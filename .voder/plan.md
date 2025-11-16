@@ -1,26 +1,21 @@
-## NOW
+## Updated Plan
 
-Run `npm init -y` in the project root to generate a package.json with default metadata.
+## NOW
+Generate a GitHub Actions CI workflow file (`.github/workflows/ci.yml`) that runs the full quality-check pipeline (build, type-check, lint, test, format:check, and `npm audit`) on every push.
 
 ## NEXT
-
-- Install core devDependencies:  
-  `npm install --save-dev typescript eslint @typescript-eslint/parser @typescript-eslint/utils jest ts-jest @types/jest`
-- Create a tsconfig.json at project root with CommonJS module, strict settings, `outDir: "lib"`, and include `"src/**/*"`.
-- Scaffold an `eslint.config.js` using ESLint v9 flat config that loads your plugin and defines `recommended` and `strict` presets.
-- Add a `jest.config.js` configured for `ts-jest` and set testMatch patterns pointing at a `tests/` directory.
-- Update package.json “scripts” section to include:
-  - `"build": "tsc"`
-  - `"type-check": "tsc --noEmit"`
-  - `"lint": "eslint ."`
-  - `"test": "jest"`
-  - `"format": "prettier --write ."`
-- Commit all changes and verify that `npm run build`, `npm run type-check`, `npm run lint`, and `npm test` all succeed.
+- Install and configure Husky and lint-staged:
+  - `npm install --save-dev husky lint-staged`
+  - `npx husky install`
+  - Add a `pre-commit` hook to run `npm run format:check`, `npm run lint`, and `npm run type-check`
+  - Add a `pre-push` hook to run `npm test`
+  - Add a `lint-staged` section to `package.json` to format and lint only staged files  
+- Create a `.prettierignore` to exclude `lib/` and `.voder/` artifacts from formatting checks  
+- Verify that `npm run lint` and `npx eslint` now execute successfully under the new CI and local hooks configuration
 
 ## LATER
-
-- Add a GitHub Actions workflow (`.github/workflows/ci.yml`) to run build, type-check, lint, test, format, and `npm audit` on every push.
-- Configure Husky pre-commit hooks to auto-format, lint, and type-check, and pre-push hooks to run tests.
-- Create a `.env.example` file and initialize `docs/security-incidents/` for tracking vulnerabilities and incidents.
-- Commit the lockfile (package-lock.json or yarn.lock) and integrate `npm audit` into CI.
-- Flesh out `README.md` with installation, configuration, and usage instructions reflecting the new setup.
+- Run `npm audit fix` (and `npm audit fix --force` if needed), document any remaining vulnerabilities in `docs/security-incidents/` and track remediation  
+- Flesh out `README.md` with installation, configuration, usage examples, and links to `docs/`  
+- Commit the `package-lock.json`, enable Dependabot or Renovate for automated dependency updates  
+- Add an `.env.example` for any future environment variables and update project documentation accordingly  
+- Review and update version control policies (e.g., branch protection, PR templates) to enforce the new CI and hook requirements
