@@ -8,6 +8,8 @@ export declare const rules: {
     "require-req-annotation": any;
     "require-branch-annotation": any;
     "valid-annotation-format": any;
+    "valid-story-reference": import("eslint").Rule.RuleModule;
+    "valid-req-reference": import("eslint").Rule.RuleModule;
 };
 export declare const configs: {
     recommended: {
@@ -19,6 +21,8 @@ export declare const configs: {
             "traceability/require-req-annotation": string;
             "traceability/require-branch-annotation": string;
             "traceability/valid-annotation-format": string;
+            "traceability/valid-story-reference": string;
+            "traceability/valid-req-reference": string;
         };
     }[];
     strict: {
@@ -30,6 +34,8 @@ export declare const configs: {
             "traceability/require-req-annotation": string;
             "traceability/require-branch-annotation": string;
             "traceability/valid-annotation-format": string;
+            "traceability/valid-story-reference": string;
+            "traceability/valid-req-reference": string;
         };
     }[];
 };
@@ -39,6 +45,8 @@ declare const _default: {
         "require-req-annotation": any;
         "require-branch-annotation": any;
         "valid-annotation-format": any;
+        "valid-story-reference": import("eslint").Rule.RuleModule;
+        "valid-req-reference": import("eslint").Rule.RuleModule;
     };
     configs: {
         recommended: {
@@ -50,6 +58,8 @@ declare const _default: {
                 "traceability/require-req-annotation": string;
                 "traceability/require-branch-annotation": string;
                 "traceability/valid-annotation-format": string;
+                "traceability/valid-story-reference": string;
+                "traceability/valid-req-reference": string;
             };
         }[];
         strict: {
@@ -61,6 +71,8 @@ declare const _default: {
                 "traceability/require-req-annotation": string;
                 "traceability/require-branch-annotation": string;
                 "traceability/valid-annotation-format": string;
+                "traceability/valid-story-reference": string;
+                "traceability/valid-req-reference": string;
             };
         }[];
     };

@@ -8,12 +8,16 @@ import requireStoryAnnotation from "./rules/require-story-annotation";
 import requireReqAnnotation from "./rules/require-req-annotation";
 import requireBranchAnnotation from "./rules/require-branch-annotation";
 import validAnnotationFormat from "./rules/valid-annotation-format";
+import validStoryReference from "./rules/valid-story-reference";
+import validReqReference from "./rules/valid-req-reference";
 
 export const rules = {
   "require-story-annotation": requireStoryAnnotation,
   "require-req-annotation": requireReqAnnotation,
   "require-branch-annotation": requireBranchAnnotation,
   "valid-annotation-format": validAnnotationFormat,
+  "valid-story-reference": validStoryReference,
+  "valid-req-reference": validReqReference,
 };
 
 export const configs = {
@@ -27,6 +31,8 @@ export const configs = {
         "traceability/require-req-annotation": "error",
         "traceability/require-branch-annotation": "error",
         "traceability/valid-annotation-format": "error",
+        "traceability/valid-story-reference": "error",
+        "traceability/valid-req-reference": "error",
       },
     },
   ],
@@ -40,6 +46,8 @@ export const configs = {
         "traceability/require-req-annotation": "error",
         "traceability/require-branch-annotation": "error",
         "traceability/valid-annotation-format": "error",
+        "traceability/valid-story-reference": "error",
+        "traceability/valid-req-reference": "error",
       },
     },
   ],

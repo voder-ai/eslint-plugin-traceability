@@ -1,17 +1,11 @@
 ## NOW  
-Populate the Git pre‐commit hook so lint-staged runs on every commit. Modify `.husky/pre-commit` to include a single line:  
-```
-npx lint-staged
-```  
+Create a new Jest RuleTester suite at `tests/rules/valid-story-reference.test.ts` that covers the core file‐validation rule (006.0-DEV-FILE-VALIDATION): valid paths, missing files, wrong extensions, path traversal, and custom story directories.
 
 ## NEXT  
-- Expand tests for `require-branch-annotation` to cover nested branches, loops, switch defaults, and edge cases, raising branch coverage to ≥95%.  
-- Scaffold the annotation-format validation rule (005.0-DEV-ANNOTATION-VALIDATION) by creating `src/rules/valid-annotation-format.ts` and registering it in `src/index.ts`.  
-- Add a unit test suite in `tests/rules/valid-annotation-format.test.ts` with basic valid/invalid JSDoc cases.  
+- Add a corresponding test suite for deep requirement‐content validation at `tests/rules/valid-req-reference.test.ts` (010.0-DEV-DEEP-VALIDATION), covering existing and missing `@req` IDs in real `.story.md` files.  
+- Enhance the `valid-story-reference` and `valid-req-reference` rule implementations in `src/rules/` to memoize file reads and directory lookups—cache by file path with modification timestamps to avoid repeated fs calls.  
+- Add an end-to-end integration test in `tests/integration/file-validation.test.ts` that spawns ESLint CLI against sample code using the file‐validation rule and asserts exit codes and error messages.
 
 ## LATER  
-- Implement the full annotation-format validation logic and error messages per the story.  
-- Develop and test the story-file reference rule (006.0) and deep requirement validation (010.0).  
-- Write auto-fixers (008.0) and maintenance tools (009.0) and their docs/tests.  
-- Add technical documentation in `docs/rules/` for all new validation rules and update examples in the user guide.  
-- Enforce the pre-commit hook in CI and document the local/CI quality-check workflow.
+- Add a new GitHub Actions workflow (`.github/workflows/release.yml`) to publish the plugin to npm on semantically versioned git tags, using `actions/setup-node` and `npm publish`.  
+- Document the automated release process in a `RELEASE.md`, include publish scripts in `package.json`, and configure semantic-release or version-bump tooling for continuous delivery.
