@@ -28,7 +28,7 @@ function runEslint(code, rule) {
     "--rule",
     rule,
   ];
-  return spawnSync("node", ["--experimental-vm-modules", eslintBin, ...args], {
+  return spawnSync(eslintBin, args, {
     encoding: "utf-8",
     input: code,
   });
@@ -54,37 +54,19 @@ function foo() {}
   },
   {
     name: "reports error when requirement reference is missing",
-    code: `
-/**
- * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
- * @req REQ-NON-EXISTENT
- */
-function foo() {}
-`,
+    code: `/**\n * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md\n * @req REQ-NON-EXISTENT\n */\nfunction foo() {}`,
     rule: "traceability/valid-req-reference:error",
     expectedStatus: 1,
   },
   {
     name: "reports error when requirement reference uses path traversal",
-    code: `
-/**
- * @story ../docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
- * @req REQ-PLUGIN-STRUCTURE
- */
-function foo() {}
-`,
+    code: `/**\n * @story ../docs/stories/001.0-DEV-PLUGIN-SETUP.story.md\n * @req REQ-PLUGIN-STRUCTURE\n */\nfunction foo() {}`,
     rule: "traceability/valid-req-reference:error",
     expectedStatus: 1,
   },
   {
     name: "reports error when requirement reference uses absolute path",
-    code: `
-/**
- * @story /absolute/docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
- * @req REQ-PLUGIN-STRUCTURE
- */
-function foo() {}
-`,
+    code: `/**\n * @story /absolute/docs/stories/001.0-DEV-PLUGIN-SETUP.story.md\n * @req REQ-PLUGIN-STRUCTURE\n */\nfunction foo() {}`,
     rule: "traceability/valid-req-reference:error",
     expectedStatus: 1,
   },
