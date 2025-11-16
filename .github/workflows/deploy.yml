@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    if: ${{ secrets.NPM_TOKEN }}
     runs-on: ubuntu-latest
 
     steps:
@@ -37,8 +36,7 @@ jobs:
         run: npm run test
 
       - name: Publish package to npm
-        if: ${{ secrets.NPM_TOKEN }}
-        continue-on-error: true
+        if: ${{ secrets.NPM_TOKEN != '' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public
