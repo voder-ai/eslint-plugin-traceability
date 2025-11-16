@@ -5,12 +5,13 @@
  */
 import * as fs from "fs";
 import * as path from "path";
+import * as os from "os";
 import { updateAnnotationReferences } from "../../src/maintenance/update";
 
 describe("updateAnnotationReferences isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
   it("[REQ-MAINT-UPDATE] updates @story annotations in files", () => {
     // Create a temporary directory for testing
-    const tmpDir = fs.mkdtempSync(path.join(__dirname, "tmp-"));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-"));
     const filePath = path.join(tmpDir, "file.ts");
     const originalContent = `
 /**

@@ -27,7 +27,7 @@ export default {
         comments.forEach((comment: any) => {
           const lines = comment.value
             .split(/\r?\n/)
-            .map((l: string) => l.trim());
+            .map((l: string) => l.replace(/^[^@]*/, "").trim());
           lines.forEach((line: string) => {
             if (line.startsWith("@story")) {
               const parts = line.split(/\s+/);

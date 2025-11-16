@@ -133,7 +133,9 @@ function handleComment(
   allowAbsolute: boolean,
   requireExt: boolean,
 ): void {
-  const lines = commentNode.value.split(/\r?\n/).map((l: string) => l.trim());
+  const lines = commentNode.value
+    .split(/\r?\n/)
+    .map((l: string) => l.replace(/^[^@]*/, "").trim());
   for (const line of lines) {
     if (line.startsWith("@story")) {
       validateStoryPath(

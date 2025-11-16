@@ -5,6 +5,7 @@
  */
 import * as fs from "fs";
 import * as path from "path";
+import * as os from "os";
 import { detectStaleAnnotations } from "../../src/maintenance/detect";
 
 describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
@@ -14,7 +15,7 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
   });
 
   it("[REQ-MAINT-DETECT] detects stale annotations in nested directories", () => {
-    const tmpDir = fs.mkdtempSync(path.join(__dirname, "tmp-nested-"));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-nested-"));
     const nestedDir = path.join(tmpDir, "nested");
     fs.mkdirSync(nestedDir);
     const filePath1 = path.join(tmpDir, "file1.ts");
@@ -39,7 +40,7 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
   });
 
   it("[REQ-MAINT-DETECT] throws error on permission denied", () => {
-    const tmpDir2 = fs.mkdtempSync(path.join(__dirname, "tmp-perm-"));
+    const tmpDir2 = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-perm-"));
     const dir = path.join(tmpDir2, "subdir");
     fs.mkdirSync(dir);
     const filePath = path.join(dir, "file.ts");
