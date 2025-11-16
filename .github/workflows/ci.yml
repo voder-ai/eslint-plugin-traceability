@@ -36,6 +36,9 @@ jobs:
     - name: Run linting
       run: npm run lint
 
+    - name: Run duplication check
+      run: npm run duplication
+
     - name: Run tests with coverage
       run: npm run test
 

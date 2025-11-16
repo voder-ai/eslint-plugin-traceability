@@ -27,24 +27,21 @@ Example `.eslintrc.js`:
 module.exports = {
   plugins: ["traceability"],
   rules: {
-    "traceability/require-tag": [
-      "error",
-      {
-        prefixes: ["REQ-", "TST-"],
-        message: "Missing traceability tag (e.g., REQ-1234 or TST-5678).",
-      },
-    ],
-    "traceability/unique-tag": ["warn"],
+    "traceability/require-story-annotation": "error",
+    "traceability/require-req-annotation": "error",
+    "traceability/require-branch-annotation": "error",
   },
 };
 ```
 
 ### Available Rules
 
-- `require-tag`  
-  Enforces a comment or JSDoc tag with one of the specified prefixes.
-- `unique-tag`  
-  Warns if a traceability tag is reused within the codebase.
+- `require-story-annotation`  
+  Enforces `@story` annotations on function declarations. ([Documentation](docs/rules/require-story-annotation.md))
+- `require-req-annotation`  
+  Enforces `@req` annotations on function declarations. ([Documentation](docs/rules/require-req-annotation.md))
+- `require-branch-annotation`  
+  Enforces `@story` and `@req` annotations on significant code branches. ([Documentation](docs/rules/require-branch-annotation.md))
 
 For development and contribution guidelines, see docs/eslint-plugin-development-guide.md.
 
@@ -61,8 +58,9 @@ For development and contribution guidelines, see docs/eslint-plugin-development-
   "plugins": ["traceability"],
   "extends": ["eslint:recommended"],
   "rules": {
-    "traceability/require-tag": ["error", { "prefixes": ["REQ-", "TST-"] }],
-    "traceability/unique-tag": "warn"
+    "traceability/require-story-annotation": "error",
+    "traceability/require-req-annotation": "error",
+    "traceability/require-branch-annotation": "error"
   }
 }
 ```
@@ -87,7 +85,8 @@ npx eslint "src/**/*.js"
 - ESLint v9 Setup Guide: docs/eslint-9-setup-guide.md
 - Plugin Development Guide: docs/eslint-plugin-development-guide.md
 - Full README: https://github.com/traceability/eslint-plugin-traceability#readme
-- Rule: require-tag: https://github.com/traceability/eslint-plugin-traceability/blob/main/docs/rules/require-tag.md
-- Rule: unique-tag: https://github.com/traceability/eslint-plugin-traceability/blob/main/docs/rules/unique-tag.md
+- Rule: require-story-annotation: docs/rules/require-story-annotation.md
+- Rule: require-req-annotation: docs/rules/require-req-annotation.md
+- Rule: require-branch-annotation: docs/rules/require-branch-annotation.md
 - Contribution guide: https://github.com/traceability/eslint-plugin-traceability/blob/main/CONTRIBUTING.md
 - Issue tracker: https://github.com/traceability/eslint-plugin-traceability/issues

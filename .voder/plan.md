@@ -1,13 +1,19 @@
 ## NOW
-Update README.md to add the required “Attribution” section (“Created autonomously by voder.ai” linking to https://voder.ai), plus installation steps, a quick-start example, and direct links to docs/eslint-9-setup-guide.md and docs/eslint-plugin-development-guide.md.
+Create a new docs/rules directory and add markdown documentation for each implemented rule—  
+- docs/rules/require-story-annotation.md  
+- docs/rules/require-req-annotation.md  
+- docs/rules/require-branch-annotation.md  
+Each file should include the rule’s purpose, @story story reference, @req requirement ID, options schema, and usage examples.
 
 ## NEXT
-- Add a `coverageThreshold` section to jest.config.js (e.g. enforce 100% statements, branches, functions, and lines) so CI will fail on low coverage.  
-- Refactor the Husky pre-commit hook to use lint-staged for fast, staged-file linting/formatting, and extend the pre-push hook to run `npm audit --audit-level=high` to mirror CI security checks.  
-- Expand tests in tests/rules/require-branch-annotation.test.ts to include SwitchCase, TryStatement, CatchClause, WhileStatement, DoWhileStatement, ForInStatement, and ForOfStatement cases so branch coverage reaches 100%.
+- Update README.md: add a “Rules” section that links to each file in docs/rules, correct rule names in all examples, and remove any broken links.  
+- Configure lint-staged in package.json and update .husky/pre-commit to run `npx lint-staged` for formatting and lint fixes.  
+- Integrate jscpd duplication checks into the pre-push hook and CI workflow to enforce DRY.  
+- Populate the plugin’s `configs.recommended` and `configs.strict` in src/index.ts so they immediately enable the three documented rules.
 
 ## LATER
-- Create a lint-staged configuration file and update package.json scripts accordingly.  
-- Once format-validation (005) and file-validation (006) rules are implemented, write their unit tests to raise overall test coverage.  
-- Add end-to-end integration tests invoking the ESLint CLI (with both recommended and strict configs) against fixture projects to verify rule enforcement and `--fix` behavior.  
-- Implement a GitHub Actions workflow to automate npm package publishing on tagged releases and document the release process in the repository.
+- Implement and unit-test the annotation-format (story 005.0) and file-reference (story 006.0) validation rules to raise test coverage.  
+- Add integration tests that load the built plugin in an ESLint flat config against sample code, including `--fix` scenarios.  
+- Develop end-to-end CLI tests for both recommended and strict configurations.  
+- Introduce performance benchmarks and caching for file-system operations.  
+- Set up scheduled dependency/security scans (Dependabot/CodeQL) and document the process.

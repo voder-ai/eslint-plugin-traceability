@@ -17,12 +17,26 @@ export const rules = {
 export const configs = {
   recommended: [
     {
-      rules: {},
+      plugins: {
+        traceability: {},
+      },
+      rules: {
+        "traceability/require-story-annotation": "error",
+        "traceability/require-req-annotation": "error",
+        "traceability/require-branch-annotation": "error",
+      },
     },
   ],
   strict: [
     {
-      rules: {},
+      plugins: {
+        traceability: {},
+      },
+      rules: {
+        "traceability/require-story-annotation": "error",
+        "traceability/require-req-annotation": "error",
+        "traceability/require-branch-annotation": "error",
+      },
     },
   ],
 };

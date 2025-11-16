@@ -10,10 +10,24 @@ export declare const rules: {
 };
 export declare const configs: {
     recommended: {
-        rules: {};
+        plugins: {
+            traceability: {};
+        };
+        rules: {
+            "traceability/require-story-annotation": string;
+            "traceability/require-req-annotation": string;
+            "traceability/require-branch-annotation": string;
+        };
     }[];
     strict: {
-        rules: {};
+        plugins: {
+            traceability: {};
+        };
+        rules: {
+            "traceability/require-story-annotation": string;
+            "traceability/require-req-annotation": string;
+            "traceability/require-branch-annotation": string;
+        };
     }[];
 };
 declare const _default: {
@@ -24,10 +38,24 @@ declare const _default: {
     };
     configs: {
         recommended: {
-            rules: {};
+            plugins: {
+                traceability: {};
+            };
+            rules: {
+                "traceability/require-story-annotation": string;
+                "traceability/require-req-annotation": string;
+                "traceability/require-branch-annotation": string;
+            };
         }[];
         strict: {
-            rules: {};
+            plugins: {
+                traceability: {};
+            };
+            rules: {
+                "traceability/require-story-annotation": string;
+                "traceability/require-req-annotation": string;
+                "traceability/require-branch-annotation": string;
+            };
         }[];
     };
 };
