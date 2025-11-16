@@ -15,7 +15,8 @@ const configPath = path.resolve(__dirname, "eslint.config.js");
  * @req REQ-PLUGIN-STRUCTURE - Utility for invoking ESLint with flat config in integration tests
  */
 function runEslint(code, rule) {
-  const eslintCliPath = require.resolve("eslint/bin/eslint.js");
+  const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
+  const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
   const args = [
     "--no-config-lookup",
     "--config",
@@ -77,7 +78,7 @@ tests.forEach(({ name, code, rule, expectedStatus }) => {
   const result = runEslint(code, rule);
   if (result.status !== expectedStatus) {
     console.error(
-      `Test "${name}" failed. Expected status ${expectedStatus}, got ${result.status}.`
+      `Test "${name}" failed. Expected status ${expectedStatus}, got ${result.status}.`,
     );
     console.error("stdout:", result.stdout);
     exitCode = 1;
