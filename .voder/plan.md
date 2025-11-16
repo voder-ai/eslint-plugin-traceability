@@ -1,23 +1,18 @@
-## NOW
-Run ESLint with JSON output to identify all violations of the size rules in one go:  
-```bash
-npm run lint -- --format=json > eslint-violations.json
-```  
-(Examining `eslint-violations.json` for `max-lines-per-function` and `max-lines-per-file` errors will pinpoint the exact functions and files needing refactoring.)
+## NOW  
+Modify CHANGELOG.md to add a new “## [1.0.0] – 2025-11-16” section with bullet points summarizing all v1.0.0 changes so the changelog version matches package.json.
 
-## NEXT
-- Refactor each file/function flagged in the report:
-  - Extract large functions into focused helpers under `src/utils/` so no function exceeds the current 100-line limit.  
-  - Break up any file over 500 lines into smaller modules (e.g. split rule implementations into per‐rule files).  
-- Once existing violations are cleared, tighten the thresholds in `eslint.config.js` to:
-  - `max-lines-per-function: [“error”, { max: 90 }]`  
-  - `max-lines-per-file: [“error”, { max: 400 }]`  
-  - Re-run lint and fix any new violations.  
-- Revise all tests that rely on fixed fixture directories:
-  - In each file-I/O test under `tests/`, replace hard-coded `tests/fixtures` paths with a temp directory created via `fs.mkdtempSync()` (or `os.tmpdir()`), copy in the needed fixtures, and clean up after the test.
+## NEXT  
+- Add `lib/` (and any other build output directories) to `.gitignore` to stop committing artifacts.  
+- Update the Husky pre-push hook (`.husky/pre-push`) to include running the CLI integration tests (e.g. add `node cli-integration.js` after the existing checks).  
+- Create a new GitHub Actions workflow file (`.github/workflows/deploy.yml`) that:  
+  1. Triggers on `push` to `main`.  
+  2. Checks out the code, installs dependencies, runs build/test/lint.  
+  3. Publishes the package to npm via `npm publish` (using `NODE_AUTH_TOKEN` secret).  
+  4. Uploads the built `lib/` directory as a GitHub release artifact.  
+- Adjust the existing release job trigger in `ci.yml` to remove “tags only” gating so that the `deploy.yml` workflow handles publishing automatically on every merge to `main`.  
 
-## LATER
-- Continue the ESLint ratcheting plan by moving thresholds down in 10-line increments until functions average ~50 lines and files ~300 lines.  
-- Add a CI job that fails on any new size-rule violation and publishes a short report for maintainers.  
-- Document the ratcheting goals and timeline in an ADR so future contributors can track progress.  
-- Expand test utilities to automate temp-dir fixture setup/teardown and validate file-system side-effects in isolation.
+## LATER  
+- Add a CI smoke-test job that installs the freshly published package in a clean workspace and runs a basic CLI command to verify the npm release.  
+- Migrate to semantic-release or GitHub’s “release” event to automate version bumping and changelog generation.  
+- Document these version-control and CD workflow decisions in an ADR (e.g. `docs/decisions/ADR-version-control-and-CD.md`).  
+- Continuously monitor and enforce parity between the local Husky hooks and the CI workflows, adding any missing checks to both.
