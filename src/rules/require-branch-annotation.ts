@@ -18,7 +18,31 @@ export default {
   create(context: any) {
     const sourceCode = context.getSourceCode();
     function checkBranch(node: any) {
-      const comments = sourceCode.getCommentsBefore(node) || [];
+      // skip default cases in switch
+      if (node.type === "SwitchCase" && node.test == null) {
+        return;
+      }
+      // collect comments before node
+      let comments = sourceCode.getCommentsBefore(node) || [];
+      // fallback scanning for SwitchCase if no leading comment nodes
+      if (node.type === "SwitchCase" && comments.length === 0) {
+        const lines = sourceCode.lines;
+        const startLine = node.loc.start.line;
+        let i = startLine - 1;
+        const fallbackComments: string[] = [];
+        while (i > 0) {
+          const lineText = lines[i - 1];
+          if (/^\s*(\/\/|\/\*)/.test(lineText)) {
+            fallbackComments.unshift(lineText.trim());
+            i--;
+          } else if (/^\s*$/.test(lineText)) {
+            break;
+          } else {
+            break;
+          }
+        }
+        comments = fallbackComments.map((text) => ({ value: text }));
+      }
       const text = comments.map((c: any) => c.value).join(" ");
       if (!/@story\b/.test(text)) {
         context.report({
