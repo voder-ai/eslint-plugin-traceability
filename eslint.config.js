@@ -18,7 +18,6 @@ try {
 
 module.exports = [
   js.configs.recommended,
-  ...(plugin.configs ? plugin.configs.recommended : []),
   {
     // Node.js config files
     files: ["*.config.js", "*.config.mjs", "jest.config.js"],
