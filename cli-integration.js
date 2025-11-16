@@ -22,6 +22,8 @@ function runEslint(code, rule) {
     "--no-config-lookup",
     "--config",
     configPath,
+    "--plugin",
+    `traceability=${pluginPath}`,
     "--stdin",
     "--stdin-filename",
     "foo.js",
