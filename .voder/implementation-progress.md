@@ -1,145 +1,148 @@
 # Implementation Progress Assessment
 
-**Generated:** 2025-11-16T11:05:41.084Z
+**Generated:** 2025-11-16T12:46:33.841Z
 
 ![Progress Chart](./progress-chart.png)
 
-Projected completion (from current rate): cycle 36.8
+Projection: flat (no recent upward trend)
 
-## IMPLEMENTATION STATUS: INCOMPLETE (89% ± 5% COMPLETE)
+## IMPLEMENTATION STATUS: INCOMPLETE (78.5% ± 5% COMPLETE)
 
 ## OVERALL ASSESSMENT
-Overall implementation is solid in most areas but functionality lags due to incomplete maintenance tools and deep validation stories, leading to a failed functionality threshold and incomplete status.
+The implementation is incomplete: Testing (88%), Execution (88%), and Version Control (70%) are below the 90% requirement. These foundational areas must be addressed before assessing functionality or adding features.
 
 ## NEXT PRIORITY
-Implement the maintenance tools and complete deep validation rules to satisfy remaining functionality stories.
+Focus exclusively on improving Testing, Execution, and Version Control to meet or exceed the 90% thresholds before continuing.
 
 
 
-## CODE_QUALITY ASSESSMENT (90% ± 16% COMPLETE)
-- The codebase is well-structured and uses modern quality tooling: linting, formatting, type-checking, duplication detection, complexity checks, and a comprehensive Jest test suite with 96%+ coverage. There are no disabled quality checks or significant duplication, and all CI jobs pass.
-- All ESLint rules pass with no errors; complexity rule (default max:20) enforces maintainable function complexity.
-- Prettier format checks pass; lint-staged and Husky hooks in place for pre-commit and pre-push enforcement.
-- TypeScript compilation and tsc --noEmit type-checking pass with no errors.
-- Duplication scan (jscpd, 3% threshold) reports 0% duplication across src and tests.
-- Jest tests cover 96.7% of lines, 85.4% of branches, and 100% of functions; CI runs integration and CLI tests successfully.
-- No file-wide `eslint-disable`, `@ts-nocheck`, or inline suppressions found in source code.
-- Plugin code files are under 300 lines; no file-length or function-length rules are currently configured.
-- Some branches in valid-req-reference and valid-story-reference remain lightly untested (branch coverage ~75–85%).
-
-**Next Steps:**
-- Add ESLint file-length (`max-lines`) and function-length (`max-lines-per-function`) rules to catch oversized files/functions and ratchet them down over time.
-- Introduce ESLint rules for max-params and max-depth to guard against long parameter lists and deeply nested conditionals.
-- Increase branch coverage in tests, particularly for edge cases in valid-req-reference and valid-story-reference rules.
-- Document and enforce error-handling patterns and magic-number avoidance via additional ESLint rules as needed.
-- Monitor complexity trends in plugin source itself; consider ratcheting complexity thresholds lower if any functions approach the default limit.
-
-## TESTING ASSESSMENT (92% ± 16% COMPLETE)
-- The project has a comprehensive Jest‐based test suite covering unit-rule tests, integration tests, and CLI scenarios, with 100% pass and healthy coverage above configured thresholds. Tests are non-interactive, isolated, and traceable to stories. Missing are explicit auto-fix tests and maintenance-tool tests planned for later stories.
-- Uses established testing framework (Jest) with ts-jest; all tests pass non-interactively (100% pass rate).
-- Comprehensive RuleTester unit tests for all core rules with clear GIVEN-WHEN-THEN structure and descriptive names.
-- Integration tests via spawnSync CLI cover file and requirement validation, and main plugin registration, with story/@req traceability annotations in test headers.
-- Coverage metrics: 96.75% statements, 85.41% branches, meeting coverageThreshold settings in jest.config.js.
-- Test files are well-named to match rule content; no misleading ‘branch’ terminology tied to coverage concepts.
-- Tests cleanly isolate state (no file modifications), use temporary stdin for CLI tests, and run in any order without interdependence.
-- Traceability: All test files include @story headers and relevant @req IDs for requirement traceability.
-- No tests exist for ESLint auto-fix functionality (008.0-DEV-AUTO-FIX) or maintenance tools (009.0-DEV-MAINTENANCE-TOOLS) yet, as these are planned for future stories.
+## CODE_QUALITY ASSESSMENT (92% ± 13% COMPLETE)
+- The project demonstrates high code quality: linting, formatting, type checking, and tests all pass, duplication is zero, and complexity rules are enforced. Minor gaps exist in test coverage for maintenance utilities.
+- ESLint linting, Prettier formatting, and TypeScript type checking all pass with zero errors
+- Jest tests run in CI with ~91.9% coverage; tests exist for all rules and CLI integration
+- jscpd duplication scan reports 0% duplication across 28 files
+- Cyclomatic complexity enforced at the default max of 20 with no violations
+- No disabled quality checks (@ts-ignore, eslint-disable) detected in source
+- Pre-commit and pre-push hooks enforce formatting, linting, type checking, tests, duplication checks, and audit
+- src/maintenance/update.ts and utils.ts have lower coverage (50% and ~62%), indicating missing tests
 
 **Next Steps:**
-- Add unit and integration tests for auto-fix capabilities to validate safe code fixes under `--fix`.
-- Implement tests for the maintenance tools (batch update, detection) planned in Story 009 to complete test coverage of Release 0.1.
-- Introduce tests for deep requirement-content validation (Story 010) when implemented to ensure @req matching accuracy.
-- Consider consolidating or removing compiled tests under `lib/tests` to avoid clutter; rely on `tests/` directory for active test suite.
+- Add or expand unit tests for maintenance utilities (src/maintenance/update.ts, utils.ts) to improve coverage
+- Introduce file- and function-length rules (e.g., max-lines and max-lines-per-function) and ratchet thresholds incrementally
+- Consider adding explicit ESLint rules for max-params and nesting depth to catch anti-patterns
+- Implement a plan to lower complexity thresholds or remove explicit limits if higher than default
+- Monitor code quality metrics in CI and report trends over time
 
-## EXECUTION ASSESSMENT (92% ± 17% COMPLETE)
-- The plugin demonstrates a solid execution profile: it builds cleanly, type-checks, lints without errors, and all unit, integration, and CLI tests pass. The build pipeline including duplication checks and security audit is automated and reliable. A few runtime paths in the deep validation logic remain untested, leading to slightly lower branch coverage.
-- Build process (`npm run build`) completes without errors
-- Type checking (`npm run type-check`) passes with no issues
-- Linting (`npm run lint`) runs cleanly under the flat config
-- Jest tests (unit and integration) all pass with high coverage (96.7% statements, 85.4% branches)
-- CLI integration script (`node cli-integration.js`) yields expected exit codes for all scenarios
-- No code duplication detected by jscpd
-- All GitHub Actions CI steps (build, lint, type-check, duplication, test, format check, security audit) are configured and passing
-
-**Next Steps:**
-- Increase branch coverage by adding tests for untested conditions in valid-req-reference (e.g., malformed markdown, read errors)
-- Add integration tests for valid-story-reference to cover fileMissing and invalidExtension scenarios
-- Introduce performance benchmarks or resource‐heavy test cases for large story files to validate caching effectiveness
-- Document and test error handling for edge cases in file system operations (e.g., permission errors, symbolic links)
-
-## DOCUMENTATION ASSESSMENT (90% ± 18% COMPLETE)
-- The project provides thorough user-facing documentation, including installation, usage, ESLint v9 setup, configuration presets, CLI integration, rule-level docs, and a CHANGELOG, with proper attribution. A few minor consistency refinements would elevate clarity.
-- README.md includes the required “Created autonomously by voder.ai” attribution linking to https://voder.ai
-- Installation, usage, and quick-start examples in README match the plugin’s implementation
-- docs/eslint-9-setup-guide.md offers detailed ESLint 9 flat-config instructions and troubleshooting
-- docs/config-presets.md clearly documents recommended and strict configuration presets
-- docs/cli-integration.md explains end-to-end CLI tests and CI integration
-- Each rule has its own documentation file under docs/rules with correct annotations and examples
-- CHANGELOG.md is present, up-to-date, and documents the initial release
-- README links to docs and scripts (lint, test, format) are accurate
+## TESTING ASSESSMENT (88% ± 14% COMPLETE)
+- The project has a comprehensive Jest-based test suite (unit, integration, and CLI tests) that all pass in non-interactive mode and meet the configured coverage thresholds. Tests are well-structured, use descriptive names with @story/@req annotations for traceability, and cover core rule behaviors. However, maintenance utilities lack end-to-end write-path tests, and file-system operations are exercised against fixtures in the repo rather than isolated temp directories, leaving gaps in branch coverage and test isolation.
+- Tests use Jest with ts-jest and ESLint’s RuleTester according to the project’s decision records, and all tests pass with `npm test --ci --bail --coverage`.
+- Coverage thresholds (statements ≥57%, branches ≥47%, lines ≥59%, functions ≥42%) are met: overall 91.6% stmts, 81.1% branches, 96.9% funcs, 91.9% lines.
+- Unit tests include @story and @req annotations in JSDoc headers; describe blocks reference story IDs; individual test names include requirement IDs, supporting precise traceability.
+- Integration tests (tests/integration and cli-integration.js) run ESLint CLI in non-interactive mode and verify both valid and invalid scenarios for story and requirement rules.
+- Test file names accurately reflect the rules under test (e.g., require-branch-annotation.test.ts) and follow ARRANGE-ACT-ASSERT structure with no complex logic in tests.
+- Fixtures are used to simulate file-system scenarios, but maintenance functions (updateAnnotationReferences, detectStaleAnnotations, generateMaintenanceReport) have uncovered branches—especially write and update paths—that are not covered by tests.
+- Maintenance tests operate on committed fixture directories rather than OS temp directories, risking test pollution and violating best practices for file-operation isolation.
+- No tests currently clean up or isolate file writes, and there are no tests covering unsafe or permission-error scenarios in file-validation and deep-validation rules.
 
 **Next Steps:**
-- Standardize code examples in README (choose a consistent CJS or ESM style) to reduce reader confusion
-- Segregate user-facing docs (e.g. installation, usage, config presets, rule docs) into a dedicated user-docs/ directory to clearly separate dev guidance
-- Add an API reference or summary section in README listing exported rules and configs with brief descriptions
-- Consider adding a migration or upgrade guide into CHANGELOG or docs for future breaking changes
-- Review docs for minor typos or outdated links and update as plugin evolves
+- Add unit and integration tests exercising the write-path logic in updateAnnotationReferences, using fs.mkdtemp to create isolated temp directories and cleaning up after tests.
+- Expand tests for detectStaleAnnotations and generateMaintenanceReport to cover multiple stale and batch scenarios, improving branch coverage in maintenance modules.
+- Refactor existing fixture-based tests for file operations to deep-copy fixtures into temporary directories or use mock file systems, ensuring repository files remain untouched.
+- Introduce beforeAll/afterAll hooks in maintenance tests to set up and tear down temp dirs, verifying tests do not modify committed files and maintain isolation.
+- Add tests for security and edge cases in file-validation and deep-validation rules (e.g., symlinks, permission errors), and verify cleanup behavior to increase confidence and coverage.
+
+## EXECUTION ASSESSMENT (88% ± 15% COMPLETE)
+- The project’s build, lint, type‐check, unit tests, duplication checks, and CLI integration tests all pass reliably across Node.js versions. Core functionality is validated at runtime via Jest RuleTester and CLI scenarios. Coverage is solid but there are gaps in maintenance utilities and some rules lack end-to-end CLI tests. File system operations are correct but lack caching for repeated checks.
+- Build (tsc) succeeds without errors and outputs to lib/
+- ESLint linting passes (no warnings) against src and tests with flat config
+- TypeScript compilation and type checking (tsc --noEmit) succeed
+- Unit tests (Jest) pass with ~91.6% statement and ~81.1% branch coverage; maintenance/update.ts and some deep‐validation branches are under‐covered
+- Zero duplication detected by jscpd
+- CLI integration tests (cli-integration.js) pass, validating require-story-annotation and valid-req-reference rules
+- CI pipeline configured with quality-checks and integration-tests jobs on Node 18.x and 20.x
+- No duplication, no silent failures, and clear error reporting evidenced in rule contexts
+- File existence and deep requirement parsing work but lack result caching, potentially impacting performance on large codebases
+
+**Next Steps:**
+- Introduce in-memory caching for story-file existence checks and markdown parsing in valid‐story‐reference and valid‐req‐reference rules to improve lint performance
+- Expand CLI integration tests to cover additional rules (require-req-annotation, require-branch-annotation, valid-annotation-format, valid-story-reference)
+- Add unit/integration tests for maintenance helpers (src/maintenance/update.ts and utils.ts) to raise coverage above 90% branches
+- Benchmark lint performance on a large codebase to detect any AST traversal or file I/O bottlenecks
+- Consider adding end-to-end examples or scripts demonstrating full plugin usage in a sample project for runtime validation of all rules
+
+## DOCUMENTATION ASSESSMENT (90% ± 17% COMPLETE)
+- User-facing documentation is comprehensive, accurate, and up-to-date, with complete setup, usage, and API reference guides. The README includes the required attribution and covers installation, configuration, rules, testing, and CLI integration. Documentation under docs/ provides detailed guides for ESLint 9 setup, rule reference, CLI integration, and changelog. Only minor gaps were found in cross-references: the configuration-presets guide exists but is not linked from the README’s Documentation Links, and the security incidents and jest testing guides are not directly referenced in the main README.
+- README.md contains the required “Created autonomously by voder.ai” attribution linking to https://voder.ai.
+- Installation and usage examples in README.md align with actual package.json scripts and supported module formats.
+- All six core rules are documented in docs/rules/ and linked under Available Rules in README.md.
+- docs/eslint-9-setup-guide.md provides accurate, up-to-date instructions for ESLint v9 flat config and TypeScript integration.
+- CHANGELOG.md records the initial release (0.1.0) with date and aligns with project state.
+- docs/config-presets.md describes recommended and strict presets but is not linked in README.md’s Documentation Links section.
+- docs/security-incidents/unresolved-vulnerabilities.md exists but is not referenced in README.md or changelog.
+- docs/jest-testing-guide.md offers testing guidance but is not exposed via README.md links.
+
+**Next Steps:**
+- Add links to docs/config-presets.md in the README’s Documentation Links to improve discoverability of configuration presets.
+- Reference docs/security-incidents/unresolved-vulnerabilities.md in README.md or CHANGELOG.md to surface the current security posture.
+- Optionally include a pointer to docs/jest-testing-guide.md for teams interested in test output traceability.
+- Consider reorganizing user-facing docs into a dedicated user-docs/ directory to clearly separate from internal developer documentation.
 
 ## DEPENDENCIES ASSESSMENT (100% ± 18% COMPLETE)
-- Dependencies are well managed: all packages are up to date according to the dry-aged-deps tool, the npm lockfile is committed, there are no vulnerabilities or deprecation warnings, and installation succeeds cleanly.
+- Dependencies are well-managed: all packages are current (per the dry-aged-deps maturity check), the lockfile is committed, and no vulnerabilities or deprecation warnings were found.
 - npx dry-aged-deps reports “All dependencies are up to date.”
-- package-lock.json is present and tracked in git (verified via git ls-files).
-- npm install completed with no deprecation warnings.
-- npm audit reports zero vulnerabilities at any severity level.
-- Peer dependency on ESLint ^9.0.0 matches the installed ESLint v9.39.1.
+- package-lock.json is tracked in Git (git ls-files shows it).
+- npm audit --json reports zero vulnerabilities (moderate or higher).
+- An override for js-yaml (>=4.1.1) is in place and reflected in the lockfile.
+- A dry-run of npm install completed without deprecation warnings or conflicts.
+- All declared dependencies (eslint, @typescript-eslint/utils, jest, etc.) align with code usage and testing setup.
 
 **Next Steps:**
-- Add a CI step to run npx dry-aged-deps periodically to catch new safe upgrades.
-- Automate npm audit in the CI pipeline to detect any future vulnerabilities immediately.
-- Review the js-yaml override in package.json periodically to remove it if upstream fixes are available.
+- Continue to run `npx dry-aged-deps` periodically to pick up safe mature updates.
+- Keep the package-lock.json under source control and review overrides when new security advisories appear.
+- Monitor for any deprecation warnings when new dependencies are introduced or updated.
+- Periodically audit the devDependencies list to remove any that become unnecessary over time.
 
-## SECURITY ASSESSMENT (100% ± 20% COMPLETE)
-- All known vulnerabilities have been addressed, no hardcoded secrets are tracked, and dependency management and CI security checks are properly in place.
-- npm audit reports zero vulnerabilities (moderate or higher).
-- docs/security-incidents/unresolved-vulnerabilities.md confirms no outstanding moderate+ issues; js-yaml vulnerability fixed via override to >=4.1.1.
-- .env is git-ignored (git ls-files .env returns empty) and only .env.example with placeholder values is tracked.
-- No conflicting dependency-update automation tools found (no Dependabot or Renovate configs).
-- CI pipeline includes a `npm audit --audit-level=high` step to continuously enforce vulnerability scanning.
-- Peer and production dependencies are minimal (eslint only), reducing surface area for security issues.
-
-**Next Steps:**
-- Continue weekly or per-release dependency audits (npm audit) and update overrides as needed.
-- Establish the 14-day vulnerability review cadence for any new findings per security policy.
-- Monitor upstream security advisories for shared dependencies and update CI as new audit flags appear.
-- Ensure any new critical or high vulnerabilities are documented in docs/security-incidents and remediated promptly.
-- Maintain secure CI secrets (e.g., CODECOV_TOKEN) via GitHub Actions Secrets with least-privilege access.
-
-## VERSION_CONTROL ASSESSMENT (95% ± 17% COMPLETE)
-- The repository demonstrates strong version control practices with a clean working directory, trunk-based development on main, comprehensive pre-commit and pre-push hooks, a current GitHub Actions CI configuration without deprecations, and appropriate .gitignore settings (including tracking of the .voder directory). CI and local hooks run the same quality gates, and commit messages follow Conventional Commits.
-- Git status is clean except for changes in the .voder directory, which is correctly tracked and excluded from assessment.
-- Current branch is 'main' with direct commits (trunk-based development) and no unpushed commits.
-- .gitignore does not list .voder/, ensuring that assessment history is tracked.
-- Husky pre-commit hook runs fast basic checks: `npm run format` (auto–fix) and `npm run lint -- --max-warnings=0`.
-- Husky pre-push hook runs comprehensive quality gates matching CI: build, type-check, lint, duplication check, tests, format:check, and audit.
-- package.json includes a prepare script for Husky hook installation and lint-staged configured for staged files.
-- GitHub Actions workflow (ci.yml) uses non-deprecated actions (actions/checkout@v4, actions/setup-node@v4, codecov-action@v4) and runs on every push to main and PR.
-- CI workflow defines a single unified pipeline with two jobs (quality-checks and integration-tests) without redundant testing steps, and no deprecation warnings in workflows.
-- Commit history shows clear, descriptive messages using Conventional Commits (feat:, chore:, style:, test:).
+## SECURITY ASSESSMENT (100% ± 15% COMPLETE)
+- The project demonstrates strong security hygiene: all moderate+ vulnerabilities are resolved, no new issues found, secrets are managed correctly, path traversal protections are in place, and CI enforces audits without conflicting automation tools.
+- No open moderate or higher severity vulnerabilities according to `npm audit` and docs/security-incidents/unresolved-vulnerabilities.md
+- js-yaml prototype pollution (GHSA-mh29-5h37-fv8m) was upgraded to ≥4.1.1 (verified via `npm ls js-yaml` and package.json overrides)
+- Local `.env` is untracked (`git ls-files .env` and `git log --all -- .env` both empty) and listed in `.gitignore`, with a safe `.env.example` template
+- Rules (valid-story-reference and valid-req-reference) include checks to prevent path traversal (`..`) and absolute paths
+- CI pipeline runs `npm audit --audit-level=high` on every push and pre-push hook includes the same audit check
+- No conflicting dependency update automation tools detected (no Dependabot or Renovate configurations in repo)
 
 **Next Steps:**
-- Consider moving CLI integration tests into the pre-push hook to catch CLI regressions locally before push.
-- Optionally optimize pre-commit hook speed by using lint-staged instead of full repository linting on every commit.
-- If publishing to npm is desired, add an automated release/publish job to the CI workflow with semantic-release or similar tooling.
+- Continue weekly or automated dependency vulnerability scans to catch new issues early
+- Monitor patched-in-place overrides (e.g., js-yaml) and remove overrides once direct dependencies are updated
+- Consider integrating a policy-as-code tool (e.g., Snyk, Dependabot alerts) for ongoing monitoring beyond `npm audit`
+- Regularly review and test security controls in path-resolution logic as the plugin evolves
 
-## FUNCTIONALITY ASSESSMENT (50% ± 95% COMPLETE)
-- 5 of 10 stories incomplete. First failed: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-- Total stories assessed: 10 (0 non-spec files excluded)
-- Stories passed: 5
-- Stories failed: 5
-- First incomplete story: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-- Failure reason: The story 009.0-DEV-MAINTENANCE-TOOLS is clearly defined in docs but there is no corresponding implementation or tests in src, lib, or tests. All acceptance criteria and requirements for maintenance tools are unmet.
+## VERSION_CONTROL ASSESSMENT (70% ± 10% COMPLETE)
+- Overall the project shows strong version control practices—clean working directory, comprehensive CI pipeline with current GitHub Actions versions, modern Husky hooks for pre-commit and pre-push with parity to CI, clear conventional commits, and trunk-based development on main. However, there is no automated publishing/deployment step configured in the pipeline, and no post-deployment or smoke-test verification, which are critical for continuous delivery of a library package.
+- CI workflow uses actions/checkout@v4 and actions/setup-node@v4 with no deprecation warnings
+- Single workflow file with two jobs (quality-checks and integration-tests), avoiding duplicate testing across workflows
+- Comprehensive quality gates: build, type-check, lint, duplication check, tests, format check, security audit
+- .husky/pre-commit and .husky/pre-push hooks exist and mirror CI checks (format + lint pre-commit; build, type-check, lint, tests, audit pre-push)
+- .voder directory is not ignored and uncommitted changes only within .voder, working tree clean excluding assessment files
+- Current branch is main, commit history shows clear Conventional Commit messages
 
 **Next Steps:**
-- Complete story: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-- The story 009.0-DEV-MAINTENANCE-TOOLS is clearly defined in docs but there is no corresponding implementation or tests in src, lib, or tests. All acceptance criteria and requirements for maintenance tools are unmet.
-- Evidence: No implementation found for maintenance tools: no CLI commands or scripts (e.g., src/maintenance or a dedicated entry in package.json), no source files or modules implementing REQ-MAINT-DETECT, REQ-MAINT-UPDATE, REQ-MAINT-BATCH, REQ-MAINT-VERIFY, REQ-MAINT-REPORT, or REQ-MAINT-SAFE. No tests reference docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md, and no scripts added for batch update or detection of stale annotations.
+- Add an automated publish step (e.g., npm publish) to the CI workflow under a release or tag trigger to enable continuous delivery
+- Implement post-publish verification or smoke tests to validate published package integrity
+- Consider automating version bumping and changelog generation as part of the release workflow
+- Review branch trigger policies to align strictly with trunk-based development (e.g., remove develop branch pushes if unused)
+- Document the release and publish process in CI to ensure clear version control of published artifacts
+
+## FUNCTIONALITY ASSESSMENT (undefined% ± 95% COMPLETE)
+- Functionality assessment skipped - fix 3 deficient support area(s) first
+- Support areas must meet thresholds before assessing feature completion
+- Deficient areas: TESTING (88%), EXECUTION (88%), VERSION_CONTROL (70%)
+- Principle: "Improvement of daily work is higher priority than daily work" - fix foundation before building features
+
+**Next Steps:**
+- TESTING: Add unit and integration tests exercising the write-path logic in updateAnnotationReferences, using fs.mkdtemp to create isolated temp directories and cleaning up after tests.
+- TESTING: Expand tests for detectStaleAnnotations and generateMaintenanceReport to cover multiple stale and batch scenarios, improving branch coverage in maintenance modules.
+- EXECUTION: Introduce in-memory caching for story-file existence checks and markdown parsing in valid‐story‐reference and valid‐req‐reference rules to improve lint performance
+- EXECUTION: Expand CLI integration tests to cover additional rules (require-req-annotation, require-branch-annotation, valid-annotation-format, valid-story-reference)
+- VERSION_CONTROL: Add an automated publish step (e.g., npm publish) to the CI workflow under a release or tag trigger to enable continuous delivery
+- VERSION_CONTROL: Implement post-publish verification or smoke tests to validate published package integrity

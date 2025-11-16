@@ -71,6 +71,59 @@ function foo() {}
     rule: "traceability/valid-req-reference:error",
     expectedStatus: 1,
   },
+  {
+    name: "reports error when @req annotation is missing",
+    code: `/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ */\nfunction foo() {}`,
+    rule: "traceability/require-req-annotation:error",
+    expectedStatus: 1,
+  },
+  {
+    name: "does not report error when @req annotation is present",
+    code: `/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ */\nfunction foo() {}`,
+    rule: "traceability/require-req-annotation:error",
+    expectedStatus: 0,
+  },
+  {
+    name: "reports error for missing branch annotations",
+    code: `if (true) {}`,
+    rule: "traceability/require-branch-annotation:error",
+    expectedStatus: 1,
+  },
+  {
+    name: "does not report error for branch with annotations",
+    code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md\n// @req REQ-BRANCH-DETECTION\nif (true) {}`,
+    rule: "traceability/require-branch-annotation:error",
+    expectedStatus: 0,
+  },
+  {
+    name: "reports invalid annotation format",
+    code: `/**\n * @story invalid/path.txt\n * @req INVALID\n */\nfunction foo() {}`,
+    rule: "traceability/valid-annotation-format:error",
+    expectedStatus: 1,
+  },
+  {
+    name: "valid annotation format passes",
+    code: `/**\n * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n * @req REQ-FORMAT-SPECIFICATION\n */\nfunction foo() {}`,
+    rule: "traceability/valid-annotation-format:error",
+    expectedStatus: 0,
+  },
+  {
+    name: "reports missing story file reference",
+    code: `/**\n * @story docs/stories/nonexistent.story.md\n */\nfunction foo() {}`,
+    rule: "traceability/valid-story-reference:error",
+    expectedStatus: 1,
+  },
+  {
+    name: "existing story file reference passes",
+    code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction foo() {}`,
+    rule: "traceability/valid-story-reference:error",
+    expectedStatus: 0,
+  },
 ];
 
 let exitCode = 0;
