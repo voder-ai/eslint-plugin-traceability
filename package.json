@@ -15,7 +15,7 @@
     "test": "jest --bail --coverage",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "duplication": "jscpd . --reporters console",
+    "duplication": "jscpd src tests --reporters console --ignore '**/lib/**' '**/node_modules/**' '**/docs/**'",
     "prepare": "husky"
   },
   "lint-staged": {
