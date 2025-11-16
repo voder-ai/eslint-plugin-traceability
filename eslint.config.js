@@ -50,6 +50,8 @@ module.exports = [
       ...(plugin.rules ? { traceability: plugin } : {}),
     },
     rules: {
+      // Enforce maximum cyclomatic complexity per function
+      complexity: ["error", { max: 20 }],
       // Add basic TypeScript-friendly rules here as needed
     },
   },
@@ -63,6 +65,8 @@ module.exports = [
       ...(plugin.rules ? { traceability: plugin } : {}),
     },
     rules: {
+      // Enforce maximum cyclomatic complexity per function
+      complexity: ["error", { max: 20 }],
       // Add basic JavaScript rules here as needed
     },
   },
