@@ -67,12 +67,7 @@ describe("ESLint CLI Integration (Story 001.0-DEV-PLUGIN-SETUP)", () => {
   test.each(cliTests)(
     "$name",
     ({ code, rule, expectedStatus, stdoutRegex }) => {
-      // Arrange
-      const inputCode = code;
-      const testRule = rule;
-      // Act
-      const result = runEslint(inputCode, testRule);
-      // Assert
+      const result = runEslint(code, rule);
       expect(result.status).toBe(expectedStatus);
       if (stdoutRegex) {
         expect(result.stdout).toMatch(stdoutRegex);
