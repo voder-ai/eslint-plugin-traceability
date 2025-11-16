@@ -69,7 +69,10 @@ export default [
 2. Annotate your functions or modules:
 
 ```js
-// REQ-1001 Initialize the user authentication flow
+/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ */
 function initAuth() {
   // implementation...
 }
@@ -142,3 +145,5 @@ The CLI integration tests are also executed automatically in CI under the `integ
 - Rule: require-branch-annotation: docs/rules/require-branch-annotation.md
 - Contribution guide: https://github.com/voder-ai/eslint-plugin-traceability/blob/main/CONTRIBUTING.md
 - Issue tracker: https://github.com/voder-ai/eslint-plugin-traceability/issues
+- Configuration Presets: docs/config-presets.md
+- Changelog: CHANGELOG.md

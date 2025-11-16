@@ -27,6 +27,7 @@ We will implement option 3: an incremental ratcheting plan to gradually reduce t
 - **Sprint 4**: Reduce `max-lines-per-function` to 100 and `max-lines` to 500.
 
 Automation:
+
 - Update the ESLint configuration to enforce the new thresholds immediately.
 - Configure the CI pipeline to fail on any new violations of these rules.
 - Document the ratcheting schedule in this ADR and revisit the plan at each milestone.
@@ -41,6 +42,7 @@ Automation:
 ## Future Review
 
 At the end of each milestone sprint, the team will:
+
 - Review existing violations.
 - Refactor code to comply with the new thresholds.
 - Update this ADR if any adjustments to the schedule are required.
