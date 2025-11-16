@@ -12,16 +12,19 @@ describe("Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)", 
   ruleTester.run("require-branch-annotation", rule, {
     valid: [
       {
+        name: "[REQ-BRANCH-DETECTION] valid if-statement with annotations",
         code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
 // @req REQ-BRANCH-DETECTION
 if (condition) {}`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid for loop with block comment annotations",
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
 for (let i = 0; i < 10; i++) {}`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid switch-case with annotations",
         code: `switch (value) {
   // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
   // @req REQ-BRANCH-DETECTION
@@ -32,6 +35,7 @@ for (let i = 0; i < 10; i++) {}`,
 }`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid try-finally with annotations",
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
 try {
@@ -41,6 +45,7 @@ try {
 }`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid catch with annotations",
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
 try {
@@ -53,6 +58,7 @@ catch (error) {
 }`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid do-while loop with annotations",
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
 do {
@@ -60,6 +66,7 @@ do {
 } while (condition);`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid for-of loop with annotations",
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
 for (const item of items) {
@@ -67,6 +74,7 @@ for (const item of items) {
 }`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid for-in loop with annotations",
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
 for (const key in object) {
@@ -74,6 +82,7 @@ for (const key in object) {
 }`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid while loop with annotations",
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
 while (condition) {
@@ -81,8 +90,8 @@ while (condition) {
 }`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid switch-case with inline annotation",
         code: `switch (value) {
-
   // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
   // @req REQ-BRANCH-DETECTION
   case 'a':
@@ -90,6 +99,7 @@ while (condition) {
 }`,
       },
       {
+        name: "[REQ-BRANCH-DETECTION] valid default case without annotations",
         code: `switch (value) {
   default:
     doSomething();
@@ -98,6 +108,7 @@ while (condition) {
     ],
     invalid: [
       {
+        name: "[REQ-BRANCH-DETECTION] missing annotations on if-statement",
         code: `if (condition) {}`,
         errors: [
           { messageId: "missingAnnotation", data: { missing: "@story" } },
@@ -105,11 +116,13 @@ while (condition) {
         ],
       },
       {
+        name: "[REQ-BRANCH-DETECTION] missing @req on for loop when only story present",
         code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
 for (let i = 0; i < 5; i++) {}`,
         errors: [{ messageId: "missingAnnotation", data: { missing: "@req" } }],
       },
       {
+        name: "[REQ-BRANCH-DETECTION] missing @story on while loop when only req present",
         code: `// @req REQ-BRANCH-DETECTION
 while (true) {}`,
         errors: [
@@ -117,6 +130,7 @@ while (true) {}`,
         ],
       },
       {
+        name: "[REQ-BRANCH-DETECTION] missing annotations on switch-case",
         code: `switch (value) {
   case 'a':
     break;
@@ -127,6 +141,7 @@ while (true) {}`,
         ],
       },
       {
+        name: "[REQ-BRANCH-DETECTION] missing annotations on do-while loop",
         code: `do {
   action();
 } while (condition);`,
@@ -136,6 +151,7 @@ while (true) {}`,
         ],
       },
       {
+        name: "[REQ-BRANCH-DETECTION] missing annotations on for-of loop",
         code: `for (const item of items) {
   process(item);
 }`,
@@ -145,6 +161,7 @@ while (true) {}`,
         ],
       },
       {
+        name: "[REQ-BRANCH-DETECTION] missing annotations on for-in loop",
         code: `for (const key in object) {
   console.log(key);
 }`,
@@ -154,6 +171,7 @@ while (true) {}`,
         ],
       },
       {
+        name: "[REQ-BRANCH-DETECTION] missing annotations on try-catch blocks",
         code: `try {
   doSomething();
 } catch (error) {
@@ -167,6 +185,7 @@ while (true) {}`,
         ],
       },
       {
+        name: "[REQ-BRANCH-DETECTION] missing annotations on switch-case with blank line",
         code: `switch (value) {
 
   case 'a':
