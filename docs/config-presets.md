@@ -19,6 +19,9 @@ This preset enables the following rules at the `error` level:
 - `traceability/require-story-annotation`
 - `traceability/require-req-annotation`
 - `traceability/require-branch-annotation`
+- `traceability/valid-annotation-format`
+- `traceability/valid-story-reference`
+- `traceability/valid-req-reference`
 
 ## Strict Preset
 

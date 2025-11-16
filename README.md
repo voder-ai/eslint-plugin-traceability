@@ -43,12 +43,12 @@ module.exports = [
 
 ### Available Rules
 
-- `require-story-annotation`  
-  Enforces `@story` annotations on function declarations. ([Documentation](docs/rules/require-story-annotation.md))
-- `require-req-annotation`  
-  Enforces `@req` annotations on function declarations. ([Documentation](docs/rules/require-req-annotation.md))
-- `require-branch-annotation`  
-  Enforces `@story` and `@req` annotations on significant code branches. ([Documentation](docs/rules/require-branch-annotation.md))
+- `valid-annotation-format`  
+  Enforces correct format of traceability annotations. ([Documentation](docs/rules/valid-annotation-format.md))
+- `valid-story-reference`  
+  Validates that `@story` references correspond to existing story IDs. ([Documentation](docs/rules/valid-story-reference.md))
+- `valid-req-reference`  
+  Validates that `@req` references correspond to existing requirement IDs. ([Documentation](docs/rules/valid-req-reference.md))
 
 For development and contribution guidelines, see docs/eslint-plugin-development-guide.md.
 

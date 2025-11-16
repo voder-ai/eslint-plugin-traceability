@@ -52,6 +52,42 @@ function foo() {}
     rule: "traceability/require-story-annotation:error",
     expectedStatus: 0,
   },
+  {
+    name: "reports error when requirement reference is missing",
+    code: `
+/**
+ * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+ * @req docs/requirements/nonexistent.req.md
+ */
+function foo() {}
+`,
+    rule: "traceability/valid-req-reference:error",
+    expectedStatus: 1,
+  },
+  {
+    name: "reports error when requirement reference uses path traversal",
+    code: `
+/**
+ * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+ * @req ../outside/req.md
+ */
+function foo() {}
+`,
+    rule: "traceability/valid-req-reference:error",
+    expectedStatus: 1,
+  },
+  {
+    name: "reports error when requirement reference uses absolute path",
+    code: `
+/**
+ * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+ * @req /absolute/path/req.md
+ */
+function foo() {}
+`,
+    rule: "traceability/valid-req-reference:error",
+    expectedStatus: 1,
+  },
 ];
 
 let exitCode = 0;
