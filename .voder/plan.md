@@ -1,12 +1,17 @@
 ## NOW  
-Update the **Quick Start** section in `README.md` to replace any `.eslintrc` examples with a complete `eslint.config.js` flat-config snippet showing how to load and configure the traceability plugin (using its recommended preset).
+Populate the Git pre‐commit hook so lint-staged runs on every commit. Modify `.husky/pre-commit` to include a single line:  
+```
+npx lint-staged
+```  
 
 ## NEXT  
-- Revise **docs/eslint-9-setup-guide.md** to include the traceability plugin setup under flat config and ensure all code samples use `eslint.config.js`.  
-- Add `@story` and `@req` JSDoc annotations to the `runEslint` helper (and any other top-level functions) in `cli-integration.js` to satisfy traceability documentation requirements.  
-- Create **docs/config-presets.md** describing the “recommended” and “strict” plugin configs with usage examples.  
+- Expand tests for `require-branch-annotation` to cover nested branches, loops, switch defaults, and edge cases, raising branch coverage to ≥95%.  
+- Scaffold the annotation-format validation rule (005.0-DEV-ANNOTATION-VALIDATION) by creating `src/rules/valid-annotation-format.ts` and registering it in `src/index.ts`.  
+- Add a unit test suite in `tests/rules/valid-annotation-format.test.ts` with basic valid/invalid JSDoc cases.  
 
 ## LATER  
-- Author an ADR in **docs/decisions** capturing the project’s documentation conventions and complexity standards.  
-- Audit **docs/rules/** and insert placeholders or migration notes for Stories 005–010 (annotation format, file validation, auto-fix, maintenance tools, deep validation).  
-- Expand user-facing docs with a guide to advanced configuration options (e.g., `storyDirectories`, `allowAbsolutePaths`).
+- Implement the full annotation-format validation logic and error messages per the story.  
+- Develop and test the story-file reference rule (006.0) and deep requirement validation (010.0).  
+- Write auto-fixers (008.0) and maintenance tools (009.0) and their docs/tests.  
+- Add technical documentation in `docs/rules/` for all new validation rules and update examples in the user guide.  
+- Enforce the pre-commit hook in CI and document the local/CI quality-check workflow.
