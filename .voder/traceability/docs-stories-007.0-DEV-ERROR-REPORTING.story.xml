@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-11-16T11:04:42.379Z</last_validated>
+  <last_modified>2025-11-16T00:07:54.454Z</last_modified>
+  <evidence>Review of src/rules and tests shows that while rules report specific messageIds (e.g. missingStory: “Missing @story annotation”, invalidStoryFormat: “Invalid @story annotation format”), none of the rule definitions implement ESLint’s suggest API or include actionable suggestions in the message text (REQ-ERROR-SUGGESTION). Tests (e.g. tests/rules/require-story-annotation.test.ts, valid-story-reference.test.ts) only assert messageIds, not message content or suggestion behavior. There is no use of context.report with a `suggest` property, and messages do not reference available story files or concrete fix instructions.</evidence>
+  <notes>The story calls for clear, specific error messages that suggest how to fix issues (e.g. “Add @story annotation”) and include contextual guidance. The current implementation only reports generic missing/invalid annotation messages without suggestions or contextual details, so the acceptance criteria for actionable suggestions and error-context are not met.</notes>
+</traceability>

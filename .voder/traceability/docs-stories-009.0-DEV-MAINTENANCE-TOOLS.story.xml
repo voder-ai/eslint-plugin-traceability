@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-11-16T11:04:27.428Z</last_validated>
+  <last_modified>2025-11-16T00:07:54.476Z</last_modified>
+  <evidence>No implementation found for maintenance tools: no CLI commands or scripts (e.g., src/maintenance or a dedicated entry in package.json), no source files or modules implementing REQ-MAINT-DETECT, REQ-MAINT-UPDATE, REQ-MAINT-BATCH, REQ-MAINT-VERIFY, REQ-MAINT-REPORT, or REQ-MAINT-SAFE. No tests reference docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md, and no scripts added for batch update or detection of stale annotations.</evidence>
+  <notes>The story 009.0-DEV-MAINTENANCE-TOOLS is clearly defined in docs but there is no corresponding implementation or tests in src, lib, or tests. All acceptance criteria and requirements for maintenance tools are unmet.</notes>
+</traceability>

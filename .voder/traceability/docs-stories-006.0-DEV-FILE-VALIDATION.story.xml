@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/006.0-DEV-FILE-VALIDATION.story.md</specification>
+  <status>PASSED</status>
+  <last_validated>2025-11-16T11:04:19.797Z</last_validated>
+  <last_modified>2025-11-16T00:07:54.445Z</last_modified>
+  <evidence>1. Unit tests in tests/rules/valid-story-reference.test.ts cover all acceptance cases (existing file, correct extension, relative paths, missing file, wrong extension, path traversal, absolute paths) and pass without errors.
+2. Integration tests in tests/integration/file-validation.test.ts simulate CLI usage of the valid-story-reference rule, verifying error codes and messages for missing files and invalid extensions, all passing.
+3. Code in src/rules/valid-story-reference.ts implements:
+   - REQ-FILE-EXISTENCE via fs.existsSync with caching (existsAny).
+   - REQ-PATH-RESOLUTION in buildCandidates and validateStoryPath (resolving relative and configured directories).
+   - REQ-SECURITY-VALIDATION by checking path.isAbsolute and preventing path traversal (normalization and prefix check).
+   - REQ-PERFORMANCE-OPTIMIZATION through fileExistCache to avoid redundant fs calls.
+   - REQ-PROJECT-BOUNDARY via ensuring resolved paths start with cwd.
+   - REQ-CONFIGURABLE-PATHS using options.storyDirectories or defaults.
+4. Documentation docs/rules/valid-story-reference.md aligns with implementation, referencing the story and requirements.
+5. jest --coverage shows 98%+ coverage for valid-story-reference and CI tests all green.</evidence>
+  <notes>The valid-story-reference rule fully satisfies the specification: it correctly validates .story.md file existence, enforces naming conventions, prevents invalid path usage, supports configuration, caches checks for performance, and is backed by comprehensive unit and integration tests. Documentation is in place, and error messages are clear and actionable.</notes>
+</traceability>

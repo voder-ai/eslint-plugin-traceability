@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-11-16T11:05:30.589Z</last_validated>
+  <last_modified>2025-11-16T00:07:54.465Z</last_modified>
+  <evidence>A search of the source rules (e.g. src/rules/*.ts) shows no use of ESLint’s fix API: none of the rule modules declare a `meta.fixable` property or implement fixer functions in `context.report`. Furthermore, there are no unit or integration tests exercising `--fix` behavior, and grep for “fix” in src/rules yields no hits. This indicates that none of the REQ-AUTOFIX-* requirements have been implemented.</evidence>
+  <notes>The 008.0-DEV-AUTO-FIX story calls for auto-fix capabilities (declaring meta.fixable, providing fixer functions, and tests verifying before/after code transformations), but no such implementation exists in the codebase. The story is therefore not satisfied.</notes>
+</traceability>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
+  <status>PASSED</status>
+  <last_validated>2025-11-16T11:04:06.200Z</last_validated>
+  <last_modified>2025-11-16T00:07:54.431Z</last_modified>
+  <evidence>Found a fully implemented ESLint rule in src/rules/valid-annotation-format.ts that scans all comments for @story and @req lines and applies regex-based format checks. Tests in tests/rules/valid-annotation-format.test.ts (and corresponding JS variants under lib/tests) verify both valid and invalid annotation patterns by messageId. Documentation exists in docs/rules/valid-annotation-format.md, and the rule is registered in src/index.ts and included in the recommended config. All tests for this rule pass as part of the CI-verified 100% suite.</evidence>
+  <notes>The implementation meets all Acceptance Criteria: it validates format and syntax, follows ESLint best practices, integrates with function/branch annotation rules, provides specific error messages, handles multi-line and whitespace variations, and is documented with examples. No unmet requirements were found.</notes>
+</traceability>
