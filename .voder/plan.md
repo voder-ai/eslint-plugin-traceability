@@ -1,20 +1,22 @@
-## NOW
-Create a new Jest RuleTester unit test file for the first core rule: scaffold `tests/rules/require-story-annotation.test.ts` using ESLint’s `RuleTester` to validate that functions without `@story` annotations produce the correct error message.
+## NOW  
+Populate the Husky pre-push hook (`.husky/pre-push`) so that it runs the full local quality gate:  
+```bash
+npm run build && npm run type-check && npm test && npm run lint && npm run format:check
+```
 
-## NEXT
-- Implement Jest RuleTester tests for each additional rule:
-  - `require-req-annotation` (functions missing `@req`)
-  - `require-branch-annotation` (if/else, loops, try/catch)
-  - `annotation-format` (malformed `@story`/`@req` syntax)
-  - `valid-story-reference` (missing or invalid `.story.md` paths)
-  - `valid-req-reference` (requirements not found in story files)
-- For each rule test file:
-  - Write `valid` and `invalid` code snippets with `errors` expectations
-  - Use `ts-jest` parser configuration matching `jest.config.js`
-  - Cover edge cases (anonymous functions, nested branches, path traversal)
-- Commit tests and verify coverage increases; aim for ≥ 90% rule logic coverage.
+## NEXT  
+- Populate the Husky pre-commit hook (`.husky/pre-commit`) to run `npm run format` and `npm run lint`.  
+- Enable and configure ESLint’s `complexity` rule (e.g. `"complexity": ["error",{ "max": 20 }]`) in `eslint.config.js`.  
+- Install and configure a duplication detector (e.g. `jscpd`) and add an `npm run duplication` script.  
+- Begin writing RuleTester tests for the next core rule: `require-req-annotation` in `tests/rules/require-req-annotation.test.ts`.  
+- Add `"eslint": ">=9.0.0"` to `peerDependencies` and declare supported Node.js versions under `engines` in `package.json`.  
+- Create a `.env.example` file with placeholder environment variables.
 
-## LATER
-- Add integration tests that load `eslint.config.js` and lint sample code files to assert combined rule behavior and auto-fixes.
-- Introduce snapshot tests for auto-fix scenarios (before/after code comparisons).
-- Enforce coverage thresholds in CI (e.g., `jest --coverage --coverageThreshold`) to prevent regressions.
+## LATER  
+- Continue adding RuleTester tests for branch annotations (`require-branch-annotation`), annotation format validation, file-reference validation, deep requirement validation, and auto-fix scenarios.  
+- Flesh out `README.md` with installation, configuration, and usage examples linking to `docs/` guides.  
+- Create a `docs/rules/` section documenting each rule’s purpose, options, and sample code.  
+- Write integration tests that run the ESLint CLI against sample projects to verify combined rule behavior and auto-fixes.  
+- Configure CI to enforce coverage thresholds, code complexity limits, and duplication checks locally and in GitHub Actions.  
+- Review and adjust CI branch triggers to align with trunk-based development (remove or update the `develop` branch trigger).  
+- Plan and implement an automated `npm publish` step in the CI pipeline after quality gates pass.
