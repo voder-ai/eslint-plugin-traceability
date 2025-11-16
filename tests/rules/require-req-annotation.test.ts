@@ -8,7 +8,7 @@ import rule from "../../src/rules/require-req-annotation";
 
 const ruleTester = new RuleTester();
 
-describe("Require Req Annotation Rule", () => {
+describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", () => {
   ruleTester.run("require-req-annotation", rule, {
     valid: [
       {

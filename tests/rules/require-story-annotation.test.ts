@@ -7,7 +7,7 @@ import rule from "../../src/rules/require-story-annotation";
 
 const ruleTester = new RuleTester();
 
-describe("Require Story Annotation Rule", () => {
+describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", () => {
   ruleTester.run("require-story-annotation", rule, {
     valid: [
       {
