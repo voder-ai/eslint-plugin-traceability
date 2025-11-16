@@ -19,3 +19,4 @@ coverage/
 # Ignore changelog and logs
 CHANGELOG.md
 *.log
+package.json
