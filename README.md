@@ -100,6 +100,43 @@ This command runs ESLint with the plugin, pointing at `eslint.config.js` flat co
 
 Replace `sample.js` with your JavaScript or TypeScript file.
 
+## Running Tests
+
+You can run tests and quality checks locally using the npm scripts provided:
+
+```bash
+# Run all tests with coverage
+npm test
+
+# Run linting with zero tolerance for warnings
+npm run lint -- --max-warnings=0
+
+# Check code formatting
+npm run format:check
+
+# Check duplication threshold
+npm run duplication
+```
+
+Coverage reports will be generated in the `coverage/` directory.
+
+## CLI Integration
+
+The `cli-integration.js` script runs end-to-end CLI integration tests for the plugin, verifying behavior when used via the ESLint CLI.
+
+Usage:
+
+```bash
+# Run the CLI integration tests
+node cli-integration.js
+```
+
+This script executes tests that:
+- Report an error when the `@story` annotation is missing.
+- Do not report an error when the `@story` annotation is present.
+
+The CLI integration tests are also executed automatically in CI under the `integration-tests` job.
+
 ## Documentation Links
 
 - ESLint v9 Setup Guide: docs/eslint-9-setup-guide.md

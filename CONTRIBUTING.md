@@ -79,16 +79,18 @@ Ensure there are no errors or warnings in the output.
 1. Clone your fork and install dependencies:
 
    ```bash
-git clone https://github.com/<your-username>/eslint-plugin-traceability.git
-cd eslint-plugin-traceability
-npm install
-```
+   git clone https://github.com/<your-username>/eslint-plugin-traceability.git
+   cd eslint-plugin-traceability
+   npm install
+   ```
+
+````
 
 2. Run the tests in watch mode:
 
    ```bash
 npm test
-```
+````
 
 3. Make your changes, and verify that tests and linting continue to pass.
 
