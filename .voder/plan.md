@@ -1,13 +1,23 @@
 ## NOW
-Implement the auto-fixer for missing `@story` annotations in the `require-story-annotation` rule (Story 008.0) by adding a `fix` function in `src/rules/require-story-annotation.ts` that inserts a JSDoc stub (`/** @story <story-file>.story.md */`) immediately above any function declaration missing the annotation.
+Run ESLint with JSON output to identify all violations of the size rules in one go:  
+```bash
+npm run lint -- --format=json > eslint-violations.json
+```  
+(Examining `eslint-violations.json` for `max-lines-per-function` and `max-lines-per-file` errors will pinpoint the exact functions and files needing refactoring.)
 
 ## NEXT
-- Extend the `require-req-annotation` rule with a similar auto-fixer that inserts a JSDoc stub with `@req <REQ-ID>` above functions lacking the requirement annotation.
-- Add auto-fix capability to the `require-branch-annotation` rule to insert inline comment stubs with both `@story` and `@req` before significant branches.
-- Create RuleTester unit tests in `tests/rules/` to verify each fixer’s before/after output for missing annotations.
+- Refactor each file/function flagged in the report:
+  - Extract large functions into focused helpers under `src/utils/` so no function exceeds the current 100-line limit.  
+  - Break up any file over 500 lines into smaller modules (e.g. split rule implementations into per‐rule files).  
+- Once existing violations are cleared, tighten the thresholds in `eslint.config.js` to:
+  - `max-lines-per-function: [“error”, { max: 90 }]`  
+  - `max-lines-per-file: [“error”, { max: 400 }]`  
+  - Re-run lint and fix any new violations.  
+- Revise all tests that rely on fixed fixture directories:
+  - In each file-I/O test under `tests/`, replace hard-coded `tests/fixtures` paths with a temp directory created via `fs.mkdtempSync()` (or `os.tmpdir()`), copy in the needed fixtures, and clean up after the test.
 
 ## LATER
-- Implement auto-fix strategies for common format violations in the `valid-annotation-format` rule (spacing, casing, syntax).
-- Introduce configuration options allowing teams to enable/disable specific fixer behaviors and customize annotation templates.
-- Document `--fix` usage and auto-fix examples in the README, config-presets guide, and CLI integration documentation.
-- Add CI checks or metrics to monitor auto-fix coverage and validate that fixes apply correctly in large codebases.
+- Continue the ESLint ratcheting plan by moving thresholds down in 10-line increments until functions average ~50 lines and files ~300 lines.  
+- Add a CI job that fails on any new size-rule violation and publishes a short report for maintainers.  
+- Document the ratcheting goals and timeline in an ADR so future contributors can track progress.  
+- Expand test utilities to automate temp-dir fixture setup/teardown and validate file-system side-effects in isolation.
