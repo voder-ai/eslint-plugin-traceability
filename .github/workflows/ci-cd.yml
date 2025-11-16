@@ -46,13 +46,13 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Configure npm for publish
-        if: ${{ matrix.node-version == '20.x' && secrets.NPM_TOKEN != '' }}
+        if: ${{ matrix['node-version'] == '20.x' && secrets.NPM_TOKEN != '' }}
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish package to npm
-        if: ${{ matrix.node-version == '20.x' && secrets.NPM_TOKEN != '' }}
+        if: ${{ matrix['node-version'] == '20.x' && secrets.NPM_TOKEN != '' }}
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
