@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import * as path from "path";
+import { getAllFiles } from "./utils";
 
 /**
  * Update annotation references when story files are moved or renamed
@@ -11,7 +11,10 @@ export function updateAnnotationReferences(
   oldPath: string,
   newPath: string,
 ): number {
-  if (!fs.existsSync(codebasePath) || !fs.statSync(codebasePath).isDirectory()) {
+  if (
+    !fs.existsSync(codebasePath) ||
+    !fs.statSync(codebasePath).isDirectory()
+  ) {
     return 0;
   }
 
@@ -19,26 +22,19 @@ export function updateAnnotationReferences(
   const escapedOldPath = oldPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(`(@story\\s*)${escapedOldPath}`, "g");
 
-  function traverse(dir: string) {
-    const entries = fs.readdirSync(dir);
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry);
-      const stat = fs.statSync(fullPath);
-      if (stat.isDirectory()) {
-        traverse(fullPath);
-      } else if (stat.isFile()) {
-        const content = fs.readFileSync(fullPath, "utf8");
-        const newContent = content.replace(regex, (match, p1) => {
-          replacementCount++;
-          return `${p1}${newPath}`;
-        });
-        if (newContent !== content) {
-          fs.writeFileSync(fullPath, newContent, "utf8");
-        }
-      }
+  const files = getAllFiles(codebasePath);
+  for (const fullPath of files) {
+    const stat = fs.statSync(fullPath);
+    if (!stat.isFile()) continue;
+    const content = fs.readFileSync(fullPath, "utf8");
+    const newContent = content.replace(regex, (match, p1) => {
+      replacementCount++;
+      return `${p1}${newPath}`;
+    });
+    if (newContent !== content) {
+      fs.writeFileSync(fullPath, newContent, "utf8");
     }
   }
 
-  traverse(codebasePath);
   return replacementCount;
 }

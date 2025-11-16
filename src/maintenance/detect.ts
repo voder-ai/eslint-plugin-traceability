@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { getAllFiles } from "./utils";
 
 /**
  * Detect stale annotation references that point to moved or deleted story files
@@ -19,32 +20,23 @@ export function detectStaleAnnotations(codebasePath: string): string[] {
 
   const stale = new Set<string>();
 
-  function traverse(dir: string) {
-    const entries = fs.readdirSync(dir);
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry);
-      const stat = fs.statSync(fullPath);
-      if (stat.isDirectory()) {
-        traverse(fullPath);
-      } else if (stat.isFile()) {
-        const content = fs.readFileSync(fullPath, "utf8");
-        const regex = /@story\s+([^\s]+)/g;
-        let match: RegExpExecArray | null;
-        while ((match = regex.exec(content)) !== null) {
-          const storyPath = match[1];
-          const storyProjectPath = path.resolve(cwd, storyPath);
-          const storyCodebasePath = path.resolve(baseDir, storyPath);
-          if (
-            !fs.existsSync(storyProjectPath) &&
-            !fs.existsSync(storyCodebasePath)
-          ) {
-            stale.add(storyPath);
-          }
-        }
+  const files = getAllFiles(codebasePath);
+  for (const file of files) {
+    const content = fs.readFileSync(file, "utf8");
+    const regex = /@story\s+([^\s]+)/g;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(content)) !== null) {
+      const storyPath = match[1];
+      const storyProjectPath = path.resolve(cwd, storyPath);
+      const storyCodebasePath = path.resolve(baseDir, storyPath);
+      if (
+        !fs.existsSync(storyProjectPath) &&
+        !fs.existsSync(storyCodebasePath)
+      ) {
+        stale.add(storyPath);
       }
     }
   }
 
-  traverse(codebasePath);
   return Array.from(stale);
 }
