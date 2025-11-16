@@ -23,7 +23,7 @@ The project currently enforces maintainability through ESLint `max-lines-per-fun
 We will implement option 3: an incremental ratcheting plan to gradually reduce the ESLint thresholds:
 
 - **Sprint 0 (Now)**: Reduce `max-lines-per-function` to 150 and `max-lines` to 800.
-- **Sprint 2**: Reduce `max-lines-per-function` to 120 and `max-lines` to 600.
+- **Sprint 2 (Completed 2025-11-16)**: Reduce `max-lines-per-function` to 120 and `max-lines` to 600.
 - **Sprint 4**: Reduce `max-lines-per-function` to 100 and `max-lines` to 500.
 
 Automation:
