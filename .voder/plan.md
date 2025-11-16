@@ -1,18 +1,12 @@
 ## NOW
-Unskip the ESLint CLI integration tests by changing the first line in `tests/integration/plugin-validation.test.ts` from  
-```js
-describe.skip('ESLint CLI Integration', () => {
-```
-to  
-```js
-describe('ESLint CLI Integration', () => {
-```
+In `cli-integration.js`, remove the file-wide `/* eslint-disable */` comment and replace it with precise `// eslint-disable-next-line <rule>` comments only for the specific rules that truly cannot pass, so that the rest of the file is fully linted.
 
 ## NEXT
-- Update the invocation in `tests/integration/plugin-validation.test.ts` to use valid ESLint 9 flags (e.g. `--no-eslintrc --config <path>`) and include `--experimental-vm-modules` when spawning the CLI, then run `npm test` and fix any failing assertions or plugin behavior so that the integration tests pass under the flat‐config setup.  
-- Add a dedicated CI job that builds the plugin and then runs these integration tests against the built `lib/index.js`.
+- Write Jest unit tests targeting each compiled rule in `lib/src/rules` (require-story-annotation, require-req-annotation, require-branch-annotation) using ESLint’s RuleTester to exercise the built output and drive coverage toward 100%.  
+- Update all `describe(…)` blocks in both `tests/` and `lib/tests/` to include the associated story ID and title (e.g. “(Story 003.0-DEV-FUNCTION-ANNOTATIONS)”) for full traceability.  
+- Scaffold initial test suites for the upcoming validation rules (annotation-format in story 005, file-reference in 006, error-reporting in 007, and auto-fix in 008) under `tests/rules` and `lib/tests/rules` so that coverage gates can be met as soon as those rules are implemented.
 
 ## LATER
-- Write and incorporate unit and integration tests for annotation format validation (005), file reference validation (006), error reporting (007), and auto‐fix rules (008) to raise overall coverage above 80%.  
-- Implement tests and test fixtures for the maintenance tools (009) and deep validation logic (010).  
-- Introduce performance benchmarks and CI checks to monitor lint-time overhead and execution reliability over time.
+- Incrementally enable and configure additional ESLint maintainability rules (e.g. `max-lines`, `max-params`) with a ratcheting plan.  
+- Add performance and memory benchmarks for large codebases (particularly markdown parsing) and integrate them into CI.  
+- Develop and test maintenance-tooling scripts for story file renames and deep-validation logic (stories 009 and 010), adding corresponding integration tests and documentation.

@@ -36,6 +36,24 @@ module.exports = [
     },
   },
   {
+    files: ["cli-integration.js"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "script",
+      globals: {
+        require: "readonly",
+        module: "readonly",
+        exports: "readonly",
+        __dirname: "readonly",
+        __filename: "readonly",
+        console: "readonly",
+        process: "readonly",
+      },
+    },
+    plugins: { ...(plugin.rules ? { traceability: plugin } : {}) },
+    rules: { complexity: ["error", { max: 20 }] },
+  },
+  {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser: typescriptParser,

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable */
+/* eslint-env node */
 /**
  * CLI integration tests for ESLint Traceability Plugin
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
@@ -60,4 +60,5 @@ tests.forEach(({ name, code, rule, expectedStatus }) => {
     exitCode = 1;
   }
 });
+
 process.exit(exitCode);
