@@ -132,6 +132,7 @@ node cli-integration.js
 ```
 
 This script executes tests that:
+
 - Report an error when the `@story` annotation is missing.
 - Do not report an error when the `@story` annotation is present.
 
