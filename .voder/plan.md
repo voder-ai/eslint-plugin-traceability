@@ -1,12 +1,20 @@
 ## NOW
-Add a new CLI integration test for the `require-req-annotation` rule in `tests/integration/plugin-validation.test.ts` by extending the `cliTests` array with a case named “Require Req Annotation CLI (Story 003.0-DEV-FUNCTION-ANNOTATIONS)” that runs ESLint on a file with a function missing `@req` and asserts the nonzero exit code and the expected error message.
+Remove the explicit complexity‐rule options in eslint.config.js so that the rule is declared simply as  
+```json
+"complexity": "error"
+```  
+instead of  
+```json
+"complexity": ["error", { "max": 20 }]
+```  
+—this switches back to ESLint’s default threshold and eliminates the custom max object.
 
 ## NEXT
-- Add a similar CLI integration test for the `require-branch-annotation` rule in the same file (Story 004.0-DEV-BRANCH-ANNOTATIONS).
-- Write targeted unit tests in `tests/rules/require-branch-annotation.test.ts` covering `for`/`while` loops and `try/catch` branches that lack annotations to close branch‐coverage gaps.
-- Update all RuleTester valid/invalid cases across rule test suites to include descriptive `name` properties for clearer test reporting.
+- Run `npm run lint` and confirm there are no complexity errors under the default threshold.  
+- For any functions now flagged for excessive complexity (e.g. in src/rules/require-branch-annotation.ts), refactor them into smaller helper functions until each function’s cyclomatic complexity is below ESLint’s default limit.  
+- Update the lint step in .github/workflows/ci.yml to include `--max-warnings=0` so that any future complexity or lint warnings break the build.
 
 ## LATER
-- Scaffold and implement unit and integration tests for the upcoming annotation‐format (005.0), file‐reference (006.0), error‐reporting (007.0), and auto‐fix (008.0) rules.
-- Develop and test the deep‐validation rule (010.0) with markdown parsing and requirement‐existence checks.
-- Gradually ratchet up maintainability rules (e.g. `max‐lines`, `max‐params`) and add performance benchmarks for file‐system caching and markdown parsing.
+- Introduce additional maintainability rules in eslint.config.js (such as `max-lines`, `max-params`) to further improve code quality.  
+- Add a decision record documenting the final complexity standard and refactoring approach.  
+- Periodically audit and adjust complexity thresholds as new rules and features are added.
