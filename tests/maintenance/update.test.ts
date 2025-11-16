@@ -12,11 +12,7 @@ describe("updateAnnotationReferences (Story 009.0-DEV-MAINTENANCE-TOOLS)", () =>
   it("[REQ-MAINT-UPDATE] should return 0 when no updates made", () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "update-test-"));
     try {
-      const count = updateAnnotationReferences(
-        tmpDir,
-        "old.md",
-        "new.md",
-      );
+      const count = updateAnnotationReferences(tmpDir, "old.md", "new.md");
       expect(count).toBe(0);
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
