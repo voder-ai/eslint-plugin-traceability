@@ -36,14 +36,14 @@ describe("File and Req Validation CLI Integration (Story 006.0-DEV-FILE-VALIDATI
     const code = "// @story docs/stories/missing-file.story.md";
     const res = runLint(code, ["traceability/valid-story-reference:error"]);
     expect(res.status).toBe(1);
-    expect(res.stdout).toContain("fileMissing");
+    expect(res.stdout).toContain("Story file");
   });
 
   it("[REQ-EXTENSION] reports invalid extension via CLI", () => {
     const code = "// @story docs/stories/001.0-DEV-PLUGIN-SETUP.md";
     const res = runLint(code, ["traceability/valid-story-reference:error"]);
     expect(res.status).toBe(1);
-    expect(res.stdout).toContain("invalidExtension");
+    expect(res.stdout).toContain("Invalid story file extension");
   });
 
   it("[REQ-DEEP-PARSE] reports missing requirement via CLI", () => {
@@ -51,7 +51,7 @@ describe("File and Req Validation CLI Integration (Story 006.0-DEV-FILE-VALIDATI
       "// @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md\n// @req REQ-UNKNOWN";
     const res = runLint(code, ["traceability/valid-req-reference:error"]);
     expect(res.status).toBe(1);
-    expect(res.stdout).toMatch(/reqMissing/);
+    expect(res.stdout).toContain("Requirement 'REQ-UNKNOWN' not found");
   });
 
   it("[REQ-DEEP-MATCH] valid story and requirement via CLI", () => {
