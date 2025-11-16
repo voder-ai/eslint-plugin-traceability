@@ -3,7 +3,9 @@
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-PLUGIN-STRUCTURE - Provide foundational plugin export and registration
  */
-export declare const rules: Record<string, unknown>;
+export declare const rules: {
+    'require-story-annotation': any;
+};
 export declare const configs: {
     recommended: {
         rules: {};
@@ -13,7 +15,9 @@ export declare const configs: {
     }[];
 };
 declare const _default: {
-    rules: Record<string, unknown>;
+    rules: {
+        'require-story-annotation': any;
+    };
     configs: {
         recommended: {
             rules: {};

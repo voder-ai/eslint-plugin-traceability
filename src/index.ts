@@ -4,7 +4,11 @@
  * @req REQ-PLUGIN-STRUCTURE - Provide foundational plugin export and registration
  */
 
-export const rules: Record<string, unknown> = {};
+import requireStoryAnnotation from "./rules/require-story-annotation";
+
+export const rules = {
+  "require-story-annotation": requireStoryAnnotation,
+};
 
 export const configs = {
   recommended: [

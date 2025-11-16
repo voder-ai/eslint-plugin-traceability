@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest", "eslint"]
+    "types": ["node", "jest", "eslint", "@typescript-eslint/utils"]
   },
   "include": ["src", "tests"]
 }
