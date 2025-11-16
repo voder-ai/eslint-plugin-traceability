@@ -36,6 +36,7 @@ jobs:
         run: npm run test
 
       - name: Configure npm for publish
+        if: ${{ secrets.NPM_TOKEN != '' }}
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
 
       - name: Publish package to npm
