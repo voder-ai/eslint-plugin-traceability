@@ -71,9 +71,11 @@ module.exports = [
       ...(plugin.rules ? { traceability: plugin } : {}),
     },
     rules: {
-      // Enforce maximum cyclomatic complexity per function
       complexity: "error",
-      // Add basic TypeScript-friendly rules here as needed
+      // Enforce maximum lines per function for maintainability
+      "max-lines-per-function": ["error", { max: 200, skipBlankLines: true, skipComments: true }],
+      // Enforce maximum lines per file for maintainability
+      "max-lines": ["error", { max: 1000, skipBlankLines: true, skipComments: true }],
     },
   },
   {
@@ -86,9 +88,11 @@ module.exports = [
       ...(plugin.rules ? { traceability: plugin } : {}),
     },
     rules: {
-      // Enforce maximum cyclomatic complexity per function
       complexity: "error",
-      // Add basic JavaScript rules here as needed
+      // Enforce maximum lines per function for maintainability
+      "max-lines-per-function": ["error", { max: 200, skipBlankLines: true, skipComments: true }],
+      // Enforce maximum lines per file for maintainability
+      "max-lines": ["error", { max: 1000, skipBlankLines: true, skipComments: true }],
     },
   },
   {
