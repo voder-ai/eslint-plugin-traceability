@@ -45,10 +45,17 @@ function runEslint(code, rule) {
     "--rule",
     rule,
   ];
-  return spawnSync(process.execPath, ['--experimental-vm-modules', eslintCliPath, ...args], {
-    encoding: "utf-8",
-    input: code,
-  });
+  return spawnSync(
+    process.execPath,
+    [
+      eslintCliPath,
+      ...args
+    ],
+    {
+      encoding: "utf-8",
+      input: code,
+    },
+  );
 }
 
 const tests = [
