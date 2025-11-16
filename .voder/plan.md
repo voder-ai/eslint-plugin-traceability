@@ -1,20 +1,12 @@
 ## NOW
-Remove the explicit complexity‐rule options in eslint.config.js so that the rule is declared simply as  
-```json
-"complexity": "error"
-```  
-instead of  
-```json
-"complexity": ["error", { "max": 20 }]
-```  
-—this switches back to ESLint’s default threshold and eliminates the custom max object.
+Modify the `.husky/pre-commit` hook script to run `npm run format` followed by `npm run lint -- --max-warnings=0`.
 
 ## NEXT
-- Run `npm run lint` and confirm there are no complexity errors under the default threshold.  
-- For any functions now flagged for excessive complexity (e.g. in src/rules/require-branch-annotation.ts), refactor them into smaller helper functions until each function’s cyclomatic complexity is below ESLint’s default limit.  
-- Update the lint step in .github/workflows/ci.yml to include `--max-warnings=0` so that any future complexity or lint warnings break the build.
+- Align the `.husky/pre-push` hook to exactly mirror the CI “quality-checks” job by running `npm run build`, `npm run type-check`, `npm run lint -- --max-warnings=0`, `npm test`, `npm run format:check`, and `npm run duplication`.
+- Update the usage example in `README.md` to demonstrate the ESLint v9 flat‐config (`eslint.config.js`) approach for installing and configuring the traceability plugin.
+- Add JSDoc `@story` and `@req` annotations to internal helper functions and significant code branches in `src/` to satisfy the project’s traceability guidelines.
 
 ## LATER
-- Introduce additional maintainability rules in eslint.config.js (such as `max-lines`, `max-params`) to further improve code quality.  
-- Add a decision record documenting the final complexity standard and refactoring approach.  
-- Periodically audit and adjust complexity thresholds as new rules and features are added.
+- Document the `cli-integration.js` script and its commands in the `docs/` folder and update any related setup guides.
+- Review and update `docs/rules/` for stories not yet implemented (annotation format, file validation, auto-fix, maintenance tools, deep validation), adding placeholders or migration notes.
+- Record an ADR capturing the chosen documentation conventions and complexity standards, and outline a process for keeping examples and helper docs in sync with flat-config and traceability requirements.

@@ -21,17 +21,24 @@ For detailed setup with ESLint v9, see docs/eslint-9-setup-guide.md.
 
 Add the plugin to your ESLint configuration and enable the rules.
 
-Example `.eslintrc.js`:
+Example eslint.config.js (ESLint v9 flat config):
 
 ```js
-module.exports = {
-  plugins: ["traceability"],
-  rules: {
-    "traceability/require-story-annotation": "error",
-    "traceability/require-req-annotation": "error",
-    "traceability/require-branch-annotation": "error",
+// eslint.config.js
+module.exports = [
+  {
+    env: {
+      es2021: true,
+      node: true,
+    },
+    plugins: { traceability: {} },
+    rules: {
+      "traceability/require-story-annotation": "error",
+      "traceability/require-req-annotation": "error",
+      "traceability/require-branch-annotation": "error",
+    },
   },
-};
+];
 ```
 
 ### Available Rules
