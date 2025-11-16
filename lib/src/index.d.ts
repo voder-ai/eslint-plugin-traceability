@@ -7,6 +7,7 @@ export declare const rules: {
     "require-story-annotation": any;
     "require-req-annotation": any;
     "require-branch-annotation": any;
+    "valid-annotation-format": any;
 };
 export declare const configs: {
     recommended: {
@@ -17,6 +18,7 @@ export declare const configs: {
             "traceability/require-story-annotation": string;
             "traceability/require-req-annotation": string;
             "traceability/require-branch-annotation": string;
+            "traceability/valid-annotation-format": string;
         };
     }[];
     strict: {
@@ -27,6 +29,7 @@ export declare const configs: {
             "traceability/require-story-annotation": string;
             "traceability/require-req-annotation": string;
             "traceability/require-branch-annotation": string;
+            "traceability/valid-annotation-format": string;
         };
     }[];
 };
@@ -35,6 +38,7 @@ declare const _default: {
         "require-story-annotation": any;
         "require-req-annotation": any;
         "require-branch-annotation": any;
+        "valid-annotation-format": any;
     };
     configs: {
         recommended: {
@@ -45,6 +49,7 @@ declare const _default: {
                 "traceability/require-story-annotation": string;
                 "traceability/require-req-annotation": string;
                 "traceability/require-branch-annotation": string;
+                "traceability/valid-annotation-format": string;
             };
         }[];
         strict: {
@@ -55,6 +60,7 @@ declare const _default: {
                 "traceability/require-story-annotation": string;
                 "traceability/require-req-annotation": string;
                 "traceability/require-branch-annotation": string;
+                "traceability/valid-annotation-format": string;
             };
         }[];
     };
