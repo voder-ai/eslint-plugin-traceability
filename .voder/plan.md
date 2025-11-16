@@ -1,22 +1,14 @@
-## NOW  
-Populate the Husky pre-push hook (`.husky/pre-push`) so that it runs the full local quality gate:  
-```bash
-npm run build && npm run type-check && npm test && npm run lint && npm run format:check
-```
+## NOW
+Generate and register the skeleton for the branch-annotation rule by creating `src/rules/require-branch-annotation.ts` with a stubbed create function and adding `"require-branch-annotation": requireBranchAnnotation` to the `rules` export in `src/index.ts`.
 
-## NEXT  
-- Populate the Husky pre-commit hook (`.husky/pre-commit`) to run `npm run format` and `npm run lint`.  
-- Enable and configure ESLint’s `complexity` rule (e.g. `"complexity": ["error",{ "max": 20 }]`) in `eslint.config.js`.  
-- Install and configure a duplication detector (e.g. `jscpd`) and add an `npm run duplication` script.  
-- Begin writing RuleTester tests for the next core rule: `require-req-annotation` in `tests/rules/require-req-annotation.test.ts`.  
-- Add `"eslint": ">=9.0.0"` to `peerDependencies` and declare supported Node.js versions under `engines` in `package.json`.  
-- Create a `.env.example` file with placeholder environment variables.
+## NEXT
+- Create `tests/rules/require-branch-annotation.test.ts` using RuleTester and reference `docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md` with valid and invalid branch examples.
+- Flesh out `require-branch-annotation.ts` to detect `IfStatement`, `SwitchCase`, `TryStatement`, and loop nodes and report missing `@story`/`@req` annotations.
+- Add JSDoc traceability tags (`@story`/`@req`) in the new rule source file linking to story 004.0.
+- Run `npm run build && npm run type-check && npm test && npm run lint && npm run format:check` to verify the new rule and tests pass.
 
-## LATER  
-- Continue adding RuleTester tests for branch annotations (`require-branch-annotation`), annotation format validation, file-reference validation, deep requirement validation, and auto-fix scenarios.  
-- Flesh out `README.md` with installation, configuration, and usage examples linking to `docs/` guides.  
-- Create a `docs/rules/` section documenting each rule’s purpose, options, and sample code.  
-- Write integration tests that run the ESLint CLI against sample projects to verify combined rule behavior and auto-fixes.  
-- Configure CI to enforce coverage thresholds, code complexity limits, and duplication checks locally and in GitHub Actions.  
-- Review and adjust CI branch triggers to align with trunk-based development (remove or update the `develop` branch trigger).  
-- Plan and implement an automated `npm publish` step in the CI pipeline after quality gates pass.
+## LATER
+- Implement and test annotation-format validation (005.0), story file existence checks (006.0), clear error messaging (007.0), auto-fixers (008.0), maintenance tools (009.0), and deep-validation (010.0).
+- Write ESLint CLI integration tests on fixture projects to ensure end-to-end rule enforcement and auto-fix behavior.
+- Update `README.md` with “Getting Started” instructions, link to `docs/eslint-9-setup-guide.md` and `docs/eslint-plugin-development-guide.md`, and document all rules and configs.
+- Commit any outstanding lockfile changes, add an automated publish workflow for npm, and configure CI to enforce coverage, complexity, and duplication checks.

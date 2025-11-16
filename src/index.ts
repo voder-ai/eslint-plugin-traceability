@@ -6,10 +6,12 @@
 
 import requireStoryAnnotation from "./rules/require-story-annotation";
 import requireReqAnnotation from "./rules/require-req-annotation";
+import requireBranchAnnotation from "./rules/require-branch-annotation";
 
 export const rules = {
   "require-story-annotation": requireStoryAnnotation,
   "require-req-annotation": requireReqAnnotation,
+  "require-branch-annotation": requireBranchAnnotation,
 };
 
 export const configs = {
