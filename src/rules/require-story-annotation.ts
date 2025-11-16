@@ -21,8 +21,12 @@ export default {
       FunctionDeclaration(node: any) {
         const jsdoc = sourceCode.getJSDocComment(node);
         let hasStory = false;
+        // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+        // @req REQ-JSDOC-PARSING - Detect JSDoc @story annotation presence
         if (jsdoc && jsdoc.value.includes("@story")) {
           hasStory = true;
+        // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+        // @req REQ-JSDOC-PARSING - Fallback to loading comments before node for @story annotation detection
         } else {
           const commentsBefore = sourceCode.getCommentsBefore(node) || [];
           hasStory = commentsBefore.some((comment: any) =>
