@@ -1,14 +1,13 @@
 ## NOW  
-Delete the stray `temp_foo.js` file from the project root.
+Create and commit a new Architecture Decision Record at `docs/decisions/003-code-quality-ratcheting-plan.md` setting out an incremental schedule for reducing the ESLint `max-lines-per-function` and `max-lines` thresholds over the next several sprints.
 
 ## NEXT  
-- Remove any leftover `tests/maintenance/tmp-nested-*` directories that are not referenced by fixtures or tests.  
-- Add a `.gitignore` entry (e.g. `tmp-*.js`) to prevent committing future temp files.  
-- Update `eslint.config.js` to enable the `max-lines-per-function` and `max-lines-per-file` rules.  
-- Ensure the CI “quality-checks” job explicitly runs the `jscpd` duplication check and fails on any detected duplicates.
+- Update the README’s Quick Start code block to include proper `@story` and `@req` annotations and use consistent ESM or CJS syntax.  
+- Add links in the README to `docs/config-presets.md` and `CHANGELOG.md`.  
+- Lower `max-lines-per-function` to 150 and `max-lines` to 800 in `eslint.config.js`, then refactor any functions/files that violate the new thresholds so ESLint passes.  
+- Commit all documentation, config, and refactoring changes under `chore:` commits.
 
 ## LATER  
-- Create an `npm run clean` script to purge temp artifacts and stale files.  
-- Configure a pre-commit hook to reject new temp files (e.g. via `lint-staged`).  
-- Tighten complexity and file-length thresholds as the codebase grows.  
-- Audit the repo for any other orphaned files or directories and remove them.
+- On a bi-sprint cadence, further reduce thresholds (e.g., to 120/600) in both the ADR and ESLint config, refactoring code as needed.  
+- Configure the CI “quality-checks” job to fail on any new violations of these rules.  
+- Once code quality and documentation metrics reach ≥90%, resume functionality assessments and new feature work.
