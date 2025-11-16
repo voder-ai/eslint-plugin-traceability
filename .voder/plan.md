@@ -1,13 +1,13 @@
-## NOW  
-Create and commit a new Architecture Decision Record at `docs/decisions/003-code-quality-ratcheting-plan.md` setting out an incremental schedule for reducing the ESLint `max-lines-per-function` and `max-lines` thresholds over the next several sprints.
+## NOW
+Modify `eslint.config.js` to reduce the `max-lines-per-function` threshold from 150 to 120 and the `max-lines` threshold from 800 to 600.
 
-## NEXT  
-- Update the README’s Quick Start code block to include proper `@story` and `@req` annotations and use consistent ESM or CJS syntax.  
-- Add links in the README to `docs/config-presets.md` and `CHANGELOG.md`.  
-- Lower `max-lines-per-function` to 150 and `max-lines` to 800 in `eslint.config.js`, then refactor any functions/files that violate the new thresholds so ESLint passes.  
-- Commit all documentation, config, and refactoring changes under `chore:` commits.
+## NEXT
+- Run `npm run lint` (or `eslint . --max-warnings=0`) to list all violations under the new thresholds.  
+- Refactor any functions longer than 120 lines or files longer than 600 lines to comply.  
+- Commit each batch of refactorings under `refactor:` commits and verify that lint, build, and tests pass.  
+- Update the Sprint 2 entry in `docs/decisions/003-code-quality-ratcheting-plan.md` to mark completion of this ratcheting milestone.
 
-## LATER  
-- On a bi-sprint cadence, further reduce thresholds (e.g., to 120/600) in both the ADR and ESLint config, refactoring code as needed.  
-- Configure the CI “quality-checks” job to fail on any new violations of these rules.  
-- Once code quality and documentation metrics reach ≥90%, resume functionality assessments and new feature work.
+## LATER
+- Configure the CI “quality-checks” job to fail on any new violations of the 120/600 rules.  
+- Plan and schedule the next ratchet (100 lines/function, 500 lines/file) for Sprint 4 and update the ADR accordingly.  
+- Once overall code-quality metrics reach ≥90%, resume functionality assessments and begin new feature work.
