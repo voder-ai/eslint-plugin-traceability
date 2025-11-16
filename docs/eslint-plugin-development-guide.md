@@ -39,9 +39,9 @@ Every plugin should include meta information for debugging and caching:
 ```typescript
 const plugin = {
   meta: {
-    name: "eslint-plugin-traceability",        // npm package name
-    version: "1.0.0",                          // npm package version
-    namespace: "traceability",                 // prefix for rules/configs
+    name: "eslint-plugin-traceability", // npm package name
+    version: "1.0.0", // npm package version
+    namespace: "traceability", // prefix for rules/configs
   },
   // ... other properties
 };
@@ -60,7 +60,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const pkg = JSON.parse(
-  fs.readFileSync(join(__dirname, "../package.json"), "utf8")
+  fs.readFileSync(join(__dirname, "../package.json"), "utf8"),
 );
 
 const plugin = {
@@ -267,18 +267,21 @@ For validating @story references to actual files:
 import fs from "fs/promises";
 import path from "path";
 
-async function validateStoryFile(storyPath: string, context: any): Promise<boolean> {
+async function validateStoryFile(
+  storyPath: string,
+  context: any,
+): Promise<boolean> {
   try {
     const fullPath = path.resolve(context.getCwd(), storyPath);
-    
+
     // Check file exists
     await fs.access(fullPath);
-    
+
     // Check file extension
-    if (!fullPath.endsWith('.story.md')) {
+    if (!fullPath.endsWith(".story.md")) {
       return false;
     }
-    
+
     return true;
   } catch {
     return false;
@@ -291,12 +294,15 @@ async function validateStoryFile(storyPath: string, context: any): Promise<boole
 For validating @req references within story files:
 
 ```typescript
-async function validateRequirement(storyPath: string, reqId: string): Promise<boolean> {
+async function validateRequirement(
+  storyPath: string,
+  reqId: string,
+): Promise<boolean> {
   try {
-    const content = await fs.readFile(storyPath, 'utf8');
-    
+    const content = await fs.readFile(storyPath, "utf8");
+
     // Look for requirement ID in story content
-    const reqPattern = new RegExp(`\\*\\*${reqId}\\*\\*:`, 'g');
+    const reqPattern = new RegExp(`\\*\\*${reqId}\\*\\*:`, "g");
     return reqPattern.test(content);
   } catch {
     return false;
@@ -310,9 +316,9 @@ Allow users to customize behavior:
 
 ```typescript
 interface RuleOptions {
-  storyFilePattern?: string;        // Default: "**/*.story.md"
-  requirementPattern?: string;      // Default: "REQ-*"
-  excludePatterns?: string[];       // Files to exclude
+  storyFilePattern?: string; // Default: "**/*.story.md"
+  requirementPattern?: string; // Default: "REQ-*"
+  excludePatterns?: string[]; // Files to exclude
   includePrivateFunctions?: boolean; // Default: false
 }
 ```

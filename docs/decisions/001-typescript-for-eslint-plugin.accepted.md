@@ -1,5 +1,5 @@
 ---
-status: 'accepted'
+status: "accepted"
 date: 2025-11-15
 decision-makers: [Development Team]
 consulted: [ESLint Community Best Practices, TypeScript ESLint Documentation]
@@ -47,6 +47,7 @@ Chosen option: "TypeScript with full type definitions", because it provides the 
 ### Confirmation
 
 Implementation compliance will be confirmed through:
+
 - TypeScript compilation passes without errors in CI/CD pipeline
 - All plugin source files use .ts extension
 - package.json includes TypeScript as development dependency
@@ -104,6 +105,7 @@ Pure JavaScript implementation with no type system support.
 This decision aligns with REQ-TYPESCRIPT in story 001.0-DEV-PLUGIN-SETUP. The implementation should use @typescript-eslint/utils for AST parsing utilities and follow TypeScript ESLint plugin development patterns. The decision should be re-evaluated if TypeScript compilation becomes a significant bottleneck or if the team expertise changes significantly.
 
 Related resources:
+
 - [ESLint Plugin Development Guide](https://eslint.org/docs/latest/extend/plugins)
 - [@typescript-eslint/utils Documentation](https://typescript-eslint.io/packages/utils/)
 - [TypeScript ESLint Plugin Examples](https://github.com/typescript-eslint/typescript-eslint/tree/main/packages/eslint-plugin/src/rules)

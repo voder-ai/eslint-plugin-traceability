@@ -2,11 +2,11 @@
 
 ## Journey Steps (Columns)
 
-| **Setup Plugin**           | **Write Code**           | **Validate Annotations**           | **Fix Issues**           | **Maintain Quality**           |
-| ----------------------- | ----------------------- | ----------------------- | ----------------------- | ----------------------- |
+| **Setup Plugin**                                                                           | **Write Code**                                                              | **Validate Annotations**                                    | **Fix Issues**                                            | **Maintain Quality**                          |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------- |
 | _Install and configure the ESLint plugin in their project to start enforcing traceability_ | _Write functions and code branches with proper @story and @req annotations_ | _Run linting to check that annotations exist and are valid_ | _Address any traceability violations found by the linter_ | _Keep annotations up-to-date as code evolves_ |
-| **Installation**        | **Function Annotations**        | **Annotation Validation**        | **Error Resolution**        | **Ongoing Maintenance**        |
-| **Configuration**        | **Branch Annotations**        | **File Reference Validation**        | **Quick Fixes**        | **Ongoing Maintenance**        |
+| **Installation**                                                                           | **Function Annotations**                                                    | **Annotation Validation**                                   | **Error Resolution**                                      | **Ongoing Maintenance**                       |
+| **Configuration**                                                                          | **Branch Annotations**                                                      | **File Reference Validation**                               | **Quick Fixes**                                           | **Ongoing Maintenance**                       |
 
 ## Personas
 
@@ -18,17 +18,17 @@
 
 # User Story Map with Releases
 
-| **Release 0.1 (Core Validation)** (Planned) | **Setup Plugin** | **Write Code** | **Validate Annotations** | **Fix Issues** | **Maintain Quality** |
-| ----------------------------------------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| **Plugin Foundation**                    | 001.0-DEV-PLUGIN-SETUP  | 003.0-DEV-FUNCTION-ANNOTATIONS  | 005.0-DEV-ANNOTATION-VALIDATION  | 007.0-DEV-ERROR-REPORTING  | 009.0-DEV-MAINTENANCE-TOOLS  |
-| **Basic Rules**                    | 002.0-DEV-ESLINT-CONFIG  | 004.0-DEV-BRANCH-ANNOTATIONS  | 006.0-DEV-FILE-VALIDATION  | 008.0-DEV-AUTO-FIX  | 010.0-DEV-DEEP-VALIDATION  |
-|                                                 | -             | -             | -             | -             | -             |
+| **Release 0.1 (Core Validation)** (Planned) | **Setup Plugin**        | **Write Code**                 | **Validate Annotations**        | **Fix Issues**            | **Maintain Quality**        |
+| ------------------------------------------- | ----------------------- | ------------------------------ | ------------------------------- | ------------------------- | --------------------------- |
+| **Plugin Foundation**                       | 001.0-DEV-PLUGIN-SETUP  | 003.0-DEV-FUNCTION-ANNOTATIONS | 005.0-DEV-ANNOTATION-VALIDATION | 007.0-DEV-ERROR-REPORTING | 009.0-DEV-MAINTENANCE-TOOLS |
+| **Basic Rules**                             | 002.0-DEV-ESLINT-CONFIG | 004.0-DEV-BRANCH-ANNOTATIONS   | 006.0-DEV-FILE-VALIDATION       | 008.0-DEV-AUTO-FIX        | 010.0-DEV-DEEP-VALIDATION   |
+|                                             | -                       | -                              | -                               | -                         | -                           |
 
-| **Release 0.2 (Enhanced Features)** (Future) | **Setup Plugin** | **Write Code** | **Validate Annotations** | **Fix Issues** | **Maintain Quality** |
-| ----------------------------------------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| **Advanced Validation**                    | 011.0-DEV-IDE-INTEGRATION  | 013.0-DEV-SMART-SUGGESTIONS  | 015.0-DEV-REAL-TIME-FEEDBACK  | 016.0-DEV-BULK-FIXES  | 018.0-DEV-QUALITY-METRICS  |
-| **Developer Experience**                    | 012.0-DEV-PROJECT-TEMPLATES  | 014.0-DEV-ANNOTATION-HELPERS  | -  | 017.0-DEV-GUIDED-RESOLUTION  | 019.0-DEV-DASHBOARD  |
-|                                                 | -             | -             | -             | -             | -             |
+| **Release 0.2 (Enhanced Features)** (Future) | **Setup Plugin**            | **Write Code**               | **Validate Annotations**     | **Fix Issues**              | **Maintain Quality**      |
+| -------------------------------------------- | --------------------------- | ---------------------------- | ---------------------------- | --------------------------- | ------------------------- |
+| **Advanced Validation**                      | 011.0-DEV-IDE-INTEGRATION   | 013.0-DEV-SMART-SUGGESTIONS  | 015.0-DEV-REAL-TIME-FEEDBACK | 016.0-DEV-BULK-FIXES        | 018.0-DEV-QUALITY-METRICS |
+| **Developer Experience**                     | 012.0-DEV-PROJECT-TEMPLATES | 014.0-DEV-ANNOTATION-HELPERS | -                            | 017.0-DEV-GUIDED-RESOLUTION | 019.0-DEV-DASHBOARD       |
+|                                              | -                           | -                            | -                            | -                           | -                         |
 
 ---
 
@@ -74,21 +74,25 @@
 ### **Release 0.1 Questions:**
 
 **Plugin Foundation:**
+
 - How easy is it to add the ESLint plugin to an existing project without disrupting current workflow?
 - What configuration options are needed to accommodate different project structures and story file locations?
 - How should the plugin handle different story file naming conventions (.story.md vs other formats)?
 
 **Core Annotations:**
+
 - What types of functions should require @story annotations (all functions, only exported functions, only functions above certain complexity)?
 - Which code branches need traceability annotations (if/else, try/catch, switch cases, loops)?
 - How should the plugin handle generated code or third-party code that can't have annotations?
 
 **Validation Logic:**
+
 - How strict should annotation format validation be (exact format vs flexible parsing)?
 - Should the plugin validate that @req annotations point to actual requirements within the referenced story file?
 - How should the plugin handle story files that exist but are empty or malformed?
 
 **Developer Support:**
+
 - What information should be included in error messages to help developers fix annotation issues quickly?
 - Which annotation errors can be auto-fixed safely (missing @story template, broken file paths)?
 - How should the plugin integrate with existing ESLint configurations and other rules?
@@ -96,16 +100,19 @@
 ### **Release 0.2 Questions:**
 
 **Developer Integration:**
+
 - What IDE features would make maintaining traceability annotations feel natural and effortless?
 - How can the plugin provide intelligent suggestions for @story references based on file context?
 - What project templates would help new teams adopt traceability practices from the start?
 
 **Advanced Validation:**
+
 - Should the plugin parse story files to validate that referenced requirements actually exist in the content?
 - How can the plugin detect when story files are updated but code annotations become stale?
 - What real-time feedback mechanisms would help developers maintain traceability as they code?
 
 **Quality Management:**
+
 - What metrics help teams understand and improve their traceability coverage?
 - How can teams track traceability quality trends over time?
 - What visualization tools would help identify areas of the codebase with poor traceability?

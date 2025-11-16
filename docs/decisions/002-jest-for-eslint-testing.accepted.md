@@ -1,8 +1,14 @@
 ---
-status: 'accepted'
+status: "accepted"
 date: 2025-11-15
 decision-makers: [Development Team]
-consulted: [ESLint Community Best Practices, Jest Documentation, Vitest Documentation, TypeScript ESLint Testing Patterns]
+consulted:
+  [
+    ESLint Community Best Practices,
+    Jest Documentation,
+    Vitest Documentation,
+    TypeScript ESLint Testing Patterns,
+  ]
 informed: [Project Stakeholders, Future Contributors]
 ---
 
@@ -49,6 +55,7 @@ Chosen option: "Jest with TypeScript support", because it provides native Common
 ### Confirmation
 
 Implementation compliance will be confirmed through:
+
 - Jest configuration properly set up with ts-jest transformer
 - ESLint RuleTester tests run successfully without module resolution errors
 - All tests pass in CI/CD pipeline using Jest
@@ -109,6 +116,7 @@ Node.js native test runner provides minimal testing without external dependencie
 This decision supports REQ-TEST-SETUP in story 001.0-DEV-PLUGIN-SETUP. The implementation should use ts-jest for TypeScript compilation and follow patterns established by @typescript-eslint project. ESLint's RuleTester should be the primary tool for rule validation testing.
 
 Key implementation considerations:
+
 - Use ts-jest transformer for TypeScript source testing
 - Configure Jest to handle both source TypeScript and compiled CommonJS
 - Follow ESLint RuleTester patterns for rule validation
@@ -116,12 +124,14 @@ Key implementation considerations:
 - Set up proper mocking for file system operations
 
 This decision should be re-evaluated if:
+
 - ESLint ecosystem moves away from Jest as standard
 - CommonJS requirement changes for ESLint plugins
 - Vitest significantly improves CommonJS support
 - Team expertise with Jest becomes insufficient
 
 Related resources:
+
 - [ESLint RuleTester Documentation](https://eslint.org/docs/latest/integrate/nodejs-api#ruletester)
 - [@typescript-eslint Testing Patterns](https://github.com/typescript-eslint/typescript-eslint/tree/main/packages/eslint-plugin/tests)
 - [Jest with TypeScript Guide](https://jestjs.io/docs/getting-started#using-typescript)
