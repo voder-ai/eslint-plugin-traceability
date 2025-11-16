@@ -78,7 +78,7 @@ import js from "@eslint/js";
 export default [
   // Apply to all files
   js.configs.recommended,
-  
+
   // Specific configuration objects
   {
     files: ["**/*.js"], // File patterns
@@ -90,7 +90,7 @@ export default [
       // Rule configurations
     },
   },
-  
+
   // Ignore patterns
   {
     ignores: ["dist/**", "build/**", "node_modules/**"],
@@ -190,7 +190,11 @@ export default [
 // eslint.config.js
 export default [
   {
-    files: ["**/*.test.{js,ts}", "**/__tests__/**/*.{js,ts}", "**/tests/**/*.{js,ts}"],
+    files: [
+      "**/*.test.{js,ts}",
+      "**/__tests__/**/*.{js,ts}",
+      "**/tests/**/*.{js,ts}",
+    ],
     languageOptions: {
       globals: {
         describe: "readonly",
@@ -281,32 +285,36 @@ export default [
 ### Issue: "Expected object with parse() method"
 
 **Problem**: Using `require.resolve()` for parser
+
 ```javascript
 // ❌ Wrong
 languageOptions: {
-  parser: require.resolve("@typescript-eslint/parser")
+  parser: require.resolve("@typescript-eslint/parser");
 }
 ```
 
 **Solution**: Import parser directly
+
 ```javascript
 // ✅ Correct
 import typescriptParser from "@typescript-eslint/parser";
 
 languageOptions: {
-  parser: typescriptParser
+  parser: typescriptParser;
 }
 ```
 
 ### Issue: "eslint:recommended" not working
 
 **Problem**: Using string reference
+
 ```javascript
 // ❌ Wrong
 export default ["eslint:recommended"];
 ```
 
 **Solution**: Import from @eslint/js
+
 ```javascript
 // ✅ Correct
 import js from "@eslint/js";
@@ -317,12 +325,14 @@ export default [js.configs.recommended];
 ### Issue: CLI flags not working
 
 **Problem**: Using deprecated flags
+
 ```bash
 # ❌ Wrong (deprecated in flat config)
 eslint src --ext .ts --config eslint.config.js
 ```
 
 **Solution**: Use file patterns in config
+
 ```bash
 # ✅ Correct
 eslint .
@@ -331,6 +341,7 @@ eslint .
 ### Issue: Globals not defined
 
 **Problem**: Missing environment globals
+
 ```javascript
 // ❌ Wrong - globals not defined
 export default [
@@ -342,6 +353,7 @@ export default [
 ```
 
 **Solution**: Define globals explicitly
+
 ```javascript
 // ✅ Correct
 export default [
@@ -428,7 +440,11 @@ export default [
   },
   {
     // Test files
-    files: ["**/*.test.{js,ts}", "**/__tests__/**/*.{js,ts}", "**/tests/**/*.{js,ts}"],
+    files: [
+      "**/*.test.{js,ts}",
+      "**/__tests__/**/*.{js,ts}",
+      "**/tests/**/*.{js,ts}",
+    ],
     languageOptions: {
       globals: {
         describe: "readonly",
@@ -445,7 +461,13 @@ export default [
   },
   {
     // Ignore patterns
-    ignores: ["lib/**", "dist/**", "build/**", "node_modules/**", "coverage/**"],
+    ignores: [
+      "lib/**",
+      "dist/**",
+      "build/**",
+      "node_modules/**",
+      "coverage/**",
+    ],
   },
 ];
 ```

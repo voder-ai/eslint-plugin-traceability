@@ -1,0 +1,21 @@
+# Ignore compiled outputs and voder artifacts
+lib/
+.voder/
+
+# Ignore node modules and dependencies
+node_modules/
+
+# Ignore test coverage reports
+coverage/
+
+# Ignore minified files
+*.min.js
+*.min.css
+
+# Ignore GitHub workflows and git hooks
+.github/
+.husky/
+
+# Ignore changelog and logs
+CHANGELOG.md
+*.log
