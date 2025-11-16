@@ -80,6 +80,21 @@ while (condition) {
   iterate();
 }`,
       },
+      {
+        code: `switch (value) {
+
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
+  case 'a':
+    break;
+}`,
+      },
+      {
+        code: `switch (value) {
+  default:
+    doSomething();
+}`,
+      },
     ],
     invalid: [
       {
@@ -147,6 +162,17 @@ while (true) {}`,
         errors: [
           { messageId: "missingAnnotation", data: { missing: "@story" } },
           { messageId: "missingAnnotation", data: { missing: "@req" } },
+          { messageId: "missingAnnotation", data: { missing: "@story" } },
+          { messageId: "missingAnnotation", data: { missing: "@req" } },
+        ],
+      },
+      {
+        code: `switch (value) {
+
+  case 'a':
+    break;
+}`,
+        errors: [
           { messageId: "missingAnnotation", data: { missing: "@story" } },
           { messageId: "missingAnnotation", data: { missing: "@req" } },
         ],

@@ -5,7 +5,7 @@
  */
 import plugin, { rules, configs } from "../src/index";
 
-describe("Plugin Default Export and Configs (Story 001.0)", () => {
+describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () => {
   it("[REQ-PLUGIN-STRUCTURE] default export includes rules and configs", () => {
     expect(plugin.rules).toBe(rules);
     expect(plugin.configs).toBe(configs);

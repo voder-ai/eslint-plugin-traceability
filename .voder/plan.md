@@ -1,12 +1,12 @@
 ## NOW
-In `cli-integration.js`, remove the file-wide `/* eslint-disable */` comment and replace it with precise `// eslint-disable-next-line <rule>` comments only for the specific rules that truly cannot pass, so that the rest of the file is fully linted.
+Write comprehensive Jest RuleTester unit tests for each compiled rule in `lib/src/rules` (require-story-annotation, require-req-annotation, require-branch-annotation) to exercise the built plugin and drive overall coverage above 90%.
 
 ## NEXT
-- Write Jest unit tests targeting each compiled rule in `lib/src/rules` (require-story-annotation, require-req-annotation, require-branch-annotation) using ESLint’s RuleTester to exercise the built output and drive coverage toward 100%.  
-- Update all `describe(…)` blocks in both `tests/` and `lib/tests/` to include the associated story ID and title (e.g. “(Story 003.0-DEV-FUNCTION-ANNOTATIONS)”) for full traceability.  
-- Scaffold initial test suites for the upcoming validation rules (annotation-format in story 005, file-reference in 006, error-reporting in 007, and auto-fix in 008) under `tests/rules` and `lib/tests/rules` so that coverage gates can be met as soon as those rules are implemented.
+- Update every `describe(…)` block in `tests/` to include the associated story ID and title (e.g. “Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)”) for full traceability.
+- Refactor the CLI integration tests in `cli-integration.js` to use Jest’s `test.each` API, add story IDs to each test name, and consolidate rule invocations.
+- Scaffold empty `tests/rules/` (and `lib/tests/rules/`) suites for annotation-format (story 005), file-reference (story 006), error-reporting (story 007), and auto-fix (story 008) so coverage gates are met as soon as those rules ship.
 
 ## LATER
-- Incrementally enable and configure additional ESLint maintainability rules (e.g. `max-lines`, `max-params`) with a ratcheting plan.  
-- Add performance and memory benchmarks for large codebases (particularly markdown parsing) and integrate them into CI.  
-- Develop and test maintenance-tooling scripts for story file renames and deep-validation logic (stories 009 and 010), adding corresponding integration tests and documentation.
+- Implement and test the annotation-format validation rule (story 005) and file-reference validation rule (story 006).
+- Develop and test the error-reporting rule (story 007) and auto-fix rule (story 008), then deep-validation (story 010).
+- Incrementally enable ESLint maintainability rules (e.g. `max-lines`, `max-params`) with a ratcheting plan and add performance/memory benchmarks (markdown parsing, file-system caching) into CI.
