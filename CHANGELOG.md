@@ -2,17 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2025-11-17
+
+### Added
+- Detailed API documentation in `user-docs/api-reference.md`
+- New usage examples in `user-docs/examples.md`
+
+### Changed
+- Updated `README.md` with advanced usage instructions and migration guide
+- Consolidated CI workflows into a unified GitHub Actions pipeline
+
 ## [1.0.0] - 2025-11-16
 
 ### Changed
-
 - Bumped version to 1.0.0 in package.json.
 - Aligned CHANGELOG with package.json version.
 
 ## [0.1.0] - 2025-11-16
 
 ### Added
-
 - Initial release of `eslint-plugin-traceability`:
   - `require-story-annotation`
   - `require-req-annotation`
@@ -27,5 +35,4 @@ All notable changes to this project will be documented in this file.
 - Comprehensive tests covering core validation rules.
 
 ### Fixed
-
 - N/A
