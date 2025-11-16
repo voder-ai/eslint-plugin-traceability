@@ -5,6 +5,7 @@
  */
 export declare const rules: {
     "require-story-annotation": any;
+    "require-req-annotation": any;
 };
 export declare const configs: {
     recommended: {
@@ -17,6 +18,7 @@ export declare const configs: {
 declare const _default: {
     rules: {
         "require-story-annotation": any;
+        "require-req-annotation": any;
     };
     configs: {
         recommended: {
