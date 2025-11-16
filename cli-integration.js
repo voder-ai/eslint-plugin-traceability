@@ -8,7 +8,6 @@
 const { spawnSync } = require("child_process");
 const path = require("path");
 const configPath = path.resolve(__dirname, "eslint.config.js");
-const pluginPath = path.resolve(__dirname, "lib/index.js");
 
 /**
  * Helper to execute ESLint CLI integration tests for the traceability plugin
@@ -22,8 +21,6 @@ function runEslint(code, rule) {
     "--no-config-lookup",
     "--config",
     configPath,
-    "--plugin",
-    `traceability=${pluginPath}`,
     "--stdin",
     "--stdin-filename",
     "foo.js",
