@@ -38,7 +38,10 @@ export default {
       Program() {
         const comments = sourceCode.getAllComments() || [];
         comments.forEach((comment) => {
-          const lines = comment.value.split(/\r?\n/).map((l) => l.trim());
+          const rawLines = comment.value.split(/\r?\n/);
+          const lines = rawLines.map((rawLine) =>
+            rawLine.trim().replace(/^\*+\s*/, ""),
+          );
           lines.forEach((line) => {
             if (line.startsWith("@story")) {
               const parts = line.split(/\s+/);

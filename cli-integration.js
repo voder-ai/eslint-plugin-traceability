@@ -57,7 +57,7 @@ function foo() {}
     code: `
 /**
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
- * @req docs/requirements/nonexistent.req.md
+ * @req REQ-NON-EXISTENT
  */
 function foo() {}
 `,
@@ -68,8 +68,8 @@ function foo() {}
     name: "reports error when requirement reference uses path traversal",
     code: `
 /**
- * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
- * @req ../outside/req.md
+ * @story ../docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+ * @req REQ-PLUGIN-STRUCTURE
  */
 function foo() {}
 `,
@@ -80,8 +80,8 @@ function foo() {}
     name: "reports error when requirement reference uses absolute path",
     code: `
 /**
- * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
- * @req /absolute/path/req.md
+ * @story /absolute/docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+ * @req REQ-PLUGIN-STRUCTURE
  */
 function foo() {}
 `,
