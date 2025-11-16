@@ -43,26 +43,32 @@ Chosen option: "npm version command with automated execution in CI/CD", because 
 
 ### Implementation Strategy
 
-The CI/CD pipeline will be modified to:
+The CI/CD pipeline will be modified to avoid infinite loops while ensuring reliable publishing:
 
-1. **Pre-publish Version Check**: Before attempting to publish, check if the current package.json version already exists on npm
-2. **Automatic Patch Increment**: If the version exists, automatically increment the patch version using `npm version patch`
-3. **Commit and Tag**: Create a version commit and git tag as part of the pipeline
+1. **Pre-publish Version Check**: Before attempting to publish, check if the current package.json version already exists on npm using `npm view`
+2. **In-Pipeline Version Increment**: If the version exists, increment the patch version directly in the pipeline without committing back to git using `npm version patch --no-git-tag-version`
+3. **Changelog Update**: Update CHANGELOG.md programmatically with the new version entry within the pipeline
 4. **Publish with New Version**: Proceed with npm publish using the incremented version
-5. **Changelog Update**: Automatically update CHANGELOG.md with the new version entry
+5. **Post-Publish Git Update**: After successful publish, commit the version changes and create a git tag using `git commit` and `git tag`, with commit message including `[skip ci]` to prevent pipeline recursion
+6. **Push Changes**: Push the version commit and tag back to the repository with CI skip directive
+
+### Alternative Approach Considered
+
+**Version Increment Without Git Commits**: Increment version only in-memory during pipeline execution, publish to npm, but never commit version changes back to git. This would eliminate loop concerns entirely but would cause package.json to drift from published versions, making it difficult to track which version is published and potentially causing confusion for developers.
 
 ### Consequences
 
 - Good, because prevents all npm publish failures due to version conflicts
-- Good, because maintains automated delivery without manual intervention
-- Good, because creates proper git tags and version history
+- Good, because maintains fully automated delivery without any manual intervention
+- Good, because creates proper git tags and version history after successful publish
 - Good, because uses standard npm tooling that developers understand
-- Good, because allows for emergency manual version bumps when needed
+- Good, because avoids infinite CI/CD loops through `[skip ci]` directive
 - Good, because integrates cleanly with existing CI/CD infrastructure
+- Good, because ensures version increments only occur when publishing is successful
 - Neutral, because requires CI/CD pipeline to have git write access
-- Neutral, because creates additional commits in the main branch for version bumps
+- Neutral, because creates additional commits in the main branch for version tracking
 - Bad, because does not automatically determine semantic version type (major/minor/patch)
-- Bad, because may create noise in git history with automated version commits
+- Bad, because version commits occur after publish rather than before
 
 ### Confirmation
 
@@ -89,9 +95,10 @@ Standard npm tooling with CI/CD automation provides reliable version management 
 - Good, because provides immediate resolution to publish failures
 - Good, because maintains compatibility with npm ecosystem tools
 - Neutral, because requires configuration of git credentials in CI/CD
-- Neutral, because creates automated commits that may clutter history
+- Neutral, because creates automated commits that include CI skip directives
 - Bad, because defaults to patch-level increments only
 - Bad, because does not analyze commit messages for semantic versioning
+- Bad, because potential for git history inconsistency if post-publish commits fail
 
 ### Semantic Release with automated version detection
 
@@ -144,12 +151,13 @@ This decision addresses the immediate CI/CD publish failures while establishing 
 
 Key implementation considerations:
 
-- Configure CI/CD pipeline with appropriate git credentials for version commits
+- Configure CI/CD pipeline with appropriate git credentials for post-publish commits
 - Set up git user configuration for automated commits
 - Ensure version tags follow consistent naming convention (v1.0.0 format)
+- Use `[skip ci]` or `[ci skip]` in commit messages to prevent pipeline recursion
 - Update CHANGELOG.md generation to work with automated version increments
-- Consider branch protection rules that allow CI/CD version commits
-- Document manual override process for major/minor version bumps
+- Handle potential race conditions if multiple commits are pushed simultaneously
+- Ensure proper error handling if post-publish git operations fail
 
 This decision should be re-evaluated if:
 
