@@ -30,12 +30,14 @@ Current test scenarios:
    - Code: `function foo() {}`
    - Expects ESLint to exit with code 1 (error reported)
 2. `does not report error when @story annotation is present`
+
    ```js
    /**
     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
     */
    function foo() {}
    ```
+
    - Expects ESLint to exit with code 0 (no error)
 
 ## Usage
