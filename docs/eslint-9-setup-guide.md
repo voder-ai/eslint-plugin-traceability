@@ -60,6 +60,20 @@ export default [
 }
 ```
 
+### 4. Enable Traceability Plugin
+
+To integrate the traceability plugin, update your `eslint.config.js` to include its recommended configuration:
+
+```javascript
+import js from "@eslint/js";
+import traceability from "eslint-plugin-traceability";
+
+export default [
+  js.configs.recommended,
+  traceability.configs.recommended,
+];
+```
+
 ## Configuration File Format
 
 ### Key Changes from ESLintRC

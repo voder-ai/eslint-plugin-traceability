@@ -10,6 +10,11 @@ const path = require("path");
 const eslintBin = path.resolve(__dirname, "node_modules/.bin/eslint");
 const configPath = path.resolve(__dirname, "eslint.config.js");
 
+/**
+ * Helper to execute ESLint CLI integration tests for the traceability plugin
+ * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+ * @req REQ-PLUGIN-STRUCTURE - Utility for invoking ESLint with flat config in integration tests
+ */
 function runEslint(code, rule) {
   const args = [
     "--no-config-lookup",
