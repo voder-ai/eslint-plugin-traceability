@@ -30,7 +30,9 @@ function example() {}
 
 // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
 // @req REQ-SYNTAX-VALIDATION
-if (condition) { /* ... */ }
+if (condition) {
+  /* ... */
+}
 ```
 
 #### Incorrect

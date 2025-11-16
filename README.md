@@ -43,12 +43,12 @@ module.exports = [
 
 ### Available Rules
 
-- `traceability/require-story-annotation`  Enforces presence of `@story` annotations. ([Documentation](docs/rules/require-story-annotation.md))
-- `traceability/require-req-annotation`    Enforces presence of `@req` annotations. ([Documentation](docs/rules/require-req-annotation.md))
+- `traceability/require-story-annotation` Enforces presence of `@story` annotations. ([Documentation](docs/rules/require-story-annotation.md))
+- `traceability/require-req-annotation` Enforces presence of `@req` annotations. ([Documentation](docs/rules/require-req-annotation.md))
 - `traceability/require-branch-annotation` Enforces presence of branch annotations. ([Documentation](docs/rules/require-branch-annotation.md))
-- `traceability/valid-annotation-format`   Enforces correct format of traceability annotations. ([Documentation](docs/rules/valid-annotation-format.md))
-- `traceability/valid-story-reference`     Validates that `@story` references point to existing story files. ([Documentation](docs/rules/valid-story-reference.md))
-- `traceability/valid-req-reference`       Validates that `@req` references point to existing requirement IDs. ([Documentation](docs/rules/valid-req-reference.md))
+- `traceability/valid-annotation-format` Enforces correct format of traceability annotations. ([Documentation](docs/rules/valid-annotation-format.md))
+- `traceability/valid-story-reference` Validates that `@story` references point to existing story files. ([Documentation](docs/rules/valid-story-reference.md))
+- `traceability/valid-req-reference` Validates that `@req` references point to existing requirement IDs. ([Documentation](docs/rules/valid-req-reference.md))
 
 For development and contribution guidelines, see docs/eslint-plugin-development-guide.md.
 
