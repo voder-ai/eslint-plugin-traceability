@@ -39,66 +39,84 @@ Currently, version bumping requires manual intervention through direct package.j
 
 ## Decision Outcome
 
-Chosen option: "npm version command with automated execution in CI/CD", because it provides direct integration with npm tooling, maintains simplicity in the CI/CD pipeline, allows for both automated and manual control when needed, and follows established npm ecosystem practices without requiring complex semantic analysis tooling.
+Chosen option: "Version Increment Without Git Commits", because it eliminates CI/CD loop complexity, requires no git write permissions, solves the immediate npm publish failures, and provides the simplest implementation while maintaining full automation.
 
 ### Implementation Strategy
 
-The CI/CD pipeline will be modified to avoid infinite loops while ensuring reliable publishing:
+The CI/CD pipeline will use in-memory version increments without git write-back:
 
-1. **Pre-publish Version Check**: Before attempting to publish, check if the current package.json version already exists on npm using `npm view`
-2. **In-Pipeline Version Increment**: If the version exists, increment the patch version directly in the pipeline without committing back to git using `npm version patch --no-git-tag-version`
-3. **Changelog Update**: Update CHANGELOG.md programmatically with the new version entry within the pipeline
-4. **Publish with New Version**: Proceed with npm publish using the incremented version
-5. **Post-Publish Git Update**: After successful publish, commit the version changes and create a git tag using `git commit` and `git tag`, with commit message including `[skip ci]` to prevent pipeline recursion
-6. **Push Changes**: Push the version commit and tag back to the repository with CI skip directive
+1. **Pre-publish Version Check**: Before attempting to publish, check if the current package.json version already exists on npm using `npm view eslint-plugin-traceability@<version>`
+2. **In-Memory Version Increment**: If the version exists on npm, increment the patch version in the pipeline workspace using `npm version patch --no-git-tag-version`
+3. **Immediate Publish**: Proceed with npm publish using the incremented version without any git operations
+4. **Pipeline Logging**: Log the version increment action for visibility and debugging
+5. **No Git Write-Back**: The incremented version exists only in the pipeline workspace and is never committed back to the repository
 
-### Alternative Approach Considered
+### Primary Approach Considered
 
-**Version Increment Without Git Commits**: Increment version only in-memory during pipeline execution, publish to npm, but never commit version changes back to git. This would eliminate loop concerns entirely but would cause package.json to drift from published versions, making it difficult to track which version is published and potentially causing confusion for developers.
+**Git Write-Back with Version Commits**: Increment version in pipeline, publish to npm, then commit version changes and create git tags with `[skip ci]` to prevent recursion. This approach was rejected due to complexity concerns including git write permissions, infinite loop prevention, post-publish failure handling, and potential race conditions in concurrent pipeline runs.
 
 ### Consequences
 
 - Good, because prevents all npm publish failures due to version conflicts
 - Good, because maintains fully automated delivery without any manual intervention
-- Good, because creates proper git tags and version history after successful publish
+- Good, because eliminates infinite CI/CD loop risks entirely
+- Good, because requires no git write permissions or credentials in CI/CD
 - Good, because uses standard npm tooling that developers understand
-- Good, because avoids infinite CI/CD loops through `[skip ci]` directive
-- Good, because integrates cleanly with existing CI/CD infrastructure
-- Good, because ensures version increments only occur when publishing is successful
-- Neutral, because requires CI/CD pipeline to have git write access
-- Neutral, because creates additional commits in the main branch for version tracking
+- Good, because simplest possible implementation with minimal failure modes
+- Good, because each pipeline run is completely independent
+- Good, because immediate resolution to publish failures with no complexity overhead
+- Neutral, because package.json version may lag behind published npm version
+- Neutral, because developers can check published version via `npm view eslint-plugin-traceability version`
 - Bad, because does not automatically determine semantic version type (major/minor/patch)
-- Bad, because version commits occur after publish rather than before
+- Bad, because no automatic git tags or version history created
 
 ### Confirmation
 
 Implementation compliance will be confirmed through:
 
 - CI/CD pipeline successfully publishes without version conflicts
-- Git repository contains version tags matching published npm versions
-- CHANGELOG.md automatically updated with version entries
+- No npm publish failures due to existing version numbers
+- No git write operations or credentials required in CI/CD
+- No infinite pipeline loops or `[skip ci]` complexity needed
+- Pipeline logs clearly show when version increments occur
+- Published npm versions can be verified via `npm view eslint-plugin-traceability versions`
 - No manual intervention required for routine publishing
-- Version bumps traceable through git commit history
-- package.json version always synchronized with published npm version
 
 ## Pros and Cons of the Options
 
-### npm version command with automated execution in CI/CD
+### Version Increment Without Git Commits
 
-Standard npm tooling with CI/CD automation provides reliable version management with minimal complexity.
+In-memory version increments during pipeline execution without any git write-back operations.
 
-- Good, because uses native npm version management tools
+- Good, because eliminates all CI/CD loop complexity and infinite recursion risks
+- Good, because requires no git write permissions or credentials in CI/CD environment
+- Good, because simplest possible implementation with minimal failure modes
+- Good, because each pipeline run is completely independent with no race conditions
+- Good, because immediate resolution to npm publish failures
+- Good, because uses standard npm version tooling familiar to developers
+- Good, because no complex error handling for git operations required
+- Neutral, because package.json version may not reflect latest published version
+- Neutral, because published version always discoverable via npm registry
+- Bad, because no automatic git tags created for release tracking
+- Bad, because requires manual version management for major/minor releases
+- Bad, because no automated version commit history
+
+### Git Write-Back with Version Commits
+
+Increment version in pipeline, publish to npm, then commit version changes and create git tags.
+
 - Good, because creates proper git tags and version commits automatically
-- Good, because simple to understand and maintain in CI/CD
-- Good, because allows manual override for major/minor version bumps
-- Good, because integrates with existing npm publish workflow
-- Good, because provides immediate resolution to publish failures
-- Good, because maintains compatibility with npm ecosystem tools
+- Good, because maintains package.json synchronization with published versions
+- Good, because provides complete version history in git repository
+- Good, because allows for automated CHANGELOG.md updates
+- Good, because follows traditional npm ecosystem patterns
 - Neutral, because requires configuration of git credentials in CI/CD
-- Neutral, because creates automated commits that include CI skip directives
-- Bad, because defaults to patch-level increments only
-- Bad, because does not analyze commit messages for semantic versioning
-- Bad, because potential for git history inconsistency if post-publish commits fail
+- Neutral, because creates automated commits with CI skip directives
+- Bad, because requires complex infinite loop prevention with `[skip ci]`
+- Bad, because potential for git write failures after successful npm publish
+- Bad, because introduces race conditions in concurrent pipeline runs
+- Bad, because requires git write permissions and credential management
+- Bad, because adds multiple failure modes beyond the core publish operation
 
 ### Semantic Release with automated version detection
 
@@ -131,43 +149,46 @@ Requiring manual version increments before publishing with workflow validation.
 - Bad, because does not solve the original npm publish failure problem
 - Bad, because creates friction in development workflow
 
-### Version bumping through GitHub Actions with npm version
-
-GitHub Actions-specific tooling for automated version management within the existing platform.
-
-- Good, because native integration with GitHub workflow ecosystem
-- Good, because can leverage GitHub-specific features like releases
-- Good, because may provide better integration with pull request workflows
-- Good, because uses familiar GitHub Actions patterns
-- Neutral, because similar capabilities to npm version approach
-- Bad, because locks solution to GitHub Actions platform specifically
-- Bad, because may require additional GitHub Actions marketplace dependencies
-- Bad, because potentially less portable to other CI/CD systems
-- Bad, because npm version command is more universally understood
-
 ## More Information
 
-This decision addresses the immediate CI/CD publish failures while establishing a foundation for reliable automated delivery. The implementation should be flexible enough to support future migration to semantic release if the project grows to require more sophisticated version management.
+This decision addresses the immediate CI/CD publish failures with the simplest possible solution that eliminates complexity while maintaining full automation. The in-memory version increment approach provides immediate relief from npm publish conflicts without introducing git write-back complexity.
 
-Key implementation considerations:
+Key implementation details:
 
-- Configure CI/CD pipeline with appropriate git credentials for post-publish commits
-- Set up git user configuration for automated commits
-- Ensure version tags follow consistent naming convention (v1.0.0 format)
-- Use `[skip ci]` or `[ci skip]` in commit messages to prevent pipeline recursion
-- Update CHANGELOG.md generation to work with automated version increments
-- Handle potential race conditions if multiple commits are pushed simultaneously
-- Ensure proper error handling if post-publish git operations fail
+```yaml
+- name: Prepare version for publish
+  run: |
+    CURRENT_VERSION=$(node -p "require('./package.json').version")
+    echo "Current package.json version: $CURRENT_VERSION"
+
+    # Check if this version exists on npm
+    if npm view eslint-plugin-traceability@$CURRENT_VERSION version >/dev/null 2>&1; then
+      echo "Version $CURRENT_VERSION already exists on npm, incrementing..."
+      npm version patch --no-git-tag-version
+      NEW_VERSION=$(node -p "require('./package.json').version")
+      echo "Bumped version to: $NEW_VERSION"
+    else
+      echo "Version $CURRENT_VERSION is available, proceeding with publish"
+    fi
+
+- name: Publish package
+  run: npm publish --access public
+```
+
+Implementation considerations:
+
+- No git credentials or write permissions required in CI/CD
+- Version increments are logged for visibility and debugging
+- Each pipeline run operates independently with no side effects
+- Published versions remain discoverable via `npm view eslint-plugin-traceability versions`
+- Manual version bumps for major/minor releases can still be done via git commits
+- Future migration to git write-back approach remains possible if needed
 
 This decision should be re-evaluated if:
 
-- Project adopts semantic versioning discipline across the team
-- Commit message standardization becomes feasible
-- Publishing frequency increases significantly requiring more sophisticated automation
-- The simple patch increment approach becomes insufficient for change communication
+- Package.json/npm version drift becomes problematic for development workflow
+- Automatic git tagging becomes a requirement for release management
+- The team adopts semantic versioning discipline requiring commit message analysis
+- Integration with automated changelog generation becomes necessary
 
-Related resources:
-
-- [npm version command documentation](https://docs.npmjs.com/cli/v9/commands/npm-version)
-- [GitHub Actions CI/CD Best Practices](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments)
-- [Semantic Versioning Specification](https://semver.org/)
+The simplicity of this approach allows for easy migration to more complex solutions later while solving the immediate problem with minimal risk and complexity.
