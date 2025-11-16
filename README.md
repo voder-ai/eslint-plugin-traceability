@@ -11,9 +11,9 @@ Created autonomously by [voder.ai](https://voder.ai).
 Prerequisites: Node.js v12+ and ESLint v9+.
 
 1. Using npm  
-   npm install --save-dev eslint-plugin-traceability  
+   npm install --save-dev eslint-plugin-traceability
 2. Using Yarn  
-   yarn add --dev eslint-plugin-traceability  
+   yarn add --dev eslint-plugin-traceability
 
 For detailed setup with ESLint v9, see docs/eslint-9-setup-guide.md.
 
@@ -58,7 +58,7 @@ For development and contribution guidelines, see docs/eslint-plugin-development-
 
 ```javascript
 // eslint.config.js
-import traceability from 'eslint-plugin-traceability';
+import traceability from "eslint-plugin-traceability";
 
 export default [
   // Load the traceability plugin's recommended rule set

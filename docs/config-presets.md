@@ -11,10 +11,7 @@ Use the **recommended** preset to enable the core traceability rule set with def
 import js from "@eslint/js";
 import traceability from "eslint-plugin-traceability";
 
-export default [
-  js.configs.recommended,
-  traceability.configs.recommended,
-];
+export default [js.configs.recommended, traceability.configs.recommended];
 ```
 
 This preset enables the following rules at the `error` level:
@@ -32,10 +29,7 @@ Use the **strict** preset to enforce the same core rules, with potential future 
 import js from "@eslint/js";
 import traceability from "eslint-plugin-traceability";
 
-export default [
-  js.configs.recommended,
-  traceability.configs.strict,
-];
+export default [js.configs.recommended, traceability.configs.strict];
 ```
 
 The **strict** preset currently mirrors the **recommended** rules, but may include additional constraints in future plugin versions.
