@@ -89,13 +89,6 @@ module.exports = [
     },
   },
   {
-    files: ["src/rules/**/*.ts"],
-    languageOptions: {
-      globals: { process: "readonly" },
-    },
-    rules: { complexity: "off" },
-  },
-  {
     // Test files
     files: [
       "**/*.test.{js,ts,tsx}",

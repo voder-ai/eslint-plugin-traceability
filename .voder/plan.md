@@ -1,11 +1,12 @@
 ## NOW  
-Create a new Jest RuleTester suite at `tests/rules/valid-story-reference.test.ts` that covers the core file‐validation rule (006.0-DEV-FILE-VALIDATION): valid paths, missing files, wrong extensions, path traversal, and custom story directories.
+Remove the ESLint override disabling the `complexity` rule for `src/rules/**/*.ts` in `eslint.config.js` so that cyclomatic-complexity checks are re-enabled on all rule implementation files.
 
 ## NEXT  
-- Add a corresponding test suite for deep requirement‐content validation at `tests/rules/valid-req-reference.test.ts` (010.0-DEV-DEEP-VALIDATION), covering existing and missing `@req` IDs in real `.story.md` files.  
-- Enhance the `valid-story-reference` and `valid-req-reference` rule implementations in `src/rules/` to memoize file reads and directory lookups—cache by file path with modification timestamps to avoid repeated fs calls.  
-- Add an end-to-end integration test in `tests/integration/file-validation.test.ts` that spawns ESLint CLI against sample code using the file‐validation rule and asserts exit codes and error messages.
+- Run `npm run lint` to surface all complexity violations in `src/rules`.  
+- For each reported high-complexity function, incrementally refactor by extracting helpers or simplifying logic (using the Expand-Contract or Sprout pattern) until every function’s complexity is ≤ 20.  
+- Commit each refactoring step separately, verifying that `npm run lint` passes without complexity errors after each change.
 
 ## LATER  
-- Add a new GitHub Actions workflow (`.github/workflows/release.yml`) to publish the plugin to npm on semantically versioned git tags, using `actions/setup-node` and `npm publish`.  
-- Document the automated release process in a `RELEASE.md`, include publish scripts in `package.json`, and configure semantic-release or version-bump tooling for continuous delivery.
+- Adopt an incremental ratcheting plan: lower the ESLint `complexity` threshold (e.g. 18, 16, …) and continue refactoring to meet the stricter limits.  
+- Integrate or tighten code-duplication detection (e.g. enable an ESLint duplicate check or lower the jscpd threshold).  
+- Add targeted tests to boost branch coverage above 90%, especially around edge cases in the `valid-annotation-format`, `valid-story-reference`, and `valid-req-reference` rules.
