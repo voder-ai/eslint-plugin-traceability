@@ -80,13 +80,26 @@ function initAuth() {
 npx eslint "src/**/*.js"
 ```
 
+## Plugin Validation
+
+You can validate the plugin by running ESLint CLI with the plugin on a sample file:
+
+```bash
+# Validate missing @story annotation (should report an error)
+npx eslint --no-eslintrc --config eslint.config.js sample.js --rule 'traceability/require-story-annotation:error'
+```
+
+This command runs ESLint with the plugin, pointing at `eslint.config.js` flat config.
+
+Replace `sample.js` with your JavaScript or TypeScript file.
+
 ## Documentation Links
 
 - ESLint v9 Setup Guide: docs/eslint-9-setup-guide.md
 - Plugin Development Guide: docs/eslint-plugin-development-guide.md
-- Full README: https://github.com/traceability/eslint-plugin-traceability#readme
+- Full README: https://github.com/voder-ai/eslint-plugin-traceability#readme
 - Rule: require-story-annotation: docs/rules/require-story-annotation.md
 - Rule: require-req-annotation: docs/rules/require-req-annotation.md
 - Rule: require-branch-annotation: docs/rules/require-branch-annotation.md
-- Contribution guide: https://github.com/traceability/eslint-plugin-traceability/blob/main/CONTRIBUTING.md
-- Issue tracker: https://github.com/traceability/eslint-plugin-traceability/issues
+- Contribution guide: https://github.com/voder-ai/eslint-plugin-traceability/blob/main/CONTRIBUTING.md
+- Issue tracker: https://github.com/voder-ai/eslint-plugin-traceability/issues
