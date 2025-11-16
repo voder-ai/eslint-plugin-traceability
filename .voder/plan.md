@@ -1,13 +1,11 @@
 ## NOW
-Modify `eslint.config.js` to reduce the `max-lines-per-function` threshold from 150 to 120 and the `max-lines` threshold from 800 to 600.
+Modify the GitHub Actions CI workflow (`.github/workflows/ci.yml`) to trigger the existing release job on every push to the `main` branch (not just on tag pushes), enabling automatic publishing of new package versions on main-branch merges.
 
 ## NEXT
-- Run `npm run lint` (or `eslint . --max-warnings=0`) to list all violations under the new thresholds.  
-- Refactor any functions longer than 120 lines or files longer than 600 lines to comply.  
-- Commit each batch of refactorings under `refactor:` commits and verify that lint, build, and tests pass.  
-- Update the Sprint 2 entry in `docs/decisions/003-code-quality-ratcheting-plan.md` to mark completion of this ratcheting milestone.
+- Remove any `continue-on-error: true` setting from the security audit step in `.github/workflows/ci.yml` so that audit failures block the CI build, aligning CI behavior with the pre-push hook.  
+- Update the Husky pre-push hook (`.husky/pre-push`) to invoke the same `npm audit --audit-level=high` command without allowing errors, ensuring both CI and pre-push use identical exit-code handling.  
+- Add `.voder/` to `.gitignore` so that internal Voder process files are not tracked in version control.
 
 ## LATER
-- Configure the CI “quality-checks” job to fail on any new violations of the 120/600 rules.  
-- Plan and schedule the next ratchet (100 lines/function, 500 lines/file) for Sprint 4 and update the ADR accordingly.  
-- Once overall code-quality metrics reach ≥90%, resume functionality assessments and begin new feature work.
+- Refactor the Husky pre-commit hook to use `lint-staged` for staged-file formatting and linting, improving performance by only processing changed files.  
+- Add a lightweight “smoke test” or post-release validation job in CI that installs the published package and runs a basic lint check to verify the release pipeline end-to-end.
