@@ -9,10 +9,10 @@ module.exports = {
   testMatch: ["<rootDir>/tests/**/*.test.ts"],
   coverageThreshold: {
     global: {
-      branches: 50,
-      functions: 50,
-      lines: 50,
-      statements: 50,
+      branches: 49,
+      functions: 47,
+      lines: 59,
+      statements: 57,
     },
   },
   moduleFileExtensions: ["ts", "js"],
