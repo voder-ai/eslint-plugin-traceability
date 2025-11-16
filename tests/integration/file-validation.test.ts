@@ -20,7 +20,6 @@ describe("File and Req Validation CLI Integration (Story 006.0-DEV-FILE-VALIDATI
     return spawnSync(
       "node",
       [
-        "--experimental-vm-modules",
         eslintBin,
         "--no-config-lookup",
         "--config",

@@ -24,7 +24,7 @@ function runEslint(code: string, rule: string): SpawnSyncReturns<string> {
     rule,
   ];
   // Use Node to run the ESLint CLI script
-  return spawnSync("node", ["--experimental-vm-modules", eslintBin, ...args], {
+  return spawnSync("node", [eslintBin, ...args], {
     encoding: "utf-8",
     input: code,
   });
