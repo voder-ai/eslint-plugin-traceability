@@ -128,3 +128,6 @@ docs/generated/
 *.patch
 *.tmp
 *.diff
+
+tmp-nested-*
+temp_foo.js
