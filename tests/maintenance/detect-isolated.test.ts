@@ -15,6 +15,7 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
   });
 
   it("[REQ-MAINT-DETECT] detects stale annotations in nested directories", () => {
+    // Arrange
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-nested-"));
     const nestedDir = path.join(tmpDir, "nested");
     fs.mkdirSync(nestedDir);
@@ -33,10 +34,13 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
 `;
     fs.writeFileSync(filePath2, content2, "utf8");
 
+    // Act
     const result = detectStaleAnnotations(tmpDir);
-    expect(result.sort()).toEqual(
-      ["stale1.story.md", "stale2.story.md"].sort(),
-    );
+
+    // Assert
+    expect(result).toHaveLength(2);
+    expect(result).toContain("stale1.story.md");
+    expect(result).toContain("stale2.story.md");
   });
 
   it("[REQ-MAINT-DETECT] throws error on permission denied", () => {

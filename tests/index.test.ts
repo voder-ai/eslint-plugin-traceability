@@ -12,6 +12,7 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
   });
 
   it("[REQ-PLUGIN-STRUCTURE] rules object has correct rule names", () => {
+    // Arrange: expected rule names in insertion order
     const expected = [
       "require-story-annotation",
       "require-req-annotation",
@@ -20,7 +21,10 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
       "valid-story-reference",
       "valid-req-reference",
     ];
-    expect(Object.keys(rules).sort()).toEqual(expected.sort());
+    // Act: get actual rule names from plugin
+    const actual = Object.keys(rules);
+    // Assert: actual matches expected
+    expect(actual).toEqual(expected);
   });
 
   it("[REQ-RULE-REGISTRY] configs.recommended contains correct rule configuration", () => {

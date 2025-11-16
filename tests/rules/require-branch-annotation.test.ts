@@ -1,6 +1,8 @@
-// Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-DETECTION - Verify require-branch-annotation rule enforces branch annotations
+/**
+ * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @req REQ-BRANCH-DETECTION - Verify require-branch-annotation rule enforces branch annotations
+ */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-branch-annotation";
 

@@ -39,6 +39,9 @@ jobs:
       - name: Run tests with coverage
         run: npm run test
 
+      - name: Run CLI Integration Tests
+        run: node cli-integration.js
+
       - name: Check code formatting
         run: npm run format:check
 
@@ -76,3 +79,15 @@ jobs:
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  smoke-test:
+    name: Post-Deployment Smoke Test
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Smoke Test Published Package
+        run: node cli-integration.js

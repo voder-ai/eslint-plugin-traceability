@@ -1,15 +1,12 @@
 ## NOW  
-Create `user-docs/api-reference.md` containing a skeleton outline of the plugin’s public API (listing each exported rule and config).
+Standardize all test file headers under `tests/` to use JSDoc block comments with proper `@story` and `@req` annotations, replacing any inline comments for traceability.
 
 ## NEXT  
-- Populate `user-docs/api-reference.md` with detailed descriptions, options, default values, and JSDoc‐style examples for every rule and config.  
-- Add `user-docs/examples.md` with runnable end-to-end ESLint configurations and CLI invocation scenarios.  
-- Update `README.md` to link to the new API reference and examples under `user-docs/`.  
-- Replace the separate `ci.yml` and `deploy.yml` workflows with a single `.github/workflows/ci-cd.yml` that on every push to `main` runs build, lint, type-check, test, audit, and then publishes to npm.  
-- Remove or disable the old `deploy.yml` and adjust any branch/tag filters so only `ci-cd.yml` handles publishing.
+- Refactor test bodies to adopt explicit GIVEN-WHEN-THEN (Arrange-Act-Assert) structure and eliminate any custom logic (e.g. sorting/flatMap) in expectations.  
+- Add a post-deployment smoke-test job to `.github/workflows/ci-cd.yml` that installs the freshly published package in a clean workspace and executes the `cli-integration.js` script.  
+- Incorporate `cli-integration.js` into the CI “quality-checks” job so the pipeline mirrors the Husky pre-push behavior.
 
 ## LATER  
-- In `ci-cd.yml`, add a smoke-test job that installs the freshly published package in a clean workspace and exercises basic CLI commands.  
-- Record the unified CI/CD and documentation decisions in ADRs (e.g. `docs/decisions/ADR-unified-cicd.md`, `docs/decisions/ADR-api-reference.md`).  
-- Migrate to semantic-release (or GitHub Releases) to automate version bumps and changelog updates.  
-- Introduce a scheduled dependency/vulnerability audit job in CI to catch new advisories early.
+- Write additional edge-case unit tests to cover any uncovered branches in the maintenance utilities.  
+- Monitor and optimize test execution times to keep unit tests fast (<100 ms each).  
+- Once testing and version-control improvements push both support areas above 90%, perform a full functionality reassessment.

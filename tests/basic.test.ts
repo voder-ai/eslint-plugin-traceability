@@ -1,5 +1,5 @@
 /**
- * Tests for basic plugin structure
+ * Tests for: docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-PLUGIN-STRUCTURE - plugin exports rules and configs
  */
