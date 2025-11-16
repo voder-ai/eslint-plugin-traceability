@@ -63,6 +63,9 @@ module.exports = [
         ecmaVersion: 2022,
         sourceType: "module",
       },
+      globals: {
+        process: "readonly",
+      },
     },
     plugins: {
       ...(plugin.rules ? { traceability: plugin } : {}),
@@ -86,6 +89,14 @@ module.exports = [
       // Enforce maximum cyclomatic complexity per function
       complexity: "error",
       // Add basic JavaScript rules here as needed
+    },
+  },
+  {
+    files: ["src/rules/**/*.ts"],
+    languageOptions: {
+      globals: {
+        process: "readonly",
+      },
     },
   },
   {
@@ -120,6 +131,8 @@ module.exports = [
       ".cursor/**",
       "**/.cursor/**",
       ".voder/**",
+      "docs/**",
+      "*.md",
     ],
   },
 ];
