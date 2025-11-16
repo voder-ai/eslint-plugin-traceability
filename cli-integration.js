@@ -7,7 +7,6 @@
  */
 const { spawnSync } = require("child_process");
 const path = require("path");
-const eslintBin = path.resolve(__dirname, "node_modules/.bin/eslint");
 const configPath = path.resolve(__dirname, "eslint.config.js");
 
 /**
@@ -16,6 +15,7 @@ const configPath = path.resolve(__dirname, "eslint.config.js");
  * @req REQ-PLUGIN-STRUCTURE - Utility for invoking ESLint with flat config in integration tests
  */
 function runEslint(code, rule) {
+  const eslintCliPath = require.resolve("eslint/bin/eslint.js");
   const args = [
     "--no-config-lookup",
     "--config",
@@ -28,7 +28,7 @@ function runEslint(code, rule) {
     "--rule",
     rule,
   ];
-  return spawnSync(eslintBin, args, {
+  return spawnSync(process.execPath, [eslintCliPath, ...args], {
     encoding: "utf-8",
     input: code,
   });
@@ -77,7 +77,7 @@ tests.forEach(({ name, code, rule, expectedStatus }) => {
   const result = runEslint(code, rule);
   if (result.status !== expectedStatus) {
     console.error(
-      `Test "${name}" failed. Expected status ${expectedStatus}, got ${result.status}.`,
+      `Test "${name}" failed. Expected status ${expectedStatus}, got ${result.status}.`
     );
     console.error("stdout:", result.stdout);
     exitCode = 1;
