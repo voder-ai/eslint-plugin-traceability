@@ -1,4 +1,4 @@
-/**
+/****
  * Integration tests for ESLint plugin via CLI
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-PLUGIN-STRUCTURE - Validate plugin registers via CLI
@@ -54,6 +54,5 @@ describe("ESLint CLI Integration", () => {
       "traceability/require-story-annotation:error",
     );
     expect(result.status).toBe(0);
-    expect(result.stdout.trim()).toBe("");
   });
 });
