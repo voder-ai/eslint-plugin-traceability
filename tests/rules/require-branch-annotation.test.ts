@@ -12,6 +12,16 @@ describe("Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)", 
   ruleTester.run("require-branch-annotation", rule, {
     valid: [
       {
+        name: "[REQ-BRANCH-DETECTION] valid fallback scanning comment detection",
+        code: `switch (value) {
+
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
+  case 'z':
+    break;
+}`,
+      },
+      {
         name: "[REQ-BRANCH-DETECTION] valid if-statement with annotations",
         code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
 // @req REQ-BRANCH-DETECTION
