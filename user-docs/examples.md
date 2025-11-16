@@ -13,10 +13,7 @@ Create an ESLint config file (`eslint.config.js`) at your project root:
 import js from "@eslint/js";
 import traceability from "eslint-plugin-traceability";
 
-export default [
-  js.configs.recommended,
-  traceability.configs.recommended,
-];
+export default [js.configs.recommended, traceability.configs.recommended];
 ```
 
 Then run ESLint on your source files:
@@ -34,10 +31,7 @@ If you want to enforce all traceability rules (strict mode), update your config:
 import js from "@eslint/js";
 import traceability from "eslint-plugin-traceability";
 
-export default [
-  js.configs.recommended,
-  traceability.configs.strict,
-];
+export default [js.configs.recommended, traceability.configs.strict];
 ```
 
 Run ESLint the same way:
