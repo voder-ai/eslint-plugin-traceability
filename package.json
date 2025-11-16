@@ -16,10 +16,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "duplication": "jscpd src tests --reporters console",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,md}": [
+    "**/*.{js,jsx,ts,tsx,json,md}": [
       "prettier --write",
       "eslint --fix"
     ]
