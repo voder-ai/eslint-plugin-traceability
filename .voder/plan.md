@@ -1,19 +1,14 @@
 ## NOW
-Create a new docs/rules directory and add markdown documentation for each implemented rule—  
-- docs/rules/require-story-annotation.md  
-- docs/rules/require-req-annotation.md  
-- docs/rules/require-branch-annotation.md  
-Each file should include the rule’s purpose, @story story reference, @req requirement ID, options schema, and usage examples.
+Modify `src/index.ts` to export a default plugin object that includes the `rules` and `configs` so that, once built, `lib/index.js` correctly registers all implemented rules.
 
 ## NEXT
-- Update README.md: add a “Rules” section that links to each file in docs/rules, correct rule names in all examples, and remove any broken links.  
-- Configure lint-staged in package.json and update .husky/pre-commit to run `npx lint-staged` for formatting and lint fixes.  
-- Integrate jscpd duplication checks into the pre-push hook and CI workflow to enforce DRY.  
-- Populate the plugin’s `configs.recommended` and `configs.strict` in src/index.ts so they immediately enable the three documented rules.
+- Add an end-to-end integration test that runs the built plugin via the ESLint CLI on a small sample fixture and asserts that `traceability/require-story-annotation` violations are reported.
+- In `README.md`, add a “Plugin Validation” section showing how to invoke ESLint with the traceability plugin and interpret its output; correct the homepage link and add a `CONTRIBUTING.md` with contribution guidelines.
+- Update `.github/workflows/ci.yml` to include:
+  - A step that lints a fixtures directory using the built plugin.
+  - An `npm publish --dry-run` step on version‐tag pushes to validate automated publishing workflows.
 
 ## LATER
-- Implement and unit-test the annotation-format (story 005.0) and file-reference (story 006.0) validation rules to raise test coverage.  
-- Add integration tests that load the built plugin in an ESLint flat config against sample code, including `--fix` scenarios.  
-- Develop end-to-end CLI tests for both recommended and strict configurations.  
-- Introduce performance benchmarks and caching for file-system operations.  
-- Set up scheduled dependency/security scans (Dependabot/CodeQL) and document the process.
+- Configure semantic-release or a GitHub Action to automate version bumps and npm publishing on merges to `main` or tag pushes.
+- Build performance benchmarks to measure lint-time overhead of the plugin on large codebases.
+- Implement and ship rules for annotation format (005), file reference (006), error reporting (007), auto-fix (008), maintenance tools (009), and deep validation (010) with accompanying documentation and tests.
