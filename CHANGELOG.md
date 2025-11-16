@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2025-11-16
+
+### Changed
+
+- Bumped version to 1.0.0 in package.json.
+- Aligned CHANGELOG with package.json version.
+
 ## [0.1.0] - 2025-11-16
 
 ### Added

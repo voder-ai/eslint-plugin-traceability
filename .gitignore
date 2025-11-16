@@ -109,6 +109,7 @@ tmp/
 temp/
 
 # Build outputs
+lib/
 build/
 dist/
 
