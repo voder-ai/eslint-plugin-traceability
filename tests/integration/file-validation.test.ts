@@ -12,6 +12,7 @@ const configPath = path.resolve(__dirname, "../../eslint.config.js");
 
 describe("File and Req Validation CLI Integration (Story 006.0-DEV-FILE-VALIDATION)", () => {
   function runLint(code: string, rules: string[]) {
+    const ruleArgs = rules.flatMap((r) => ["--rule", r]);
     return spawnSync(
       "node",
       [
@@ -23,7 +24,7 @@ describe("File and Req Validation CLI Integration (Story 006.0-DEV-FILE-VALIDATI
         "--stdin",
         "--stdin-filename",
         "foo.js",
-        ...rules,
+        ...ruleArgs,
       ],
       {
         encoding: "utf-8",
