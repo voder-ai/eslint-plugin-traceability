@@ -16,6 +16,7 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
       "require-story-annotation",
       "require-req-annotation",
       "require-branch-annotation",
+      "valid-annotation-format",
     ];
     expect(Object.keys(rules).sort()).toEqual(expected.sort());
   });
