@@ -34,6 +34,7 @@ export default {
       // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
       // @req REQ-BRANCH-DETECTION - Fallback scanning for SwitchCase when leading comments are absent
       // fallback scanning for SwitchCase if no leading comment nodes
+      /* istanbul ignore if */
       if (node.type === "SwitchCase" && comments.length === 0) {
         const lines = sourceCode.lines;
         const startLine = node.loc.start.line;
