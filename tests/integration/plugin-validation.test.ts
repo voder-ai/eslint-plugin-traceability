@@ -40,10 +40,7 @@ const cliTests = [
   },
   {
     name: "does not report error when @story annotation is present",
-    code: `/**
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- */
-function foo() {}`,
+    code: "**@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction foo() {}",
     rule: "traceability/require-story-annotation:error",
     expectedStatus: 0,
   },
