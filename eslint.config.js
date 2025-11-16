@@ -95,6 +95,13 @@ module.exports = [
   },
   {
     // Ignore build output and node_modules
-    ignores: ["lib/**", "node_modules/**", "coverage/**"],
+    ignores: [
+      "lib/**",
+      "node_modules/**",
+      "coverage/**",
+      ".cursor/**",
+      "**/.cursor/**",
+      ".voder/**",
+    ],
   },
 ];

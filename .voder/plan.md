@@ -1,14 +1,18 @@
 ## NOW
-Modify `src/index.ts` to export a default plugin object that includes the `rules` and `configs` so that, once built, `lib/index.js` correctly registers all implemented rules.
+Unskip the ESLint CLI integration tests by changing the first line in `tests/integration/plugin-validation.test.ts` from  
+```js
+describe.skip('ESLint CLI Integration', () => {
+```
+to  
+```js
+describe('ESLint CLI Integration', () => {
+```
 
 ## NEXT
-- Add an end-to-end integration test that runs the built plugin via the ESLint CLI on a small sample fixture and asserts that `traceability/require-story-annotation` violations are reported.
-- In `README.md`, add a “Plugin Validation” section showing how to invoke ESLint with the traceability plugin and interpret its output; correct the homepage link and add a `CONTRIBUTING.md` with contribution guidelines.
-- Update `.github/workflows/ci.yml` to include:
-  - A step that lints a fixtures directory using the built plugin.
-  - An `npm publish --dry-run` step on version‐tag pushes to validate automated publishing workflows.
+- Update the invocation in `tests/integration/plugin-validation.test.ts` to use valid ESLint 9 flags (e.g. `--no-eslintrc --config <path>`) and include `--experimental-vm-modules` when spawning the CLI, then run `npm test` and fix any failing assertions or plugin behavior so that the integration tests pass under the flat‐config setup.  
+- Add a dedicated CI job that builds the plugin and then runs these integration tests against the built `lib/index.js`.
 
 ## LATER
-- Configure semantic-release or a GitHub Action to automate version bumps and npm publishing on merges to `main` or tag pushes.
-- Build performance benchmarks to measure lint-time overhead of the plugin on large codebases.
-- Implement and ship rules for annotation format (005), file reference (006), error reporting (007), auto-fix (008), maintenance tools (009), and deep validation (010) with accompanying documentation and tests.
+- Write and incorporate unit and integration tests for annotation format validation (005), file reference validation (006), error reporting (007), and auto‐fix rules (008) to raise overall coverage above 80%.  
+- Implement tests and test fixtures for the maintenance tools (009) and deep validation logic (010).  
+- Introduce performance benchmarks and CI checks to monitor lint-time overhead and execution reliability over time.

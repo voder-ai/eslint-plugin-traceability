@@ -7,18 +7,20 @@
 import { spawnSync, SpawnSyncReturns } from "child_process";
 import path from "path";
 
-describe.skip("ESLint CLI Integration", () => {
+describe("ESLint CLI Integration", () => {
   const eslintBin = path.resolve(__dirname, "../../node_modules/.bin/eslint");
   const configPath = path.resolve(__dirname, "../../eslint.config.js");
 
   function runEslint(code: string, rule: string): SpawnSyncReturns<string> {
     const args = [
-      "--no-eslintrc",
+      "--no-config-lookup",
       "--config",
       configPath,
       "--stdin",
       "--stdin-filename",
       "foo.js",
+      "--rule",
+      "no-unused-vars:off",
       "--rule",
       rule,
     ];

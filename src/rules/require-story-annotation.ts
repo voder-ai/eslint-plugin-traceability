@@ -20,7 +20,16 @@ export default {
     return {
       FunctionDeclaration(node: any) {
         const jsdoc = sourceCode.getJSDocComment(node);
-        if (!jsdoc || !jsdoc.value.includes("@story")) {
+        let hasStory = false;
+        if (jsdoc && jsdoc.value.includes("@story")) {
+          hasStory = true;
+        } else {
+          const commentsBefore = sourceCode.getCommentsBefore(node) || [];
+          hasStory = commentsBefore.some((comment: any) =>
+            comment.value.includes("@story"),
+          );
+        }
+        if (!hasStory) {
           context.report({ node, messageId: "missingStory" });
         }
       },
