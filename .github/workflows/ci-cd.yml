@@ -5,20 +5,20 @@ on:
     branches: [main]
 
 jobs:
-  quality-and-deploy:
+  quality-checks:
+    name: Quality Checks
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
-
+        node-version: ['18.x', '20.x']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix['node-version'] }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix['node-version'] }}
           cache: npm
 
       - name: Install dependencies
@@ -45,14 +45,34 @@ jobs:
       - name: Run security audit
         run: npm audit --audit-level=high
 
+  publish:
+    name: Publish Package
+    needs: quality-checks
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js for publish
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org/'
+          always-auth: true
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
       - name: Configure npm for publish
-        if: ${{ matrix['node-version'] == '20.x' && secrets.NPM_TOKEN != '' }}
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish package to npm
-        if: ${{ matrix['node-version'] == '20.x' && secrets.NPM_TOKEN != '' }}
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
