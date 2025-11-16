@@ -1,4 +1,4 @@
-/****
+/**
  * Integration tests for ESLint plugin via CLI
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-PLUGIN-STRUCTURE - Validate plugin registers via CLI
