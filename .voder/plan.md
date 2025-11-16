@@ -1,21 +1,11 @@
-## Updated Plan
-
 ## NOW
-Generate a GitHub Actions CI workflow file (`.github/workflows/ci.yml`) that runs the full quality-check pipeline (build, type-check, lint, test, format:check, and `npm audit`) on every push.
+Run `npm audit fix` to automatically resolve all fixable vulnerabilities in the project’s dependencies.
 
 ## NEXT
-- Install and configure Husky and lint-staged:
-  - `npm install --save-dev husky lint-staged`
-  - `npx husky install`
-  - Add a `pre-commit` hook to run `npm run format:check`, `npm run lint`, and `npm run type-check`
-  - Add a `pre-push` hook to run `npm test`
-  - Add a `lint-staged` section to `package.json` to format and lint only staged files  
-- Create a `.prettierignore` to exclude `lib/` and `.voder/` artifacts from formatting checks  
-- Verify that `npm run lint` and `npx eslint` now execute successfully under the new CI and local hooks configuration
+- Review the updated `npm audit` report and manually upgrade or replace any remaining vulnerable packages in `package.json`.  
+- Create a new directory `docs/security-incidents/` and add a markdown file (e.g. `unresolved-vulnerabilities.md`) that lists any unresolved issues, their severity, affected packages, and a mitigation plan.
 
 ## LATER
-- Run `npm audit fix` (and `npm audit fix --force` if needed), document any remaining vulnerabilities in `docs/security-incidents/` and track remediation  
-- Flesh out `README.md` with installation, configuration, usage examples, and links to `docs/`  
-- Commit the `package-lock.json`, enable Dependabot or Renovate for automated dependency updates  
-- Add an `.env.example` for any future environment variables and update project documentation accordingly  
-- Review and update version control policies (e.g., branch protection, PR templates) to enforce the new CI and hook requirements
+- Add an `npm audit --audit-level=moderate` step to the CI workflow in `.github/workflows/ci.yml` so that any moderate-or-higher vulnerabilities cause the build to fail.  
+- Configure Dependabot (via a `.github/dependabot.yml` file) to automatically propose dependency updates.  
+- Define and document a formal security incident response process in `docs/security-incidents/`, including a reusable incident-report template for future vulnerabilities.
