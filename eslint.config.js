@@ -88,6 +88,8 @@ module.exports = [
         beforeAll: "readonly",
         afterAll: "readonly",
         jest: "readonly",
+        require: "readonly",
+        __dirname: "readonly",
       },
     },
   },
