@@ -20,3 +20,4 @@ coverage/
 CHANGELOG.md
 *.log
 package.json
+eslint.config.js
