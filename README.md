@@ -11,7 +11,7 @@ Created autonomously by [voder.ai](https://voder.ai).
 Prerequisites: Node.js v12+ and ESLint v9+.
 
 1. Using npm  
-   npm install --save-dev eslint-plugin-traceability  
+   npm install --save-dev eslint-plugin-traceability
 2. Using Yarn  
    yarn add --dev eslint-plugin-traceability
 
@@ -43,11 +43,11 @@ module.exports = [
 
 ### Available Rules
 
-- `traceability/require-story-annotation` Enforces presence of `@story` annotations. ([Documentation](docs/rules/require-story-annotation.md))  
-- `traceability/require-req-annotation` Enforces presence of `@req` annotations. ([Documentation](docs/rules/require-req-annotation.md))  
-- `traceability/require-branch-annotation` Enforces presence of branch annotations. ([Documentation](docs/rules/require-branch-annotation.md))  
-- `traceability/valid-annotation-format` Enforces correct format of traceability annotations. ([Documentation](docs/rules/valid-annotation-format.md))  
-- `traceability/valid-story-reference` Validates that `@story` references point to existing story files. ([Documentation](docs/rules/valid-story-reference.md))  
+- `traceability/require-story-annotation` Enforces presence of `@story` annotations. ([Documentation](docs/rules/require-story-annotation.md))
+- `traceability/require-req-annotation` Enforces presence of `@req` annotations. ([Documentation](docs/rules/require-req-annotation.md))
+- `traceability/require-branch-annotation` Enforces presence of branch annotations. ([Documentation](docs/rules/require-branch-annotation.md))
+- `traceability/valid-annotation-format` Enforces correct format of traceability annotations. ([Documentation](docs/rules/valid-annotation-format.md))
+- `traceability/valid-story-reference` Validates that `@story` references point to existing story files. ([Documentation](docs/rules/valid-story-reference.md))
 - `traceability/valid-req-reference` Validates that `@req` references point to existing requirement IDs. ([Documentation](docs/rules/valid-req-reference.md))
 
 For development and contribution guidelines, see docs/eslint-plugin-development-guide.md.
@@ -138,22 +138,22 @@ node cli-integration.js
 
 This script executes tests that:
 
-- Report an error when the `@story` annotation is missing.  
+- Report an error when the `@story` annotation is missing.
 - Do not report an error when the `@story` annotation is present.
 
 The CLI integration tests are also executed automatically in CI under the `integration-tests` job.
 
 ## Documentation Links
 
-- ESLint v9 Setup Guide: docs/eslint-9-setup-guide.md  
-- Plugin Development Guide: docs/eslint-plugin-development-guide.md  
-- API Reference: user-docs/api-reference.md  
-- Examples: user-docs/examples.md  
-- Full README: https://github.com/voder-ai/eslint-plugin-traceability#readme  
-- Rule: require-story-annotation: docs/rules/require-story-annotation.md  
-- Rule: require-req-annotation: docs/rules/require-req-annotation.md  
-- Rule: require-branch-annotation: docs/rules/require-branch-annotation.md  
-- Contribution guide: https://github.com/voder-ai/eslint-plugin-traceability/blob/main/CONTRIBUTING.md  
-- Issue tracker: https://github.com/voder-ai/eslint-plugin-traceability/issues  
-- Configuration Presets: docs/config-presets.md  
+- ESLint v9 Setup Guide: docs/eslint-9-setup-guide.md
+- Plugin Development Guide: docs/eslint-plugin-development-guide.md
+- API Reference: user-docs/api-reference.md
+- Examples: user-docs/examples.md
+- Full README: https://github.com/voder-ai/eslint-plugin-traceability#readme
+- Rule: require-story-annotation: docs/rules/require-story-annotation.md
+- Rule: require-req-annotation: docs/rules/require-req-annotation.md
+- Rule: require-branch-annotation: docs/rules/require-branch-annotation.md
+- Contribution guide: https://github.com/voder-ai/eslint-plugin-traceability/blob/main/CONTRIBUTING.md
+- Issue tracker: https://github.com/voder-ai/eslint-plugin-traceability/issues
+- Configuration Presets: docs/config-presets.md
 - Changelog: CHANGELOG.md
