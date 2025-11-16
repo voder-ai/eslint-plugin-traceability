@@ -6,6 +6,7 @@
 export default {
   meta: {
     type: "problem",
+    fixable: "code",
     docs: {
       description: "Require @req annotations on functions",
       recommended: "error",
@@ -21,7 +22,13 @@ export default {
       FunctionDeclaration(node: any) {
         const jsdoc = sourceCode.getJSDocComment(node);
         if (!jsdoc || !jsdoc.value.includes("@req")) {
-          context.report({ node, messageId: "missingReq" });
+          context.report({
+            node,
+            messageId: "missingReq",
+            fix(fixer: any) {
+              return fixer.insertTextBefore(node, "/** @req <REQ-ID> */\n");
+            },
+          });
         }
       },
     };

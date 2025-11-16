@@ -10,6 +10,7 @@ export default {
       description: "Require @story and @req annotations on code branches",
       recommended: "error",
     },
+    fixable: "code",
     messages: {
       missingAnnotation: "Missing {{missing}} annotation on code branch",
     },
@@ -54,19 +55,48 @@ export default {
         comments = fallbackComments.map((text) => ({ value: text }));
       }
       const text = comments.map((c: any) => c.value).join(" ");
-      if (!/@story\b/.test(text)) {
-        context.report({
+
+      const missingStory = !/@story\b/.test(text);
+      const missingReq = !/@req\b/.test(text);
+
+      if (missingStory) {
+        const reportObj: any = {
           node,
           messageId: "missingAnnotation",
           data: { missing: "@story" },
-        });
+        };
+        if (node.type !== "CatchClause") {
+          if (node.type === "SwitchCase") {
+            const indent = " ".repeat(node.loc.start.column);
+            reportObj.fix = (fixer: any) =>
+              fixer.insertTextBefore(
+                node,
+                `// @story <story-file>.story.md\n${indent}`,
+              );
+          } else {
+            reportObj.fix = (fixer: any) =>
+              fixer.insertTextBefore(node, `// @story <story-file>.story.md\n`);
+          }
+        }
+        context.report(reportObj);
       }
-      if (!/@req\b/.test(text)) {
-        context.report({
+      if (missingReq) {
+        const reportObj: any = {
           node,
           messageId: "missingAnnotation",
           data: { missing: "@req" },
-        });
+        };
+        if (!missingStory && node.type !== "CatchClause") {
+          if (node.type === "SwitchCase") {
+            const indent = " ".repeat(node.loc.start.column);
+            reportObj.fix = (fixer: any) =>
+              fixer.insertTextBefore(node, `// @req <REQ-ID>\n${indent}`);
+          } else {
+            reportObj.fix = (fixer: any) =>
+              fixer.insertTextBefore(node, `// @req <REQ-ID>\n`);
+          }
+        }
+        context.report(reportObj);
       }
     }
     return {

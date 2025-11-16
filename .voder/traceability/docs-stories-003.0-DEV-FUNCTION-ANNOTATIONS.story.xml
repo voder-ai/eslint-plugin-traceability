@@ -2,8 +2,8 @@
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-16T11:04:18.896Z</last_validated>
+  <last_validated>2025-11-16T17:03:12.326Z</last_validated>
   <last_modified>2025-11-16T00:07:54.405Z</last_modified>
-  <evidence>Inspection of src/rules/require-story-annotation.ts and src/rules/require-req-annotation.ts shows they only handle FunctionDeclaration nodes (no arrow functions, function expressions, class methods) and have no schema for configurability or scope control. The story’s requirements (REQ-CONFIGURABLE-SCOPE, REQ-EXPORT-PRIORITY, full REQ-FUNCTION-DETECTION across all function types, REQ-TYPESCRIPT-SUPPORT via AST utilities) are not implemented. While basic tests pass for simple cases, the rule does not satisfy all acceptance criteria of story 003.0-DEV-FUNCTION-ANNOTATIONS.</evidence>
-  <notes>The implementation covers only basic FunctionDeclaration JSDoc checks for @story and @req but lacks support for arrow functions, expressions, config options, and prioritized/export-only checks. These gaps mean not all acceptance criteria are met.</notes>
+  <evidence>Inspection of src/rules/require-story-annotation.ts and src/rules/require-req-annotation.ts shows only FunctionDeclaration nodes are handled (no arrow functions, function expressions, or class methods), there is no support for TypeScript‐specific syntax or parser configuration in RuleTester (only default parser used), and neither rule exposes configuration to scope which functions are checked or to prioritize exported functions. Key requirements REQ-FUNCTION-DETECTION (expressions/arrow functions), REQ-CONFIGURABLE-SCOPE, REQ-EXPORT-PRIORITY, and REQ-TYPESCRIPT-SUPPORT are not implemented.</evidence>
+  <notes>While basic function‐level detection and error reporting exist for missing @story and @req, the implementation does not satisfy the full breadth of acceptance criteria and technical requirements outlined in the story. Additional work is needed to support all function patterns, configurability, and TypeScript integration.</notes>
 </traceability>

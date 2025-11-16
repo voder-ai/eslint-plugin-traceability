@@ -120,6 +120,8 @@ while (condition) {
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on if-statement",
         code: `if (condition) {}`,
+        output: `// @story <story-file>.story.md
+if (condition) {}`,
         errors: [
           { messageId: "missingAnnotation", data: { missing: "@story" } },
           { messageId: "missingAnnotation", data: { missing: "@req" } },
@@ -129,11 +131,17 @@ while (condition) {
         name: "[REQ-BRANCH-DETECTION] missing @req on for loop when only story present",
         code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
 for (let i = 0; i < 5; i++) {}`,
+        output: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req <REQ-ID>
+for (let i = 0; i < 5; i++) {}`,
         errors: [{ messageId: "missingAnnotation", data: { missing: "@req" } }],
       },
       {
         name: "[REQ-BRANCH-DETECTION] missing @story on while loop when only req present",
         code: `// @req REQ-BRANCH-DETECTION
+while (true) {}`,
+        output: `// @req REQ-BRANCH-DETECTION
+// @story <story-file>.story.md
 while (true) {}`,
         errors: [
           { messageId: "missingAnnotation", data: { missing: "@story" } },
@@ -142,6 +150,11 @@ while (true) {}`,
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on switch-case",
         code: `switch (value) {
+  case 'a':
+    break;
+}`,
+        output: `switch (value) {
+  // @story <story-file>.story.md
   case 'a':
     break;
 }`,
@@ -155,6 +168,10 @@ while (true) {}`,
         code: `do {
   action();
 } while (condition);`,
+        output: `// @story <story-file>.story.md
+do {
+  action();
+} while (condition);`,
         errors: [
           { messageId: "missingAnnotation", data: { missing: "@story" } },
           { messageId: "missingAnnotation", data: { missing: "@req" } },
@@ -163,6 +180,10 @@ while (true) {}`,
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on for-of loop",
         code: `for (const item of items) {
+  process(item);
+}`,
+        output: `// @story <story-file>.story.md
+for (const item of items) {
   process(item);
 }`,
         errors: [
@@ -175,6 +196,10 @@ while (true) {}`,
         code: `for (const key in object) {
   console.log(key);
 }`,
+        output: `// @story <story-file>.story.md
+for (const key in object) {
+  console.log(key);
+}`,
         errors: [
           { messageId: "missingAnnotation", data: { missing: "@story" } },
           { messageId: "missingAnnotation", data: { missing: "@req" } },
@@ -183,6 +208,12 @@ while (true) {}`,
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on try-catch blocks",
         code: `try {
+  doSomething();
+} catch (error) {
+  handleError(error);
+}`,
+        output: `// @story <story-file>.story.md
+try {
   doSomething();
 } catch (error) {
   handleError(error);
@@ -198,6 +229,12 @@ while (true) {}`,
         name: "[REQ-BRANCH-DETECTION] missing annotations on switch-case with blank line",
         code: `switch (value) {
 
+  case 'a':
+    break;
+}`,
+        output: `switch (value) {
+
+  // @story <story-file>.story.md
   case 'a':
     break;
 }`,

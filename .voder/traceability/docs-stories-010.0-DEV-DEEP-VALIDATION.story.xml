@@ -2,8 +2,10 @@
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-16T11:04:57.580Z</last_validated>
+  <last_validated>2025-11-16T17:03:50.351Z</last_validated>
   <last_modified>2025-11-16T00:07:54.487Z</last_modified>
-  <evidence>The `valid-req-reference` rule is implemented in src/rules/valid-req-reference.ts with JSDoc traceability tags (@story pointing to docs/stories/010.0-DEV-DEEP-VALIDATION.story.md and @req tags for REQ-DEEP-PARSE, REQ-DEEP-MATCH, REQ-DEEP-CACHE, REQ-DEEP-PATH). Unit tests in tests/rules/valid-req-reference.test.ts cover: a valid reference scenario, missing requirement (reqMissing), path traversal (invalidPath), and absolute path (invalidPath). All tests pass under Jest (as evidenced by the 92% overall test pass rate and specific tests for deep validation). The rule handles file reading errors gracefully (catches read failures and treats missing requirements accordingly), supports caching, parses markdown for REQ- identifiers, and reports clear error messages. Documentation in docs/rules/valid-req-reference.md matches behavior, and the rule is properly registered in src/index.ts and included in the recommended/strict configs.</evidence>
-  <notes>All acceptance criteria for story 010.0-DEV-DEEP-VALIDATION have been met: requirement content validation is implemented, tested, integrated, error-handled, and documented.</notes>
+  <evidence>- src/rules/valid-req-reference.ts implements deep validation logic with AST comment parsing, path resolution, caching, regex-based requirement extraction, and reports both invalidPath and reqMissing messages.
+- Tests in tests/rules/valid-req-reference.test.ts cover valid references (including bullet-list fixture), missing requirements, path traversal, and absolute paths, all passing under Jest: exit code 0, coverage report included.
+- Documentation in docs/rules/valid-req-reference.md and docs/stories/010.0-DEV-DEEP-VALIDATION.story.md align, and the plugin builds, lints, type-checks, and tests successfully (npm test shows 96%+ statements, 84%+ branches overall).</evidence>
+  <notes>The implementation provides the required core functionality for deep requirement content validation: it parses story files, matches @req IDs, handles path errors, caches content, reports clear errors, and is fully tested. All acceptance criteria are satisfied.</notes>
 </traceability>

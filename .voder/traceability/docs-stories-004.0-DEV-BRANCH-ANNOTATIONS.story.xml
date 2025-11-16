@@ -2,8 +2,8 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-16T11:04:23.687Z</last_validated>
+  <last_validated>2025-11-16T17:03:22.383Z</last_validated>
   <last_modified>2025-11-16T00:07:54.419Z</last_modified>
-  <evidence>In src/rules/require-branch-annotation.ts, meta.schema is defined as an empty array (schema: []), and there is no handling of rule options or configuration for selecting which branch node types to validate. The story’s requirement REQ-CONFIGURABLE-SCOPE (‘Allow configuration of which branch types require annotations’) is not implemented. All other acceptance criteria appear satisfied (core functionality, tests, documentation), but configurability is missing.</evidence>
-  <notes>The branch‐annotation rule correctly enforces annotations on all hard-coded branch types and is well-tested and documented. However, it does not expose any options to configure which branch types should be checked, in direct conflict with the story’s requirement for a configurable scope.</notes>
+  <evidence>In src/rules/require-branch-annotation.ts the rule.meta.schema is an empty array (schema: []), and the documentation (docs/rules/require-branch-annotation.md) explicitly states “This rule does not accept any options.” However, the story’s Requirements include REQ-CONFIGURABLE-SCOPE: “Allow configuration of which branch types require annotations.” There is no code to accept or handle any configuration options for branch scopes, nor any tests for that behavior.</evidence>
+  <notes>While the core detection, parsing, and error reporting for branch annotations are implemented and well-tested, the required ability to configure which branch types are enforced is missing. The story is therefore not fully satisfied.</notes>
 </traceability>

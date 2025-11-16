@@ -10,6 +10,7 @@ export default {
       description: "Require @story annotations on functions",
       recommended: "error",
     },
+    fixable: "code",
     messages: {
       missingStory: "Missing @story annotation",
     },
@@ -34,7 +35,16 @@ export default {
           );
         }
         if (!hasStory) {
-          context.report({ node, messageId: "missingStory" });
+          context.report({
+            node,
+            messageId: "missingStory",
+            fix(fixer: any) {
+              return fixer.insertTextBefore(
+                node,
+                "/** @story <story-file>.story.md */\n",
+              );
+            },
+          });
         }
       },
     };

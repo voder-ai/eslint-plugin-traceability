@@ -2,8 +2,8 @@
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-16T11:04:06.200Z</last_validated>
+  <last_validated>2025-11-16T17:03:32.682Z</last_validated>
   <last_modified>2025-11-16T00:07:54.431Z</last_modified>
-  <evidence>Found a fully implemented ESLint rule in src/rules/valid-annotation-format.ts that scans all comments for @story and @req lines and applies regex-based format checks. Tests in tests/rules/valid-annotation-format.test.ts (and corresponding JS variants under lib/tests) verify both valid and invalid annotation patterns by messageId. Documentation exists in docs/rules/valid-annotation-format.md, and the rule is registered in src/index.ts and included in the recommended config. All tests for this rule pass as part of the CI-verified 100% suite.</evidence>
-  <notes>The implementation meets all Acceptance Criteria: it validates format and syntax, follows ESLint best practices, integrates with function/branch annotation rules, provides specific error messages, handles multi-line and whitespace variations, and is documented with examples. No unmet requirements were found.</notes>
+  <evidence>The `valid-annotation-format` rule is present in src/rules/valid-annotation-format.ts with appropriate meta, messages, and schema. Tests in tests/rules/valid-annotation-format.test.ts cover valid and invalid @story and @req formats, including block comments and single-line comments, and all tests pass (100% statements, 100% lines, 92.85% branches). Documentation exists at docs/rules/valid-annotation-format.md with examples matching implementation. The rule is exported in src/index.ts and included in both 'recommended' and 'strict' configs. ESLint linting, Jest testing, type checking, and coverage checks all pass.</evidence>
+  <notes>The annotation format validation rule fully meets the story’s acceptance criteria: it validates @story and @req syntax, follows ESLint best practices, integrates with other rules, provides clear error messages, handles edge cases (multiline/block comments), and is documented with examples. Tests ensure REQ-FORMAT-SPECIFICATION, REQ-SYNTAX-VALIDATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT, REQ-MULTILINE-SUPPORT, REQ-FLEXIBLE-PARSING, and REQ-ERROR-SPECIFICITY are satisfied.</notes>
 </traceability>
