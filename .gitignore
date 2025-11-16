@@ -103,6 +103,7 @@ Desktop.ini
 .cursor/
 .github/instructions
 .github/prompts
+.voder/
 
 # Temporary folders
 tmp/
