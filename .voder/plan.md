@@ -1,12 +1,12 @@
 ## NOW
-Modify the `.husky/pre-commit` hook script to run `npm run format` followed by `npm run lint -- --max-warnings=0`.
+Create a CONTRIBUTING.md file at the project root with contribution guidelines covering issue reporting, pull‐request process, commit‐message conventions, coding style, and instructions for running tests and quality checks.
 
 ## NEXT
-- Align the `.husky/pre-push` hook to exactly mirror the CI “quality-checks” job by running `npm run build`, `npm run type-check`, `npm run lint -- --max-warnings=0`, `npm test`, `npm run format:check`, and `npm run duplication`.
-- Update the usage example in `README.md` to demonstrate the ESLint v9 flat‐config (`eslint.config.js`) approach for installing and configuring the traceability plugin.
-- Add JSDoc `@story` and `@req` annotations to internal helper functions and significant code branches in `src/` to satisfy the project’s traceability guidelines.
+- Update README.md to add a “Running Tests” section that shows how to execute `npm test`, view coverage reports, and enforce lint/format checks.  
+- Add a “CLI Integration” section in README.md that explains how to use `cli-integration.js` (list available commands, flags, and example usage).  
+- Create a new docs/cli‐integration.md with detailed documentation of the CLI integration script’s options, commands, and integration into developer workflows.
 
 ## LATER
-- Document the `cli-integration.js` script and its commands in the `docs/` folder and update any related setup guides.
-- Review and update `docs/rules/` for stories not yet implemented (annotation format, file validation, auto-fix, maintenance tools, deep validation), adding placeholders or migration notes.
-- Record an ADR capturing the chosen documentation conventions and complexity standards, and outline a process for keeping examples and helper docs in sync with flat-config and traceability requirements.
+- Document configuration presets by adding docs/config‐presets.md that explains the “recommended” and “strict” configs with usage examples.  
+- Write an ADR in docs/decisions capturing the project’s documentation conventions and complexity standards.  
+- Review docs/rules/ and insert placeholders or migration notes for stories 005–010 (annotation format, file validation, auto-fix, maintenance tools, deep validation).
