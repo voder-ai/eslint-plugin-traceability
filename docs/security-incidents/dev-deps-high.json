@@ -5,10 +5,14 @@
       "name": "@semantic-release/npm",
       "severity": "high",
       "isDirect": true,
-      "via": ["npm"],
+      "via": [
+        "npm"
+      ],
       "effects": [],
       "range": ">=11.0.0",
-      "nodes": ["node_modules/@semantic-release/npm"],
+      "nodes": [
+        "node_modules/@semantic-release/npm"
+      ],
       "fixAvailable": true
     },
     "glob": {
@@ -23,7 +27,9 @@
           "title": "glob CLI: Command injection via -c/--cmd executes matches with shell:true",
           "url": "https://github.com/advisories/GHSA-5j98-mcp5-4vw2",
           "severity": "high",
-          "cwe": ["CWE-78"],
+          "cwe": [
+            "CWE-78"
+          ],
           "cvss": {
             "score": 7.5,
             "vectorString": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H"
@@ -31,19 +37,29 @@
           "range": ">=10.3.7 <=11.0.3"
         }
       ],
-      "effects": ["npm"],
+      "effects": [
+        "npm"
+      ],
       "range": "10.3.7 - 11.0.3",
-      "nodes": ["node_modules/npm/node_modules/glob"],
+      "nodes": [
+        "node_modules/npm/node_modules/glob"
+      ],
       "fixAvailable": true
     },
     "npm": {
       "name": "npm",
       "severity": "high",
       "isDirect": false,
-      "via": ["glob"],
-      "effects": ["@semantic-release/npm"],
+      "via": [
+        "glob"
+      ],
+      "effects": [
+        "@semantic-release/npm"
+      ],
       "range": "7.21.0 - 8.5.4 || >=9.6.6",
-      "nodes": ["node_modules/npm"],
+      "nodes": [
+        "node_modules/npm"
+      ],
       "fixAvailable": true
     }
   },
