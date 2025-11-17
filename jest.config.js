@@ -4,7 +4,8 @@
  * @req REQ-TEST-SETUP - Provide testing infrastructure for plugin
  */
 module.exports = {
-  coverageProvider: 'v8',
+  coverageProvider: "v8",
+  collectCoverageFrom: ['src/**/*.{ts,js}'],
   preset: "ts-jest",
   testEnvironment: "node",
   testPathIgnorePatterns: ["<rootDir>/lib/"],
