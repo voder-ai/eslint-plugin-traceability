@@ -1,14 +1,16 @@
-## NOW  
-Lower the ESLint `max-lines-per-function` rule from 65 to 60 in `eslint.config.js`.
+The previous plan’s NOW step merely regenerates the audit report—it doesn’t actually remediate the vulnerabilities. Below is a corrected plan that immediately begins fixing the devDependency issues:
 
-## NEXT  
-- Run `npm run lint` to identify functions now violating the 60-line limit, refactor each to comply, and commit the fixes.  
-- Execute `npm audit --omit=dev --audit-level=high`, upgrade all remaining high-severity production dependencies until the audit reports zero issues, and commit the updated lockfile.  
-- Upgrade every devDependency listed in `docs/security-incidents/dev-deps-high.json` to its patched version and update that incident report.  
-- Update `.github/workflows/ci-cd.yml` to enforce `npm audit --audit-level=high` on both production and dev dependencies and fail the build on any moderate-or-higher findings.
+## NOW
+Run the automatic dev-dependency patch step:
+```
+npm audit fix --dev
+```
 
-## LATER  
-- Define and implement an incremental ratcheting plan for ESLint (60 → 55 → 50 lines) and integrate those thresholds into CI quality gates.  
-- Add a scheduled GitHub Actions job for weekly high- and moderate-severity dependency audits with automated notifications.  
-- Expand `SECURITY.md` and `CONTRIBUTING.md` with formal remediation timelines, incident-reporting procedures, and dependency-upgrade guidelines.  
-- Automate creation of new security-incident entries using `SECURITY-INCIDENT-TEMPLATE.md` for any future unresolved vulnerabilities.
+## NEXT
+- For any remaining high-severity devDependency advisories not fixed by the above command, manually install each patched version (e.g. `npm install --save-dev pkg@patchedVersion`), update your `package.json` and lockfile, and commit.
+- Re-run `npm audit --dev --audit-level=high` and confirm zero high-severity findings.
+
+## LATER
+- Enforce a `npm audit --dev --audit-level=high` check in your pre-push/CI pipeline to block new high-severity issues.
+- Add a scheduled GitHub Actions job to perform weekly devDependency audits and alert on any new high or moderate issues.
+- Update your `SECURITY.md` and `CONTRIBUTING.md` with formal SLAs and procedures for triaging and patching devDependency vulnerabilities.

@@ -1,6 +1,26 @@
 {
   "auditReportVersion": 2,
   "vulnerabilities": {
+    "@semantic-release/github": {
+      "name": "@semantic-release/github",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "semantic-release"
+      ],
+      "effects": [
+        "semantic-release"
+      ],
+      "range": "5.3.0-beta.1 - 5.3.0-beta.8 || 5.4.0-beta.1 || 5.5.0-beta.1 || 5.6.0-beta.1 - 5.6.0-beta.3 || >=11.0.0",
+      "nodes": [
+        "node_modules/@semantic-release/github"
+      ],
+      "fixAvailable": {
+        "name": "@semantic-release/github",
+        "version": "10.3.5",
+        "isSemVerMajor": true
+      }
+    },
     "@semantic-release/npm": {
       "name": "@semantic-release/npm",
       "severity": "high",
@@ -8,11 +28,12 @@
       "via": [
         "npm"
       ],
-      "effects": [],
+      "effects": [
+        "semantic-release"
+      ],
       "range": ">=11.0.0",
       "nodes": [
-        "node_modules/@semantic-release/npm",
-        "node_modules/semantic-release/node_modules/@semantic-release/npm"
+        "node_modules/@semantic-release/npm"
       ],
       "fixAvailable": {
         "name": "@semantic-release/npm",
@@ -47,7 +68,8 @@
       ],
       "range": "10.3.7 - 11.0.3",
       "nodes": [
-        "node_modules/npm/node_modules/glob"
+        "node_modules/npm/node_modules/glob",
+        "node_modules/npm/node_modules/node-gyp/node_modules/glob"
       ],
       "fixAvailable": {
         "name": "@semantic-release/npm",
@@ -60,7 +82,8 @@
       "severity": "high",
       "isDirect": false,
       "via": [
-        "glob"
+        "glob",
+        "tar"
       ],
       "effects": [
         "@semantic-release/npm"
@@ -74,24 +97,80 @@
         "version": "10.0.6",
         "isSemVerMajor": true
       }
+    },
+    "semantic-release": {
+      "name": "semantic-release",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@semantic-release/github",
+        "@semantic-release/npm"
+      ],
+      "effects": [
+        "@semantic-release/github"
+      ],
+      "range": "16.0.0-beta.1 - 16.0.0-beta.47 || >=22.0.0-beta.1",
+      "nodes": [
+        "node_modules/semantic-release"
+      ],
+      "fixAvailable": {
+        "name": "semantic-release",
+        "version": "21.1.2",
+        "isSemVerMajor": true
+      }
+    },
+    "tar": {
+      "name": "tar",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1109463,
+          "name": "tar",
+          "dependency": "tar",
+          "title": "node-tar has a race condition leading to uninitialized memory exposure",
+          "url": "https://github.com/advisories/GHSA-29xp-372q-xqph",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-362"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "=7.5.1"
+        }
+      ],
+      "effects": [
+        "npm"
+      ],
+      "range": "7.5.1",
+      "nodes": [
+        "node_modules/npm/node_modules/tar"
+      ],
+      "fixAvailable": {
+        "name": "@semantic-release/npm",
+        "version": "10.0.6",
+        "isSemVerMajor": true
+      }
     }
   },
   "metadata": {
     "vulnerabilities": {
       "info": 0,
       "low": 0,
-      "moderate": 0,
-      "high": 3,
+      "moderate": 1,
+      "high": 5,
       "critical": 0,
-      "total": 3
+      "total": 6
     },
     "dependencies": {
       "prod": 1,
-      "dev": 1269,
-      "optional": 17,
+      "dev": 1194,
+      "optional": 7,
       "peer": 10,
       "peerOptional": 0,
-      "total": 1269
+      "total": 1194
     }
   }
 }
