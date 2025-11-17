@@ -189,6 +189,7 @@ semantic-release configuration will include:
 ```
 
 **Note**: The `@semantic-release/git` plugin is intentionally excluded. semantic-release will manage versions through git tags only, without committing version changes back to package.json. This approach:
+
 - Prevents infinite CI loops from version commits
 - Follows npm ecosystem best practices where tags are the source of truth
 - Keeps the repository history clean of automated version bump commits
