@@ -1,13 +1,13 @@
 ## NOW
-Modify `.github/workflows/ci-cd.yml` to add an `npm publish --access public` step (using the `NPM_TOKEN` secret) in the `publish` job immediately after the quality‐checks have passed.
+Generate the missing `cli-integration.js` at the project root as a stub implementation for ESLint plugin integration, matching the usage examples referenced in `README.md` and `docs/cli-integration.md`.
 
 ## NEXT
-- Update the `smoke-test` job in `.github/workflows/ci-cd.yml` to install the newly published package from npm into a temporary directory (e.g. `npm install <package>@latest`) and run a basic smoke test (such as invoking `eslint --print-config` or a sample lint check against fixture code).  
-- Remove the existing `npm pack` step from the `publish` job so that only `npm publish` runs.  
-- Append `npm run type-check` to the Husky `pre-commit` hook in `.husky/pre-commit` to catch type errors before commits.
+- Update `README.md` and `docs/cli-integration.md` to point to the new `cli-integration.js` script, including a copy-and-paste usage example.  
+- Add entries for versions 1.0.2 and 1.0.3 in `CHANGELOG.md` (with dates and summaries of the released changes).  
+- Either author the promised “Migration Guide” under `user-docs/migration-guide.md` or remove all references to it from user-facing documentation.
 
 ## LATER
-- Introduce a post-deployment “health-check” job in CI that spins up an isolated environment (Docker, Codespaces, etc.), installs the published package, and verifies end-to-end plugin behavior.  
-- Adopt semantic-release (or a similar tool) to fully automate version bumps, tagging, and CHANGELOG generation on each publish.  
-- Schedule automated dependency audits and update PRs via GitHub Actions (Dependabot/renovate).  
-- Continue ratcheting ESLint thresholds and refactoring per the incremental ratcheting ADR.
+- Remove committed build artifacts (`lib/`) and ensure they remain in `.gitignore`.  
+- Refactor `.github/workflows/ci-cd.yml` to replace the dry-run publish with a real `npm publish --access public` on every push to `main`, consolidate quality and deploy steps into one job, and guard on the presence of `secrets.NPM_TOKEN`.  
+- Introduce semantic-release (or similar) to automate version bumps, Git tags, and CHANGELOG generation.  
+- Add a CI post-deployment health-check job that installs the published package and verifies end-to-end ESLint plugin behavior.

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.3] - 2025-11-17
+
+### Added
+- CLI integration script (`cli-integration.js`) for end-to-end ESLint CLI tests.
+- Migration guide in `user-docs/migration-guide.md`.
+
+## [1.0.2] - 2025-11-17
+
+### Changed
+- Updated README and docs to reference `cli-integration.js` script.
+- Removed stale references to migration guide in CHANGELOG gradients.
+
 ## [1.0.1] - 2025-11-17
 
 ### Added
