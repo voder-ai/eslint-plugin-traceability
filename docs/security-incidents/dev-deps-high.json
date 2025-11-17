@@ -1,58 +1,6 @@
 {
   "auditReportVersion": 2,
   "vulnerabilities": {
-    "@jest/core": {
-      "name": "@jest/core",
-      "severity": "high",
-      "isDirect": false,
-      "via": [
-        "@jest/reporters",
-        "jest-config",
-        "jest-runner",
-        "jest-runtime"
-      ],
-      "effects": [],
-      "range": ">=30.0.0-alpha.1",
-      "nodes": [
-        "node_modules/@jest/core"
-      ],
-      "fixAvailable": true
-    },
-    "@jest/reporters": {
-      "name": "@jest/reporters",
-      "severity": "high",
-      "isDirect": false,
-      "via": [
-        "glob"
-      ],
-      "effects": [],
-      "range": ">=30.0.0-alpha.1",
-      "nodes": [
-        "node_modules/@jest/reporters"
-      ],
-      "fixAvailable": true
-    },
-    "@semantic-release/github": {
-      "name": "@semantic-release/github",
-      "severity": "high",
-      "isDirect": true,
-      "via": [
-        "semantic-release"
-      ],
-      "effects": [
-        "semantic-release"
-      ],
-      "range": "5.3.0-beta.1 - 5.3.0-beta.8 || 5.4.0-beta.1 || 5.5.0-beta.1 || 5.6.0-beta.1 - 5.6.0-beta.3 || >=11.0.0",
-      "nodes": [
-        "node_modules/@semantic-release/github",
-        "node_modules/semantic-release/node_modules/@semantic-release/github"
-      ],
-      "fixAvailable": {
-        "name": "@semantic-release/github",
-        "version": "10.3.5",
-        "isSemVerMajor": true
-      }
-    },
     "@semantic-release/npm": {
       "name": "@semantic-release/npm",
       "severity": "high",
@@ -60,18 +8,12 @@
       "via": [
         "npm"
       ],
-      "effects": [
-        "semantic-release"
-      ],
+      "effects": [],
       "range": ">=11.0.0",
       "nodes": [
         "node_modules/@semantic-release/npm"
       ],
-      "fixAvailable": {
-        "name": "@semantic-release/npm",
-        "version": "10.0.6",
-        "isSemVerMajor": true
-      }
+      "fixAvailable": true
     },
     "glob": {
       "name": "glob",
@@ -96,127 +38,11 @@
         }
       ],
       "effects": [
-        "@jest/reporters",
-        "jest-config",
-        "jest-runtime",
         "npm"
       ],
       "range": "10.3.7 - 11.0.3",
       "nodes": [
-        "node_modules/glob",
         "node_modules/npm/node_modules/glob"
-      ],
-      "fixAvailable": {
-        "name": "@semantic-release/npm",
-        "version": "10.0.6",
-        "isSemVerMajor": true
-      }
-    },
-    "jest": {
-      "name": "jest",
-      "severity": "high",
-      "isDirect": true,
-      "via": [
-        "@jest/core",
-        "jest-cli"
-      ],
-      "effects": [],
-      "range": ">=30.0.0-alpha.1",
-      "nodes": [
-        "node_modules/jest"
-      ],
-      "fixAvailable": {
-        "name": "jest",
-        "version": "29.7.0",
-        "isSemVerMajor": true
-      }
-    },
-    "jest-circus": {
-      "name": "jest-circus",
-      "severity": "high",
-      "isDirect": false,
-      "via": [
-        "jest-runtime"
-      ],
-      "effects": [],
-      "range": ">=30.0.0-alpha.1",
-      "nodes": [
-        "node_modules/jest-circus"
-      ],
-      "fixAvailable": true
-    },
-    "jest-cli": {
-      "name": "jest-cli",
-      "severity": "high",
-      "isDirect": false,
-      "via": [
-        "@jest/core",
-        "jest-config"
-      ],
-      "effects": [
-        "jest"
-      ],
-      "range": ">=30.0.0-alpha.1",
-      "nodes": [
-        "node_modules/jest-cli"
-      ],
-      "fixAvailable": {
-        "name": "jest",
-        "version": "29.7.0",
-        "isSemVerMajor": true
-      }
-    },
-    "jest-config": {
-      "name": "jest-config",
-      "severity": "high",
-      "isDirect": false,
-      "via": [
-        "glob",
-        "jest-circus",
-        "jest-runner"
-      ],
-      "effects": [
-        "@jest/core",
-        "jest-cli"
-      ],
-      "range": ">=30.0.0-alpha.1",
-      "nodes": [
-        "node_modules/jest-config"
-      ],
-      "fixAvailable": {
-        "name": "jest",
-        "version": "29.7.0",
-        "isSemVerMajor": true
-      }
-    },
-    "jest-runner": {
-      "name": "jest-runner",
-      "severity": "high",
-      "isDirect": false,
-      "via": [
-        "jest-runtime"
-      ],
-      "effects": [],
-      "range": ">=30.0.0-alpha.1",
-      "nodes": [
-        "node_modules/jest-runner"
-      ],
-      "fixAvailable": true
-    },
-    "jest-runtime": {
-      "name": "jest-runtime",
-      "severity": "high",
-      "isDirect": false,
-      "via": [
-        "glob"
-      ],
-      "effects": [
-        "jest-circus",
-        "jest-runner"
-      ],
-      "range": ">=30.0.0-alpha.1",
-      "nodes": [
-        "node_modules/jest-runtime"
       ],
       "fixAvailable": true
     },
@@ -234,32 +60,7 @@
       "nodes": [
         "node_modules/npm"
       ],
-      "fixAvailable": {
-        "name": "@semantic-release/npm",
-        "version": "10.0.6",
-        "isSemVerMajor": true
-      }
-    },
-    "semantic-release": {
-      "name": "semantic-release",
-      "severity": "high",
-      "isDirect": true,
-      "via": [
-        "@semantic-release/github",
-        "@semantic-release/npm"
-      ],
-      "effects": [
-        "@semantic-release/github"
-      ],
-      "range": "16.0.0-beta.1 - 16.0.0-beta.47 || >=22.0.0-beta.1",
-      "nodes": [
-        "node_modules/semantic-release"
-      ],
-      "fixAvailable": {
-        "name": "semantic-release",
-        "version": "21.1.2",
-        "isSemVerMajor": true
-      }
+      "fixAvailable": true
     }
   },
   "metadata": {
@@ -267,17 +68,17 @@
       "info": 0,
       "low": 0,
       "moderate": 0,
-      "high": 13,
+      "high": 3,
       "critical": 0,
-      "total": 13
+      "total": 3
     },
     "dependencies": {
       "prod": 1,
-      "dev": 958,
-      "optional": 9,
-      "peer": 0,
+      "dev": 1237,
+      "optional": 17,
+      "peer": 10,
       "peerOptional": 0,
-      "total": 958
+      "total": 1237
     }
   }
 }

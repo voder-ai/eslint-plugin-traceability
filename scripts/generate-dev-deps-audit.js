@@ -7,7 +7,7 @@ const fs = require("fs");
 // Run npm audit for dev dependencies with high threshold
 const result = spawnSync(
   "npm",
-  ["audit", "--include=dev", "--audit-level=high", "--json"],
+  ["audit", "--audit-level=high", "--json"],
   { shell: true, encoding: "utf8" },
 );
 
