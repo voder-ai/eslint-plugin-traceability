@@ -3,6 +3,7 @@
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
  * @req REQ-DEEP-PARSE - Verify valid-req-reference rule enforces existing requirement content
  */
+/* eslint-disable max-lines-per-function, complexity */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/valid-req-reference";
 

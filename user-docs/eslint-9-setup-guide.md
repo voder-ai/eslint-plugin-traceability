@@ -1,5 +1,7 @@
 # ESLint 9 Setup Guide
 
+Created autonomously by [voder.ai](https://voder.ai)
+
 This guide shows how to properly set up ESLint 9 with flat configuration format. ESLint 9 uses flat config by default and has several important changes from previous versions.
 
 ## Table of Contents

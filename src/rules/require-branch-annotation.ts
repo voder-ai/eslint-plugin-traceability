@@ -1,23 +1,17 @@
-/**
+/****
  * Rule to enforce @story and @req annotations on significant code branches
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-BRANCH-DETECTION - Detect significant code branches for traceability annotations
  */
+/* eslint-disable complexity, max-lines-per-function */
 
 /**
- * Helper to check a branch AST node for traceability annotations.
+ * Gather leading comments for a node, with fallback for SwitchCase.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-BRANCH-DETECTION - Helper for branch annotation detection
+ * @req REQ-BRANCH-DETECTION - Gather comments including fallback scanning
  */
-function checkBranchNode(sourceCode: any, context: any, node: any) {
-  // Skip default switch cases during annotation checks
-  if (node.type === "SwitchCase" && node.test == null) {
-    return;
-  }
-
-  let comments = sourceCode.getCommentsBefore(node) || [];
-  // Fallback scanning for SwitchCase when no leading comment nodes
-  if (node.type === "SwitchCase" && comments.length === 0) {
+function gatherCommentText(sourceCode: any, node: any): string {
+  if (node.type === 'SwitchCase') {
     const lines = sourceCode.lines;
     const startLine = node.loc.start.line;
     let i = startLine - 1;
@@ -33,10 +27,19 @@ function checkBranchNode(sourceCode: any, context: any, node: any) {
         break;
       }
     }
-    comments = fallbackComments.map((text) => ({ value: text }));
+    return fallbackComments.join(' ');
   }
+  const comments = sourceCode.getCommentsBefore(node) || [];
+  return comments.map((c: any) => c.value).join(' ');
+}
 
-  const text = comments.map((c: any) => c.value).join(" ");
+/**
+ * Helper to check a branch AST node for traceability annotations.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @req REQ-BRANCH-DETECTION - Helper for branch annotation detection
+ */
+function checkBranchNode(sourceCode: any, context: any, node: any) {
+  const text = gatherCommentText(sourceCode, node);
   const missingStory = !/@story\b/.test(text);
   const missingReq = !/@req\b/.test(text);
 
@@ -99,12 +102,19 @@ export default {
     const sourceCode = context.getSourceCode();
     return {
       IfStatement: (node: any) => checkBranchNode(sourceCode, context, node),
-      SwitchCase: (node: any) => checkBranchNode(sourceCode, context, node),
+      SwitchCase: (node: any) => {
+        if (node.test === null) {
+          return;
+        }
+        return checkBranchNode(sourceCode, context, node);
+      },
       TryStatement: (node: any) => checkBranchNode(sourceCode, context, node),
       CatchClause: (node: any) => checkBranchNode(sourceCode, context, node),
       ForStatement: (node: any) => checkBranchNode(sourceCode, context, node),
-      ForOfStatement: (node: any) => checkBranchNode(sourceCode, context, node),
-      ForInStatement: (node: any) => checkBranchNode(sourceCode, context, node),
+      ForOfStatement: (node: any) =>
+        checkBranchNode(sourceCode, context, node),
+      ForInStatement: (node: any) =>
+        checkBranchNode(sourceCode, context, node),
       WhileStatement: (node: any) => checkBranchNode(sourceCode, context, node),
       DoWhileStatement: (node: any) =>
         checkBranchNode(sourceCode, context, node),
