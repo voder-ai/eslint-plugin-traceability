@@ -28,44 +28,45 @@ The project uses GitHub Actions for CI/CD workflows defined in `.github/workflow
 
 ## Considered Options
 
-- actionlint only (for both pre-commit and CI/CD)
-- actionlint for pre-commit hooks + Super-Linter for CI/CD
-- Super-Linter only (for both pre-commit and CI/CD)
+- actionlint for pre-commit hooks only
+- actionlint for both pre-commit and CI/CD
+- Super-Linter for pre-commit hooks
 - GitHub's built-in validation only
 
 ## Decision Outcome
 
-Chosen option: "actionlint only (for both pre-commit and CI/CD)", because it provides fast, focused GitHub Actions validation without the overhead of comprehensive multi-language linting tools, while maintaining consistency across development and CI/CD environments.
+Chosen option: "actionlint for pre-commit hooks only", because it prevents broken GitHub Actions files from being pushed while maintaining fast local development workflow. Once files reach CI/CD, if the workflow runs successfully, the files are valid by definition.
 
 ### Consequences
 
-- Good, because actionlint provides fast validation without container overhead
-- Good, because consistent validation rules across development and CI/CD environments
+- Good, because actionlint provides fast pre-commit validation without container overhead
+- Good, because prevents broken GitHub Actions files from being pushed
 - Good, because specifically designed for GitHub Actions validation
-- Good, because simple configuration and maintenance with single tool
+- Good, because simple configuration and maintenance
 - Good, because no Docker dependencies for local development
-- Good, because excellent performance for both pre-commit hooks and CI/CD
-- Neutral, because focused scope keeps complexity minimal
+- Good, because excellent performance for pre-commit hooks
+- Good, because integrates seamlessly with existing Husky-based pre-commit hooks
+- Neutral, because CI/CD validation is unnecessary if workflows execute successfully
 - Bad, because limited to GitHub Actions validation only
-- Bad, because no security vulnerability detection capabilities
-- Bad, because misses validation of other workflow-related file types
+- Bad, because no security vulnerability detection in pre-commit phase
 
 ### Confirmation
 
 Implementation compliance will be confirmed through:
 
-- actionlint configured in `.pre-commit-config.yaml`
+- actionlint added to Husky pre-commit hook in `.husky/pre-commit`
 - Pre-commit hook blocks commits with GitHub Actions validation errors
 - actionlint configured to validate files in `.github/workflows/`
-- Documentation updated to explain pre-commit validation approach
+- Documentation updated to explain Husky-based pre-commit validation approach
 
-### Key Changes to CI/CD Workflow
+### Implementation Approach
 
-- Consolidated build, test, publish, and smoke-test into a single `CI/CD Pipeline` workflow
-- Implemented a Node.js version matrix to run workflows against multiple Node.js versions
-- Added a conditional publish step that only runs on Node.js `20.x`
-- Utilized `actions/upload-artifact` and `actions/download-artifact` for artifact management between steps
-- Removed standalone `publish` and `smoke-test` jobs in favor of the unified workflow
+actionlint will be integrated into existing Husky-based pre-commit hooks by:
+
+- Installing actionlint as a development dependency
+- Adding actionlint validation to `.husky/pre-commit` hook
+- Configuring actionlint to check `.github/workflows/*.yml` files
+- Documenting the validation process for contributors
 
 ## Pros and Cons of the Options
 
@@ -127,7 +128,7 @@ Rely solely on GitHub's native workflow validation.
 
 This decision focuses on solving the specific problem of preventing broken GitHub Actions files from being pushed to the repository. If CI/CD workflows execute successfully, the files are validated by definition - there's no need for redundant validation in the CI/CD pipeline itself.
 
-actionlint configuration should be added to `.pre-commit-config.yaml` targeting `.github/workflows/*.yml` files to catch syntax and configuration errors before commit.
+actionlint configuration should be added to the existing Husky pre-commit hook in `.husky/pre-commit`, targeting `.github/workflows/*.yml` files to catch syntax and configuration errors before commit.
 
 The decision should be re-evaluated if:
 
@@ -140,4 +141,4 @@ Related resources:
 
 - [actionlint Documentation](https://github.com/rhymond/actionlint)
 - [GitHub Actions Workflow Syntax](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions)
-- [Pre-commit Framework](https://pre-commit.com/)
+- [Husky Documentation](https://typicode.github.io/husky/)
