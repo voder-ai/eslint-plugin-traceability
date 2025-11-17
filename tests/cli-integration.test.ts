@@ -39,7 +39,10 @@ describe("CLI Integration Tests for Traceability Rules", () => {
 
   it("[REQ-PLUGIN-STRUCTURE] reports error when @story annotation is missing", () => {
     const code = "function foo() {}";
-    const result = runEslint(code, "traceability/require-story-annotation:error");
+    const result = runEslint(
+      code,
+      "traceability/require-story-annotation:error",
+    );
     expect(result.status).toBe(1);
     expect(result.stdout).toMatch(/require-story-annotation/);
   });
@@ -49,14 +52,18 @@ describe("CLI Integration Tests for Traceability Rules", () => {
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  */
 function foo() {}`;
-    const result = runEslint(code, "traceability/require-story-annotation:error");
+    const result = runEslint(
+      code,
+      "traceability/require-story-annotation:error",
+    );
     expect(result.status).toBe(0);
   });
 
   it("[REQ-REQ-ANNOTATION] reports error when @req annotation is missing", () => {
     const code = `/**
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- */`;
+ */
+function foo() {}`;
     const result = runEslint(code, "traceability/require-req-annotation:error");
     expect(result.status).toBe(1);
     expect(result.stdout).toMatch(/require-req-annotation/);
@@ -64,7 +71,10 @@ function foo() {}`;
 
   it("[REQ-BRANCH-DETECTION] reports error when branch annotations missing", () => {
     const code = "if (true) {}";
-    const result = runEslint(code, "traceability/require-branch-annotation:error");
+    const result = runEslint(
+      code,
+      "traceability/require-branch-annotation:error",
+    );
     expect(result.status).toBe(1);
     expect(result.stdout).toMatch(/require-branch-annotation/);
   });
@@ -75,7 +85,10 @@ function foo() {}`;
  * @req INVALID
  */
 function foo() {}`;
-    const result = runEslint(code, "traceability/valid-annotation-format:error");
+    const result = runEslint(
+      code,
+      "traceability/valid-annotation-format:error",
+    );
     expect(result.status).toBe(1);
     expect(result.stdout).toMatch(/valid-annotation-format/);
   });
@@ -86,7 +99,10 @@ function foo() {}`;
  * @req REQ-FORMAT-SPECIFICATION
  */
 function foo() {}`;
-    const result = runEslint(code, "traceability/valid-annotation-format:error");
+    const result = runEslint(
+      code,
+      "traceability/valid-annotation-format:error",
+    );
     expect(result.status).toBe(0);
   });
 
