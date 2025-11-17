@@ -74,9 +74,11 @@ Current test scenarios:
 
 ## Usage
 
+Note: The script lives at the project root.
+
 ```bash
 # Run CLI integration tests
-node cli-integration.js
+node ./cli-integration.js
 ```
 
 ## Integration into CI

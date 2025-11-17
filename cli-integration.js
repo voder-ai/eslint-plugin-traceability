@@ -36,8 +36,9 @@ function foo() {}`,
     expectedStatus: 1,
   },
   {
-    name: "reports error when @req annotation uses path traversal",
+    name: "reports error when @story annotation uses path traversal and @req annotation uses path traversal",
     code: `/**
+ * @story ../docs/stories/invalid.story.md
  * @req ../docs/requirements/REQ-INVALID.md
  */
 function bar() {}`,
@@ -45,8 +46,9 @@ function bar() {}`,
     expectedStatus: 1,
   },
   {
-    name: "reports error when @req annotation uses absolute path",
+    name: "reports error when @story annotation uses absolute path and @req annotation uses absolute path",
     code: `/**
+ * @story /absolute/path/to/story.story.md
  * @req /etc/passwd
  */
 function baz() {}`,
