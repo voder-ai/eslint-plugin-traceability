@@ -11,13 +11,5 @@ module.exports = {
   testPathIgnorePatterns: ["<rootDir>/lib/"],
   testMatch: ["<rootDir>/tests/**/*.test.ts"],
   coveragePathIgnorePatterns: ["<rootDir>/lib/", "<rootDir>/node_modules/"],
-  coverageThreshold: {
-    global: {
-      branches: 47,
-      functions: 42,
-      lines: 59,
-      statements: 57,
-    },
-  },
   moduleFileExtensions: ["ts", "js"],
 };

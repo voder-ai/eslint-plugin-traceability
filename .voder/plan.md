@@ -1,12 +1,15 @@
-## NOW
-Run `npm audit --omit=dev --audit-level=high --json > docs/security-incidents/prod-deps-high.json` to generate a comprehensive report of all high-severity vulnerabilities in production dependencies.
+## NOW  
+Upgrade the vulnerable `@semantic-release/npm` package to its patched release by running  
+```
+npm install @semantic-release/npm@latest --save-dev
+```
 
-## NEXT
-- Review `docs/security-incidents/prod-deps-high.json` and upgrade or patch each affected dependency in `package.json`/`package-lock.json`; rerun `npm audit --omit=dev --audit-level=high` until zero high-severity issues remain.  
-- For any vulnerabilities that cannot be fixed via upgrades, use `docs/security-incidents/SECURITY-INCIDENT-TEMPLATE.md` to create formal incident reports detailing impact and mitigation.  
-- Verify that both the CI workflow (`.github/workflows/ci-cd.yml`) and the Husky pre-push hook include a hard-failing `npm audit --production --audit-level=high` step (no `|| true` or continue-on-error).
+## NEXT  
+- Rerun `npm audit --omit=dev --audit-level=high` and upgrade any remaining high-severity production dependencies until the audit reports zero issues.  
+- Upgrade or patch all devDependencies flagged in `docs/security-incidents/dev-deps-high.json`.  
+- Fix the Jest coverage configuration: switch to the V8 coverage provider in `jest.config.js`, re-enable the `coverageThreshold` settings, and verify that `npm run test -- --coverage` completes without errors.  
 
-## LATER
-- Once all high-severity production issues are cleared, lower the audit threshold to “moderate” for production dependencies and re-enable moderate-level auditing in CI and Husky.  
-- Add a scheduled CI job (weekly or bi-weekly) to run high-severity production audits and notify the team of new findings.  
-- Update `SECURITY.md` and `CONTRIBUTING.md` with guidelines for handling production dependency vulnerabilities, incident reporting, and remediation timelines.
+## LATER  
+- Integrate coverage collection into the CI/CD pipeline and Husky pre-push hook (e.g. run `npm run test -- --coverage`) to enforce coverage thresholds automatically.  
+- Lower the production audit threshold to “moderate” and add a scheduled GitHub Actions job to run high- and moderate-severity audits (weekly or bi-weekly).  
+- Update `SECURITY.md` and `CONTRIBUTING.md` with formal remediation timelines, incident-reporting procedures, and dependency-upgrade guidelines.
