@@ -1,16 +1,13 @@
 ## NOW
-Create a new Architecture Decision Record at  
-docs/decisions/code-quality-ratcheting-plan.md  
-that defines an incremental schedule to tighten our ESLint `max-lines-per-function` (70 → 65 → 60 → 55 → 50) and complexity thresholds, including metrics, timeline, and success criteria.
+Run `npm audit --omit=prod --audit-level=high --json > docs/security-incidents/dev-deps-high.json` to generate a complete report of all high-severity vulnerabilities in development dependencies.
 
 ## NEXT
-- Update `eslint.config.js` to lower `max-lines-per-function` to the first ratchet value (65).  
-- Add a CI lint step that fails if any function exceeds 65 lines.  
-- Run the updated lint rules locally, generate a report of offending functions, and refactor the top offenders in `src/` to comply with the 65-line limit.  
-- Commit these changes and verify the CI/CD pipeline passes with the new threshold enforced.
+- Review `docs/security-incidents/dev-deps-high.json` and upgrade or patch each affected devDependency in `package.json`/`package-lock.json`; rerun `npm audit --omit=prod --audit-level=high` until zero high-severity issues remain.  
+- For any vulnerabilities that cannot be fixed via upgrades, create formal incident reports in `docs/security-incidents/` using the project’s incident-report template, detailing impact and mitigation plans.  
+- Update the Husky pre-push hook (`.husky/pre-push`) to re-enable a blocking `npm audit --omit=prod --audit-level=high` step so that devDependency vulnerabilities fail local pushes.  
+- Restore the security audit in the CI workflow (`.github/workflows/ci-cd.yml`) by replacing `npm audit --production --audit-level=high || true` (or `continue-on-error`) with a hard-failing `npm audit --production --audit-level=high` step.
 
 ## LATER
-- Once no functions exceed 65 lines, increment the threshold down to 60, then 55, then finally 50 in subsequent sprints.  
-- After reaching 50 lines, remove the explicit override to revert to ESLint’s default.  
-- Introduce additional ratcheting for `max-lines-per-file` and `max-params` rules.  
-- Update CONTRIBUTING.md and developer docs to document the finalized code-quality standards and ratcheting process.
+- Once all high-severity devDependency issues are cleared, consider lowering the audit threshold to “moderate” for development dependencies and re-enable moderate-level auditing in both Husky and CI.  
+- Automate weekly or bi-weekly `npm audit --omit=prod --audit-level=high` on devDependencies in a scheduled CI job and alert the team on new findings.  
+- Update `SECURITY.md` and `CONTRIBUTING.md` with guidelines for handling devDependency vulnerabilities, incident reporting, and remediation timelines.
