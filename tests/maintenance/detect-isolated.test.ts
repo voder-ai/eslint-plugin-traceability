@@ -15,32 +15,31 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
   });
 
   it("[REQ-MAINT-DETECT] detects stale annotations in nested directories", () => {
-    // Arrange
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-nested-"));
-    const nestedDir = path.join(tmpDir, "nested");
-    fs.mkdirSync(nestedDir);
-    const filePath1 = path.join(tmpDir, "file1.ts");
-    const filePath2 = path.join(nestedDir, "file2.ts");
-    const content1 = `
+    try {
+      const nestedDir = path.join(tmpDir, "nested");
+      fs.mkdirSync(nestedDir);
+      const filePath1 = path.join(tmpDir, "file1.ts");
+      const filePath2 = path.join(nestedDir, "file2.ts");
+      const content1 = `
 /**
  * @story stale1.story.md
  */
 `;
-    fs.writeFileSync(filePath1, content1, "utf8");
-    const content2 = `
+      fs.writeFileSync(filePath1, content1, "utf8");
+      const content2 = `
 /**
  * @story stale2.story.md
  */
 `;
-    fs.writeFileSync(filePath2, content2, "utf8");
-
-    // Act
-    const result = detectStaleAnnotations(tmpDir);
-
-    // Assert
-    expect(result).toHaveLength(2);
-    expect(result).toContain("stale1.story.md");
-    expect(result).toContain("stale2.story.md");
+      fs.writeFileSync(filePath2, content2, "utf8");
+      const result = detectStaleAnnotations(tmpDir);
+      expect(result).toHaveLength(2);
+      expect(result).toContain("stale1.story.md");
+      expect(result).toContain("stale2.story.md");
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
   });
 
   it("[REQ-MAINT-DETECT] throws error on permission denied", () => {
