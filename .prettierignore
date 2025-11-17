@@ -30,3 +30,4 @@ docs/security-incidents/unresolved-vulnerabilities.md
 tests/config/
 
 docs/security-incidents/*.json
+docs/security-incidents/
