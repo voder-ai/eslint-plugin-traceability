@@ -5,7 +5,7 @@
  */
 module.exports = {
   coverageProvider: "v8",
-  collectCoverageFrom: ['src/**/*.{ts,js}'],
+  collectCoverageFrom: ["src/**/*.{ts,js}"],
   preset: "ts-jest",
   testEnvironment: "node",
   testPathIgnorePatterns: ["<rootDir>/lib/"],
