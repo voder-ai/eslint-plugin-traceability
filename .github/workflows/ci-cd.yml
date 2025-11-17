@@ -87,7 +87,19 @@ jobs:
 
       - name: Release with semantic-release
         id: semantic-release
-        run: npx semantic-release
+        run: |
+          npx semantic-release 2>&1 | tee /tmp/release.log
+          
+          # Check if a release was published
+          if grep -q "Published release" /tmp/release.log; then
+            VERSION=$(grep "Published release" /tmp/release.log | sed -n 's/.*Published release \([0-9.]*\).*/\1/p')
+            echo "new_release_published=true" >> $GITHUB_OUTPUT
+            echo "new_release_version=$VERSION" >> $GITHUB_OUTPUT
+            echo "Published version: $VERSION"
+          else
+            echo "new_release_published=false" >> $GITHUB_OUTPUT
+            echo "No new release published"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
