@@ -5,11 +5,10 @@ const { spawnSync } = require("child_process");
 const fs = require("fs");
 
 // Run npm audit for dev dependencies with high threshold
-const result = spawnSync(
-  "npm",
-  ["audit", "--audit-level=high", "--json"],
-  { shell: true, encoding: "utf8" },
-);
+const result = spawnSync("npm", ["audit", "--audit-level=high", "--json"], {
+  shell: true,
+  encoding: "utf8",
+});
 
 // Ensure the output directory exists
 const outputDir = "docs/security-incidents";
