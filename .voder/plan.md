@@ -1,13 +1,13 @@
 ## NOW
-Modify the ESLint configuration (`eslint.config.js`) to lower the `max-lines-per-function` rule threshold from 90 to 80.
+Modify `.github/workflows/ci-cd.yml` to add an `npm publish --access public` step (using the `NPM_TOKEN` secret) in the `publish` job immediately after the quality‐checks have passed.
 
 ## NEXT
-- Reduce the ESLint `max-lines` per-file threshold from 400 to 350 and refactor any files that exceed the new limit.  
-- Migrate the standalone `cli-integration.js` tests into the Jest test suite to eliminate the custom runner.  
-- Rename `tests/basic.test.ts` and `tests/index.test.ts` to descriptive filenames that reflect the feature or module under test.
+- Update the `smoke-test` job in `.github/workflows/ci-cd.yml` to install the newly published package from npm into a temporary directory (e.g. `npm install <package>@latest`) and run a basic smoke test (such as invoking `eslint --print-config` or a sample lint check against fixture code).  
+- Remove the existing `npm pack` step from the `publish` job so that only `npm publish` runs.  
+- Append `npm run type-check` to the Husky `pre-commit` hook in `.husky/pre-commit` to catch type errors before commits.
 
 ## LATER
-- Continue ratcheting ESLint thresholds downward (e.g. in 5–10 line increments) until reaching defaults, refactoring as needed.  
-- Monitor and optimize unit‐test execution times to keep each test fast (< 100 ms).  
-- Add new edge‐case unit tests to cover any remaining untested branches in maintenance utilities.  
-- Once code quality and testing support both exceed 90%, perform a full functionality reassessment.
+- Introduce a post-deployment “health-check” job in CI that spins up an isolated environment (Docker, Codespaces, etc.), installs the published package, and verifies end-to-end plugin behavior.  
+- Adopt semantic-release (or a similar tool) to fully automate version bumps, tagging, and CHANGELOG generation on each publish.  
+- Schedule automated dependency audits and update PRs via GitHub Actions (Dependabot/renovate).  
+- Continue ratcheting ESLint thresholds and refactoring per the incremental ratcheting ADR.
