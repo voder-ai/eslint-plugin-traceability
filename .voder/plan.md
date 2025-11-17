@@ -1,12 +1,13 @@
 ## NOW
-Update the CI/CD workflow (`.github/workflows/ci-cd.yml`) to replace the `npm publish --dry-run` step with a real `npm publish --access public` invocation that runs automatically on every push to `main` when `secrets.NPM_TOKEN` is set.
+Add a dependency override for the vulnerable `tar` package in `package.json` to pin it to version ≥ 6.1.11.
 
 ## NEXT
-- Remove the committed `lib/` build artifacts from version control (`git rm -r --cached lib/`) and add `lib/` to `.gitignore`.  
-- Refactor the CI job to build once, upload the compiled artifacts as a workflow artifact, and then download them in the publish step to ensure correct artifact tracking.  
-- Consolidate quality‐check and deploy steps into a single `quality-and-deploy` job that gates on `secrets.NPM_TOKEN` and publishes without manual approval.
+- Run `npm install` to regenerate `package-lock.json` and commit the updated lockfile.  
+- Update tests that create temporary directories (e.g. in `detectStaleAnnotations`) to clean up their temp folders using `afterAll` or `finally` blocks.  
+- Adjust ESLint maintainability rules: lower `max-lines-per-function` to 70 and `max-lines-per-file` to 300; refactor any files/functions that exceed those limits.  
+- Correct user-facing documentation: add missing CHANGELOG entries for v1.0.4 and v1.0.5 (or align the `package.json` version), and move the ESLint v9 setup guide from `docs/` into `user-docs/`, updating README links accordingly.
 
 ## LATER
-- Introduce semantic-release (or a similar tool) to automate version bumps, changelog generation, Git tagging, and npm publication.  
-- Add a post-deployment health-check job that installs the just-published package and runs an end-to-end ESLint plugin smoke test.  
-- Periodically review and ratchet CI security and dependency audit thresholds to maintain a robust release pipeline.
+- Document and publish an incremental plan for ratcheting up complexity and size rules in `docs/decisions/`.  
+- Integrate a CI job that fails on any moderate-severity audit findings and schedules periodic dependency-health checks.  
+- After foundation improvements are complete, proceed with the functionality assessment and begin new feature work.
