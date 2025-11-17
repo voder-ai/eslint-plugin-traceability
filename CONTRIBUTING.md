@@ -27,26 +27,28 @@ When submitting a pull request (PR):
 
 ## Commit Message Conventions
 
-We follow [Conventional Commits](https://www.conventionalcommits.org/) format. Commit messages should be structured as:
+We follow [Conventional Commits](https://www.conventionalcommits.org/) format to enable automated semantic versioning and changelog generation.
+
+For detailed guidelines and examples, see [docs/conventional-commits-guide.md](docs/conventional-commits-guide.md).
+
+Commit messages should be structured as:
 
 ```
-tag: short description
+type[optional scope]: description
 
-optional body explaining why the change was made
+[optional body]
 
-optional footer (e.g., BREAKING CHANGE: ...)
+[optional footer(s)]
 ```
 
-Common commit types:
+Examples:
 
-- `feat:` A new feature
-- `fix:` A bug fix
-- `docs:` Documentation only changes
-- `style:` Code style changes (formatting, linting)
-- `refactor:` Code changes that neither fix a bug nor add a feature
-- `perf:` Performance improvements
-- `test:` Adding or updating tests
-- `chore:` Other changes that do not modify src or test files
+- `feat: add new validation rule` → minor version increment
+- `fix: resolve parsing issue` → patch version increment
+- `feat!: change API interface` → major version increment
+- `docs: update README` → no version change
+
+Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`
 
 ## Coding Style and Quality Checks
 

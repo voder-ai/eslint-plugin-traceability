@@ -1,5 +1,5 @@
 ---
-status: "accepted"
+status: "superseded"
 date: 2025-11-17
 decision-makers: [Development Team]
 consulted:
@@ -9,6 +9,8 @@ consulted:
     Semantic Versioning Specification,
   ]
 informed: [Project Stakeholders, CI/CD Pipeline Maintainers]
+superseded-by: "006-semantic-release-for-automated-publishing"
+superseded-date: "2025-11-17"
 ---
 
 # Automated Version Bumping for CI/CD Publishing
