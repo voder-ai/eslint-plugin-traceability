@@ -3,7 +3,7 @@
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-PLUGIN-STRUCTURE - plugin exports rules and configs
  */
-import plugin, { rules, configs } from "../lib/index";
+import plugin, { rules, configs } from "../src/index";
 
 describe("Traceability ESLint Plugin (Story 001.0-DEV-PLUGIN-SETUP)", () => {
   it("[REQ-PLUGIN-STRUCTURE] plugin exports rules and configs", () => {
