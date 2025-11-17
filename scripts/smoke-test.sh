@@ -4,14 +4,20 @@ set -e
 echo "🧪 Running smoke test for eslint-plugin-traceability"
 echo ""
 
+# Pack the package first
+echo "📦 Packing the package..."
+tarball=$(npm pack 2>&1 | tail -1)
+echo "   Created: $tarball"
+
 # Create temporary directory
 workdir=$(mktemp -d)
 echo "📁 Created test directory: $workdir"
 
 # Cleanup on exit
 cleanup() {
-  echo "🧹 Cleaning up test directory"
+  echo "🧹 Cleaning up test directory and tarball"
   rm -rf "$workdir"
+  rm -f "$tarball"
 }
 trap cleanup EXIT
 
@@ -21,9 +27,9 @@ cd "$workdir"
 echo "📦 Initializing npm project..."
 npm init -y > /dev/null
 
-# Install the local package
-echo "📥 Installing eslint-plugin-traceability from local build..."
-npm install "$OLDPWD" > /dev/null
+# Install the packed tarball
+echo "📥 Installing eslint-plugin-traceability from packed tarball..."
+npm install "$OLDPWD/$tarball" > /dev/null
 
 # Create ESLint config (CommonJS format)
 echo "⚙️  Creating ESLint config..."
