@@ -73,6 +73,21 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Prepare version for publish
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current package.json version: $CURRENT_VERSION"
+
+          # Check if this version exists on npm
+          if npm view eslint-plugin-traceability@$CURRENT_VERSION version >/dev/null 2>&1; then
+            echo "Version $CURRENT_VERSION already exists on npm, incrementing..."
+            npm version patch --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "Bumped version to: $NEW_VERSION"
+          else
+            echo "Version $CURRENT_VERSION is available, proceeding with publish"
+          fi
+
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
