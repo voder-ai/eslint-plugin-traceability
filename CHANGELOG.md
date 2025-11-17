@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.5] - 2025-11-17
+
+### Changed
+- Lowered maintainability thresholds to 70 lines/function and 300 lines/file in ESLint config.
+- Added override for 'tar' package to mitigate moderate vulnerabilities.
+
+## [1.0.4] - 2025-11-17
+
+### Fixed
+- Ensured temporary directories are cleaned up in maintenance tests for detect and update functions.
+- Refactored valid-req-reference rule to reduce function length and added explicit type annotations.
+
 ## [1.0.3] - 2025-11-17
 
 ### Added
