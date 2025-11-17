@@ -89,7 +89,9 @@ tests.forEach((test) => {
     console.log(`✓ ${test.name}`);
   } else {
     console.error(`✗ ${test.name}`);
-    console.error(`  Expected exit code ${test.expectedStatus}, got ${result.status}`);
+    console.error(
+      `  Expected exit code ${test.expectedStatus}, got ${result.status}`,
+    );
     if (result.stdout) console.error(`  stdout: ${result.stdout}`);
     if (result.stderr) console.error(`  stderr: ${result.stderr}`);
     failures++;

@@ -127,13 +127,13 @@ Coverage reports will be generated in the `coverage/` directory.
 
 ## CLI Integration
 
-The `cli-integration.js` script runs end-to-end CLI integration tests for the plugin, verifying behavior when used via the ESLint CLI.
+The `cli-integration.js` script runs end-to-end CLI integration tests for the plugin, verifying behavior when used via the ESLint CLI. Note: this script lives at the project root.
 
 Usage:
 
 ```bash
 # Run the CLI integration tests
-node cli-integration.js
+node ./cli-integration.js
 ```
 
 This script executes tests that:

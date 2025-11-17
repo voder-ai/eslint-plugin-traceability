@@ -27,9 +27,7 @@ yarn add --dev eslint-plugin-traceability@^1.0.0
 // eslint.config.js (ESLint v9 flat config)
 import traceability from "eslint-plugin-traceability";
 
-export default [
-  traceability.configs.recommended,
-];
+export default [traceability.configs.recommended];
 ```
 
 ## 3. New and Updated Rules
