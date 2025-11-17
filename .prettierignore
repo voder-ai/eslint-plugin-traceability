@@ -25,3 +25,4 @@ eslint.config.js
 # Ignore CLI integration files
 cli-integration.js
 docs/cli-integration.md
+docs/security-incidents/unresolved-vulnerabilities.md
