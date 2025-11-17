@@ -46,27 +46,17 @@ jobs:
         run: npm audit --audit-level=high
 
   publish:
-    name: Publish Package
+    name: Publish Package (Dry Run)
     needs: quality-checks
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.NPM_TOKEN != '' }}
-    env:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js for publish
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org/'
-          always-auth: true
-
-      - name: Configure npm auth
-        run: |
-          echo "registry=https://registry.npmjs.org/" > .npmrc
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
 
       - name: Install dependencies
         run: npm ci
@@ -74,20 +64,31 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Publish to npm
+      - name: Publish to npm (Dry Run)
         run: npm publish --access public --dry-run
 
   smoke-test:
-    name: Post-Deployment Smoke Test
+    name: Smoke Test Packaged Plugin
     needs: publish
-    if: ${{ needs.publish.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Smoke Test Published Package
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Pack plugin
+        run: npm pack
+
+      - name: Smoke Test Plugin Tarball
         run: |
-          mkdir temp-eslint-test
-          cd temp-eslint-test
+          mkdir temp
+          cd temp
           npm init -y
-          npm install eslint@^9.0.0 eslint-plugin-traceability@latest --no-save
+          npm install ../*.tgz --no-save
           echo '{"plugins":["traceability"],"rules":{}}' > .eslintrc.json
           npx eslint --print-config .
