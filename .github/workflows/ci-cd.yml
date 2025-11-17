@@ -67,15 +67,8 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Configure npm for publish
-        run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish package to npm
-        run: npm publish --access public --dry-run
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Pack package
+        run: npm pack
 
   smoke-test:
     name: Post-Deployment Smoke Test
