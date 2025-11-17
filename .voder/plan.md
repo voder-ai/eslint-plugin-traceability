@@ -1,11 +1,14 @@
 ## NOW
-Modify the `"license"` field in `package.json` from `"ISC"` to `"MIT"` so it exactly matches the text of the root `LICENSE` file.
+Update the CI audit step in `.github/workflows/ci-cd.yml` to run `npm audit --audit-level=moderate` (remove the `--production` flag) so that both production and development dependencies are scanned.
 
 ## NEXT
-- Update the Husky pre-push hook to run `npm audit --production --audit-level=moderate` and fail on any moderate-or-higher vulnerabilities.  
-- Update the GitHub Actions CI workflow (`.github/workflows/ci-cd.yml`) to use `npm audit --production --audit-level=moderate` in its audit step.  
-- Add a new scheduled “dependency-health” job in the CI workflow that runs daily, executes `npm audit --production --audit-level=moderate`, and fails the run (blocking merges) if any moderate-or-higher issues are found.
+- Modify the Husky pre-push hook (`.husky/pre-push`) to run `npm audit --audit-level=moderate` instead of only auditing production deps.
+- Update the scheduled `dependency-health` job in `.github/workflows/ci-cd.yml` to run `npm audit --audit-level=moderate`, ensuring dev dependencies are included.
+- Run `npm audit --audit-level=moderate` locally, identify all moderate-severity vulnerabilities, and apply upgrades, patches, or overrides as appropriate.
+- Document any remaining unpatchable vulnerabilities in `docs/security-incidents/unresolved-vulnerabilities.md`, noting dates and remediation status.
 
 ## LATER
-- After audit hooks and the scheduled dependency-health job are in place and passing, proceed with the full functionality assessment and resume feature development.  
-- Establish a cadence for reviewing and applying updates or overrides as new vulnerabilities emerge.
+- Establish an ongoing vulnerability‐review cadence: add a documented process for triaging new audit findings and assigning ownership.
+- After the audit hooks and scheduled job pass reliably, resume the full functionality assessment and feature roadmap.
+- Consider integrating a periodic notification (e.g., Slack or email) for new audit failures to ensure timely attention.
+- Evaluate adding a third-party monitoring tool (e.g., Snyk) if moderate issues persist beyond acceptable windows.
