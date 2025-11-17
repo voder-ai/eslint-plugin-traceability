@@ -1,9 +1,13 @@
-```markdown
 ---
 status: "accepted"
 date: 2025-11-17
 decision-makers: [Development Team]
-consulted: [GitHub Actions Documentation, Super-Linter Community, actionlint Documentation]
+consulted:
+  [
+    GitHub Actions Documentation,
+    Super-Linter Community,
+    actionlint Documentation,
+  ]
 informed: [Project Contributors, CI/CD Pipeline Maintainers]
 ---
 
@@ -11,17 +15,16 @@ informed: [Project Contributors, CI/CD Pipeline Maintainers]
 
 ## Context and Problem Statement
 
-The project uses GitHub Actions for CI/CD workflows defined in `.github/workflows/`. To ensure workflow reliability and prevent configuration errors that could break the build pipeline, we need to implement validation for GitHub Actions YAML files. This validation should catch syntax errors, invalid action references, misconfigured job dependencies, and security vulnerabilities before they reach the main branch.
+The project uses GitHub Actions for CI/CD workflows defined in `.github/workflows/`. To prevent broken GitHub Actions files from being pushed to the repository, we need to implement pre-commit validation for GitHub Actions YAML files. This validation should catch syntax errors, invalid action references, and misconfigured job dependencies before they are committed, as broken workflow files could prevent CI/CD from running at all.
 
 ## Decision Drivers
 
-- Need for pre-commit validation to catch errors early in development
+- Need for pre-commit validation to prevent broken GitHub Actions files from being pushed
 - Performance requirements for fast local development workflows
-- Comprehensive validation covering syntax, semantics, and security
-- Integration with existing development tools and CI/CD pipeline
+- Prevention of workflow files that would break CI/CD execution
+- Integration with existing development tools and pre-commit hooks
 - Maintainability and configuration simplicity
 - Resource efficiency for local development environments
-- Security vulnerability detection in workflow configurations
 
 ## Considered Options
 
@@ -52,71 +55,60 @@ Chosen option: "actionlint only (for both pre-commit and CI/CD)", because it pro
 Implementation compliance will be confirmed through:
 
 - actionlint configured in `.pre-commit-config.yaml`
-- actionlint integrated into CI/CD workflow
 - Pre-commit hook blocks commits with GitHub Actions validation errors
-- CI/CD pipeline fails on GitHub Actions validation issues
 - actionlint configured to validate files in `.github/workflows/`
-- Documentation updated to explain validation approach
+- Documentation updated to explain pre-commit validation approach
+
+### Key Changes to CI/CD Workflow
+
+- Consolidated build, test, publish, and smoke-test into a single `CI/CD Pipeline` workflow
+- Implemented a Node.js version matrix to run workflows against multiple Node.js versions
+- Added a conditional publish step that only runs on Node.js `20.x`
+- Utilized `actions/upload-artifact` and `actions/download-artifact` for artifact management between steps
+- Removed standalone `publish` and `smoke-test` jobs in favor of the unified workflow
 
 ## Pros and Cons of the Options
 
-### actionlint only (for both pre-commit and CI/CD)
+### actionlint for pre-commit hooks only
 
-Lightweight, focused tool for all GitHub Actions validation.
+Lightweight, focused pre-commit validation to prevent broken GitHub Actions files.
+
+- Good, because fast execution without container overhead
+- Good, because specifically designed for GitHub Actions validation
+- Good, because no Docker dependencies for local development
+- Good, because simple configuration and maintenance
+- Good, because excellent performance for pre-commit hooks
+- Good, because prevents broken workflow files from being pushed
+- Good, because minimal tooling - only runs where validation is needed
+- Neutral, because focused scope reduces complexity
+- Neutral, because CI/CD validation unnecessary if workflows execute successfully
+- Bad, because limited to GitHub Actions validation only
+- Bad, because no security vulnerability detection in pre-commit phase
+
+### actionlint for both pre-commit and CI/CD
+
+Validation in both development and CI/CD environments.
 
 - Good, because fast execution in all environments
 - Good, because specifically designed for GitHub Actions
-- Good, because no container dependencies
-- Good, because simple configuration and maintenance
-- Good, because excellent performance for pre-commit hooks
-- Good, because consistent validation across development and CI/CD
+- Good, because consistent validation across environments
 - Neutral, because focused scope reduces complexity
+- Bad, because unnecessary duplication - CI/CD execution validates workflow correctness
+- Bad, because adds CI/CD overhead for validation that's already proven by execution
 - Bad, because limited to GitHub Actions validation only
-- Bad, because no security vulnerability detection (no zizmor)
-- Bad, because misses validation of other workflow-related files
 
-### actionlint for pre-commit hooks + Super-Linter for CI/CD
+### Super-Linter for pre-commit hooks
 
-Hybrid approach using lightweight tool for development and comprehensive tool for CI/CD.
+Comprehensive linting solution for pre-commit validation.
 
-- Good, because actionlint provides fast pre-commit validation without container overhead
-- Good, because Super-Linter provides comprehensive security and syntax validation
-- Good, because separates concerns: quick feedback vs thorough validation
-- Good, because actionlint is specifically designed for GitHub Actions
-- Good, because Super-Linter includes zizmor for security vulnerability detection
-- Good, because pre-commit catches most issues before CI/CD execution
-- Neutral, because requires configuration maintenance for two tools
-- Bad, because more complex than single-tool approach
-- Bad, because potential for validation rule inconsistencies
-
-### Super-Linter only (for both pre-commit and CI/CD)
-
-Single comprehensive linting solution for all validation needs.
-
-- Good, because single tool reduces configuration complexity
 - Good, because comprehensive validation including security checks
-- Good, because consistent validation rules across environments
 - Good, because validates multiple file types beyond GitHub Actions
 - Neutral, because well-maintained and widely adopted
 - Bad, because container overhead makes pre-commit hooks slow
 - Bad, because heavy resource usage for simple syntax checking
 - Bad, because Docker dependency required for local development
 - Bad, because not optimized for frequent pre-commit execution
-
-### actionlint only (for both pre-commit and CI/CD)
-
-Lightweight, focused tool for all GitHub Actions validation.
-
-- Good, because fast execution in all environments
-- Good, because specifically designed for GitHub Actions
-- Good, because no container dependencies
-- Good, because simple configuration and maintenance
-- Good, because excellent performance for pre-commit hooks
-- Neutral, because focused scope reduces complexity
-- Bad, because limited to GitHub Actions validation only
-- Bad, because no security vulnerability detection (no zizmor)
-- Bad, because misses validation of other workflow-related files
-- Bad, because less comprehensive than multi-tool solutions
+- Bad, because overkill for the specific problem of preventing broken workflow files
 
 ### GitHub's built-in validation only
 
@@ -127,28 +119,25 @@ Rely solely on GitHub's native workflow validation.
 - Good, because validated by the same system that executes workflows
 - Neutral, because basic validation is always performed
 - Bad, because no pre-commit validation for early error detection
-- Bad, because limited to basic syntax checking only
-- Bad, because no security vulnerability analysis
+- Bad, because broken files can be pushed, preventing CI/CD execution
 - Bad, because errors only discovered after push to repository
 - Bad, because no local development feedback
 
 ## More Information
 
-This decision supports the CI/CD pipeline reliability requirements and development workflow efficiency. Using actionlint consistently across both development and CI/CD environments ensures validation rule consistency and reduces configuration complexity.
+This decision focuses on solving the specific problem of preventing broken GitHub Actions files from being pushed to the repository. If CI/CD workflows execute successfully, the files are validated by definition - there's no need for redundant validation in the CI/CD pipeline itself.
 
-actionlint configuration should be added to `.pre-commit-config.yaml` targeting `.github/workflows/*.yml` files. The same actionlint validation should be integrated into the CI/CD workflow to maintain consistency.
+actionlint configuration should be added to `.pre-commit-config.yaml` targeting `.github/workflows/*.yml` files to catch syntax and configuration errors before commit.
 
 The decision should be re-evaluated if:
-- Security vulnerability detection becomes a requirement
-- Comprehensive multi-language linting becomes necessary
+
+- Security vulnerability detection becomes a requirement for pre-commit validation
+- Comprehensive multi-language linting becomes necessary for pre-commit
 - Alternative tools with better GitHub Actions-specific features emerge
-- Performance requirements change significantly
+- The problem scope expands beyond preventing broken workflow files
 
 Related resources:
 
 - [actionlint Documentation](https://github.com/rhymond/actionlint)
-- [Super-Linter GitHub Actions Configuration](https://github.com/marketplace/actions/super-linter)
 - [GitHub Actions Workflow Syntax](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions)
-- [zizmor Security Analysis](https://github.com/woodruffw/zizmor)
-
-```
+- [Pre-commit Framework](https://pre-commit.com/)
