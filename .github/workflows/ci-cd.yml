@@ -95,5 +95,13 @@ jobs:
           cd "$workdir"
           npm init -y > /dev/null
           npm install eslint-plugin-traceability > /dev/null
-          echo '{"plugins":["traceability"],"rules":{}}' > .eslintrc.json
-          npx eslint --print-config .
+          cat > eslint.config.js << 'EOF'
+          import traceability from 'eslint-plugin-traceability';
+          export default [
+            {
+              plugins: { traceability },
+              rules: {}
+            }
+          ];
+          EOF
+          npx eslint --print-config eslint.config.js
