@@ -10,30 +10,28 @@ import { updateAnnotationReferences } from "../../src/maintenance/update";
 
 describe("updateAnnotationReferences isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
   it("[REQ-MAINT-UPDATE] updates @story annotations in files", () => {
-    // Create a temporary directory for testing
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-"));
-    const filePath = path.join(tmpDir, "file.ts");
-    const originalContent = `
+    try {
+      const filePath = path.join(tmpDir, "file.ts");
+      const originalContent = `
 /**
  * @story old.path.md
  */
 function foo() {}
 `;
-    fs.writeFileSync(filePath, originalContent, "utf8");
+      fs.writeFileSync(filePath, originalContent, "utf8");
 
-    // Run the function under test
-    const count = updateAnnotationReferences(
-      tmpDir,
-      "old.path.md",
-      "new.path.md",
-    );
-    expect(count).toBe(1);
+      const count = updateAnnotationReferences(
+        tmpDir,
+        "old.path.md",
+        "new.path.md",
+      );
+      expect(count).toBe(1);
 
-    // Verify the file content was updated
-    const updatedContent = fs.readFileSync(filePath, "utf8");
-    expect(updatedContent).toContain("@story new.path.md");
-
-    // Cleanup temporary directory
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+      const updatedContent = fs.readFileSync(filePath, "utf8");
+      expect(updatedContent).toContain("@story new.path.md");
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
   });
 });
