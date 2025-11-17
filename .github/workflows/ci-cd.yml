@@ -57,7 +57,7 @@ jobs:
           name: build-artifact
 
       - name: Publish to npm
-        if: ${{ secrets.NPM_TOKEN }}
+        if: ${{ matrix.node-version == '20.x' && secrets.NPM_TOKEN }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public
