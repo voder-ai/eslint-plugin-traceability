@@ -86,46 +86,14 @@ jobs:
         run: npm run build
 
       - name: Release with semantic-release
+        id: semantic-release
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Smoke test published package
+        if: steps.semantic-release.outputs.new_release_published == 'true'
         run: |
-          echo "Smoke testing eslint-plugin-traceability"
-          
-          # Wait for npm registry to propagate (max 2 minutes)
-          echo "Waiting for package to be available on npm registry..."
-          for i in {1..24}; do
-            if npm view eslint-plugin-traceability time.modified > /dev/null 2>&1; then
-              echo "Package found on registry"
-              sleep 5  # Give it a bit more time to fully propagate
-              break
-            fi
-            echo "Attempt $i/24: Package not yet available, waiting..."
-            sleep 5
-          done
-          
-          workdir=$(mktemp -d)
-          cd "$workdir"
-          npm init -y > /dev/null
-          
-          # Install with --prefer-online to avoid stale cache
-          echo "Installing latest version from registry..."
-          npm install eslint-plugin-traceability --prefer-online
-          
-          # Verify it loaded correctly
-          node -e "const pkg = require('eslint-plugin-traceability'); if (!pkg.rules) throw new Error('Package did not load correctly')"
-          
-          cat > eslint.config.js << 'EOF'
-          const traceability = require('eslint-plugin-traceability');
-          module.exports = [
-            {
-              plugins: { traceability },
-              rules: {}
-            }
-          ];
-          EOF
-          npx eslint --print-config eslint.config.js > /dev/null
-          echo "✅ Smoke test passed!"
+          chmod +x scripts/smoke-test.sh
+          ./scripts/smoke-test.sh "${{ steps.semantic-release.outputs.new_release_version }}"
