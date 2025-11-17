@@ -8,7 +8,8 @@ import { spawnSync, SpawnSyncReturns } from "child_process";
 import path from "path";
 
 // Ensure ESLint CLI uses built plugin
-const eslintBin = path.resolve(__dirname, "../../node_modules/.bin/eslint");
+const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
+const eslintBin = path.join(eslintPkgDir, "bin", "eslint.js");
 const configPath = path.resolve(__dirname, "../../eslint.config.js");
 
 describe("ESLint CLI Integration (Story 001.0-DEV-PLUGIN-SETUP)", () => {
@@ -30,7 +31,7 @@ describe("ESLint CLI Integration (Story 001.0-DEV-PLUGIN-SETUP)", () => {
       "--rule",
       rule,
     ];
-    return spawnSync("node", [eslintBin, ...args], {
+    return spawnSync(process.execPath, [eslintBin, ...args], {
       encoding: "utf-8",
       input: code,
     });
