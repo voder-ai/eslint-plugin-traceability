@@ -1,15 +1,14 @@
 ## NOW  
-Upgrade the vulnerable `@semantic-release/npm` package to its patched release by running  
-```
-npm install @semantic-release/npm@latest --save-dev
-```
+Lower the ESLint `max-lines-per-function` rule from 65 to 60 in `eslint.config.js`.
 
 ## NEXT  
-- Rerun `npm audit --omit=dev --audit-level=high` and upgrade any remaining high-severity production dependencies until the audit reports zero issues.  
-- Upgrade or patch all devDependencies flagged in `docs/security-incidents/dev-deps-high.json`.  
-- Fix the Jest coverage configuration: switch to the V8 coverage provider in `jest.config.js`, re-enable the `coverageThreshold` settings, and verify that `npm run test -- --coverage` completes without errors.  
+- Run `npm run lint` to identify functions now violating the 60-line limit, refactor each to comply, and commit the fixes.  
+- Execute `npm audit --omit=dev --audit-level=high`, upgrade all remaining high-severity production dependencies until the audit reports zero issues, and commit the updated lockfile.  
+- Upgrade every devDependency listed in `docs/security-incidents/dev-deps-high.json` to its patched version and update that incident report.  
+- Update `.github/workflows/ci-cd.yml` to enforce `npm audit --audit-level=high` on both production and dev dependencies and fail the build on any moderate-or-higher findings.
 
 ## LATER  
-- Integrate coverage collection into the CI/CD pipeline and Husky pre-push hook (e.g. run `npm run test -- --coverage`) to enforce coverage thresholds automatically.  
-- Lower the production audit threshold to “moderate” and add a scheduled GitHub Actions job to run high- and moderate-severity audits (weekly or bi-weekly).  
-- Update `SECURITY.md` and `CONTRIBUTING.md` with formal remediation timelines, incident-reporting procedures, and dependency-upgrade guidelines.
+- Define and implement an incremental ratcheting plan for ESLint (60 → 55 → 50 lines) and integrate those thresholds into CI quality gates.  
+- Add a scheduled GitHub Actions job for weekly high- and moderate-severity dependency audits with automated notifications.  
+- Expand `SECURITY.md` and `CONTRIBUTING.md` with formal remediation timelines, incident-reporting procedures, and dependency-upgrade guidelines.  
+- Automate creation of new security-incident entries using `SECURITY-INCIDENT-TEMPLATE.md` for any future unresolved vulnerabilities.
