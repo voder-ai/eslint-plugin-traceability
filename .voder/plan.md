@@ -1,13 +1,13 @@
 ## NOW
-Add a dependency override for the vulnerable `tar` package in `package.json` to pin it to version ≥ 6.1.11.
+Upgrade `semantic-release` (and its `@semantic-release/npm` plugin) in `package.json` to the latest versions that include a patched `node-tar` dependency.
 
 ## NEXT
-- Run `npm install` to regenerate `package-lock.json` and commit the updated lockfile.  
-- Update tests that create temporary directories (e.g. in `detectStaleAnnotations`) to clean up their temp folders using `afterAll` or `finally` blocks.  
-- Adjust ESLint maintainability rules: lower `max-lines-per-function` to 70 and `max-lines-per-file` to 300; refactor any files/functions that exceed those limits.  
-- Correct user-facing documentation: add missing CHANGELOG entries for v1.0.4 and v1.0.5 (or align the `package.json` version), and move the ESLint v9 setup guide from `docs/` into `user-docs/`, updating README links accordingly.
+- Run `npm install` to update `package-lock.json`.
+- Execute `npm audit --production --audit-level=moderate` and confirm no moderate-or-higher vulnerabilities remain.
+- For any remaining findings, apply dependency overrides or bump additional packages until the audit passes at “moderate” level.
+- Create or update security-incident reports in `docs/security-incidents/` (e.g. js-yaml and tar) using the project’s incident-template to document each remediation.
 
 ## LATER
-- Document and publish an incremental plan for ratcheting up complexity and size rules in `docs/decisions/`.  
-- Integrate a CI job that fails on any moderate-severity audit findings and schedules periodic dependency-health checks.  
-- After foundation improvements are complete, proceed with the functionality assessment and begin new feature work.
+- Update CI and Husky pre-push hooks to run `npm audit --production --audit-level=moderate` and fail on any moderate+ vulnerabilities.
+- Introduce a scheduled “dependency-health” CI job that blocks merges when new vulnerabilities are detected.
+- Once audit compliance is solidified, proceed with the full functionality assessment and resume feature work.
