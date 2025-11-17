@@ -146,7 +146,14 @@ function handleComment(
   const rawLines = comment.value.split(/\r?\n/);
   for (const rawLine of rawLines) {
     const line = rawLine.trim().replace(/^\*+\s*/, "");
-    storyPath = handleAnnotationLine(line, comment, context, cwd, reqCache, storyPath);
+    storyPath = handleAnnotationLine(
+      line,
+      comment,
+      context,
+      cwd,
+      reqCache,
+      storyPath,
+    );
   }
   return storyPath;
 }
