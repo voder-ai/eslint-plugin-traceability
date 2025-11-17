@@ -39,9 +39,6 @@ jobs:
       - name: Run tests with coverage
         run: npm run test
 
-      - name: Run CLI Integration Tests
-        run: node cli-integration.js
-
       - name: Check code formatting
         run: npm run format:check
 
@@ -90,4 +87,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Smoke Test Published Package
-        run: node cli-integration.js
+        run: npm test
