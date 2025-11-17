@@ -10,7 +10,7 @@ module.exports = {
   testEnvironment: "node",
   testPathIgnorePatterns: ["<rootDir>/lib/"],
   testMatch: ["<rootDir>/tests/**/*.test.ts"],
-  coveragePathIgnorePatterns: ["<rootDir>/lib/"],
+  coveragePathIgnorePatterns: ["<rootDir>/lib/", "<rootDir>/node_modules/"],
   coverageThreshold: {
     global: {
       branches: 47,
