@@ -1,24 +1,16 @@
-**Plan to Implement Incomplete User Stories (Raise Functionality Coverage Above 90%)**
-
 ## NOW
-Implement the first missing story (`docs/stories/002.0-DEV-ESLINT-CONFIG.story.md`) by adding JSON‐schema validation for plugin options and writing tests to verify both valid and invalid configurations are accepted or rejected.
+Create a new Architecture Decision Record at  
+docs/decisions/code-quality-ratcheting-plan.md  
+that defines an incremental schedule to tighten our ESLint `max-lines-per-function` (70 → 65 → 60 → 55 → 50) and complexity thresholds, including metrics, timeline, and success criteria.
 
 ## NEXT
-- Complete the remaining five incomplete stories in priority order:  
-  1. Add customizable path patterns for story annotations per `002.0` acceptance criteria.  
-  2. Implement error handling and user‐friendly messages when config validation fails.  
-  3. Write end‐to‐end tests for the new ESLint config options.  
-  4. Integrate each feature into the flat config exports (`recommended`/`strict` presets).  
-  5. Update the user‐docs to document new config options and validation behavior.  
-
-- For each story:  
-  - Read the acceptance criteria in its markdown.  
-  - Write failing tests first (verify behavior).  
-  - Implement minimal code to make tests pass.  
-  - Refactor and annotate code with `@story`/`@req` tags.  
-  - Update docs and README with links and examples.
+- Update `eslint.config.js` to lower `max-lines-per-function` to the first ratchet value (65).  
+- Add a CI lint step that fails if any function exceeds 65 lines.  
+- Run the updated lint rules locally, generate a report of offending functions, and refactor the top offenders in `src/` to comply with the 65-line limit.  
+- Commit these changes and verify the CI/CD pipeline passes with the new threshold enforced.
 
 ## LATER
-- Run a full test suite and ESLint run to confirm functionality coverage > 90%.  
-- Add CI badge showing “Requirements Coverage” or link to new requirement‐tracking report.  
-- Schedule a retrospective ADR to document lessons learned integrating stories incrementally.
+- Once no functions exceed 65 lines, increment the threshold down to 60, then 55, then finally 50 in subsequent sprints.  
+- After reaching 50 lines, remove the explicit override to revert to ESLint’s default.  
+- Introduce additional ratcheting for `max-lines-per-file` and `max-params` rules.  
+- Update CONTRIBUTING.md and developer docs to document the finalized code-quality standards and ratcheting process.
