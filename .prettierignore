@@ -26,3 +26,5 @@ eslint.config.js
 cli-integration.js
 docs/cli-integration.md
 docs/security-incidents/unresolved-vulnerabilities.md
+
+tests/config/
