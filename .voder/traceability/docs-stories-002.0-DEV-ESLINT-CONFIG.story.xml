@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/002.0-DEV-ESLINT-CONFIG.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-11-17T13:55:27.380Z</last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-11-17T16:36:23.122Z</last_validated>
   <last_modified>2025-11-16T00:07:54.396Z</last_modified>
-  <evidence>1) The plugin exports both `configs.recommended` and `configs.strict` (src/index.ts) and tests in `tests/plugin-default-export-and-configs.test.ts` verify the presence and contents of these presets.
-2) The flat‐config file `eslint.config.js` follows ESLint v9 best practices (array of config objects, `files`, `languageOptions`, `plugins`, `rules`, `ignores`) and is annotated with `@story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md` and `@req REQ-FLAT-CONFIG`.
-3) Integration via CLI in `cli-integration.js` succeeds for missing/present annotation and invalid path cases (all ✓).
-4) Documentation for setup is provided in `user-docs/eslint-9-setup-guide.md` and `docs/config-presets.md`, covering JS, TS, mixed projects, recommended vs. strict presets, and troubleshooting.
-5) Rule metadata for `valid-story-reference` includes a JSON schema for configuration options (`storyDirectories`, `allowAbsolutePaths`, `requireStoryExtension`), satisfying customizable paths and config validation.
-6) `npm test`, `npm run lint`, and CLI integration tests all complete without errors.</evidence>
-  <notes>All acceptance criteria for 002.0-DEV-ESLINT-CONFIG are implemented. The plugin provides recommended and strict presets, uses ESLint v9 flat config, integrates smoothly in CLI scenarios, includes clear user documentation, supports customization via rule options, and leverages JSON schema for config validation. Tests and lints pass, demonstrating correct behavior.</notes>
+  <evidence>1. No tests reference or verify docs/stories/002.0-DEV-ESLINT-CONFIG.story.md (search for “002.0” in tests yields nothing).
+2. eslint.config.js provides a flat config and imports plugin.configs.*, but there is no implementation for REQ-CUSTOMIZABLE-PATHS (no option to customize story file patterns) or REQ-CONFIG-VALIDATION (no JSON-Schema or runtime validation of invalid config options).
+3. No CLI helper or generator for initial setup, and no code to gracefully catch and report invalid configuration options—error handling acceptance criteria unimplemented.
+4. Documentation (`docs/config-presets.md`, `docs/eslint-9-setup-guide.md`) covers setup and examples but lacks a troubleshooting guide or error-handling section.</evidence>
+  <notes>While basic presets (recommended/strict) and ESLint v9 flat config usage are present and documented, several acceptance criteria remain unmet: customizable paths, configuration-option validation, explicit error handling, and accompanying tests for this story are missing.</notes>
 </traceability>

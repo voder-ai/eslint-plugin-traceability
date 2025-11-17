@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-11-17T13:53:27.468Z</last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-11-17T16:34:01.972Z</last_validated>
   <last_modified>2025-11-16T00:07:54.419Z</last_modified>
-  <evidence>1) tests/rules/require-branch-annotation.test.ts references docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md and all valid/invalid RuleTester cases pass (npm test succeeds).  
-2) src/rules/require-branch-annotation.ts implements an ESLint visitor for all specified branch node types and reports/fixes missing @story/@req.  
-3) docs/rules/require-branch-annotation.md provides documentation with examples.  
-4) src/index.ts exports the rule and it is included in configs.recommended/strict; plugin-default-export-and-configs.test.ts passes.  
-5) Lint and build pipelines (npm run lint, npm run build) complete without errors.</evidence>
-  <notes>All six acceptance‐criteria boxes in the story are satisfied: the core rule detects missing annotations, follows ESLint best practices, handles nested/blank‐line cases, emits clear messages, has documentation, and integrates into the plugin. Tests exercise both valid and invalid branch cases and all pass. Therefore the story implementation is complete.</notes>
+  <evidence>The rule’s implementation in src/rules/require-branch-annotation.ts defines meta.schema = [] (no options) and the documentation (docs/rules/require-branch-annotation.md) explicitly states “This rule does not accept any options.” However, the story’s requirements include REQ-CONFIGURABLE-SCOPE (“Allow configuration of which branch types require annotations”), and there are no tests covering any configuration or option to limit branch types. The absence of a configurable schema and corresponding tests indicates that REQ-CONFIGURABLE-SCOPE has not been implemented.</evidence>
+  <notes>All core detection and reporting functionality is implemented, tested, and documented, but the story’s requirement for a configurable scope of branch types is missing. To fully satisfy the story, the rule must accept and honor configuration options specifying which branch nodes to enforce.</notes>
 </traceability>

@@ -1,13 +1,24 @@
+**Plan to Implement Incomplete User Stories (Raise Functionality Coverage Above 90%)**
+
 ## NOW
-Remove the ESLint override that disables the `complexity` and `max-lines-per-function` rules for `src/rules/**/*.ts` and test files in `eslint.config.js`, so those rules are enforced again.
+Implement the first missing story (`docs/stories/002.0-DEV-ESLINT-CONFIG.story.md`) by adding JSON‐schema validation for plugin options and writing tests to verify both valid and invalid configurations are accepted or rejected.
 
 ## NEXT
-- Run `npm run lint` to surface all `complexity` and `max-lines-per-function` violations in plugin source and tests.  
-- Refactor or split any functions in `src/rules/` and tests that exceed the configured thresholds until the lint run passes with zero violations.  
-- Add the “Created autonomously by voder.ai” attribution header to `user-docs/eslint-9-setup-guide.md`.  
-- Insert a link to `user-docs/migration-guide.md` in the README under the Documentation section.
+- Complete the remaining five incomplete stories in priority order:  
+  1. Add customizable path patterns for story annotations per `002.0` acceptance criteria.  
+  2. Implement error handling and user‐friendly messages when config validation fails.  
+  3. Write end‐to‐end tests for the new ESLint config options.  
+  4. Integrate each feature into the flat config exports (`recommended`/`strict` presets).  
+  5. Update the user‐docs to document new config options and validation behavior.  
+
+- For each story:  
+  - Read the acceptance criteria in its markdown.  
+  - Write failing tests first (verify behavior).  
+  - Implement minimal code to make tests pass.  
+  - Refactor and annotate code with `@story`/`@req` tags.  
+  - Update docs and README with links and examples.
 
 ## LATER
-- Add a CI reporting step or badge for complexity/function-length metrics to track regressions.  
-- Audit remaining user-facing docs to ensure all have the required attribution and accurate navigation links.  
-- Periodically revisit and tighten the `complexity` and `max-lines-per-function` thresholds if maintainability allows.
+- Run a full test suite and ESLint run to confirm functionality coverage > 90%.  
+- Add CI badge showing “Requirements Coverage” or link to new requirement‐tracking report.  
+- Schedule a retrospective ADR to document lessons learned integrating stories incrementally.

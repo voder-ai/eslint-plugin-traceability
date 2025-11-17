@@ -2,10 +2,11 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-17T13:52:12.731Z</last_validated>
+  <last_validated>2025-11-17T16:33:50.909Z</last_validated>
   <last_modified>2025-11-16T00:07:54.454Z</last_modified>
-  <evidence>1) No source files or tests reference docs/stories/007.0-DEV-ERROR-REPORTING.story.md.
-2) The existing ESLint rules (003–006) define generic error messages (e.g. "Missing @story annotation") and do not implement the detailed, actionable messaging (REQ-ERROR-SPECIFIC, REQ-ERROR-LOCATION, REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-CONSISTENCY, REQ-ERROR-SEVERITY) required by story 007.0.
-3) No unit or integration tests verify the enhanced error‐message format or content for annotation violations.</evidence>
-  <notes>The story for clear, actionable error reporting (007.0) has no implementation or tests. The current rules only provide basic, generic messages and do not satisfy any of the acceptance criteria for this story.</notes>
+  <evidence>1) No rule or code changes targeting docs/stories/007.0-DEV-ERROR-REPORTING.story.md were found in src/rules.
+2) Tests do not reference story 007.0 or verify enhanced error messages—no tests named or annotated for 007.0-DEV-ERROR-REPORTING.
+3) Existing messages in src/rules/* use generic messageIds (e.g. "missingStory") and message text (e.g. "Missing @story annotation (REQ-ANNOTATION-REQUIRED)") without suggestions, context, or ESLint suggest API usage as required by REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-SEVERITY.
+4) No documentation of error‐message templates or formatting guidelines was added.</evidence>
+  <notes>The 007.0-DEV-ERROR-REPORTING story defines acceptance criteria and requirements for improved, actionable error messages, but there is no implementation or test coverage for it. The existing plugin rules still emit basic/generic messages and lack suggested fixes, context, severity distinctions, or documentation. This story has not been implemented.</notes>
 </traceability>

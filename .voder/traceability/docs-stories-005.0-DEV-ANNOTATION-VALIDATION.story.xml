@@ -2,17 +2,12 @@
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-17T13:52:50.121Z</last_validated>
+  <last_validated>2025-11-17T16:34:36.818Z</last_validated>
   <last_modified>2025-11-16T00:07:54.431Z</last_modified>
-  <evidence>• src/rules/valid-annotation-format.ts implements the rule with JSDoc @story and @req tags referencing docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md and includes regex checks for story paths and req IDs.
-• tests/rules/valid-annotation-format.test.ts covers valid and invalid @story/@req patterns (inline and block), and `npm test` passes with no failures.
-• docs/rules/valid-annotation-format.md provides format specification and examples of valid and invalid annotations.
-• The rule is exported in src/index.ts and included in the plugin’s recommended config.</evidence>
-  <notes>All acceptance criteria are satisfied:
-- Core functionality for syntax/format validation is implemented and tested.
-- ESLint rule follows best practices (meta, docs, messages, schema).
-- Multiline and flexible parsing are supported.
-- Clear error messages (invalidStoryFormat vs invalidReqFormat).
-- Documentation updated with examples.
-Thus, the annotation format validation feature is fully implemented.</notes>
+  <evidence>• Found and inspected src/rules/valid-annotation-format.ts implementing the @story/@req format checks with regex patterns matching the spec.  
+• The rule is correctly wired up in src/index.ts under the "valid-annotation-format" key.  
+• There is comprehensive test coverage in tests/rules/valid-annotation-format.test.ts, including valid and invalid cases for missing path, bad extension, missing req ID, and malformed req IDs.  
+• All existing tests pass (97.17% overall coverage, 100% on valid-annotation-format.ts) when running `npm test -- --coverage --silent`.  
+• Documentation exists at docs/rules/valid-annotation-format.md with examples of correct and incorrect annotation formats.</evidence>
+  <notes>All acceptance criteria for story 005.0-DEV-ANNOTATION-VALIDATION have been satisfied: core functionality is present and tested, error messages are specific, the rule integrates with the plugin, edge cases are handled via regex and line splitting, and documentation is up to date.</notes>
 </traceability>

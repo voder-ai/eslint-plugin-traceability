@@ -2,14 +2,8 @@
 <traceability>
   <specification>docs/stories/001.0-DEV-PLUGIN-SETUP.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-17T13:52:40.547Z</last_validated>
+  <last_validated>2025-11-17T16:35:51.299Z</last_validated>
   <last_modified>2025-11-16T00:07:54.385Z</last_modified>
-  <evidence>• Unit tests passed (jest coverage 95%+)
-• CLI integration tests passed (all scenarios ✓)
-• src/index.ts exports `rules` and `configs` as expected
-• eslint.config.js flat-config example loads plugin with error fallback
-• README includes install & configuration instructions
-• package.json is structured as npm package (main, types, files)
-• TypeScript sources with tsconfig, linting, build & test scripts in place</evidence>
-  <notes>All acceptance criteria and requirements for story 001.0-DEV-PLUGIN-SETUP have been satisfied: the plugin registers and loads without errors, supports ESLint v9 flat config, is written in TypeScript with proper package structure, includes docs and setup instructions, and has comprehensive unit and CLI integration tests.</notes>
+  <evidence>1) All unit tests passed (jest --ci --bail): plugin-setup.test.ts, plugin-default-export-and-configs.test.ts and all rule tests succeed with 97%+ coverage. 2) CLI integration script (cli-integration.js) passes all scenarios against ESLint v9 flat config. 3) `src/index.ts` exports `rules` and `configs` as expected. 4) `package.json` is configured as a publishable npm package (main, types, files). 5) README.md and docs/ contain installation, usage, flat-config examples, and development guides. 6) eslint.config.js demonstrates flat-config integration with try/catch error handling for missing build. 7) smoke-test.sh installs and verifies the plugin in a clean project, confirming install/configure UX and error-handling.</evidence>
+  <notes>The foundational ESLint plugin structure meets all acceptance criteria and requirements: it registers and loads rules without errors, follows plugin conventions, integrates with ESLint v9 flat config, provides clear install/config instructions, includes error handling for missing builds, is fully documented, written in TypeScript, packaged correctly, and has comprehensive test coverage (unit, integration, smoke).</notes>
 </traceability>

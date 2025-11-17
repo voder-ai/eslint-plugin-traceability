@@ -2,12 +2,11 @@
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-17T13:52:36.628Z</last_validated>
+  <last_validated>2025-11-17T16:35:21.904Z</last_validated>
   <last_modified>2025-11-16T00:07:54.405Z</last_modified>
-  <evidence>- The implementation in `src/rules/require-story-annotation.ts` and `require-req-annotation.ts` only registers a visitor for `FunctionDeclaration`, but the story’s REQ-FUNCTION-DETECTION requires detection of function declarations, expressions, arrow functions, and class methods.
-- Schema for both rules is an empty array; there is no support for REQ-CONFIGURABLE-SCOPE (configurable which functions to check) or REQ-EXPORT-PRIORITY (prioritizing exported functions).
-- No code branches handle TypeScript-specific syntax (decorators, parameter properties) or other AST node types (`ArrowFunctionExpression`, `FunctionExpression`, `MethodDefinition`).
-- Tests in `tests/rules/require-*.test.ts` only cover plain function declarations, not arrow functions, expressions, class methods, or malformed JSDoc edge cases.
-- Documentation (docs/rules/*.md) shows no examples of configuration options and confirms schema `[]`, contradicting the story’s requirement for “configuration options”.</evidence>
-  <notes>While basic functionality for simple function declarations is implemented and tested, the core requirements around full function detection, configurability, export priority, and TypeScript support are missing or incomplete. Therefore the story’s acceptance criteria are not fully met.</notes>
+  <evidence>- The `require-req-annotation` rule only implements a listener for `FunctionDeclaration` nodes; it does not detect or enforce `@req` annotations on function expressions, arrow functions, or class methods as required by REQ-FUNCTION-DETECTION.
+- No tests exist for `require-req-annotation` on arrow functions or function expressions; tests only cover `FunctionDeclaration`.
+- The documentation for `require-story-annotation` (docs/rules/require-story-annotation.md) incorrectly states that the rule accepts no options (`schema: []`), while the implementation’s schema supports `scope` and `exportPriority` options.
+- No tests verify TypeScript-specific syntax, decorators, or mixed JS/TS codebases, despite the acceptance criterion for TypeScript support.</evidence>
+  <notes>While the plugin provides separate rules and tests for `@story` and `@req` annotations, it fails to fully implement REQ-FUNCTION-DETECTION for the `@req` rule (missing support for non-declaration functions) and has documentation mismatches. Therefore, not all acceptance criteria are met.</notes>
 </traceability>

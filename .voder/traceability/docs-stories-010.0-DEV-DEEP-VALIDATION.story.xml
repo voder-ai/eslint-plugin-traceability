@@ -2,10 +2,14 @@
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-17T13:53:48.546Z</last_validated>
+  <last_validated>2025-11-17T16:35:32.819Z</last_validated>
   <last_modified>2025-11-16T00:07:54.487Z</last_modified>
-  <evidence>The rule `valid-req-reference` is implemented in `src/rules/valid-req-reference.ts` with JSDoc annotations pointing to `docs/stories/010.0-DEV-DEEP-VALIDATION.story.md` and requirement IDs `REQ-DEEP-PARSE`, `REQ-DEEP-MATCH`, `REQ-DEEP-CACHE`, and path‐validation logic (`REQ-DEEP-PATH`). It parses story files (via regex), caches results, and reports two clear error messages (`invalidPath` and `reqMissing`).
-
-Unit tests in `tests/rules/valid-req-reference.test.ts` reference the story file, cover valid and invalid cases (including bullet‐list fixtures in `tests/fixtures/story_bullet.md`), and the full test suite passes (see Jest output – 95.57% statements, tests exit code 0). Documentation exists in `docs/rules/valid-req-reference.md` with examples and references back to the story file.</evidence>
-  <notes>All acceptance criteria are met: core functionality works (REQ annotations are matched against actual content), it integrates with existing validation logic, handles path errors, provides clear messages, caches parsing, and is documented with examples. Tests pass and trace back to the story, satisfying end-to-end deep validation.</notes>
+  <evidence>- Found and read the deep-validation specification at docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+- Implementation present in src/rules/valid-req-reference.ts with @story and @req traceability tags
+- Rule logic parses and caches story files, extracts REQ- identifiers, reports clear errors for missing IDs and invalid paths
+- Documentation for the rule exists in docs/rules/valid-req-reference.md with examples
+- Unit tests in tests/rules/valid-req-reference.test.ts cover valid and invalid scenarios (path traversal, missing IDs, bullet-list fixture), referencing the story file
+- `npm test` (Jest) passed without errors and shows coverage for valid-req-reference
+</evidence>
+  <notes>The deep validation ESLint rule correctly implements REQ-DEEP-PARSE, REQ-DEEP-MATCH, REQ-DEEP-CACHE and REQ-DEEP-PATH requirements, integrates with existing annotation logic, provides clear error messages, handles malformed or missing files gracefully, and is documented and tested. All acceptance criteria are satisfied.</notes>
 </traceability>

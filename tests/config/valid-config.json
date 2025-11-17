@@ -1,0 +1,13 @@
+{
+  "plugins": { "traceability": {} },
+  "rules": {
+    "traceability/valid-story-reference": [
+      "error",
+      {
+        "storyDirectories": ["docs/stories"],
+        "allowAbsolutePaths": true,
+        "requireStoryExtension": false
+      }
+    ]
+  }
+}
