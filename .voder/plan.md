@@ -1,13 +1,11 @@
 ## NOW
-Upgrade `semantic-release` (and its `@semantic-release/npm` plugin) in `package.json` to the latest versions that include a patched `node-tar` dependency.
+Modify the `"license"` field in `package.json` from `"ISC"` to `"MIT"` so it exactly matches the text of the root `LICENSE` file.
 
 ## NEXT
-- Run `npm install` to update `package-lock.json`.
-- Execute `npm audit --production --audit-level=moderate` and confirm no moderate-or-higher vulnerabilities remain.
-- For any remaining findings, apply dependency overrides or bump additional packages until the audit passes at “moderate” level.
-- Create or update security-incident reports in `docs/security-incidents/` (e.g. js-yaml and tar) using the project’s incident-template to document each remediation.
+- Update the Husky pre-push hook to run `npm audit --production --audit-level=moderate` and fail on any moderate-or-higher vulnerabilities.  
+- Update the GitHub Actions CI workflow (`.github/workflows/ci-cd.yml`) to use `npm audit --production --audit-level=moderate` in its audit step.  
+- Add a new scheduled “dependency-health” job in the CI workflow that runs daily, executes `npm audit --production --audit-level=moderate`, and fails the run (blocking merges) if any moderate-or-higher issues are found.
 
 ## LATER
-- Update CI and Husky pre-push hooks to run `npm audit --production --audit-level=moderate` and fail on any moderate+ vulnerabilities.
-- Introduce a scheduled “dependency-health” CI job that blocks merges when new vulnerabilities are detected.
-- Once audit compliance is solidified, proceed with the full functionality assessment and resume feature work.
+- After audit hooks and the scheduled dependency-health job are in place and passing, proceed with the full functionality assessment and resume feature development.  
+- Establish a cadence for reviewing and applying updates or overrides as new vulnerabilities emerge.
