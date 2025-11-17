@@ -3,7 +3,6 @@
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-BRANCH-DETECTION - Detect significant code branches for traceability annotations
  */
-/* eslint-disable complexity, max-lines-per-function */
 
 /**
  * Gather leading comments for a node, with fallback for SwitchCase.
@@ -11,7 +10,7 @@
  * @req REQ-BRANCH-DETECTION - Gather comments including fallback scanning
  */
 function gatherCommentText(sourceCode: any, node: any): string {
-  if (node.type === 'SwitchCase') {
+  if (node.type === "SwitchCase") {
     const lines = sourceCode.lines;
     const startLine = node.loc.start.line;
     let i = startLine - 1;
@@ -27,10 +26,10 @@ function gatherCommentText(sourceCode: any, node: any): string {
         break;
       }
     }
-    return fallbackComments.join(' ');
+    return fallbackComments.join(" ");
   }
   const comments = sourceCode.getCommentsBefore(node) || [];
-  return comments.map((c: any) => c.value).join(' ');
+  return comments.map((c: any) => c.value).join(" ");
 }
 
 /**
@@ -111,10 +110,8 @@ export default {
       TryStatement: (node: any) => checkBranchNode(sourceCode, context, node),
       CatchClause: (node: any) => checkBranchNode(sourceCode, context, node),
       ForStatement: (node: any) => checkBranchNode(sourceCode, context, node),
-      ForOfStatement: (node: any) =>
-        checkBranchNode(sourceCode, context, node),
-      ForInStatement: (node: any) =>
-        checkBranchNode(sourceCode, context, node),
+      ForOfStatement: (node: any) => checkBranchNode(sourceCode, context, node),
+      ForInStatement: (node: any) => checkBranchNode(sourceCode, context, node),
       WhileStatement: (node: any) => checkBranchNode(sourceCode, context, node),
       DoWhileStatement: (node: any) =>
         checkBranchNode(sourceCode, context, node),

@@ -43,10 +43,95 @@ function findAncestorNode(node: any, types: string[]): any {
 }
 
 /**
+ * Determine if node should be checked based on scope and exportPriority.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-OPTIONS-SCOPE
+ * @req REQ-EXPORT-PRIORITY
+ * @req REQ-UNIFIED-CHECK
+ */
+function shouldCheckNode(
+  node: any,
+  scope: string[],
+  exportPriority: string,
+): boolean {
+  if (
+    node.type === "FunctionExpression" &&
+    node.parent?.type === "MethodDefinition"
+  ) {
+    return false;
+  }
+  if (!scope.includes(node.type)) {
+    return false;
+  }
+  const exported = isExportedNode(node);
+  if (
+    (exportPriority === "exported" && !exported) ||
+    (exportPriority === "non-exported" && exported)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Resolve the AST node to annotate or check.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-UNIFIED-CHECK
+ */
+function resolveTargetNode(sourceCode: any, node: any): any {
+  let target: any = node;
+  if (node.type === "FunctionDeclaration") {
+    const exp = findAncestorNode(node, [
+      "ExportNamedDeclaration",
+      "ExportDefaultDeclaration",
+    ]);
+    if (exp) {
+      target = exp;
+    }
+  } else if (
+    node.type === "FunctionExpression" ||
+    node.type === "ArrowFunctionExpression"
+  ) {
+    const exp = findAncestorNode(node, [
+      "ExportNamedDeclaration",
+      "ExportDefaultDeclaration",
+    ]);
+    if (exp) {
+      target = exp;
+    } else {
+      const anc = findAncestorNode(node, [
+        "VariableDeclaration",
+        "ExpressionStatement",
+      ]);
+      if (anc) {
+        target = anc;
+      }
+    }
+  } else if (node.type === "MethodDefinition") {
+    target = node;
+  }
+  return target;
+}
+
+/**
+ * Check if the target node has @story annotation.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ */
+function hasStoryAnnotation(sourceCode: any, target: any): boolean {
+  const jsdoc = sourceCode.getJSDocComment(target);
+  if (jsdoc?.value.includes("@story")) {
+    return true;
+  }
+  const comments = sourceCode.getCommentsBefore(target) || [];
+  return comments.some((c: any) => c.value.includes("@story"));
+}
+
+/**
  * Check for @story annotation on function-like nodes.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-UNIFIED-CHECK - Implement unified checkNode for all supported node types
- * @req REQ-ANNOTATION-REQUIRED - Require @story annotation on functions
+ * @req REQ-UNIFIED-CHECK
+ * @req REQ-ANNOTATION-REQUIRED
  */
 function checkStoryAnnotation(
   sourceCode: any,
@@ -55,81 +140,26 @@ function checkStoryAnnotation(
   scope: string[],
   exportPriority: string,
 ) {
-  // Skip nested function expressions inside methods
-  if (
-    node.type === "FunctionExpression" &&
-    node.parent &&
-    node.parent.type === "MethodDefinition"
-  ) {
+  if (!shouldCheckNode(node, scope, exportPriority)) {
     return;
   }
-
-  if (!scope.includes(node.type)) {
+  const target = resolveTargetNode(sourceCode, node);
+  if (hasStoryAnnotation(sourceCode, target)) {
     return;
   }
-
-  const exported = isExportedNode(node);
-  if (
-    (exportPriority === "exported" && !exported) ||
-    (exportPriority === "non-exported" && exported)
-  ) {
-    return;
-  }
-
-  let target: any = node;
-  if (node.type === "FunctionDeclaration") {
-    const parentExport = findAncestorNode(node, [
-      "ExportNamedDeclaration",
-      "ExportDefaultDeclaration",
-    ]);
-    if (parentExport) {
-      target = parentExport;
-    }
-  } else if (
-    node.type === "FunctionExpression" ||
-    node.type === "ArrowFunctionExpression"
-  ) {
-    const exportAnc = findAncestorNode(node, [
-      "ExportNamedDeclaration",
-      "ExportDefaultDeclaration",
-    ]);
-    if (exportAnc) {
-      target = exportAnc;
-    } else {
-      const variableAnc = findAncestorNode(node, [
-        "VariableDeclaration",
-        "ExpressionStatement",
-      ]);
-      if (variableAnc) {
-        target = variableAnc;
-      }
-    }
-  } else if (node.type === "MethodDefinition") {
-    target = node;
-  }
-
-  // Check for @story in JSDoc or preceding comments
-  const jsdoc = sourceCode.getJSDocComment(target);
-  const commentsBefore = sourceCode.getCommentsBefore(target) || [];
-  const hasStory =
-    (jsdoc && jsdoc.value.includes("@story")) ||
-    commentsBefore.some((comment: any) => comment.value.includes("@story"));
-
-  if (!hasStory) {
-    context.report({
-      node,
-      messageId: "missingStory",
-      fix(fixer: any) {
-        const indentLevel = target.loc.start.column;
-        const indent = " ".repeat(indentLevel);
-        const insertPos = target.range[0] - indentLevel;
-        return fixer.insertTextBeforeRange(
-          [insertPos, insertPos],
-          `${indent}/** @story <story-file>.story.md */\n`,
-        );
-      },
-    });
-  }
+  context.report({
+    node,
+    messageId: "missingStory",
+    fix(fixer: any) {
+      const indentLevel = target.loc.start.column;
+      const indent = " ".repeat(indentLevel);
+      const insertPos = target.range[0] - indentLevel;
+      return fixer.insertTextBeforeRange(
+        [insertPos, insertPos],
+        `${indent}/** @story <story-file>.story.md */\n`,
+      );
+    },
+  });
 }
 
 export default {
