@@ -49,7 +49,9 @@ jobs:
     name: Publish Package
     needs: quality-checks
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.NPM_TOKEN != '' }}
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -61,6 +63,11 @@ jobs:
           registry-url: 'https://registry.npmjs.org/'
           always-auth: true
 
+      - name: Configure npm auth
+        run: |
+          echo "registry=https://registry.npmjs.org/" > .npmrc
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
+
       - name: Install dependencies
         run: npm ci
 
@@ -68,13 +75,12 @@ jobs:
         run: npm run build
 
       - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --dry-run
 
   smoke-test:
     name: Post-Deployment Smoke Test
     needs: publish
+    if: ${{ needs.publish.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Smoke Test Published Package
