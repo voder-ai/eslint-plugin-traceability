@@ -21,3 +21,7 @@ CHANGELOG.md
 *.log
 package.json
 eslint.config.js
+
+# Ignore CLI integration files
+cli-integration.js
+docs/cli-integration.md
