@@ -96,8 +96,8 @@ jobs:
           npm init -y > /dev/null
           npm install eslint-plugin-traceability > /dev/null
           cat > eslint.config.js << 'EOF'
-          import traceability from 'eslint-plugin-traceability';
-          export default [
+          const traceability = require('eslint-plugin-traceability');
+          module.exports = [
             {
               plugins: { traceability },
               rules: {}

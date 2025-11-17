@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "duplication": "jscpd src tests --reporters console --threshold 3",
+    "smoke-test": "./scripts/smoke-test.sh",
     "prepare": "husky install"
   },
   "lint-staged": {
