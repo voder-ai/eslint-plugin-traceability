@@ -1,0 +1,21 @@
+# Include lib directory even though it's in .gitignore
+!lib/
+
+# Exclude development files
+.github/
+.husky/
+.voder/
+coverage/
+node_modules/
+src/
+tests/
+*.test.ts
+*.test.js
+.env
+.env.*
+!.env.example
+tsconfig.json
+jest.config.js
+eslint.config.js
+.prettierrc
+.prettierignore
