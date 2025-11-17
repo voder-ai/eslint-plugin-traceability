@@ -1,7 +1,7 @@
 {
   "name": "eslint-plugin-traceability",
   "version": "1.0.5",
-  "description": "",
+  "description": "A customizable ESLint plugin that enforces traceability annotations in your code, ensuring each implementation is linked to its requirement or test case.",
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
   "files": [
