@@ -2,10 +2,10 @@
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-16T17:03:50.351Z</last_validated>
+  <last_validated>2025-11-17T13:53:48.546Z</last_validated>
   <last_modified>2025-11-16T00:07:54.487Z</last_modified>
-  <evidence>- src/rules/valid-req-reference.ts implements deep validation logic with AST comment parsing, path resolution, caching, regex-based requirement extraction, and reports both invalidPath and reqMissing messages.
-- Tests in tests/rules/valid-req-reference.test.ts cover valid references (including bullet-list fixture), missing requirements, path traversal, and absolute paths, all passing under Jest: exit code 0, coverage report included.
-- Documentation in docs/rules/valid-req-reference.md and docs/stories/010.0-DEV-DEEP-VALIDATION.story.md align, and the plugin builds, lints, type-checks, and tests successfully (npm test shows 96%+ statements, 84%+ branches overall).</evidence>
-  <notes>The implementation provides the required core functionality for deep requirement content validation: it parses story files, matches @req IDs, handles path errors, caches content, reports clear errors, and is fully tested. All acceptance criteria are satisfied.</notes>
+  <evidence>The rule `valid-req-reference` is implemented in `src/rules/valid-req-reference.ts` with JSDoc annotations pointing to `docs/stories/010.0-DEV-DEEP-VALIDATION.story.md` and requirement IDs `REQ-DEEP-PARSE`, `REQ-DEEP-MATCH`, `REQ-DEEP-CACHE`, and path‐validation logic (`REQ-DEEP-PATH`). It parses story files (via regex), caches results, and reports two clear error messages (`invalidPath` and `reqMissing`).
+
+Unit tests in `tests/rules/valid-req-reference.test.ts` reference the story file, cover valid and invalid cases (including bullet‐list fixtures in `tests/fixtures/story_bullet.md`), and the full test suite passes (see Jest output – 95.57% statements, tests exit code 0). Documentation exists in `docs/rules/valid-req-reference.md` with examples and references back to the story file.</evidence>
+  <notes>All acceptance criteria are met: core functionality works (REQ annotations are matched against actual content), it integrates with existing validation logic, handles path errors, provides clear messages, caches parsing, and is documented with examples. Tests pass and trace back to the story, satisfying end-to-end deep validation.</notes>
 </traceability>

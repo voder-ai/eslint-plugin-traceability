@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-11-16T17:05:08.140Z</last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-11-17T13:53:25.924Z</last_validated>
   <last_modified>2025-11-16T00:07:54.476Z</last_modified>
-  <evidence>- src/maintenance/detect.ts, update.ts, batch.ts, report.ts, utils.ts implement all six REQ-MAINT-* requirements with JSDoc @story and @req annotations.  
-- tests/maintenance/detect.test.ts & detect-isolated.test.ts cover REQ-MAINT-DETECT (detectStaleAnnotations).  
-- tests/maintenance/update.test.ts & update-isolated.test.ts cover REQ-MAINT-UPDATE (updateAnnotationReferences).  
-- tests/maintenance/batch.test.ts cover REQ-MAINT-BATCH and REQ-MAINT-VERIFY (batchUpdateAnnotations, verifyAnnotations).  
-- tests/maintenance/report.test.ts covers REQ-MAINT-REPORT (generateMaintenanceReport) and implicitly REQ-MAINT-SAFE.  
-- npm test (Jest) runs all tests with 100% passing, maintaining >96% coverage in maintenance code.  
-- Code preserves formatting, handles missing directories, nested structures, permission errors, and writes updates safely.  
-</evidence>
-  <notes>All acceptance criteria for story 009.0-DEV-MAINTENANCE-TOOLS are satisfied: core functionality, quality standards, integration, UX feedback, error handling, and documentation via JSDoc and test coverage. Maintenance tools are fully implemented and validated by tests.</notes>
+  <evidence>Found implementation for REQ-MAINT-DETECT, REQ-MAINT-UPDATE, REQ-MAINT-BATCH, REQ-MAINT-VERIFY, and REQ-MAINT-REPORT in src/maintenance with accompanying Jest tests (all passing). However, acceptance criteria for “User Experience” (no CLI interface or user feedback messages implemented), “Documentation” (no usage docs or best practices under docs/), and integration with existing ESLint config (no hooks or CLI integration) are not met. No CLI tool or file‐watching support is provided, and no documentation/examples exist for maintenance tools.</evidence>
+  <notes>While core functions and tests are implemented, key acceptance criteria (CLI UX, documentation, and integration) remain unaddressed.</notes>
 </traceability>

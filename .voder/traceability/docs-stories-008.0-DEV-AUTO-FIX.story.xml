@@ -2,8 +2,8 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-16T17:04:59.379Z</last_validated>
+  <last_validated>2025-11-17T13:53:32.817Z</last_validated>
   <last_modified>2025-11-16T00:07:54.465Z</last_modified>
-  <evidence>Assessment error: 400 This model's maximum context length is 200000 tokens. However, your messages resulted in 206091 tokens (204696 in the messages, 1395 in the functions). Please reduce the length of the messages or functions.</evidence>
-  <notes>Technical error during assessment</notes>
+  <evidence>No ESLint rules or tests implement or reference auto-fix functionality specific to story 008.0-DEV-AUTO-FIX. There are no fixer functions in the format-validation, story-reference, or req-reference rules, and no tests or code mention "008.0-DEV-AUTO-FIX" or implement REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-PRESERVE, REQ-AUTOFIX-TEMPLATE, or REQ-AUTOFIX-SELECTIVE. Only basic missing-annotation fixes exist from earlier stories (003 and 004).</evidence>
+  <notes>The auto-fix story 008 has no corresponding implementation or tests. Core auto-fix acceptance criteria for formatting, template configuration, selective fixes, and safe-preserve fixes are not met.</notes>
 </traceability>

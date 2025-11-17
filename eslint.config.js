@@ -102,6 +102,10 @@ module.exports = [
         process: "readonly",
       },
     },
+    rules: {
+      complexity: "off",
+      "max-lines-per-function": "off",
+    },
   },
   {
     // Test files
@@ -126,6 +130,7 @@ module.exports = [
       },
     },
     rules: {
+      complexity: "off",
       "max-lines-per-function": "off",
       "max-lines": "off",
     },

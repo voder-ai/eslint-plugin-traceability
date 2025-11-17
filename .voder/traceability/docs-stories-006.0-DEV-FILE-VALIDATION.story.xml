@@ -2,8 +2,12 @@
 <traceability>
   <specification>docs/stories/006.0-DEV-FILE-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-16T17:03:17.855Z</last_validated>
+  <last_validated>2025-11-17T13:52:48.570Z</last_validated>
   <last_modified>2025-11-16T00:07:54.445Z</last_modified>
-  <evidence>Found src/rules/valid-story-reference.ts with full implementation of REQ-FILE-EXISTENCE, REQ-PATH-RESOLUTION, REQ-SECURITY-VALIDATION, REQ-PERFORMANCE-OPTIMIZATION (caching), REQ-PROJECT-BOUNDARY, and REQ-CONFIGURABLE-PATHS, all annotated with @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md. Corresponding tests in tests/rules/valid-story-reference.test.ts cover valid and invalid scenarios (file exists, extension check, path traversal, absolute paths) and reference the story and requirement IDs. package.json scripts include Jest run, and CI reports 100% passing tests and high coverage.</evidence>
-  <notes>The valid-story-reference rule meets all acceptance criteria: core functionality, ESLint best practices, integration with format validation, clear error messages, and documented examples. Tests confirm correct behavior across file system scenarios.</notes>
+  <evidence>- Found story file at docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+- Implementation in src/rules/valid-story-reference.ts includes all REQ-* checks (existence, path resolution, security, extension, project boundary, caching for performance, configurable directories).
+- Documentation in docs/rules/valid-story-reference.md with examples and configuration options.
+- Tests in tests/rules/valid-story-reference.test.ts cover valid references and invalid cases (missing file, wrong extension, path traversal, absolute paths).
+- All tests passed (see Jest output: valid-story-reference rule tests succeeded, overall coverage 95.6%).</evidence>
+  <notes>The ESLint rule ‘valid-story-reference’ fully implements the acceptance criteria: it validates .story.md file existence, handles path resolution and security, provides clear error messages, respects configuration, caches results for performance, and includes documentation. Associated tests reference the story and all pass, confirming core functionality and integration with format validation.</notes>
 </traceability>

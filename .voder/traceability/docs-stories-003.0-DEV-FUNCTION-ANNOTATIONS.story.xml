@@ -2,8 +2,12 @@
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-16T17:03:12.326Z</last_validated>
+  <last_validated>2025-11-17T13:52:36.628Z</last_validated>
   <last_modified>2025-11-16T00:07:54.405Z</last_modified>
-  <evidence>Inspection of src/rules/require-story-annotation.ts and src/rules/require-req-annotation.ts shows only FunctionDeclaration nodes are handled (no arrow functions, function expressions, or class methods), there is no support for TypeScript‐specific syntax or parser configuration in RuleTester (only default parser used), and neither rule exposes configuration to scope which functions are checked or to prioritize exported functions. Key requirements REQ-FUNCTION-DETECTION (expressions/arrow functions), REQ-CONFIGURABLE-SCOPE, REQ-EXPORT-PRIORITY, and REQ-TYPESCRIPT-SUPPORT are not implemented.</evidence>
-  <notes>While basic function‐level detection and error reporting exist for missing @story and @req, the implementation does not satisfy the full breadth of acceptance criteria and technical requirements outlined in the story. Additional work is needed to support all function patterns, configurability, and TypeScript integration.</notes>
+  <evidence>- The implementation in `src/rules/require-story-annotation.ts` and `require-req-annotation.ts` only registers a visitor for `FunctionDeclaration`, but the story’s REQ-FUNCTION-DETECTION requires detection of function declarations, expressions, arrow functions, and class methods.
+- Schema for both rules is an empty array; there is no support for REQ-CONFIGURABLE-SCOPE (configurable which functions to check) or REQ-EXPORT-PRIORITY (prioritizing exported functions).
+- No code branches handle TypeScript-specific syntax (decorators, parameter properties) or other AST node types (`ArrowFunctionExpression`, `FunctionExpression`, `MethodDefinition`).
+- Tests in `tests/rules/require-*.test.ts` only cover plain function declarations, not arrow functions, expressions, class methods, or malformed JSDoc edge cases.
+- Documentation (docs/rules/*.md) shows no examples of configuration options and confirms schema `[]`, contradicting the story’s requirement for “configuration options”.</evidence>
+  <notes>While basic functionality for simple function declarations is implemented and tested, the core requirements around full function detection, configurability, export priority, and TypeScript support are missing or incomplete. Therefore the story’s acceptance criteria are not fully met.</notes>
 </traceability>

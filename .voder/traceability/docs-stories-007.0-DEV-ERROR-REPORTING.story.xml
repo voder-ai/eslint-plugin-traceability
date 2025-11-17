@@ -2,8 +2,10 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-16T17:04:41.461Z</last_validated>
+  <last_validated>2025-11-17T13:52:12.731Z</last_validated>
   <last_modified>2025-11-16T00:07:54.454Z</last_modified>
-  <evidence>A review of the rule implementations shows that none of the context.report() calls supply “suggest” fixes or instruction text: for example, require-story-annotation only reports messageId “missingStory” with text “Missing @story annotation” and no suggestion on how to add one. None of the rules use ESLint’s suggest API or include actionable guidance (e.g. “Add @story docs/stories/...”) or dynamic context beyond basic identifiers. The docs/rules markdown do not document full error messages or suggestions, and existing unit and CLI tests only assert that errors fire, not that they carry specific, actionable message text or locations beyond the default. </evidence>
-  <notes>The 007.0-DEV-ERROR-REPORTING story calls for clear, actionable error messages including suggested fixes, context and consistent formatting. While basic error reporting exists, there is no implementation of suggestion API, no contextual guidance, and no documentation of full message format. Therefore the story is not satisfied.</notes>
+  <evidence>1) No source files or tests reference docs/stories/007.0-DEV-ERROR-REPORTING.story.md.
+2) The existing ESLint rules (003–006) define generic error messages (e.g. "Missing @story annotation") and do not implement the detailed, actionable messaging (REQ-ERROR-SPECIFIC, REQ-ERROR-LOCATION, REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-CONSISTENCY, REQ-ERROR-SEVERITY) required by story 007.0.
+3) No unit or integration tests verify the enhanced error‐message format or content for annotation violations.</evidence>
+  <notes>The story for clear, actionable error reporting (007.0) has no implementation or tests. The current rules only provide basic, generic messages and do not satisfy any of the acceptance criteria for this story.</notes>
 </traceability>
