@@ -83,11 +83,12 @@ Chosen option: "semantic-release with conventional commits", because it provides
 - Good, because creates proper git tags and GitHub releases for traceability
 - Good, because follows conventional commits standard adopted widely in open source
 - Good, because only publishes when changes actually warrant a new release
-- Good, because maintains package.json/npm version synchronization through git operations
+- Good, because avoids package.json version drift by using git tags as source of truth
 - Good, because simplifies GitHub Actions workflow, improving validation compliance
 - Good, because provides comprehensive release management with minimal configuration
+- Good, because prevents infinite CI loops from version commits
 - Neutral, because requires team adoption of conventional commit message format
-- Neutral, because requires git write permissions in CI/CD environment
+- Neutral, because package.json version in repository may lag behind published version (git tags are source of truth)
 - Bad, because introduces dependency on semantic-release tool and its ecosystem
 - Bad, because may require learning curve for conventional commit message format
 
@@ -182,11 +183,18 @@ semantic-release configuration will include:
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
     "@semantic-release/npm",
-    "@semantic-release/git",
     "@semantic-release/github"
   ]
 }
 ```
+
+**Note**: The `@semantic-release/git` plugin is intentionally excluded. semantic-release will manage versions through git tags only, without committing version changes back to package.json. This approach:
+- Prevents infinite CI loops from version commits
+- Follows npm ecosystem best practices where tags are the source of truth
+- Keeps the repository history clean of automated version bump commits
+- Aligns with how other projects in the ecosystem use semantic-release
+
+The published npm package will have the correct version, but package.json in the repository may not reflect the latest published version. Git tags serve as the authoritative version record.
 
 Conventional commit format examples:
 
@@ -199,8 +207,10 @@ GitHub Actions workflow simplification:
 
 - Remove custom version increment logic
 - Replace with single `npx semantic-release` command
-- Add git credentials for tag and commit operations
+- Configure necessary permissions (contents:write, issues:write, pull-requests:write, id-token:write)
+- Set HUSKY=0 environment variable to disable git hooks during release
 - Maintain existing quality checks and security audits
+- Add smoke test for published package verification
 
 This decision should be re-evaluated if:
 
