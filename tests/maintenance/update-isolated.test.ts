@@ -34,4 +34,9 @@ function foo() {}
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
+
+  it("[REQ-MAINT-UPDATE] should return 0 when directory does not exist", () => {
+    const count = updateAnnotationReferences("non-existent-dir", "old.md", "new.md");
+    expect(count).toBe(0);
+  });
 });
