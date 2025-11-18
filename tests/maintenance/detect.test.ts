@@ -19,4 +19,22 @@ describe("detectStaleAnnotations (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
+
+  it("[REQ-MAINT-DETECT] should detect stale annotation references", () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "detect-stale-"));
+    try {
+      const filePath = path.join(tmpDir, "file.ts");
+      const storyName = "stale.story.md";
+      const content = `
+/**
+ * @story ${storyName}
+ */`;
+      fs.writeFileSync(filePath, content, "utf8");
+      const result = detectStaleAnnotations(tmpDir);
+      expect(result).toHaveLength(1);
+      expect(result).toContain(storyName);
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
 });

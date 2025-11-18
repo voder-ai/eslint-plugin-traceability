@@ -36,7 +36,11 @@ function foo() {}
   });
 
   it("[REQ-MAINT-UPDATE] should return 0 when directory does not exist", () => {
-    const count = updateAnnotationReferences("non-existent-dir", "old.md", "new.md");
+    const count = updateAnnotationReferences(
+      "non-existent-dir",
+      "old.md",
+      "new.md",
+    );
     expect(count).toBe(0);
   });
 });
