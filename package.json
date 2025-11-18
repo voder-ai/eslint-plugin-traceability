@@ -13,7 +13,6 @@
     "doc": "docs"
   },
   "scripts": {
-    "prelint": "npm run build",
     "build": "tsc -p tsconfig.json",
     "type-check": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
