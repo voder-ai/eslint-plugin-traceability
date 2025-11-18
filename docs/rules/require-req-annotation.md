@@ -7,7 +7,7 @@ Enforces the presence of `@req` annotations on function declarations to ensure e
 
 ## Rule Details
 
-This rule validates that every function declaration has a JSDoc comment containing an `@req` annotation.
+This rule validates that every function declaration (including TypeScript-specific function syntax such as TSDeclareFunction and TSMethodSignature) has a JSDoc comment containing an `@req` annotation.
 
 ### Options Schema
 
@@ -35,5 +35,47 @@ function initAuth() {
  */
 function initAuth() {
   // authentication logic
+}
+```
+
+### TypeScript Specific Syntax
+
+#### TSDeclareFunction
+
+Incorrect:
+
+```ts
+// Missing @req annotation
+declare function initAuth(): void;
+```
+
+Correct:
+
+```ts
+/**
+ * @req REQ-ANNOTATION-REQUIRED
+ */
+declare function initAuth(): void;
+```
+
+#### TSMethodSignature
+
+Incorrect:
+
+```ts
+// Missing @req annotation on interface method
+interface I {
+  method(): void;
+}
+```
+
+Correct:
+
+```ts
+/**
+ * @req REQ-ANNOTATION-REQUIRED
+ */
+interface I {
+  method(): void;
 }
 ```

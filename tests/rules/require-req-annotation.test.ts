@@ -6,7 +6,11 @@
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-req-annotation";
 
-const ruleTester = new RuleTester();
+const ruleTester = new RuleTester({
+  languageOptions: {
+    parserOptions: { ecmaVersion: 2022, sourceType: "module" },
+  },
+} as any);
 
 describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", () => {
   ruleTester.run("require-req-annotation", rule, {
@@ -18,6 +22,22 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
       {
         name: "[REQ-ANNOTATION-REQUIRED] valid with @story and @req annotations",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-EXAMPLE\n */\nfunction bar() {}`,
+      },
+      {
+        name: "[REQ-TYPESCRIPT-SUPPORT] valid with @req annotation on TSDeclareFunction",
+        code: `/**\n * @req REQ-EXAMPLE\n */\ndeclare function foo(): void;`,
+        languageOptions: {
+          parser: require("@typescript-eslint/parser") as any,
+          parserOptions: { ecmaVersion: 2022, sourceType: "module" },
+        },
+      },
+      {
+        name: "[REQ-TYPESCRIPT-SUPPORT] valid with @req annotation on TSMethodSignature",
+        code: `interface I {\n  /**\n   * @req REQ-EXAMPLE\n   */\n  method(): void;\n}`,
+        languageOptions: {
+          parser: require("@typescript-eslint/parser") as any,
+          parserOptions: { ecmaVersion: 2022, sourceType: "module" },
+        },
       },
     ],
     invalid: [
@@ -32,6 +52,26 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction qux() {}`,
         output: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\n/** @req <REQ-ID> */\nfunction qux() {}`,
         errors: [{ messageId: "missingReq" }],
+      },
+      {
+        name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction",
+        code: `declare function baz(): void;`,
+        output: `/** @req <REQ-ID> */\ndeclare function baz(): void;`,
+        errors: [{ messageId: "missingReq" }],
+        languageOptions: {
+          parser: require("@typescript-eslint/parser") as any,
+          parserOptions: { ecmaVersion: 2022, sourceType: "module" },
+        },
+      },
+      {
+        name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
+        code: `interface I { method(): void; }`,
+        output: `interface I { /** @req <REQ-ID> */\nmethod(): void; }`,
+        errors: [{ messageId: "missingReq" }],
+        languageOptions: {
+          parser: require("@typescript-eslint/parser") as any,
+          parserOptions: { ecmaVersion: 2022, sourceType: "module" },
+        },
       },
     ],
   });

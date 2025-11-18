@@ -2,6 +2,8 @@
  * Rule to enforce @req annotation on functions
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Require @req annotation on functions
+ * @req REQ-FUNCTION-DETECTION - Detect function declarations, expressions, arrow functions, and methods
+ * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
  */
 export default {
   meta: {
@@ -22,6 +24,50 @@ export default {
       FunctionDeclaration(node: any) {
         const jsdoc = sourceCode.getJSDocComment(node);
         if (!jsdoc || !jsdoc.value.includes("@req")) {
+          context.report({
+            node,
+            messageId: "missingReq",
+            fix(fixer: any) {
+              return fixer.insertTextBefore(node, "/** @req <REQ-ID> */\n");
+            },
+          });
+        }
+      },
+      /**
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-TYPESCRIPT-SUPPORT
+       */
+      TSDeclareFunction(node: any) {
+        const jsdoc = sourceCode.getJSDocComment(node);
+        const leading = (node as any).leadingComments || [];
+        const comments = sourceCode.getCommentsBefore(node) || [];
+        const all = [...leading, ...comments];
+        const hasReq =
+          (jsdoc && jsdoc.value.includes("@req")) ||
+          all.some((c) => c.value.includes("@req"));
+        if (!hasReq) {
+          context.report({
+            node,
+            messageId: "missingReq",
+            fix(fixer: any) {
+              return fixer.insertTextBefore(node, "/** @req <REQ-ID> */\n");
+            },
+          });
+        }
+      },
+      /**
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-TYPESCRIPT-SUPPORT
+       */
+      TSMethodSignature(node: any) {
+        const jsdoc = sourceCode.getJSDocComment(node);
+        const leading = (node as any).leadingComments || [];
+        const comments = sourceCode.getCommentsBefore(node) || [];
+        const all = [...leading, ...comments];
+        const hasReq =
+          (jsdoc && jsdoc.value.includes("@req")) ||
+          all.some((c) => c.value.includes("@req"));
+        if (!hasReq) {
           context.report({
             node,
             messageId: "missingReq",
