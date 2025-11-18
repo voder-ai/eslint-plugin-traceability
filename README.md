@@ -132,21 +132,21 @@ Coverage reports will be generated in the `coverage/` directory.
 
 ## CLI Integration
 
-The `cli-integration.js` script runs end-to-end CLI integration tests for the plugin, verifying behavior when used via the ESLint CLI. Note: this script lives at the project root.
+Integration tests for the ESLint CLI plugin are included in the Jest test suite under `tests/integration/cli-integration.test.ts`.
 
-Usage:
+To run only the CLI integration tests:
 
 ```bash
-# Run the CLI integration tests
-node ./cli-integration.js
+npm test -- tests/integration/cli-integration.test.ts
 ```
 
-This script executes tests that:
+Or run the full test suite:
 
-- Report an error when the `@story` annotation is missing.
-- Do not report an error when the `@story` annotation is present.
+```bash
+npm test
+```
 
-The CLI integration tests are also executed automatically in CI under the `integration-tests` job.
+These tests verify end-to-end behavior of the plugin via the ESLint CLI.
 
 ## Documentation Links
 

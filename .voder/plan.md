@@ -1,12 +1,12 @@
 ## NOW
-Modify the Husky pre-push hook (`.husky/pre-push`) to run `npm run build` as the first step, ensuring local build verification before tests and lint.
+Update the user-facing README.md to remove all references to the non-existent `cli-integration.js` script and replace them with instructions for running the integration tests via `npm test`, pointing to the `tests/integration/cli-integration.test.ts` file.
 
 ## NEXT
-- Add explicit `coverageThreshold` settings (≥90% for branches, statements, functions, and lines) in `jest.config.js`.  
-- Write edge‐case and invalid‐input tests for maintenance utilities (e.g., `detectStaleAnnotations`) to boost branch coverage.  
-- Update the CI/CD workflow (`.github/workflows/ci-cd.yml`) so the “Run tests” step uses `npm run test -- --coverage` and fails on unmet thresholds.
+- Revise the standalone integration guide (e.g. user-docs/cli-integration.md) to reflect the new test file location and show exact commands/snippets for end users.  
+- Create a new document under docs/security-incidents/dependency-override-rationale.md that lists each manual dependency override, the risk assessment, and justification according to our security incident handling policy.  
+- Add or update a security-incident-handling procedures doc (e.g. docs/security-incidents/handling-procedure.md) to formalize how overrides and residual risks must be documented and reviewed.
 
 ## LATER
-- Create a reusable test-data-builder module to DRY up fixtures across unit and integration tests.  
-- Add performance and resource‐usage benchmarks to the test suite to track regressions.  
-- Integrate a `dry-aged-deps` check into the CI quality gates to report on dev-dependency health.
+- Establish a scheduled link-validation job in CI to catch stale doc references automatically.  
+- Draft an ADR for our dependency-override policy to guide future decisions and ensure traceability.  
+- Conduct a quarterly review of user-facing docs against the live codebase to prevent drift.
