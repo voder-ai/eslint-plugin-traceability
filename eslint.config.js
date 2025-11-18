@@ -36,7 +36,7 @@ module.exports = [
     },
   },
   {
-    files: ["cli-integration.js"],
+    files: ["cli-integration.js", "tests/integration/cli-integration.js"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "script",
