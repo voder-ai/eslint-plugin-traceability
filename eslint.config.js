@@ -100,7 +100,6 @@ module.exports = [
     files: [
       "**/*.test.{js,ts,tsx}",
       "**/__tests__/**/*.{js,ts,tsx}",
-      "**/tests/**/*.{js,ts,tsx}",
     ],
     languageOptions: {
       globals: {
@@ -115,6 +114,8 @@ module.exports = [
         jest: "readonly",
         require: "readonly",
         __dirname: "readonly",
+        process: "readonly",
+        console: "readonly",
       },
     },
     rules: {
