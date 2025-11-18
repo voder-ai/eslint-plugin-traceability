@@ -6,7 +6,7 @@
 import { spawnSync } from "child_process";
 import path from "path";
 
-describe("CLI Integration (traceability plugin)", () => {
+describe("[docs/stories/001.0-DEV-PLUGIN-SETUP.story.md] CLI Integration (traceability plugin)", () => {
   const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
   const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
   const configPath = path.resolve(__dirname, "../../eslint.config.js");
@@ -83,7 +83,7 @@ function baz() {}`,
   }
 
   tests.forEach((testCase) => {
-    it(testCase.name, () => {
+    it(`[REQ-PLUGIN-STRUCTURE] ${testCase.name}`, () => {
       const result = runEslint(testCase.code, testCase.rule);
       expect(result.status).toBe(testCase.expectedStatus);
     });
