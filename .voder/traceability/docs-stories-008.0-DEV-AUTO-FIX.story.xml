@@ -2,8 +2,11 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-17T16:36:28.119Z</last_validated>
+  <last_validated>2025-11-18T00:01:59.442Z</last_validated>
   <last_modified>2025-11-16T00:07:54.465Z</last_modified>
-  <evidence>While the plugin includes fixer functions for missing @story (require-story-annotation) and @req (require-req-annotation) and branch annotations (require-branch-annotation) as exercised by their respective tests, there is no implementation of auto-fixers for common format issues (REQ-AUTOFIX-FORMAT) in valid-annotation-format.ts (meta.fixable is missing and no fixer functions are provided). Moreover, there is no support for configurable annotation templates (REQ-AUTOFIX-TEMPLATE) or selective enabling/disabling of specific fixes (REQ-AUTOFIX-SELECTIVE) in any rule schema or code. Documentation (docs/rules/*.md and README) does not describe auto-fix examples or configuration options for these requirements.</evidence>
-  <notes>Core missing-annotation auto-fixers are in place, but key story requirements around format fixes, template configurability, and selective fix control have not been implemented.</notes>
+  <evidence>1. No rule or code implements REQ-AUTOFIX-FORMAT (fixers for spacing, syntax, casing) or REQ-AUTOFIX-SELECTIVE (configurable enable/disable) or REQ-AUTOFIX-TEMPLATE (customizable templates).  
+2. The only fixers present are in require-story-annotation.ts and require-req-annotation.ts (inserting placeholder comments) and branch annotation rule; there are no fixers in valid-annotation-format.ts or any mechanism to configure which fixes run.  
+3. No tests for auto-fix formatting scenarios or for selective‐fix configuration under story 008.0.  
+4. No reference to docs/stories/008.0-DEV-AUTO-FIX.story.md in any code, tests, or configuration.</evidence>
+  <notes>The plugin currently auto-fixes only missing @story/@req annotations on functions and branches. The broader auto-fix requirements in 008.0 (format corrections, template customization, selective fixes, safe-fix guarantees beyond inserting placeholders) have not been implemented or tested.</notes>
 </traceability>

@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/002.0-DEV-ESLINT-CONFIG.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-11-17T16:36:23.122Z</last_validated>
+  <status>PASSED</status>
+  <last_validated>2025-11-18T00:03:42.380Z</last_validated>
   <last_modified>2025-11-16T00:07:54.396Z</last_modified>
-  <evidence>1. No tests reference or verify docs/stories/002.0-DEV-ESLINT-CONFIG.story.md (search for “002.0” in tests yields nothing).
-2. eslint.config.js provides a flat config and imports plugin.configs.*, but there is no implementation for REQ-CUSTOMIZABLE-PATHS (no option to customize story file patterns) or REQ-CONFIG-VALIDATION (no JSON-Schema or runtime validation of invalid config options).
-3. No CLI helper or generator for initial setup, and no code to gracefully catch and report invalid configuration options—error handling acceptance criteria unimplemented.
-4. Documentation (`docs/config-presets.md`, `docs/eslint-9-setup-guide.md`) covers setup and examples but lacks a troubleshooting guide or error-handling section.</evidence>
-  <notes>While basic presets (recommended/strict) and ESLint v9 flat config usage are present and documented, several acceptance criteria remain unmet: customizable paths, configuration-option validation, explicit error handling, and accompanying tests for this story are missing.</notes>
+  <evidence>1. Presence of ESLint flat config example annotating the 002.0 story in eslint.config.js:
+   /** @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md */
+
+2. Config presets implemented in src/index.ts under configs.recommended and configs.strict (REQ-CONFIG-PRESETS).
+
+3. Schema validation for rule options covering storyDirectories, allowAbsolutePaths, requireStoryExtension in valid-story-reference.meta.schema, exercised by tests/config/eslint-config-validation.test.ts (REQ-CUSTOMIZABLE-PATHS, REQ-CONFIG-VALIDATION).
+
+4. Schema validation for require-story-annotation rule options (scope, exportPriority) in tests/config/require-story-annotation-config.test.ts (REQ-RULE-OPTIONS).
+
+5. Comprehensive documentation in docs/config-presets.md and user-docs/eslint-9-setup-guide.md, including flat-config examples for JS, TS, CommonJS, and a troubleshooting section (User Experience, Documentation).
+
+6. Tests all pass (`npm test` completed with exit code 0).</evidence>
+  <notes>All acceptance criteria and technical requirements for story 002.0-DEV-ESLINT-CONFIG are satisfied: configuration presets exist; flat-config usage is demonstrated; rule options are customizable and validated; integration instructions and troubleshooting docs are provided; invalid config options are disallowed by schema.</notes>
 </traceability>

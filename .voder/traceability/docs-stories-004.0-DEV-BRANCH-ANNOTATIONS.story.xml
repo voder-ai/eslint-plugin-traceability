@@ -2,8 +2,8 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-17T16:34:01.972Z</last_validated>
+  <last_validated>2025-11-18T00:02:11.023Z</last_validated>
   <last_modified>2025-11-16T00:07:54.419Z</last_modified>
-  <evidence>The rule’s implementation in src/rules/require-branch-annotation.ts defines meta.schema = [] (no options) and the documentation (docs/rules/require-branch-annotation.md) explicitly states “This rule does not accept any options.” However, the story’s requirements include REQ-CONFIGURABLE-SCOPE (“Allow configuration of which branch types require annotations”), and there are no tests covering any configuration or option to limit branch types. The absence of a configurable schema and corresponding tests indicates that REQ-CONFIGURABLE-SCOPE has not been implemented.</evidence>
-  <notes>All core detection and reporting functionality is implemented, tested, and documented, but the story’s requirement for a configurable scope of branch types is missing. To fully satisfy the story, the rule must accept and honor configuration options specifying which branch nodes to enforce.</notes>
+  <evidence>The require-branch-annotation rule is implemented (`src/rules/require-branch-annotation.ts`) and fully tested (21 passing tests in `tests/rules/require-branch-annotation.test.ts`), with clear error messages and documentation in `docs/rules/require-branch-annotation.md`. However, the story’s requirement REQ-CONFIGURABLE-SCOPE (“Allow configuration of which branch types require annotations”) is not implemented: the rule’s meta.schema is `[]` (no options) and neither code nor docs expose any configuration for turning specific branch types on or off.</evidence>
+  <notes>While core functionality, error reporting, nested handling, and documentation exist, the story explicitly calls for configurability of branch types. Since there is no schema or option support, one acceptance criterion remains unmet.</notes>
 </traceability>

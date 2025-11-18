@@ -2,11 +2,10 @@
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-17T16:35:21.904Z</last_validated>
+  <last_validated>2025-11-18T00:01:35.458Z</last_validated>
   <last_modified>2025-11-16T00:07:54.405Z</last_modified>
-  <evidence>- The `require-req-annotation` rule only implements a listener for `FunctionDeclaration` nodes; it does not detect or enforce `@req` annotations on function expressions, arrow functions, or class methods as required by REQ-FUNCTION-DETECTION.
-- No tests exist for `require-req-annotation` on arrow functions or function expressions; tests only cover `FunctionDeclaration`.
-- The documentation for `require-story-annotation` (docs/rules/require-story-annotation.md) incorrectly states that the rule accepts no options (`schema: []`), while the implementation’s schema supports `scope` and `exportPriority` options.
-- No tests verify TypeScript-specific syntax, decorators, or mixed JS/TS codebases, despite the acceptance criterion for TypeScript support.</evidence>
-  <notes>While the plugin provides separate rules and tests for `@story` and `@req` annotations, it fails to fully implement REQ-FUNCTION-DETECTION for the `@req` rule (missing support for non-declaration functions) and has documentation mismatches. Therefore, not all acceptance criteria are met.</notes>
+  <evidence>1) The `require-req-annotation` rule only checks FunctionDeclarations (no arrow functions, function expressions, or class methods), although the story’s REQ-FUNCTION-DETECTION mandates detection of all function forms.  
+2) The published documentation in docs/rules/require-story-annotation.md still says “This rule does not accept any options” even though the code and tests support `scope` and `exportPriority` options.  
+3) There are no tests or examples exercising TypeScript-specific syntax or decorators, nor malformed‐JSDoc edge cases mentioned in the acceptance criteria.</evidence>
+  <notes>While the core ESLint rules and RuleTester suite for @story and @req annotations pass, the implementation does not fully satisfy the story’s requirements around universal function detection (REQ-FUNCTION-DETECTION), documentation of configuration options, TypeScript support, and error handling edge cases.</notes>
 </traceability>

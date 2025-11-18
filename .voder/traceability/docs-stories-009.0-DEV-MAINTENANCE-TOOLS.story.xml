@@ -2,17 +2,12 @@
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-17T16:35:09.490Z</last_validated>
+  <last_validated>2025-11-18T00:02:51.396Z</last_validated>
   <last_modified>2025-11-16T00:07:54.476Z</last_modified>
-  <evidence>• Core modules implemented under src/maintenance with corresponding tests passing (detect.ts, update.ts, batch.ts, report.ts), achieving overall test coverage ~97%.
-• Tests validate detection of stale annotations, single update operations, batch empty mappings, verify true on valid annotations, and report generation for stale annotations.
-• Missing tests and implementation for several acceptance criteria:
-  – No CLI entrypoint or commands provided for maintenance operations (story requests “Implement CLI tools for common maintenance operations”).
-  – No user-facing feedback mechanism (console output or logs) to indicate what changed during operations.
-  – No documentation (README or user guide) with usage examples and best practices for these tools.
-  – Error handling is minimal (permission errors bubble up, no graceful reporting of edge cases like circular references).
-  – No support for reversal (“reversible operations”) or undo capability as per REQ-MAINT-SAFE.
-  – verifyAnnotations lacks a test for returning false when stale annotations exist.
-• No integration with ESLint plugin infrastructure or Git hooks as suggested in the story.</evidence>
-  <notes>While core detection, update, batch, verify and report functions exist and are tested, key user experience, CLI integration, documentation, error handling, and safety requirements from the acceptance criteria remain unimplemented.</notes>
+  <evidence>- All existing unit tests in tests/maintenance for detect, update, batch, verify, and report pass, but:
+  • src/maintenance/index.ts (the public API surface) has 0% test coverage (no integration or import tests exercising the exports). 
+  • src/maintenance/utils.ts declares @req REQ-MAINT-UTILS, which is not defined in the story’s requirements list. No tests cover this helper. 
+  • There is no documentation (in README.md, docs/ or user-docs/) describing usage examples or best practices for the maintenance tools, despite the Acceptance Criteria requiring documentation.
+</evidence>
+  <notes>While the core maintenance functions and their basic unit behaviors are implemented and tested, key acceptance criteria are unmet: missing documentation and usage guides, missing integration tests for the public API (index.ts), and a helper requirement mismatch. Therefore the story is not fully implemented.</notes>
 </traceability>

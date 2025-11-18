@@ -1,24 +1,12 @@
 ## NOW
-Modify the `overrides` section in package.json to pin all high-severity production dependencies to their patched versions:
-```json
-"overrides": {
-  "glob": "12.0.0",
-  "http-cache-semantics": ">=4.1.1",
-  "ip": ">=2.0.2",
-  "semver": ">=7.5.2",
-  "socks": ">=2.7.2",
-  "tar": ">=6.1.12"
-}
-```
+Enhance the `require-story-annotation` rule in `src/rules/require-story-annotation.ts` to include AST selectors for ArrowFunctionExpression, FunctionExpression, and MethodDefinition so that missing `@story` annotations on those function forms trigger errors per REQ-FUNCTION-DETECTION in `docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md`.
 
 ## NEXT
-- Run `npm install` to apply the new overrides and update package-lock.json.  
-- Execute `npm audit --production --audit-level=high` and confirm zero high-severity vulnerabilities remain.  
-- Remove any now-resolved entries from docs/security-incidents/unresolved-vulnerabilities.md.  
-- For any lingering advisories, file incident reports in docs/security-incidents/ using SECURITY-INCIDENT-TEMPLATE.md.
+- Add new unit tests in `tests/rules/require-story-annotation.test.ts` for arrow functions, function expressions, and class methods to verify the rule flags missing annotations and accepts properly annotated cases.
+- Update ESLint’s `parserOptions` (e.g. enable `@typescript-eslint/parser`) and extend the rule to handle TypeScript-specific nodes (e.g. TSDeclareFunction, TSMethodSignature).
+- Revise `docs/rules/require-story-annotation.md` to document the newly supported function forms and confirm the `scope` and `exportPriority` options reflect the code’s behavior.
 
 ## LATER
-- Add a weekly GitHub Actions job to audit production (and dev) dependencies and notify on moderate+ issues.  
-- Integrate `npm audit --production --audit-level=high` into your Husky pre-push hook and CI pipeline to block new high-severity findings.  
-- When upstream fixes arrive for any persistent issues, remove the overrides and upgrade to the native patched versions.  
-- Extend coverage to devDependencies and repeat the audit/remediation cycle to fully raise the dependencies score above 90%.
+- Implement handling for decorator-laden functions, overloaded and generic functions as outlined in the story’s edge‐case requirements.
+- Publish a patch release (e.g. v1.x.x) documenting full support for story 003.0 and update the changelog.
+- Prioritize and plan the implementation of the remaining incomplete stories (004.0, 005.0, etc.) in order.

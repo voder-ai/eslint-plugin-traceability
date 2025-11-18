@@ -2,11 +2,14 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-17T16:33:50.909Z</last_validated>
+  <last_validated>2025-11-18T00:02:21.457Z</last_validated>
   <last_modified>2025-11-16T00:07:54.454Z</last_modified>
-  <evidence>1) No rule or code changes targeting docs/stories/007.0-DEV-ERROR-REPORTING.story.md were found in src/rules.
-2) Tests do not reference story 007.0 or verify enhanced error messages—no tests named or annotated for 007.0-DEV-ERROR-REPORTING.
-3) Existing messages in src/rules/* use generic messageIds (e.g. "missingStory") and message text (e.g. "Missing @story annotation (REQ-ANNOTATION-REQUIRED)") without suggestions, context, or ESLint suggest API usage as required by REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-SEVERITY.
-4) No documentation of error‐message templates or formatting guidelines was added.</evidence>
-  <notes>The 007.0-DEV-ERROR-REPORTING story defines acceptance criteria and requirements for improved, actionable error messages, but there is no implementation or test coverage for it. The existing plugin rules still emit basic/generic messages and lack suggested fixes, context, severity distinctions, or documentation. This story has not been implemented.</notes>
+  <evidence>Review of rule definitions in src/rules shows no enhancements for clear, actionable error messages as specified in docs/stories/007.0-DEV-ERROR-REPORTING.story.md. For example:
+• require-story-annotation.ts uses messageId “missingStory” with text "Missing @story annotation (REQ-ANNOTATION-REQUIRED)" but does not suggest a concrete fix in the message (only a generic fixer), nor uses ESLint’s suggest API.
+• require-req-annotation.ts reports "Missing @req annotation" with no suggestion or contextual guidance.
+• valid-annotation-format, valid-story-reference, valid-req-reference, and require-branch-annotation rules do not include suggestions or enriched context in their messages, nor document a consistent message template across rules.
+• No tests reference story 007.0 or verify improved error messaging format, suggestions, or documentation of message templates.
+
+No code changes corresponding to story 007.0 are present.</evidence>
+  <notes>The error-reporting enhancements called for in story 007.0 (specific, actionable messages, contextual guidance, consistent formatting, use of the suggest API, and documentation of message templates) have not been implemented. All acceptance criteria remain unmet.</notes>
 </traceability>

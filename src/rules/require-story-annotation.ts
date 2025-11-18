@@ -5,6 +5,8 @@
  * @req REQ-OPTIONS-SCOPE - Support configuring which function types to enforce via options
  * @req REQ-EXPORT-PRIORITY - Add exportPriority option to target exported or non-exported
  * @req REQ-UNIFIED-CHECK - Implement unified checkNode for all supported node types
+ * @req REQ-FUNCTION-DETECTION - Detect function declarations, expressions, arrow functions, and methods
+ * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
  */
 
 /**
@@ -185,6 +187,8 @@ export default {
                 "FunctionExpression",
                 "ArrowFunctionExpression",
                 "MethodDefinition",
+                "TSDeclareFunction",
+                "TSMethodSignature",
               ],
             },
             uniqueItems: true,
@@ -205,6 +209,8 @@ export default {
       "FunctionExpression",
       "ArrowFunctionExpression",
       "MethodDefinition",
+      "TSDeclareFunction",
+      "TSMethodSignature",
     ];
     const exportPriority = options.exportPriority || "all";
 
@@ -219,6 +225,17 @@ export default {
         checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
       },
       MethodDefinition(node: any) {
+        checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
+      },
+
+      // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      // @req REQ-FUNCTION-DETECTION - Detect TS-specific function syntax
+      TSDeclareFunction(node: any) {
+        checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
+      },
+      // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      // @req REQ-FUNCTION-DETECTION - Detect TS-specific function syntax
+      TSMethodSignature(node: any) {
         checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
       },
     };

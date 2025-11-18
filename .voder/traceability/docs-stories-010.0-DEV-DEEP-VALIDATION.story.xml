@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-11-17T16:35:32.819Z</last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-11-18T00:02:21.456Z</last_validated>
   <last_modified>2025-11-16T00:07:54.487Z</last_modified>
-  <evidence>- Found and read the deep-validation specification at docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-- Implementation present in src/rules/valid-req-reference.ts with @story and @req traceability tags
-- Rule logic parses and caches story files, extracts REQ- identifiers, reports clear errors for missing IDs and invalid paths
-- Documentation for the rule exists in docs/rules/valid-req-reference.md with examples
-- Unit tests in tests/rules/valid-req-reference.test.ts cover valid and invalid scenarios (path traversal, missing IDs, bullet-list fixture), referencing the story file
-- `npm test` (Jest) passed without errors and shows coverage for valid-req-reference
-</evidence>
-  <notes>The deep validation ESLint rule correctly implements REQ-DEEP-PARSE, REQ-DEEP-MATCH, REQ-DEEP-CACHE and REQ-DEEP-PATH requirements, integrates with existing annotation logic, provides clear error messages, handles malformed or missing files gracefully, and is documented and tested. All acceptance criteria are satisfied.</notes>
+  <evidence>In src/rules/valid-req-reference.ts the JSDoc @req tags reference REQ-DEEP-PARSE, REQ-DEEP-MATCH, REQ-DEEP-CACHE and REQ-DEEP-PATH, but the story (docs/stories/010.0-DEV-DEEP-VALIDATION.story.md) defines REQ-DEEP-PARSE, REQ-DEEP-MATCH, REQ-DEEP-FORMAT, REQ-DEEP-SECTION, REQ-DEEP-CACHE and REQ-DEEP-ERROR. The rule documentation (docs/rules/valid-req-reference.md) likewise only lists REQ-DEEP-PARSE, REQ-DEEP-MATCH and REQ-DEEP-PATH. There are no annotations or examples covering REQ-DEEP-FORMAT, REQ-DEEP-SECTION or REQ-DEEP-ERROR, and instead a non-spec requirement REQ-DEEP-PATH is present.</evidence>
+  <notes>While the core validation logic and tests for matching or missing requirement IDs pass, the implementation and rule documentation do not fully align with the story’s defined requirements. Several named requirements are unimplemented in traceability annotations and documentation, so the story is not yet fully satisfied.</notes>
 </traceability>

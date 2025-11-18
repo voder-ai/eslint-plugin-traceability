@@ -37,6 +37,26 @@ const arrowFn = () => {};`,
         name: "[REQ-ANNOTATION-REQUIRED] valid on class method with annotation",
         code: `class A {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
       },
+      {
+        name: "[REQ-FUNCTION-DETECTION] valid with annotation on TS declare function",
+        code: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+declare function tsDecl(): void;`,
+        languageOptions: {
+          parser: require("@typescript-eslint/parser") as any,
+          parserOptions: { ecmaVersion: 2020, sourceType: "module" },
+        },
+      },
+      {
+        name: "[REQ-FUNCTION-DETECTION] valid with annotation on TS method signature",
+        code: `interface C {
+  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+  method(): void;
+}`,
+        languageOptions: {
+          parser: require("@typescript-eslint/parser") as any,
+          parserOptions: { ecmaVersion: 2020, sourceType: "module" },
+        },
+      },
     ],
     invalid: [
       {
@@ -61,6 +81,32 @@ const arrowFn = () => {};`,
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on class method",
         code: `class C {\n  method() {}\n}`,
         output: `class C {\n  /** @story <story-file>.story.md */\n  method() {}\n}`,
+        errors: [{ messageId: "missingStory" }],
+      },
+      {
+        name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS declare function",
+        code: `declare function tsDecl(): void;`,
+        output: `/** @story <story-file>.story.md */
+declare function tsDecl(): void;`,
+        languageOptions: {
+          parser: require("@typescript-eslint/parser") as any,
+          parserOptions: { ecmaVersion: 2020, sourceType: "module" },
+        },
+        errors: [{ messageId: "missingStory" }],
+      },
+      {
+        name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS method signature",
+        code: `interface D {
+  method(): void;
+}`,
+        output: `/** @story <story-file>.story.md */
+interface D {
+  method(): void;
+}`,
+        languageOptions: {
+          parser: require("@typescript-eslint/parser") as any,
+          parserOptions: { ecmaVersion: 2020, sourceType: "module" },
+        },
         errors: [{ messageId: "missingStory" }],
       },
     ],
