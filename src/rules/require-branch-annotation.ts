@@ -61,7 +61,7 @@ const rule: Rule.RuleModule = {
         properties: {
           branchTypes: {
             type: "array",
-            items: { type: "string", enum: DEFAULT_BRANCH_TYPES as any },
+            items: { type: "string" },
             uniqueItems: true,
           },
         },
@@ -72,8 +72,19 @@ const rule: Rule.RuleModule = {
 
   create(context) {
     const sourceCode = context.getSourceCode();
-    const branchTypes: BranchType[] =
-      context.options[0]?.branchTypes ?? Array.from(DEFAULT_BRANCH_TYPES);
+    const optionBranchTypes = context.options[0]?.branchTypes as string[] | undefined;
+    if (optionBranchTypes) {
+      for (const bt of optionBranchTypes) {
+        if (!DEFAULT_BRANCH_TYPES.includes(bt as BranchType)) {
+          throw new Error(
+            `branchTypes value "${bt}" should be equal to one of the allowed values: ${DEFAULT_BRANCH_TYPES.join(', ')}`
+          );
+        }
+      }
+    }
+    const branchTypes: BranchType[] = optionBranchTypes
+      ? (optionBranchTypes as BranchType[])
+      : Array.from(DEFAULT_BRANCH_TYPES);
     let storyFixCount = 0;
 
     function reportBranch(node: any) {
