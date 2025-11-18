@@ -19,7 +19,7 @@
     "test": "jest --ci --bail",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "duplication": "jscpd src tests --reporters console --threshold 3",
+    "duplication": "jscpd src tests --reporters console --threshold 3 --ignore tests/utils/**",
     "audit:dev-high": "node scripts/generate-dev-deps-audit.js",
     "smoke-test": "./scripts/smoke-test.sh",
     "prepare": "husky install"

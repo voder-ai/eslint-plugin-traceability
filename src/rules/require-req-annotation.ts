@@ -1,10 +1,11 @@
-/**
+/****
  * Rule to enforce @req annotation on functions
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Require @req annotation on functions
  * @req REQ-FUNCTION-DETECTION - Detect function declarations, expressions, arrow functions, and methods
  * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
  */
+import { checkReqAnnotation } from "../utils/annotation-checker";
 export default {
   meta: {
     type: "problem",
@@ -35,48 +36,14 @@ export default {
       },
       /**
        * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-TYPESCRIPT-SUPPORT
+       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
        */
-      TSDeclareFunction(node: any) {
-        const jsdoc = sourceCode.getJSDocComment(node);
-        const leading = (node as any).leadingComments || [];
-        const comments = sourceCode.getCommentsBefore(node) || [];
-        const all = [...leading, ...comments];
-        const hasReq =
-          (jsdoc && jsdoc.value.includes("@req")) ||
-          all.some((c) => c.value.includes("@req"));
-        if (!hasReq) {
-          context.report({
-            node,
-            messageId: "missingReq",
-            fix(fixer: any) {
-              return fixer.insertTextBefore(node, "/** @req <REQ-ID> */\n");
-            },
-          });
-        }
-      },
+      TSDeclareFunction: (node: any) => checkReqAnnotation(context, node),
       /**
        * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-TYPESCRIPT-SUPPORT
+       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
        */
-      TSMethodSignature(node: any) {
-        const jsdoc = sourceCode.getJSDocComment(node);
-        const leading = (node as any).leadingComments || [];
-        const comments = sourceCode.getCommentsBefore(node) || [];
-        const all = [...leading, ...comments];
-        const hasReq =
-          (jsdoc && jsdoc.value.includes("@req")) ||
-          all.some((c) => c.value.includes("@req"));
-        if (!hasReq) {
-          context.report({
-            node,
-            messageId: "missingReq",
-            fix(fixer: any) {
-              return fixer.insertTextBefore(node, "/** @req <REQ-ID> */\n");
-            },
-          });
-        }
-      },
+      TSMethodSignature: (node: any) => checkReqAnnotation(context, node),
     };
   },
 } as any;
