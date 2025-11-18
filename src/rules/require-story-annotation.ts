@@ -109,6 +109,11 @@ function resolveTargetNode(sourceCode: any, node: any): any {
         target = anc;
       }
     }
+  } else if (node.type === "TSMethodSignature") {
+    const exp = findAncestorNode(node, ["TSInterfaceDeclaration"]);
+    if (exp) {
+      target = exp;
+    }
   } else if (node.type === "MethodDefinition") {
     target = node;
   }
