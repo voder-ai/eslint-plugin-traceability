@@ -2,12 +2,22 @@
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-18T00:02:51.396Z</last_validated>
+  <last_validated>2025-11-18T02:23:41.142Z</last_validated>
   <last_modified>2025-11-16T00:07:54.476Z</last_modified>
-  <evidence>- All existing unit tests in tests/maintenance for detect, update, batch, verify, and report pass, but:
-  • src/maintenance/index.ts (the public API surface) has 0% test coverage (no integration or import tests exercising the exports). 
-  • src/maintenance/utils.ts declares @req REQ-MAINT-UTILS, which is not defined in the story’s requirements list. No tests cover this helper. 
-  • There is no documentation (in README.md, docs/ or user-docs/) describing usage examples or best practices for the maintenance tools, despite the Acceptance Criteria requiring documentation.
-</evidence>
-  <notes>While the core maintenance functions and their basic unit behaviors are implemented and tested, key acceptance criteria are unmet: missing documentation and usage guides, missing integration tests for the public API (index.ts), and a helper requirement mismatch. Therefore the story is not fully implemented.</notes>
+  <evidence>The project contains a `src/maintenance` folder with TypeScript modules (detect.ts, update.ts, batch.ts, report.ts, utils.ts) and corresponding Jest tests covering:
+  • REQ-MAINT-DETECT (detectStaleAnnotations + tests)
+  • REQ-MAINT-UPDATE (updateAnnotationReferences + tests)
+  • REQ-MAINT-BATCH & REQ-MAINT-VERIFY (batchUpdateAnnotations, verifyAnnotations + basic tests)
+  • REQ-MAINT-REPORT (generateMaintenanceReport + tests)
+
+However, the following acceptance criteria and requirements are not addressed or missing:
+  • No CLI entrypoint or command‐line scripts to invoke maintenance tools (“Core Functionality” was implemented as APIs only, not as CLI tools).
+  • No documentation (README updates, usage examples, best practices) for how to run or configure the maintenance helpers.
+  • No user‐experience feedback: the APIs return counts/arrays/strings but do not log or report what changed in a user‐friendly way.
+  • No support for reversibility (REQ-MAINT-SAFE): there is no mechanism to undo or rollback updates, no backups, no transactional safety.
+  • Error handling is incomplete: permission errors bubble unhandled, no handling of circular story‐reference scenarios or detailed error messages.
+  • Integration with existing ESLint plugin infrastructure is not demonstrated or tested.
+
+Because key acceptance criteria around CLI integration, user feedback, documentation, safe/undoable operations, and integration are unimplemented, the story is not fully satisfied.</evidence>
+  <notes>While the core programmatic APIs for detecting, updating, batching, verifying, and reporting stale annotations are in place and covered by unit tests, the broader requirements around usability (CLI, user feedback), documentation, safe reversible operations, and integration with ESLint are missing. Therefore the story is not complete.</notes>
 </traceability>

@@ -2,14 +2,12 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-18T00:02:21.457Z</last_validated>
+  <last_validated>2025-11-18T02:23:26.888Z</last_validated>
   <last_modified>2025-11-16T00:07:54.454Z</last_modified>
-  <evidence>Review of rule definitions in src/rules shows no enhancements for clear, actionable error messages as specified in docs/stories/007.0-DEV-ERROR-REPORTING.story.md. For example:
-• require-story-annotation.ts uses messageId “missingStory” with text "Missing @story annotation (REQ-ANNOTATION-REQUIRED)" but does not suggest a concrete fix in the message (only a generic fixer), nor uses ESLint’s suggest API.
-• require-req-annotation.ts reports "Missing @req annotation" with no suggestion or contextual guidance.
-• valid-annotation-format, valid-story-reference, valid-req-reference, and require-branch-annotation rules do not include suggestions or enriched context in their messages, nor document a consistent message template across rules.
-• No tests reference story 007.0 or verify improved error messaging format, suggestions, or documentation of message templates.
-
-No code changes corresponding to story 007.0 are present.</evidence>
-  <notes>The error-reporting enhancements called for in story 007.0 (specific, actionable messages, contextual guidance, consistent formatting, use of the suggest API, and documentation of message templates) have not been implemented. All acceptance criteria remain unmet.</notes>
+  <evidence>Inspection of rule implementations shows generic messages without actionable suggestions or consistent formatting across rules. For example, src/rules/require-story-annotation.ts reports:
+  messageId: "missingStory" → "Missing @story annotation (REQ-ANNOTATION-REQUIRED)"
+but does not suggest how to fix (e.g., "Add @story annotation <path>"). src/rules/require-req-annotation.ts reports:
+  messageId: "missingReq" → "Missing @req annotation"
+with no REQ code or suggestion. valid-annotation-format.ts and valid-story-reference.ts similarly provide only generic errors without guidance or context. No ESLint ‘suggest’ blocks are implemented. Tests (e.g., tests/rules/require-story-annotation.test.ts) only assert messageId usage, not content or suggestions.</evidence>
+  <notes>The story requires clear, specific error messages including suggestions, context, and consistent format (REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-CONSISTENCY), but the current implementation only provides minimal generic messages. Documentation of message formats is also missing. Therefore, the story is not fully implemented.</notes>
 </traceability>

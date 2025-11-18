@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-11-18T00:01:35.458Z</last_validated>
+  <status>PASSED</status>
+  <last_validated>2025-11-18T02:23:38.137Z</last_validated>
   <last_modified>2025-11-16T00:07:54.405Z</last_modified>
-  <evidence>1) The `require-req-annotation` rule only checks FunctionDeclarations (no arrow functions, function expressions, or class methods), although the story’s REQ-FUNCTION-DETECTION mandates detection of all function forms.  
-2) The published documentation in docs/rules/require-story-annotation.md still says “This rule does not accept any options” even though the code and tests support `scope` and `exportPriority` options.  
-3) There are no tests or examples exercising TypeScript-specific syntax or decorators, nor malformed‐JSDoc edge cases mentioned in the acceptance criteria.</evidence>
-  <notes>While the core ESLint rules and RuleTester suite for @story and @req annotations pass, the implementation does not fully satisfy the story’s requirements around universal function detection (REQ-FUNCTION-DETECTION), documentation of configuration options, TypeScript support, and error handling edge cases.</notes>
+  <evidence>- Found implementation of both `require-story-annotation` and `require-req-annotation` rules in `src/rules`, each annotated with `@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md` and corresponding `@req` tags.
+- Comprehensive RuleTester test suites in `tests/rules/require-story-annotation.test.ts` and `tests/rules/require-req-annotation.test.ts` covering JavaScript, TypeScript, arrow functions, class methods, exportPriority and scope options; all tests pass (observed via `npm test`).
+- Documentation files in `docs/rules/require-story-annotation.md` and `docs/rules/require-req-annotation.md` include examples, schema, and reference back to the story.
+- The rules are registered in `src/index.ts` and included in both `recommended` and `strict` configs.
+- Linting (`npm run lint`), type checking, formatting, and build steps complete without errors.</evidence>
+  <notes>The story’s core functionality (detect missing @story/@req annotations), configurability (scope and exportPriority), TypeScript support, clear error messages, and documentation have all been implemented and validated by tests. All acceptance criteria are satisfied.</notes>
 </traceability>

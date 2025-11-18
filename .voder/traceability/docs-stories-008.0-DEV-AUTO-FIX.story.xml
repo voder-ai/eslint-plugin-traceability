@@ -2,11 +2,8 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-18T00:01:59.442Z</last_validated>
+  <last_validated>2025-11-18T02:24:03.823Z</last_validated>
   <last_modified>2025-11-16T00:07:54.465Z</last_modified>
-  <evidence>1. No rule or code implements REQ-AUTOFIX-FORMAT (fixers for spacing, syntax, casing) or REQ-AUTOFIX-SELECTIVE (configurable enable/disable) or REQ-AUTOFIX-TEMPLATE (customizable templates).  
-2. The only fixers present are in require-story-annotation.ts and require-req-annotation.ts (inserting placeholder comments) and branch annotation rule; there are no fixers in valid-annotation-format.ts or any mechanism to configure which fixes run.  
-3. No tests for auto-fix formatting scenarios or for selective‐fix configuration under story 008.0.  
-4. No reference to docs/stories/008.0-DEV-AUTO-FIX.story.md in any code, tests, or configuration.</evidence>
-  <notes>The plugin currently auto-fixes only missing @story/@req annotations on functions and branches. The broader auto-fix requirements in 008.0 (format corrections, template customization, selective fixes, safe-fix guarantees beyond inserting placeholders) have not been implemented or tested.</notes>
+  <evidence>Inspection of src/rules shows fixers implemented for missing @story (require-story-annotation), missing @req (require-req-annotation), and missing branch annotations (require-branch-annotation) but no auto-fixers for annotation formatting issues (valid-annotation-format rule has no fixer functions). There is no support for configurable annotation templates (templates are hard-coded) nor any option to selectively enable/disable specific fix types. Documentation (README.md or docs) contains no examples or explanation of the new auto-fix functionality. No tests cover format auto-fix or template customization. Therefore several requirements (REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-TEMPLATE, REQ-AUTOFIX-SELECTIVE, documentation) are unmet.</evidence>
+  <notes>Core auto-fixers for missing annotations exist, but the feature set is incomplete. Format-fix capabilities, configurable templates, selective enabling, and documentation of auto-fixes are missing.</notes>
 </traceability>

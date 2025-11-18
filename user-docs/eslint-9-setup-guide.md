@@ -12,6 +12,7 @@ This guide shows how to properly set up ESLint 9 with flat configuration format.
 - [Package.json Scripts](#packagejson-scripts)
 - [TypeScript Integration](#typescript-integration)
 - [Common Issues and Solutions](#common-issues-and-solutions)
+- [Troubleshooting ESLint Configuration](#troubleshooting-eslint-configuration)
 - [Working Example](#working-example)
 
 ## Quick Setup
@@ -172,6 +173,37 @@ export default [
 ];
 ```
 
+### Mixed JavaScript/TypeScript Projects
+
+```javascript
+// eslint.config.js
+import js from "@eslint/js";
+import typescriptParser from "@typescript-eslint/parser";
+
+export default [
+  js.configs.recommended,
+  {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        project: "./tsconfig.json",
+        tsconfigRootDir: import.meta.dirname,
+        ecmaVersion: 2024,
+        sourceType: "module",
+      },
+      ecmaVersion: 2024,
+      sourceType: "module",
+    },
+    rules: {
+      // Combined JS and TS rules
+      "no-unused-vars": "error",
+      "@typescript-eslint/no-unused-vars": "error",
+    },
+  },
+];
+```
+
 ### 3. Node.js Configuration Files (CommonJS)
 
 ```javascript
@@ -221,6 +253,37 @@ export default [
         jest: "readonly",
         vi: "readonly", // for Vitest
       },
+    },
+  },
+];
+```
+
+### Monorepos / Workspaces
+
+```javascript
+// eslint.config.js
+import js from "@eslint/js";
+import typescriptParser from "@typescript-eslint/parser";
+
+export default [
+  js.configs.recommended,
+  {
+    // Lint all packages in a monorepo/workspace
+    files: ["packages/*/src/**/*.{js,ts,tsx}"],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        project: ["./packages/*/tsconfig.json"],
+        tsconfigRootDir: import.meta.dirname,
+        ecmaVersion: 2024,
+        sourceType: "module",
+      },
+      ecmaVersion: 2024,
+      sourceType: "module",
+    },
+    rules: {
+      // Monorepo-specific rules
+      "no-unused-vars": "error",
     },
   },
 ];
@@ -379,6 +442,45 @@ export default [
         Buffer: "readonly",
         // etc.
       },
+    },
+  },
+];
+```
+
+## Troubleshooting ESLint Configuration
+
+The following scenarios cover common issues when configuring ESLint 9 with flat config, especially in mixed JavaScript and TypeScript projects.
+
+### Mixed JavaScript/TypeScript Projects
+
+Problem: ESLint does not correctly apply rules to `.js`, `.jsx`, `.ts`, or `.tsx` files when using separate file patterns or incorrect parser configuration.
+
+Solution: Use combined file patterns or separate override blocks, and import the parser correctly. For example:
+
+```javascript
+// eslint.config.js
+import js from "@eslint/js";
+import typescriptParser from "@typescript-eslint/parser";
+
+export default [
+  js.configs.recommended,
+  {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        project: "./tsconfig.json",
+        tsconfigRootDir: import.meta.dirname,
+        ecmaVersion: 2024,
+        sourceType: "module",
+      },
+      ecmaVersion: 2024,
+      sourceType: "module",
+    },
+    rules: {
+      // Combined JS and TS rules
+      "no-unused-vars": "error",
+      "@typescript-eslint/no-unused-vars": "error",
     },
   },
 ];

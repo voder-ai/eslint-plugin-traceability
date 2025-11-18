@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-11-18T00:02:21.456Z</last_validated>
+  <status>PASSED</status>
+  <last_validated>2025-11-18T02:23:53.243Z</last_validated>
   <last_modified>2025-11-16T00:07:54.487Z</last_modified>
-  <evidence>In src/rules/valid-req-reference.ts the JSDoc @req tags reference REQ-DEEP-PARSE, REQ-DEEP-MATCH, REQ-DEEP-CACHE and REQ-DEEP-PATH, but the story (docs/stories/010.0-DEV-DEEP-VALIDATION.story.md) defines REQ-DEEP-PARSE, REQ-DEEP-MATCH, REQ-DEEP-FORMAT, REQ-DEEP-SECTION, REQ-DEEP-CACHE and REQ-DEEP-ERROR. The rule documentation (docs/rules/valid-req-reference.md) likewise only lists REQ-DEEP-PARSE, REQ-DEEP-MATCH and REQ-DEEP-PATH. There are no annotations or examples covering REQ-DEEP-FORMAT, REQ-DEEP-SECTION or REQ-DEEP-ERROR, and instead a non-spec requirement REQ-DEEP-PATH is present.</evidence>
-  <notes>While the core validation logic and tests for matching or missing requirement IDs pass, the implementation and rule documentation do not fully align with the story’s defined requirements. Several named requirements are unimplemented in traceability annotations and documentation, so the story is not yet fully satisfied.</notes>
+  <evidence>The deep‐validation rule is implemented in src/rules/valid-req-reference.ts and is covered by a dedicated test suite at tests/rules/valid-req-reference.test.ts.  
+– The rule extracts @story and @req annotations, resolves and sanitizes story paths, reads and parses the target markdown for REQ-IDs, caches results, and reports `invalidPath` or `reqMissing` as appropriate.  
+– The test file declares its linkage to docs/stories/010.0-DEV-DEEP-VALIDATION.story.md and verifies both valid (including bullet‐list fixture at tests/fixtures/story_bullet.md) and invalid scenarios (missing requirement, path traversal, absolute path).  
+– User‐facing documentation lives in docs/rules/valid-req-reference.md, which describes the rule’s behavior and shows correct and incorrect examples.  
+All acceptance criteria (core functionality, error messages, integration, caching, path checks, and basic format support) are implemented and tested.</evidence>
+  <notes>The deep-validation feature described in 010.0-DEV-DEEP-VALIDATION is fully implemented, integrated into the plugin, and validated by automated tests. Potential future refinements (e.g., explicit numbered-list examples in docs) can be considered, but the story’s stated acceptance criteria are satisfied.</notes>
 </traceability>

@@ -21,6 +21,11 @@ For detailed setup with ESLint v9, see user-docs/eslint-9-setup-guide.md.
 
 Add the plugin to your ESLint configuration and enable the rules.
 
+Additional ESLint v9 configuration guidance:
+
+- For detailed configuration examples, see [Common Configuration Patterns](user-docs/eslint-9-setup-guide.md#common-configuration-patterns) in the ESLint 9 Setup Guide.
+- For troubleshooting ESLint flat-config errors, see [Troubleshooting ESLint Configuration](user-docs/eslint-9-setup-guide.md#troubleshooting-eslint-configuration).
+
 Example eslint.config.js (ESLint v9 flat config):
 
 ```js

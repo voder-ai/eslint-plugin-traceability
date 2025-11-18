@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-11-18T00:02:11.023Z</last_validated>
+  <status>PASSED</status>
+  <last_validated>2025-11-18T02:23:20.877Z</last_validated>
   <last_modified>2025-11-16T00:07:54.419Z</last_modified>
-  <evidence>The require-branch-annotation rule is implemented (`src/rules/require-branch-annotation.ts`) and fully tested (21 passing tests in `tests/rules/require-branch-annotation.test.ts`), with clear error messages and documentation in `docs/rules/require-branch-annotation.md`. However, the story’s requirement REQ-CONFIGURABLE-SCOPE (“Allow configuration of which branch types require annotations”) is not implemented: the rule’s meta.schema is `[]` (no options) and neither code nor docs expose any configuration for turning specific branch types on or off.</evidence>
-  <notes>While core functionality, error reporting, nested handling, and documentation exist, the story explicitly calls for configurability of branch types. Since there is no schema or option support, one acceptance criterion remains unmet.</notes>
+  <evidence>■ Rule implementation: src/rules/require-branch-annotation.ts contains the ESLint rule with @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md and @req REQ-BRANCH-DETECTION annotations.
+■ Tests: tests/rules/require-branch-annotation.test.ts covers all major branch types (if, switch, loops, try/catch, fallback scanning), and the full test suite passes with 96.76% coverage (including 100% coverage for require-branch-annotation.ts).
+■ Documentation: docs/rules/require-branch-annotation.md exists and references the story and requirement, and the rule is exported and enabled in src/index.ts and eslint.config.js.
+</evidence>
+  <notes>All acceptance criteria for 004.0-DEV-BRANCH-ANNOTATIONS have been met: the rule detects missing @story/@req on significant branches, includes auto-fixes, clear messages, handles switch-case fallbacks, is integrated into configs, and is documented and tested.</notes>
 </traceability>
