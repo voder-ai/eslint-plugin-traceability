@@ -107,7 +107,11 @@ function reportMissingStory(
     });
     storyFixCountRef.count++;
   } else {
-    context.report({ node, messageId: "missingAnnotation", data: { missing: "@story" } });
+    context.report({
+      node,
+      messageId: "missingAnnotation",
+      data: { missing: "@story" },
+    });
   }
 }
 
@@ -135,7 +139,11 @@ function reportMissingReq(
         ),
     });
   } else {
-    context.report({ node, messageId: "missingAnnotation", data: { missing: "@req" } });
+    context.report({
+      node,
+      messageId: "missingAnnotation",
+      data: { missing: "@req" },
+    });
   }
 }
 
@@ -160,10 +168,18 @@ export function reportMissingAnnotations(
     column: 0,
   });
 
-  if (missingStory) {
-    reportMissingStory(context, node, indent, insertPos, storyFixCountRef);
-  }
-  if (missingReq) {
-    reportMissingReq(context, node, indent, insertPos, missingStory);
-  }
+  const actions: Array<{ missing: boolean; fn: Function; args: any[] }> = [
+    {
+      missing: missingStory,
+      fn: reportMissingStory,
+      args: [context, node, indent, insertPos, storyFixCountRef],
+    },
+    {
+      missing: missingReq,
+      fn: reportMissingReq,
+      args: [context, node, indent, insertPos, missingStory],
+    },
+  ];
+
+  actions.forEach(({ missing, fn, args }) => missing && fn(...args));
 }
