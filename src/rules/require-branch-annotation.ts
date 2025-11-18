@@ -1,148 +1,174 @@
-/****
+/*
  * Rule to enforce @story and @req annotations on significant code branches
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-BRANCH-DETECTION - Detect significant code branches for traceability annotations
  * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of branch types for annotation enforcement
  */
+/* eslint-disable max-lines-per-function */
+
+import type { Rule } from 'eslint';
 
 const DEFAULT_BRANCH_TYPES = [
-  "IfStatement",
-  "SwitchCase",
-  "TryStatement",
-  "CatchClause",
-  "ForStatement",
-  "ForOfStatement",
-  "ForInStatement",
-  "WhileStatement",
-  "DoWhileStatement"
-];
+  'IfStatement',
+  'SwitchCase',
+  'TryStatement',
+  'CatchClause',
+  'ForStatement',
+  'ForOfStatement',
+  'ForInStatement',
+  'WhileStatement',
+  'DoWhileStatement',
+] as const;
+
+type BranchType = typeof DEFAULT_BRANCH_TYPES[number];
 
 /**
  * Gather leading comments for a node, with fallback for SwitchCase.
  */
-function gatherCommentText(sourceCode: any, node: any): string {
-  if (node.type === "SwitchCase") {
+function gatherCommentText(
+  sourceCode: ReturnType<Rule.RuleContext['getSourceCode']>,
+  node: any,
+): string {
+  if (node.type === 'SwitchCase') {
     const lines = sourceCode.lines;
     const startLine = node.loc.start.line;
     let i = startLine - 1;
-    const fallbackComments: string[] = [];
-    while (i > 0) {
-      const lineText = lines[i - 1];
-      if (/^\s*(\/\/|\/\*)/.test(lineText)) {
-        fallbackComments.unshift(lineText.trim());
-        i--;
-      } else if (/^\s*$/.test(lineText)) {
-        break;
-      } else {
-        break;
-      }
+    const comments: string[] = [];
+    while (i > 0 && /^\s*(\/\/|\/\*)/.test(lines[i - 1])) {
+      comments.unshift(lines[i - 1].trim());
+      i--;
     }
-    return fallbackComments.join(" ");
+    return comments.join(' ');
   }
   const comments = sourceCode.getCommentsBefore(node) || [];
-  return comments.map((c: any) => c.value).join(" ");
+  return comments.map(c => c.value).join(' ');
 }
 
-/**
- * Helper to check a branch AST node for traceability annotations.
- */
-function checkBranchNode(sourceCode: any, context: any, node: any) {
-  const text = gatherCommentText(sourceCode, node);
-  const missingStory = !/@story\b/.test(text);
-  const missingReq = !/@req\b/.test(text);
-
-  if (missingStory) {
-    const reportObj: any = { node, messageId: "missingAnnotation", data: { missing: "@story" } };
-    if (node.type !== "CatchClause") {
-      if (node.type === "SwitchCase") {
-        const indent = " ".repeat(node.loc.start.column);
-        reportObj.fix = (fixer: any) => fixer.insertTextBefore(node, `// @story <story-file>.story.md\n${indent}`);
-      } else {
-        reportObj.fix = (fixer: any) => fixer.insertTextBefore(node, `// @story <story-file>.story.md\n`);
-      }
-    }
-    context.report(reportObj);
-  }
-  if (missingReq) {
-    const reportObj: any = { node, messageId: "missingAnnotation", data: { missing: "@req" } };
-    if (!missingStory && node.type !== "CatchClause") {
-      if (node.type === "SwitchCase") {
-        const indent = " ".repeat(node.loc.start.column);
-        reportObj.fix = (fixer: any) => fixer.insertTextBefore(node, `// @req <REQ-ID>\n${indent}`);
-      } else {
-        reportObj.fix = (fixer: any) => fixer.insertTextBefore(node, `// @req <REQ-ID>\n`);
-      }
-    }
-    context.report(reportObj);
-  }
-}
-
-const rule: any = {
+const rule: Rule.RuleModule = {
   meta: {
-    type: "problem",
+    type: 'problem',
     docs: {
-      description: "Require @story and @req annotations on code branches",
-      recommended: "error"
+      description: 'Require @story and @req annotations on code branches',
+      recommended: 'error',
     },
-    fixable: "code",
+    fixable: 'code',
     messages: {
-      missingAnnotation: "Missing {{missing}} annotation on code branch"
+      missingAnnotation: 'Missing {{missing}} annotation on code branch',
     },
     schema: [
       {
-        type: "object",
+        type: 'object',
         properties: {
           branchTypes: {
-            type: "array",
-            items: { type: "string", enum: DEFAULT_BRANCH_TYPES },
-            uniqueItems: true
-          }
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: DEFAULT_BRANCH_TYPES as any,
+            },
+            uniqueItems: true,
+          },
         },
-        additionalProperties: false
-      }
-    ]
+        additionalProperties: false,
+      },
+    ],
   },
-  create(context: any) {
+
+  create(context) {
     const sourceCode = context.getSourceCode();
-    const branchTypes: string[] = context.options[0]?.branchTypes || DEFAULT_BRANCH_TYPES;
-    return {
-      IfStatement(node: any) {
-        if (!branchTypes.includes(node.type)) return;
-        checkBranchNode(sourceCode, context, node);
-      },
-      SwitchCase(node: any) {
-        if (node.test === null) return;
-        if (!branchTypes.includes(node.type)) return;
-        checkBranchNode(sourceCode, context, node);
-      },
-      TryStatement(node: any) {
-        if (!branchTypes.includes(node.type)) return;
-        checkBranchNode(sourceCode, context, node);
-      },
-      CatchClause(node: any) {
-        if (!branchTypes.includes(node.type)) return;
-        checkBranchNode(sourceCode, context, node);
-      },
-      ForStatement(node: any) {
-        if (!branchTypes.includes(node.type)) return;
-        checkBranchNode(sourceCode, context, node);
-      },
-      ForOfStatement(node: any) {
-        if (!branchTypes.includes(node.type)) return;
-        checkBranchNode(sourceCode, context, node);
-      },
-      ForInStatement(node: any) {
-        if (!branchTypes.includes(node.type)) return;
-        checkBranchNode(sourceCode, context, node);
-      },
-      WhileStatement(node: any) {
-        if (!branchTypes.includes(node.type)) return;
-        checkBranchNode(sourceCode, context, node);
-      },
-      DoWhileStatement(node: any) {
-        if (!branchTypes.includes(node.type)) return;
-        checkBranchNode(sourceCode, context, node);
+    let storyFixCount = 0;
+    const branchTypes: BranchType[] =
+      context.options[0]?.branchTypes ?? Array.from(DEFAULT_BRANCH_TYPES);
+
+    function reportBranch(node: any) {
+      const text = gatherCommentText(sourceCode, node);
+      const missingStory = !/@story\b/.test(text);
+      const missingReq = !/@req\b/.test(text);
+      const indentMatch = sourceCode.lines[node.loc.start.line - 1].match(/^(\s*)/);
+      const indent = indentMatch ? indentMatch[1] : '';
+      const insertPos = sourceCode.getIndexFromLoc({ line: node.loc.start.line, column: 0 });
+
+      if (missingStory) {
+        if (storyFixCount === 0) {
+          context.report({
+            node,
+            messageId: 'missingAnnotation',
+            data: { missing: '@story' },
+            fix: fixer =>
+              fixer.insertTextBeforeRange(
+                [insertPos, insertPos],
+                `${indent}// @story <story-file>.story.md\n`,
+              ),
+          });
+          storyFixCount++;
+        } else {
+          context.report({
+            node,
+            messageId: 'missingAnnotation',
+            data: { missing: '@story' },
+          });
+        }
       }
+
+      if (missingReq) {
+        const hasOriginalStory = /@story\b/.test(text);
+        if (hasOriginalStory) {
+          context.report({
+            node,
+            messageId: 'missingAnnotation',
+            data: { missing: '@req' },
+            fix: fixer =>
+              fixer.insertTextBeforeRange(
+                [insertPos, insertPos],
+                `${indent}// @req <REQ-ID>\n`,
+              ),
+          });
+        } else {
+          context.report({
+            node,
+            messageId: 'missingAnnotation',
+            data: { missing: '@req' },
+          });
+        }
+      }
+    }
+
+    return {
+      IfStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      SwitchCase(node) {
+        if (node.test == null || !branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      TryStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      CatchClause(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      ForStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      ForOfStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      ForInStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      WhileStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      DoWhileStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
     };
   },
 };
