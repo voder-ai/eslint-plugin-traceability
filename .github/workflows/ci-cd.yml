@@ -50,7 +50,7 @@ jobs:
         run: npm run duplication
 
       - name: Run tests with coverage
-        run: npm run test
+        run: npm run test -- --coverage
 
       - name: Check code formatting
         run: npm run format:check
