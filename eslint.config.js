@@ -10,7 +10,7 @@ const js = require("@eslint/js");
 // Try to load the plugin, but handle case where it doesn't exist yet
 let plugin;
 try {
-  plugin = require("./lib/index.js");
+  plugin = require("./lib/src/index.js");
 } catch {
   console.warn("Plugin not built yet, skipping traceability rules");
   plugin = {};
