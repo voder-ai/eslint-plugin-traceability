@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-11-18T02:23:20.877Z</last_validated>
+  <status>TODO</status>
+  <last_validated></last_validated>
   <last_modified>2025-11-16T00:07:54.419Z</last_modified>
-  <evidence>■ Rule implementation: src/rules/require-branch-annotation.ts contains the ESLint rule with @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md and @req REQ-BRANCH-DETECTION annotations.
+  <evidence>Previous assessment: PASSED
+■ Rule implementation: src/rules/require-branch-annotation.ts contains the ESLint rule with @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md and @req REQ-BRANCH-DETECTION annotations.
 ■ Tests: tests/rules/require-branch-annotation.test.ts covers all major branch types (if, switch, loops, try/catch, fallback scanning), and the full test suite passes with 96.76% coverage (including 100% coverage for require-branch-annotation.ts).
-■ Documentation: docs/rules/require-branch-annotation.md exists and references the story and requirement, and the rule is exported and enabled in src/index.ts and eslint.config.js.
-</evidence>
-  <notes>All acceptance criteria for 004.0-DEV-BRANCH-ANNOTATIONS have been met: the rule detects missing @story/@req on significant branches, includes auto-fixes, clear messages, handles switch-case fallbacks, is integrated into configs, and is documented and tested.</notes>
+■ Documentation: docs/rules/require-branch-annotation.md exists and references the story and requirement, and the rule is exported and enabled in src/index.ts and eslint.config.js.</evidence>
+  <notes>Reset for re-assessment this cycle. Previous: All acceptance criteria for 004.0-DEV-BRANCH-ANNOTATIONS have been met: the rule detects missing @story/@req on significant branches, includes auto-fixes, clear messages, handles switch-case fallbacks, is integrated into configs, and is documented and tested.</notes>
 </traceability>

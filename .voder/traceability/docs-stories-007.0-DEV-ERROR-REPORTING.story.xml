@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-11-18T02:23:26.888Z</last_validated>
+  <status>TODO</status>
+  <last_validated></last_validated>
   <last_modified>2025-11-16T00:07:54.454Z</last_modified>
-  <evidence>Inspection of rule implementations shows generic messages without actionable suggestions or consistent formatting across rules. For example, src/rules/require-story-annotation.ts reports:
+  <evidence>Previous assessment: FAILED
+Inspection of rule implementations shows generic messages without actionable suggestions or consistent formatting across rules. For example, src/rules/require-story-annotation.ts reports:
   messageId: "missingStory" → "Missing @story annotation (REQ-ANNOTATION-REQUIRED)"
 but does not suggest how to fix (e.g., "Add @story annotation <path>"). src/rules/require-req-annotation.ts reports:
   messageId: "missingReq" → "Missing @req annotation"
 with no REQ code or suggestion. valid-annotation-format.ts and valid-story-reference.ts similarly provide only generic errors without guidance or context. No ESLint ‘suggest’ blocks are implemented. Tests (e.g., tests/rules/require-story-annotation.test.ts) only assert messageId usage, not content or suggestions.</evidence>
-  <notes>The story requires clear, specific error messages including suggestions, context, and consistent format (REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-CONSISTENCY), but the current implementation only provides minimal generic messages. Documentation of message formats is also missing. Therefore, the story is not fully implemented.</notes>
+  <notes>Reset for re-assessment this cycle. Previous: The story requires clear, specific error messages including suggestions, context, and consistent format (REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-CONSISTENCY), but the current implementation only provides minimal generic messages. Documentation of message formats is also missing. Therefore, the story is not fully implemented.</notes>
 </traceability>

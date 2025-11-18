@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-11-18T02:23:38.137Z</last_validated>
+  <status>TODO</status>
+  <last_validated></last_validated>
   <last_modified>2025-11-16T00:07:54.405Z</last_modified>
-  <evidence>- Found implementation of both `require-story-annotation` and `require-req-annotation` rules in `src/rules`, each annotated with `@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md` and corresponding `@req` tags.
+  <evidence>Previous assessment: PASSED
+- Found implementation of both `require-story-annotation` and `require-req-annotation` rules in `src/rules`, each annotated with `@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md` and corresponding `@req` tags.
 - Comprehensive RuleTester test suites in `tests/rules/require-story-annotation.test.ts` and `tests/rules/require-req-annotation.test.ts` covering JavaScript, TypeScript, arrow functions, class methods, exportPriority and scope options; all tests pass (observed via `npm test`).
 - Documentation files in `docs/rules/require-story-annotation.md` and `docs/rules/require-req-annotation.md` include examples, schema, and reference back to the story.
 - The rules are registered in `src/index.ts` and included in both `recommended` and `strict` configs.
 - Linting (`npm run lint`), type checking, formatting, and build steps complete without errors.</evidence>
-  <notes>The story’s core functionality (detect missing @story/@req annotations), configurability (scope and exportPriority), TypeScript support, clear error messages, and documentation have all been implemented and validated by tests. All acceptance criteria are satisfied.</notes>
+  <notes>Reset for re-assessment this cycle. Previous: The story’s core functionality (detect missing @story/@req annotations), configurability (scope and exportPriority), TypeScript support, clear error messages, and documentation have all been implemented and validated by tests. All acceptance criteria are satisfied.</notes>
 </traceability>

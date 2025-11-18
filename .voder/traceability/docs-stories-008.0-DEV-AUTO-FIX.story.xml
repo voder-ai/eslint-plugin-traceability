@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-11-18T02:24:03.823Z</last_validated>
+  <status>TODO</status>
+  <last_validated></last_validated>
   <last_modified>2025-11-16T00:07:54.465Z</last_modified>
-  <evidence>Inspection of src/rules shows fixers implemented for missing @story (require-story-annotation), missing @req (require-req-annotation), and missing branch annotations (require-branch-annotation) but no auto-fixers for annotation formatting issues (valid-annotation-format rule has no fixer functions). There is no support for configurable annotation templates (templates are hard-coded) nor any option to selectively enable/disable specific fix types. Documentation (README.md or docs) contains no examples or explanation of the new auto-fix functionality. No tests cover format auto-fix or template customization. Therefore several requirements (REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-TEMPLATE, REQ-AUTOFIX-SELECTIVE, documentation) are unmet.</evidence>
-  <notes>Core auto-fixers for missing annotations exist, but the feature set is incomplete. Format-fix capabilities, configurable templates, selective enabling, and documentation of auto-fixes are missing.</notes>
+  <evidence>Previous assessment: FAILED
+Inspection of src/rules shows fixers implemented for missing @story (require-story-annotation), missing @req (require-req-annotation), and missing branch annotations (require-branch-annotation) but no auto-fixers for annotation formatting issues (valid-annotation-format rule has no fixer functions). There is no support for configurable annotation templates (templates are hard-coded) nor any option to selectively enable/disable specific fix types. Documentation (README.md or docs) contains no examples or explanation of the new auto-fix functionality. No tests cover format auto-fix or template customization. Therefore several requirements (REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-TEMPLATE, REQ-AUTOFIX-SELECTIVE, documentation) are unmet.</evidence>
+  <notes>Reset for re-assessment this cycle. Previous: Core auto-fixers for missing annotations exist, but the feature set is incomplete. Format-fix capabilities, configurable templates, selective enabling, and documentation of auto-fixes are missing.</notes>
 </traceability>
