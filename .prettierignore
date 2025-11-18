@@ -33,3 +33,4 @@ tests/utils/
 docs/security-incidents/*.json
 docs/security-incidents/
 jest-report.json
+test-results.json
