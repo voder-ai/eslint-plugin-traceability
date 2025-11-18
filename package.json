@@ -17,7 +17,7 @@
     "build": "tsc -p tsconfig.json",
     "type-check": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
-    "test": "jest --ci --bail",
+    "test": "jest --ci --bail && node tests/integration/cli-integration.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "duplication": "jscpd src tests --reporters console --threshold 3",
