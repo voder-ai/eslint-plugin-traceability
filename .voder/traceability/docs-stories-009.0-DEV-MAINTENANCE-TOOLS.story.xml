@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
-  <status>TODO</status>
-  <last_validated></last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-11-18T06:54:42.856Z</last_validated>
   <last_modified>2025-11-16T00:07:54.476Z</last_modified>
-  <evidence>Previous assessment: FAILED
-The project contains a `src/maintenance` folder with TypeScript modules (detect.ts, update.ts, batch.ts, report.ts, utils.ts) and corresponding Jest tests covering:
-  • REQ-MAINT-DETECT (detectStaleAnnotations + tests)
-  • REQ-MAINT-UPDATE (updateAnnotationReferences + tests)
-  • REQ-MAINT-BATCH & REQ-MAINT-VERIFY (batchUpdateAnnotations, verifyAnnotations + basic tests)
-  • REQ-MAINT-REPORT (generateMaintenanceReport + tests)
-
-However, the following acceptance criteria and requirements are not addressed or missing:
-  • No CLI entrypoint or command‐line scripts to invoke maintenance tools (“Core Functionality” was implemented as APIs only, not as CLI tools).
-  • No documentation (README updates, usage examples, best practices) for how to run or configure the maintenance helpers.
-  • No user‐experience feedback: the APIs return counts/arrays/strings but do not log or report what changed in a user‐friendly way.
-  • No support for reversibility (REQ-MAINT-SAFE): there is no mechanism to undo or rollback updates, no backups, no transactional safety.
-  • Error handling is incomplete: permission errors bubble unhandled, no handling of circular story‐reference scenarios or detailed error messages.
-  • Integration with existing ESLint plugin infrastructure is not demonstrated or tested.
-
-Because key acceptance criteria around CLI integration, user feedback, documentation, safe/undoable operations, and integration are unimplemented, the story is not fully satisfied.</evidence>
-  <notes>Reset for re-assessment this cycle. Previous: While the core programmatic APIs for detecting, updating, batching, verifying, and reporting stale annotations are in place and covered by unit tests, the broader requirements around usability (CLI, user feedback), documentation, safe reversible operations, and integration with ESLint are missing. Therefore the story is not complete.</notes>
+  <evidence>– src/maintenance/* and tests/maintenance/* implement and cover REQ-MAINT-DETECT, REQ-MAINT-UPDATE, REQ-MAINT-BATCH, REQ-MAINT-VERIFY, REQ-MAINT-REPORT (all tests pass)
+– No handling or tests for REQ-MAINT-SAFE beyond tagging (no reversible operation guarantees or rollback API)
+– No CLI entrypoints or npm scripts for invoking maintenance tools (package.json has no maintenance commands)
+– No user‐facing documentation or examples in README.md or user-docs/ for usage of maintenance tools
+– No integration layer with existing ESLint plugin workflows (no documentation or tests for ESLint config integration)
+</evidence>
+  <notes>While the core detection and update functions and their batch/verify/report counterparts are implemented and tested, several acceptance criteria are unmet: there is no user documentation or CLI for the tools; no explicit support for reversible/safe operations (REQ-MAINT-SAFE) beyond a tag; and no demonstrated integration or UX feedback layer. Therefore the story is not fully satisfied.</notes>
 </traceability>

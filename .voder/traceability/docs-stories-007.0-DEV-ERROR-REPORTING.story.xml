@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
-  <status>TODO</status>
-  <last_validated></last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-11-18T06:55:32.916Z</last_validated>
   <last_modified>2025-11-16T00:07:54.454Z</last_modified>
-  <evidence>Previous assessment: FAILED
-Inspection of rule implementations shows generic messages without actionable suggestions or consistent formatting across rules. For example, src/rules/require-story-annotation.ts reports:
-  messageId: "missingStory" → "Missing @story annotation (REQ-ANNOTATION-REQUIRED)"
-but does not suggest how to fix (e.g., "Add @story annotation <path>"). src/rules/require-req-annotation.ts reports:
-  messageId: "missingReq" → "Missing @req annotation"
-with no REQ code or suggestion. valid-annotation-format.ts and valid-story-reference.ts similarly provide only generic errors without guidance or context. No ESLint ‘suggest’ blocks are implemented. Tests (e.g., tests/rules/require-story-annotation.test.ts) only assert messageId usage, not content or suggestions.</evidence>
-  <notes>Reset for re-assessment this cycle. Previous: The story requires clear, specific error messages including suggestions, context, and consistent format (REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-CONSISTENCY), but the current implementation only provides minimal generic messages. Documentation of message formats is also missing. Therefore, the story is not fully implemented.</notes>
+  <evidence>1. No source files reference docs/stories/007.0-DEV-ERROR-REPORTING.story.md or its REQ-ERROR-* requirement IDs.  
+2. No tests exercise or assert against improved error messages (tests cover stories 001–006, 009, 010 but never 007).  
+3. The plugin’s `meta.messages` remain the generic messages defined in earlier stories (e.g. "Missing @story annotation (REQ-ANNOTATION-REQUIRED)") and do not include any context-rich suggestions or follow the new REQ-ERROR-* naming or templating.  
+4. No use of ESLint’s `suggest` API or enhanced message templates as called out under REQ-ERROR-SPECIFIC, REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, etc.</evidence>
+  <notes>The 007.0-DEV-ERROR-REPORTING story calls for enhanced, actionable, and consistent error messages and suggests use of ESLint’s suggestion API. The existing rules still emit the original, generic messages from stories 003–006 and no code or tests reference story 007, so none of the new acceptance criteria or REQ-ERROR-* requirements have been implemented.</notes>
 </traceability>

@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
-  <status>TODO</status>
-  <last_validated></last_validated>
+  <status>PASSED</status>
+  <last_validated>2025-11-18T06:53:26.736Z</last_validated>
   <last_modified>2025-11-16T00:07:54.431Z</last_modified>
-  <evidence>Previous assessment: PASSED
-- Found src/rules/valid-annotation-format.ts implementing the format validation logic with regex checks for @story and @req per the spec requirements (REQ-FORMAT-SPECIFICATION, REQ-SYNTAX-VALIDATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT, REQ-MULTILINE-SUPPORT, REQ-FLEXIBLE-PARSING, REQ-ERROR-SPECIFICITY).
-- Tests present in tests/rules/valid-annotation-format.test.ts referencing the story file, covering valid and invalid cases for both @story and @req formats.
-- Documentation exists in docs/rules/valid-annotation-format.md with specification and examples of valid/invalid annotations.
-- The rule is exported in src/index.ts and included in plugin configs, demonstrating integration.
-- Project-wide tests (npm test) execute without errors, indicating rules behave as expected.</evidence>
-  <notes>Reset for re-assessment this cycle. Previous: All acceptance criteria for core functionality, quality standards, integration, user experience, error handling, and documentation are satisfied. The implementation aligns directly with the story’s requirements and tests cover the specified scenarios.</notes>
+  <evidence>The `valid-annotation-format` rule (src/rules/valid-annotation-format.ts) implements all required checks (REQ-FORMAT-SPECIFICATION, REQ-SYNTAX-VALIDATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT) and is wired into the plugin index. The dedicated test suite (tests/rules/valid-annotation-format.test.ts) runs 3 valid and 4 invalid scenarios covering single‐line story annotations, single‐line req annotations, JSDoc block annotations, missing path, wrong extension, missing req ID, and malformed req ID. All of those tests pass (as shown in jest-report.json), demonstrating correct behavior and specific error reporting for format violations.</evidence>
+  <notes>The implementation meets the core functionality, provides clear error messages, handles multiline/JSDoc annotations, integrates with the plugin config, and follows ESLint rule best practices. Documentation examples exist in the story file. Therefore, this story is fully implemented.</notes>
 </traceability>

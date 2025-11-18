@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/006.0-DEV-FILE-VALIDATION.story.md</specification>
-  <status>TODO</status>
-  <last_validated></last_validated>
+  <status>PASSED</status>
+  <last_validated>2025-11-18T06:54:33.259Z</last_validated>
   <last_modified>2025-11-16T00:07:54.445Z</last_modified>
-  <evidence>Previous assessment: PASSED
-- src/rules/valid-story-reference.ts implements the core functionality (@story annotation reference checks) with JSDoc tags pointing to docs/stories/006.0-DEV-FILE-VALIDATION.story.md and requirements REQ-FILE-EXISTENCE, REQ-PATH-RESOLUTION, REQ-SECURITY-VALIDATION, plus caching for REQ-PERFORMANCE-OPTIMIZATION and support for configurable storyDirectories (REQ-CONFIGURABLE-PATHS).
-- Tests in tests/rules/valid-story-reference.test.ts cover valid references, missing files (fileMissing), invalid extensions (invalidExtension), path traversal and absolute path cases (invalidPath).
-- Documentation at docs/rules/valid-story-reference.md explains the rule, options, examples of valid/invalid references, and references the story file.
-- DefaultStoryDirs and schema support configurable directories; clear error messages defined in rule.meta.messages.
-- The rule uses fs.existsSync/statSync guarded by existsSync (graceful for permission issues) and path normalization for security, satisfying error handling and performance criteria.</evidence>
-  <notes>Reset for re-assessment this cycle. Previous: All acceptance criteria and requirements from 006.0-DEV-FILE-VALIDATION are implemented: core functionality, ESLint best practices, integration, clear error messaging, edge-case handling, and documentation. Tests pass, code implements caching, security checks, and configurable directories.</notes>
+  <evidence>The `valid-story-reference` rule is implemented in `src/rules/valid-story-reference.ts` with JSDoc traceability annotations pointing to `docs/stories/006.0-DEV-FILE-VALIDATION.story.md`. It covers REQ-FILE-EXISTENCE, REQ-PATH-RESOLUTION, REQ-SECURITY-VALIDATION, REQ-PERFORMANCE-OPTIMIZATION (caching), REQ-PROJECT-BOUNDARY, and REQ-CONFIGURABLE-PATHS via its schema and default options. 
+
+Unit tests in `tests/rules/valid-story-reference.test.ts` exercise:
+- Valid references (existing paths, correct extension, relative resolution)
+- Invalid references (missing files, wrong extension, path traversal, absolute paths)
+
+All 5 tests in that suite passed. The documentation in `docs/rules/valid-story-reference.md` and the example in `README.md` have been updated. The global test suite (97 tests across 18 suites) passes with zero failures (see `jest-report.json`).</evidence>
+  <notes>All acceptance criteria for core file-reference validation are met and backed by concrete test coverage. The rule is wired into the plugin, documented, and validated by ESLint tests.</notes>
 </traceability>

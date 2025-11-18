@@ -117,6 +117,18 @@ while (condition) {
     doSomething();
 }`,
       },
+      {
+        name: "[REQ-CONFIGURABLE-SCOPE] custom branchTypes ignores unlisted branch types",
+        code: `switch (value) { case 'a': break; }`,
+        options: [{ branchTypes: ['IfStatement'] }],
+      },
+      {
+        name: "[REQ-CONFIGURABLE-SCOPE] custom branchTypes only enforce listed types",
+        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-BRANCH-DETECTION
+if (condition) {}`,
+        options: [{ branchTypes: ['IfStatement', 'SwitchCase'] }],
+      },
     ],
     invalid: [
       {
@@ -245,6 +257,33 @@ try {
           { messageId: "missingAnnotation", data: { missing: "@req" } },
         ],
       },
+      {
+        name: "[REQ-CONFIGURABLE-SCOPE] missing annotations on configured branch type ForStatement",
+        code: `for (let i = 0; i < 3; i++) {}`,
+        options: [{ branchTypes: ['ForStatement'] }],
+        output: `// @story <story-file>.story.md
+for (let i = 0; i < 3; i++) {}`,
+        errors: [
+          { messageId: "missingAnnotation", data: { missing: "@story" } },
+          { messageId: "missingAnnotation", data: { missing: "@req" } }
+        ],
+      },
     ],
+  });
+
+  ruleTester.run("require-branch-annotation", rule, {
+    valid: [],
+    invalid: [
+      {
+        name: "[REQ-CONFIGURABLE-SCOPE] invalid branchTypes option should error schema",
+        code: "if (condition) {}",
+        options: [{ branchTypes: ['UnknownType'] }],
+        errors: [
+          {
+            message: /should be equal to one of the allowed values/
+          }
+        ]
+      }
+    ]
   });
 });

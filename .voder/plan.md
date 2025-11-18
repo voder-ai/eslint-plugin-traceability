@@ -1,12 +1,14 @@
-## NOW
-Refactor `src/rules/require-req-annotation.ts` by extracting the duplicated logic for handling `TSDeclareFunction` and `TSMethodSignature` nodes into a new shared helper module under `src/utils/annotation-checker.ts`.
+## NOW  
+Implement the configurability requirement (REQ-CONFIGURABLE-SCOPE) for branch annotations by updating `src/rules/require-branch-annotation.ts`: add a `branchTypes` option to its `meta.schema` (an array of AST node-type strings) and change the rule logic to read `context.options[0]?.branchTypes` (falling back to the existing defaults) when deciding which branch nodes to enforce.
 
-## NEXT
-- Update `require-req-annotation.ts` to import and invoke the new helper for both node types.
-- Add unit tests for the helper in `tests/utils/annotation-checker.test.ts` to ensure its behavior.
-- Adjust the jscpd configuration (e.g. in `.jscpd.json` or `package.json`) to ignore the legitimate duplication now centralized in the helper or raise the per-file duplication threshold.
+## NEXT  
+- Add unit tests in `tests/rules/require-branch-annotation.test.ts` covering:  
+  • Default enforcement (no options)  
+  • Custom `branchTypes` arrays  
+  • ESLint schema validation errors for bad config  
+- Update the rule documentation (`docs/rules/require-branch-annotation.md`) and the user-story file (`docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md`) to describe and demonstrate the new `branchTypes` option.
 
-## LATER
-- Scan other rule files for similar duplication and consolidate shared logic into utilities.
-- Integrate a duplication check step (`npm run duplication`) into the CI workflow to fail on new code clones.
-- Review overall code complexity and, if needed, introduce additional small refactorings to meet the 90% code-quality threshold.
+## LATER  
+- Audit other rules for missing configurability per their stories and refactor to accept options where needed.  
+- Create integration tests ensuring `branchTypes` can be set via an ESLint config override and through CLI presets.  
+- Update the shared preset and README examples to show how to customize branch-annotation enforcement.
