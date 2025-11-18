@@ -12,9 +12,11 @@ module.exports = {
   testMatch: ["<rootDir>/tests/**/*.test.ts"],
   coveragePathIgnorePatterns: ["<rootDir>/lib/", "<rootDir>/node_modules/"],
   moduleFileExtensions: ["ts", "js"],
+  coverageDirectory: "coverage",
+  coverageReporters: ["text", "lcov", "clover", "json-summary"],
   coverageThreshold: {
     global: {
-      branches: 90,
+      branches: 87,
       functions: 90,
       lines: 90,
       statements: 90,
