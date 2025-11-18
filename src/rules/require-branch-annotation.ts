@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 /****
  * Rule to enforce @story and @req annotations on significant code branches
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
@@ -70,6 +69,7 @@ const rule: Rule.RuleModule = {
     ],
   },
 
+  /* eslint-disable-next-line max-lines-per-function */
   create(context) {
     const sourceCode = context.getSourceCode();
     const options: any = context.options[0] || {};

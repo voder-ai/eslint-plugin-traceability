@@ -82,10 +82,11 @@ function baz() {}`,
     return result;
   }
 
-  tests.forEach((testCase) => {
-    it(`[REQ-PLUGIN-STRUCTURE] ${testCase.name}`, () => {
-      const result = runEslint(testCase.code, testCase.rule);
-      expect(result.status).toBe(testCase.expectedStatus);
-    });
-  });
+  it.each(tests)(
+    "[REQ-PLUGIN-STRUCTURE] $name",
+    ({ code, rule, expectedStatus }) => {
+      const result = runEslint(code, rule);
+      expect(result.status).toBe(expectedStatus);
+    },
+  );
 });
