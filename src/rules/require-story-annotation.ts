@@ -150,16 +150,43 @@ function checkStoryAnnotation(
   if (!shouldCheckNode(node, scope, exportPriority)) {
     return;
   }
+  // Special handling for TSMethodSignature: allow annotation on the method itself
+  if (node.type === 'TSMethodSignature') {
+    // If annotated on the method signature, skip
+    if (hasStoryAnnotation(sourceCode, node)) {
+      return;
+    }
+    // Otherwise, check on interface declaration
+    const intf = resolveTargetNode(sourceCode, node);
+    if (hasStoryAnnotation(sourceCode, intf)) {
+      return;
+    }
+    // Missing annotation: report on the interface declaration
+    context.report({
+      node: intf,
+      messageId: 'missingStory',
+      fix(fixer: any) {
+        const indentLevel = intf.loc.start.column;
+        const indent = ' '.repeat(indentLevel);
+        const insertPos = intf.range[0] - indentLevel;
+        return fixer.insertTextBeforeRange(
+          [insertPos, insertPos],
+          `${indent}/** @story <story-file>.story.md */\n`,
+        );
+      },
+    });
+    return;
+  }
   const target = resolveTargetNode(sourceCode, node);
   if (hasStoryAnnotation(sourceCode, target)) {
     return;
   }
   context.report({
     node,
-    messageId: "missingStory",
+    messageId: 'missingStory',
     fix(fixer: any) {
       const indentLevel = target.loc.start.column;
-      const indent = " ".repeat(indentLevel);
+      const indent = ' '.repeat(indentLevel);
       const insertPos = target.range[0] - indentLevel;
       return fixer.insertTextBeforeRange(
         [insertPos, insertPos],
