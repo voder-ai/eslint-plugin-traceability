@@ -1,14 +1,12 @@
 ## NOW
-Add `test-results.json` to the `.prettierignore` file.
+Extract the branch‐type validation logic out of `src/rules/require-branch-annotation.ts#create(context)` into a new helper function `validateBranchTypes` in `src/utils/branch-annotation-helpers.ts`, and add JSDoc `@story` and `@req` annotations to it.
 
 ## NEXT
-- Add `test-results.json` to `.gitignore` and run `npm run format:check` to clear formatting errors.
-- Refactor `src/rules/require-branch-annotation.ts` to remove the file-wide `eslint-disable max-lines-per-function` suppression—either split the large function into smaller helpers or narrow the disable to the specific block.
-- Create unit tests for `src/maintenance/index.ts` in `tests/maintenance/index.test.ts` to cover all exports and edge cases, raising branch coverage above 90%.
-- Refactor existing tests to eliminate imperative loops (replace `forEach` with `test.each` or separate `it()` calls) and swap generic data (`foo`, `bar`) for descriptive fixtures.
+- Split the remaining blocks in `create(context)` (e.g. missing‐annotation reporting, unexpected‐annotation reporting) into separate helper functions in `src/utils/branch-annotation-helpers.ts`, each with proper `@story`/`@req` JSDoc.
+- Update `src/rules/require-branch-annotation.ts` to call these helpers and remove the inline `eslint-disable-next-line max-lines-per-function`.
+- Add unit tests for each new helper in `tests/utils/branch-annotation-helpers.test.ts` covering all edge cases.
 
 ## LATER
-- Configure CI to enforce 90% coverage thresholds for statements, branches, and functions, failing the build if they drop below target.
-- Audit other ESLint rules for complexity or function-length violations and refactor as needed.
-- Expand integration and end-to-end tests to validate rule configurability via CLI presets and real-world sample repositories.
-- Establish a monitoring workflow for code-quality and coverage metrics over time and document regressions or improvements.
+- Ensure the main `create(context)` stays under the max‐lines threshold; remove any remaining `eslint-disable max-lines-per-function` comments.
+- Review cyclomatic complexity for the refactored file and adjust helper boundaries if necessary.
+- Document the refactoring approach in an ADR to guide future splits and complexity rules.
