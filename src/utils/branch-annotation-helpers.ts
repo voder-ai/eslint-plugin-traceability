@@ -63,7 +63,7 @@ export function validateBranchTypes(
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-COMMENT-ASSOCIATION - Associate inline comments with their corresponding code branches
  */
-function gatherBranchCommentText(
+export function gatherBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
 ): string {
@@ -87,7 +87,7 @@ function gatherBranchCommentText(
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
  */
-function reportMissingStory(
+export function reportMissingStory(
   context: Rule.RuleContext,
   node: any,
   indent: string,
@@ -120,7 +120,7 @@ function reportMissingStory(
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
  */
-function reportMissingReq(
+export function reportMissingReq(
   context: Rule.RuleContext,
   node: any,
   indent: string,
