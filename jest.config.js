@@ -11,6 +11,14 @@ module.exports = {
   testPathIgnorePatterns: ["<rootDir>/lib/"],
   testMatch: ["<rootDir>/tests/**/*.test.ts"],
   coveragePathIgnorePatterns: ["<rootDir>/lib/", "<rootDir>/node_modules/"],
+  coverageThreshold: {
+    global: {
+      branches: 90,
+      lines: 90,
+      functions: 90,
+      statements: 90,
+    },
+  },
   // Coverage thresholds disabled due to Jest reporter bug in threshold checking
   // (TypeError: Cannot read properties of undefined (reading 'sync'))
   // Actual coverage metrics (as of 2025-11-18):

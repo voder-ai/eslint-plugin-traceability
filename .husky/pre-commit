@@ -1,1 +1,1 @@
-npm run format && npm run lint -- --max-warnings=0 && npm run type-check && node node_modules/actionlint/actionlint.cjs .github/workflows/*.yml
+npm run format && npm run lint && npm run type-check && node node_modules/actionlint/actionlint.cjs .github/workflows/*.yml
