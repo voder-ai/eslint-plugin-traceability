@@ -151,7 +151,7 @@ function checkStoryAnnotation(
     return;
   }
   // Special handling for TSMethodSignature: allow annotation on the method itself
-  if (node.type === 'TSMethodSignature') {
+  if (node.type === "TSMethodSignature") {
     // If annotated on the method signature, skip
     if (hasStoryAnnotation(sourceCode, node)) {
       return;
@@ -164,10 +164,10 @@ function checkStoryAnnotation(
     // Missing annotation: report on the interface declaration
     context.report({
       node: intf,
-      messageId: 'missingStory',
+      messageId: "missingStory",
       fix(fixer: any) {
         const indentLevel = intf.loc.start.column;
-        const indent = ' '.repeat(indentLevel);
+        const indent = " ".repeat(indentLevel);
         const insertPos = intf.range[0] - indentLevel;
         return fixer.insertTextBeforeRange(
           [insertPos, insertPos],
@@ -183,10 +183,10 @@ function checkStoryAnnotation(
   }
   context.report({
     node,
-    messageId: 'missingStory',
+    messageId: "missingStory",
     fix(fixer: any) {
       const indentLevel = target.loc.start.column;
-      const indent = ' '.repeat(indentLevel);
+      const indent = " ".repeat(indentLevel);
       const insertPos = target.range[0] - indentLevel;
       return fixer.insertTextBeforeRange(
         [insertPos, insertPos],
