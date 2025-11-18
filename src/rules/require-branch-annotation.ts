@@ -1,3 +1,11 @@
+/* eslint-disable max-lines-per-function */
+/****
+ * Rule to enforce @story and @req annotations on significant code branches
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @req REQ-BRANCH-DETECTION - Detect significant code branches for traceability annotations
+ * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of branch types for annotation enforcement
+ */
+
 import type { Rule } from "eslint";
 
 const DEFAULT_BRANCH_TYPES = [
@@ -53,10 +61,7 @@ const rule: Rule.RuleModule = {
         properties: {
           branchTypes: {
             type: "array",
-            items: {
-              type: "string",
-              enum: DEFAULT_BRANCH_TYPES as any,
-            },
+            items: { type: "string", enum: DEFAULT_BRANCH_TYPES as any },
             uniqueItems: true,
           },
         },
@@ -65,13 +70,10 @@ const rule: Rule.RuleModule = {
     ],
   },
 
-  // eslint-disable-next-line max-lines-per-function
   create(context) {
     const sourceCode = context.getSourceCode();
     const branchTypes: BranchType[] =
-      (context.options[0]?.branchTypes as BranchType[]) ??
-      Array.from(DEFAULT_BRANCH_TYPES);
-
+      context.options[0]?.branchTypes ?? Array.from(DEFAULT_BRANCH_TYPES);
     let storyFixCount = 0;
 
     function reportBranch(node: any) {
@@ -131,15 +133,45 @@ const rule: Rule.RuleModule = {
       }
     }
 
-    const listeners: Rule.RuleListener = {};
-    for (const type of DEFAULT_BRANCH_TYPES) {
-      listeners[type] = (node: any) => {
-        if (!branchTypes.includes(type)) return;
-        if (type === "SwitchCase" && (node as any).test == null) return;
+    return {
+      IfStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
         reportBranch(node);
-      };
-    }
-    return listeners;
+      },
+      SwitchCase(node) {
+        if (node.test == null || !branchTypes.includes(node.type as BranchType))
+          return;
+        reportBranch(node);
+      },
+      TryStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      CatchClause(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      ForStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      ForOfStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      ForInStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      WhileStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+      DoWhileStatement(node) {
+        if (!branchTypes.includes(node.type as BranchType)) return;
+        reportBranch(node);
+      },
+    };
   },
 };
 
