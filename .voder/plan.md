@@ -1,16 +1,14 @@
-## NOW  
-Add a **Troubleshooting ESLint Configuration** section to `user-docs/eslint-9-setup-guide.md` that explains how to resolve common flat-config errors—including a dedicated subsection for mixed JavaScript/TypeScript setups with sample configurations.
+## NOW
+Extract the duplicated annotation‐checking logic in `src/rules/require-req-annotation.ts` into a new helper function in `src/utils/annotationChecker.ts` and update the rule file to import and call that helper, removing all duplicate code blocks.
 
-## NEXT  
-- Extend the **Examples for Common Project Types** in `user-docs/eslint-9-setup-guide.md` to include full config snippets for:  
-  1. JavaScript-only projects  
-  2. TypeScript-only projects  
-  3. Mixed JS/TS codebases  
-  4. Monorepos/workspaces  
-- Update `README.md` under **Usage** to link to both the Examples and Troubleshooting sections.  
-- Commit and verify that the docs build (lint, markdown-link-check) passes without errors.
+## NEXT
+- In `package.json`, add a new npm script (e.g. `"lint:fast"`) that runs only ESLint on `src/**/*.{ts,js}` without triggering the build step.
+- Update the Husky pre-commit hook (`.husky/pre-commit`) to invoke `npm run lint:fast` (or direct `npx eslint ...`) instead of the existing lint script.
+- Run the pre-commit hook locally to confirm it finishes in under 10 seconds and only blocks on lint/format/type errors.
+- Commit and push these changes, then verify the CI pipeline still passes.
 
-## LATER  
-- Create real sample projects in an `examples/` folder (JS, TS, mixed, monorepo) and add a CI job to run ESLint flat-config against each to validate the documented setups.  
-- Automate markdown link validation and spell-checking in CI to catch future documentation gaps.  
-- Repeat this pattern to finish the remaining incomplete stories (003.0, 004.0, etc.) according to the functionality gap analysis.
+## LATER
+- Integrate the jscpd duplication check into the CI/CD workflow as a blocking quality gate.
+- Audit other custom rule files for similar DRY violations and refactor where needed.
+- Add performance monitoring or timing logs for pre-commit/pre-push hooks to catch regressions.
+- Document the new `annotationChecker` helper in the internal developer docs (`docs/decisions/`) so future contributors understand the shared logic.

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-env node */
 /**
  * CLI integration tests script for ESLint Traceability Plugin
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
@@ -10,7 +11,7 @@ const path = require("path");
 // Resolve the ESLint CLI binary and configuration path
 const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
 const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
-const configPath = path.resolve(__dirname, "eslint.config.js");
+const configPath = path.resolve(__dirname, "../../eslint.config.js");
 
 // Define CLI integration test scenarios
 const tests = [
@@ -92,7 +93,7 @@ tests.forEach((test) => {
   } else {
     console.error(`✗ ${test.name}`);
     console.error(
-      `  Expected exit code ${test.expectedStatus}, got ${result.status}`,
+      `  Expected exit code ${test.expectedStatus}, got ${result.status}`
     );
     if (result.stdout) console.error(`  stdout: ${result.stdout}`);
     if (result.stderr) console.error(`  stderr: ${result.stderr}`);
