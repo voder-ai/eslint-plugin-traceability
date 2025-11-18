@@ -28,6 +28,7 @@ docs/cli-integration.md
 docs/security-incidents/unresolved-vulnerabilities.md
 
 tests/config/
+tests/utils/
 
 docs/security-incidents/*.json
 docs/security-incidents/
