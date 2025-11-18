@@ -13,7 +13,9 @@ This rule checks for JSDoc or inline comments immediately preceding significant 
 ### Options
 
 Property: `branchTypes` (array of AST node type strings)  
-Default: `["IfStatement", "SwitchCase", "TryStatement", "CatchClause", "ForStatement", "ForOfStatement", "ForInStatement", "WhileStatement", "DoWhileStatement"]` (DEFAULT_BRANCH_TYPES)
+Default: `["IfStatement", "SwitchCase", "TryStatement", "CatchClause", "ForStatement", "ForOfStatement", "ForInStatement", "WhileStatement", "DoWhileStatement"]` (DEFAULT_BRANCH_TYPES)  
+Allowed values: `["IfStatement", "SwitchCase", "TryStatement", "CatchClause", "ForStatement", "ForOfStatement", "ForInStatement", "WhileStatement", "DoWhileStatement"]`  
+If an invalid branch type is provided, the rule will report a configuration error with a message: Value "<invalid>" should be equal to one of the allowed values.
 
 Example (.eslintrc.js):
 
@@ -49,3 +51,20 @@ if (error) {
   handleError();
 }
 ```
+
+#### Invalid Configuration
+
+```js
+// .eslintrc.js
+module.exports = {
+  rules: {
+    "require-branch-annotation": [
+      "error",
+      {
+        branchTypes: ["IfStatement", "InvalidType"],
+      },
+    ],
+  },
+};
+
+// Error: Value "InvalidType" should be equal to one of the allowed values.
