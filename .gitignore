@@ -132,3 +132,4 @@ docs/generated/
 
 tmp-nested-*
 temp_foo.js
+test-results.json
