@@ -143,7 +143,6 @@ module.exports = [
   {
     // Ignore build output and node_modules and dynamic loader file
     ignores: [
-      "src/index.ts",
       "lib/**",
       "node_modules/**",
       "coverage/**",

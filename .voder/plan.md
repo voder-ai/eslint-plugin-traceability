@@ -1,12 +1,16 @@
-## NOW
-Implement a try/catch around the ESLint plugin’s rule‐loading in `src/index.ts` to catch module or dependency errors and emit a clear, ESLint‐friendly error message (satisfying the missing error‐handling criterion from docs/stories/001.0-DEV-PLUGIN-SETUP.story.md).
+## NOW  
+Remove the file‐level `/* eslint-disable */` directive from `src/index.ts` so that the file is fully linted under the existing ESLint rules.  
 
-## NEXT
-- Add a unit test (e.g. `tests/plugin-setup-error.test.ts`) that mocks a missing or broken rule module and asserts the plugin loader throws or logs the expected error.  
-- Add an end-to-end CLI test in `tests/cli-error-handling.test.ts` that runs `eslint --print-config` (or equivalent) against a config using the plugin and verifies the exit code and error output.  
-- Update `docs/stories/001.0-DEV-PLUGIN-SETUP.story.md` to mark the error-handling requirement fulfilled and reference the new tests.
+## NEXT  
+- Run `npm run lint` and fix all lint errors reported in `src/index.ts` by:  
+  1. Adding targeted inline disables only where absolutely necessary (e.g.  
+     `// eslint-disable-next-line @typescript-eslint/no-var-requires` above the dynamic `require` and  
+     `// eslint-disable-next-line no-console` above `console.error`).  
+  2. Updating `eslint.config.js` (TypeScript files block) to declare `require`, `module` and `console` as read-only globals so that `no-undef` errors are resolved without broad disables.  
+- Remove any ignore-pattern or ignore entry for `src/index.ts` in `package.json` or in `eslint.config.js`.  
+- Rerun `npm run lint` to verify zero errors or warnings in `src/index.ts`.  
 
-## LATER
-- Review the two other incomplete stories and implement any missing requirements (code, tests, documentation) to reach 100% story coverage.  
-- Add functional smoke tests for all user stories via a simple script or GitHub Actions job.  
-- Document in CONTRIBUTING how to add new story tests and verify full functionality coverage.
+## LATER  
+- Scan the rest of the codebase for any other broad `eslint-disable` directives and refactor them into minimal inline disables or configuration adjustments.  
+- Introduce an ESLint rule or CI check that disallows file-wide `eslint-disable` comments to prevent regressions.  
+- Once all files comply, raise the project’s code-quality metric above 90% and proceed to implement remaining feature stories.
