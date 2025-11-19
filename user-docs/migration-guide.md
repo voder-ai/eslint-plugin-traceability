@@ -60,7 +60,8 @@ To test CLI integration, run:
 ```bash
 npm test -- tests/integration/cli-integration.test.ts
 ```
-> Note: The CLI integration test has been renamed from `cli-integration.js` to `cli-integration.test.ts`.
+
+> Note: The CLI integration test is now located at `tests/integration/cli-integration.test.ts`.
 
 ## 5. Update Documentation
 
