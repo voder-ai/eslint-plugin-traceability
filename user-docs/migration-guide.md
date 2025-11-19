@@ -58,10 +58,14 @@ npm run format:check
 To test CLI integration, run:
 
 ```bash
+# Using npm
 npm test -- tests/integration/cli-integration.test.ts
+
+# Using Yarn
+yarn test tests/integration/cli-integration.test.ts
 ```
 
-> Note: The CLI integration test is now located at `tests/integration/cli-integration.test.ts`.
+> Note: The CLI integration test is located at `tests/integration/cli-integration.test.ts`. The previous `cli-integration.js` script is no longer used in v1.x.
 
 ## 5. Update Documentation
 
