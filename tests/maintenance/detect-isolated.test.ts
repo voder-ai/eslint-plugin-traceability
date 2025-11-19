@@ -54,11 +54,21 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
 `;
     fs.writeFileSync(filePath, content, "utf8");
     // Remove read permission
-    fs.chmodSync(dir, 0o000);
-    expect(() => detectStaleAnnotations(tmpDir2)).toThrow();
-    // Restore permissions
-    fs.chmodSync(dir, 0o700);
-    // Cleanup temporary directory
-    fs.rmSync(tmpDir2, { recursive: true, force: true });
+    try {
+      fs.chmodSync(dir, 0o000);
+      expect(() => detectStaleAnnotations(tmpDir2)).toThrow();
+    } finally {
+      // Restore permissions and cleanup temporary directory, ignoring errors during cleanup
+      try {
+        fs.chmodSync(dir, 0o700);
+      } catch {
+        // ignore
+      }
+      try {
+        fs.rmSync(tmpDir2, { recursive: true, force: true });
+      } catch {
+        // ignore
+      }
+    }
   });
 });
