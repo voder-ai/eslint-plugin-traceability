@@ -45,7 +45,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: traceability-report
+          name: traceability-report-${{ matrix['node-version'] }}
           path: scripts/traceability-report.md
 
       - name: Build project
