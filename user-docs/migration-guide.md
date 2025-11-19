@@ -55,7 +55,7 @@ npm run lint -- --max-warnings=0
 npm run format:check
 ```
 
-Note: The `cli-integration.js` script is no longer available. To test CLI integration, run:
+To test CLI integration, run:
 
 ```bash
 npm test -- tests/integration/cli-integration.test.ts
