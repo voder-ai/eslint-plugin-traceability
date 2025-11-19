@@ -142,14 +142,8 @@ function handleComment(opts: {
   allowAbsolute: boolean;
   requireExt: boolean;
 }): void {
-  const {
-    commentNode,
-    context,
-    cwd,
-    storyDirs,
-    allowAbsolute,
-    requireExt,
-  } = opts;
+  const { commentNode, context, cwd, storyDirs, allowAbsolute, requireExt } =
+    opts;
   const lines = commentNode.value
     .split(/\r?\n/)
     .map((l: string) => l.replace(/^[^@]*/, "").trim());
