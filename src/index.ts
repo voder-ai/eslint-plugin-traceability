@@ -43,12 +43,11 @@ RULE_NAMES.forEach(
       const mod = require(`./rules/${name}`);
       // Support ESModule default export
       rules[name] = mod.default ?? mod;
-    }
-    /**
-     * @story docs/stories/003.0-RULE-LOAD-ERROR-HANDLING.story.md
-     * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
-     */
-    catch (error: any) {
+    } catch (error: any) {
+      /**
+       * @story docs/stories/003.0-RULE-LOAD-ERROR-HANDLING.story.md
+       * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
+       */
       /**
        * @story docs/stories/003.0-RULE-LOAD-ERROR-HANDLING.story.md
        * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
