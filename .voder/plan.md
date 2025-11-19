@@ -1,16 +1,13 @@
-## NOW  
-Remove the file‐level `/* eslint-disable */` directive from `src/index.ts` so that the file is fully linted under the existing ESLint rules.  
+## NOW
+In `.github/workflows/ci-cd.yml`, collapse the separate `quality-checks` and `deploy` jobs into a single `quality-and-deploy` job that runs all quality gates (build, lint, type-check, tests, format-check, security audit) and then publishes the package.
 
-## NEXT  
-- Run `npm run lint` and fix all lint errors reported in `src/index.ts` by:  
-  1. Adding targeted inline disables only where absolutely necessary (e.g.  
-     `// eslint-disable-next-line @typescript-eslint/no-var-requires` above the dynamic `require` and  
-     `// eslint-disable-next-line no-console` above `console.error`).  
-  2. Updating `eslint.config.js` (TypeScript files block) to declare `require`, `module` and `console` as read-only globals so that `no-undef` errors are resolved without broad disables.  
-- Remove any ignore-pattern or ignore entry for `src/index.ts` in `package.json` or in `eslint.config.js`.  
-- Rerun `npm run lint` to verify zero errors or warnings in `src/index.ts`.  
+## NEXT
+- Delete the old `deploy` job block and remove any duplicate build/test/lint steps from the workflow.
+- In the new `quality-and-deploy` job, after the quality steps, add the publish step (e.g. `npm publish` with `NPM_TOKEN`).
+- Update any `needs:` or `if:` settings so that there is only one job on push to `main`.
+- Commit and push these changes, then verify that a single CI/CD run builds, tests, lints, type-checks, formats, audits, and publishes the package end-to-end.
 
-## LATER  
-- Scan the rest of the codebase for any other broad `eslint-disable` directives and refactor them into minimal inline disables or configuration adjustments.  
-- Introduce an ESLint rule or CI check that disallows file-wide `eslint-disable` comments to prevent regressions.  
-- Once all files comply, raise the project’s code-quality metric above 90% and proceed to implement remaining feature stories.
+## LATER
+- Write an ADR under `docs/decisions/` documenting the switch to a unified CI/CD workflow.
+- Add a CI YAML linter or schema check to flag future duplicate steps.
+- Optimize caching and parallelism in the unified job to reduce pipeline runtime.

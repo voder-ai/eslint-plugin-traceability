@@ -8,13 +8,21 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
 jobs:
-  quality-checks:
-    name: Quality Checks
+  quality-and-deploy:
+    name: Quality and Deploy
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: ['18.x', '20.x']
+    env:
+      HUSKY: 0
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,13 +40,6 @@ jobs:
 
       - name: Build project
         run: npm run build
-
-      - name: Upload build artifacts
-        if: ${{ matrix['node-version'] == '20.x' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifact
-          path: lib/
 
       - name: Run type checking
         run: npm run type-check
@@ -62,41 +63,11 @@ jobs:
         run: npm audit --omit=prod --audit-level=high
         continue-on-error: true
 
-  deploy:
-    if: ${{ github.event_name == 'push' }}
-    name: Release
-    runs-on: ubuntu-latest
-    needs: quality-checks
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      id-token: write
-    env:
-      HUSKY: 0
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
-
       - name: Release with semantic-release
+        if: ${{ github.event_name == 'push' && matrix['node-version'] == '20.x' }}
         id: semantic-release
         run: |
           npx semantic-release 2>&1 | tee /tmp/release.log
-          
-          # Check if a release was published
           if grep -q "Published release" /tmp/release.log; then
             VERSION=$(grep "Published release" /tmp/release.log | sed -n 's/.*Published release \([0-9.]*\).*/\1/p')
             echo "new_release_published=true" >> $GITHUB_OUTPUT
