@@ -12,6 +12,7 @@ export function batchUpdateAnnotations(
   mappings: { oldPath: string; newPath: string }[],
 ): number {
   let totalUpdated = 0;
+  // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md // @req REQ-MAINT-BATCH - Perform batch updates
   for (const { oldPath, newPath } of mappings) {
     totalUpdated += updateAnnotationReferences(codebasePath, oldPath, newPath);
   }
