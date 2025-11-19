@@ -63,6 +63,22 @@ jobs:
       - name: Run tests with coverage
         run: npm run test -- --coverage
 
+      - name: Upload jest artifacts (primary)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: jest-artifacts-${{ matrix['node-version'] }}
+          path: ci/
+
+      - name: Upload jest artifacts (secondary)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: jest-artifacts-${{ matrix['node-version'] }}
+          path: ci/
+
       - name: Check code formatting
         run: npm run format:check
 
