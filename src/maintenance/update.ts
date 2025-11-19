@@ -23,14 +23,37 @@ export function updateAnnotationReferences(
   const regex = new RegExp(`(@story\\s*)${escapedOldPath}`, "g");
 
   const files = getAllFiles(codebasePath);
+  /**
+   * Iterate over all files and replace annotation references
+   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+   * @req REQ-MAINT-UPDATE
+   */
   for (const fullPath of files) {
     const stat = fs.statSync(fullPath);
+    /**
+     * Skip non-files in iteration
+     * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+     * @req REQ-MAINT-UPDATE
+     */
     if (!stat.isFile()) continue;
     const content = fs.readFileSync(fullPath, "utf8");
-    const newContent = content.replace(regex, (match, p1) => {
-      replacementCount++;
-      return `${p1}${newPath}`;
-    });
+    const newContent = content.replace(
+      regex,
+      /**
+       * Replacement callback to update annotation references
+       * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+       * @req REQ-MAINT-UPDATE
+       */
+      (match, p1) => {
+        replacementCount++;
+        return `${p1}${newPath}`;
+      },
+    );
+    /**
+     * Write file only if content changed
+     * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+     * @req REQ-MAINT-UPDATE
+     */
     if (newContent !== content) {
       fs.writeFileSync(fullPath, newContent, "utf8");
     }

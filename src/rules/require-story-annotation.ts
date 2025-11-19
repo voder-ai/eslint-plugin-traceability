@@ -276,6 +276,12 @@ const rule: Rule.RuleModule = {
         reportMissing(context, sourceCode, node, target);
       },
 
+      /**
+       * Handle FunctionExpression nodes
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
+       * @param {any} node - FunctionExpression AST node
+       */
       FunctionExpression(node: any) {
         if (!shouldProcessNode(node, scope, exportPriority)) return;
         if (node.parent && node.parent.type === "MethodDefinition") return;
@@ -283,23 +289,47 @@ const rule: Rule.RuleModule = {
         reportMissing(context, sourceCode, node, target);
       },
 
+      /**
+       * Handle ArrowFunctionExpression nodes
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
+       * @param {any} node - ArrowFunctionExpression AST node
+       */
       ArrowFunctionExpression(node: any) {
         if (!shouldProcessNode(node, scope, exportPriority)) return;
         const target = resolveTargetNode(sourceCode, node);
         reportMissing(context, sourceCode, node, target);
       },
 
+      /**
+       * Handle TSDeclareFunction nodes
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
+       * @param {any} node - TSDeclareFunction AST node
+       */
       TSDeclareFunction(node: any) {
         if (!shouldProcessNode(node, scope, exportPriority)) return;
         reportMissing(context, sourceCode, node, node);
       },
 
+      /**
+       * Handle TSMethodSignature nodes
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
+       * @param {any} node - TSMethodSignature AST node
+       */
       TSMethodSignature(node: any) {
         if (!shouldProcessNode(node, scope, exportPriority)) return;
         const target = resolveTargetNode(sourceCode, node);
         reportMissing(context, sourceCode, node, target);
       },
 
+      /**
+       * Handle MethodDefinition nodes
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
+       * @param {any} node - MethodDefinition AST node
+       */
       MethodDefinition(node: any) {
         if (!shouldProcessNode(node, scope, exportPriority)) return;
         reportMethod(context, sourceCode, node);
