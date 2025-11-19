@@ -28,10 +28,20 @@ export function updateAnnotationReferences(
    * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
    * @req REQ-MAINT-UPDATE
    */
+  /**
+   * Loop over each discovered file path
+   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+   * @req REQ-MAINT-UPDATE
+   */
   for (const fullPath of files) {
     const stat = fs.statSync(fullPath);
     /**
      * Skip non-files in iteration
+     * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+     * @req REQ-MAINT-UPDATE
+     */
+    /**
+     * Skip entries that are not regular files (e.g., directories)
      * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
      * @req REQ-MAINT-UPDATE
      */
