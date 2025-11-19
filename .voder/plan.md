@@ -1,12 +1,12 @@
 ## NOW
-Extract the path normalization and file‐existence logic from the `validateStoryPath` function in `src/rules/valid-story-reference.ts` into a new helper `normalizeStoryPath` in `src/utils/storyReferenceUtils.ts`.
+Remove the committed test artifact file `jest-results.json` from the repository.
 
 ## NEXT
-- Remove the `// eslint-disable-next-line max-lines-per-function` in `valid-story-reference.ts` and continue splitting `validateStoryPath` by extracting its comment-parsing logic into separate helpers so it falls below 60 lines.  
-- Update the CI/CD workflow (`.github/workflows/ci-cd.yml`) to run `npm audit` without the `--production` flag, ensuring dev-dependencies are scanned.  
-- Run `npm run lint`, `npm run format:check`, and `npm test` to confirm Code Quality and Security checks now pass.
+- Add `jest-results.json` to `.gitignore` so it cannot be committed again.  
+- Scan `git ls-files` for any other generated artifacts (e.g. coverage directories, build outputs) that are currently tracked, remove them, and add appropriate entries to `.gitignore`.  
+- Run the full quality suite (`npm run lint`, `npm run format:check`, `npm test`, `npm run type-check`) to confirm the code_quality score rises above 90%.
 
 ## LATER
-- Add unit tests for `normalizeStoryPath` (and other extracted helpers) to preserve 100% function coverage.  
-- Introduce a CI check for security-incident file naming conventions.  
-- Audit other large rule files and apply the same extract-helper refactoring to enforce the max-lines-per-function rule project-wide.
+- Add a pre-commit hook (via lint-staged or Husky) that automatically removes or rejects any tracked test/artifact files.  
+- Introduce a CI enforcement step that fails the build if any `*.json` test-artifact or build-output files are present in the repo.  
+- Update the CONTRIBUTING guide to document which artifacts must never be committed and how developers can clean up local test outputs.
