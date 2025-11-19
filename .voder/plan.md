@@ -1,43 +1,38 @@
 ## NOW
-Create and run a traceability-check script that scans the src/ tree and produces a report of every function and significant branch missing JSDoc @story and @req annotations (write output to scripts/traceability-report.md).
+
+Add a package.json script named "check:traceability" with the command: node scripts/traceability-check.js
 
 ## NEXT
-1. Triage the generated traceability report and prioritize files by impact. Start with the key files noted in the assessment:
-   - src/rules/require-story-annotation.ts
-   - src/utils/annotation-checker.ts
-   - src/utils/storyReferenceUtils.ts
-   - src/index.ts
-   - src/maintenance/* and other src/utils/* files flagged by the report
-2. For each file in priority order:
-   - Add parseable JSDoc @story and @req annotations to every exported function and to significant branches per the project's traceability format (use exact story file paths from prompts/ or docs/stories/ and a short requirement description).
-   - Commit each file change individually using the Conventional Commit format, e.g.:
-     - chore: add @story/@req annotations to src/utils/annotation-checker.ts
-   - After each commit, run the full local quality checks before pushing:
+
+1. Add the new script into CI as a fail-fast quality gate:
+   - Modify .github/workflows/ci-cd.yml to run npm run check:traceability as the very first step in the quality job (before build/test/lint). Commit with: chore: add check:traceability CI step.
+2. Run the traceability check locally and remediate results incrementally:
+   - Locally run npm run check:traceability.
+   - For each reported file, add the required JSDoc @story/@req annotations (one or a small group of files per commit).
+   - After each commit run the full local quality suite before pushing:
      - npm run build
+     - npm run type-check
      - npm test
      - npm run lint -- --max-warnings=0
-     - npm run type-check
      - npm run format:check
-   - Push the commit and monitor the CI workflow run. If CI fails, fix the specific failing step and repeat the local checks, commit and push.
-3. After annotating all priority files, run the traceability-check script again and resolve any remaining missing annotations until the report is clean (no @story/@req omissions).
-4. Re-run the full local quality suite and ensure code-quality and testing metrics rise above 90%. If code-quality or tests remain under 90%, address the specific issues reported by lint/test/coverage tools (for example: remove or justify @ts-nocheck in tests, fix ESLint complexity inconsistency, rename problematic test files) following the same commit→checks→push flow.
+   - Push and monitor the CI run; if CI fails, fix only the failing step, repeat local checks, commit and push.
+3. Make the traceability-check visible to reviewers:
+   - Persist scripts/traceability-report.md as a CI artifact on failure so reviewers can see details without running locally. Commit with: chore: upload traceability report on CI failure.
 
 ## LATER
-1. Automate traceability enforcement:
-   - Add the traceability-check script to package.json (e.g., "check:traceability") and wire it into CI early in the pipeline to fail fast on missing/malformed annotations.
-   - Add an ESLint rule/run-step (or extend the existing plugin) that enforces per-function/branch @story/@req presence/format and fail CI on violations.
-2. Update developer docs:
-   - Add an example section to CONTRIBUTING.md and docs/developer-traceability.md showing correct JSDoc examples for functions and branches (copy-paste ready).
-   - Add a short checklist item for PRs to include traceability annotations.
-3. Add tests and reporting:
-   - Add a small unit test (test:) that validates the traceability-check script works on representative files and that new violations are detected automatically.
-   - Save the traceability-report.md as a CI artifact on failures to aid reviewers.
-4. Clean-up & follow-ups to reach final priority targets:
-   - Remove or replace file-level suppressions (e.g., // @ts-nocheck) with targeted // @ts-expect-error and an issue reference where unavoidable.
-   - Normalize the ESLint complexity configuration anomaly and rename any test files that break naming policy.
-   - Once traceability is enforced and code-quality/tests are >90%, request a full functionality assessment to proceed with the next project milestones.
 
-Notes / Constraints:
-- Follow the incremental commit/check/push pattern: commit one logical change at a time, run local quality gates, push, and verify CI passes before continuing.
-- Use Conventional Commits; for these changes prefer chore: (internal task) unless they change user-visible behavior.
-- Do not modify prompts/, .voder/ or other protected directories.
+1. Enforce traceability via lint/tests:
+   - Implement or enable an ESLint rule (or extend existing plugin) that enforces per-function/@branch @story/@req annotations and run it in CI.
+   - Add a unit test validating scripts/traceability-check.js against representative fixture files.
+2. Improve developer ergonomics & docs:
+   - Add a CONTRIBUTING.md section describing the traceability annotation format, how to run npm run check:traceability, and the local pre-push checklist.
+   - Add a pre-push hook (husky) or lint-staged config to run npm run check:traceability locally before pushing large changes (keep hooks fast and incremental).
+3. Cleanup & follow-ups:
+   - Replace any remaining file-level suppressions (e.g., // @ts-nocheck) with targeted // @ts-expect-error and an issue reference where unavoidable.
+   - Rename any test files that violate naming policy and adjust tests accordingly.
+   - Once traceability is enforced and CI is stable, request a full functionality assessment to continue roadmap work.
+
+Constraints/Notes
+- Follow the incremental commit → local checks → push → monitor CI flow for all changes.
+- Do not modify prompts/, prompt-assets/, or .voder/.
+- Use non-interactive commands only and Conventional Commits (chore: for infra, style: for formatting).

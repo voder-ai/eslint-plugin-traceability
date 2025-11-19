@@ -15,6 +15,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "type-check": "tsc --noEmit -p tsconfig.json",
+    "check:traceability": "node scripts/traceability-check.js",
     "lint": "eslint --config eslint.config.js \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
     "test": "jest --ci --bail",
     "format": "prettier --write .",
