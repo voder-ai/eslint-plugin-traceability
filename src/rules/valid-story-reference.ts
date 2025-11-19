@@ -61,15 +61,25 @@ function existsAny(paths: string[]): boolean {
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
  * @req REQ-SECURITY-VALIDATION - Prevent path traversal and absolute path usage
  */
-function validateStoryPath(
-  line: string,
-  commentNode: any,
-  context: any,
-  cwd: string,
-  storyDirs: string[],
-  allowAbsolute: boolean,
-  requireExt: boolean,
-): void {
+// eslint-disable-next-line max-lines-per-function
+function validateStoryPath(opts: {
+  line: string;
+  commentNode: any;
+  context: any;
+  cwd: string;
+  storyDirs: string[];
+  allowAbsolute: boolean;
+  requireExt: boolean;
+}): void {
+  const {
+    line,
+    commentNode,
+    context,
+    cwd,
+    storyDirs,
+    allowAbsolute,
+    requireExt,
+  } = opts;
   const parts = line.split(/\s+/);
   const storyPath = parts[1];
   if (!storyPath) {
@@ -124,21 +134,28 @@ function validateStoryPath(
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-ANNOTATION-VALIDATION - Ensure each annotation line is parsed
  */
-function handleComment(
-  commentNode: any,
-  context: any,
-  sourceCode: any,
-  cwd: string,
-  storyDirs: string[],
-  allowAbsolute: boolean,
-  requireExt: boolean,
-): void {
+function handleComment(opts: {
+  commentNode: any;
+  context: any;
+  cwd: string;
+  storyDirs: string[];
+  allowAbsolute: boolean;
+  requireExt: boolean;
+}): void {
+  const {
+    commentNode,
+    context,
+    cwd,
+    storyDirs,
+    allowAbsolute,
+    requireExt,
+  } = opts;
   const lines = commentNode.value
     .split(/\r?\n/)
     .map((l: string) => l.replace(/^[^@]*/, "").trim());
   for (const line of lines) {
     if (line.startsWith("@story")) {
-      validateStoryPath(
+      validateStoryPath({
         line,
         commentNode,
         context,
@@ -146,7 +163,7 @@ function handleComment(
         storyDirs,
         allowAbsolute,
         requireExt,
-      );
+      });
     }
   }
 }
@@ -181,7 +198,6 @@ export default {
     ],
   },
   create(context) {
-    const sourceCode = context.getSourceCode();
     const cwd = process.cwd();
     const opts = context.options[0] as
       | {
@@ -195,17 +211,16 @@ export default {
     const requireExt = opts?.requireStoryExtension !== false;
     return {
       Program() {
-        const comments = sourceCode.getAllComments() || [];
+        const comments = context.getSourceCode().getAllComments() || [];
         for (const comment of comments) {
-          handleComment(
-            comment,
+          handleComment({
+            commentNode: comment,
             context,
-            sourceCode,
             cwd,
             storyDirs,
             allowAbsolute,
             requireExt,
-          );
+          });
         }
       },
     };

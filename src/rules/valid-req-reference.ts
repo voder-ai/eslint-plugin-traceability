@@ -32,21 +32,16 @@ function extractStoryPath(comment: any): string | null {
 /**
  * Validate a @req annotation line against the extracted story content.
  * Performs path validation, file reading, caching, and requirement existence checks.
- * @param comment any JSDoc comment node
- * @param context ESLint rule context
- * @param line the @req annotation line
- * @param storyPath current story path
- * @param cwd current working directory
- * @param reqCache cache mapping story paths to sets of requirement IDs
  */
-function validateReqLine(
-  comment: any,
-  context: any,
-  line: string,
-  storyPath: string | null,
-  cwd: string,
-  reqCache: Map<string, Set<string>>,
-): void {
+function validateReqLine(opts: {
+  comment: any;
+  context: any;
+  line: string;
+  storyPath: string | null;
+  cwd: string;
+  reqCache: Map<string, Set<string>>;
+}): void {
+  const { comment, context, line, storyPath, cwd, reqCache } = opts;
   const parts = line.split(/\s+/);
   const reqId = parts[1];
   if (!reqId || !storyPath) {
@@ -100,27 +95,21 @@ function validateReqLine(
  * Handle a single annotation line.
  * @story Updates the current story path when encountering an @story annotation
  * @req Validates the requirement reference against the current story content
- * @param line the trimmed annotation line
- * @param comment JSDoc comment node
- * @param context ESLint rule context
- * @param cwd current working directory
- * @param reqCache cache mapping story paths to sets of requirement IDs
- * @param storyPath current story path or null
- * @returns updated story path or null
  */
-function handleAnnotationLine(
-  line: string,
-  comment: any,
-  context: any,
-  cwd: string,
-  reqCache: Map<string, Set<string>>,
-  storyPath: string | null,
-): string | null {
+function handleAnnotationLine(opts: {
+  line: string;
+  comment: any;
+  context: any;
+  cwd: string;
+  reqCache: Map<string, Set<string>>;
+  storyPath: string | null;
+}): string | null {
+  const { line, comment, context, cwd, reqCache, storyPath } = opts;
   if (line.startsWith("@story")) {
     const newPath = extractStoryPath(comment);
     return newPath || storyPath;
   } else if (line.startsWith("@req")) {
-    validateReqLine(comment, context, line, storyPath, cwd, reqCache);
+    validateReqLine({ comment, context, line, storyPath, cwd, reqCache });
     return storyPath;
   }
   return storyPath;
@@ -128,32 +117,27 @@ function handleAnnotationLine(
 
 /**
  * Handle JSDoc story and req annotations.
- * @param comment any JSDoc comment node
- * @param context ESLint rule context
- * @param cwd current working directory
- * @param reqCache cache mapping story paths to sets of requirement IDs
- * @param rawStoryPath the last extracted story path or null
- * @returns updated story path or null
  */
-function handleComment(
-  comment: any,
-  context: any,
-  cwd: string,
-  reqCache: Map<string, Set<string>>,
-  rawStoryPath: string | null,
-): string | null {
+function handleComment(opts: {
+  comment: any;
+  context: any;
+  cwd: string;
+  reqCache: Map<string, Set<string>>;
+  rawStoryPath: string | null;
+}): string | null {
+  const { comment, context, cwd, reqCache, rawStoryPath } = opts;
   let storyPath = rawStoryPath;
   const rawLines = comment.value.split(/\r?\n/);
   for (const rawLine of rawLines) {
     const line = rawLine.trim().replace(/^\*+\s*/, "");
-    storyPath = handleAnnotationLine(
+    storyPath = handleAnnotationLine({
       line,
       comment,
       context,
       cwd,
       reqCache,
       storyPath,
-    );
+    });
   }
   return storyPath;
 }
@@ -167,13 +151,13 @@ function programListener(context: any) {
   return function Program() {
     const comments = sourceCode.getAllComments() || [];
     comments.forEach((comment: any) => {
-      rawStoryPath = handleComment(
+      rawStoryPath = handleComment({
         comment,
         context,
         cwd,
         reqCache,
         rawStoryPath,
-      );
+      });
     });
   };
 }

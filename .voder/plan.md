@@ -1,14 +1,12 @@
 ## NOW
-Create a new failing test spec for story 007.0-DEV-ERROR-REPORTING by adding `tests/rules/error-reporting.test.ts` that captures the acceptance criteria (clear contextual error messages with actionable suggestions) and references `docs/stories/007.0-DEV-ERROR-REPORTING.story.md`.
+Modify the project’s ESLint configuration to enable the `no-magic-numbers` rule (with sensible exceptions for `0` and `1`).
 
 ## NEXT
-- Implement the enhanced error‐reporting in the affected ESLint rules:
-  - Add new `messageId`s in each rule’s `meta.messages` for context and suggestion.
-  - Update `context.report()` calls to use those messages and include the expected file path, code location, and fix suggestion text from the story.
-- Run the new tests and iterate until they pass.
-- Add unit tests for any helper functions you introduce to format or generate the suggestion text.
+- Update the ESLint config to add the `max-params` rule (e.g. maximum of 4 parameters per function).  
+- Run `npm run lint` and fix every new `no-magic-numbers` and `max-params` violation by introducing named constants or refactoring functions.  
+- Commit the linting rule changes and code fixes, then push and verify the CI pipeline passes and code_quality rises.
 
 ## LATER
-- Audit all other rules to ensure they emit similarly rich error reports and update their tests.
-- Document the error‐reporting design and patterns in an ADR under `docs/decisions/`.
-- Consider publishing a “verbose errors” configuration option exposing or suppressing the additional context.
+- Define and enable additional lint rules for consistent error‐handling patterns and naming conventions.  
+- Periodically review and tighten cyclomatic-complexity, file-length, and function-length thresholds as the codebase evolves.  
+- Automate a quality-regression check in CI to track the code_quality score on each push and prevent regressions.

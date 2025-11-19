@@ -1,4 +1,5 @@
 import type { Rule } from "eslint";
+const PRE_COMMENT_OFFSET = 2; // number of lines above branch to inspect for comments
 
 /**
  * Valid branch types for require-branch-annotation rule.
@@ -70,7 +71,7 @@ export function gatherBranchCommentText(
   if (node.type === "SwitchCase") {
     const lines = sourceCode.lines;
     const startLine = node.loc.start.line;
-    let i = startLine - 2;
+    let i = startLine - PRE_COMMENT_OFFSET;
     const comments: string[] = [];
     while (i >= 0 && /^\s*(\/\/|\/\*)/.test(lines[i])) {
       comments.unshift(lines[i].trim());
@@ -90,10 +91,13 @@ export function gatherBranchCommentText(
 export function reportMissingStory(
   context: Rule.RuleContext,
   node: any,
-  indent: string,
-  insertPos: number,
-  storyFixCountRef: { count: number },
+  options: {
+    indent: string;
+    insertPos: number;
+    storyFixCountRef: { count: number };
+  },
 ): void {
+  const { indent, insertPos, storyFixCountRef } = options;
   if (storyFixCountRef.count === 0) {
     context.report({
       node,
@@ -123,10 +127,9 @@ export function reportMissingStory(
 export function reportMissingReq(
   context: Rule.RuleContext,
   node: any,
-  indent: string,
-  insertPos: number,
-  missingStory: boolean,
+  options: { indent: string; insertPos: number; missingStory: boolean },
 ): void {
+  const { indent, insertPos, missingStory } = options;
   if (!missingStory) {
     context.report({
       node,
@@ -172,12 +175,12 @@ export function reportMissingAnnotations(
     {
       missing: missingStory,
       fn: reportMissingStory,
-      args: [context, node, indent, insertPos, storyFixCountRef],
+      args: [context, node, { indent, insertPos, storyFixCountRef }],
     },
     {
       missing: missingReq,
       fn: reportMissingReq,
-      args: [context, node, indent, insertPos, missingStory],
+      args: [context, node, { indent, insertPos, missingStory }],
     },
   ];
 

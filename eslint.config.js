@@ -76,6 +76,10 @@ module.exports = [
       "max-lines-per-function": ["error", { max: 60, skipBlankLines: true, skipComments: true }],
       // Enforce maximum lines per file for maintainability
       "max-lines": ["error", { max: 300, skipBlankLines: true, skipComments: true }],
+      // Disallow magic numbers with sensible exceptions for 0 and 1
+      "no-magic-numbers": ["error", { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true }],
+      // Limit max parameters per function
+      "max-params": ["error", { max: 4 }],
     },
   },
   {
@@ -93,6 +97,10 @@ module.exports = [
       "max-lines-per-function": ["error", { max: 60, skipBlankLines: true, skipComments: true }],
       // Enforce maximum lines per file for maintainability
       "max-lines": ["error", { max: 300, skipBlankLines: true, skipComments: true }],
+      // Disallow magic numbers with sensible exceptions for 0 and 1
+      "no-magic-numbers": ["error", { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true }],
+      // Limit max parameters per function
+      "max-params": ["error", { max: 4 }],
     },
   },
   {
@@ -122,6 +130,9 @@ module.exports = [
       complexity: "off",
       "max-lines-per-function": "off",
       "max-lines": "off",
+      // Disable magic numbers and max params in tests
+      "no-magic-numbers": "off",
+      "max-params": "off",
     },
   },
   {
