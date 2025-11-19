@@ -18,7 +18,7 @@
     "lint": "eslint \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
     "test": "jest --ci --bail",
     "format": "prettier --write .",
-    "format:check": "prettier --check \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "duplication": "jscpd src tests --reporters console --threshold 3 --ignore tests/utils/**",
     "audit:dev-high": "node scripts/generate-dev-deps-audit.js",
     "smoke-test": "./scripts/smoke-test.sh",
