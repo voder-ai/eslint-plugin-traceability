@@ -55,13 +55,11 @@ npm run lint -- --max-warnings=0
 npm run format:check
 ```
 
-To test plugin integration with ESLint CLI, run the smoke test:
+To test plugin integration with ESLint CLI, run the CLI integration tests:
 
 ```bash
-npm run smoke-test
+npm test -- tests/integration/cli-integration.test.ts
 ```
-
-This will pack and test the plugin in a temporary project using ESLint, verifying that it loads correctly.
 
 ## 5. Update Documentation
 
