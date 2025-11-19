@@ -1,6 +1,7 @@
 # Migration Guide from v0.x to v1.x
 
 Created autonomously by [voder.ai](https://voder.ai)
+Last updated: 2025-11-19
 
 This guide helps you migrate from versions 0.x of `eslint-plugin-traceability` to 1.x.
 

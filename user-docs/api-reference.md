@@ -133,3 +133,4 @@ import js from "@eslint/js";
 import traceability from "eslint-plugin-traceability";
 
 export default [js.configs.recommended, traceability.configs.strict];
+```
