@@ -1,13 +1,12 @@
 ## NOW
-In `.github/workflows/ci-cd.yml`, collapse the separate `quality-checks` and `deploy` jobs into a single `quality-and-deploy` job that runs all quality gates (build, lint, type-check, tests, format-check, security audit) and then publishes the package.
+Edit the user-facing Migration Guide (`user-docs/migration-guide.md`) to remove or correct the reference to the non-existent `cli-integration.js` script.
 
 ## NEXT
-- Delete the old `deploy` job block and remove any duplicate build/test/lint steps from the workflow.
-- In the new `quality-and-deploy` job, after the quality steps, add the publish step (e.g. `npm publish` with `NPM_TOKEN`).
-- Update any `needs:` or `if:` settings so that there is only one job on push to `main`.
-- Commit and push these changes, then verify that a single CI/CD run builds, tests, lints, type-checks, formats, audits, and publishes the package end-to-end.
+- Commit and push the updated Migration Guide.
+- Run the documentation quality checks and verify that the documentation score rises above 90%.
+- Add a brief date or version header to all files in `user-docs/` to indicate their currency.
 
 ## LATER
-- Write an ADR under `docs/decisions/` documenting the switch to a unified CI/CD workflow.
-- Add a CI YAML linter or schema check to flag future duplicate steps.
-- Optimize caching and parallelism in the unified job to reduce pipeline runtime.
+- Introduce a Troubleshooting/FAQ section in `user-docs/` covering common migration pitfalls.
+- Add a CI validation step that scans docs for referenced files and flags broken links.
+- Schedule a periodic audit of user-facing documentation to catch outdated or inaccurate references.

@@ -43,26 +43,17 @@ Review and update your existing annotations accordingly:
 + /** @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md */
 ```
 
-## 4. CLI Integration Script
+## 4. Test and Validate
 
-Version 1.x includes a new `cli-integration.js` script at the project root to run end-to-end CLI integration tests:
-
-```bash
-node ./cli-integration.js
-```
-
-## 5. Test and Validate
-
-Run your test suite and the new CLI integration script to confirm everything passes:
+Run your test suite to confirm everything passes:
 
 ```bash
 npm test
 npm run lint -- --max-warnings=0
 npm run format:check
-node ./cli-integration.js
 ```
 
-## 6. Update Documentation
+## 5. Update Documentation
 
 If you have custom documentation or examples that reference old rule names or file paths, update them to match the new conventions introduced in v1.x.
 
