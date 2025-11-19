@@ -16,23 +16,20 @@ const RULE_NAMES = [
   "valid-req-reference",
 ] as const;
 
-type RuleName = typeof RULE_NAMES[number];
+type RuleName = (typeof RULE_NAMES)[number];
 
 const rules: Record<RuleName, Rule.RuleModule> = {} as any;
 
 RULE_NAMES.forEach((name) => {
   try {
     // Dynamically require rule module
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const mod = require(`./rules/${name}`);
     // Support ESModule default export
     rules[name] = mod.default ?? mod;
   } catch (error: any) {
-    // eslint-disable-next-line no-console
     console.error(
-      `[eslint-plugin-traceability] Failed to load rule "${name}": ${error.message}`
+      `[eslint-plugin-traceability] Failed to load rule "${name}": ${error.message}`,
     );
-    // Provide placeholder rule that reports loading error
     rules[name] = {
       meta: {
         type: "problem",

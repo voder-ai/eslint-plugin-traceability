@@ -23,16 +23,16 @@ describe("Traceability ESLint Plugin Error Handling (Story 001.0-DEV-PLUGIN-SETU
     // Expect console.error to have been called for the missing rule
     expect(console.error).toHaveBeenCalledWith(
       expect.stringContaining(
-        'Failed to load rule "require-branch-annotation": Test load error'
-      )
+        'Failed to load rule "require-branch-annotation": Test load error',
+      ),
     );
     // Placeholder rule should exist
     const placeholderRule = plugin.rules["require-branch-annotation"];
     expect(placeholderRule).toBeDefined();
     // meta.docs.description should reflect load failure
-    expect(
-      placeholderRule.meta.docs.description
-    ).toContain("Failed to load rule 'require-branch-annotation'");
+    expect(placeholderRule.meta.docs.description).toContain(
+      "Failed to load rule 'require-branch-annotation'",
+    );
     // Placeholder rule create should report an error message
     const fakeContext = { report: jest.fn() };
     const visitor = placeholderRule.create(fakeContext as any);
@@ -40,7 +40,7 @@ describe("Traceability ESLint Plugin Error Handling (Story 001.0-DEV-PLUGIN-SETU
     expect(fakeContext.report).toHaveBeenCalledWith({
       node: { type: "Program" },
       message: expect.stringContaining(
-        'Error loading rule "require-branch-annotation": Test load error'
+        'Error loading rule "require-branch-annotation": Test load error',
       ),
     });
   });

@@ -65,6 +65,9 @@ module.exports = [
       },
       globals: {
         process: "readonly",
+        require: "readonly",
+        module: "readonly",
+        console: "readonly",
       },
     },
     plugins: {
@@ -80,6 +83,9 @@ module.exports = [
       "no-magic-numbers": ["error", { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true }],
       // Limit max parameters per function
       "max-params": ["error", { max: 4 }],
+      // Disable undefined and console checks in TS files
+      "no-undef": "off",
+      "no-console": "off",
     },
   },
   {
