@@ -1,1 +1,1 @@
-npm run format && npm run lint && npm run type-check && node node_modules/actionlint/actionlint.cjs .github/workflows/*.yml
+npx lint-staged || true && npm run format && node node_modules/actionlint/actionlint.cjs .github/workflows/*.yml

@@ -41,6 +41,13 @@ jobs:
       - name: Run traceability check
         run: npm run check:traceability
 
+      - name: Upload traceability report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: traceability-report
+          path: scripts/traceability-report.md
+
       - name: Build project
         run: npm run build
 
@@ -67,7 +74,7 @@ jobs:
         continue-on-error: true
 
       - name: Release with semantic-release
-        if: ${{ github.event_name == 'push' && matrix['node-version'] == '20.x' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix['node-version'] == '20.x' && success() }}
         id: semantic-release
         run: |
           npx semantic-release 2>&1 | tee /tmp/release.log
