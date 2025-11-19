@@ -1,76 +1,82 @@
+The previous plan was not correct — it proposed adding annotations to src/rules/require-story-annotation.ts even though that file was already included in earlier mass-annotation work. I’ve corrected the plan so it does not repeat completed work and so the NOW action directly addresses one of the four NEXT PRIORITY remediation areas from the assessment (version-control cleanliness). Here is the corrected plan:
+
 ## NOW
-Edit the pre-commit hook file .husky/pre-commit to replace the current heavy commands with a single fast staged-file invocation: run `npx --no-install lint-staged` (so pre-commit only formats and lints staged files). Commit this one change with a Conventional Commit message: `chore: make pre-commit fast — use lint-staged`.
+
+Remove the generated test output file from version control and ignore it: git rm --cached jest-output.json; add 'jest-output.json' to .gitignore; commit the single change with the message:
+chore: remove generated jest-output.json from git and add to .gitignore
+
+(Do exactly this one specific repository change now.)
 
 ## NEXT
-After the pre-commit change is in place, perform the following incremental remediation steps (do them one small item at a time; run the full local quality suite and commit/push after each small change):
 
-1. Remove or fix file-level TypeScript suppressions
-   - File to start with: tests/rules/require-story-annotation.test.ts
-   - Replace `// @ts-nocheck` with either:
-     - fix the underlying type errors so no suppression is needed, or
-     - use targeted `// @ts-expect-error` above the single offending line with an inline explanation comment and an issue/ticket reference if the error requires a follow-up.
-   - Local checks to run after change:
-     - npm run build
-     - npm run type-check
-     - npm test
-     - npm run lint -- --max-warnings=0
-     - npm run format:check
-   - Commit message example: `fix(test): remove file-level @ts-nocheck from tests/rules/require-story-annotation.test.ts`
+After the NOW commit is pushed and CI passes, proceed with these incremental remediation steps (one small change per commit; run full local quality suite before each commit; push and wait for CI to pass before the next):
 
-2. Incrementally remediate remaining missing traceability annotations
-   - Use scripts/traceability-report.md to pick the next highest-impact file (one file or a small cohesive group). Suggested priority order: src/rules/require-story-annotation.ts, src/utils/branch-annotation-helpers.ts, src/utils/storyReferenceUtils.ts, then other src/rules/*.
+1) Resume incremental traceability remediation (primary priority)
+   - Use scripts/traceability-report.md to pick the next file flagged (one file or a very small cohesive group).
+   - Suggested next targets (choose the highest-impact file currently reported missing in the report):
+     - src/utils/branch-annotation-helpers.ts
+     - src/utils/storyReferenceUtils.ts
+     - then remaining src/rules/* files as reported
    - For each file:
-     - Add JSDoc `@story` and `@req` tags to every exported/public function and to each significant branch (if/else, switch, try/catch, loops) flagged in the report.
-     - Keep edits small: one file per commit (or one tightly-related group).
-     - Run the full local quality suite (build, type-check, test, lint, format-check).
-     - Commit with a Conventional Commit message, e.g. `chore: add @story/@req annotations to src/rules/require-story-annotation.ts`.
-     - Push and monitor CI. If CI fails, fix only the failing step locally, re-run the local suite, commit and push again.
-   - Repeat until scripts/traceability-report.md shows the missing items reduced to the target level (aim for zero).
+     - Add JSDoc @story and @req to every exported/public function and to branches flagged by the report.
+     - Keep changes minimal (one file per commit).
+     - Run full local quality suite and commit with a Conventional Commit (e.g., chore: add @story/@req annotations to src/utils/branch-annotation-helpers.ts).
+     - Push and verify CI passes before moving on.
 
-3. Fix broken story filename reference(s) in docs
-   - File: user-docs/api-reference.md (and any other doc files that reference wrong story paths).
-   - Replace incorrect reference `docs/stories/006.0-DEV-STORY-EXISTS.story.md` with the correct `docs/stories/006.0-DEV-FILE-VALIDATION.story.md` (search & fix any other mismatches).
-   - Run doc link check (local script or grep) and the full quality suite if doc generation/tests exist.
-   - Commit: `docs: fix broken story cross-reference in user-docs/api-reference.md`
+2) Restore test guarantees and coverage visibility (secondary priority)
+   - Fix tests that may leave temp resources:
+     - Wrap temp dir setup/teardown in try/finally or afterEach/afterAll (start with tests/maintenance/detect-isolated.test.ts).
+     - Commit each test fix separately (fix(test): ensure temp-dir cleanup in tests/maintenance/detect-isolated.test.ts).
+   - Enable and publish coverage:
+     - Ensure CI runs Jest with coverage and uploads coverage artifacts.
+     - Locally generate coverage and raise tests where thresholds fail.
+     - Commit CI change as ci: enable coverage reporting.
 
-4. Add missing @param / @returns JSDoc for public helpers
-   - Identify complex exported helpers in src/utils/* and selected src/rules/* flagged in the documentation assessment.
-   - Add clear @param and @returns annotations (one file per commit if needed).
-   - Run full local quality suite and commit: `docs: add @param/@returns JSDoc to src/utils/storyReferenceUtils.ts`
+3) Remove/rotate local secrets and add secret-scan (security priority)
+   - Replace real secrets in local .env with placeholders and rotate exposed tokens (do not commit real secrets).
+   - Commit .env.example or placeholder changes: security: replace local .env secrets with placeholders and document rotation.
+   - Add a lightweight secret-scan to CI/pre-push (e.g., trufflehog-lite or git-secrets) and commit: chore: add secret-scan to CI.
 
-5. Make traceability output visible in CI for reviewers
-   - Add a CI workflow step that uploads scripts/traceability-report.md as an artifact when the traceability check runs or on failure.
-   - If traceability now runs early in CI, ensure the artifact upload step occurs immediately after that step (and on failure).
-   - Commit: `chore: upload traceability report artifact from CI on traceability check`
+4) Continue VCS cleanups (version-control priority)
+   - After removing jest-output.json, search for any other generated artifacts that are tracked and remove/ignore them (one file per commit).
+   - Commit each: chore: remove <filename> from git and add to .gitignore.
 
-General rules for all NEXT actions
-- Keep each change small and focused (one file or tight group).
-- Before commit: run the full local quality suite in this order: npm run build; npm run type-check; npm test; npm run lint -- --max-warnings=0; npm run format:check.
-- Use Conventional Commits. Prefer `chore:` or `fix:` for these remediation tasks.
-- Push and monitor CI. Only proceed to the next file after CI passes.
+5) Re-run traceability report and verify progress
+   - After a set of annotation commits run npm run check:traceability, commit or upload the generated scripts/traceability-report.md per project policy.
+   - Continue until the report shows the missing items reduced to target (aim for zero).
+
+Local quality-check checklist to run before every commit
+- npm run build
+- npm run type-check
+- npm test
+- npm run lint -- --max-warnings=0
+- npm run format:check
+- npm run check:traceability
+
+Operational rules while executing NEXT steps
+- One small focused change per commit (one file or tightly related pair).
+- Use Conventional Commits.
+- Push and wait for CI to pass before starting next item.
 - Do not modify prompts/, prompt-assets/, or .voder/.
+- Do not commit real secrets.
 
 ## LATER
-Once the immediate CODE_QUALITY and DOCUMENTATION items are remediated and CI is green for the incremental commits, do the following longer-term work:
 
-1. Enforce traceability programmatically
-   - Implement/enable an ESLint rule (or extend the existing plugin) that enforces per-function and per-branch `@story`/`@req` annotations.
-   - Add unit tests validating the rule and run it in CI so missing annotations fail the pipeline.
+Once the four deficient areas reach acceptable levels, perform systemic improvements:
 
-2. Add documentation & ergonomics improvements
-   - Add or update CONTRIBUTING.md with a "Traceability remediation checklist" that describes the annotation format, local remediation steps, scripts to run, and Conventional Commit examples.
-   - Provide a small helper template script or editor snippets for adding the required JSDoc tags (placeholders only).
+1) Enforce traceability automatically
+   - Implement/enable an ESLint rule enforcing per-function and per-branch @story/@req annotations and add unit tests for it; make it a blocking CI step.
 
-3. CI & pre-commit parity and safety
-   - Confirm pre-push remains the gate for full type-check/test runs and pre-commit remains fast. Add a CI parity-check job that compares commands in .husky/pre-push with CI traceability/build/test commands and fails if they diverge.
-   - Replace any remaining file-wide `// @ts-nocheck` with documented `// @ts-expect-error` and reference an issue for each exception; remove exceptions when fixed.
+2) Documentation & contributor ergonomics
+   - Add CONTRIBUTING.md Traceability remediation checklist and editor snippets/templates for inserting @story/@req JSDoc.
 
-4. Documentation QA automation
-   - Add a CI check that verifies all `@story` JSDoc file paths referenced in source/docs exist (a lightweight link validator).
-   - Optionally remove scripts/traceability-report.md from the repository and rely on CI artifact generation, or keep it generated and committed by an automated job if you prefer source-tracked visibility.
+3) CI safety & observability
+   - Ensure CI uploads traceability and coverage artifacts for reviewers and add a scheduled job to run npx dry-aged-deps for safe upgrades.
 
-5. Monitoring and maintenance
-   - Schedule periodic runs of the traceability script (or add to CI) so regressions are caught early.
-   - Track any remaining small exceptions in a short-lived issue list and close them as annotations are added.
+4) Secrets & security hardening
+   - Make secret-scan mandatory in CI/pre-push, add secret-rotation docs, and require token rotation if secrets were exposed.
 
-If you want, I will perform the NOW action immediately (edit .husky/pre-commit to use lint-staged and commit the change), then proceed to the NEXT step of removing the file-level @ts-nocheck in tests/rules/require-story-annotation.test.ts as the first incremental remediation (running the full local quality suite before committing).
+5) Housekeeping
+   - Schedule periodic runs of scripts/traceability-check.js to detect regressions and document policy for scripts/traceability-report.md (artifact-only or tracked).
+
+If you want me to make the NOW change (remove jest-output.json from git and add to .gitignore) now, confirm and I will perform that single change.
