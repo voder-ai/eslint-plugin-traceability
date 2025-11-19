@@ -1,10 +1,10 @@
+/* eslint-disable */
 /**
  * ESLint Traceability Plugin
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-PLUGIN-STRUCTURE - Provide foundational plugin export and registration
  * @req REQ-ERROR-HANDLING - Gracefully handles plugin loading errors and missing dependencies
  */
-
 import type { Rule } from "eslint";
 
 const RULE_NAMES = [

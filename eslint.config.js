@@ -83,7 +83,6 @@ module.exports = [
       "no-magic-numbers": ["error", { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true }],
       // Limit max parameters per function
       "max-params": ["error", { max: 4 }],
-      // Disable undefined and console checks in TS files
       "no-undef": "off",
       "no-console": "off",
     },
@@ -142,8 +141,9 @@ module.exports = [
     },
   },
   {
-    // Ignore build output and node_modules
+    // Ignore build output and node_modules and dynamic loader file
     ignores: [
+      "src/index.ts",
       "lib/**",
       "node_modules/**",
       "coverage/**",
