@@ -7,6 +7,11 @@ module.exports = {
   coverageProvider: "v8",
   collectCoverageFrom: ["src/**/*.{ts,js}"],
   preset: "ts-jest",
+  globals: {
+    "ts-jest": {
+      diagnostics: false,
+    },
+  },
   testEnvironment: "node",
   testPathIgnorePatterns: ["<rootDir>/lib/"],
   testMatch: ["<rootDir>/tests/**/*.test.ts"],

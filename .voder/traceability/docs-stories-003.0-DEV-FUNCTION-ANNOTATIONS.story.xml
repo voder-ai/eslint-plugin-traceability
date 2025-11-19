@@ -2,12 +2,11 @@
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-18T06:54:26.468Z</last_validated>
+  <last_validated>2025-11-18T17:53:36.059Z</last_validated>
   <last_modified>2025-11-16T00:07:54.405Z</last_modified>
-  <evidence>– Found rule implementation in src/rules/require-story-annotation.ts and src/rules/require-req-annotation.ts with @story refs to docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md and correct schema/options.
-– Tests for require-story-annotation (tests/rules/require-story-annotation.test.ts) cover missing/present @story on functions, arrow, class methods, TSDeclareFunction, TSMethodSignature, plus exportPriority and scope options.
-– Tests for require-req-annotation (tests/rules/require-req-annotation.test.ts and utils) cover missing/present @req on functions including TypeScript syntax.
-– Integration tests (tests/integration/cli-integration.test.ts) exercise CLI error reporting for both @story and @req annotations referencing this story.
-– All 18 test suites (97 tests) passed (see jest-report.json), including deep validation of REQ-FUNCTION-DETECTION, REQ-ANNOTATION-REQUIRED, REQ-EXPORT-PRIORITY, REQ-CONFIGURABLE-SCOPE, REQ-TYPESCRIPT-SUPPORT.</evidence>
-  <notes>The implementation fully satisfies the acceptance criteria and specific requirements of story 003.0-DEV-FUNCTION-ANNOTATIONS: core functionality, TypeScript/JavaScript support, configurable scope and export priority, clear error messages, and documentation examples are all present and validated by passing tests.</notes>
+  <evidence>• Source files src/rules/require-req-annotation.ts and src/rules/require-story-annotation.ts both include @story references to docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md and implement the required AST listeners (FunctionDeclaration, FunctionExpression, ArrowFunctionExpression, MethodDefinition, TSDeclareFunction, TSMethodSignature) with checks for @req and @story annotations.
+• Comprehensive RuleTester suites in tests/rules/require-req-annotation.test.ts and tests/rules/require-story-annotation.test.ts reference the exact story file, cover valid and invalid cases for JavaScript and TypeScript functions, and all assertions pass.
+• docs/rules/require-req-annotation.md and docs/rules/require-story-annotation.md provide documentation with examples linked to the story.
+• Full test suite (19 suites, 106 tests) ran with `npm test -- --verbose` and all tests associated with Story 003.0 passed without failures (see jest-results.json).</evidence>
+  <notes>The core functionality (detect missing @story and @req), TypeScript support, configurable scope and exportPriority for the @story rule, error location reporting, and documentation are all implemented and validated by passing tests. Therefore the story is fully satisfied.</notes>
 </traceability>

@@ -2,8 +2,11 @@
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-18T06:53:26.736Z</last_validated>
+  <last_validated>2025-11-18T17:52:25.725Z</last_validated>
   <last_modified>2025-11-16T00:07:54.431Z</last_modified>
-  <evidence>The `valid-annotation-format` rule (src/rules/valid-annotation-format.ts) implements all required checks (REQ-FORMAT-SPECIFICATION, REQ-SYNTAX-VALIDATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT) and is wired into the plugin index. The dedicated test suite (tests/rules/valid-annotation-format.test.ts) runs 3 valid and 4 invalid scenarios covering single‐line story annotations, single‐line req annotations, JSDoc block annotations, missing path, wrong extension, missing req ID, and malformed req ID. All of those tests pass (as shown in jest-report.json), demonstrating correct behavior and specific error reporting for format violations.</evidence>
-  <notes>The implementation meets the core functionality, provides clear error messages, handles multiline/JSDoc annotations, integrates with the plugin config, and follows ESLint rule best practices. Documentation examples exist in the story file. Therefore, this story is fully implemented.</notes>
+  <evidence>– src/rules/valid-annotation-format.ts implements the rule with traceability annotations (@story and @req) matching docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md requirements
+– tests/rules/valid-annotation-format.test.ts covers all REQ-PATH-FORMAT, REQ-REQ-FORMAT, REQ-FORMAT-SPECIFICATION messages; 3 valid + 4 invalid cases
+– jest-results.json shows 106/106 tests passed, including valid-annotation-format tests
+– Plugin index (src/index.ts) exports and configures the rule per ESLint best practices</evidence>
+  <notes>The rule enforces @story and @req format (regex matching, block & line comments), provides specific error messages, and is integrated into the plugin with tests passing. Documentation examples exist in the story file. All acceptance criteria for annotation format validation are satisfied.</notes>
 </traceability>

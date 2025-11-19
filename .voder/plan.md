@@ -1,12 +1,14 @@
 ## NOW
-Extract the branch‐type validation logic out of `src/rules/require-branch-annotation.ts#create(context)` into a new helper function `validateBranchTypes` in `src/utils/branch-annotation-helpers.ts`, and add JSDoc `@story` and `@req` annotations to it.
+Create a new failing test spec for story 007.0-DEV-ERROR-REPORTING by adding `tests/rules/error-reporting.test.ts` that captures the acceptance criteria (clear contextual error messages with actionable suggestions) and references `docs/stories/007.0-DEV-ERROR-REPORTING.story.md`.
 
 ## NEXT
-- Split the remaining blocks in `create(context)` (e.g. missing‐annotation reporting, unexpected‐annotation reporting) into separate helper functions in `src/utils/branch-annotation-helpers.ts`, each with proper `@story`/`@req` JSDoc.
-- Update `src/rules/require-branch-annotation.ts` to call these helpers and remove the inline `eslint-disable-next-line max-lines-per-function`.
-- Add unit tests for each new helper in `tests/utils/branch-annotation-helpers.test.ts` covering all edge cases.
+- Implement the enhanced error‐reporting in the affected ESLint rules:
+  - Add new `messageId`s in each rule’s `meta.messages` for context and suggestion.
+  - Update `context.report()` calls to use those messages and include the expected file path, code location, and fix suggestion text from the story.
+- Run the new tests and iterate until they pass.
+- Add unit tests for any helper functions you introduce to format or generate the suggestion text.
 
 ## LATER
-- Ensure the main `create(context)` stays under the max‐lines threshold; remove any remaining `eslint-disable max-lines-per-function` comments.
-- Review cyclomatic complexity for the refactored file and adjust helper boundaries if necessary.
-- Document the refactoring approach in an ADR to guide future splits and complexity rules.
+- Audit all other rules to ensure they emit similarly rich error reports and update their tests.
+- Document the error‐reporting design and patterns in an ADR under `docs/decisions/`.
+- Consider publishing a “verbose errors” configuration option exposing or suppressing the additional context.

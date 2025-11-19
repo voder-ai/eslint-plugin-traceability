@@ -1,275 +1,244 @@
-/**
- * Rule to enforce @story annotation on functions, function expressions, arrow functions, and methods
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Require @story annotation on functions
- * @req REQ-OPTIONS-SCOPE - Support configuring which function types to enforce via options
- * @req REQ-EXPORT-PRIORITY - Add exportPriority option to target exported or non-exported
- * @req REQ-UNIFIED-CHECK - Implement unified checkNode for all supported node types
- * @req REQ-FUNCTION-DETECTION - Detect function declarations, expressions, arrow functions, and methods
- * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
- */
+import type { Rule } from "eslint";
+
+// Default node types to check for function annotations
+const DEFAULT_SCOPE = [
+  "FunctionDeclaration",
+  "FunctionExpression",
+  "ArrowFunctionExpression",
+  "MethodDefinition",
+  "TSDeclareFunction",
+  "TSMethodSignature",
+];
+const EXPORT_PRIORITY_VALUES = ["all", "exported", "non-exported"];
 
 /**
- * Determine if a node is exported via export declaration.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-EXPORT-PRIORITY - Determine if function node has export declaration ancestor
+ * Determine if a node is in an export declaration
  */
 function isExportedNode(node: any): boolean {
-  let current: any = node;
-  while (current) {
-    if (
-      current.type === "ExportNamedDeclaration" ||
-      current.type === "ExportDefaultDeclaration"
-    ) {
+  let p = node.parent;
+  while (p) {
+    if (p.type === 'ExportNamedDeclaration' || p.type === 'ExportDefaultDeclaration') {
       return true;
     }
-    current = current.parent;
+    p = p.parent;
   }
   return false;
 }
 
+// Path to the story file for annotations
+const STORY_PATH = "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
+const ANNOTATION = `/** @story ${STORY_PATH} */`;
+
 /**
- * Find nearest ancestor node of specified types.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-OPTIONS-SCOPE - Support configuring which function types to enforce via options
+ * Check if @story annotation already present in JSDoc or preceding comments
  */
-function findAncestorNode(node: any, types: string[]): any {
-  let current = node.parent;
-  while (current) {
-    if (types.includes(current.type)) {
-      return current;
-    }
-    current = current.parent;
+function hasStoryAnnotation(sourceCode: any, node: any): boolean {
+  const jsdoc = sourceCode.getJSDocComment(node);
+  if (jsdoc?.value.includes("@story")) {
+    return true;
   }
-  return null;
+  const comments = sourceCode.getCommentsBefore(node) || [];
+  return comments.some((c: any) => c.value.includes("@story"));
 }
 
 /**
- * Determine if node should be checked based on scope and exportPriority.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-OPTIONS-SCOPE
- * @req REQ-EXPORT-PRIORITY
- * @req REQ-UNIFIED-CHECK
+ * Get the name of the function-like node
  */
-function shouldCheckNode(
+function getNodeName(node: any): string {
+  let current: any = node;
+  while (current) {
+    if (current.type === 'VariableDeclarator' && current.id && typeof current.id.name === 'string') {
+      return current.id.name;
+    }
+    if ((current.type === 'FunctionDeclaration' || current.type === 'TSDeclareFunction') && current.id && typeof current.id.name === 'string') {
+      return current.id.name;
+    }
+    if ((current.type === 'MethodDefinition' || current.type === 'TSMethodSignature') && current.key && typeof current.key.name === 'string') {
+      return current.key.name;
+    }
+    current = current.parent;
+  }
+  return '<unknown>';
+}
+
+/**
+ * Determine AST node where annotation should be inserted
+ */
+function resolveTargetNode(sourceCode: any, node: any): any {
+  if (node.type === 'TSMethodSignature') {
+    // Interface method signature -> insert on interface
+    return node.parent.parent;
+  }
+  if (node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') {
+    const parent = node.parent;
+    if (parent.type === 'VariableDeclarator') {
+      const varDecl = parent.parent;
+      if (varDecl.parent && varDecl.parent.type === 'ExportNamedDeclaration') {
+        return varDecl.parent;
+      }
+      return varDecl;
+    }
+    if (parent.type === 'ExportNamedDeclaration') {
+      return parent;
+    }
+    if (parent.type === 'ExpressionStatement') {
+      return parent;
+    }
+  }
+  return node;
+}
+
+/**
+ * Report missing @story annotation on function or method
+ */
+function reportMissing(
+  context: Rule.RuleContext,
+  sourceCode: any,
+  node: any,
+  target: any
+) {
+  if (hasStoryAnnotation(sourceCode, node) || hasStoryAnnotation(sourceCode, target)) {
+    return;
+  }
+  let name = getNodeName(node);
+  if (node.type === 'TSDeclareFunction' && node.id && node.id.name) {
+    name = node.id.name;
+  }
+  context.report({
+    node,
+    messageId: 'missingStory',
+    data: { name },
+    suggest: [
+      {
+        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+        fix: (fixer: any) => fixer.insertTextBefore(target, `${ANNOTATION}\n`)
+      }
+    ]
+  });
+}
+
+/**
+ * Report missing @story annotation on class methods
+ */
+function reportMethod(
+  context: Rule.RuleContext,
+  sourceCode: any,
+  node: any
+) {
+  if (hasStoryAnnotation(sourceCode, node)) {
+    return;
+  }
+  // compute indent based on method column
+  const indent = ' '.repeat(node.loc.start.column);
+  context.report({
+    node,
+    messageId: 'missingStory',
+    data: { name: getNodeName(node) },
+    suggest: [
+      {
+        desc: `Add JSDoc @story annotation for function '${getNodeName(node)}', e.g., ${ANNOTATION}`,
+        fix: (fixer: any) => fixer.insertTextBefore(node, `${ANNOTATION}\n  `)
+      }
+    ]
+  });
+}
+
+/**
+ * Check if this node is within scope and matches exportPriority
+ */
+function shouldProcessNode(
   node: any,
   scope: string[],
-  exportPriority: string,
+  exportPriority: string
 ): boolean {
-  if (
-    node.type === "FunctionExpression" &&
-    node.parent?.type === "MethodDefinition"
-  ) {
-    return false;
-  }
   if (!scope.includes(node.type)) {
     return false;
   }
   const exported = isExportedNode(node);
-  if (
-    (exportPriority === "exported" && !exported) ||
-    (exportPriority === "non-exported" && exported)
-  ) {
+  if (exportPriority === 'exported' && !exported) {
+    return false;
+  }
+  if (exportPriority === 'non-exported' && exported) {
     return false;
   }
   return true;
 }
 
-/**
- * Resolve the AST node to annotate or check.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-UNIFIED-CHECK
- */
-function resolveTargetNode(sourceCode: any, node: any): any {
-  let target: any = node;
-  if (node.type === "FunctionDeclaration") {
-    const exp = findAncestorNode(node, [
-      "ExportNamedDeclaration",
-      "ExportDefaultDeclaration",
-    ]);
-    if (exp) {
-      target = exp;
-    }
-  } else if (
-    node.type === "FunctionExpression" ||
-    node.type === "ArrowFunctionExpression"
-  ) {
-    const exp = findAncestorNode(node, [
-      "ExportNamedDeclaration",
-      "ExportDefaultDeclaration",
-    ]);
-    if (exp) {
-      target = exp;
-    } else {
-      const anc = findAncestorNode(node, [
-        "VariableDeclaration",
-        "ExpressionStatement",
-      ]);
-      if (anc) {
-        target = anc;
-      }
-    }
-  } else if (node.type === "TSMethodSignature") {
-    const exp = findAncestorNode(node, ["TSInterfaceDeclaration"]);
-    if (exp) {
-      target = exp;
-    }
-  } else if (node.type === "MethodDefinition") {
-    target = node;
-  }
-  return target;
-}
-
-/**
- * Check if the target node has @story annotation.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
- */
-function hasStoryAnnotation(sourceCode: any, target: any): boolean {
-  const jsdoc = sourceCode.getJSDocComment(target);
-  if (jsdoc?.value.includes("@story")) {
-    return true;
-  }
-  const comments = sourceCode.getCommentsBefore(target) || [];
-  return comments.some((c: any) => c.value.includes("@story"));
-}
-
-/**
- * Check for @story annotation on function-like nodes.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-UNIFIED-CHECK
- * @req REQ-ANNOTATION-REQUIRED
- */
-function checkStoryAnnotation(
-  sourceCode: any,
-  context: any,
-  node: any,
-  scope: string[],
-  exportPriority: string,
-) {
-  if (!shouldCheckNode(node, scope, exportPriority)) {
-    return;
-  }
-  // Special handling for TSMethodSignature: allow annotation on the method itself
-  if (node.type === "TSMethodSignature") {
-    // If annotated on the method signature, skip
-    if (hasStoryAnnotation(sourceCode, node)) {
-      return;
-    }
-    // Otherwise, check on interface declaration
-    const intf = resolveTargetNode(sourceCode, node);
-    if (hasStoryAnnotation(sourceCode, intf)) {
-      return;
-    }
-    // Missing annotation: report on the interface declaration
-    context.report({
-      node: intf,
-      messageId: "missingStory",
-      fix(fixer: any) {
-        const indentLevel = intf.loc.start.column;
-        const indent = " ".repeat(indentLevel);
-        const insertPos = intf.range[0] - indentLevel;
-        return fixer.insertTextBeforeRange(
-          [insertPos, insertPos],
-          `${indent}/** @story <story-file>.story.md */\n`,
-        );
-      },
-    });
-    return;
-  }
-  const target = resolveTargetNode(sourceCode, node);
-  if (hasStoryAnnotation(sourceCode, target)) {
-    return;
-  }
-  context.report({
-    node,
-    messageId: "missingStory",
-    fix(fixer: any) {
-      const indentLevel = target.loc.start.column;
-      const indent = " ".repeat(indentLevel);
-      const insertPos = target.range[0] - indentLevel;
-      return fixer.insertTextBeforeRange(
-        [insertPos, insertPos],
-        `${indent}/** @story <story-file>.story.md */\n`,
-      );
-    },
-  });
-}
-
-export default {
+const rule: Rule.RuleModule = {
   meta: {
-    type: "problem",
+    type: 'problem',
     docs: {
-      description: "Require @story annotations on selected functions",
-      recommended: "error",
+      description: 'Require @story annotations on functions',
+      recommended: 'error'
     },
-    fixable: "code",
+    hasSuggestions: true,
     messages: {
-      missingStory: "Missing @story annotation (REQ-ANNOTATION-REQUIRED)",
+      missingStory: 'Missing @story annotation (REQ-ANNOTATION-REQUIRED)'
     },
     schema: [
       {
-        type: "object",
+        type: 'object',
         properties: {
           scope: {
-            type: "array",
-            items: {
-              enum: [
-                "FunctionDeclaration",
-                "FunctionExpression",
-                "ArrowFunctionExpression",
-                "MethodDefinition",
-                "TSDeclareFunction",
-                "TSMethodSignature",
-              ],
-            },
-            uniqueItems: true,
+            type: 'array',
+            items: { type: 'string', enum: DEFAULT_SCOPE },
+            uniqueItems: true
           },
-          exportPriority: {
-            enum: ["all", "exported", "non-exported"],
-          },
+          exportPriority: { type: 'string', enum: EXPORT_PRIORITY_VALUES }
         },
-        additionalProperties: false,
-      },
-    ],
+        additionalProperties: false
+      }
+    ]
   },
-  create(context: any) {
+  create(context) {
     const sourceCode = context.getSourceCode();
-    const options = context.options[0] || {};
-    const scope = options.scope || [
-      "FunctionDeclaration",
-      "FunctionExpression",
-      "ArrowFunctionExpression",
-      "MethodDefinition",
-      "TSDeclareFunction",
-      "TSMethodSignature",
-    ];
-    const exportPriority = options.exportPriority || "all";
+    const opts = context.options[0] || {} as { scope?: string[]; exportPriority?: string };
+    const scope = opts.scope || DEFAULT_SCOPE;
+    const exportPriority = opts.exportPriority || 'all';
 
     return {
       FunctionDeclaration(node: any) {
-        checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
-      },
-      FunctionExpression(node: any) {
-        checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
-      },
-      ArrowFunctionExpression(node: any) {
-        checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
-      },
-      MethodDefinition(node: any) {
-        checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
+        if (!shouldProcessNode(node, scope, exportPriority)) return;
+        let target = node;
+        if (
+          node.parent &&
+          (node.parent.type === 'ExportNamedDeclaration' || node.parent.type === 'ExportDefaultDeclaration')
+        ) {
+          target = node.parent;
+        }
+        reportMissing(context, sourceCode, node, target);
       },
 
-      // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-      // @req REQ-FUNCTION-DETECTION - Detect TS-specific function syntax
+      FunctionExpression(node: any) {
+        if (!shouldProcessNode(node, scope, exportPriority)) return;
+        if (node.parent && node.parent.type === 'MethodDefinition') return;
+        const target = resolveTargetNode(sourceCode, node);
+        reportMissing(context, sourceCode, node, target);
+      },
+
+      ArrowFunctionExpression(node: any) {
+        if (!shouldProcessNode(node, scope, exportPriority)) return;
+        const target = resolveTargetNode(sourceCode, node);
+        reportMissing(context, sourceCode, node, target);
+      },
+
       TSDeclareFunction(node: any) {
-        checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
+        if (!shouldProcessNode(node, scope, exportPriority)) return;
+        reportMissing(context, sourceCode, node, node);
       },
-      // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-      // @req REQ-FUNCTION-DETECTION - Detect TS-specific function syntax
+
       TSMethodSignature(node: any) {
-        checkStoryAnnotation(sourceCode, context, node, scope, exportPriority);
+        if (!shouldProcessNode(node, scope, exportPriority)) return;
+        const target = resolveTargetNode(sourceCode, node);
+        reportMissing(context, sourceCode, node, target);
       },
+
+      MethodDefinition(node: any) {
+        if (!shouldProcessNode(node, scope, exportPriority)) return;
+        reportMethod(context, sourceCode, node);
+      }
     };
-  },
-} as any;
+  }
+};
+
+export default rule;

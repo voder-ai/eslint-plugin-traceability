@@ -2,11 +2,8 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-18T06:55:32.916Z</last_validated>
+  <last_validated>2025-11-18T17:53:03.201Z</last_validated>
   <last_modified>2025-11-16T00:07:54.454Z</last_modified>
-  <evidence>1. No source files reference docs/stories/007.0-DEV-ERROR-REPORTING.story.md or its REQ-ERROR-* requirement IDs.  
-2. No tests exercise or assert against improved error messages (tests cover stories 001–006, 009, 010 but never 007).  
-3. The plugin’s `meta.messages` remain the generic messages defined in earlier stories (e.g. "Missing @story annotation (REQ-ANNOTATION-REQUIRED)") and do not include any context-rich suggestions or follow the new REQ-ERROR-* naming or templating.  
-4. No use of ESLint’s `suggest` API or enhanced message templates as called out under REQ-ERROR-SPECIFIC, REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, etc.</evidence>
-  <notes>The 007.0-DEV-ERROR-REPORTING story calls for enhanced, actionable, and consistent error messages and suggests use of ESLint’s suggestion API. The existing rules still emit the original, generic messages from stories 003–006 and no code or tests reference story 007, so none of the new acceptance criteria or REQ-ERROR-* requirements have been implemented.</notes>
+  <evidence>I searched the code and test suite for any references to `docs/stories/007.0-DEV-ERROR-REPORTING.story.md` or ‘007.0’ and found none. There is no dedicated rule or test coverage for error-message enhancements defined in this story. The existing ESLint rules define basic messageIds (e.g. “missingStory”, “missingReq”, “invalidPath”), but those messages do not include the required actionable suggestions (REQ-ERROR-SUGGESTION), contextual details about the expected format or available files (REQ-ERROR-CONTEXT), nor do any tests assert on the clarity, location details, or suggestion text. The CLI integration tests only verify exit codes, not message contents. No documentation or unit/integration tests cover REQ-ERROR-SPECIFIC, REQ-ERROR-LOCATION, REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT and related acceptance criteria of story 007.</evidence>
+  <notes>The specification 007.0-DEV-ERROR-REPORTING is present but not implemented. To satisfy it, the plugin must be enhanced so that all validation failures emit clear, contextualized error messages with actionable fix suggestions, and tests must be added to verify those messages and suggestions.</notes>
 </traceability>

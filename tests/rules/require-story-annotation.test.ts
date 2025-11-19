@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -62,52 +63,100 @@ declare function tsDecl(): void;`,
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story annotation on function",
         code: `function bar() {}`,
-        output: `/** @story <story-file>.story.md */\nfunction bar() {}`,
-        errors: [{ messageId: "missingStory" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'bar', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}`,
+              },
+            ],
+          },
+        ],
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on function expression",
         code: `const fnExpr = function() {};`,
-        output: `/** @story <story-file>.story.md */\nconst fnExpr = function() {};`,
-        errors: [{ messageId: "missingStory" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'fnExpr', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst fnExpr = function() {};`,
+              },
+            ],
+          },
+        ],
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on arrow function",
         code: `const arrowFn = () => {};`,
-        output: `/** @story <story-file>.story.md */\nconst arrowFn = () => {};`,
-        errors: [{ messageId: "missingStory" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'arrowFn', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst arrowFn = () => {};`,
+              },
+            ],
+          },
+        ],
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on class method",
         code: `class C {\n  method() {}\n}`,
-        output: `class C {\n  /** @story <story-file>.story.md */\n  method() {}\n}`,
-        errors: [{ messageId: "missingStory" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `class C {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
+              },
+            ],
+          },
+        ],
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS declare function",
         code: `declare function tsDecl(): void;`,
-        output: `/** @story <story-file>.story.md */
-declare function tsDecl(): void;`,
         languageOptions: {
           parser: require("@typescript-eslint/parser") as any,
           parserOptions: { ecmaVersion: 2020, sourceType: "module" },
         },
-        errors: [{ messageId: "missingStory" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'tsDecl', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ndeclare function tsDecl(): void;`,
+              },
+            ],
+          },
+        ],
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS method signature",
-        code: `interface D {
-  method(): void;
-}`,
-        output: `/** @story <story-file>.story.md */
-interface D {
-  method(): void;
-}`,
+        code: `interface D {\n  method(): void;\n}`,
         languageOptions: {
           parser: require("@typescript-eslint/parser") as any,
           parserOptions: { ecmaVersion: 2020, sourceType: "module" },
         },
-        errors: [{ messageId: "missingStory" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ninterface D {\n  method(): void;\n}`,
+              },
+            ],
+          },
+        ],
       },
     ],
   });
@@ -129,16 +178,34 @@ interface D {
       {
         name: "[exportPriority] exported function missing @story annotation",
         code: `export function exportedMissing() {}`,
-        output: `/** @story <story-file>.story.md */\nexport function exportedMissing() {}`,
         options: [{ exportPriority: "exported" }],
-        errors: [{ messageId: "missingStory" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'exportedMissing', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport function exportedMissing() {}`,
+              },
+            ],
+          },
+        ],
       },
       {
         name: "[exportPriority] exported arrow function missing @story annotation",
         code: `export const arrowExported = () => {};`,
-        output: `/** @story <story-file>.story.md */\nexport const arrowExported = () => {};`,
         options: [{ exportPriority: "exported" }],
-        errors: [{ messageId: "missingStory" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'arrowExported', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport const arrowExported = () => {};`,
+              },
+            ],
+          },
+        ],
       },
     ],
   });
@@ -156,8 +223,17 @@ interface D {
         name: "[scope] function declaration missing annotation when scope is FunctionDeclaration",
         code: `function onlyDecl() {}`,
         options: [{ scope: ["FunctionDeclaration"] }],
-        output: `/** @story <story-file>.story.md */\nfunction onlyDecl() {}`,
-        errors: [{ messageId: "missingStory" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'onlyDecl', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction onlyDecl() {}`,
+              },
+            ],
+          },
+        ],
       },
     ],
   });

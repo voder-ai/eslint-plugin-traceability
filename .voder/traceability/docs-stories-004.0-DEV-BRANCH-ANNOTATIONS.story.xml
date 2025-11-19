@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-11-18T06:53:33.794Z</last_validated>
-  <last_modified>2025-11-16T00:07:54.419Z</last_modified>
-  <evidence>The `require-branch-annotation` rule’s implementation (src/rules/require-branch-annotation.ts) defines meta.schema as an empty array and hardcodes the set of branch node types (IfStatement, SwitchCase, TryStatement, etc.) with no provision for user configuration. The story’s Requirements include **REQ-CONFIGURABLE-SCOPE** (“Allow configuration of which branch types require annotations”), but there is no schema entry or code path to accept or honor configuration options. No tests exercise configuration of branch types.</evidence>
-  <notes>Core detection is implemented and covered by tests, but the configurability requirement (REQ-CONFIGURABLE-SCOPE) is missing, so the story is not fully satisfied.</notes>
+  <status>PASSED</status>
+  <last_validated>2025-11-18T17:52:52.340Z</last_validated>
+  <last_modified>2025-11-18T16:51:31.239Z</last_modified>
+  <evidence>The `require-branch-annotation` ESLint rule is implemented in `src/rules/require-branch-annotation.ts`, its helpers in `src/utils/branch-annotation-helpers.ts`, and fully documented in `docs/rules/require-branch-annotation.md`. The unit tests in `tests/rules/require-branch-annotation.test.ts` cover all core AST node types (IfStatement, SwitchCase, Try/Catch, loops), missing‐annotation error messages, auto‐fix behavior, nested/default cases, configurable branchTypes, and invalid configuration. All 35 tests for this rule passed (see Jest summary: 0 failures).</evidence>
+  <notes>The feature implements REQ-BRANCH-DETECTION, REQ-COMMENT-ASSOCIATION, REQ-ANNOTATION-PARSING, REQ-SIGNIFICANCE-CRITERIA, REQ-NESTED-HANDLING, REQ-CONFIGURABLE-SCOPE, and REQ-PERFORMANCE-OPTIMIZATION. Documentation and examples exist, and the rule is wired into the plugin's index and config presets. Acceptance criteria for core functionality, configuration, user feedback, and documentation are satisfied.</notes>
 </traceability>

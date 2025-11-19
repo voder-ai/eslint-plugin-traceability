@@ -2,13 +2,13 @@
 <traceability>
   <specification>docs/stories/002.0-DEV-ESLINT-CONFIG.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-18T06:55:49.399Z</last_validated>
+  <last_validated>2025-11-18T17:54:54.781Z</last_validated>
   <last_modified>2025-11-16T00:07:54.396Z</last_modified>
-  <evidence>- All tests covering ESLint configuration passed (97/97 tests; see jest-report.json).
-- tests/config/eslint-config-validation.test.ts verifies validStoryReference.meta.schema contains properties (storyDirectories, allowAbsolutePaths, requireStoryExtension) and additionalProperties=false.
-- tests/config/require-story-annotation-config.test.ts verifies requireStoryAnnotation.meta.schema defines scope and exportPriority properties with additionalProperties=false.
-- src/index.ts exports configs.recommended and configs.strict presets (REQ-CONFIG-PRESETS).
-- eslint.config.js implements a valid ESLint v9 flat config annotated with @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md and @req REQ-FLAT-CONFIG.
-- Documentation in README.md and user-docs/eslint-9-setup-guide.md provides clear setup examples for JS, TS, and mixed projects, as well as troubleshooting guidance.</evidence>
-  <notes>All acceptance criteria and requirements for story 002.0-DEV-ESLINT-CONFIG are satisfied: configuration presets exist, flat config support is implemented, rule option schemas validate and reject invalid options, customization of story paths is supported, and comprehensive documentation is provided.</notes>
+  <evidence>• src/index.ts defines both `configs.recommended` and `configs.strict` presets (REQ-CONFIG-PRESETS)
+• Root eslint.config.js implements ESLint v9 flat config format with @story/REQ-FLAT-CONFIG annotation (REQ-FLAT-CONFIG)
+• Tests in tests/config/require-story-annotation-config.test.ts and tests/config/eslint-config-validation.test.ts verify each rule’s `meta.schema` has `properties` for storyDirectories, allowAbsolutePaths, requireStoryExtension, scope, exportPriority and disallows additionalProperties (REQ-RULE-OPTIONS, REQ-CONFIG-VALIDATION)
+• docs/config-presets.md and user-docs/eslint-9-setup-guide.md provide recommended/strict examples and troubleshooting guidance (Documentation, User Experience)
+• eslint.config.js includes blocks for JS, TS, test files and ignores, demonstrating integration with mixed TS/JS projects (REQ-PROJECT-INTEGRATION)
+• JSON Schema in each rule’s meta.schema enforces validation and ESLint will report schema errors for unknown options (Error Handling)</evidence>
+  <notes>All technical requirements and acceptance criteria for story 002.0-DEV-ESLINT-CONFIG are implemented: presets, flat config support, customizable paths, rule options, config validation, project integration, and documentation. Tests cover schema definitions and plugin exports, and user documentation guides common setups and troubleshooting.</notes>
 </traceability>
