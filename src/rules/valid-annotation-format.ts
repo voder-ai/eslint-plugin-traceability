@@ -19,9 +19,20 @@ export default {
     },
     schema: [],
   },
+  /**
+   * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+   * @req REQ-SYNTAX-VALIDATION - Ensure rule create function validates annotations syntax
+   * @req REQ-FORMAT-SPECIFICATION - Implement formatting checks per specification
+   */
   create(context: any) {
     const sourceCode = context.getSourceCode();
     return {
+      /**
+       * Program-level handler that inspects all comments for @story and @req tags
+       * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+       * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
+       * @req REQ-REQ-FORMAT - Validate @req identifiers follow expected patterns
+       */
       Program() {
         const comments = sourceCode.getAllComments() || [];
         comments.forEach((comment: any) => {

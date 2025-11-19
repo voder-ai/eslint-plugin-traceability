@@ -11,6 +11,11 @@ export function getAllFiles(dir: string): string[] {
   if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
     return fileList;
   }
+  /**
+   * Recursively traverse a directory and collect file paths.
+   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+   * @req REQ-MAINT-UTILS-TRAVERSE - Helper traversal function used by getAllFiles
+   */
   function traverse(currentDir: string) {
     const entries = fs.readdirSync(currentDir);
     for (const entry of entries) {

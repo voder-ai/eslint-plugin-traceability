@@ -6,6 +6,10 @@
  */
 import type { Rule } from "eslint";
 
+/**
+ * @story docs/stories/001.2-RULE-NAMES-DECLARATION.story.md
+ * @req REQ-RULE-LIST - Enumerate supported rule file names for plugin discovery
+ */
 const RULE_NAMES = [
   "require-story-annotation",
   "require-req-annotation",
@@ -21,11 +25,19 @@ const rules: Record<RuleName, Rule.RuleModule> = {} as any;
 
 RULE_NAMES.forEach((name) => {
   try {
+    /**
+     * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
+     * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
+     */
     // Dynamically require rule module
     const mod = require(`./rules/${name}`);
     // Support ESModule default export
     rules[name] = mod.default ?? mod;
   } catch (error: any) {
+    /**
+     * @story docs/stories/003.0-RULE-LOAD-ERROR-HANDLING.story.md
+     * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
+     */
     console.error(
       `[eslint-plugin-traceability] Failed to load rule "${name}": ${error.message}`,
     );

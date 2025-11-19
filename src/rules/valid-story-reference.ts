@@ -196,6 +196,13 @@ export default {
     const allowAbsolute = opts?.allowAbsolutePaths || false;
     const requireExt = opts?.requireStoryExtension !== false;
     return {
+      /**
+       * Program-level handler: iterate comments and validate @story annotations.
+       * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+       * @req REQ-ANNOTATION-VALIDATION - Discover and dispatch @story annotations for validation
+       * @req REQ-FILE-EXISTENCE - Ensure referenced files exist
+       * @req REQ-PATH-RESOLUTION - Resolve using cwd and configured story directories
+       */
       Program() {
         const comments = context.getSourceCode().getAllComments() || [];
         for (const comment of comments) {

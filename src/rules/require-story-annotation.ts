@@ -13,6 +13,11 @@ const EXPORT_PRIORITY_VALUES = ["all", "exported", "non-exported"];
 
 /**
  * Determine if a node is in an export declaration
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ * @param {any} node - AST node to check for export ancestry
+ * @returns {boolean} true if node is within an export declaration
  */
 function isExportedNode(node: any): boolean {
   let p = node.parent;
@@ -34,6 +39,12 @@ const ANNOTATION = `/** @story ${STORY_PATH} */`;
 
 /**
  * Check if @story annotation already present in JSDoc or preceding comments
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ * @param {any} sourceCode - ESLint sourceCode object
+ * @param {any} node - AST node to inspect for existing annotations
+ * @returns {boolean} true if @story annotation already present
  */
 function hasStoryAnnotation(sourceCode: any, node: any): boolean {
   const jsdoc = sourceCode.getJSDocComment(node);
@@ -46,6 +57,11 @@ function hasStoryAnnotation(sourceCode: any, node: any): boolean {
 
 /**
  * Get the name of the function-like node
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ * @param {any} node - AST node representing a function-like construct
+ * @returns {string} the resolved name or "<unknown>"
  */
 function getNodeName(node: any): string {
   let current: any = node;
@@ -80,6 +96,12 @@ function getNodeName(node: any): string {
 
 /**
  * Determine AST node where annotation should be inserted
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ * @param {any} sourceCode - ESLint sourceCode object (unused but kept for parity)
+ * @param {any} node - function-like AST node to resolve target for
+ * @returns {any} AST node that should receive the annotation
  */
 function resolveTargetNode(sourceCode: any, node: any): any {
   if (node.type === "TSMethodSignature") {
@@ -110,6 +132,13 @@ function resolveTargetNode(sourceCode: any, node: any): any {
 
 /**
  * Report missing @story annotation on function or method
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ * @param {Rule.RuleContext} context - ESLint rule context
+ * @param {any} sourceCode - ESLint sourceCode object
+ * @param {any} node - function AST node missing annotation
+ * @param {any} target - AST node where annotation should be inserted
  */
 function reportMissing(
   context: Rule.RuleContext,
@@ -142,6 +171,12 @@ function reportMissing(
 
 /**
  * Report missing @story annotation on class methods
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ * @param {Rule.RuleContext} context - ESLint rule context
+ * @param {any} sourceCode - ESLint sourceCode object
+ * @param {any} node - MethodDefinition AST node
  */
 function reportMethod(context: Rule.RuleContext, sourceCode: any, node: any) {
   if (hasStoryAnnotation(sourceCode, node)) {
@@ -162,6 +197,13 @@ function reportMethod(context: Rule.RuleContext, sourceCode: any, node: any) {
 
 /**
  * Check if this node is within scope and matches exportPriority
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ * @param {any} node - AST node to evaluate
+ * @param {string[]} scope - allowed node types
+ * @param {string} exportPriority - 'all' | 'exported' | 'non-exported'
+ * @returns {boolean} whether node should be processed
  */
 function shouldProcessNode(
   node: any,

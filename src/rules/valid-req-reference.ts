@@ -16,6 +16,9 @@ import type { Rule } from "eslint";
  * Parses comment.value lines for @story annotation.
  * @param comment any JSDoc comment node
  * @returns story path or null if not found
+ *
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-PARSE - Extracts @story annotation from comment content
  */
 function extractStoryPath(comment: any): string | null {
   const rawLines = comment.value.split(/\r?\n/);
@@ -32,6 +35,14 @@ function extractStoryPath(comment: any): string | null {
 /**
  * Validate a @req annotation line against the extracted story content.
  * Performs path validation, file reading, caching, and requirement existence checks.
+ *
+ * @param opts options bag
+ *
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-PATH - Validates and protects against path traversal and absolute paths
+ * @req REQ-DEEP-CACHE - Caches parsed story files to avoid repeated IO
+ * @req REQ-DEEP-MATCH - Ensures referenced requirement IDs exist in the story file
+ * @req REQ-DEEP-PARSE - Parses story file content to find REQ- identifiers
  */
 function validateReqLine(opts: {
   comment: any;
@@ -95,6 +106,12 @@ function validateReqLine(opts: {
  * Handle a single annotation line.
  * @story Updates the current story path when encountering an @story annotation
  * @req Validates the requirement reference against the current story content
+ *
+ * @param opts handler options
+ *
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-PARSE - Recognizes @story and @req annotation lines
+ * @req REQ-DEEP-MATCH - Delegates @req validation to validateReqLine
  */
 function handleAnnotationLine(opts: {
   line: string;
@@ -117,6 +134,13 @@ function handleAnnotationLine(opts: {
 
 /**
  * Handle JSDoc story and req annotations.
+ *
+ * @param opts options for comment handling
+ *
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-PARSE - Parses comment blocks to extract annotation lines
+ * @req REQ-DEEP-MATCH - Uses handleAnnotationLine to validate @req entries
+ * @req REQ-DEEP-CACHE - Passes shared cache for parsed story files
  */
 function handleComment(opts: {
   comment: any;
@@ -142,6 +166,16 @@ function handleComment(opts: {
   return storyPath;
 }
 
+/**
+ * Create a Program listener that iterates comments and validates annotations.
+ *
+ * @param context ESLint rule context
+ * @returns Program visitor function
+ *
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-CACHE - Maintains a cache across comment processing
+ * @req REQ-DEEP-PATH - Resolves and protects story paths against traversal
+ */
 function programListener(context: any) {
   const sourceCode = context.getSourceCode();
   const cwd = process.cwd();
@@ -176,6 +210,15 @@ export default {
     },
     schema: [],
   },
+  /**
+   * Rule create entrypoint that returns the Program visitor.
+   *
+   * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+   * @req REQ-DEEP-MATCH - Entrypoint orchestrates validation of @req annotations
+   * @req REQ-DEEP-PARSE - Uses parsing helpers to extract annotations and story paths
+   * @req REQ-DEEP-CACHE - Establishes cache used during validation
+   * @req REQ-DEEP-PATH - Ensures path validation is applied during checks
+   */
   create(context) {
     return { Program: programListener(context) };
   },

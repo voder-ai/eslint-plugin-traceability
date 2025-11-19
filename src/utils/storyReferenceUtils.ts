@@ -68,6 +68,7 @@ export function normalizeStoryPath(
 
 /**
  * Check if the provided path is absolute.
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-SECURITY-VALIDATION - Prevent absolute path usage
  */
 export function isAbsolutePath(p: string): boolean {
@@ -76,6 +77,7 @@ export function isAbsolutePath(p: string): boolean {
 
 /**
  * Check for path traversal patterns.
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-SECURITY-VALIDATION - Prevent path traversal
  */
 export function containsPathTraversal(p: string): boolean {
@@ -85,6 +87,7 @@ export function containsPathTraversal(p: string): boolean {
 
 /**
  * Determine if a path is unsafe due to traversal or being absolute.
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-SECURITY-VALIDATION - Prevent path traversal and absolute path usage
  */
 export function isTraversalUnsafe(p: string): boolean {
@@ -93,6 +96,7 @@ export function isTraversalUnsafe(p: string): boolean {
 
 /**
  * Validate that the story file has an allowed extension.
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-SECURITY-VALIDATION - Enforce allowed file extensions
  */
 export function hasValidExtension(p: string): boolean {
@@ -101,6 +105,7 @@ export function hasValidExtension(p: string): boolean {
 
 /**
  * Determine if a story path is unsafe due to traversal, being absolute, or invalid extension.
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-SECURITY-VALIDATION - Prevent path traversal, absolute path usage, and enforce allowed file extensions
  */
 export function isUnsafeStoryPath(p: string): boolean {
