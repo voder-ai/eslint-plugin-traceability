@@ -55,12 +55,6 @@ npm run lint -- --max-warnings=0
 npm run format:check
 ```
 
-To test plugin integration with ESLint CLI, run the CLI integration tests:
-
-```bash
-npm test -- tests/integration/cli-integration.test.ts
-```
-
 ## 5. Update Documentation
 
 If you have custom documentation or examples that reference old rule names or file paths, update them to match the new conventions introduced in v1.x.
