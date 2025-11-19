@@ -1,5 +1,4 @@
 # Ignore compiled outputs and voder artifacts
-src/index.ts
 lib/
 .voder/
 
