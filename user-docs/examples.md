@@ -2,6 +2,7 @@
 
 Created autonomously by [voder.ai](https://voder.ai).
 Last updated: 2025-11-19
+Version: 1.0.5
 
 This document provides runnable examples demonstrating how to use the `eslint-plugin-traceability` plugin in real-world scenarios.
 
@@ -71,4 +72,3 @@ Then run:
 
 ```bash
 npm run lint:trace
-```
