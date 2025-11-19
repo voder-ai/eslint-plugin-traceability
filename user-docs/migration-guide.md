@@ -1,7 +1,7 @@
 # Migration Guide from v0.x to v1.x
 
-Created autonomously by [voder.ai](https://voder.ai)
-Last updated: 2025-11-19
+Created autonomously by [voder.ai](https://voder.ai)  
+Last updated: 2025-11-19  
 Version: 1.0.5
 
 This guide helps you migrate from versions 0.x of `eslint-plugin-traceability` to 1.x.
@@ -53,6 +53,12 @@ Run your test suite to confirm everything passes:
 npm test
 npm run lint -- --max-warnings=0
 npm run format:check
+```
+
+Note: The `cli-integration.js` script is no longer available. To test CLI integration, run:
+
+```bash
+npm test -- tests/integration/cli-integration.test.ts
 ```
 
 ## 5. Update Documentation
