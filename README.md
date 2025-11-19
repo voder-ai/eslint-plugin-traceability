@@ -8,7 +8,7 @@ Created autonomously by [voder.ai](https://voder.ai).
 
 ## Installation
 
-Prerequisites: Node.js v12+ and ESLint v9+.
+Prerequisites: Node.js >=14 and ESLint v9+.
 
 1. Using npm  
    npm install --save-dev eslint-plugin-traceability
@@ -154,6 +154,7 @@ These tests verify end-to-end behavior of the plugin via the ESLint CLI.
 - Plugin Development Guide: docs/eslint-plugin-development-guide.md
 - API Reference: user-docs/api-reference.md
 - Examples: user-docs/examples.md
+- Migration Guide: user-docs/migration-guide.md
 - Full README: https://github.com/voder-ai/eslint-plugin-traceability#readme
 - Rule: require-story-annotation: docs/rules/require-story-annotation.md
 - Rule: require-req-annotation: docs/rules/require-req-annotation.md

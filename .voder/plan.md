@@ -1,12 +1,12 @@
 ## NOW
-Modify the project’s ESLint configuration to enable the `no-magic-numbers` rule (with sensible exceptions for `0` and `1`).
+Update the README.md Installation section to change the Node.js requirement from “v12+” to “>=14” so it matches the `engines` field in package.json.
 
 ## NEXT
-- Update the ESLint config to add the `max-params` rule (e.g. maximum of 4 parameters per function).  
-- Run `npm run lint` and fix every new `no-magic-numbers` and `max-params` violation by introducing named constants or refactoring functions.  
-- Commit the linting rule changes and code fixes, then push and verify the CI pipeline passes and code_quality rises.
+- Insert a link to `user-docs/migration-guide.md` under the Documentation section of README.md.
+- Scan all user-facing docs (in `user-docs/`) for version references (Node, ESLint, etc.) and correct any that don’t align with package.json or peer‐dependency requirements.
+- Run `npm run lint`, `npm run format:check` and `npm test` to verify documentation edits introduce no lint, formatting, or test failures.
 
 ## LATER
-- Define and enable additional lint rules for consistent error‐handling patterns and naming conventions.  
-- Periodically review and tighten cyclomatic-complexity, file-length, and function-length thresholds as the codebase evolves.  
-- Automate a quality-regression check in CI to track the code_quality score on each push and prevent regressions.
+- Add a top‐level table of contents and anchor links in the `user-docs/` guides for easier navigation.
+- Integrate an automated docs‐link and version‐consistency check into the CI pipeline.
+- Include documentation review as part of the release checklist to catch future mismatches early.
