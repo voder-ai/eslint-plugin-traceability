@@ -249,6 +249,11 @@ const rule: Rule.RuleModule = {
       },
     ],
   },
+  /**
+   * Create the rule visitor functions for require-story-annotation.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @req REQ-CREATE-HOOK - Provide create(context) hook for rule behavior
+   */
   create(context) {
     const sourceCode = context.getSourceCode();
     const opts =
