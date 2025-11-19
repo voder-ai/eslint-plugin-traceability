@@ -23,45 +23,61 @@ type RuleName = (typeof RULE_NAMES)[number];
 
 const rules: Record<RuleName, Rule.RuleModule> = {} as any;
 
-RULE_NAMES.forEach((name) => {
-  try {
+RULE_NAMES.forEach(
+  /**
+   * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
+   * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
+   * @param {RuleName} name - Rule file base name used to discover and load rule module
+   */
+  (name) => {
     /**
      * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
      * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
      */
-    // Dynamically require rule module
-    const mod = require(`./rules/${name}`);
-    // Support ESModule default export
-    rules[name] = mod.default ?? mod;
-  } catch (error: any) {
+    try {
+      /**
+       * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
+       * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
+       */
+      // Dynamically require rule module
+      const mod = require(`./rules/${name}`);
+      // Support ESModule default export
+      rules[name] = mod.default ?? mod;
+    }
     /**
      * @story docs/stories/003.0-RULE-LOAD-ERROR-HANDLING.story.md
      * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
      */
-    console.error(
-      `[eslint-plugin-traceability] Failed to load rule "${name}": ${error.message}`,
-    );
-    rules[name] = {
-      meta: {
-        type: "problem",
-        docs: {
-          description: `Failed to load rule '${name}'`,
-        },
-        schema: [],
-      },
-      create(context: Rule.RuleContext) {
-        return {
-          Program(node: any) {
-            context.report({
-              node,
-              message: `eslint-plugin-traceability: Error loading rule "${name}": ${error.message}`,
-            });
+    catch (error: any) {
+      /**
+       * @story docs/stories/003.0-RULE-LOAD-ERROR-HANDLING.story.md
+       * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
+       */
+      console.error(
+        `[eslint-plugin-traceability] Failed to load rule "${name}": ${error.message}`,
+      );
+      rules[name] = {
+        meta: {
+          type: "problem",
+          docs: {
+            description: `Failed to load rule '${name}'`,
           },
-        };
-      },
-    } as Rule.RuleModule;
-  }
-});
+          schema: [],
+        },
+        create(context: Rule.RuleContext) {
+          return {
+            Program(node: any) {
+              context.report({
+                node,
+                message: `eslint-plugin-traceability: Error loading rule "${name}": ${error.message}`,
+              });
+            },
+          };
+        },
+      } as Rule.RuleModule;
+    }
+  },
+);
 
 const configs = {
   recommended: [
