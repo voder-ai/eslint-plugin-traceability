@@ -17,7 +17,10 @@ const EXPORT_PRIORITY_VALUES = ["all", "exported", "non-exported"];
 function isExportedNode(node: any): boolean {
   let p = node.parent;
   while (p) {
-    if (p.type === 'ExportNamedDeclaration' || p.type === 'ExportDefaultDeclaration') {
+    if (
+      p.type === "ExportNamedDeclaration" ||
+      p.type === "ExportDefaultDeclaration"
+    ) {
       return true;
     }
     p = p.parent;
@@ -47,41 +50,58 @@ function hasStoryAnnotation(sourceCode: any, node: any): boolean {
 function getNodeName(node: any): string {
   let current: any = node;
   while (current) {
-    if (current.type === 'VariableDeclarator' && current.id && typeof current.id.name === 'string') {
+    if (
+      current.type === "VariableDeclarator" &&
+      current.id &&
+      typeof current.id.name === "string"
+    ) {
       return current.id.name;
     }
-    if ((current.type === 'FunctionDeclaration' || current.type === 'TSDeclareFunction') && current.id && typeof current.id.name === 'string') {
+    if (
+      (current.type === "FunctionDeclaration" ||
+        current.type === "TSDeclareFunction") &&
+      current.id &&
+      typeof current.id.name === "string"
+    ) {
       return current.id.name;
     }
-    if ((current.type === 'MethodDefinition' || current.type === 'TSMethodSignature') && current.key && typeof current.key.name === 'string') {
+    if (
+      (current.type === "MethodDefinition" ||
+        current.type === "TSMethodSignature") &&
+      current.key &&
+      typeof current.key.name === "string"
+    ) {
       return current.key.name;
     }
     current = current.parent;
   }
-  return '<unknown>';
+  return "<unknown>";
 }
 
 /**
  * Determine AST node where annotation should be inserted
  */
 function resolveTargetNode(sourceCode: any, node: any): any {
-  if (node.type === 'TSMethodSignature') {
+  if (node.type === "TSMethodSignature") {
     // Interface method signature -> insert on interface
     return node.parent.parent;
   }
-  if (node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') {
+  if (
+    node.type === "FunctionExpression" ||
+    node.type === "ArrowFunctionExpression"
+  ) {
     const parent = node.parent;
-    if (parent.type === 'VariableDeclarator') {
+    if (parent.type === "VariableDeclarator") {
       const varDecl = parent.parent;
-      if (varDecl.parent && varDecl.parent.type === 'ExportNamedDeclaration') {
+      if (varDecl.parent && varDecl.parent.type === "ExportNamedDeclaration") {
         return varDecl.parent;
       }
       return varDecl;
     }
-    if (parent.type === 'ExportNamedDeclaration') {
+    if (parent.type === "ExportNamedDeclaration") {
       return parent;
     }
-    if (parent.type === 'ExpressionStatement') {
+    if (parent.type === "ExpressionStatement") {
       return parent;
     }
   }
@@ -95,51 +115,48 @@ function reportMissing(
   context: Rule.RuleContext,
   sourceCode: any,
   node: any,
-  target: any
+  target: any,
 ) {
-  if (hasStoryAnnotation(sourceCode, node) || hasStoryAnnotation(sourceCode, target)) {
+  if (
+    hasStoryAnnotation(sourceCode, node) ||
+    hasStoryAnnotation(sourceCode, target)
+  ) {
     return;
   }
   let name = getNodeName(node);
-  if (node.type === 'TSDeclareFunction' && node.id && node.id.name) {
+  if (node.type === "TSDeclareFunction" && node.id && node.id.name) {
     name = node.id.name;
   }
   context.report({
     node,
-    messageId: 'missingStory',
+    messageId: "missingStory",
     data: { name },
     suggest: [
       {
         desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-        fix: (fixer: any) => fixer.insertTextBefore(target, `${ANNOTATION}\n`)
-      }
-    ]
+        fix: (fixer: any) => fixer.insertTextBefore(target, `${ANNOTATION}\n`),
+      },
+    ],
   });
 }
 
 /**
  * Report missing @story annotation on class methods
  */
-function reportMethod(
-  context: Rule.RuleContext,
-  sourceCode: any,
-  node: any
-) {
+function reportMethod(context: Rule.RuleContext, sourceCode: any, node: any) {
   if (hasStoryAnnotation(sourceCode, node)) {
     return;
   }
-  // compute indent based on method column
-  const indent = ' '.repeat(node.loc.start.column);
   context.report({
     node,
-    messageId: 'missingStory',
+    messageId: "missingStory",
     data: { name: getNodeName(node) },
     suggest: [
       {
         desc: `Add JSDoc @story annotation for function '${getNodeName(node)}', e.g., ${ANNOTATION}`,
-        fix: (fixer: any) => fixer.insertTextBefore(node, `${ANNOTATION}\n  `)
-      }
-    ]
+        fix: (fixer: any) => fixer.insertTextBefore(node, `${ANNOTATION}\n  `),
+      },
+    ],
   });
 }
 
@@ -149,16 +166,16 @@ function reportMethod(
 function shouldProcessNode(
   node: any,
   scope: string[],
-  exportPriority: string
+  exportPriority: string,
 ): boolean {
   if (!scope.includes(node.type)) {
     return false;
   }
   const exported = isExportedNode(node);
-  if (exportPriority === 'exported' && !exported) {
+  if (exportPriority === "exported" && !exported) {
     return false;
   }
-  if (exportPriority === 'non-exported' && exported) {
+  if (exportPriority === "non-exported" && exported) {
     return false;
   }
   return true;
@@ -166,35 +183,37 @@ function shouldProcessNode(
 
 const rule: Rule.RuleModule = {
   meta: {
-    type: 'problem',
+    type: "problem",
     docs: {
-      description: 'Require @story annotations on functions',
-      recommended: 'error'
+      description: "Require @story annotations on functions",
+      recommended: "error",
     },
     hasSuggestions: true,
     messages: {
-      missingStory: 'Missing @story annotation (REQ-ANNOTATION-REQUIRED)'
+      missingStory: "Missing @story annotation (REQ-ANNOTATION-REQUIRED)",
     },
     schema: [
       {
-        type: 'object',
+        type: "object",
         properties: {
           scope: {
-            type: 'array',
-            items: { type: 'string', enum: DEFAULT_SCOPE },
-            uniqueItems: true
+            type: "array",
+            items: { type: "string", enum: DEFAULT_SCOPE },
+            uniqueItems: true,
           },
-          exportPriority: { type: 'string', enum: EXPORT_PRIORITY_VALUES }
+          exportPriority: { type: "string", enum: EXPORT_PRIORITY_VALUES },
         },
-        additionalProperties: false
-      }
-    ]
+        additionalProperties: false,
+      },
+    ],
   },
   create(context) {
     const sourceCode = context.getSourceCode();
-    const opts = context.options[0] || {} as { scope?: string[]; exportPriority?: string };
+    const opts =
+      context.options[0] ||
+      ({} as { scope?: string[]; exportPriority?: string });
     const scope = opts.scope || DEFAULT_SCOPE;
-    const exportPriority = opts.exportPriority || 'all';
+    const exportPriority = opts.exportPriority || "all";
 
     return {
       FunctionDeclaration(node: any) {
@@ -202,7 +221,8 @@ const rule: Rule.RuleModule = {
         let target = node;
         if (
           node.parent &&
-          (node.parent.type === 'ExportNamedDeclaration' || node.parent.type === 'ExportDefaultDeclaration')
+          (node.parent.type === "ExportNamedDeclaration" ||
+            node.parent.type === "ExportDefaultDeclaration")
         ) {
           target = node.parent;
         }
@@ -211,7 +231,7 @@ const rule: Rule.RuleModule = {
 
       FunctionExpression(node: any) {
         if (!shouldProcessNode(node, scope, exportPriority)) return;
-        if (node.parent && node.parent.type === 'MethodDefinition') return;
+        if (node.parent && node.parent.type === "MethodDefinition") return;
         const target = resolveTargetNode(sourceCode, node);
         reportMissing(context, sourceCode, node, target);
       },
@@ -236,9 +256,9 @@ const rule: Rule.RuleModule = {
       MethodDefinition(node: any) {
         if (!shouldProcessNode(node, scope, exportPriority)) return;
         reportMethod(context, sourceCode, node);
-      }
+      },
     };
-  }
+  },
 };
 
 export default rule;

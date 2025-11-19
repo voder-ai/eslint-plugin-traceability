@@ -22,24 +22,25 @@ Every ESLint rule must export an object with two main properties:
 
 ```javascript
 module.exports = {
-    meta: {
-        type: "problem" | "suggestion" | "layout",
-        docs: {
-            description: "Description of the rule",
-            url: "https://your-docs-url.com"
-        },
-        fixable: "code" | "whitespace",  // Optional, required if rule provides fixes
-        hasSuggestions: true,             // Optional, required if rule provides suggestions
-        schema: [],                        // Rule options schema
-        messages: {                        // Message templates
-            messageId: "Message text with {{placeholder}}"
-        }
+  meta: {
+    type: "problem" | "suggestion" | "layout",
+    docs: {
+      description: "Description of the rule",
+      url: "https://your-docs-url.com",
     },
-    create(context) {
-        return {
-            // Visitor methods
-        };
-    }
+    fixable: "code" | "whitespace", // Optional, required if rule provides fixes
+    hasSuggestions: true, // Optional, required if rule provides suggestions
+    schema: [], // Rule options schema
+    messages: {
+      // Message templates
+      messageId: "Message text with {{placeholder}}",
+    },
+  },
+  create(context) {
+    return {
+      // Visitor methods
+    };
+  },
 };
 ```
 
@@ -99,22 +100,22 @@ create(context) {
         Identifier(node) {
             // Handle Identifier nodes
         },
-        
+
         // Visit node while going up the tree
         "FunctionExpression:exit"(node) {
             // Handle function exits
         },
-        
+
         // Use selectors for more specific matching
         "IfStatement > BlockStatement"(node) {
             // Handle if statements with block bodies
         },
-        
+
         // Code path analysis
         onCodePathStart(codePath, node) {
             // Start of code path
         },
-        
+
         onCodePathEnd(codePath, node) {
             // End of code path
         }
@@ -132,8 +133,8 @@ Use [Code Explorer](http://explorer.eslint.org/) to visualize AST structure for 
 
 ```javascript
 context.report({
-    node: node,
-    message: "Unexpected identifier"
+  node: node,
+  message: "Unexpected identifier",
 });
 ```
 
@@ -142,18 +143,18 @@ context.report({
 ```javascript
 // In meta.messages
 meta: {
-    messages: {
-        avoidName: "Avoid using variables named '{{name}}'"
-    }
+  messages: {
+    avoidName: "Avoid using variables named '{{name}}'";
+  }
 }
 
 // In create function
 context.report({
-    node,
-    messageId: "avoidName",
-    data: {
-        name: node.name
-    }
+  node,
+  messageId: "avoidName",
+  data: {
+    name: node.name,
+  },
 });
 ```
 
@@ -175,11 +176,11 @@ context.report({
 
 ```javascript
 context.report({
-    node,
-    message: "Missing semicolon",
-    fix(fixer) {
-        return fixer.insertTextAfter(node, ";");
-    }
+  node,
+  message: "Missing semicolon",
+  fix(fixer) {
+    return fixer.insertTextAfter(node, ";");
+  },
 });
 ```
 
@@ -266,18 +267,18 @@ context.report({
 
 ```javascript
 meta: {
-    schema: [
-        {
-            enum: ["always", "never"]
-        },
-        {
-            type: "object",
-            properties: {
-                exceptRange: { type: "boolean" }
-            },
-            additionalProperties: false
-        }
-    ]
+  schema: [
+    {
+      enum: ["always", "never"],
+    },
+    {
+      type: "object",
+      properties: {
+        exceptRange: { type: "boolean" },
+      },
+      additionalProperties: false,
+    },
+  ];
 }
 
 // Valid configs:
@@ -341,13 +342,13 @@ meta: {
 ```javascript
 create(context) {
     const sourceCode = context.sourceCode;
-    
+
     // Get all source text
     const allSource = sourceCode.getText();
-    
+
     // Get text for specific node
     const nodeText = sourceCode.getText(node);
-    
+
     // Get text with surrounding context
     const withPrev = sourceCode.getText(node, 2);      // 2 chars before
     const withNext = sourceCode.getText(node, 0, 2);   // 2 chars after
@@ -369,9 +370,9 @@ const tokensBetween = sourceCode.getTokensBetween(node1, node2);
 
 // Skip options
 const token = sourceCode.getTokenAfter(node, {
-    skip: 2,                    // Skip 2 tokens
-    includeComments: true,      // Include comment tokens
-    filter: (token) => token.type !== "Punctuator"
+  skip: 2, // Skip 2 tokens
+  includeComments: true, // Include comment tokens
+  filter: (token) => token.type !== "Punctuator",
 });
 ```
 
@@ -393,13 +394,13 @@ const hasComments = sourceCode.commentsExistBetween(node1, node2);
 ### SourceCode Properties
 
 ```javascript
-sourceCode.text           // Full source text
-sourceCode.ast            // Program node
-sourceCode.lines          // Array of lines
-sourceCode.hasBOM         // Has Unicode BOM
-sourceCode.scopeManager   // Scope manager
-sourceCode.visitorKeys    // Visitor keys for traversal
-sourceCode.parserServices // Parser-specific services
+sourceCode.text; // Full source text
+sourceCode.ast; // Program node
+sourceCode.lines; // Array of lines
+sourceCode.hasBOM; // Has Unicode BOM
+sourceCode.scopeManager; // Scope manager
+sourceCode.visitorKeys; // Visitor keys for traversal
+sourceCode.parserServices; // Parser-specific services
 ```
 
 ## Variable Scopes
@@ -411,11 +412,11 @@ create(context) {
     return {
         Identifier(node) {
             const scope = context.sourceCode.getScope(node);
-            
+
             // Check variables in scope
             scope.variables.forEach(variable => {
                 console.log(variable.name);
-                
+
                 // Check references
                 variable.references.forEach(ref => {
                     if (ref.isWrite()) {
@@ -425,7 +426,7 @@ create(context) {
                         // Variable is read from
                     }
                 });
-                
+
                 // Check definitions
                 variable.defs.forEach(def => {
                     console.log(def.type); // "Variable", "FunctionName", etc.
@@ -438,18 +439,18 @@ create(context) {
 
 ### Scope Types
 
-| AST Node Type | Scope Type |
-|---------------|------------|
-| Program | global |
-| FunctionDeclaration | function |
-| FunctionExpression | function |
-| ArrowFunctionExpression | function |
-| ClassDeclaration | class |
-| ClassExpression | class |
-| BlockStatement | block |
-| ForStatement | for |
-| SwitchStatement | switch |
-| CatchClause | catch |
+| AST Node Type           | Scope Type |
+| ----------------------- | ---------- |
+| Program                 | global     |
+| FunctionDeclaration     | function   |
+| FunctionExpression      | function   |
+| ArrowFunctionExpression | function   |
+| ClassDeclaration        | class      |
+| ClassExpression         | class      |
+| BlockStatement          | block      |
+| ForStatement            | for        |
+| SwitchStatement         | switch     |
+| CatchClause             | catch      |
 
 ### Marking Variables as Used
 
@@ -470,41 +471,47 @@ const RuleTester = require("eslint").RuleTester;
 const rule = require("../rules/my-rule");
 
 const ruleTester = new RuleTester({
-    languageOptions: {
-        ecmaVersion: 2022,
-        sourceType: "module"
-    }
+  languageOptions: {
+    ecmaVersion: 2022,
+    sourceType: "module",
+  },
 });
 
 ruleTester.run("my-rule", rule, {
-    valid: [
-        "var foo = 'bar';",
+  valid: [
+    "var foo = 'bar';",
+    {
+      code: "const foo = 'bar';",
+      options: ["always"],
+    },
+  ],
+
+  invalid: [
+    {
+      code: "var foo = 'bar';",
+      errors: [
         {
-            code: "const foo = 'bar';",
-            options: ["always"]
-        }
-    ],
-    
-    invalid: [
-        {
-            code: "var foo = 'bar';",
-            errors: [{
-                messageId: "unexpected",
-                type: "VariableDeclaration"
-            }]
+          messageId: "unexpected",
+          type: "VariableDeclaration",
         },
+      ],
+    },
+    {
+      code: "var foo = 'bar';",
+      output: "const foo = 'bar';", // Expected fix output
+      errors: [
         {
-            code: "var foo = 'bar';",
-            output: "const foo = 'bar';",  // Expected fix output
-            errors: [{
-                messageId: "useConst",
-                suggestions: [{
-                    messageId: "useConstSuggestion",
-                    output: "const foo = 'bar';"
-                }]
-            }]
-        }
-    ]
+          messageId: "useConst",
+          suggest: [
+            {
+              messageId: "useConstSuggestion",
+              output: "const foo = 'bar';",
+            },
+          ],
+        },
+      ],
+    },
+  ],
 });
 ```
 
@@ -563,79 +570,77 @@ ruleTester.run("my-rule", rule, {
  */
 
 module.exports = {
-    meta: {
-        type: "suggestion",
-        docs: {
-            description: "Disallow var, prefer const or let",
-            url: "https://example.com/rules/no-var"
-        },
-        fixable: "code",
-        hasSuggestions: true,
-        schema: [
-            {
-                type: "object",
-                properties: {
-                    allowInLegacy: { type: "boolean" }
-                },
-                additionalProperties: false
-            }
-        ],
-        defaultOptions: [
-            { allowInLegacy: false }
-        ],
-        messages: {
-            unexpectedVar: "Unexpected var, use const or let instead",
-            replaceWithLet: "Replace with 'let'",
-            replaceWithConst: "Replace with 'const'"
-        }
+  meta: {
+    type: "suggestion",
+    docs: {
+      description: "Disallow var, prefer const or let",
+      url: "https://example.com/rules/no-var",
     },
-    
-    create(context) {
-        const sourceCode = context.sourceCode;
-        const options = context.options[0] || {};
-        
-        return {
-            VariableDeclaration(node) {
-                if (node.kind !== "var") {
-                    return;
-                }
-                
-                // Check if in legacy file
-                if (options.allowInLegacy && isLegacyFile(context.filename)) {
-                    return;
-                }
-                
-                const varToken = sourceCode.getFirstToken(node);
-                
-                context.report({
-                    node,
-                    messageId: "unexpectedVar",
-                    fix(fixer) {
-                        // Auto-fix to let (conservative)
-                        return fixer.replaceText(varToken, "let");
-                    },
-                    suggest: [
-                        {
-                            messageId: "replaceWithLet",
-                            fix(fixer) {
-                                return fixer.replaceText(varToken, "let");
-                            }
-                        },
-                        {
-                            messageId: "replaceWithConst",
-                            fix(fixer) {
-                                return fixer.replaceText(varToken, "const");
-                            }
-                        }
-                    ]
-                });
-            }
-        };
-    }
+    fixable: "code",
+    hasSuggestions: true,
+    schema: [
+      {
+        type: "object",
+        properties: {
+          allowInLegacy: { type: "boolean" },
+        },
+        additionalProperties: false,
+      },
+    ],
+    defaultOptions: [{ allowInLegacy: false }],
+    messages: {
+      unexpectedVar: "Unexpected var, use const or let instead",
+      replaceWithLet: "Replace with 'let'",
+      replaceWithConst: "Replace with 'const'",
+    },
+  },
+
+  create(context) {
+    const sourceCode = context.sourceCode;
+    const options = context.options[0] || {};
+
+    return {
+      VariableDeclaration(node) {
+        if (node.kind !== "var") {
+          return;
+        }
+
+        // Check if in legacy file
+        if (options.allowInLegacy && isLegacyFile(context.filename)) {
+          return;
+        }
+
+        const varToken = sourceCode.getFirstToken(node);
+
+        context.report({
+          node,
+          messageId: "unexpectedVar",
+          fix(fixer) {
+            // Auto-fix to let (conservative)
+            return fixer.replaceText(varToken, "let");
+          },
+          suggest: [
+            {
+              messageId: "replaceWithLet",
+              fix(fixer) {
+                return fixer.replaceText(varToken, "let");
+              },
+            },
+            {
+              messageId: "replaceWithConst",
+              fix(fixer) {
+                return fixer.replaceText(varToken, "const");
+              },
+            },
+          ],
+        });
+      },
+    };
+  },
 };
 
 function isLegacyFile(filename) {
-    return filename.includes("/legacy/");
+  return filename.includes("/legacy/");
 }
 ```
 
