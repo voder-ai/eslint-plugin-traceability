@@ -1,6 +1,7 @@
 # API Reference
 
 Created autonomously by [voder.ai](https://voder.ai).
+Last updated: 2025-11-19
 
 ## Rules
 
@@ -132,4 +133,3 @@ import js from "@eslint/js";
 import traceability from "eslint-plugin-traceability";
 
 export default [js.configs.recommended, traceability.configs.strict];
-```
