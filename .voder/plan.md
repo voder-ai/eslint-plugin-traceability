@@ -1,62 +1,76 @@
 ## NOW
-Update the pre-push Git hook so it runs the exact same traceability check as CI: edit .husky/pre-push to invoke `npm run check:traceability` as the very first command (before any build/test/lint steps), commit the change with "chore: run check:traceability in pre-push for parity".
+Edit the pre-commit hook file .husky/pre-commit to replace the current heavy commands with a single fast staged-file invocation: run `npx --no-install lint-staged` (so pre-commit only formats and lints staged files). Commit this one change with a Conventional Commit message: `chore: make pre-commit fast — use lint-staged`.
 
 ## NEXT
-1. Remediate missing traceability annotations incrementally, one small file (or closely-related file group) per commit:
-   - Pick the next highest-impact file(s) from scripts/traceability-report.md (suggested priority: src/rules/require-story-annotation.ts, src/utils/branch-annotation-helpers.ts, src/utils/storyReferenceUtils.ts).
-   - Edit the file(s) to add JSDoc-style `@story` and `@req` tags for every function and for each significant branch (if/else, switch, loops, try/catch) reported in scripts/traceability-report.md. Follow the project's exact annotation format.
-   - After editing a small batch (1 file or a cohesive small group) run the full local quality suite in this order:
+After the pre-commit change is in place, perform the following incremental remediation steps (do them one small item at a time; run the full local quality suite and commit/push after each small change):
+
+1. Remove or fix file-level TypeScript suppressions
+   - File to start with: tests/rules/require-story-annotation.test.ts
+   - Replace `// @ts-nocheck` with either:
+     - fix the underlying type errors so no suppression is needed, or
+     - use targeted `// @ts-expect-error` above the single offending line with an inline explanation comment and an issue/ticket reference if the error requires a follow-up.
+   - Local checks to run after change:
      - npm run build
      - npm run type-check
      - npm test
      - npm run lint -- --max-warnings=0
      - npm run format:check
-   - Commit each small, passing change with a Conventional Commit message like:
-     - chore: add @story/@req annotations to src/rules/require-story-annotation.ts
-   - Push and monitor CI. If CI fails, fix only the failing step locally, re-run the local suite, commit and push again.
-   - Repeat this cycle until scripts/traceability-report.md reports zero missing functions/branches.
+   - Commit message example: `fix(test): remove file-level @ts-nocheck from tests/rules/require-story-annotation.test.ts`
 
-2. Make traceability output visible to reviewers in CI:
-   - Add a CI step that uploads scripts/traceability-report.md as a workflow artifact whenever the traceability check runs (and especially on failure), to avoid forcing reviewers to run checks locally.
-   - Commit with: chore: upload traceability report artifact on CI run.
+2. Incrementally remediate remaining missing traceability annotations
+   - Use scripts/traceability-report.md to pick the next highest-impact file (one file or a small cohesive group). Suggested priority order: src/rules/require-story-annotation.ts, src/utils/branch-annotation-helpers.ts, src/utils/storyReferenceUtils.ts, then other src/rules/*.
+   - For each file:
+     - Add JSDoc `@story` and `@req` tags to every exported/public function and to each significant branch (if/else, switch, try/catch, loops) flagged in the report.
+     - Keep edits small: one file per commit (or one tightly-related group).
+     - Run the full local quality suite (build, type-check, test, lint, format-check).
+     - Commit with a Conventional Commit message, e.g. `chore: add @story/@req annotations to src/rules/require-story-annotation.ts`.
+     - Push and monitor CI. If CI fails, fix only the failing step locally, re-run the local suite, commit and push again.
+   - Repeat until scripts/traceability-report.md shows the missing items reduced to the target level (aim for zero).
 
-3. Harden local/CI parity (complementing NOW):
-   - Verify .husky/pre-push contains the identical command(s) and arguments used by the CI traceability step (exact `npm run check:traceability`) and that the CI runs the same node/npm version.
-   - Commit with: chore: ensure pre-push and CI use identical traceability command.
+3. Fix broken story filename reference(s) in docs
+   - File: user-docs/api-reference.md (and any other doc files that reference wrong story paths).
+   - Replace incorrect reference `docs/stories/006.0-DEV-STORY-EXISTS.story.md` with the correct `docs/stories/006.0-DEV-FILE-VALIDATION.story.md` (search & fix any other mismatches).
+   - Run doc link check (local script or grep) and the full quality suite if doc generation/tests exist.
+   - Commit: `docs: fix broken story cross-reference in user-docs/api-reference.md`
 
-4. Update CI triggers & publishing behavior to meet continuous-deployment policy:
-   - Modify .github/workflows/ci-cd.yml so publishing/deployment runs automatically in the same workflow that performed the quality gates and only on push to main:
-     - Remove or split non-publish triggers (remove `pull_request` and scheduled `cron` triggers from the publish/complete workflow or ensure publish steps are conditional on `github.ref == 'refs/heads/main'` and `github.event_name == 'push'`).
-     - Add a publish step that runs immediately after successful quality gates and that performs automatic publishing/deployment (for npm packages: `npm publish --access public` or a controlled publish step using the project's existing release tooling) using the repo's NPM_TOKEN. Ensure this step runs without manual approval.
-   - If using semantic-release and it prevents publishing every commit, either:
-     - Temporarily add an unconditional publish step (as above) to satisfy the "publish on every main push" requirement, or
-     - Reconfigure release tooling so it performs automated publish on every successful push-to-main (document trade-offs).
-   - Commit with: chore: restrict CI triggers to push:main and add automatic publish step after quality gates.
-   - Test by pushing a no-op commit (e.g., docs change) to main and monitoring the workflow to confirm the publish step runs automatically when quality gates pass.
+4. Add missing @param / @returns JSDoc for public helpers
+   - Identify complex exported helpers in src/utils/* and selected src/rules/* flagged in the documentation assessment.
+   - Add clear @param and @returns annotations (one file per commit if needed).
+   - Run full local quality suite and commit: `docs: add @param/@returns JSDoc to src/utils/storyReferenceUtils.ts`
 
-5. Operational rules for remediation work:
-   - Always make small commits (one file or small group) and run the full local quality suite before pushing.
-   - Use Conventional Commits for every change; prefer `chore:` or `refactor:` for annotation work.
-   - Do not remove or modify prompts/, prompt-assets/, or .voder/ directories during this work.
+5. Make traceability output visible in CI for reviewers
+   - Add a CI workflow step that uploads scripts/traceability-report.md as an artifact when the traceability check runs or on failure.
+   - If traceability now runs early in CI, ensure the artifact upload step occurs immediately after that step (and on failure).
+   - Commit: `chore: upload traceability report artifact from CI on traceability check`
+
+General rules for all NEXT actions
+- Keep each change small and focused (one file or tight group).
+- Before commit: run the full local quality suite in this order: npm run build; npm run type-check; npm test; npm run lint -- --max-warnings=0; npm run format:check.
+- Use Conventional Commits. Prefer `chore:` or `fix:` for these remediation tasks.
+- Push and monitor CI. Only proceed to the next file after CI passes.
+- Do not modify prompts/, prompt-assets/, or .voder/.
 
 ## LATER
-1. Enforce traceability programmatically:
-   - Implement/enable an ESLint rule (or extend the existing plugin) that enforces per-function and per-branch `@story`/`@req` annotations and run it in CI. Add unit tests for the rule.
-   - Add a fast unit/integration test that runs scripts/traceability-check.js against representative fixtures to catch regressions.
+Once the immediate CODE_QUALITY and DOCUMENTATION items are remediated and CI is green for the incremental commits, do the following longer-term work:
 
-2. Developer ergonomics & documentation:
-   - Add CONTRIBUTING.md section and examples showing the required annotation format and the local remediation checklist (how to run `npm run check:traceability`, what to annotate, how to name commit messages).
-   - Add a small helper script or code action snippets (placeholders only, no external tools) to speed up adding JSDoc annotations.
+1. Enforce traceability programmatically
+   - Implement/enable an ESLint rule (or extend the existing plugin) that enforces per-function and per-branch `@story`/`@req` annotations.
+   - Add unit tests validating the rule and run it in CI so missing annotations fail the pipeline.
 
-3. Pre-commit/pre-push performance & safety:
-   - Keep pre-commit hooks fast (Prettier + lint-staged). Keep heavy checks (full type-check, full test suite) in pre-push.
-   - Add a parity-check CI job that compares the commands run by .husky/pre-push and CI and fails if they diverge.
+2. Add documentation & ergonomics improvements
+   - Add or update CONTRIBUTING.md with a "Traceability remediation checklist" that describes the annotation format, local remediation steps, scripts to run, and Conventional Commit examples.
+   - Provide a small helper template script or editor snippets for adding the required JSDoc tags (placeholders only).
 
-4. Cleanups and policy items:
-   - Replace any remaining file-wide `// @ts-nocheck` with targeted `// @ts-expect-error` and document each exception.
-   - Once traceability is fully remediated and enforced, remove scripts/traceability-report.md from source if you prefer and rely on CI artifacts instead, or keep it regenerated by CI as an artifact.
+3. CI & pre-commit parity and safety
+   - Confirm pre-push remains the gate for full type-check/test runs and pre-commit remains fast. Add a CI parity-check job that compares commands in .husky/pre-push with CI traceability/build/test commands and fails if they diverge.
+   - Replace any remaining file-wide `// @ts-nocheck` with documented `// @ts-expect-error` and reference an issue for each exception; remove exceptions when fixed.
 
-Notes / Constraints
-- Every code change must be small, tested locally (build/type-check/test/lint/format), and pushed only when CI is green.
-- All commands are non-interactive. Do not modify files under prompts/ or .voder/.
-- Use Conventional Commit messages and ensure pre-push hooks and CI remain synchronized.
+4. Documentation QA automation
+   - Add a CI check that verifies all `@story` JSDoc file paths referenced in source/docs exist (a lightweight link validator).
+   - Optionally remove scripts/traceability-report.md from the repository and rely on CI artifact generation, or keep it generated and committed by an automated job if you prefer source-tracked visibility.
+
+5. Monitoring and maintenance
+   - Schedule periodic runs of the traceability script (or add to CI) so regressions are caught early.
+   - Track any remaining small exceptions in a short-lived issue list and close them as annotations are added.
+
+If you want, I will perform the NOW action immediately (edit .husky/pre-commit to use lint-staged and commit the change), then proceed to the NEXT step of removing the file-level @ts-nocheck in tests/rules/require-story-annotation.test.ts as the first incremental remediation (running the full local quality suite before committing).
