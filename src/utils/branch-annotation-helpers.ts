@@ -35,12 +35,21 @@ export function validateBranchTypes(
   const options: any = context.options[0] || {};
 
   if (Array.isArray(options.branchTypes)) {
+    // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+    // @req REQ-TRACEABILITY-FILTER-CALLBACK - Trace filter callback for invalid branch type detection
     const invalidTypes = options.branchTypes.filter(
       (t: any) => !DEFAULT_BRANCH_TYPES.includes(t as BranchType),
     );
     if (invalidTypes.length > 0) {
+      /**
+       * Program listener produced when configuration is invalid.
+       * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+       * @req REQ-TRACEABILITY-PROGRAM-LISTENER - Trace Program listener reporting invalid config values
+       */
       return {
         Program(node: any) {
+          // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+          // @req REQ-TRACEABILITY-FOR-EACH-CALLBACK - Trace reporting for each invalid type
           invalidTypes.forEach((t: any) => {
             context.report({
               node,
@@ -73,6 +82,8 @@ export function gatherBranchCommentText(
     const startLine = node.loc.start.line;
     let i = startLine - PRE_COMMENT_OFFSET;
     const comments: string[] = [];
+    // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+    // @req REQ-TRACEABILITY-WHILE - Trace while loop that collects preceding comments for SwitchCase
     while (i >= 0 && /^\s*(\/\/|\/\*)/.test(lines[i])) {
       comments.unshift(lines[i].trim());
       i--;
@@ -80,6 +91,8 @@ export function gatherBranchCommentText(
     return comments.join(" ");
   }
   const comments = sourceCode.getCommentsBefore(node) || [];
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-TRACEABILITY-MAP-CALLBACK - Trace mapping of comment nodes to their text values
   return comments.map((c: any) => c.value).join(" ");
 }
 
@@ -103,11 +116,14 @@ export function reportMissingStory(
       node,
       messageId: "missingAnnotation",
       data: { missing: "@story" },
-      fix: (fixer: any) =>
-        fixer.insertTextBeforeRange(
-          [insertPos, insertPos],
-          `${indent}// @story <story-file>.story.md\n`,
-        ),
+      fix:
+        // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+        // @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer arrow function used to insert missing @story
+        (fixer: any) =>
+          fixer.insertTextBeforeRange(
+            [insertPos, insertPos],
+            `${indent}// @story <story-file>.story.md\n`,
+          ),
     });
     storyFixCountRef.count++;
   } else {
@@ -135,11 +151,14 @@ export function reportMissingReq(
       node,
       messageId: "missingAnnotation",
       data: { missing: "@req" },
-      fix: (fixer: any) =>
-        fixer.insertTextBeforeRange(
-          [insertPos, insertPos],
-          `${indent}// @req <REQ-ID>\n`,
-        ),
+      fix:
+        // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+        // @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer arrow function used to insert missing @req
+        (fixer: any) =>
+          fixer.insertTextBeforeRange(
+            [insertPos, insertPos],
+            `${indent}// @req <REQ-ID>\n`,
+          ),
     });
   } else {
     context.report({
@@ -184,5 +203,12 @@ export function reportMissingAnnotations(
     },
   ];
 
-  actions.forEach(({ missing, fn, args }) => missing && fn(...args));
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-TRACEABILITY-ACTIONS-FOREACH - Trace processing of actions array to report missing annotations
+  actions.forEach(
+    ({ missing, fn, args }) =>
+      // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+      // @req REQ-TRACEABILITY-FOR-EACH-CALLBACK - Trace callback handling for each action item
+      missing && fn(...args),
+  );
 }
