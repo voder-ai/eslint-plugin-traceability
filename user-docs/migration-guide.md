@@ -61,8 +61,6 @@ To test plugin integration with ESLint CLI, run the smoke test:
 npm run smoke-test
 ```
 
-Note: Previous versions of this guide referenced a `cli-integration.js` script for CLI integration tests, which no longer exists. Use `npm run smoke-test` instead.
-
 This will pack and test the plugin in a temporary project using ESLint, verifying that it loads correctly.
 
 ## 5. Update Documentation
