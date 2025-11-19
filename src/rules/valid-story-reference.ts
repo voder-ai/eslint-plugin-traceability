@@ -30,11 +30,27 @@ function validateStoryPath(opts: {
   allowAbsolute: boolean;
   requireExt: boolean;
 }): void {
-  const { line, commentNode, context, cwd, storyDirs, allowAbsolute, requireExt } = opts;
+  const {
+    line,
+    commentNode,
+    context,
+    cwd,
+    storyDirs,
+    allowAbsolute,
+    requireExt,
+  } = opts;
   const parts = line.split(/\s+/);
   const storyPath = parts[1];
   if (!storyPath) return;
-  processStoryPath({ storyPath, commentNode, context, cwd, storyDirs, allowAbsolute, requireExt });
+  processStoryPath({
+    storyPath,
+    commentNode,
+    context,
+    cwd,
+    storyDirs,
+    allowAbsolute,
+    requireExt,
+  });
 }
 
 /**
@@ -53,12 +69,24 @@ function processStoryPath(opts: {
   allowAbsolute: boolean;
   requireExt: boolean;
 }): void {
-  const { storyPath, commentNode, context, cwd, storyDirs, allowAbsolute, requireExt } = opts;
+  const {
+    storyPath,
+    commentNode,
+    context,
+    cwd,
+    storyDirs,
+    allowAbsolute,
+    requireExt,
+  } = opts;
 
   // Absolute path check
   if (path.isAbsolute(storyPath)) {
     if (!allowAbsolute) {
-      context.report({ node: commentNode, messageId: "invalidPath", data: { path: storyPath } });
+      context.report({
+        node: commentNode,
+        messageId: "invalidPath",
+        data: { path: storyPath },
+      });
     }
     return;
   }
@@ -67,20 +95,32 @@ function processStoryPath(opts: {
   if (containsPathTraversal(storyPath)) {
     const full = path.resolve(cwd, path.normalize(storyPath));
     if (!full.startsWith(cwd + path.sep)) {
-      context.report({ node: commentNode, messageId: "invalidPath", data: { path: storyPath } });
+      context.report({
+        node: commentNode,
+        messageId: "invalidPath",
+        data: { path: storyPath },
+      });
       return;
     }
   }
 
   // Extension check
   if (requireExt && !hasValidExtension(storyPath)) {
-    context.report({ node: commentNode, messageId: "invalidExtension", data: { path: storyPath } });
+    context.report({
+      node: commentNode,
+      messageId: "invalidExtension",
+      data: { path: storyPath },
+    });
     return;
   }
 
   // Existence check
   if (!normalizeStoryPath(storyPath, cwd, storyDirs).exists) {
-    context.report({ node: commentNode, messageId: "fileMissing", data: { path: storyPath } });
+    context.report({
+      node: commentNode,
+      messageId: "fileMissing",
+      data: { path: storyPath },
+    });
   }
 }
 
@@ -97,13 +137,22 @@ function handleComment(opts: {
   allowAbsolute: boolean;
   requireExt: boolean;
 }): void {
-  const { commentNode, context, cwd, storyDirs, allowAbsolute, requireExt } = opts;
+  const { commentNode, context, cwd, storyDirs, allowAbsolute, requireExt } =
+    opts;
   const lines = commentNode.value
     .split(/\r?\n/)
     .map((l: string) => l.replace(/^[^@]*/, "").trim());
   for (const line of lines) {
     if (line.startsWith("@story")) {
-      validateStoryPath({ line, commentNode, context, cwd, storyDirs, allowAbsolute, requireExt });
+      validateStoryPath({
+        line,
+        commentNode,
+        context,
+        cwd,
+        storyDirs,
+        allowAbsolute,
+        requireExt,
+      });
     }
   }
 }
@@ -112,12 +161,14 @@ export default {
   meta: {
     type: "problem",
     docs: {
-      description: "Validate that @story annotations reference existing .story.md files",
+      description:
+        "Validate that @story annotations reference existing .story.md files",
       recommended: "error",
     },
     messages: {
       fileMissing: "Story file '{{path}}' not found",
-      invalidExtension: "Invalid story file extension for '{{path}}', expected '.story.md'",
+      invalidExtension:
+        "Invalid story file extension for '{{path}}', expected '.story.md'",
       invalidPath: "Invalid story path '{{path}}'",
     },
     schema: [
@@ -135,7 +186,11 @@ export default {
   create(context) {
     const cwd = process.cwd();
     const opts = context.options[0] as
-      | { storyDirectories?: string[]; allowAbsolutePaths?: boolean; requireStoryExtension?: boolean }
+      | {
+          storyDirectories?: string[];
+          allowAbsolutePaths?: boolean;
+          requireStoryExtension?: boolean;
+        }
       | undefined;
     const storyDirs = opts?.storyDirectories || defaultStoryDirs;
     const allowAbsolute = opts?.allowAbsolutePaths || false;
@@ -144,7 +199,14 @@ export default {
       Program() {
         const comments = context.getSourceCode().getAllComments() || [];
         for (const comment of comments) {
-          handleComment({ commentNode: comment, context, cwd, storyDirs, allowAbsolute, requireExt });
+          handleComment({
+            commentNode: comment,
+            context,
+            cwd,
+            storyDirs,
+            allowAbsolute,
+            requireExt,
+          });
         }
       },
     };
