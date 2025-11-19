@@ -19,9 +19,9 @@ Branches missing annotations: 46
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-story-annotation.ts:303 - MethodDeclaration 'MethodDefinition' - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:41 - ArrowFunction '<unknown>' - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:50 - MethodDeclaration 'Program' - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:56 - ArrowFunction '<unknown>' - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:100 - ArrowFunction '<unknown>' - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:213 - ArrowFunction '<unknown>' - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:53 - ArrowFunction '<unknown>' - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:96 - ArrowFunction '<unknown>' - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:209 - ArrowFunction '<unknown>' - missing: @story, @req
 
 ## Branches missing @story/@req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/batch.ts:15 - ForOfStatement - missing: @story, @req
@@ -67,6 +67,6 @@ Branches missing annotations: 46
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-story-annotation.ts:304 - IfStatement - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:37 - IfStatement - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:43 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:84 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:118 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:153 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:80 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:114 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts:149 - IfStatement - missing: @story, @req
