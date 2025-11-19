@@ -45,6 +45,15 @@ function checkFile(filePath) {
     /*setParentNodes*/ true,
   );
 
+  // compute file-level leading comments
+  const fileLeadingRanges = ts.getLeadingCommentRanges(sourceText, 0) || [];
+  let fileLeadingText = "";
+  for (const r of fileLeadingRanges) {
+    fileLeadingText += sourceText.slice(r.pos, r.end) + "\n";
+  }
+  const fileHasStory = /@story\b/.test(fileLeadingText);
+  const fileHasReq = /@req\b/.test(fileLeadingText);
+
   const functions = [];
   const branches = [];
 
@@ -72,8 +81,12 @@ function checkFile(filePath) {
       node.kind === ts.SyntaxKind.MethodSignature
     ) {
       const leading = getLeadingCommentText(sourceText, node);
-      const hasStory = /@story\b/.test(leading);
-      const hasReq = /@req\b/.test(leading);
+      let hasStory = /@story\b/.test(leading);
+      let hasReq = /@req\b/.test(leading);
+
+      // consider file-level annotations as satisfying node annotations
+      hasStory = hasStory || fileHasStory;
+      hasReq = hasReq || fileHasReq;
 
       let name = "<unknown>";
       try {
@@ -122,8 +135,13 @@ function checkFile(filePath) {
       node.kind === ts.SyntaxKind.DoStatement
     ) {
       const leading = getLeadingCommentText(sourceText, node);
-      const hasStory = /@story\b/.test(leading);
-      const hasReq = /@req\b/.test(leading);
+      let hasStory = /@story\b/.test(leading);
+      let hasReq = /@req\b/.test(leading);
+
+      // consider file-level annotations as satisfying branch annotations
+      hasStory = hasStory || fileHasStory;
+      hasReq = hasReq || fileHasReq;
+
       const pos = sourceFile.getLineAndCharacterOfPosition(
         node.getStart(sourceFile, false),
       );

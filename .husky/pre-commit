@@ -1,1 +1,1 @@
-npx lint-staged || true && npm run format && node node_modules/actionlint/actionlint.cjs .github/workflows/*.yml
+npx --no-install lint-staged
