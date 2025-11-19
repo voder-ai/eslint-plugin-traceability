@@ -49,7 +49,12 @@ function commentContainsReq(c: any) {
  * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation
  */
 function hasReqAnnotation(jsdoc: any, comments: any[]) {
-  return (jsdoc && typeof jsdoc.value === "string" && jsdoc.value.includes("@req")) || comments.some(commentContainsReq);
+  return (
+    (jsdoc &&
+      typeof jsdoc.value === "string" &&
+      jsdoc.value.includes("@req")) ||
+    comments.some(commentContainsReq)
+  );
 }
 
 /**
