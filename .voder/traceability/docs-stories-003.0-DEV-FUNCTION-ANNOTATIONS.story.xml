@@ -2,11 +2,8 @@
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-18T17:53:36.059Z</last_validated>
-  <last_modified>2025-11-16T00:07:54.405Z</last_modified>
-  <evidence>• Source files src/rules/require-req-annotation.ts and src/rules/require-story-annotation.ts both include @story references to docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md and implement the required AST listeners (FunctionDeclaration, FunctionExpression, ArrowFunctionExpression, MethodDefinition, TSDeclareFunction, TSMethodSignature) with checks for @req and @story annotations.
-• Comprehensive RuleTester suites in tests/rules/require-req-annotation.test.ts and tests/rules/require-story-annotation.test.ts reference the exact story file, cover valid and invalid cases for JavaScript and TypeScript functions, and all assertions pass.
-• docs/rules/require-req-annotation.md and docs/rules/require-story-annotation.md provide documentation with examples linked to the story.
-• Full test suite (19 suites, 106 tests) ran with `npm test -- --verbose` and all tests associated with Story 003.0 passed without failures (see jest-results.json).</evidence>
-  <notes>The core functionality (detect missing @story and @req), TypeScript support, configurable scope and exportPriority for the @story rule, error location reporting, and documentation are all implemented and validated by passing tests. Therefore the story is fully satisfied.</notes>
+  <last_validated>2025-11-19T07:10:29.775Z</last_validated>
+  <last_modified>2025-11-19T04:17:32.753Z</last_modified>
+  <evidence>1) The rule implementations live in src/rules/require‐story‐annotation.ts and src/rules/require‐req‐annotation.ts matching all REQ‐* IDs from docs/stories/003.0‐DEV‐FUNCTION‐ANNOTATIONS.story.md. 2) Comprehensive RuleTester suites in tests/rules/require‐story‐annotation.test.ts and tests/rules/require‐req‐annotation.test.ts reference this story and cover all valid and invalid cases (function declarations, expressions, arrow functions, class methods, TSDeclareFunction, TSMethodSignature, exportPriority and scope options). 3) All 111 tests passed (`npx jest --ci --bail --json` reports numFailedTests: 0). 4) Documentation files docs/rules/require‐story‐annotation.md and docs/rules/require‐req‐annotation.md exist with examples and schema.</evidence>
+  <notes>All acceptance criteria are satisfied: core functionality, TypeScript and JavaScript support, configurable scope and export‐priority, precise error reporting with suggestions, and documentation are in place and fully exercised by the tests.</notes>
 </traceability>

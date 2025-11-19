@@ -2,11 +2,8 @@
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-18T17:52:25.725Z</last_validated>
-  <last_modified>2025-11-16T00:07:54.431Z</last_modified>
-  <evidence>– src/rules/valid-annotation-format.ts implements the rule with traceability annotations (@story and @req) matching docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md requirements
-– tests/rules/valid-annotation-format.test.ts covers all REQ-PATH-FORMAT, REQ-REQ-FORMAT, REQ-FORMAT-SPECIFICATION messages; 3 valid + 4 invalid cases
-– jest-results.json shows 106/106 tests passed, including valid-annotation-format tests
-– Plugin index (src/index.ts) exports and configures the rule per ESLint best practices</evidence>
-  <notes>The rule enforces @story and @req format (regex matching, block & line comments), provides specific error messages, and is integrated into the plugin with tests passing. Documentation examples exist in the story file. All acceptance criteria for annotation format validation are satisfied.</notes>
+  <last_validated>2025-11-19T07:08:48.758Z</last_validated>
+  <last_modified>2025-11-19T04:17:32.780Z</last_modified>
+  <evidence>Found src/rules/valid-annotation-format.ts implementing the rule with @story and @req format checks (regex for path and ID), complete with JSDoc traceability to docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md and REQ tags. The corresponding tests in tests/rules/valid-annotation-format.test.ts cover valid and invalid cases (block comments, missing identifier, bad extension, etc.). Documentation exists in docs/rules/valid-annotation-format.md with examples. The rule is exported in src/index.ts and included in the recommended config. All tests for this rule pass.</evidence>
+  <notes>The annotation format validation rule is fully implemented per the story’s acceptance criteria, including format checks, error messages, documentation, and integration into the plugin.</notes>
 </traceability>

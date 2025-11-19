@@ -2,8 +2,12 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-18T17:52:52.340Z</last_validated>
-  <last_modified>2025-11-18T16:51:31.239Z</last_modified>
-  <evidence>The `require-branch-annotation` ESLint rule is implemented in `src/rules/require-branch-annotation.ts`, its helpers in `src/utils/branch-annotation-helpers.ts`, and fully documented in `docs/rules/require-branch-annotation.md`. The unit tests in `tests/rules/require-branch-annotation.test.ts` cover all core AST node types (IfStatement, SwitchCase, Try/Catch, loops), missing‐annotation error messages, auto‐fix behavior, nested/default cases, configurable branchTypes, and invalid configuration. All 35 tests for this rule passed (see Jest summary: 0 failures).</evidence>
-  <notes>The feature implements REQ-BRANCH-DETECTION, REQ-COMMENT-ASSOCIATION, REQ-ANNOTATION-PARSING, REQ-SIGNIFICANCE-CRITERIA, REQ-NESTED-HANDLING, REQ-CONFIGURABLE-SCOPE, and REQ-PERFORMANCE-OPTIMIZATION. Documentation and examples exist, and the rule is wired into the plugin's index and config presets. Acceptance criteria for core functionality, configuration, user feedback, and documentation are satisfied.</notes>
+  <last_validated>2025-11-19T07:10:55.199Z</last_validated>
+  <last_modified>2025-11-19T04:17:32.767Z</last_modified>
+  <evidence>- Rule implementation at src/rules/require-branch-annotation.ts includes @story/docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md and implements validateBranchTypes and reportMissingAnnotations per REQ-BRANCH-DETECTION, REQ-COMMENT-ASSOCIATION, REQ-ANNOTATION-PARSING, REQ-CONFIGURABLE-SCOPE
+- Tests in tests/rules/require-branch-annotation.test.ts cover valid and invalid cases for all significant branch types (if, switch/case, loops, try/catch), configuration options, and schema errors, referencing the story file
+- Documentation in docs/rules/require-branch-annotation.md provides rule details, examples, options, and references the story and requirements
+- Plugin export in src/index.ts includes the rule in configs.recommended
+- Invalid configuration behavior and autofix code paths are tested and passes lint+test suite</evidence>
+  <notes>The branch-annotation rule exists, is traceably linked to the story, is included in the plugin, has comprehensive tests for core functionality, configuration, and documentation. All acceptance criteria and requirements for story 004.0 appear satisfied.</notes>
 </traceability>

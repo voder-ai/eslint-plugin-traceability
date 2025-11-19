@@ -2,8 +2,10 @@
 <traceability>
   <specification>docs/stories/006.0-DEV-FILE-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-11-18T17:52:25.724Z</last_validated>
-  <last_modified>2025-11-16T00:07:54.445Z</last_modified>
-  <evidence>Rule implementation src/rules/valid-story-reference.ts includes all required logic for: REQ-FILE-EXISTENCE (existsAny), REQ-PATH-RESOLUTION (buildCandidates, ./ handling), REQ-SECURITY-VALIDATION (absolute‐path and .. checks), REQ-CONFIGURABLE-PATHS (options.storyDirectories), plus caching for performance. Tests in tests/rules/valid-story-reference.test.ts cover valid and invalid cases for file existence, extension, relative paths, path traversal, and absolute paths. The full test suite (19 suites, 106 tests) passes without failures.</evidence>
-  <notes>All core acceptance criteria for 006.0-DEV-FILE-VALIDATION are satisfied: the rule validates that @story references point to existing .story.md files, emits clear error messages for missing or invalid paths, handles security edge cases, integrates as an ESLint rule, and follows best practices. Optional requirements (configurable dirs, caching) are implemented. Documentation exists in docs/stories/006.0-DEV-FILE-VALIDATION.story.md.</notes>
+  <last_validated>2025-11-19T07:12:02.983Z</last_validated>
+  <last_modified>2025-11-19T04:17:32.797Z</last_modified>
+  <evidence>The `valid-story-reference` rule is implemented in src/rules/valid-story-reference.ts with all required checks (existence, extension, path traversal, absolute paths). Utility functions in src/utils/storyReferenceUtils.ts perform path resolution, existence checks with caching, and security validation. The rule is registered in src/index.ts and included in the recommended and strict configs. 
+
+Tests in tests/rules/valid-story-reference.test.ts cover the core functionality: valid references, missing files (fileMissing), wrong extension (invalidExtension), path traversal, and absolute path errors (invalidPath). Schema validation tests in tests/config/eslint-config-validation.test.ts verify configurable options (storyDirectories, allowAbsolutePaths, requireStoryExtension). Documentation in docs/rules/valid-story-reference.md details behavior, options, examples, and references the story file. No tests failed when running the suite for this rule.</evidence>
+  <notes>All acceptance criteria are satisfied: core functionality, ESLint best practices, integration via plugin export and configs, clear error messages, handling of security edge cases, and documentation are present. The implementation includes caching for performance and boundary checks for project limits. Therefore, the story is fully implemented.</notes>
 </traceability>

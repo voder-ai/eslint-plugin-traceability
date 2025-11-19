@@ -2,8 +2,12 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-18T17:54:09.545Z</last_validated>
-  <last_modified>2025-11-16T00:07:54.465Z</last_modified>
-  <evidence>Although built-in ESLint fixers exist for missing @story/@req annotations in the “require-…” rules (from stories 003 and 004), there is no implementation or tests covering the new auto-fix scenarios defined in 008.0.  No rule in src/rules implements REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-TEMPLATE or REQ-AUTOFIX-SELECTIVE; valid-annotation-format, valid-story-reference and valid-req-reference do not provide fixers; no CLI or rule schema exposes configuration to enable/disable specific fixes; and there are no tests targeting auto-fix behaviors in docs/stories/008.0-DEV-AUTO-FIX.story.md.</evidence>
-  <notes>The project only auto-fixes missing annotations (from earlier stories) but does not implement the broader set of safe, configurable auto-fix features (formatting corrections, template customization, selective enabling, edge-case handling, and documentation) required by story 008.0.  Therefore, the specification is not yet implemented.</notes>
+  <last_validated>2025-11-19T07:11:33.692Z</last_validated>
+  <last_modified>2025-11-19T04:17:32.825Z</last_modified>
+  <evidence>• The require-story-annotation rule (src/rules/require-story-annotation.ts) does not declare `meta.fixable` and only offers ESLint suggestions, not real auto‐fixers invoked by `--fix`.
+• The valid-annotation-format rule (src/rules/valid-annotation-format.ts) reports format errors but includes no fixer implementations.
+• No code implements configurable templates (REQ-AUTOFIX-TEMPLATE) or selective enabling/disabling of specific fixes (REQ-AUTOFIX-SELECTIVE).
+• No documentation examples of running ESLint with `--fix` to auto-resolve annotation issues.
+</evidence>
+  <notes>Story 008.0-DEV-AUTO-FIX defines acceptance criteria to auto‐fix missing/formatting issues for both @story and @req, but the plugin only provides suggestions for missing @story (not real fixes), implements fixes only for @req and branch annotations, and lacks format fixers, templates, or selective controls. Thus the story is not fully implemented.</notes>
 </traceability>

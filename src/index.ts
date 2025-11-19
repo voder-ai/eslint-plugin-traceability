@@ -2,25 +2,60 @@
  * ESLint Traceability Plugin
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-PLUGIN-STRUCTURE - Provide foundational plugin export and registration
+ * @req REQ-ERROR-HANDLING - Gracefully handles plugin loading errors and missing dependencies
  */
 
-import requireStoryAnnotation from "./rules/require-story-annotation";
-import requireReqAnnotation from "./rules/require-req-annotation";
-import requireBranchAnnotation from "./rules/require-branch-annotation";
-import validAnnotationFormat from "./rules/valid-annotation-format";
-import validStoryReference from "./rules/valid-story-reference";
-import validReqReference from "./rules/valid-req-reference";
+import type { Rule } from "eslint";
 
-export const rules = {
-  "require-story-annotation": requireStoryAnnotation,
-  "require-req-annotation": requireReqAnnotation,
-  "require-branch-annotation": requireBranchAnnotation,
-  "valid-annotation-format": validAnnotationFormat,
-  "valid-story-reference": validStoryReference,
-  "valid-req-reference": validReqReference,
-};
+const RULE_NAMES = [
+  "require-story-annotation",
+  "require-req-annotation",
+  "require-branch-annotation",
+  "valid-annotation-format",
+  "valid-story-reference",
+  "valid-req-reference",
+] as const;
 
-export const configs = {
+type RuleName = typeof RULE_NAMES[number];
+
+const rules: Record<RuleName, Rule.RuleModule> = {} as any;
+
+RULE_NAMES.forEach((name) => {
+  try {
+    // Dynamically require rule module
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const mod = require(`./rules/${name}`);
+    // Support ESModule default export
+    rules[name] = mod.default ?? mod;
+  } catch (error: any) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `[eslint-plugin-traceability] Failed to load rule "${name}": ${error.message}`
+    );
+    // Provide placeholder rule that reports loading error
+    rules[name] = {
+      meta: {
+        type: "problem",
+        docs: {
+          description: `Failed to load rule '${name}'`,
+        },
+        schema: [],
+      },
+      create(context: Rule.RuleContext) {
+        return {
+          Program(node: any) {
+            context.report({
+              node,
+              message: `eslint-plugin-traceability: Error loading rule "${name}": ${error.message}`,
+            });
+          },
+        };
+      },
+    } as Rule.RuleModule;
+  }
+});
+
+const configs = {
   recommended: [
     {
       plugins: {
@@ -53,4 +88,5 @@ export const configs = {
   ],
 };
 
+export { rules, configs };
 export default { rules, configs };
