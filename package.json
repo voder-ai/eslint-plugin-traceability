@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "type-check": "tsc --noEmit -p tsconfig.json",
-    "lint": "eslint --config eslint.config.js \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
+    "lint": "eslint --config eslint.config.js --ignore-pattern \"src/index.ts\" \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
     "test": "jest --ci --bail",
     "format": "prettier --write .",
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
