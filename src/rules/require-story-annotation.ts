@@ -1,13 +1,3 @@
-import type { Rule } from "eslint";
-import {
-  DEFAULT_SCOPE,
-  EXPORT_PRIORITY_VALUES,
-  shouldProcessNode,
-  resolveTargetNode,
-  reportMissing as helperReportMissing,
-  reportMethod as helperReportMethod,
-} from "./helpers/require-story-helpers";
-
 /**
  * ESLint rule module: require-story-annotation
  *
@@ -17,6 +7,15 @@ import {
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED
  */
+import type { Rule } from "eslint";
+import {
+  DEFAULT_SCOPE,
+  EXPORT_PRIORITY_VALUES,
+  shouldProcessNode,
+  resolveTargetNode,
+  reportMissing as helperReportMissing,
+  reportMethod as helperReportMethod,
+} from "./helpers/require-story-helpers";
 
 /**
  * ESLint rule to require @story annotations on functions/methods.
@@ -70,6 +69,9 @@ const rule: Rule.RuleModule = {
      *
      * @param node - AST node to evaluate
      * @returns boolean indicating whether the node should be processed
+     *
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-CREATE-HOOK
      */
     const should = (node: any) =>
       shouldProcessNode(node, scope, exportPriority);
@@ -82,6 +84,9 @@ const rule: Rule.RuleModule = {
        * declaration is exported, the export node is used as the reporting target.
        *
        * @param node - FunctionDeclaration AST node
+       *
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
        */
       FunctionDeclaration(node: any) {
         if (!should(node)) return;
@@ -104,6 +109,9 @@ const rule: Rule.RuleModule = {
        * target node is resolved for reporting.
        *
        * @param node - FunctionExpression AST node
+       *
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
        */
       FunctionExpression(node: any) {
         if (!should(node)) return;
@@ -119,6 +127,9 @@ const rule: Rule.RuleModule = {
        * target is resolved based on surrounding syntax (e.g., variable declarator).
        *
        * @param node - ArrowFunctionExpression AST node
+       *
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
        */
       ArrowFunctionExpression(node: any) {
         if (!should(node)) return;
@@ -133,6 +144,9 @@ const rule: Rule.RuleModule = {
        * declarations. The node itself is used as the reporting target.
        *
        * @param node - TSDeclareFunction AST node
+       *
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
        */
       TSDeclareFunction(node: any) {
         if (!should(node)) return;
@@ -147,6 +161,9 @@ const rule: Rule.RuleModule = {
        * parent or identifier.
        *
        * @param node - TSMethodSignature AST node
+       *
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
        */
       TSMethodSignature(node: any) {
         if (!should(node)) return;
@@ -161,6 +178,9 @@ const rule: Rule.RuleModule = {
        * method definitions using helperReportMethod which handles method specifics.
        *
        * @param node - MethodDefinition AST node
+       *
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-ANNOTATION-REQUIRED
        */
       MethodDefinition(node: any) {
         if (!should(node)) return;

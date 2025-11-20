@@ -34,32 +34,50 @@ export function validateBranchTypes(
 ): BranchType[] | Rule.RuleListener {
   const options: any = context.options[0] || {};
 
+  /**
+   * Conditional branch checking whether branchTypes option was provided.
+   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+   * @req REQ-TRACEABILITY-CONDITIONAL - Trace configuration branch existence check
+   */
   if (Array.isArray(options.branchTypes)) {
-    // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-    // @req REQ-TRACEABILITY-FILTER-CALLBACK - Trace filter callback for invalid branch type detection
-    const invalidTypes = options.branchTypes.filter(
-      (t: any) => !DEFAULT_BRANCH_TYPES.includes(t as BranchType),
-    );
+    /**
+     * Predicate to determine whether a provided branch type is invalid.
+     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+     * @req REQ-TRACEABILITY-FILTER-CALLBACK - Trace filter callback for invalid branch type detection
+     */
+    function isInvalidType(t: any): boolean {
+      return !DEFAULT_BRANCH_TYPES.includes(t as BranchType);
+    }
+
+    const invalidTypes = options.branchTypes.filter(isInvalidType);
+    /**
+     * Conditional branch checking whether any invalid types were found.
+     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+     * @req REQ-TRACEABILITY-INVALID-DETECTION - Trace handling when invalid types are detected
+     */
     if (invalidTypes.length > 0) {
       /**
        * Program listener produced when configuration is invalid.
        * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
        * @req REQ-TRACEABILITY-PROGRAM-LISTENER - Trace Program listener reporting invalid config values
        */
-      return {
-        Program(node: any) {
-          // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-          // @req REQ-TRACEABILITY-FOR-EACH-CALLBACK - Trace reporting for each invalid type
-          invalidTypes.forEach((t: any) => {
-            context.report({
-              node,
-              message: `Value "${t}" should be equal to one of the allowed values: ${DEFAULT_BRANCH_TYPES.join(
-                ", ",
-              )}`,
-            });
+      function ProgramHandler(node: any) {
+        /**
+         * Report a single invalid type for the given Program node.
+         * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+         * @req REQ-TRACEABILITY-FOR-EACH-CALLBACK - Trace reporting for each invalid type
+         */
+        function reportInvalidType(t: any) {
+          context.report({
+            node,
+            message: `Value "${t}" should be equal to one of the allowed values: ${DEFAULT_BRANCH_TYPES.join(
+              ", ",
+            )}`,
           });
-        },
-      };
+        }
+        invalidTypes.forEach(reportInvalidType);
+      }
+      return { Program: ProgramHandler };
     }
   }
 
@@ -77,6 +95,11 @@ export function gatherBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
 ): string {
+  /**
+   * Conditional branch for SwitchCase nodes that may include inline comments.
+   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+   * @req REQ-TRACEABILITY-SWITCHCASE-COMMENTS - Trace collection of preceding comments for SwitchCase
+   */
   if (node.type === "SwitchCase") {
     const lines = sourceCode.lines;
     const startLine = node.loc.start.line;
@@ -91,9 +114,17 @@ export function gatherBranchCommentText(
     return comments.join(" ");
   }
   const comments = sourceCode.getCommentsBefore(node) || [];
-  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-  // @req REQ-TRACEABILITY-MAP-CALLBACK - Trace mapping of comment nodes to their text values
-  return comments.map((c: any) => c.value).join(" ");
+
+  /**
+   * Mapper to extract the text value from a comment node.
+   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+   * @req REQ-TRACEABILITY-MAP-CALLBACK - Trace mapping of comment nodes to their text values
+   */
+  function commentToValue(c: any) {
+    return c.value;
+  }
+
+  return comments.map(commentToValue).join(" ");
 }
 
 /**
@@ -111,19 +142,29 @@ export function reportMissingStory(
   },
 ): void {
   const { indent, insertPos, storyFixCountRef } = options;
+  /**
+   * Conditional branch deciding whether to offer an auto-fix for the missing story.
+   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+   * @req REQ-TRACEABILITY-FIX-DECISION - Trace decision to provide fixer for missing @story
+   */
   if (storyFixCountRef.count === 0) {
+    /**
+     * Fixer that inserts a default @story annotation above the branch.
+     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+     * @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer function used to insert missing @story
+     */
+    function insertStoryFixer(fixer: any) {
+      return fixer.insertTextBeforeRange(
+        [insertPos, insertPos],
+        `${indent}// @story <story-file>.story.md\n`,
+      );
+    }
+
     context.report({
       node,
       messageId: "missingAnnotation",
       data: { missing: "@story" },
-      fix:
-        // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-        // @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer arrow function used to insert missing @story
-        (fixer: any) =>
-          fixer.insertTextBeforeRange(
-            [insertPos, insertPos],
-            `${indent}// @story <story-file>.story.md\n`,
-          ),
+      fix: insertStoryFixer,
     });
     storyFixCountRef.count++;
   } else {
@@ -146,19 +187,29 @@ export function reportMissingReq(
   options: { indent: string; insertPos: number; missingStory: boolean },
 ): void {
   const { indent, insertPos, missingStory } = options;
+  /**
+   * Conditional branch deciding whether to offer an auto-fix for the missing req.
+   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+   * @req REQ-TRACEABILITY-FIX-DECISION - Trace decision to provide fixer for missing @req
+   */
   if (!missingStory) {
+    /**
+     * Fixer that inserts a default @req annotation above the branch.
+     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+     * @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer function used to insert missing @req
+     */
+    function insertReqFixer(fixer: any) {
+      return fixer.insertTextBeforeRange(
+        [insertPos, insertPos],
+        `${indent}// @req <REQ-ID>\n`,
+      );
+    }
+
     context.report({
       node,
       messageId: "missingAnnotation",
       data: { missing: "@req" },
-      fix:
-        // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-        // @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer arrow function used to insert missing @req
-        (fixer: any) =>
-          fixer.insertTextBeforeRange(
-            [insertPos, insertPos],
-            `${indent}// @req <REQ-ID>\n`,
-          ),
+      fix: insertReqFixer,
     });
   } else {
     context.report({
@@ -203,12 +254,25 @@ export function reportMissingAnnotations(
     },
   ];
 
-  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-  // @req REQ-TRACEABILITY-ACTIONS-FOREACH - Trace processing of actions array to report missing annotations
-  actions.forEach(
-    ({ missing, fn, args }) =>
-      // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-      // @req REQ-TRACEABILITY-FOR-EACH-CALLBACK - Trace callback handling for each action item
-      missing && fn(...args),
-  );
+  /**
+   * Process a single action from the actions array.
+   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+   * @req REQ-TRACEABILITY-ACTIONS-FOREACH - Trace processing of actions array to report missing annotations
+   */
+  function processAction(item: {
+    missing: boolean;
+    fn: Function;
+    args: any[];
+  }) {
+    /**
+     * Callback invoked for each action to decide and execute reporting.
+     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+     * @req REQ-TRACEABILITY-FOR-EACH-CALLBACK - Trace callback handling for each action item
+     */
+    if (item.missing) {
+      item.fn(...item.args);
+    }
+  }
+
+  actions.forEach(processAction);
 }
