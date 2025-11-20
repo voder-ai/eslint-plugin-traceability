@@ -1,20 +1,19 @@
 ## NOW
 
-- [ ] Add a new repository script at scripts/check-no-tracked-ci-artifacts.js that fails when any files are tracked under ci/ (except files under .voder/ci/), implementing detection and a clear exit code and report.
+- [ ] Create a repository script at scripts/report-eslint-suppressions.js that scans the repository (excluding node_modules and .voder/) for ESLint/TypeScript suppression comments (/* eslint-disable */, // eslint-disable-next-line, /* eslint-disable-line */, // @ts-nocheck), writes a parseable report to scripts/eslint-suppressions-report.md listing file, line number, the suppression text, and a suggested remediation, and exits with code 2 if any suppressions are found.
 
 ## NEXT
 
-- [ ] Execute the new scripts/check-no-tracked-ci-artifacts.js (via the project's npm script entrypoint) to list currently-tracked ci/ files so you have a report of files to relocate or untrack.
-- [ ] Decide how to handle the reported tracked CI artifacts: either move them into .voder/ci/ (allowed and tracked) or remove/untrack them and add ci/ to .gitignore; implement the chosen approach with a small helper script scripts/move-ci-artifacts-to-voder.js if moving is chosen.
-- [ ] Update the CI workflow (.github/workflows/ci-cd.yml) to write future CI artifacts into .voder/ci/ (or an external artifact store) and add a CI step that runs scripts/check-no-tracked-ci-artifacts.js early to fail if any misplaced tracked artifacts remain.
-- [ ] Modify scripts/lint-plugin-check.js to prefer source-based validation (attempt to validate ./src/index via a safe analysis or a source-loading path) and only fall back to requiring built artifacts; mark it as CI-only strict guard and call it from CI full checks, not from local pre-push hooks. Add JSDoc @story/@req on the script.
-- [ ] Harmonize package.json script names so pre-push calls ci-verify:fast and CI calls ci-verify (same entrypoints but FAST mode via environment variable), and add a short CONTRIBUTING.md/ADR entry documenting the FAST vs full parity decision.
-- [ ] Start reducing test duplication incrementally: create tests/utils/shared-fixtures.ts and refactor one heavily duplicated test file to use it (one test file change per commit), repeating until duplication improves.
+- [ ] Run scripts/report-eslint-suppressions.js to generate scripts/eslint-suppressions-report.md and use it as the authoritative list of suppression locations to remediate.
+- [ ] Remediate suppressions incrementally: for each suppression in the report, make a small focused change (one suppression per commit) to either refactor the code to avoid the suppression or narrow it to the minimal statement with a one-line justification comment referencing an issue/ADR; re-run the report after each change until no suppressions remain.
+- [ ] Split the oversized helper module(s) (e.g., src/rules/helpers/require-story-helpers.ts) into smaller modules under src/rules/helpers/ (core, io, visitors) with function-level @story/@req JSDoc and branch-level annotations where business logic remains.
+- [ ] Run a full npm audit (locally or via CI) and capture advisories; for each actionable advisory remediate by upgrading/overriding/patching where safe, or document accepted residual risk in docs/security-incidents/ (include @story/@req annotations).
+- [ ] Create an ADR at docs/decisions/adr-pre-push-parity.md documenting the pre-push vs CI parity decision, listing exact ci-verify:fast and ci-verify commands, rationale for the divergence, and a clear migration/rollback plan.
 
 ## LATER
 
-- [ ] Add a CI-enforced policy (via scripts/check-no-tracked-ci-artifacts.js) that blocks PRs/pushes when ci/* files are tracked outside .voder/; optionally add an automated move-to-.voder action for misplaced artifacts.
-- [ ] Progressively refactor remaining duplicated test logic into shared helpers or parameterized tests (one focused extraction per commit) until jscpd duplication is below the target threshold.
-- [ ] Add a CI-only smoke-test that validates the built package artifact post-build (preserves the safety net but runs only in CI), and document why it is CI-only.
-- [ ] Target modules with low branch coverage for additional tests (one module per small commit) to raise branch coverage and reduce execution risk.
-- [ ] Re-evaluate pre-push runtime after these changes; if still too slow, introduce deterministic reduced-scope tests or caching for pre-push to guarantee acceptable developer feedback times.
+- [ ] Add a CI step that runs scripts/report-eslint-suppressions.js early and fails the build if unsupported/broad suppressions exist (enforce policy).
+- [ ] Implement an ESLint custom rule or config to flag file-level broad disables and enforce the minimal-justification pattern for any allowed suppression.
+- [ ] Incrementally refactor duplicated tests into tests/utils/shared-fixtures.ts, one test file per commit, until jscpd duplication is below the threshold.
+- [ ] Add focused tests for modules with low branch coverage to raise branch coverage to >=90%, one small test per commit.
+- [ ] After suppressions are cleared, progressively enable stricter ESLint rules in CI (fail-on-warnings or additional rules) with a staged rollout documented in an ADR.
