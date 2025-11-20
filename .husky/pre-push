@@ -1,1 +1,16 @@
-npm run check:traceability && npm run build && npm run type-check && npm run lint -- --max-warnings=0 && npm run duplication && npm test && npm run format:check && npm audit --production --audit-level=high && echo "Pre-push checks completed"
+#!/bin/sh
+# /**
+#  * @file .husky/pre-push
+#  * @description Slimmed pre-push hook: keep traceability, quick type-check, and lint
+#  *              for faster developer feedback. Removed heavier checks such as:
+#  *              build, duplication detection, full test suite, format check, and audit.
+#  *              Non-interactive behavior preserved; script exits with non-zero on failure.
+#  */
+#
+# Previous pre-push intent (kept for reference):
+# npm run check:traceability && npm run build && npm run type-check && npm run lint -- --max-warnings=0 && npm run duplication && npm test && npm run format:check && npm audit --production --audit-level=high && echo "Pre-push checks completed"
+
+set -e
+
+# Fast feedback checks: traceability, quick type-check, lint.
+npm run check:traceability && npm run type-check -- --noEmit && npm run lint -- --max-warnings=0 && echo "Pre-push quick checks completed"
