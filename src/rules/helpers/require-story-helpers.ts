@@ -1,3 +1,8 @@
+/**
+ * Helpers for the "require-story" rule
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - File-level header for rule helper utilities
+ */
 import type { Rule } from "eslint";
 
 // Path to the story file for annotations
@@ -229,7 +234,7 @@ export function reportMissing(
     data: { name },
     suggestions: [
       {
-        desc: `Add ${ANNOTATION} annotation for ${name}`,
+        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
         fix: createAddStoryFix(resolvedTarget),
       },
     ],
@@ -264,7 +269,7 @@ export function reportMethod(
     data: { name },
     suggestions: [
       {
-        desc: `Add ${ANNOTATION} annotation for method ${name}`,
+        desc: `Add JSDoc @story annotation for method '${name}', e.g., ${ANNOTATION}`,
         fix: createMethodFix(resolvedTarget),
       },
     ],
