@@ -9,6 +9,7 @@ import {
   parentChainHasStory,
   fallbackTextBeforeHasStory,
 } from "./require-story-io";
+import { getNodeName } from "./require-story-utils";
 
 import {
   DEFAULT_SCOPE,
@@ -152,44 +153,6 @@ function hasStoryAnnotation(sourceCode: any, node: any): boolean {
   }
 
   return false;
-}
-
-/**
- * Get the name of the function-like node
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Resolve a human-friendly name for a function-like AST node
- * @param {any} node - AST node representing a function-like construct
- * @returns {string} the resolved name or "<unknown>"
- */
-function getNodeName(node: any): string {
-  let current: any = node;
-  while (current) {
-    if (
-      current.type === "VariableDeclarator" &&
-      current.id &&
-      typeof current.id.name === "string"
-    ) {
-      return current.id.name;
-    }
-    if (
-      (current.type === "FunctionDeclaration" ||
-        current.type === "TSDeclareFunction") &&
-      current.id &&
-      typeof current.id.name === "string"
-    ) {
-      return current.id.name;
-    }
-    if (
-      (current.type === "MethodDefinition" ||
-        current.type === "TSMethodSignature") &&
-      current.key &&
-      typeof current.key.name === "string"
-    ) {
-      return current.key.name;
-    }
-    current = current.parent;
-  }
-  return "<unknown>";
 }
 
 /**
