@@ -132,6 +132,42 @@ function propertyKeyName(node: any): string | null {
 }
 
 /**
+ * Extract direct-level names from common container fields (.id / .key) to reduce branching in getNodeName.
+ *
+ * Branch-level traceability: prefer direct .id.name when available (common on function/class declarations)
+ * Branch-level traceability: prefer direct .key.name early (common on variable declarators, properties)
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ *
+ * @param node - AST node to inspect for direct .id/.key name
+ * @returns the resolved direct name or null
+ */
+function directName(node: any): string | null {
+  if (!node) return null;
+
+  // Prefer direct .id.name when available
+  if (node.id && typeof node.id.name === "string") {
+    return node.id.name;
+  }
+  if (node.id) {
+    const idName = getNodeName(node.id);
+    if (idName !== null) return idName;
+  }
+
+  // Prefer direct .key.name early
+  if (node.key && typeof node.key.name === "string") {
+    return node.key.name;
+  }
+  if (node.key) {
+    const keyName = getNodeName(node.key);
+    if (keyName !== null) return keyName;
+  }
+
+  return null;
+}
+
+/**
  * Get a readable name for a given AST node.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -143,27 +179,9 @@ function propertyKeyName(node: any): string | null {
 export function getNodeName(node: any): string | null {
   if (!node) return null;
 
-  // Branch-level traceability: prefer direct .id.name when available (common on function/class declarations)
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-REQUIRED
-  if (node.id && typeof node.id.name === "string") {
-    return node.id.name;
-  }
-  if (node.id) {
-    const idName = getNodeName(node.id);
-    if (idName !== null) return idName;
-  }
-
-  // Branch-level traceability: prefer direct .key.name early (common on variable declarators, properties)
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-REQUIRED
-  if (node.key && typeof node.key.name === "string") {
-    return node.key.name;
-  }
-  if (node.key) {
-    const keyName = getNodeName(node.key);
-    if (keyName !== null) return keyName;
-  }
+  // Delegate direct-level id/key resolution to helper to reduce cyclomatic complexity
+  const direct = directName(node);
+  if (direct !== null) return direct;
 
   // Identifier-like nodes
   const idName = isIdentifierLike(node);
