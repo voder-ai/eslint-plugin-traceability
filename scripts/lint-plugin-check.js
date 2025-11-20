@@ -76,7 +76,7 @@ function exitSuccess(message) {
       // Use require with resolved path to ensure Node module resolution works
       const resolved = require.resolve(candidate);
       usedPath = resolved;
-      // eslint-disable-next-line import/no-dynamic-require, global-require
+      // eslint-disable-next-line import/no-dynamic-require, global-require -- See ADR: docs/decisions/0001-allow-dynamic-require-for-built-plugins.md
       plugin = require(resolved);
       break;
     } catch (err) {

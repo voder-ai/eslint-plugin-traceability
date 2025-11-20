@@ -36,8 +36,7 @@ const content = result.stdout || result.stderr || "";
 try {
   fs.writeFileSync(outputPath, content, { encoding: "utf8" });
 } catch (err) {
-  // If writing fails, log the error but still exit 0 per requirement
-  // eslint-disable-next-line no-console
+  // eslint-disable-next-line no-console -- ADR: docs/decisions/0001-ci-logging-and-reporting.md
   console.error("Failed to write npm audit output:", err);
 }
 
