@@ -13,4 +13,4 @@
 set -e
 
 # Invoke the consolidated fast CI verification. Exits non-zero on failure due to `set -e`.
-npm run ci-verify:fast && echo "Pre-push quick checks completed"
+npm run ci-verify && echo "Pre-push quick checks completed"

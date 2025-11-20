@@ -46,11 +46,9 @@ jobs:
 
       - name: Run dependency safety check
         run: npm run safety:deps
-        continue-on-error: true
 
       - name: Run CI audit
         run: npm run audit:ci
-        continue-on-error: true
 
       - name: Upload dry-aged deps artifact
         if: ${{ always() }}
@@ -81,7 +79,12 @@ jobs:
       - name: Run type checking
         run: npm run type-check
 
+      - name: Verify built plugin exports
+        run: npm run lint-plugin-check
+
       - name: Run linting
+        env:
+          NODE_ENV: ci
         run: npm run lint -- --max-warnings=0
 
       - name: Run duplication check

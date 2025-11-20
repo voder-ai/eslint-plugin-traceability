@@ -16,6 +16,7 @@
     "build": "tsc -p tsconfig.json",
     "type-check": "tsc --noEmit -p tsconfig.json",
     "check:traceability": "node scripts/traceability-check.js",
+    "lint-plugin-check": "npm run build && node scripts/lint-plugin-check.js",
     "lint": "eslint --config eslint.config.js \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
     "test": "jest --ci --bail",
     "ci-verify": "npm run type-check && npm run lint && npm run format:check && npm run duplication && npm run check:traceability && npm test && npm run audit:ci && npm run safety:deps",
