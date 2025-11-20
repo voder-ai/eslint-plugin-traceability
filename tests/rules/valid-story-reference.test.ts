@@ -5,6 +5,7 @@
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/valid-story-reference";
+import { storyExists } from "../../src/utils/storyReferenceUtils";
 
 const ruleTester = new RuleTester({
   languageOptions: { parserOptions: { ecmaVersion: 2020 } },
@@ -62,5 +63,40 @@ describe("Valid Story Reference Rule (Story 006.0-DEV-FILE-VALIDATION)", () => {
         ],
       },
     ],
+  });
+});
+
+describe("Valid Story Reference Rule Error Handling (Story 006.0-DEV-FILE-VALIDATION)", () => {
+  /**
+   * @req REQ-ERROR-HANDLING - Verify storyExists swallows fs errors and returns false
+   * instead of throwing when filesystem operations fail.
+   * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+   */
+  const fs = require("fs");
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("[REQ-ERROR-HANDLING] storyExists returns false when fs throws", () => {
+    jest.spyOn(fs, "existsSync").mockImplementation(() => {
+      const err: NodeJS.ErrnoException = new Error("EACCES: permission denied");
+      err.code = "EACCES";
+      throw err;
+    });
+
+    jest.spyOn(fs, "statSync").mockImplementation(() => {
+      const err: NodeJS.ErrnoException = new Error("EACCES: permission denied");
+      err.code = "EACCES";
+      throw err;
+    });
+
+    expect(() =>
+      storyExists(["docs/stories/permission-denied.story.md"]),
+    ).not.toThrow();
+
+    expect(storyExists(["docs/stories/permission-denied.story.md"])).toBe(
+      false,
+    );
   });
 });

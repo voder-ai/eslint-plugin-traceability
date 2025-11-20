@@ -55,10 +55,14 @@ function validateStoryPath(opts: {
 
 /**
  * Process and validate the story path for security, extension, and existence.
+ * Filesystem and I/O errors are handled inside the underlying utilities
+ * (e.g. storyExists) and surfaced as missing-file diagnostics where appropriate.
+ *
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
  * @req REQ-SECURITY-VALIDATION - Prevent path traversal and absolute path usage
+ * @req REQ-ERROR-HANDLING - Delegate filesystem and I/O error handling to utilities
  */
 function processStoryPath(opts: {
   storyPath: string;
@@ -114,8 +118,11 @@ function processStoryPath(opts: {
     return;
   }
 
-  // Existence check
-  if (!normalizeStoryPath(storyPath, cwd, storyDirs).exists) {
+  // Existence check (filesystem and I/O errors are swallowed by utilities
+  // and treated as non-existent files)
+  const result = normalizeStoryPath(storyPath, cwd, storyDirs);
+
+  if (!result.exists) {
     context.report({
       node: commentNode,
       messageId: "fileMissing",
@@ -202,10 +209,14 @@ export default {
     return {
       /**
        * Program-level handler: iterate comments and validate @story annotations.
+       * Filesystem and I/O errors are handled by underlying utilities and
+       * surfaced as missing-file diagnostics where appropriate.
+       *
        * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
        * @req REQ-ANNOTATION-VALIDATION - Discover and dispatch @story annotations for validation
        * @req REQ-FILE-EXISTENCE - Ensure referenced files exist
        * @req REQ-PATH-RESOLUTION - Resolve using cwd and configured story directories
+       * @req REQ-ERROR-HANDLING - Delegate filesystem and I/O error handling to utilities
        */
       Program() {
         const comments = context.getSourceCode().getAllComments() || [];

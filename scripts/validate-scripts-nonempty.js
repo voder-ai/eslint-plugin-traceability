@@ -7,30 +7,30 @@
  * Exits with a non-zero exit code when any problematic files are found.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function isCommentOrWhitespaceOnly(content) {
   // Remove shebang if present
-  if (content.startsWith('#!')) {
-    const idx = content.indexOf('\n');
-    if (idx === -1) content = '';
+  if (content.startsWith("#!")) {
+    const idx = content.indexOf("\n");
+    if (idx === -1) content = "";
     else content = content.slice(idx + 1);
   }
 
   // Remove block comments
-  content = content.replace(/\/\*[\s\S]*?\*\//g, '');
+  content = content.replace(/\/\*[\s\S]*?\*\//g, "");
   // Remove line comments
-  content = content.replace(/\/\/.*$/gm, '');
+  content = content.replace(/\/\/.*$/gm, "");
   // Remove whitespace
-  content = content.replace(/\s+/g, '');
+  content = content.replace(/\s+/g, "");
   return content.length === 0;
 }
 
 function main() {
-  const scriptsDir = path.join(process.cwd(), 'scripts');
+  const scriptsDir = path.join(process.cwd(), "scripts");
   if (!fs.existsSync(scriptsDir) || !fs.statSync(scriptsDir).isDirectory()) {
-    console.error('ERROR: scripts/ directory does not exist');
+    console.error("ERROR: scripts/ directory does not exist");
     process.exit(2);
   }
 
@@ -42,14 +42,17 @@ function main() {
     const stat = fs.statSync(fp);
     if (stat.isDirectory()) continue;
 
-    const raw = fs.readFileSync(fp, 'utf8');
+    const raw = fs.readFileSync(fp, "utf8");
     if (stat.size === 0) {
-      problems.push({ file: fp, reason: 'zero-length file' });
+      problems.push({ file: fp, reason: "zero-length file" });
       continue;
     }
 
     if (isCommentOrWhitespaceOnly(raw)) {
-      problems.push({ file: fp, reason: 'comment-or-whitespace-only (likely placeholder)' });
+      problems.push({
+        file: fp,
+        reason: "comment-or-whitespace-only (likely placeholder)",
+      });
       continue;
     }
 
@@ -57,22 +60,27 @@ function main() {
     const placeholderPatterns = [/\bTODO\b/i, /\bPLACEHOLDER\b/i, /\bSTUB\b/i];
     for (const pat of placeholderPatterns) {
       if (pat.test(raw) && raw.trim().length < 200) {
-        problems.push({ file: fp, reason: `contains placeholder token (${pat})` });
+        problems.push({
+          file: fp,
+          reason: `contains placeholder token (${pat})`,
+        });
         break;
       }
     }
   }
 
   if (problems.length > 0) {
-    console.error('Found placeholder or empty scripts in scripts/:');
+    console.error("Found placeholder or empty scripts in scripts/:");
     for (const p of problems) {
       console.error(` - ${p.file}: ${p.reason}`);
     }
-    console.error('\nPlease replace these with functional scripts or remove them.');
+    console.error(
+      "\nPlease replace these with functional scripts or remove them.",
+    );
     process.exit(1);
   }
 
-  console.log('OK: scripts/ files appear non-empty and non-placeholder.');
+  console.log("OK: scripts/ files appear non-empty and non-placeholder.");
   process.exit(0);
 }
 

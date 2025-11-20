@@ -4,20 +4,24 @@
  * @req Execute scripts/lint-plugin-check.js and exit with its status.
  */
 
-const { spawnSync } = require('child_process');
-const path = require('path');
+const { spawnSync } = require("child_process");
+const path = require("path");
 
-const scriptPath = path.join(__dirname, 'lint-plugin-check.js');
+const scriptPath = path.join(__dirname, "lint-plugin-check.js");
 
 // Run the check script using the same Node.js executable, forwarding any CLI args and stdio.
-const result = spawnSync(process.execPath, [scriptPath, ...process.argv.slice(2)], {
-  stdio: 'inherit',
-});
+const result = spawnSync(
+  process.execPath,
+  [scriptPath, ...process.argv.slice(2)],
+  {
+    stdio: "inherit",
+  },
+);
 
 // If spawnSync failed to start the process, surface the error and exit non-zero.
 if (result.error) {
   // eslint-disable-next-line no-console -- Logging is required here for CLI error visibility; see docs/decisions/adr-0001-console-usage-for-cli-guards.md
-  console.error('Failed to run lint-plugin-check.js:', result.error);
+  console.error("Failed to run lint-plugin-check.js:", result.error);
   process.exit(1);
 }
 

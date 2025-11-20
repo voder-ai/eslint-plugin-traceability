@@ -100,14 +100,17 @@ Ensure there are no errors or warnings in the output.
    git clone https://github.com/<your-username>/eslint-plugin-traceability.git
    cd eslint-plugin-traceability
    npm install
-   ````
+   ```
 
 2. Run the tests in watch mode:
 
    ```bash
-npm test
-````
+   npm test
+   ```
+
+```
 
 3. Make your changes, and verify that tests and linting continue to pass.
 
 Thank you for helping improve `eslint-plugin-traceability`!
+```

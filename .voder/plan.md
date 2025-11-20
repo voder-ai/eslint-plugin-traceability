@@ -1,14 +1,17 @@
 ## NOW
 
-- [ ] Update `package.json` to add or adjust an NPM script (for example `ci-verify:full`) that runs the same sequence of quality checks as the CI `quality-and-deploy` job (build, type-check, lint plugin check, lint, duplication, full Jest with coverage, format check, traceability, and security/audit scripts).
+- [ ] Use read_file to open `src/utils/storyReferenceUtils.ts` to analyze current story path existence and error-handling logic for file validation.
 
 ## NEXT
 
-- [ ] Update the `.husky/pre-push` hook to call the new full verification script (e.g. `npm run ci-verify:full`) so that every push runs the same quality gate as CI.
-- [ ] Revise `docs/decisions/adr-pre-push-parity.md` to state that pre-push hooks now enforce full parity with the CI quality checks (not just a fast subset), updating the documented rationale and any diagrams or tables accordingly.
-- [ ] Update `CONTRIBUTING.md` to describe the new pre-push behavior (full CI-equivalent gate on push), clarifying the recommended local workflow and, if a fast script still exists, positioning it as an optional manual check rather than the pre-push default.
+- [ ] Design and implement improved error-handling in `storyExists`/`normalizeStoryPath` (e.g., wrap fs calls in try/catch to gracefully handle EACCES and other IO errors, returning a safe result and possibly a distinct status for the rule to interpret).
+- [ ] Update `src/rules/valid-story-reference.ts` so it interprets new status codes from the utils (e.g., distinguishing between not-found vs. fs-error) and reports a clear, user-facing ESLint diagnostic that satisfies the story’s "Error Handling" acceptance criterion.
+- [ ] Add or extend Jest tests in `tests/rules/valid-story-reference.test.ts` (or a new focused test file) to simulate permission-denied / fs error scenarios via Jest mocking, verifying that linting does not crash and that users see the expected error messages.
+- [ ] Ensure new/updated functions and branches have correct `@story` and `@req` annotations referencing `docs/stories/006.0-DEV-FILE-VALIDATION.story.md` and the relevant requirement IDs, updating the story file if needed to align IDs with behavior.
+- [ ] Re-run the implementation assessment (or equivalent test/story-mapping scripts if present) to confirm docs/stories/006.0-DEV-FILE-VALIDATION.story.md now passes and functional coverage has increased, then identify the next failing story and repeat a similar implement-and-test cycle.
 
 ## LATER
 
-- [ ] Optionally refine the CI and local audit commands to use the modern `npm audit --omit=dev --audit-level=high` form and mirror that in the full verification script, eliminating the npm `production` warning while keeping parity intact.
-- [ ] Optionally keep or introduce a separate, explicitly documented `ci-verify:fast` script for developers to run manually when they want quicker feedback, ensuring that it is clearly secondary to the full pre-push gate and does not diverge from core checks critical to release quality.
+- [ ] Extend validation logic to enforce that configured `storyDirectories` cannot silently point outside the project root (project-boundary requirement), adding tests for misconfigured directories and documenting the behavior.
+- [ ] Review the other three failed stories from the assessment, one by one, and for each: inspect current implementation, fill behavior gaps, add tests, and update traceability until their acceptance criteria are fully met.
+- [ ] Once all stories are green and functional coverage ≥ 90%, consider small refactors to centralize any duplicated path/FS handling helpers and keep error-handling behavior consistent across current and future rules.

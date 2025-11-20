@@ -10,17 +10,20 @@
  * @req 009.0
  */
 
-'use strict';
+"use strict";
 
-const { execFileSync } = require('child_process');
+const { execFileSync } = require("child_process");
 
 function getTrackedFiles() {
   try {
-    const out = execFileSync('git', ['ls-files'], { encoding: 'utf8' });
+    const out = execFileSync("git", ["ls-files"], { encoding: "utf8" });
     return out.split(/\r?\n/).filter(Boolean);
   } catch (err) {
     // If git is not available or the command fails, surface the error.
-    console.error('Failed to list tracked files with git ls-files:', err.message || err);
+    console.error(
+      "Failed to list tracked files with git ls-files:",
+      err.message || err,
+    );
     process.exit(1);
   }
 }
@@ -30,9 +33,11 @@ function main() {
 
   // Match any path segment "ci/" (root or deeper), e.g. "ci/foo", "some/ci/bar"
   const ciPattern = /(^|\/)ci\//;
-  const excludedSegment = '.voder/ci/';
+  const excludedSegment = ".voder/ci/";
 
-  const matches = files.filter((p) => ciPattern.test(p) && !p.includes(excludedSegment));
+  const matches = files.filter(
+    (p) => ciPattern.test(p) && !p.includes(excludedSegment),
+  );
 
   if (matches.length === 0) {
     // Nothing to report
@@ -40,9 +45,11 @@ function main() {
   }
 
   // Print report and fail with exit code 2
-  console.error('ERROR: Found tracked files under "ci/" (these should not be committed):');
+  console.error(
+    'ERROR: Found tracked files under "ci/" (these should not be committed):',
+  );
   for (const m of matches) {
-    console.error('  -', m);
+    console.error("  -", m);
   }
   process.exit(2);
 }

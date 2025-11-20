@@ -1,9 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-11-19T07:12:10.784Z</last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-11-20T21:06:46.645Z</last_validated>
   <last_modified>2025-11-19T04:17:32.813Z</last_modified>
-  <evidence>Found a dedicated Jest test for story 007 in tests/rules/error-reporting.test.ts, which references docs/stories/007.0-DEV-ERROR-REPORTING.story.md. The implementation in src/rules/require-story-annotation.ts defines a messageId “missingStory”, inserts a suggestion with the exact `desc` and `output` shape that the test expects, and uses the correct story path placeholder. All promise-style imports, meta.messages, and context.report(...) calls align with the test’s requirements.</evidence>
-  <notes>The clear error-reporting enhancements for missing @story annotations required by story 007 are fully implemented: suggestions are present and correctly formatted, the rule integrates with ESLint’s reporting API, and a traceable, story-referencing test confirms the behavior. No acceptance criterion remains unverified.</notes>
+  <evidence>Key files and tests:
+- Story file exists: docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+- Dedicated tests for this story:
+  - tests/rules/error-reporting.test.ts
+    - Header:
+      /**
+       * Tests for: docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+       * @req REQ-ERROR-SPECIFIC - Specific details about what annotation is missing or invalid
+       * @req REQ-ERROR-SUGGESTION - Suggest concrete steps to fix the issue
+       * @req REQ-ERROR-CONTEXT - Include relevant context in error messages
+       */
+    - Invalid case asserting specific message + suggestion:
+      {
+        name: "[REQ-ERROR-SPECIFIC] missing @story annotation should report specific details and suggestion",
+        code: `function bar() {}`,
+        errors: [
+          {
+            messageId: "missingStory",
+            data: { name: "bar" },
+            suggestions: [
+              {
+                desc: "Add JSDoc @story annotation for function 'bar', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                output:
+                  "/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}",
+              }
+            ]
+          }
+        ]
+      }
+- Implementation of enhanced error reporting in require-story-annotation:
+  - src/rules/require-story-annotation.ts
+    - meta.hasSuggestions = true
+    - meta.messages.missingStory = "Missing @story annotation (REQ-ANNOTATION-REQUIRED)"
+  - src/rules/helpers/require-story-helpers.ts
+    - reportMissing(...) computes a function name and uses ESLint's suggest API:
+      context.report({
+        node,
+        messageId: "missingStory",
+        data: { name },
+        suggest: [
+          {
+            desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+            fix: createAddStoryFix(resolvedTarget),
+          },
+        ],
+      });
+- Other rules already have reasonably specific messages:
+  - src/rules/require-req-annotation.ts
+    - messages: { missingReq: "Missing @req annotation" }
+  - src/rules/require-branch-annotation.ts
+    - messages: { missingAnnotation: "Missing {{missing}} annotation on code branch" }
+  - src/rules/valid-annotation-format.ts
+    - messages: { invalidStoryFormat: "Invalid @story annotation format", invalidReqFormat: "Invalid @req annotation format" }
+  - src/rules/valid-story-reference.ts
+    - messages: { fileMissing: "Story file '{{path}}' not found", invalidExtension: "Invalid story file extension for '{{path}}', expected '.story.md'", invalidPath: "Invalid story path '{{path}}'" }
+  - src/rules/valid-req-reference.ts
+    - messages: { reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'", invalidPath: "Invalid story path '{{storyPath}}'" }
+- Tests pass and include this story:
+  - npm test -- --ci --no-watch --runInBand --verbose
+  - ci/jest-full.log includes:
+    - Suite: "Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING)"
+      - Test: "[REQ-ERROR-SPECIFIC] missing @story annotation should report specific details and suggestion" with status "passed".
+- Conflict with REQ-ERROR-SEVERITY requirement:
+  - Story 007.0 requirement:
+    - docs/stories/007.0-DEV-ERROR-REPORTING.story.md:
+      - **REQ-ERROR-SEVERITY**: "Error severity levels are appropriate (error for missing annotations, warning for format issues)"
+  - Actual plugin configs in src/index.ts set format-oriented rules to error, not warning:
+    - recommended config:
+      rules: {
+        "traceability/require-story-annotation": "error",
+        "traceability/require-req-annotation": "error",
+        "traceability/require-branch-annotation": "error",
+        "traceability/valid-annotation-format": "error",      // format issues as error
+        "traceability/valid-story-reference": "error",
+        "traceability/valid-req-reference": "error",
+      }
+    - strict config: identical severities, including "valid-annotation-format": "error".
+- Missing documentation of standardized error message formats across rules:
+  - docs/custom-rules-development-guide.md describes generic ESLint best practices (messageIds, context.report, suggestions) but not a plugin-wide error message schema.
+  - No doc in docs/ enumerates each rule's messageIds, texts, and how they satisfy REQ-ERROR-SPECIFIC / REQ-ERROR-CONTEXT / REQ-ERROR-CONSISTENCY.
+  - Grep for concrete messages (e.g., "Missing @story annotation") finds them in src/, not in docs/.
+</evidence>
+  <notes>Story 007.0-DEV-ERROR-REPORTING is only partially satisfied. There is clear implementation and testing for improved error reporting in the require-story-annotation rule: missing-annotation errors now include the function name, use ESLint messageIds, and provide explicit suggestions and autofix output; this is validated by tests in tests/rules/error-reporting.test.ts, which reference this story and REQ-ERROR-SPECIFIC/REQ-ERROR-SUGGESTION/REQ-ERROR-CONTEXT. Other rules already emit reasonably specific error messages and use ESLint's reporting patterns.
+
+However, at least two explicit aspects of the specification are not met:
+1) REQ-ERROR-SEVERITY requires that missing annotations be errors while format issues be warnings. In src/index.ts, both recommended and strict configs configure the format-oriented rule valid-annotation-format (and other validators) as "error", with no configuration that treats format violations as warnings. This directly contradicts the requirement.
+2) The acceptance criterion for documentation ("Error message formats are documented for consistency across rules") is not fulfilled: there is no document that describes a standard message format or catalog of messageIds and texts across rules. Only generic ESLint guidance is documented; the plugin's concrete messages live solely in code.
+
+Because these gaps mean not all acceptance criteria and REQ-ERROR-* requirements are satisfied, the story cannot be considered fully implemented. Status: FAILED.</notes>
 </traceability>

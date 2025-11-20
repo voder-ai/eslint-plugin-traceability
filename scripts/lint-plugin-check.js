@@ -12,15 +12,15 @@
  * any check fails.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function logError(...args) {
   console.error(...args);
 }
 
 function exitFailure(message, err) {
-  if (message) logError('ERROR:', message);
+  if (message) logError("ERROR:", message);
   if (err) {
     if (err && err.stack) logError(err.stack);
     else logError(err);
@@ -35,14 +35,14 @@ function exitSuccess(message) {
 
 (function main() {
   const cwd = process.cwd();
-  const pkgPath = path.join(cwd, 'package.json');
+  const pkgPath = path.join(cwd, "package.json");
   const tried = [];
   let candidates = [];
 
   // Try package.json main first if present
   if (fs.existsSync(pkgPath)) {
     try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
       if (pkg && pkg.main) {
         candidates.push(path.join(cwd, pkg.main));
       }
@@ -53,13 +53,13 @@ function exitSuccess(message) {
 
   // Common build output locations
   candidates = candidates.concat([
-    path.join(cwd, 'dist', 'index.js'),
-    path.join(cwd, 'dist'),
-    path.join(cwd, 'lib', 'index.js'),
-    path.join(cwd, 'lib'),
-    path.join(cwd, 'index.js'),
-    path.join(cwd, 'build', 'index.js'),
-    path.join(cwd, 'build'),
+    path.join(cwd, "dist", "index.js"),
+    path.join(cwd, "dist"),
+    path.join(cwd, "lib", "index.js"),
+    path.join(cwd, "lib"),
+    path.join(cwd, "index.js"),
+    path.join(cwd, "build", "index.js"),
+    path.join(cwd, "build"),
   ]);
 
   let lastError = null;
@@ -87,30 +87,40 @@ function exitSuccess(message) {
 
   if (!plugin) {
     exitFailure(
-      'Failed to require built plugin. Tried the following locations:\n' + tried.join('\n'),
-      lastError
+      "Failed to require built plugin. Tried the following locations:\n" +
+        tried.join("\n"),
+      lastError,
     );
   }
 
   // Support ES module transpiles that export via default
-  if (plugin && plugin.__esModule && Object.prototype.hasOwnProperty.call(plugin, 'default')) {
+  if (
+    plugin &&
+    plugin.__esModule &&
+    Object.prototype.hasOwnProperty.call(plugin, "default")
+  ) {
     plugin = plugin.default;
   }
 
-  if (!plugin || typeof plugin !== 'object') {
-    exitFailure(`Plugin did not export an object. Found type: ${plugin === null ? 'null' : typeof plugin}`);
+  if (!plugin || typeof plugin !== "object") {
+    exitFailure(
+      `Plugin did not export an object. Found type: ${plugin === null ? "null" : typeof plugin}`,
+    );
   }
 
-  if (!Object.prototype.hasOwnProperty.call(plugin, 'rules')) {
+  if (!Object.prototype.hasOwnProperty.call(plugin, "rules")) {
     exitFailure("Plugin does not export a 'rules' property.");
   }
 
   const rules = plugin.rules;
-  if (!rules || typeof rules !== 'object' || Array.isArray(rules)) {
-    const type = rules === null ? 'null' : Array.isArray(rules) ? 'array' : typeof rules;
+  if (!rules || typeof rules !== "object" || Array.isArray(rules)) {
+    const type =
+      rules === null ? "null" : Array.isArray(rules) ? "array" : typeof rules;
     exitFailure(`Plugin 'rules' is not an object. Found type: ${type}`);
   }
 
   // All checks passed
-  exitSuccess(`OK: Plugin exports 'rules' object. (${usedPath || 'resolved module'})`);
-}());
+  exitSuccess(
+    `OK: Plugin exports 'rules' object. (${usedPath || "resolved module"})`,
+  );
+})();

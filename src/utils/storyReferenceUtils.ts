@@ -4,6 +4,7 @@
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
  * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
  * @req REQ-SECURITY-VALIDATION - Prevent path traversal and absolute path usage
+ * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
  */
 import fs from "fs";
 import path from "path";
@@ -32,15 +33,22 @@ export function buildStoryCandidates(
 
 /**
  * Check if any of the provided file paths exist.
+ * Handles filesystem errors (e.g., EACCES) gracefully by treating them as non-existent
+ * and never throwing.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
+ * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
  */
 const fileExistCache = new Map<string, boolean>();
 export function storyExists(paths: string[]): boolean {
   for (const candidate of paths) {
     let ok = fileExistCache.get(candidate);
     if (ok === undefined) {
-      ok = fs.existsSync(candidate) && fs.statSync(candidate).isFile();
+      try {
+        ok = fs.existsSync(candidate) && fs.statSync(candidate).isFile();
+      } catch {
+        ok = false;
+      }
       fileExistCache.set(candidate, ok);
     }
     if (ok) {
@@ -52,9 +60,12 @@ export function storyExists(paths: string[]): boolean {
 
 /**
  * Normalize a story path to candidate absolute paths and check existence.
+ * Filesystem errors are handled via `storyExists`, which suppresses exceptions
+ * and treats such cases as non-existent.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
  * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
+ * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
  */
 export function normalizeStoryPath(
   storyPath: string,

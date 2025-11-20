@@ -2,12 +2,119 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-19T07:11:33.692Z</last_validated>
+  <last_validated>2025-11-20T21:00:34.996Z</last_validated>
   <last_modified>2025-11-19T04:17:32.825Z</last_modified>
-  <evidence>• The require-story-annotation rule (src/rules/require-story-annotation.ts) does not declare `meta.fixable` and only offers ESLint suggestions, not real auto‐fixers invoked by `--fix`.
-• The valid-annotation-format rule (src/rules/valid-annotation-format.ts) reports format errors but includes no fixer implementations.
-• No code implements configurable templates (REQ-AUTOFIX-TEMPLATE) or selective enabling/disabling of specific fixes (REQ-AUTOFIX-SELECTIVE).
-• No documentation examples of running ESLint with `--fix` to auto-resolve annotation issues.
-</evidence>
-  <notes>Story 008.0-DEV-AUTO-FIX defines acceptance criteria to auto‐fix missing/formatting issues for both @story and @req, but the plugin only provides suggestions for missing @story (not real fixes), implements fixes only for @req and branch annotations, and lacks format fixers, templates, or selective controls. Thus the story is not fully implemented.</notes>
+  <evidence>1) Story and requirement IDs exist only in the spec, not in code/tests:
+- Story file: docs/stories/008.0-DEV-AUTO-FIX.story.md defines REQ-AUTOFIX-MISSING, REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-SAFE, REQ-AUTOFIX-PRESERVE, REQ-AUTOFIX-TEMPLATE, REQ-AUTOFIX-SELECTIVE.
+- Command: grep -R -n 'REQ-AUTOFIX-' docs src tests
+  -> Matches only in docs/stories/008.0-DEV-AUTO-FIX.story.md (lines 39–44); no implementation or tests reference these IDs.
+
+2) Missing core auto-fix behavior for @story on functions (uses suggestions, not ESLint --fix):
+- src/rules/require-story-annotation.ts
+  meta: {
+    type: 'problem',
+    docs: { description: 'Require @story annotations on functions', recommended: 'error' },
+    hasSuggestions: true,
+    messages: { missingStory: 'Missing @story annotation (REQ-ANNOTATION-REQUIRED)' },
+    schema: [...]
+  }
+  // Note: there is NO meta.fixable property.
+
+- src/rules/helpers/require-story-helpers.ts (reportMissing)
+  context.report({
+    node,
+    messageId: 'missingStory',
+    data: { name },
+    suggest: [
+      {
+        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+        fix: createAddStoryFix(resolvedTarget),
+      },
+    ],
+  });
+
+Because the rule only exposes suggestions and not a `fix` with `meta.fixable`, running ESLint with `--fix` will not automatically insert @story annotations. This directly contradicts the story’s acceptance criterion: "ESLint --fix automatically resolves common annotation violations" for functions.
+
+3) Some auto-fixes exist, but they are for earlier stories and are hard-coded, not aligned with 008.0’s requirements:
+- src/rules/require-req-annotation.ts
+  meta: { type: 'problem', fixable: 'code', ... }
+  FunctionDeclaration handler on missing @req:
+    fix(fixer) {
+      return fixer.insertTextBefore(node, '/** @req <REQ-ID> */\n');
+    }
+  This provides a simple hard-coded auto-fix for @req, but there is no configurability or linkage to 008.0; it is annotated against story 003.0-DEV-FUNCTION-ANNOTATIONS.
+
+- src/rules/require-branch-annotation.ts and src/utils/branch-annotation-helpers.ts
+  * Rule meta: fixable: 'code'.
+  * reportMissingStory(...) in branch-annotation-helpers:
+      if (storyFixCountRef.count === 0) {
+        function insertStoryFixer(fixer) {
+          return fixer.insertTextBeforeRange(
+            [insertPos, insertPos],
+            `${indent}// @story <story-file>.story.md\n`,
+          );
+        }
+        context.report({ node, messageId: 'missingAnnotation', data: { missing: '@story' }, fix: insertStoryFixer });
+        storyFixCountRef.count++;
+      } else {
+        context.report({ node, messageId: 'missingAnnotation', data: { missing: '@story' } });
+      }
+  * reportMissingReq(...) similarly auto-fixes missing @req with `${indent}// @req <REQ-ID>\n` when safe.
+
+These auto-fixes partially satisfy "simple" auto-fix behavior for branches, but:
+- They are tied to story 004.0-DEV-BRANCH-ANNOTATIONS in annotations.
+- They use hard-coded placeholder strings, not configurable templates.
+- They do not cover function @story annotations via ESLint --fix.
+
+4) No auto-fix for annotation format issues (REQ-AUTOFIX-FORMAT not implemented):
+- src/rules/valid-annotation-format.ts
+  meta: {
+    type: 'problem',
+    docs: { description: 'Validate format and syntax of @story and @req annotations', recommended: 'error' },
+    messages: { invalidStoryFormat: 'Invalid @story annotation format', invalidReqFormat: 'Invalid @req annotation format' },
+    schema: []
+  }
+  // No `fixable` property.
+  create(context) { ...
+    context.report({ node: comment, messageId: 'invalidStoryFormat' });
+    context.report({ node: comment, messageId: 'invalidReqFormat' });
+  }
+
+This rule validates but does not auto-fix format or syntax issues, so REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-PRESERVE, and REQ-AUTOFIX-SAFE are not satisfied for format problems.
+
+5) No configurable templates or selective controls for auto-fixes (REQ-AUTOFIX-TEMPLATE and REQ-AUTOFIX-SELECTIVE not implemented):
+- src/rules/helpers/require-story-helpers.ts:
+  const STORY_PATH = 'docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md';
+  const ANNOTATION = `/** @story ${STORY_PATH} */`;
+  // This annotation string is fixed, not configurable; no rule options or settings allow changing templates.
+
+- src/utils/branch-annotation-helpers.ts uses hard-coded placeholders:
+  `${indent}// @story <story-file>.story.md\n` and `${indent}// @req <REQ-ID>\n`.
+
+- None of the rules expose options for enabling/disabling specific categories of fixes (e.g., only missing vs. format fixes). The only conditional logic is internal safety logic (e.g., `storyFixCountRef.count === 0`), not user-configurable selective behavior.
+
+6) No tests or traceability that tie implementation to story 008.0:
+- grep -R -n 'docs/stories/008.0-DEV-AUTO-FIX.story.md' .
+  -> Only found in:
+     - docs/stories/008.0-DEV-AUTO-FIX.story.md
+     - docs/stories/developer-story.map.md
+     - .voder/traceability/docs-stories-008.0-DEV-AUTO-FIX.story.xml
+  There are no references in src/ or tests/ to this story file.
+
+- tests/rules/require-story-core.autofix.test.ts:
+  Header:
+    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    * @req REQ-AUTOFIX - Cover additional branch cases in require-story-core
+  This test file exercises autofix-related helpers (createAddStoryFix, reportMissing) but explicitly references story 003.0, not 008.0. No test file references 008.0-DEV-AUTO-FIX.story.md.
+
+7) Documentation does not describe auto-fix capabilities for this plugin:
+- grep -R -n 'auto-fix' docs README.md src tests
+  -> Hits only inside docs/stories/008.0-DEV-AUTO-FIX.story.md and high-level planning docs; the rule-specific docs (docs/rules/*.md) and README.md do not document which issues are auto-fixable or how fixing behaves under --fix.
+
+8) Tests confirm behavior aligned with earlier stories, not 008.0:
+- tests/rules/require-story-annotation.test.ts validates that missing @story emits suggestions with `output` examples, but it never asserts that ESLint --fix will apply those changes automatically (because they are suggestions, not fixes, and rule.meta.fixable is absent).
+- tests/rules/valid-annotation-format.test.ts validates error reporting only (no `output` fields or fix behavior).
+
+Collectively, these points show that while some limited autofix behavior exists (primarily for @req and branch annotations under earlier stories), the comprehensive auto-fix functionality, configurability, and documentation required by 008.0-DEV-AUTO-FIX are not present.</evidence>
+  <notes>Story 008.0-DEV-AUTO-FIX requires that running ESLint with --fix automatically resolve common annotation violations, particularly for missing @story and common format issues, using safe, configurable templates with selective control over which fixes are applied, and that these capabilities be documented and well-tested. The current implementation provides: (a) suggestions (not auto-fixes) for missing @story on functions; (b) some hard-coded auto-fixes for missing @req and branch annotations tied to earlier stories (003.0 and 004.0); and (c) a format-validation rule that reports issues but does not fix them. There is no meta.fixable support for the main @story rule, no auto-fix logic for format issues, no template or configuration system for auto-fix behavior, no selective controls over fix categories, no tests or code referencing this story’s REQ-AUTOFIX-* requirements, and no documentation describing auto-fix behavior. Therefore, multiple acceptance criteria and all explicit REQ-AUTOFIX-* requirements remain unmet, so this story is not fully implemented and the assessment status is FAILED.</notes>
 </traceability>
