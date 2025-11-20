@@ -8,13 +8,11 @@
  * @req REQ-ANNOTATION-REQUIRED
  */
 import type { Rule } from "eslint";
+import { buildVisitors } from "./helpers/require-story-visitors";
 import {
   DEFAULT_SCOPE,
   EXPORT_PRIORITY_VALUES,
   shouldProcessNode,
-  resolveTargetNode,
-  reportMissing as helperReportMissing,
-  reportMethod as helperReportMethod,
 } from "./helpers/require-story-helpers";
 
 /**
@@ -68,7 +66,6 @@ const rule: Rule.RuleModule = {
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-DEBUG-LOG
      */
-
     console.debug(
       "require-story-annotation:create",
       typeof context.getFilename === "function"
@@ -76,147 +73,16 @@ const rule: Rule.RuleModule = {
         : "<unknown>",
     );
 
-    /**
-     * Predicate to determine whether a given node should be processed by this rule.
-     *
-     * Uses configured scope and exportPriority to decide if the node is eligible.
-     *
-     * @param node - AST node to evaluate
-     * @returns boolean indicating whether the node should be processed
-     *
-     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-     * @req REQ-CREATE-HOOK
-     */
+    // Local closure that binds configured scope and export priority to the helper.
     const should = (node: any) =>
       shouldProcessNode(node, scope, exportPriority);
 
-    return {
-      /**
-       * Handle FunctionDeclaration nodes.
-       *
-       * Reports missing @story annotations for function declarations. If the
-       * declaration is exported, the export node is used as the reporting target.
-       *
-       * @param node - FunctionDeclaration AST node
-       *
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-ANNOTATION-REQUIRED
-       */
-      FunctionDeclaration(node: any) {
-        /**
-         * Debug log at the start of FunctionDeclaration visitor to help trace why
-         * a node may not be reported in tests.
-         *
-         * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-         * @req REQ-DEBUG-LOG
-         */
-
-        console.debug(
-          "require-story-annotation:FunctionDeclaration",
-          typeof context.getFilename === "function"
-            ? context.getFilename()
-            : "<unknown>",
-          node && node.id ? node.id.name : "<anonymous>",
-        );
-
-        if (!should(node)) return;
-        let target = node;
-        if (
-          node.parent &&
-          (node.parent.type === "ExportNamedDeclaration" ||
-            node.parent.type === "ExportDefaultDeclaration")
-        ) {
-          target = node.parent;
-        }
-        helperReportMissing(context, sourceCode, node, target);
-      },
-
-      /**
-       * Handle FunctionExpression nodes.
-       *
-       * Reports missing @story annotations for function expressions unless they
-       * are part of a MethodDefinition (handled elsewhere). The appropriate
-       * target node is resolved for reporting.
-       *
-       * @param node - FunctionExpression AST node
-       *
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-ANNOTATION-REQUIRED
-       */
-      FunctionExpression(node: any) {
-        if (!should(node)) return;
-        if (node.parent && node.parent.type === "MethodDefinition") return;
-        const target = resolveTargetNode(sourceCode, node);
-        helperReportMissing(context, sourceCode, node, target);
-      },
-
-      /**
-       * Handle ArrowFunctionExpression nodes.
-       *
-       * Reports missing @story annotations for arrow functions. The reporting
-       * target is resolved based on surrounding syntax (e.g., variable declarator).
-       *
-       * @param node - ArrowFunctionExpression AST node
-       *
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-ANNOTATION-REQUIRED
-       */
-      ArrowFunctionExpression(node: any) {
-        if (!should(node)) return;
-        const target = resolveTargetNode(sourceCode, node);
-        helperReportMissing(context, sourceCode, node, target);
-      },
-
-      /**
-       * Handle TSDeclareFunction nodes.
-       *
-       * Reports missing @story annotations for TypeScript declare function
-       * declarations. The node itself is used as the reporting target.
-       *
-       * @param node - TSDeclareFunction AST node
-       *
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-ANNOTATION-REQUIRED
-       */
-      TSDeclareFunction(node: any) {
-        if (!should(node)) return;
-        helperReportMissing(context, sourceCode, node, node);
-      },
-
-      /**
-       * Handle TSMethodSignature nodes.
-       *
-       * Reports missing @story annotations for TypeScript interface/class
-       * method signatures. The reporting target is resolved to the appropriate
-       * parent or identifier.
-       *
-       * @param node - TSMethodSignature AST node
-       *
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-ANNOTATION-REQUIRED
-       */
-      TSMethodSignature(node: any) {
-        if (!should(node)) return;
-        const target = resolveTargetNode(sourceCode, node);
-        helperReportMissing(context, sourceCode, node, target);
-      },
-
-      /**
-       * Handle MethodDefinition nodes.
-       *
-       * Reports missing @story annotations specifically for class/ object
-       * method definitions using helperReportMethod which handles method specifics.
-       *
-       * @param node - MethodDefinition AST node
-       *
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-ANNOTATION-REQUIRED
-       */
-      MethodDefinition(node: any) {
-        if (!should(node)) return;
-        helperReportMethod(context, sourceCode, node);
-      },
-    };
+    // Delegate visitor construction to helper to keep this file concise.
+    return buildVisitors(context, sourceCode, {
+      shouldProcessNode: should,
+      scope,
+      exportPriority,
+    });
   },
 };
 
