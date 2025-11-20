@@ -134,6 +134,11 @@ tmp-nested-*
 temp_foo.js
 test-results.json
 jest-results.json
-jest-output.json# Ignore CI artifact reports
+jest-output.json
+jest-coverage.json
+tmp_eslint_report.json
+tmp_jest_output.json
+
+# Ignore CI artifact reports
 
 ci/
