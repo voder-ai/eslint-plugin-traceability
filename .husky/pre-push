@@ -11,8 +11,10 @@
 # npm run check:traceability && npm run build && npm run type-check && npm run lint -- --max-warnings=0 && npm run duplication && npm test && npm run format:check && npm audit --production --audit-level=high && echo "Pre-push checks completed"
 #
 set -e
-# Note: The fast verification task (ci-verify:fast) depends on lint-plugin-check being installed
-# and properly configured in your ESLint setup; ensure that plugin is available in the environment.
-# `set -e` ensures the hook exits non-zero on failure.
-# Invoke the consolidated fast CI verification. Exits non-zero on failure due to `set -e`.
-npm run ci-verify:fast && echo "Pre-push quick checks completed"
+# Note: The fast verification task (ci-verify:fast) is expected NOT to invoke a build;
+# ensure your ci-verify:fast npm script is configured accordingly (no build step).
+# The fast verification relies on a lint guard; call the guard script directly here.
+# We now require lint:require-built-plugin (which runs the guard that validates the built plugin exists)
+# instead of the old lint-plugin-check. `set -e` ensures the hook exits non-zero on failure.
+# Invoke the guard first, then the consolidated fast CI verification. Exits non-zero on failure due to `set -e`.
+npm run lint:require-built-plugin && npm run ci-verify:fast && echo "Pre-push quick checks completed"
