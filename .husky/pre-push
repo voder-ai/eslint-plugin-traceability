@@ -10,6 +10,6 @@
 # npm run check:traceability && npm run build && npm run type-check && npm run lint -- --max-warnings=0 && npm run duplication && npm test && npm run format:check && npm audit --production --audit-level=high && echo "Pre-push checks completed"
 #
 set -e
-# Run a lightweight sequence of checks (no built-plugin guard): type-check, traceability, duplication, and lint.
-# Exits non-zero on failure due to `set -e`.
-npm run type-check && npm run check:traceability && npm run duplication && npm run lint -- --max-warnings=0 && echo "Pre-push quick checks completed"
+# Use consolidated fast verification script instead of manual sequence.
+# See ADR-2025-02 (pre-push parity change): prefer ci-verify:fast to align with CI fast path and reduce local feedback time.
+npm run ci-verify:fast && echo "Pre-push quick checks completed"
