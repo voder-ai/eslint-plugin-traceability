@@ -96,7 +96,7 @@ function runRuleOnCode(code: string) {
   const listeners = rule.create(context);
 
   if (typeof listeners.Program === "function") {
-    listeners.Program({ type: "Program", body: [], sourceType: "module" });
+    listeners.Program({} as any);
   }
 
   return messages;
