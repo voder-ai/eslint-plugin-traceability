@@ -1,7 +1,7 @@
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-COVERAGE-IO - Additional tests to exercise uncovered branches in require-story-io.ts
+ * @req REQ-IO-BEHAVIOR-EDGE-CASES - Edge-case behavior tests for IO helpers in require-story-io.ts
  */
 
 import {

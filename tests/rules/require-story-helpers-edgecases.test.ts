@@ -1,7 +1,7 @@
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-COVERAGE-HELPERS - Additional tests to exercise edge branches in require-story-helpers.ts
+ * @req REQ-HELPERS-EDGE-CASES - Edge-case behavior tests for helpers in require-story-helpers.ts
  */
 
 import {

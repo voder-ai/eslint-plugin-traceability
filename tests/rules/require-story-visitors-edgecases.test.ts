@@ -1,7 +1,7 @@
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-COVERAGE-VISITORS - Tests to cover visitors branches in require-story-visitors.ts
+ * @req REQ-VISITORS-BEHAVIOR - Behavior tests for visitors in require-story-visitors.ts
  */
 
 import { buildVisitors } from "../../src/rules/helpers/require-story-visitors";
