@@ -1,1 +1,20 @@
-{"packages":[]}
+{
+  "timestamp": "2025-11-20T08:38:41.083Z",
+  "packages": [],
+  "summary": {
+    "totalOutdated": 0,
+    "safeUpdates": 0,
+    "filteredByAge": 0,
+    "filteredBySecurity": 0,
+    "thresholds": {
+      "prod": {
+        "minAge": 7,
+        "minSeverity": "none"
+      },
+      "dev": {
+        "minAge": 7,
+        "minSeverity": "none"
+      }
+    }
+  }
+}
