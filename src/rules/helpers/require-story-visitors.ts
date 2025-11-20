@@ -30,28 +30,27 @@ function buildFunctionDeclarationVisitor(
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on function declarations
    */
-  function handleFunctionDeclaration(_node: any) {
+  function handleFunctionDeclaration(node: any) {
     /**
      * Debug logging for visitor entry
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-DEBUG-LOG - Provide debug logging for visitor entry
      */
-    void _node;
     console.debug(
       "require-story-annotation:FunctionDeclaration",
       typeof context.getFilename === "function"
         ? context.getFilename()
         : "<unknown>",
-      _node && _node.id ? _node.id.name : "<anonymous>",
+      node && node.id ? node.id.name : "<anonymous>",
     );
 
-    if (!options.shouldProcessNode(_node)) return;
+    if (!options.shouldProcessNode(node)) return;
 
-    const target = resolveTargetNode(sourceCode, _node, {
+    const target = resolveTargetNode(sourceCode, node, {
       scope: options.scope,
       exportPriority: options.exportPriority,
     });
-    helperReportMissing(context, sourceCode, _node, target);
+    helperReportMissing(context, sourceCode, node, target);
   }
 
   return {
@@ -78,22 +77,21 @@ function buildFunctionExpressionVisitor(
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on function expressions
    */
-  function handleFunctionExpression(_node: any) {
-    void _node;
-    if (!options.shouldProcessNode(_node)) return;
+  function handleFunctionExpression(node: any) {
+    if (!options.shouldProcessNode(node)) return;
 
     /**
      * Do not report when function expression is a MethodDefinition
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-METHOD-SKIP - Skip MethodDefinition function expressions
      */
-    if (_node.parent && _node.parent.type === "MethodDefinition") return;
+    if (node.parent && node.parent.type === "MethodDefinition") return;
 
-    const target = resolveTargetNode(sourceCode, _node, {
+    const target = resolveTargetNode(sourceCode, node, {
       scope: options.scope,
       exportPriority: options.exportPriority,
     });
-    helperReportMissing(context, sourceCode, _node, target);
+    helperReportMissing(context, sourceCode, node, target);
   }
 
   return {
@@ -120,14 +118,13 @@ function buildArrowFunctionVisitor(
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on arrow functions
    */
-  function handleArrowFunctionExpression(_node: any) {
-    void _node;
-    if (!options.shouldProcessNode(_node)) return;
-    const target = resolveTargetNode(sourceCode, _node, {
+  function handleArrowFunctionExpression(node: any) {
+    if (!options.shouldProcessNode(node)) return;
+    const target = resolveTargetNode(sourceCode, node, {
       scope: options.scope,
       exportPriority: options.exportPriority,
     });
-    helperReportMissing(context, sourceCode, _node, target);
+    helperReportMissing(context, sourceCode, node, target);
   }
 
   return {
@@ -154,10 +151,9 @@ function buildTSDeclareFunctionVisitor(
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on TS declare functions
    */
-  function handleTSDeclareFunction(_node: any) {
-    void _node;
-    if (!options.shouldProcessNode(_node)) return;
-    helperReportMissing(context, sourceCode, _node, _node);
+  function handleTSDeclareFunction(node: any) {
+    if (!options.shouldProcessNode(node)) return;
+    helperReportMissing(context, sourceCode, node, node);
   }
 
   return {
@@ -184,14 +180,13 @@ function buildTSMethodSignatureVisitor(
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on TS method signatures
    */
-  function handleTSMethodSignature(_node: any) {
-    void _node;
-    if (!options.shouldProcessNode(_node)) return;
-    const target = resolveTargetNode(sourceCode, _node, {
+  function handleTSMethodSignature(node: any) {
+    if (!options.shouldProcessNode(node)) return;
+    const target = resolveTargetNode(sourceCode, node, {
       scope: options.scope,
       exportPriority: options.exportPriority,
     });
-    helperReportMissing(context, sourceCode, _node, target);
+    helperReportMissing(context, sourceCode, node, target);
   }
 
   return {
@@ -218,10 +213,9 @@ function buildMethodDefinitionVisitor(
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on class/object methods
    */
-  function handleMethodDefinition(_node: any) {
-    void _node;
-    if (!options.shouldProcessNode(_node)) return;
-    helperReportMethod(context, sourceCode, _node);
+  function handleMethodDefinition(node: any) {
+    if (!options.shouldProcessNode(node)) return;
+    helperReportMethod(context, sourceCode, node);
   }
 
   return {
