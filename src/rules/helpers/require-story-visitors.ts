@@ -19,11 +19,7 @@ import {
 function buildFunctionDeclarationVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
-  options: {
-    shouldProcessNode: (node: any) => boolean;
-    scope?: any;
-    exportPriority?: any;
-  },
+  options: any,
 ): Rule.RuleListener {
   /**
    * Handle FunctionDeclaration nodes.
@@ -66,11 +62,7 @@ function buildFunctionDeclarationVisitor(
 function buildFunctionExpressionVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
-  options: {
-    shouldProcessNode: (node: any) => boolean;
-    scope?: any;
-    exportPriority?: any;
-  },
+  options: any,
 ): Rule.RuleListener {
   /**
    * Handle FunctionExpression nodes.
@@ -107,11 +99,7 @@ function buildFunctionExpressionVisitor(
 function buildArrowFunctionVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
-  options: {
-    shouldProcessNode: (node: any) => boolean;
-    scope?: any;
-    exportPriority?: any;
-  },
+  options: any,
 ): Rule.RuleListener {
   /**
    * Handle ArrowFunctionExpression nodes.
@@ -140,11 +128,7 @@ function buildArrowFunctionVisitor(
 function buildTSDeclareFunctionVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
-  options: {
-    shouldProcessNode: (node: any) => boolean;
-    scope?: any;
-    exportPriority?: any;
-  },
+  options: any,
 ): Rule.RuleListener {
   /**
    * Handle TSDeclareFunction nodes.
@@ -169,11 +153,7 @@ function buildTSDeclareFunctionVisitor(
 function buildTSMethodSignatureVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
-  options: {
-    shouldProcessNode: (node: any) => boolean;
-    scope?: any;
-    exportPriority?: any;
-  },
+  options: any,
 ): Rule.RuleListener {
   /**
    * Handle TSMethodSignature nodes.
@@ -202,11 +182,7 @@ function buildTSMethodSignatureVisitor(
 function buildMethodDefinitionVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
-  options: {
-    shouldProcessNode: (node: any) => boolean;
-    scope?: any;
-    exportPriority?: any;
-  },
+  options: any,
 ): Rule.RuleListener {
   /**
    * Handle MethodDefinition nodes (class/object methods).
@@ -232,11 +208,7 @@ function buildMethodDefinitionVisitor(
 export function buildVisitors(
   context: Rule.RuleContext,
   sourceCode: any,
-  options: {
-    shouldProcessNode: (node: any) => boolean;
-    scope?: any;
-    exportPriority?: any;
-  },
+  options: any,
 ): Rule.RuleListener {
   const fnDecl = buildFunctionDeclarationVisitor(context, sourceCode, options);
   const fnExpr = buildFunctionExpressionVisitor(context, sourceCode, options);
