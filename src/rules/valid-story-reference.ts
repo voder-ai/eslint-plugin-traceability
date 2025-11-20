@@ -141,6 +141,10 @@ function handleComment(opts: {
     opts;
   const lines = commentNode.value
     .split(/\r?\n/)
+    /**
+     * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+     * @req REQ-ANNOTATION-VALIDATION - Ensure each annotation line is parsed
+     */
     .map((l: string) => l.replace(/^[^@]*/, "").trim());
   for (const line of lines) {
     if (line.startsWith("@story")) {
