@@ -207,19 +207,32 @@ export const EXPORT_PRIORITY_VALUES = ["all", "exported", "non-exported"];
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Report missing annotation and provide autofix using createAddStoryFix
  * @param {Rule.RuleContext} context - ESLint rule context used to report
+ * @param {any} sourceCode - ESLint sourceCode object (use context.getSourceCode() if not provided)
  * @param {any} node - AST node missing the @story annotation
+ * @param {any} [target] - optional target node where annotation should be inserted
  */
-export function reportMissing(context: Rule.RuleContext, node: any) {
-  const sourceCode = context.getSourceCode();
-  if (hasStoryAnnotation(sourceCode, node)) {
+export function reportMissing(
+  context: Rule.RuleContext,
+  sourceCode: any,
+  node: any,
+  target?: any,
+) {
+  const sc = sourceCode || context.getSourceCode();
+  if (hasStoryAnnotation(sc, node)) {
     return;
   }
   const name = getNodeName(node);
-  const target = resolveTargetNode(sourceCode, node);
+  const resolvedTarget = target ?? resolveTargetNode(sc, node);
   context.report({
     node,
-    message: `Missing @story annotation for ${name}`,
-    fix: createAddStoryFix(target),
+    messageId: "missingStory",
+    data: { name },
+    suggestions: [
+      {
+        desc: `Add ${ANNOTATION} annotation for ${name}`,
+        fix: createAddStoryFix(resolvedTarget),
+      },
+    ],
   });
 }
 
@@ -229,17 +242,31 @@ export function reportMissing(context: Rule.RuleContext, node: any) {
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Report missing method annotation and provide autofix using createMethodFix
  * @param {Rule.RuleContext} context - ESLint rule context used to report
+ * @param {any} sourceCode - ESLint sourceCode object (use context.getSourceCode() if not provided)
  * @param {any} node - method AST node missing the @story annotation
+ * @param {any} [target] - optional target node where annotation should be inserted
  */
-export function reportMethod(context: Rule.RuleContext, node: any) {
-  const sourceCode = context.getSourceCode();
-  if (hasStoryAnnotation(sourceCode, node)) {
+export function reportMethod(
+  context: Rule.RuleContext,
+  sourceCode: any,
+  node: any,
+  target?: any,
+) {
+  const sc = sourceCode || context.getSourceCode();
+  if (hasStoryAnnotation(sc, node)) {
     return;
   }
   const name = getNodeName(node);
+  const resolvedTarget = target ?? node;
   context.report({
     node,
-    message: `Missing @story annotation for method ${name}`,
-    fix: createMethodFix(node),
+    messageId: "missingStory",
+    data: { name },
+    suggestions: [
+      {
+        desc: `Add ${ANNOTATION} annotation for method ${name}`,
+        fix: createMethodFix(resolvedTarget),
+      },
+    ],
   });
 }
