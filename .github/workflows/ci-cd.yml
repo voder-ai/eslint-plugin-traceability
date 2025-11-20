@@ -41,6 +41,30 @@ jobs:
       - name: Run traceability check
         run: npm run check:traceability
 
+      - name: Run dependency safety check
+        run: npm run safety:deps
+        continue-on-error: true
+
+      - name: Run CI audit
+        run: npm run audit:ci
+        continue-on-error: true
+
+      - name: Upload dry-aged deps artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: dry-aged-deps-${{ matrix['node-version'] }}
+          path: ci/dry-aged-deps.json
+
+      - name: Upload npm audit artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: npm-audit-${{ matrix['node-version'] }}
+          path: ci/npm-audit.json
+
       - name: Upload traceability report
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
