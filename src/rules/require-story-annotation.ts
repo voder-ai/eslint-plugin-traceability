@@ -68,7 +68,7 @@ const rule: Rule.RuleModule = {
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-DEBUG-LOG
      */
-     
+
     console.debug(
       "require-story-annotation:create",
       typeof context.getFilename === "function"
@@ -110,7 +110,7 @@ const rule: Rule.RuleModule = {
          * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
          * @req REQ-DEBUG-LOG
          */
-         
+
         console.debug(
           "require-story-annotation:FunctionDeclaration",
           typeof context.getFilename === "function"

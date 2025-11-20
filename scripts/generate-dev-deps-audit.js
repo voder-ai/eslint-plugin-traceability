@@ -12,9 +12,13 @@ const path = require("path");
 
 // Run npm audit for dev dependencies with high threshold (omit production deps)
 // Do not use shell: true
-const result = spawnSync("npm", ["audit", "--omit=prod", "--audit-level=high", "--json"], {
-  encoding: "utf8",
-});
+const result = spawnSync(
+  "npm",
+  ["audit", "--omit=prod", "--audit-level=high", "--json"],
+  {
+    encoding: "utf8",
+  },
+);
 
 // Ensure the output directory exists
 const outputDir = path.join("ci");
