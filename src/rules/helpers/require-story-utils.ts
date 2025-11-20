@@ -143,6 +143,28 @@ function propertyKeyName(node: any): string | null {
 export function getNodeName(node: any): string | null {
   if (!node) return null;
 
+  // Branch-level traceability: prefer direct .id.name when available (common on function/class declarations)
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQUIRED
+  if (node.id && typeof node.id.name === "string") {
+    return node.id.name;
+  }
+  if (node.id) {
+    const idName = getNodeName(node.id);
+    if (idName !== null) return idName;
+  }
+
+  // Branch-level traceability: prefer direct .key.name early (common on variable declarators, properties)
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQUIRED
+  if (node.key && typeof node.key.name === "string") {
+    return node.key.name;
+  }
+  if (node.key) {
+    const keyName = getNodeName(node.key);
+    if (keyName !== null) return keyName;
+  }
+
   // Identifier-like nodes
   const idName = isIdentifierLike(node);
   if (idName !== null) return idName;

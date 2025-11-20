@@ -191,6 +191,42 @@ function resolveTargetNode(sourceCode: any, node: any): any {
 }
 
 /**
+ * Small utility to walk the node and its parents to extract an Identifier or key name.
+ * Walks up the parent chain and inspects common properties (id, key, name, Identifier nodes).
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Walk node and parents to find Identifier/Key name
+ * @param {any} node - AST node to extract a name from
+ * @returns {string} extracted name or "(anonymous)" when no name found
+ */
+function extractName(node: any): string {
+  let n = node;
+  while (n) {
+    // Direct Identifier node
+    if (n.type === "Identifier" && typeof n.name === "string") {
+      return n.name;
+    }
+    // id property (FunctionDeclaration, etc.)
+    if (n.id && n.id.type === "Identifier" && typeof n.id.name === "string") {
+      return n.id.name;
+    }
+    // key property (Property, MethodDefinition, etc.)
+    if (n.key && n.key.type === "Identifier" && typeof n.key.name === "string") {
+      return n.key.name;
+    }
+    // name property (some nodes may have a 'name' string directly)
+    if (typeof (n as any).name === "string" && (n as any).name.length > 0) {
+      return (n as any).name;
+    }
+    // computed keys may have an Identifier inside
+    if (n.key && n.key.type === "Literal" && typeof (n.key as any).value === "string") {
+      return (n.key as any).value;
+    }
+    n = n.parent;
+  }
+  return "(anonymous)";
+}
+
+/**
  * Check if this node is within scope and matches exportPriority
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Determine whether a node should be processed by rule
@@ -234,7 +270,7 @@ function reportMissing(
   passedTarget?: any,
 ): void {
   try {
-    const functionName = getNodeName(node);
+    const functionName = extractName(node && (node.id || node.key) ? (node.id || node.key) : node);
 
     if (hasStoryAnnotation(sourceCode, node)) {
       return;
@@ -279,7 +315,7 @@ function reportMethod(
       return;
     }
     const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
-    const name = getNodeName(node);
+    const name = extractName(node);
     context.report({
       node,
       messageId: "missingStory",
@@ -312,6 +348,7 @@ export {
   leadingCommentsHasStory,
   hasStoryAnnotation,
   getNodeName,
+  extractName,
   resolveTargetNode,
   shouldProcessNode,
   reportMissing,
