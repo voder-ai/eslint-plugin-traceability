@@ -210,7 +210,11 @@ function extractName(node: any): string {
       return n.id.name;
     }
     // key property (Property, MethodDefinition, etc.)
-    if (n.key && n.key.type === "Identifier" && typeof n.key.name === "string") {
+    if (
+      n.key &&
+      n.key.type === "Identifier" &&
+      typeof n.key.name === "string"
+    ) {
       return n.key.name;
     }
     // name property (some nodes may have a 'name' string directly)
@@ -218,7 +222,11 @@ function extractName(node: any): string {
       return (n as any).name;
     }
     // computed keys may have an Identifier inside
-    if (n.key && n.key.type === "Literal" && typeof (n.key as any).value === "string") {
+    if (
+      n.key &&
+      n.key.type === "Literal" &&
+      typeof (n.key as any).value === "string"
+    ) {
       return (n.key as any).value;
     }
     n = n.parent;
@@ -270,7 +278,9 @@ function reportMissing(
   passedTarget?: any,
 ): void {
   try {
-    const functionName = extractName(node && (node.id || node.key) ? (node.id || node.key) : node);
+    const functionName = extractName(
+      node && (node.id || node.key) ? node.id || node.key : node,
+    );
 
     if (hasStoryAnnotation(sourceCode, node)) {
       return;
