@@ -20,7 +20,7 @@ function buildFunctionDeclarationVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
   options: {
-    shouldProcessNode: (_node: any) => boolean;
+    shouldProcessNode: (node: any) => boolean;
     scope?: any;
     exportPriority?: any;
   },
@@ -67,7 +67,7 @@ function buildFunctionExpressionVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
   options: {
-    shouldProcessNode: (_node: any) => boolean;
+    shouldProcessNode: (node: any) => boolean;
     scope?: any;
     exportPriority?: any;
   },
@@ -108,7 +108,7 @@ function buildArrowFunctionVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
   options: {
-    shouldProcessNode: (_node: any) => boolean;
+    shouldProcessNode: (node: any) => boolean;
     scope?: any;
     exportPriority?: any;
   },
@@ -141,7 +141,7 @@ function buildTSDeclareFunctionVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
   options: {
-    shouldProcessNode: (_node: any) => boolean;
+    shouldProcessNode: (node: any) => boolean;
     scope?: any;
     exportPriority?: any;
   },
@@ -170,7 +170,7 @@ function buildTSMethodSignatureVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
   options: {
-    shouldProcessNode: (_node: any) => boolean;
+    shouldProcessNode: (node: any) => boolean;
     scope?: any;
     exportPriority?: any;
   },
@@ -203,7 +203,7 @@ function buildMethodDefinitionVisitor(
   context: Rule.RuleContext,
   sourceCode: any,
   options: {
-    shouldProcessNode: (_node: any) => boolean;
+    shouldProcessNode: (node: any) => boolean;
     scope?: any;
     exportPriority?: any;
   },
@@ -233,7 +233,7 @@ export function buildVisitors(
   context: Rule.RuleContext,
   sourceCode: any,
   options: {
-    shouldProcessNode: (_node: any) => boolean;
+    shouldProcessNode: (node: any) => boolean;
     scope?: any;
     exportPriority?: any;
   },

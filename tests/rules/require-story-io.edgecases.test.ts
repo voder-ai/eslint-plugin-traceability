@@ -44,7 +44,10 @@ describe("Require Story IO helpers - edge cases (Story 003.0)", () => {
   test("parentChainHasStory returns true when ancestor comments contain @story", () => {
     const fakeSource: any = {
       getCommentsBefore: () => [
-        { type: "Block", value: "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md" },
+        {
+          type: "Block",
+          value: "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md",
+        },
       ],
     };
     const node: any = { parent: { parent: { type: "SomeParent" } } };
