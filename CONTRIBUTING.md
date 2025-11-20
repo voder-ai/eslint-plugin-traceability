@@ -74,6 +74,20 @@ npm run format:check
 npm run duplication
 ```
 
+Some checks require the plugin to be built first. To run the lint-plugin check locally:
+
+```bash
+# Build the plugin, then run the check that requires the built plugin
+npm run build
+npm run lint:require-built-plugin
+```
+
+Note on pre-push hook: the repository's pre-push hook runs a fast verification task. You can run it locally (and it's what the hook runs before pushing) with:
+
+```bash
+npm run ci-verify:fast
+```
+
 Ensure there are no errors or warnings in the output.
 
 ## Developing Locally
@@ -84,9 +98,7 @@ Ensure there are no errors or warnings in the output.
    git clone https://github.com/<your-username>/eslint-plugin-traceability.git
    cd eslint-plugin-traceability
    npm install
-   ```
-
-````
+   ````
 
 2. Run the tests in watch mode:
 
