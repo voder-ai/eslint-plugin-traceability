@@ -21,7 +21,7 @@ describe("Require Story Visitors - branch coverage (Story 003.0)", () => {
     const fakeSource: any = { getText: () => "" };
     const options: any = { shouldProcessNode: () => true };
     const visitors = buildVisitors(fakeContext, fakeSource, options as any);
-    const handler = visitors.FunctionDeclaration;
+    const handler = (visitors as any).FunctionDeclaration;
     expect(() => handler({} as any)).not.toThrow();
   });
 });
