@@ -54,15 +54,70 @@ function validateStoryPath(opts: {
 }
 
 /**
+ * Report any problems related to the existence or accessibility of the
+ * referenced story file. Filesystem and I/O errors are surfaced with a
+ * dedicated diagnostic that differentiates them from missing files.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-FILE-EXISTENCE - Ensure referenced files exist
+ * @req REQ-ERROR-HANDLING - Differentiate missing files from filesystem errors
+ */
+function reportExistenceProblems(opts: {
+  storyPath: string;
+  commentNode: any;
+  context: any;
+  cwd: string;
+  storyDirs: string[];
+}): void {
+  const { storyPath, commentNode, context, cwd, storyDirs } = opts;
+
+  const result = normalizeStoryPath(storyPath, cwd, storyDirs);
+  const existenceResult = result.existence;
+
+  if (!existenceResult || existenceResult.status === "exists") {
+    return;
+  }
+
+  if (existenceResult.status === "missing") {
+    context.report({
+      node: commentNode,
+      messageId: "fileMissing",
+      data: { path: storyPath },
+    });
+    return;
+  }
+
+  if (existenceResult.status === "fs-error") {
+    const rawError = existenceResult.error;
+    const errorMessage =
+      rawError instanceof Error
+        ? rawError.message
+        : rawError
+          ? String(rawError)
+          : "Unknown filesystem error";
+
+    context.report({
+      node: commentNode,
+      messageId: "fileAccessError",
+      data: {
+        path: storyPath,
+        error: errorMessage,
+      },
+    });
+  }
+}
+
+/**
  * Process and validate the story path for security, extension, and existence.
  * Filesystem and I/O errors are handled inside the underlying utilities
- * (e.g. storyExists) and surfaced as missing-file diagnostics where appropriate.
+ * (e.g. storyExists) and surfaced as missing-file or filesystem-error
+ * diagnostics where appropriate.
  *
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
  * @req REQ-SECURITY-VALIDATION - Prevent path traversal and absolute path usage
- * @req REQ-ERROR-HANDLING - Delegate filesystem and I/O error handling to utilities
+ * @req REQ-ERROR-HANDLING - Delegate filesystem and I/O error handling to utilities and differentiate error types
  */
 function processStoryPath(opts: {
   storyPath: string;
@@ -118,17 +173,22 @@ function processStoryPath(opts: {
     return;
   }
 
-  // Existence check (filesystem and I/O errors are swallowed by utilities
-  // and treated as non-existent files)
-  const result = normalizeStoryPath(storyPath, cwd, storyDirs);
-
-  if (!result.exists) {
-    context.report({
-      node: commentNode,
-      messageId: "fileMissing",
-      data: { path: storyPath },
-    });
-  }
+  /**
+   * Existence check:
+   * - Distinguish between missing files and filesystem errors.
+   * - Filesystem and I/O errors are surfaced with a dedicated diagnostic.
+   *
+   * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+   * @req REQ-FILE-EXISTENCE - Ensure referenced files exist
+   * @req REQ-ERROR-HANDLING - Differentiate missing files from filesystem errors
+   */
+  reportExistenceProblems({
+    storyPath,
+    commentNode,
+    context,
+    cwd,
+    storyDirs,
+  });
 }
 
 /**
@@ -181,6 +241,12 @@ export default {
       invalidExtension:
         "Invalid story file extension for '{{path}}', expected '.story.md'",
       invalidPath: "Invalid story path '{{path}}'",
+      /**
+       * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+       * @req REQ-ERROR-HANDLING - Provide clear diagnostics for filesystem errors
+       */
+      fileAccessError:
+        "Could not validate story file '{{path}}' due to a filesystem error: {{error}}. Please check file existence and permissions.",
     },
     schema: [
       {
@@ -210,7 +276,7 @@ export default {
       /**
        * Program-level handler: iterate comments and validate @story annotations.
        * Filesystem and I/O errors are handled by underlying utilities and
-       * surfaced as missing-file diagnostics where appropriate.
+       * surfaced as missing-file or filesystem-error diagnostics where appropriate.
        *
        * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
        * @req REQ-ANNOTATION-VALIDATION - Discover and dispatch @story annotations for validation

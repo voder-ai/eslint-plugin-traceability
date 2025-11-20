@@ -10,6 +10,42 @@ import fs from "fs";
 import path from "path";
 
 /**
+ * Describes the possible existence states for a checked path.
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
+ * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
+ * @req REQ-PERFORMANCE-OPTIMIZATION - Cache filesystem checks to avoid redundant work
+ */
+export type StoryExistenceStatus = "exists" | "missing" | "fs-error";
+
+/**
+ * Result of checking a single candidate path.
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
+ * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
+ * @req REQ-PERFORMANCE-OPTIMIZATION - Cache filesystem checks to avoid redundant work
+ */
+export interface StoryPathCheckResult {
+  path: string;
+  status: StoryExistenceStatus;
+  error?: unknown;
+}
+
+/**
+ * Aggregated existence result across multiple candidate paths.
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
+ * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
+ * @req REQ-PERFORMANCE-OPTIMIZATION - Cache filesystem checks to avoid redundant work
+ */
+export interface StoryExistenceResult {
+  candidates: string[];
+  status: StoryExistenceStatus;
+  matchedPath?: string;
+  error?: unknown;
+}
+
+/**
  * Build candidate file paths for a given story path.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
@@ -32,49 +68,143 @@ export function buildStoryCandidates(
 }
 
 /**
- * Check if any of the provided file paths exist.
- * Handles filesystem errors (e.g., EACCES) gracefully by treating them as non-existent
- * and never throwing.
+ * Cache of filesystem existence checks keyed by absolute path.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
  * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
+ * @req REQ-PERFORMANCE-OPTIMIZATION - Cache filesystem checks to avoid redundant work
  */
-const fileExistCache = new Map<string, boolean>();
-export function storyExists(paths: string[]): boolean {
-  for (const candidate of paths) {
-    let ok = fileExistCache.get(candidate);
-    if (ok === undefined) {
-      try {
-        ok = fs.existsSync(candidate) && fs.statSync(candidate).isFile();
-      } catch {
-        ok = false;
+const fileExistStatusCache = new Map<string, StoryPathCheckResult>();
+
+/**
+ * Check a single candidate path, with caching and robust error handling.
+ * All filesystem interactions are wrapped in try/catch and never throw.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
+ * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
+ * @req REQ-PERFORMANCE-OPTIMIZATION - Cache filesystem checks to avoid redundant work
+ */
+function checkSingleCandidate(candidate: string): StoryPathCheckResult {
+  const cached = fileExistStatusCache.get(candidate);
+  if (cached) {
+    return cached;
+  }
+
+  let result: StoryPathCheckResult;
+
+  try {
+    const exists = fs.existsSync(candidate);
+    if (!exists) {
+      result = { path: candidate, status: "missing" };
+    } else {
+      const stat = fs.statSync(candidate);
+      if (stat.isFile()) {
+        result = { path: candidate, status: "exists" };
+      } else {
+        // Path exists but is not a file; treat as missing for story purposes.
+        result = { path: candidate, status: "missing" };
       }
-      fileExistCache.set(candidate, ok);
     }
-    if (ok) {
-      return true;
+  } catch (error) {
+    // Any filesystem error is captured and surfaced as fs-error.
+    result = { path: candidate, status: "fs-error", error };
+  }
+
+  fileExistStatusCache.set(candidate, result);
+  return result;
+}
+
+/**
+ * Aggregate existence status across multiple candidate paths.
+ * Returns the first successful match (`exists`), or, if none exist,
+ * the first filesystem error encountered. If there are only missing
+ * candidates, returns a missing status.
+ *
+ * This function never throws and is the preferred richer API for callers
+ * that need more than a boolean.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
+ * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
+ * @req REQ-PERFORMANCE-OPTIMIZATION - Cache filesystem checks to avoid redundant work
+ */
+export function getStoryExistence(candidates: string[]): StoryExistenceResult {
+  let firstFsError: StoryPathCheckResult | undefined;
+
+  for (const candidate of candidates) {
+    const res = checkSingleCandidate(candidate);
+
+    if (res.status === "exists") {
+      return {
+        candidates,
+        status: "exists",
+        matchedPath: res.path,
+      };
+    }
+
+    if (res.status === "fs-error" && !firstFsError) {
+      firstFsError = res;
     }
   }
-  return false;
+
+  if (firstFsError) {
+    return {
+      candidates,
+      status: "fs-error",
+      error: firstFsError.error,
+    };
+  }
+
+  return {
+    candidates,
+    status: "missing",
+  };
+}
+
+/**
+ * Check if any of the provided file paths exist.
+ * Handles filesystem errors (e.g., EACCES) gracefully by treating them as non-existent
+ * and never throwing.
+ *
+ * Internally delegates to the richer status-based helper while preserving the
+ * original boolean-only API for backwards compatibility.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
+ * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
+ * @req REQ-PERFORMANCE-OPTIMIZATION - Cache filesystem checks to avoid redundant work
+ */
+export function storyExists(paths: string[]): boolean {
+  const result = getStoryExistence(paths);
+  return result.status === "exists";
 }
 
 /**
  * Normalize a story path to candidate absolute paths and check existence.
- * Filesystem errors are handled via `storyExists`, which suppresses exceptions
- * and treats such cases as non-existent.
+ * Filesystem errors are handled via the status-aware helper, which suppresses
+ * exceptions and treats such cases as non-existent for the boolean flag while
+ * still surfacing error details in the status field.
+ *
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
  * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
  * @req REQ-ERROR-HANDLING - Handle filesystem errors gracefully without throwing
+ * @req REQ-PERFORMANCE-OPTIMIZATION - Cache filesystem checks to avoid redundant work
  */
 export function normalizeStoryPath(
   storyPath: string,
   cwd: string,
   storyDirs: string[],
-): { candidates: string[]; exists: boolean } {
+): {
+  candidates: string[];
+  exists: boolean;
+  existence: StoryExistenceResult;
+} {
   const candidates = buildStoryCandidates(storyPath, cwd, storyDirs);
-  const exists = storyExists(candidates);
-  return { candidates, exists };
+  const existence = getStoryExistence(candidates);
+  const exists = existence.status === "exists";
+  return { candidates, exists, existence };
 }
 
 /**

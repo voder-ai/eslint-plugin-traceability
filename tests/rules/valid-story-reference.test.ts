@@ -66,6 +66,42 @@ describe("Valid Story Reference Rule (Story 006.0-DEV-FILE-VALIDATION)", () => {
   });
 });
 
+/**
+ * Helper to run the valid-story-reference rule against a single source string
+ * and collect reported diagnostics.
+ *
+ * @req REQ-ERROR-HANDLING - Used to verify fileAccessError reporting behavior
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ */
+function runRuleOnCode(code: string) {
+  const messages: any[] = [];
+
+  const context: any = {
+    report: (descriptor: any) => {
+      messages.push(descriptor);
+    },
+    getSourceCode: () => ({
+      text: code,
+      getAllComments: () => [
+        {
+          type: "Line",
+          value: code.replace(/^\/\//, "").trim(),
+        },
+      ],
+    }),
+    options: [],
+    parserOptions: { ecmaVersion: 2020 },
+  };
+
+  const listeners = rule.create(context);
+
+  if (typeof listeners.Program === "function") {
+    listeners.Program({ type: "Program", body: [], sourceType: "module" });
+  }
+
+  return messages;
+}
+
 describe("Valid Story Reference Rule Error Handling (Story 006.0-DEV-FILE-VALIDATION)", () => {
   /**
    * @req REQ-ERROR-HANDLING - Verify storyExists swallows fs errors and returns false
@@ -98,5 +134,39 @@ describe("Valid Story Reference Rule Error Handling (Story 006.0-DEV-FILE-VALIDA
     expect(storyExists(["docs/stories/permission-denied.story.md"])).toBe(
       false,
     );
+  });
+
+  /**
+   * @req REQ-ERROR-HANDLING - Verify rule reports fileAccessError when filesystem operations fail
+   * instead of treating it as a missing file.
+   * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+   */
+  it("[REQ-ERROR-HANDLING] rule reports fileAccessError when fs throws", () => {
+    const accessError = new Error(
+      "EACCES: permission denied while accessing",
+    ) as NodeJS.ErrnoException;
+    accessError.code = "EACCES";
+
+    jest.spyOn(fs, "existsSync").mockImplementation(() => {
+      throw accessError;
+    });
+
+    jest.spyOn(fs, "statSync").mockImplementation(() => {
+      throw accessError;
+    });
+
+    const diagnostics = runRuleOnCode(
+      `// @story docs/stories/fs-error.story.md`,
+    );
+
+    expect(diagnostics.length).toBeGreaterThan(0);
+    const fileAccessDiagnostics = diagnostics.filter(
+      (d) => d.messageId === "fileAccessError",
+    );
+    expect(fileAccessDiagnostics.length).toBeGreaterThan(0);
+
+    const errorData = fileAccessDiagnostics[0].data;
+    expect(errorData).toBeDefined();
+    expect(String(errorData.error)).toMatch(/EACCES/i);
   });
 });
