@@ -1,17 +1,18 @@
 ## NOW
 
-- [ ] Create scripts/validate-scripts-nonempty.js that scans scripts/ for zero-byte or obviously-placeholder files and exits non-zero when any are found.
+- [ ] Update src/index.ts to remove or correct the invalid @story JSDoc reference to docs/stories/001.2-RULE-NAMES-DECLARATION.story.md so it references an existing docs/stories file (or remove the @story tag if no appropriate story exists).
 
 ## NEXT
 
-- [ ] Add a CI workflow step (immediately after checkout/setup-node) in .github/workflows/ci-cd.yml to run node scripts/validate-scripts-nonempty.js so CI fails fast on empty/placeholder scripts.
-- [ ] Run the new validation script locally; if it reports problematic files, replace or implement minimal functional content for those scripts (or remove unused placeholder files) to satisfy the validator.
-- [ ] After remediation, let the automated pipeline run (the system will handle commit/push); if the CI run reports failures related to the validator, collect the failing step logs and fix the offending scripts and re-run the cycle.
-- [ ] When the validator is stable in CI, proceed with incremental maintenance: split src/rules/helpers/require-story-helpers.ts into smaller modules in small commits and add focused unit tests for the extracted helpers.
+- [ ] Run the traceability scanner (scripts/traceability-check.js or npm run check:traceability) to detect any remaining invalid @story/@req references and capture the report.
+- [ ] For each invalid @story/@req reported, apply a minimal targeted fix: correct the path, add a small missing story file (only if appropriate), or remove the erroneous tag. Add or update JSDoc @story/@req annotations on changed files to preserve traceability.
+- [ ] Commit each fix as a small, focused Conventional Commit (one logical change per commit) and ensure JSDoc traceability tags are present in modified files.
+- [ ] Run the project's fast verification (ci-verify:fast) locally to confirm the traceability step passes; then push to trigger CI and ensure the CI traceability step succeeds for the pushed commit (push/CI are handled automatically).
+- [ ] Begin the first minimal refactor of src/rules/helpers/require-story-helpers.ts by extracting one cohesive helper (e.g., export-detection) into src/rules/helpers/export-detection.ts, add JSDoc @story/@req annotations and unit tests for the extracted helper, and update imports. Keep the change small so tests and checks remain green.
 
 ## LATER
 
-- [ ] Add a CI/pre-push check to report missing @story/@req annotations (or produce a report) to avoid unexpected traceability failures.
-- [ ] Incrementally rename remaining '.branches.' test files to behavior-focused names (one file per commit) and add shared test utilities to reduce jscpd duplication.
-- [ ] Introduce a lightweight linter or CI metric that warns on empty/very-short scripts and on file-length thresholds; document the policy in an ADR.
-- [ ] Address jscpd clones and refactor large files after CI stability is confirmed, running tests after each small change.
+- [ ] Continue splitting require-story-helpers.ts into additional focused modules in successive small commits with unit tests and traceability annotations.
+- [ ] Introduce a CI-enforced traceability lint step that fails early with clear messages listing offending files and remediation guidance; document the rule and remediation steps in CONTRIBUTING and an ADR.
+- [ ] Rename remaining '.branches.' test files to behavior-focused names incrementally (one file per commit) and extract shared test utilities to reduce jscpd-flagged duplication.
+- [ ] Revisit pre-push ↔ CI parity: after traceability fixes are complete, align ci-verify:fast or pre-push to detect the same class of traceability/script-placeholder issues as CI, and document the chosen parity strategy in an ADR.

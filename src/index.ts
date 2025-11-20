@@ -7,7 +7,7 @@
 import type { Rule } from "eslint";
 
 /**
- * @story docs/stories/001.2-RULE-NAMES-DECLARATION.story.md
+ * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
  * @req REQ-RULE-LIST - Enumerate supported rule file names for plugin discovery
  */
 const RULE_NAMES = [
