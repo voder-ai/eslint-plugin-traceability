@@ -1,5 +1,5 @@
 import type { Rule } from "eslint";
-import * as helpers from "../helpers/require-story-helpers";
+import * as helpers from "./helpers/require-story-helpers";
 
 // Default node types to check for function annotations
 export const DEFAULT_SCOPE = helpers.DEFAULT_SCOPE;
