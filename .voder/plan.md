@@ -1,15 +1,16 @@
 ## NOW
 
-- [ ] Create docs/decisions/adr-pre-push-parity.md documenting that .husky/pre-push runs npm run ci-verify:fast instead of the full CI suite, including rationale, constraints, exact commands (ci-verify vs ci-verify:fast), and a brief rollback/migration plan.
+- [ ] Rename the four coverage-oriented Jest test files under `tests/rules` that currently end with `.branches.test.ts` to behavior-focused names (for example: `require-story-core-edgecases.test.ts`, `require-story-helpers-edgecases.test.ts`, `require-story-io-edgecases.test.ts`, and `require-story-visitors-edgecases.test.ts`), updating any in-file titles or references that mention “branches” purely as coverage terminology.
 
 ## NEXT
 
-- [ ] Update the comment in .husky/pre-push to reference docs/decisions/adr-pre-push-parity.md so the hook’s behavior is explicitly tied to the documented decision.
-- [ ] Add a short section to CONTRIBUTING.md (or an appropriate internal dev doc) explaining the pre-commit and pre-push behavior, linking to adr-pre-push-parity.md for full rationale and listing which scripts run locally vs in CI.
-- [ ] Review package.json script descriptions (if any) for ci-verify and ci-verify:fast to ensure they clearly state their intended use (full CI gate vs fast pre-push gate) in line with the ADR.
+- [ ] Scan the codebase for any references to the old `.branches.test.ts` filenames (e.g., in documentation, scripts, or comments) and update them to the new behavior-focused names so everything stays consistent.
+- [ ] Remove generated CI/test artifact files that are currently tracked in git (such as `jest-output.json`, `jest-coverage.json`, `tmp_eslint_report.json`, `tmp_jest_output.json`, `ci/jest-output.json`, and `ci/npm-audit.json`) to clean the repository and reduce VERSION_CONTROL penalties.
+- [ ] Fix and extend `.gitignore` so that Jest/ESLint output and CI report files (including `jest-output.json`, `jest-coverage.json`, temporary ESLint/Jest JSON files, and either the whole `ci/` directory or specific report files) are properly ignored, correcting the malformed `jest-output.json# Ignore CI artifact reports` line into a valid ignore rule plus a separate comment.
+- [ ] Verify that any scripts or documentation that currently read Jest or CI JSON artifacts are updated to use a dedicated, gitignored reports directory (or to regenerate artifacts on demand) so workflows keep functioning without committing generated files.
 
 ## LATER
 
-- [ ] Periodically re-evaluate whether ci-verify:fast should be expanded (e.g., add lint or a subset of tests) based on developer feedback and CI failure patterns, updating adr-pre-push-parity.md if the policy changes.
-- [ ] Consider adding a brief docs/decisions/index.md or similar ADR catalog that lists adr-pre-push-parity.md alongside other ADRs for easier discovery by maintainers.
-- [ ] If CI failures continue to arise from checks not covered by ci-verify:fast, revisit the pre-push policy to either broaden the local checks or introduce additional optional scripts developers can run before committing high-risk changes.
+- [ ] Add a brief note to the testing section of `CONTRIBUTING.md` stating that test filenames must describe the behavior or feature under test (not coverage intent such as “branches”), reinforcing the new convention for future contributors.
+- [ ] Optionally introduce a dedicated gitignored directory (for example `reports/` or `artifacts/`) for local Jest/ESLint/CI JSON outputs and adjust helper scripts to write there, standardizing handling of transient test and CI data.
+- [ ] After these changes have been in place, rerun or request an updated implementation assessment to confirm that both TESTING and VERSION_CONTROL now exceed the 90% threshold so that the FUNCTIONALITY assessment can proceed.
