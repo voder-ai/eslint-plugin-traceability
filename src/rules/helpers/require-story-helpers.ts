@@ -348,4 +348,8 @@ export {
   reportMethod,
   DEFAULT_SCOPE,
   EXPORT_PRIORITY_VALUES,
+  linesBeforeHasStory,
+  parentChainHasStory,
+  fallbackTextBeforeHasStory,
+  getNodeName,
 };
