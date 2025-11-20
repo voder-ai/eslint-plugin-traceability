@@ -16,7 +16,7 @@
     "build": "tsc -p tsconfig.json",
     "type-check": "tsc --noEmit -p tsconfig.json",
     "check:traceability": "node scripts/traceability-check.js",
-    "lint-plugin-check": "npm run build && node scripts/lint-plugin-check.js",
+    "lint-plugin-check": "node scripts/lint-plugin-check.js",
     "lint-plugin-guard": "node scripts/lint-plugin-guard.js",
     "lint:require-built-plugin": "npm run lint-plugin-guard",
     "lint": "eslint --config eslint.config.js \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
