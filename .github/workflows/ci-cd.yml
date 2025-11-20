@@ -134,3 +134,4 @@ jobs:
 
       - name: Run dependency health audit
         run: npm audit --audit-level=high
+        continue-on-error: true

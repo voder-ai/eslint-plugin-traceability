@@ -1,101 +1,105 @@
+<scratchpad>
+Goal: implement the NEXT PRIORITY from the assessment: remediate three deficient areas (CODE_QUALITY, DOCUMENTATION traceability, SECURITY). We must make the NOW action the most important single actionable step. The oversized file src/rules/require-story-annotation.ts appears central: it exceeds max-lines rule, houses many missing branch annotations, and refactoring it will directly help code quality and make it easier to add missing @story/@req annotations. Refactor also reduces cognitive size so documentation work is easier. Security work (dry-aged-deps integration, audit capture, spawnSync shell:true removal) is independent but should follow core code quality first because traceability check and lint must pass before CI.
+
+NOW must be exactly one specific action (no multiple commands). So pick: "Refactor the oversized file to split responsibilities so the main file is <= 300 lines and add annotations for moved functions/branches". That is one task. NEXT will contain the step-by-step plan: branch, implement, run local checks, commit message examples, then run traceability-check and fix remaining missing annotations across files, then integrate dry-aged-deps into CI and replace shell:true usage, run npm audit --json, apply safe upgrades or create ADR documenting accepted risk, move heavy checks out of pre-push, enforce check:traceability in CI. After each item: commit, run checks, push, wait for CI run.
+
+We must obey constraints: no interactive instructions, don't touch .voder or prompts. Also must instruct to avoid starting server. Include commit messages using Conventional Commits. Emphasize single-item-at-a-time workflow and CI monitoring.
+
+Be concise but precise.
+</scratchpad>
+
 ## NOW
-
-Run the full test suite locally in a CI-reproducible way and capture verbose/structured Jest output so we can diagnose environment-specific or flaky failures.
-
-Run this single command from the repository root (creates a ci/ folder with logs):
-- mkdir -p ci && npm ci && npm run build && npm test -- --runInBand --detectOpenHandles --verbose --json --outputFile=ci/jest-output.json 2>&1 | tee ci/jest-full.log
-
-(Exactly one action: reproduce the CI test run locally with verbose JSON output and save logs.)
+Refactor src/rules/require-story-annotation.ts so the file is reduced to <= 300 lines by extracting helper functions / branch-handling logic into one or more new modules under src/rules/helpers/ (or src/utils/), and add the required @story/@req JSDoc annotations for any functions/branches moved during the refactor.
 
 ## NEXT
+Follow these steps in order. Complete one step, then run the local quality checklist, commit with a Conventional Commit message, push, and wait for CI to pass before moving to the next step.
 
-After you have the captured logs (ci/jest-output.json and ci/jest-full.log), follow these steps in order until test execution stabilizes and the execution score rises to >= 90%:
+1. Create a working branch for the refactor
+   - git switch -c refactor/split-require-story-annotation
 
-1. Inspect the captured logs
-   - Open ci/jest-full.log for the human-readable trace and ci/jest-output.json for structured results.
-   - Look for:
-     - tests that timed out or hang (no completion), open handles, or long-running child processes
-     - failing tests and stack traces
-     - environment-specific errors (ENOENT, permission, path differences)
-     - deprecation or CLI warnings reported by Jest
-   - Note test names (suite & test) and line numbers for failing or flaky entries.
+2. Implement the refactor described in NOW
+   - Extract focused helpers (parsing, branch inspection, reporting) into new files (e.g., src/rules/helpers/annotation-parsers.ts, src/rules/helpers/annotation-branches.ts).
+   - Keep src/rules/require-story-annotation.ts as the high-level coordinator (<300 lines) that imports the helpers.
+   - Add comprehensive @story and @req JSDoc annotations to each new function and to the branch blocks you moved, following the project's traceability format.
+   - Commit: refactor: split require-story-annotation into smaller modules and add @story/@req annotations
 
-2. Reproduce individual failures in isolation
-   - For each failing/flaky test, run it locally with focused flags to capture more detail:
-     - npm test -- --runInBand --testNamePattern="Exact test name or RegExp" --detectOpenHandles --verbose
-   - If a test times out or has open handles, add --runInBand --detectOpenHandles --logHeapUsage to capture memory traces.
+3. Run the local quality-check checklist (before push)
+   - npm run build
+   - npm run type-check
+   - npm run lint -- --max-warnings=0
+   - npm test
+   - npm run format:check
+   - npm run duplication
+   - npm run check:traceability
+   - If any check fails, fix immediately and recommit. Use targeted fix commits (fix:, style:, test:) as appropriate.
 
-3. Fix the root cause(s), one fix per commit
-   - For each failing/flaky test, apply the minimal change needed:
-     - Fix environment assumptions (paths, temp dir usage) to use OS temp directories (os.tmpdir()).
-     - Ensure tests clean up (close servers, clear timers, close file handles) in finally/afterAll.
-     - Replace non-deterministic timing with deterministic mocks or use seeded randomness.
-     - Avoid long-running child processes in tests; mock external calls or use short timeouts.
-     - If a real concurrency issue exists, convert to single-threaded execution in the test or refactor the code under test.
-   - Before committing each fix, run the local quality-check checklist:
-     - npm run build
-     - npm run type-check
-     - npm test
-     - npm run lint -- --max-warnings=0
-     - npm run format:check
-     - npm run check:traceability
-   - Commit using Conventional Commits, e.g.:
-     - fix(test): ensure temp-dir cleanup in X.test.ts
-     - fix(test): close server in before/after hooks for Y.test.ts
-   - Push and wait for CI to run.
+4. Push the branch and monitor CI
+   - git push --set-upstream origin refactor/split-require-story-annotation
+   - Wait for CI (CI/CD Pipeline) to run. If CI fails, read logs, fix root cause, commit and push again.
 
-4. If a failure cannot be quickly fixed, gather detailed diagnostic evidence and create a temporary, reversible mitigation
-   - Add increased test timeout (only as a short-term measure) or skip an obviously flaky integration test with a tracked TODO and issue reference:
-     - test.skip(...) with a link to an issue, or add a short-lived feature-flag in the test to run only locally.
-   - Use Conventional Commit messages for these changes and include the issue reference:
-     - chore(test): skip flaky X.test.ts — tracked in GH-1234
-   - Immediately open an issue to permanently fix the skipped test and assign an owner.
+5. Complete remaining traceability remediation
+   - Run scripts/traceability-check.js and review scripts/traceability-report.md.
+   - For each file/function/branch reported as missing annotations (prioritize remaining items in src/rules/require-story-annotation.ts and src/utils/branch-annotation-helpers.ts):
+     - Add precise @story and @req annotations referencing the specific story files in prompts/ or docs/stories/.
+     - Prefer small, focused commits per file: chore(docs): add @story/@req to src/XYZ.ts
+   - After each file commit run the quality-check checklist and push; wait for CI to pass.
 
-5. Improve CI observability (one small change, commit when ready)
-   - Add CI steps to upload artifacts so future runs surface the same logs automatically:
-     - Upload ci/jest-output.json and ci/jest-full.log as job artifacts in .github/workflows/ci-cd.yml (use actions/upload-artifact@v4).
-     - Use a Conventional Commit for this CI change: chore(ci): upload jest logs/artifacts for debugging
-   - If CI uses multiple matrix jobs that can collide on artifact names, include matrix identifiers in artifact names.
+6. Integrate dry-aged-deps into CI and capture npm audit output
+   - Add an npm script: "safety:deps": "npx dry-aged-deps --format=json > ci/dry-aged-deps.json || true"
+   - Add a CI workflow step (quality-and-deploy job) that runs the script and uploads ci/dry-aged-deps.json as an artifact (run if: always()).
+   - Commit: chore(ci): add dry-aged-deps check and artifact upload
 
-6. Re-run full quality gates locally and in CI
-   - After fixes, re-run the initial NOW command to regenerate ci/jest-output.json and ci/jest-full.log.
-   - Push changes and verify CI run completes with tests passing and artifacts uploaded.
-   - Track execution metric: repeat until CI job(s) run cleanly and the execution assessment target (>= 90%) is reached.
+7. Replace shell:true usage and make audit reproducible
+   - Update scripts/generate-dev-deps-audit.js to call spawnSync without shell (spawnSync('npm', ['audit', '--json'], { encoding: 'utf8' })) and make the script write JSON to ci/npm-audit.json.
+   - Commit: fix(security): remove shell:true from generate-dev-deps-audit and output json to ci/npm-audit.json
+   - Run node scripts/generate-dev-deps-audit.js locally to produce ci/npm-audit.json, review contents.
 
-7. Validate environment parity
-   - Confirm local Node/npm versions match CI (check package.json engines and CI setup).
-   - If mismatch found, update CI or local dev setup (nvm, actions/setup-node) so both run the same Node version.
+8. Run npm audit --json (locally or in CI) and reconcile vulnerabilities
+   - Locally: npm audit --json > ci/npm-audit.json
+   - Inspect ci/npm-audit.json and the dry-aged-deps output to determine if dry-aged-deps lists safe upgrades.
+     - If dry-aged-deps suggests safe updates, apply them (one package per commit), run quality-check, commit with chore(deps): upgrade X per dry-aged-deps, push, and verify CI.
+     - If no safe upgrade exists, create an ADR documenting why the vulnerability is accepted and mitigation plan and commit it under docs/decisions/ (docs/decisions/adr-xxxx-accept-dev-dep-risk.md).
+       - Commit: docs: ADR accept dev-dep vulnerability GHSA-xxxx - rationale & mitigation
+
+9. Remove heavy/slow checks from pre-push and keep them in CI
+   - Modify .husky/pre-push to remove or shorten heavy checks (npm audit, long duplication runs) and leave fast checks (build, type-check, tests, lint).
+   - Ensure CI still runs the full heavy checks.
+   - Commit: chore(ci): move heavy checks out of pre-push into CI to speed developer workflow
+
+10. Finalize traceability and code-quality policy enforcement
+    - Ensure npm run check:traceability is included and enforced in CI (already added earlier; confirm).
+    - Re-run scripts/traceability-check.js; when it reports zero missing functions and branches, commit the regenerated scripts/traceability-report.md.
+    - Commit: chore: regenerate traceability-report after completing annotations
 
 ## LATER
+After the NEXT items are complete and CI is stable, perform longer-term hardening and automation:
 
-Once execution is consistently stable and passing in CI (execution >= 90%), harden the test and CI environment to prevent regressions:
+- Enforce max-lines in CI as a blocking rule (eslint rule already present — create a CI job that fails on max-lines violations if not already enforced).
+  - Commit: chore(ci): enforce eslint max-lines rule in CI
 
-1. Add permanent diagnostics and automation
-   - Add an npm script test:ci:debug that runs the command used in NOW and writes logs to ci/.
-   - Add a CI artifact upload step (if not already added) for each test run to collect logs and coverage artifacts.
+- Add a scheduled dry-aged-deps job in .github/workflows to run daily/weekly and automatically open PRs (or report) when safe updates are available.
+  - Commit: chore(ci): schedule dry-aged-deps run weekly and upload report
 
-2. Reduce flakiness systematically
-   - Convert integration tests that are flaky into faster, deterministic unit tests where feasible.
-   - Introduce a test retry policy for known non-deterministic external tests (use jest-circus retry or a controlled wrapper) but only for a short timeframe while root-cause fixes are scheduled.
+- Add CONTRIBUTING.md snippet with exact @story/@req annotation examples and the local reproduction commands (include the NOW reproduction command), so future contributors add annotations correctly.
+  - Commit: docs: add traceability annotation guidance to CONTRIBUTING.md
 
-3. CI test configuration improvements
-   - Align Jest timeouts and resource limits between local and CI (jest.config.js testTimeout).
-   - Consider adding a short smoke-test step that runs a small deterministic test suite to give fast feedback before longer tests run.
-   - Optionally add a nightly CI job that runs the full test matrix to detect flakiness early.
+- Add a small npm script test:ci:debug that runs the exact CI-reproducible test command and writes outputs to ci/ (for developer convenience).
+  - Commit: chore(scripts): add test:ci:debug to package.json
 
-4. Add monitoring and alerts
-   - Add a scheduled job to run the test suite weekly and open an issue/PR when failures arise.
-   - Record flaky test history (simple JSON under .voder/ or docs) for trend analysis and prioritization.
+- Periodically review pre-push hook contents and keep it fast (<2 minutes). If needed, add an opt-in heavier-check script developers can run pre-push manually.
 
-5. Make fixes discoverable and maintainable
-   - Document debugging steps and the "How to reproduce CI locally" command in CONTRIBUTING.md (include the exact NOW command).
-   - Add a short checklist for triaging test failures so future engineers follow the same reproducible process.
-
-Why this plan matches the NEXT PRIORITY
-- The NOW action directly reproduces the CI test run locally with verbose/structured output so we can diagnose flakes and environment-specific failures.
-- NEXT lists focused, incremental remediation steps (inspect logs, isolate failures, fix one at a time, validate locally and in CI, and ensure logs are uploaded) and preserves the project's quality-first workflow (run full local checks before committing and use Conventional Commits).
-- LATER hardens CI & tests to prevent regressions and ensures long-term execution stability so the functionality assessment can be completed.
+Notes / Process rules to follow while executing the plan
+- Single-change principle: make each change small and focused. After finishing each item:
+  1) Run the full quality-check checklist locally (build, type-check, lint, tests, format:check, duplication, check:traceability)
+  2) Commit using Conventional Commits
+  3) Push and wait for CI to run and pass
+  4) Only then move to the next item
+- Never modify files in .voder/ or prompts/ directories.
+- Do not introduce interactive steps; all scripts must be non-interactive and write artifacts to ci/.
+- Use ADRs (docs/decisions/) to document any security acceptance decisions or deviations from standard upgrade flow.
 
 If you want, I can:
-- Convert the diagnostic commands into a small npm script and commit the recommended CI artifact upload change (one file change per commit, with the required checks), or
-- Continue with the next step after you run the NOW command and share ci/jest-full.log and ci/jest-output.json.
+- produce a concrete split suggestion (file outlines and example function extractions) for src/rules/require-story-annotation.ts to accelerate the refactor, or
+- create the branch and make the initial extraction commit (small change), run the local checks, and open a PR for review.
+
+Which do you want me to do next: generate the concrete extraction plan (file-by-file outline) or create the initial refactor commit?
