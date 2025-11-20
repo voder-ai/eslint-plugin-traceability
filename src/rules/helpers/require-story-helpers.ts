@@ -223,22 +223,26 @@ export function reportMissing(
   target?: any,
 ) {
   const sc = sourceCode || context.getSourceCode();
-  if (hasStoryAnnotation(sc, node)) {
+  const resolvedTarget = target ?? resolveTargetNode(sc, node);
+  if (hasStoryAnnotation(sc, node) || hasStoryAnnotation(sc, resolvedTarget)) {
     return;
   }
   const name = getNodeName(node);
-  const resolvedTarget = target ?? resolveTargetNode(sc, node);
-  context.report({
+  const fixerFunc = createAddStoryFix(resolvedTarget);
+
+  const reportObj: any = {
     node,
     messageId: "missingStory",
     data: { name },
-    suggestions: [
+    suggest: [
       {
         desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-        fix: createAddStoryFix(resolvedTarget),
+        fix: fixerFunc,
       },
     ],
-  });
+  };
+
+  context.report(reportObj);
 }
 
 /**
@@ -263,15 +267,19 @@ export function reportMethod(
   }
   const name = getNodeName(node);
   const resolvedTarget = target ?? node;
-  context.report({
+  const fixerFunc = createMethodFix(resolvedTarget);
+
+  const reportObj: any = {
     node,
     messageId: "missingStory",
     data: { name },
-    suggestions: [
+    suggest: [
       {
-        desc: `Add JSDoc @story annotation for method '${name}', e.g., ${ANNOTATION}`,
-        fix: createMethodFix(resolvedTarget),
+        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+        fix: fixerFunc,
       },
     ],
-  });
+  };
+
+  context.report(reportObj);
 }
