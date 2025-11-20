@@ -184,6 +184,15 @@ function programListener(context: any) {
 
   return function Program() {
     const comments = sourceCode.getAllComments() || [];
+    /**
+     * Process each comment to handle story and requirement annotations.
+     *
+     * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+     * @req REQ-DEEP-PARSE - Parse annotations from comment blocks
+     * @req REQ-DEEP-MATCH - Validate @req references found in comments
+     * @req REQ-DEEP-CACHE - Use cache for parsed story files to avoid repeated IO
+     * @req REQ-DEEP-PATH - Enforce path validation when resolving story files
+     */
     comments.forEach((comment: any) => {
       rawStoryPath = handleComment({
         comment,

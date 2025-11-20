@@ -62,6 +62,10 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
     if (
       Array.isArray(pComments) &&
       pComments.some(
+        /**
+         * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+         * @req REQ-ANNOTATION-REQUIRED - Detect @story in parent comments via value inspection
+         */
         (c: any) => typeof c.value === "string" && c.value.includes("@story"),
       )
     ) {
@@ -71,6 +75,10 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
     if (
       Array.isArray(pLeading) &&
       pLeading.some(
+        /**
+         * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+         * @req REQ-ANNOTATION-REQUIRED - Detect @story in parent leadingComments via value inspection
+         */
         (c: any) => typeof c.value === "string" && c.value.includes("@story"),
       )
     ) {
