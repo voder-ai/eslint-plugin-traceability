@@ -28,6 +28,11 @@ export function getAllFiles(dir: string): string[] {
    */
   function traverse(currentDir: string) {
     const entries = fs.readdirSync(currentDir);
+    /**
+     * Iterate over directory entries using a for-of loop.
+     * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+     * @req REQ-MAINT-UTILS-TRAVERSE-FOROF - Traceability for ForOfStatement branch handling entries
+     */
     for (const entry of entries) {
       const fullPath = path.join(currentDir, entry);
       const stat = fs.statSync(fullPath);

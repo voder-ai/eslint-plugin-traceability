@@ -14,7 +14,19 @@ export function createAddStoryFix(target: any) {
    */
 
   function addStoryFixer(fixer: any) {
-    return fixer.insertTextBefore(target, `${ANNOTATION}\n`);
+    const start =
+      target && typeof target === "object"
+        ? target.parent &&
+          (target.parent.type === "ExportNamedDeclaration" ||
+            target.parent.type === "ExportDefaultDeclaration") &&
+          Array.isArray(target.parent.range) &&
+          typeof target.parent.range[0] === "number"
+          ? target.parent.range[0]
+          : Array.isArray(target.range) && typeof target.range[0] === "number"
+            ? target.range[0]
+            : 0
+        : 0;
+    return fixer.insertTextBeforeRange([start, start], `${ANNOTATION}\n`);
   }
   return addStoryFixer;
 }
@@ -32,7 +44,19 @@ export function createMethodFix(node: any) {
    */
 
   function methodFixer(fixer: any) {
-    return fixer.insertTextBefore(node, `${ANNOTATION}\n  `);
+    const start =
+      node && typeof node === "object"
+        ? node.parent &&
+          (node.parent.type === "ExportNamedDeclaration" ||
+            node.parent.type === "ExportDefaultDeclaration") &&
+          Array.isArray(node.parent.range) &&
+          typeof node.parent.range[0] === "number"
+          ? node.parent.range[0]
+          : Array.isArray(node.range) && typeof node.range[0] === "number"
+            ? node.range[0]
+            : 0
+        : 0;
+    return fixer.insertTextBeforeRange([start, start], `${ANNOTATION}\n  `);
   }
   return methodFixer;
 }
@@ -78,8 +102,10 @@ export function reportMissing(
    */
   if (typeof sc?.getJSDocComment === "function") {
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQUIRED - If JSDoc already contains @story, do not report
+    // @req REQ-ANNOTATION-REQUIRED - Skip reporting when JSDoc already contains @story
     const js = sc.getJSDocComment(node);
+    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-REQUIRED - If @story present in JSDoc, do not report
     if (js && typeof js.value === "string" && js.value.includes("@story"))
       return;
   }

@@ -11,10 +11,10 @@ import {
 } from "./require-story-io";
 
 import {
-  createAddStoryFix,
-  createMethodFix,
   DEFAULT_SCOPE,
   EXPORT_PRIORITY_VALUES,
+  createAddStoryFix,
+  createMethodFix,
 } from "./require-story-core";
 
 export { DEFAULT_SCOPE, EXPORT_PRIORITY_VALUES };
@@ -265,11 +265,13 @@ export function shouldProcessNode(
  * @param {Rule.RuleContext} context - ESLint rule context used to report
  * @param {any} sourceCode - ESLint sourceCode object
  * @param {any} node - AST node that is missing the annotation
+ * @param {any} [passedTarget] - optional AST node to use as insertion target instead of resolving from node
  */
 export function reportMissing(
   context: Rule.RuleContext,
   sourceCode: any,
   node: any,
+  passedTarget?: any,
 ): void {
   try {
     const functionName = getNodeName(node);
@@ -277,8 +279,9 @@ export function reportMissing(
     if (hasStoryAnnotation(sourceCode, node)) {
       return;
     }
-    const target = resolveTargetNode(sourceCode, node);
+    const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
     const name = functionName;
+
     context.report({
       node,
       messageId: "missingStory",
@@ -286,7 +289,7 @@ export function reportMissing(
       suggest: [
         {
           desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-          fix: createAddStoryFix(target),
+          fix: createAddStoryFix(resolvedTarget),
         },
       ],
     });
@@ -303,17 +306,19 @@ export function reportMissing(
  * @param {Rule.RuleContext} context - ESLint rule context to report
  * @param {any} sourceCode - ESLint sourceCode object
  * @param {any} node - AST node that is missing the annotation
+ * @param {any} [passedTarget] - optional AST node to use as insertion target instead of resolving from node
  */
 export function reportMethod(
   context: Rule.RuleContext,
   sourceCode: any,
   node: any,
+  passedTarget?: any,
 ): void {
   try {
     if (hasStoryAnnotation(sourceCode, node)) {
       return;
     }
-    const target = resolveTargetNode(sourceCode, node);
+    const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
     const name = getNodeName(node);
     context.report({
       node,
@@ -322,7 +327,7 @@ export function reportMethod(
       suggest: [
         {
           desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-          fix: createMethodFix(target),
+          fix: createMethodFix(resolvedTarget),
         },
       ],
     });
