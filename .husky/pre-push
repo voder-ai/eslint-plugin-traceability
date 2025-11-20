@@ -11,5 +11,5 @@
 #
 set -e
 # Use consolidated fast verification script instead of manual sequence.
-# See ADR-2025-02 (pre-push parity change): prefer ci-verify:fast to align with CI fast path and reduce local feedback time.
+# See docs/decisions/adr-pre-push-parity.md: ci-verify:fast is the documented fast pre-push gate aligned with the CI fast path and used to reduce local feedback time.
 npm run ci-verify:fast && echo "Pre-push quick checks completed"

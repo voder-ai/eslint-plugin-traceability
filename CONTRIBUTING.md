@@ -88,7 +88,7 @@ Note on pre-push hook: the repository's pre-push hook runs a fast verification t
 npm run ci-verify:fast
 ```
 
-This fast guard does not perform a full build; it's a non-building verification to catch obvious issues quickly. Continuous Integration runs the full lint-plugin check (build + verify) as `npm run lint-plugin-check` (or the CI-configured equivalent), so CI will perform the complete build-and-verify steps.
+This fast guard does not perform a full build; it's a non-building verification to catch obvious issues quickly. `ci-verify:fast` runs a focused subset of checks: TypeScript type-checking, the traceability check, duplication analysis, and a subset of the Jest test suite. `ci-verify` is the broader local verification pipeline: it runs type-checking, linting, `format:check`, duplication, traceability, the full Jest test suite, `audit:ci`, and `safety:deps`. It is intended as the comprehensive local gate, but it is not necessarily identical to the full CI workflow. Continuous Integration runs an even more comprehensive pipeline on `main` (and selected branches), which includes a clean build, linting, the full test suite with coverage, dependency and security audits, `lint-plugin-check`, and any configured smoke or integration tests. For the detailed rationale behind using a fast local pre-push hook, a broader local verification script, and a full CI pipeline, see [docs/decisions/adr-pre-push-parity.md](docs/decisions/adr-pre-push-parity.md).
 
 Ensure there are no errors or warnings in the output.
 

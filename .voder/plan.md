@@ -1,20 +1,15 @@
 ## NOW
 
-- [ ] Add a one-line justification comment referencing an ADR/issue and narrow the eslint disable to the specific rule for the suppression in scripts/generate-dev-deps-audit.js (one focused change to either replace a broad disable with a rule-specific disable plus justification or refactor to remove the need for the suppression).
+- [ ] Create docs/decisions/adr-pre-push-parity.md documenting that .husky/pre-push runs npm run ci-verify:fast instead of the full CI suite, including rationale, constraints, exact commands (ci-verify vs ci-verify:fast), and a brief rollback/migration plan.
 
 ## NEXT
 
-- [ ] Apply the same focused remediation pattern to scripts/lint-plugin-check.js: either refactor to remove the suppression or narrow it to the exact rule and add a one-line justification comment referencing an ADR/issue (one suppression per commit).
-- [ ] Apply the same focused remediation pattern to scripts/lint-plugin-guard.js: either refactor to remove the suppression or narrow it to the exact rule and add a one-line justification comment referencing an ADR/issue (one suppression per commit).
-- [ ] Run scripts/report-eslint-suppressions.js and confirm the report shows no un-justified/broad suppressions; iterate on any remaining entries until the report is clean.
-- [ ] Identify any helper file still exceeding configured file-size or function-size thresholds (start with src/rules/helpers/require-story-helpers.ts if it remains oversized). For the first flagged file: extract a single well-scoped function into a new helper module, add function-level @story/@req JSDoc and branch-level annotations as needed, and commit that single extraction. Repeat until flagged files meet thresholds.
-- [ ] Run npm run check:traceability and address the first batch of missing branch-level annotations by adding inline @story/@req comments above the specific branches (one branch per commit) until traceability check reports zero missing branches.
-- [ ] Decide the pre-push parity approach and implement it in one small change: either (A) expand .husky/pre-push to run ci-verify:fast (or an agreed subset of CI checks) so hooks mirror CI parity, or (B) create docs/decisions/adr-pre-push-parity.md documenting the accepted divergence, listing exact ci-verify:fast and ci-verify commands, rationale, and a migration/rollback plan. Commit the chosen single-step change.
+- [ ] Update the comment in .husky/pre-push to reference docs/decisions/adr-pre-push-parity.md so the hook’s behavior is explicitly tied to the documented decision.
+- [ ] Add a short section to CONTRIBUTING.md (or an appropriate internal dev doc) explaining the pre-commit and pre-push behavior, linking to adr-pre-push-parity.md for full rationale and listing which scripts run locally vs in CI.
+- [ ] Review package.json script descriptions (if any) for ci-verify and ci-verify:fast to ensure they clearly state their intended use (full CI gate vs fast pre-push gate) in line with the ADR.
 
 ## LATER
 
-- [ ] Add a CI step that runs scripts/report-eslint-suppressions.js early and fails the build if it exits with code 2 (enforce no un-justified suppressions).
-- [ ] Implement an ESLint custom rule or configuration to flag broad file-level disables and require the minimal-justification comment pattern; roll into CI after the codebase is clean.
-- [ ] Continue incremental refactors to break down other large helpers (functions <60 lines, files <300 lines), adding tests for extracted modules where appropriate (one small test per commit).
-- [ ] Refactor duplicated tests into tests/utils/shared-fixtures.ts and reduce jscpd clones, one test file per commit, until duplication meets policy thresholds.
-- [ ] Add focused unit tests to raise branch coverage for low-coverage files to >=90% (one small test per commit) and re-run coverage until targets are met.
+- [ ] Periodically re-evaluate whether ci-verify:fast should be expanded (e.g., add lint or a subset of tests) based on developer feedback and CI failure patterns, updating adr-pre-push-parity.md if the policy changes.
+- [ ] Consider adding a brief docs/decisions/index.md or similar ADR catalog that lists adr-pre-push-parity.md alongside other ADRs for easier discovery by maintainers.
+- [ ] If CI failures continue to arise from checks not covered by ci-verify:fast, revisit the pre-push policy to either broaden the local checks or introduce additional optional scripts developers can run before committing high-risk changes.
