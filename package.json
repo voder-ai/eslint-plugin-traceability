@@ -22,6 +22,7 @@
     "lint": "eslint --config eslint.config.js \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
     "test": "jest --ci --bail",
     "ci-verify": "npm run type-check && npm run lint && npm run format:check && npm run duplication && npm run check:traceability && npm test && npm run audit:ci && npm run safety:deps",
+    "ci-verify:full": "npm run check:traceability && npm run safety:deps && npm run audit:ci && npm run build && npm run type-check && npm run lint-plugin-check && npm run lint -- --max-warnings=0 && npm run duplication && npm run test -- --coverage && npm run format:check && npm audit --production --audit-level=high && npm run audit:dev-high",
     "ci-verify:fast": "npm run type-check && npm run check:traceability && npm run duplication && jest --ci --bail --passWithNoTests --testPathPatterns 'tests/(unit|fast)'",
     "format": "prettier --write .",
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",

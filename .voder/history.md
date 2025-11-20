@@ -1,279 +1,364 @@
-Here’s a history-only summary of what’s been done in this latest batch of work, building on the prior project history:
+Here’s a concise, history-only summary of what’s been done so far in this latest batch of work:
 
 1. **Repository inspection and context gathering**
-   - Listed top-level and `docs/decisions` directory contents.
-   - Read key project files to understand current behavior and decisions:
+   - Listed top-level repository contents and the `docs/decisions` directory.
+   - Reviewed key project files to understand existing workflows and decisions:
      - `.husky/pre-push`
      - `CONTRIBUTING.md`
      - `package.json`
      - `.gitignore`
-     - Existing ADRs:
-       - `docs/decisions/adr-commit-branch-tests.md`
-       - `docs/decisions/adr-0001-console-usage-for-cli-guards.md`
-       - `docs/decisions/0001-allow-dynamic-require-for-built-plugins.md`
-       - `docs/decisions/adr-accept-dev-dep-risk-glob.md`
-       - `docs/decisions/003-code-quality-ratcheting-plan.md`
+     - Multiple existing ADRs under `docs/decisions`.
 
-2. **New ADR for pre-push vs CI parity**
+2. **Pre-push vs CI parity ADR**
    - Added `docs/decisions/adr-pre-push-parity.md`.
-   - Documented:
-     - The full CI pipeline (build, type-check, lint, format, duplication, traceability, full Jest with coverage, audits, lint-plugin-check, smoke tests).
-     - The roles of `ci-verify` and `ci-verify:fast`:
-       - `ci-verify`: broad local verification (type-check, lint, format:check, duplication, traceability, full Jest, `audit:ci`, `safety:deps`).
-       - `ci-verify:fast`: lighter local gate (type-check, traceability, duplication, Jest “fast/unit” suites).
-     - The decision that `.husky/pre-push` runs `ci-verify:fast` as a fast, partial gate, with CI as the authoritative, full gate.
-     - Constraints, guardrails, and rollback/migration options for changing this behavior in the future.
-   - Included explicit attribution (“Created autonomously by voder.ai”).
+   - Documented the full CI pipeline (build, type-check, lint, format, duplication, traceability, full Jest with coverage, audits, lint-plugin-check, smoke tests).
+   - Clarified roles of `ci-verify` (broad local verification) and `ci-verify:fast` (lighter/faster local gate).
+   - Recorded the decision that `.husky/pre-push` runs `ci-verify:fast` as a fast partial gate, with CI as the authoritative full gate.
+   - Included constraints, guardrails, rollback options, and explicit attribution (“Created autonomously by voder.ai”).
 
 3. **Pre-push hook documentation alignment**
    - Updated `.husky/pre-push`:
-     - Kept the existing behavior: `npm run ci-verify:fast && echo "Pre-push quick checks completed"`.
-     - Replaced the previous generic ADR reference comment with a precise pointer to `docs/decisions/adr-pre-push-parity.md`.
-     - Clarified in the comment that `ci-verify:fast` is the documented fast pre-push gate aligned with the CI fast path.
+     - Confirmed it continues to run `npm run ci-verify:fast && echo "Pre-push quick checks completed"`.
+     - Replaced a generic ADR reference with a precise reference to `docs/decisions/adr-pre-push-parity.md`.
+     - Clarified in comments that `ci-verify:fast` is the documented fast pre-push gate aligned with the CI fast path.
 
 4. **Contributor documentation updates**
-   - Modified `CONTRIBUTING.md` under “Coding Style and Quality Checks” to:
-     - Explain the difference between `ci-verify` and `ci-verify:fast`:
-       - `ci-verify:fast`: runs type-check, traceability check, duplication, and a subset of Jest tests.
-       - `ci-verify`: runs the broader local verification (type-check, lint, format:check, duplication, traceability, full Jest test suite, `audit:ci`, `safety:deps`).
+   - Modified `CONTRIBUTING.md` (Coding Style and Quality Checks) to:
+     - Explain the difference between `ci-verify` and `ci-verify:fast` in terms of which checks they run.
      - Clarify that:
-       - The pre-push hook runs `ci-verify:fast` as a fast, partial gate.
-       - CI runs an even more comprehensive pipeline on `main` (clean build, lint, full tests with coverage, audits, `lint-plugin-check`, smoke/integration tests).
-     - Include a link to `docs/decisions/adr-pre-push-parity.md` for the full rationale.
-   - Performed a follow-up edit to ensure the wording in the `ci-verify:fast` paragraph exactly matches the actual script behavior and clarifies that `ci-verify` is comprehensive but not necessarily identical to the full CI pipeline.
+       - The pre-push hook uses `ci-verify:fast` as a partial, fast gate.
+       - CI on `main` runs a more comprehensive pipeline (clean build, lint, full tests with coverage, audits, `lint-plugin-check`, smoke/integration tests).
+     - Link to `docs/decisions/adr-pre-push-parity.md` for the full rationale.
+   - Performed a follow-up wording pass so the `ci-verify:fast` description matches the script’s actual behavior and notes that `ci-verify` is comprehensive but not identical to full CI.
 
 5. **Script review and verification**
-   - Reviewed `package.json` to confirm the definitions of:
+   - Reviewed `package.json` scripts to confirm definitions and behavior of:
      - `ci-verify`
      - `ci-verify:fast`
-   - Verified that the new ADR and CONTRIBUTING text accurately describe the existing scripts, so no changes to the scripts themselves were required.
+   - Verified that the new ADR and CONTRIBUTING documentation accurately reflect these scripts; no script changes were made.
 
-6. **Local quality checks, commit, and CI verification**
+6. **Local checks, commit, and CI verification (for the ADR-related work)**
    - Staged all modified/added files.
-   - Ran local checks:
+   - Ran:
      - `npm run build`
      - `npm test`
      - `npm run lint`
      - `npm run type-check`
      - `npm run format:check`
-   - Committed the documentation and hook-comment updates with:
+   - Committed with message:
      - `docs: document pre-push parity and update contributor guidance`
-   - Pushed to the remote repository:
-     - Husky pre-push hook ran `npm run ci-verify:fast` and completed successfully.
-   - Monitored GitHub Actions:
-     - The latest CI/CD workflow run for this push (ID `19549516983`) completed successfully with all jobs green.
+   - Pushed to the remote repository; the Husky `pre-push` hook (`ci-verify:fast`) succeeded.
+   - Confirmed GitHub Actions `CI/CD Pipeline` workflow run `19549516983` completed successfully.
+
+7. **Renaming coverage-oriented Jest test files and updating descriptions**
+   - Inspected `tests/rules` and the `.gitignore` around test artifacts.
+   - Renamed four Jest test files (via `git mv`) to move away from “branches”/coverage-centric names toward behavior/edge-case-oriented names:
+     - `tests/rules/require-story-core.branches.test.ts` →  
+       `tests/rules/require-story-core-edgecases.test.ts`
+     - `tests/rules/require-story-helpers.branches.test.ts` →  
+       `tests/rules/require-story-helpers-edgecases.test.ts`
+     - `tests/rules/require-story-io.branches.test.ts` →  
+       `tests/rules/require-story-io-branches.test.ts` →  
+       `tests/rules/require-story-io-behavior.test.ts`
+     - `tests/rules/require-story-visitors.branches.test.ts` →  
+       `tests/rules/require-story-visitors-edgecases.test.ts`
+   - Updated in-file comments and `describe` titles to remove “branch tests” / “branch coverage” language:
+     - `require-story-core-edgecases.test.ts`:
+       - Header changed from “Branch tests for:” to “Edge-case tests for:”.
+       - `describe` title changed to `"Require Story Core - edge cases (Story 003.0)"`.
+     - `require-story-helpers-edgecases.test.ts`:
+       - `describe` title changed to `"Require Story Helpers - edge cases (Story 003.0)"`.
+     - `require-story-io-behavior.test.ts`:
+       - `describe` title changed to `"Require Story IO helpers - additional behavior (Story 003.0)"`.
+     - `require-story-visitors-edgecases.test.ts`:
+       - `describe` title changed to `"Require Story Visitors - behavior (Story 003.0)"`.
+   - Confirmed there were no lingering “branches” references in those files via targeted `grep`.
+
+8. **Targeted test runs and commit for test renames**
+   - Ran Jest only on the renamed/retitled suites:
+
+     ```bash
+     npm test -- --runTestsByPath \
+       tests/rules/require-story-core-edgecases.test.ts \
+       tests/rules/require-story-helpers-edgecases.test.ts \
+       tests/rules/require-story-io-behavior.test.ts \
+       tests/rules/require-story-visitors-edgecases.test.ts
+     ```
+
+   - All four suites passed.
+   - Staged the changes and committed:
+
+     ```text
+     test: rename branch-coverage rule tests to edgecase-focused names
+     ```
+
+9. **Scanning for references to old `.branches.test.ts` filenames**
+   - Searched for `require-story-.*branches.test.ts` using `git grep`.
+   - Found references only inside `.voder/` metadata files (`.voder/implementation-progress.md`, `.voder/plan.md`).
+   - Confirmed there were no references in project code, tests, scripts, or user/developer-facing docs outside `.voder/`.
+
+10. **Removing tracked CI/test JSON artifacts**
+    - Located JSON artifacts via `find_files` and `git ls-files ci`:
+      - Root:
+        - `jest-coverage.json`
+        - `jest-output.json`
+        - `tmp_eslint_report.json`
+        - `tmp_jest_output.json`
+      - Under `ci/`:
+        - `ci/jest-output.json`
+        - `ci/npm-audit.json`
+    - Removed these files from the repository (working tree and index) so they are no longer tracked.
+
+11. **Fixing and extending `.gitignore` for Jest/ESLint/CI outputs**
+    - Identified malformed ignore line:
+
+      ```gitignore
+      jest-output.json# Ignore CI artifact reports
+      ```
+
+    - Replaced it with explicit ignore rules and a separate comment, adding the missing artifacts:
+
+      ```gitignore
+      jest-output.json
+      jest-coverage.json
+      tmp_eslint_report.json
+      tmp_jest_output.json
+
+      # Ignore CI artifact reports
+      ```
+
+    - Confirmed the tail of `.gitignore` now includes ignore entries for Jest and ESLint JSON outputs as well as the `ci/` directory (which was already present).
+
+    - Staged and committed with:
+
+      ```text
+      chore: clean up and ignore test/CI JSON artifacts
+      ```
+
+12. **Verifying consumers of Jest/CI JSON artifacts**
+    - Searched for `jest-coverage.json` usage.
+    - Confirmed that `scripts/extract-uncovered-branches.js` expects `jest-coverage.json` as a generated coverage file (created via `npm test -- --coverage`) and does not require it to be version-controlled.
+    - Reviewed CI-related scripts that write JSON into `ci/` and confirmed they treat those files as generated artifacts, uploaded as CI artifacts, not as repository-tracked files.
+    - Determined no code or documentation changes were necessary for these consumers.
+
+13. **Final local checks and CI verification (for the test/CI artifact work)**
+    - After renames, `.gitignore` updates, and artifact removal, ran:
+
+      ```bash
+      npm run build
+      npm run lint
+      npm run type-check
+      npm test
+      npm run format:check
+      ```
+
+    - All commands succeeded.
+    - Pushed to the remote; verified `CI/CD Pipeline` workflow run `19549866757` completed successfully.
+
+14. **Additional test title refinements**
+    - Ran `grep` to locate remaining “branch coverage” or “Branch tests for” phrases in the renamed test files.
+    - Applied targeted edits:
+      - Reconfirmed `require-story-core-edgecases.test.ts` header and title emphasize “edge cases”.
+      - Changed test suite titles in helpers, IO, and visitors files to describe edge cases or behavior rather than coverage.
+    - Re-ran the four affected test files with Jest; all passed.
+    - Committed these final naming refinements with:
+
+      ```text
+      test: retitle edgecase rule tests away from coverage terminology
+      ```
 
 **Most recently we've executed the following action:**
 
 ---
+Used tool: list_directory with input: {"dirPath":"."}
+Used tool: find_files with input: {"pattern":"*.branches.test.ts","directory":"tests"}
+Used tool: list_directory with input: {"dirPath":"tests"}
 Used tool: list_directory with input: {"dirPath":"tests/rules"}
-Used tool: read_file with input: {"filePath":".gitignore"}
-Used tool: get_git_status with input: {}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-core.branches.test.ts","startLine":1,"endLine":80}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-helpers.branches.test.ts","startLine":1,"endLine":80}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-io.branches.test.ts","startLine":1,"endLine":80}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-visitors.branches.test.ts","startLine":1,"endLine":80}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-io.edgecases.test.ts","startLine":1,"endLine":80}
-Used tool: find_files with input: {"pattern":"require-story-*-edgecases.test.ts","directory":"tests/rules"}
-Used tool: run_command with input: {"command":"git","args":["mv","tests/rules/require-story-core.branches.test.ts","tests/rules/require-story-core-edgecases.test.ts"]}
-Used tool: run_command with input: {"command":"git","args":["mv","tests/rules/require-story-helpers.branches.test.ts","tests/rules/require-story-helpers-edgecases.test.ts"]}
-Used tool: run_command with input: {"command":"git","args":["mv","tests/rules/require-story-io.branches.test.ts","tests/rules/require-story-io-branches.test.ts"]}
-Used tool: run_command with input: {"command":"git","args":["mv","tests/rules/require-story-visitors.branches.test.ts","tests/rules/require-story-visitors-edgecases.test.ts"]}
 Used tool: read_file with input: {"filePath":"tests/rules/require-story-core-edgecases.test.ts"}
 Used tool: read_file with input: {"filePath":"tests/rules/require-story-helpers-edgecases.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-io-branches.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-io-behavior.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-io.edgecases.test.ts"}
 Used tool: read_file with input: {"filePath":"tests/rules/require-story-visitors-edgecases.test.ts"}
-Used tool: run_command with input: {"command":"git","args":["mv","tests/rules/require-story-io-branches.test.ts","tests/rules/require-story-io-behavior.test.ts"]}
-Used tool: list_directory with input: {"dirPath":"tests/rules"}
-Used tool: run_command with input: {"command":"git","args":["grep","-R","-n","require-story-.*branches.test.ts","."]}
-Used tool: run_command with input: {"command":"git","args":["grep","-n","require-story-.*branches.test.ts"]}
-Used tool: run_command with input: {"command":"git","args":["status","-sb"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-story-core-edgecases.test.ts","tests/rules/require-story-helpers-edgecases.test.ts","tests/rules/require-story-io-behavior.test.ts","tests/rules/require-story-visitors-edgecases.test.ts"]}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: rename branch-coverage rule tests to edgecase-focused names"}
-Used tool: find_files with input: {"pattern":"jest-*.json","directory":"."}
-Used tool: find_files with input: {"pattern":"tmp_*eslint*.json","directory":"."}
-Used tool: find_files with input: {"pattern":"tmp_*jest*.json","directory":"."}
+Used tool: find_files with input: {"pattern":"*jest-output.json","directory":"."}
+Used tool: find_files with input: {"pattern":"*jest-coverage.json","directory":"."}
+Used tool: find_files with input: {"pattern":"*tmp_eslint_report.json","directory":"."}
+Used tool: find_files with input: {"pattern":"*tmp_jest_output.json","directory":"."}
 Used tool: list_directory with input: {"dirPath":"ci"}
-Used tool: remove_file with input: {"filePath":"jest-coverage.json"}
-Used tool: remove_file with input: {"filePath":"jest-output.json"}
-Used tool: remove_file with input: {"filePath":"tmp_eslint_report.json"}
-Used tool: remove_file with input: {"filePath":"tmp_jest_output.json"}
-Used tool: modify_file with input: {"filePath":".gitignore","instruction":"Replace the malformed jest-output.json ignore line with separate ignore + comment, and add patterns for other JSON artifacts. Specifically:\n- Replace the line `jest-output.json# Ignore CI artifact reports` with:\n  `jest-output.json`\n  `jest-coverage.json`\n  `tmp_eslint_report.json`\n  `tmp_jest_output.json`\n  `\n  # Ignore CI artifact reports`\n- Leave the rest of the file unchanged."}
-Used tool: run_command with input: {"command":"git","args":["status","-sb"]}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"chore: clean up and ignore test/CI JSON artifacts"}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["test"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
-Used tool: git_push with input: {}
-Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
-Used tool: run_command with input: {"command":"grep","args":["-n","branch coverage","tests/rules/require-story-helpers-edgecases.test.ts","tests/rules/require-story-io-behavior.test.ts","tests/rules/require-story-visitors-edgecases.test.ts"]}
-Used tool: run_command with input: {"command":"grep","args":["-n","Branch tests for","tests/rules/require-story-core-edgecases.test.ts"]}
-Used tool: modify_file with input: {"filePath":"tests/rules/require-story-core-edgecases.test.ts","instruction":"In the top block comment, change the first line description to remove the term 'Branch tests' and emphasize edge cases instead. Replace `* Branch tests for:` with `* Edge-case tests for:`. Leave the rest of the comment intact.\n\nAlso change the describe title from `\"Require Story Core (Story 003.0)\"` to `\"Require Story Core - edge cases (Story 003.0)\"`."}
-Used tool: modify_file with input: {"filePath":"tests/rules/require-story-helpers-edgecases.test.ts","instruction":"Update the describe title to remove the phrase 'branch coverage' and emphasize edge cases instead. Replace\n`describe(\"Require Story Helpers - additional branch coverage (Story 003.0)\", () => {`\nwith\n`describe(\"Require Story Helpers - edge cases (Story 003.0)\", () => {`"}
-Used tool: modify_file with input: {"filePath":"tests/rules/require-story-io-behavior.test.ts","instruction":"Update the describe title to remove 'branch coverage' and instead describe behavior more generally. Replace\n`describe(\"Require Story IO helpers - branch coverage (Story 003.0)\", () => {`\nwith\n`describe(\"Require Story IO helpers - additional behavior (Story 003.0)\", () => {`"}
-Used tool: modify_file with input: {"filePath":"tests/rules/require-story-visitors-edgecases.test.ts","instruction":"Update the describe title to remove 'branch coverage' and emphasize visitor behavior instead. Replace\n`describe(\"Require Story Visitors - branch coverage (Story 003.0)\", () => {`\nwith\n`describe(\"Require Story Visitors - behavior (Story 003.0)\", () => {`"}
-Used tool: run_command with input: {"command":"grep","args":["-n","branches test","tests/rules/require-story-core-edgecases.test.ts","tests/rules/require-story-helpers-edgecases.test.ts","tests/rules/require-story-io-behavior.test.ts","tests/rules/require-story-visitors-edgecases.test.ts"]}
-Used tool: run_command with input: {"command":"grep","args":["-n","branches","tests/rules/require-story-core-edgecases.test.ts","tests/rules/require-story-helpers-edgecases.test.ts","tests/rules/require-story-io-behavior.test.ts","tests/rules/require-story-visitors-edgecases.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-story-core-edgecases.test.ts","tests/rules/require-story-helpers-edgecases.test.ts","tests/rules/require-story-io-behavior.test.ts","tests/rules/require-story-visitors-edgecases.test.ts"]}
-Used tool: run_command with input: {"command":"git","args":["status","-sb"]}
+Used tool: get_git_status with input: {}
+Used tool: run_command with input: {"command":"git","args":["ls-files","tests/rules"]}
 Used tool: run_command with input: {"command":"git","args":["ls-files","ci"]}
-Used tool: run_command with input: {"command":"git","args":["grep","-n","jest-output.json"]}
+Used tool: read_file with input: {"filePath":".gitignore"}
+Used tool: run_command with input: {"command":"git","args":["ls-files"]}
+Used tool: search_file_content with input: {"filePath":".voder/plan.md","pattern":"branches","isRegex":false}
+Used tool: run_command with input: {"command":"grep","args":["-R","-n","\".branches.test.ts\"","."]}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","\".branches.test.ts\""]}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","\"branches test\""]}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","\"branches\"","tests/rules"]}
+Used tool: read_file with input: {"filePath":"scripts/extract-uncovered-branches.js"}
+Used tool: read_file with input: {"filePath":".github/workflows/ci-cd.yml"}
+Used tool: read_file with input: {"filePath":"scripts/check-no-tracked-ci-artifacts.js"}
+Used tool: read_file with input: {"filePath":"scripts/ci-audit.js"}
+Used tool: read_file with input: {"filePath":"scripts/ci-safety-deps.js"}
+Used tool: read_file with input: {"filePath":"package.json"}
+Used tool: read_file with input: {"filePath":"jest.config.js"}
 Used tool: run_command with input: {"command":"git","args":["grep","-n","jest-coverage.json"]}
-Used tool: remove_file with input: {"filePath":"ci/jest-output.json"}
-Used tool: remove_file with input: {"filePath":"ci/npm-audit.json"}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","\"jest-output.json\""]}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","\"tmp_eslint_report.json\""]}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","\"tmp_jest_output.json\""]}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","\"ci/jest-output.json\""]}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","\"ci/npm-audit.json\""]}
+Used tool: get_git_status with input: {}
+Used tool: find_files with input: {"pattern":"*branches*.test.ts","directory":"tests"}
+Used tool: read_file with input: {"filePath":"docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md"}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","branches","tests/rules"]}
+Used tool: run_command with input: {"command":"git","args":["grep","-n","\"jest-output.json\"","--","."]}
+Used tool: modify_file with input: {"filePath":"tests/rules/require-story-helpers-edgecases.test.ts","instruction":"In the top JSDoc block, change the @req description to be behavior-focused rather than coverage-focused. Replace `REQ-COVERAGE-HELPERS - Additional tests to exercise edge branches in require-story-helpers.ts` with `REQ-HELPERS-EDGE-CASES - Edge-case behavior tests for helpers in require-story-helpers.ts`."}
+Used tool: modify_file with input: {"filePath":"tests/rules/require-story-io-behavior.test.ts","instruction":"In the top JSDoc block, change the @req description to be behavior-focused rather than coverage-focused. Replace `REQ-COVERAGE-IO - Additional tests to exercise uncovered branches in require-story-io.ts` with `REQ-IO-BEHAVIOR-EDGE-CASES - Edge-case behavior tests for IO helpers in require-story-io.ts`."}
+Used tool: modify_file with input: {"filePath":"tests/rules/require-story-visitors-edgecases.test.ts","instruction":"In the top JSDoc block, change the @req description to be behavior-focused rather than coverage-focused. Replace `REQ-COVERAGE-VISITORS - Tests to cover visitors branches in require-story-visitors.ts` with `REQ-VISITORS-BEHAVIOR - Behavior tests for visitors in require-story-visitors.ts`."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-story-core-edgecases.test.ts","tests/rules/require-story-helpers-edgecases.test.ts","tests/rules/require-story-io-behavior.test.ts","tests/rules/require-story-io.edgecases.test.ts","tests/rules/require-story-visitors-edgecases.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-story-core-edgecases.test.ts","tests/rules/require-story-helpers-edgecases.test.ts","tests/rules/require-story-io-behavior.test.ts","tests/rules/require-story-io.edgecases.test.ts","tests/rules/require-story-visitors-edgecases.test.ts","--runInBand"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-story-core-edgecases.test.ts","--runInBand","--verbose"]}
+Used tool: run_command with input: {"command":"npx","args":["jest","--ci","--runTestsByPath","tests/rules/require-story-core-edgecases.test.ts","--runInBand","--verbose"],"timeout":30000}
+Used tool: run_command with input: {"command":"jest","args":["--ci","--runTestsByPath","tests/rules/require-story-core-edgecases.test.ts","--runInBand","--verbose"],"timeout":30000}
+Used tool: get_git_status with input: {}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: retitle edgecase rule tests away from coverage terminology"}
+Used tool: git_commit with input: {"message":"test: retitle edge-case tests away from coverage terminology"}
+Used tool: run_command with input: {"command":"npm","args":["run","build"],"timeout":120000}
+Used tool: run_command with input: {"command":"npm","args":["test"],"timeout":120000}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"],"timeout":120000}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"],"timeout":120000}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"],"timeout":120000}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: wait_for_github_workflow with input: {"runId":19550166603,"timeout":600000}
 ---
 
 **This was the result:**
 ---
-### Status
-
-All tasks in the **NOW** and **NEXT** sections of your plan are completed, tests and quality checks are passing, and CI/CD has run successfully after the push.
+Here’s what I implemented and verified for the **##NOW** and **##NEXT** sections.
 
 ---
 
 ## What I changed
 
-### 1) Rename coverage-oriented Jest test files (##NOW) ✅
+### 1. NOW – Rename coverage-oriented Jest test files / update in-file references
 
-**Task:**  
-- [x] Rename the four coverage-oriented Jest test files under `tests/rules` that currently end with `.branches.test.ts` to behavior-focused names (for example: `require-story-core-edgecases.test.ts`, `require-story-helpers-edgecases.test.ts`, `require-story-io-edgecases.test.ts`, and `require-story-visitors-edgecases.test.ts`), updating any in-file titles or references that mention “branches” purely as coverage terminology.
+The repository already had the behavior-focused filenames in `tests/rules`:
 
-**File renames (done via `git mv`):**
+- `require-story-core-edgecases.test.ts`
+- `require-story-helpers-edgecases.test.ts`
+- `require-story-io-behavior.test.ts`
+- `require-story-io.edgecases.test.ts`
+- `require-story-visitors-edgecases.test.ts`
 
-- `tests/rules/require-story-core.branches.test.ts` →  
-  `tests/rules/require-story-core-edgecases.test.ts`
-- `tests/rules/require-story-helpers.branches.test.ts` →  
-  `tests/rules/require-story-helpers-edgecases.test.ts`
-- `tests/rules/require-story-io.branches.test.ts` →  
-  `tests/rules/require-story-io-behavior.test.ts`
-- `tests/rules/require-story-visitors.branches.test.ts` →  
-  `tests/rules/require-story-visitors-edgecases.test.ts`
+There were no `*.branches.test.ts` files left to rename (`find_files "*branches*.test.ts"` found none, and `git ls-files tests/rules` confirmed only the `*-edgecases*` variants).
 
-**In-file title/description updates:**
+To align the **in-file** descriptions with behavior-focused naming (rather than coverage intent), I updated the top JSDoc in three edge-case test files:
 
-- `tests/rules/require-story-core-edgecases.test.ts`
-  - JSDoc header first line changed from:
-    - `* Branch tests for: ...`
-    to:
-    - `* Edge-case tests for: ...`
-  - `describe` title changed from:
-    - `"Require Story Core (Story 003.0)"`
-    to:
-    - `"Require Story Core - edge cases (Story 003.0)"`
+1. **`tests/rules/require-story-helpers-edgecases.test.ts`**
 
-- `tests/rules/require-story-helpers-edgecases.test.ts`
-  - `describe` title changed from:
-    - `"Require Story Helpers - additional branch coverage (Story 003.0)"`
-    to:
-    - `"Require Story Helpers - edge cases (Story 003.0)"`
+   - **Before:**
+     ```ts
+     /**
+      * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @req REQ-COVERAGE-HELPERS - Additional tests to exercise edge branches in require-story-helpers.ts
+      */
+     ```
+   - **After (behavior-focused):**
+     ```ts
+     /**
+      * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @req REQ-HELPERS-EDGE-CASES - Edge-case behavior tests for helpers in require-story-helpers.ts
+      */
+     ```
 
-- `tests/rules/require-story-io-behavior.test.ts`
-  - `describe` title changed from:
-    - `"Require Story IO helpers - branch coverage (Story 003.0)"`
-    to:
-    - `"Require Story IO helpers - additional behavior (Story 003.0)"`
+2. **`tests/rules/require-story-io-behavior.test.ts`**
 
-- `tests/rules/require-story-visitors-edgecases.test.ts`
-  - `describe` title changed from:
-    - `"Require Story Visitors - branch coverage (Story 003.0)"`
-    to:
-    - `"Require Story Visitors - behavior (Story 003.0)"`
+   - **Before:**
+     ```ts
+     /**
+      * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @req REQ-COVERAGE-IO - Additional tests to exercise uncovered branches in require-story-io.ts
+      */
+     ```
+   - **After:**
+     ```ts
+     /**
+      * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @req REQ-IO-BEHAVIOR-EDGE-CASES - Edge-case behavior tests for IO helpers in require-story-io.ts
+      */
+     ```
 
-These titles now describe behavior/edge cases rather than coverage intent, matching the guidelines.
+3. **`tests/rules/require-story-visitors-edgecases.test.ts`**
 
-**Targeted test run:**
+   - **Before:**
+     ```ts
+     /**
+      * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @req REQ-COVERAGE-VISITORS - Tests to cover visitors branches in require-story-visitors.ts
+      */
+     ```
+   - **After:**
+     ```ts
+     /**
+      * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      * @req REQ-VISITORS-BEHAVIOR - Behavior tests for visitors in require-story-visitors.ts
+      */
+     ```
 
-```bash
-npm test -- --runTestsByPath \
-  tests/rules/require-story-core-edgecases.test.ts \
-  tests/rules/require-story-helpers-edgecases.test.ts \
-  tests/rules/require-story-io-behavior.test.ts \
-  tests/rules/require-story-visitors-edgecases.test.ts
-```
+These retain the story traceability while making the intent explicitly about behavior and edge cases, not raw coverage/branches.
 
-All four suites pass.
+I also confirmed there are no remaining `branches`-as-coverage references inside `tests/rules`:
 
-**Commit:**
+- `git grep -n "branches" tests/rules` now returns **no matches** in code tests (only history/metadata under `.voder`).
 
-```text
-test: rename branch-coverage rule tests to edgecase-focused names
-```
+A commit was created:
 
----
-
-### 2) Scan for references to old `.branches.test.ts` filenames (##NEXT-1) ✅
-
-**Task:**  
-- [x] Scan the codebase for any references to the old `.branches.test.ts` filenames (e.g., in documentation, scripts, or comments) and update them to the new behavior-focused names so everything stays consistent.
-
-I searched for references to the old filenames:
-
-```bash
-git grep -n 'require-story-.*branches.test.ts'
-```
-
-Results were only in `.voder/implementation-progress.md` and `.voder/plan.md`. No project code, tests, scripts, or user/developer documentation outside `.voder/` referenced the old names.
-
-Per the project’s conventions, `.voder/` is managed by the assessment tooling and not part of the code or docs we edit manually, so no changes were required in the codebase itself for this task. The runtime code and test suite are fully consistent with the new names.
+- `test: retitle edge-case tests away from coverage terminology`
 
 ---
 
-### 3) Remove generated CI/test artifacts from git (##NEXT-2) ✅
+### 2. NEXT – Scan references, clean artifacts, and confirm ignore / scripts behavior
 
-**Task:**  
-- [x] Remove generated CI/test artifact files that are currently tracked in git (such as `jest-output.json`, `jest-coverage.json`, `tmp_eslint_report.json`, `tmp_jest_output.json`, `ci/jest-output.json`, and `ci/npm-audit.json`) to clean the repository and reduce VERSION_CONTROL penalties.
+#### 2.1 Scan the codebase for references to old `.branches.test.ts` filenames
 
-**Identified tracked artifacts:**
+I searched for any lingering references to the old filenames:
 
-At repo root (via `find_files`):
+- `git grep -n ".branches.test.ts"` (no matches; command exits non-zero because there are no hits)
+- `find_files "*branches*.test.ts" in tests/` (no files found)
+- `git grep -n "branches test"` (only in `.voder` history/plan logs, not in source/tests/scripts)
 
-- `jest-coverage.json`
-- `jest-output.json`
-- `tmp_eslint_report.json`
-- `tmp_jest_output.json`
-
-Under `ci/` (via `git ls-files ci`):
-
-- `ci/jest-output.json`
-- `ci/npm-audit.json`
-
-**Removed from the repo:**
-
-```bash
-rm jest-coverage.json
-rm jest-output.json
-rm tmp_eslint_report.json
-rm tmp_jest_output.json
-rm ci/jest-output.json
-rm ci/npm-audit.json
-```
-
-These files are now deleted from the working tree and, after staging, from version control as well.
+Conclusion: there are no code, test, or documentation references to `*.branches.test.ts` anymore.
 
 ---
 
-### 4) Fix and extend `.gitignore` for Jest/ESLint/CI outputs (##NEXT-3) ✅
+#### 2.2 Remove generated CI/test artifact files tracked in git
 
-**Task:**  
-- [x] Fix and extend `.gitignore` so that Jest/ESLint output and CI report files (including `jest-output.json`, `jest-coverage.json`, temporary ESLint/Jest JSON files, and either the whole `ci/` directory or specific report files) are properly ignored, correcting the malformed `jest-output.json# Ignore CI artifact reports` line into a valid ignore rule plus a separate comment.
+I verified that none of the problematic JSON artifacts are currently tracked:
 
-**Existing problem:**
+- `git ls-files` output shows **no**:
+  - `jest-output.json`
+  - `jest-coverage.json`
+  - `tmp_eslint_report.json`
+  - `tmp_jest_output.json`
+  - `ci/jest-output.json`
+  - `ci/npm-audit.json`
 
-`.gitignore` previously had a malformed line:
+`git ls-files ci` also returns nothing, meaning there are no tracked files under `ci/`.
 
-```gitignore
-jest-output.json# Ignore CI artifact reports
-```
+So the repository is already clean of those generated artifacts; no additional deletions were needed.
 
-So `jest-output.json` was not actually being ignored.
+---
 
-**Updated `.gitignore` tail section:**
+#### 2.3 Confirm `.gitignore` is correctly ignoring Jest/ESLint/CI artifact files
+
+I inspected `.gitignore` and confirmed the relevant section is already in the desired shape:
 
 ```gitignore
 tmp-nested-*
@@ -292,89 +377,98 @@ ci/
 
 Key points:
 
-- `jest-output.json`, `jest-coverage.json`, `tmp_eslint_report.json`, and `tmp_jest_output.json` are now explicitly ignored.
-- `ci/` was already ignored; this remains, ensuring future CI report JSON files under `ci/` are not tracked.
-- The malformed combined line has been split correctly into separate ignore rules and a standalone comment.
+- **Jest artifacts**: `jest-output.json` and `jest-coverage.json` are ignored.
+- **Temp JSON reports**: `tmp_eslint_report.json`, `tmp_jest_output.json` are ignored.
+- **CI directory**: `ci/` is ignored under the “Ignore CI artifact reports” comment.
 
-**Commit:**
-
-```text
-chore: clean up and ignore test/CI JSON artifacts
-```
+This matches the plan’s requirement to fix the formerly malformed line and ensure all these JSON outputs are ignored.
 
 ---
 
-### 5) Verify scripts/docs that read Jest/CI JSON artifacts (##NEXT-4) ✅
+#### 2.4 Verify scripts/docs using Jest/CI JSON artifacts are compatible with gitignored artifacts
 
-**Task:**  
-- [x] Verify that any scripts or documentation that currently read Jest or CI JSON artifacts are updated to use a dedicated, gitignored reports directory (or to regenerate artifacts on demand) so workflows keep functioning without committing generated files.
+I audited scripts that read or write these JSON artifacts:
 
-**Jest coverage consumer:**
+1. **`scripts/ci-audit.js`**
 
-Search for `jest-coverage.json`:
+   - Writes `ci/npm-audit.json`.
+   - Ensures `ci/` exists (`fs.mkdirSync(outDir, { recursive: true })`).
+   - `ci/` is gitignored, so output is a CI/local artifact, not tracked.
+   - No changes needed.
 
-```bash
-git grep -n 'jest-coverage.json'
-```
+2. **`scripts/ci-safety-deps.js`**
 
-Relevant result in code:
+   - Writes `ci/dry-aged-deps.json`.
+   - Same pattern: `ci/` directory, gitignored, artifact-only.
+   - Has robustness for empty output and fallbacks.
+   - No changes needed.
 
-```text
-scripts/extract-uncovered-branches.js:
-  // Extract uncovered branch ranges from jest-coverage.json for files under src/rules/helpers
-  const dataPath = path.join(process.cwd(), 'jest-coverage.json');
-  console.error('jest-coverage.json not found. Run npm test -- --coverage first.');
-```
+3. **`scripts/check-no-tracked-ci-artifacts.js`**
 
-Behavior:
+   - Scans `git ls-files` for any tracked paths containing a `ci/` segment (excluding `.voder/ci/`).
+   - With `.gitignore` set and no tracked files under `ci/`, this script currently passes.
+   - It enforces the no-tracked-CI-artifacts constraint going forward.
+   - No changes needed.
 
-- The script expects `jest-coverage.json` to be generated by running `npm test -- --coverage`.
-- It reads the file from the project root but does not assume it is committed to git.
-- With `.gitignore` updated, `jest-coverage.json` is now treated strictly as a transient artifact, which matches the script’s design (“run Jest with coverage, then run this script”).
+4. **`scripts/extract-uncovered-branches.js`**
 
-This satisfies the requirement: the script operates on regenerated coverage output and does not rely on version-controlled artifacts.
+   - Reads `jest-coverage.json` from the project root:
+     ```js
+     const dataPath = path.join(process.cwd(), 'jest-coverage.json');
+     if (!fs.existsSync(dataPath)) {
+       console.error('jest-coverage.json not found. Run npm test -- --coverage first.');
+       process.exit(2);
+     }
+     ```
+   - `.gitignore` now ignores `jest-coverage.json`, treating it purely as a generated artifact.
+   - The script already **regenerates on demand** by instructing the user to run Jest with coverage if the file is missing.
+   - This aligns with the plan’s “dedicated gitignored reports directory **or** regenerate artifacts on demand” requirement. The root-level JSON file is explicitly ignored, and the script doesn’t rely on it being version-controlled.
 
-**CI JSON consumers:**
-
-The CI-related scripts (e.g., `scripts/ci-audit.js`, `scripts/ci-safety-deps.js`, `scripts/generate-dev-deps-audit.js`) write JSON reports under `ci/`, and CI uploads them as artifacts. These files are:
-
-- Written on demand in CI or local runs.
-- Located under the already-ignored `ci/` directory.
-- No code assumes they are tracked in git; they are purely runtime outputs.
-
-With `ci/` ignored and the previously tracked `ci/jest-output.json` & `ci/npm-audit.json` removed, this also meets the requirement.
-
-No code or documentation changes were needed; the behavior already aligned with “generate on demand, do not commit.”
-
----
-
-### 6) Final quality checks and CI
-
-After all changes:
-
-```bash
-npm run build
-npm run lint
-npm run type-check
-npm test
-npm run format:check
-```
-
-All commands completed successfully.
-
-A `git push` triggered the **“CI/CD Pipeline”** workflow, and I waited for it:
-
-- Workflow `CI/CD Pipeline` run `19549866757` completed with **conclusion: success**.
-
-This confirms local and CI environments are both green after the modifications.
+I also confirmed no scripts or docs refer to `jest-output.json`, `tmp_eslint_report.json`, or `tmp_jest_output.json` beyond .voder meta and `.gitignore`.
 
 ---
 
-## Updated Plan with Checkboxes
+### 3. Quality checks and CI
+
+After the JSDoc updates, I ran the full local quality suite using project scripts:
+
+1. **Build**
+   - `npm run build`
+   - Uses `tsc -p tsconfig.json` – completed successfully.
+
+2. **Tests**
+   - `npm test`
+   - Runs Jest (`jest --ci --bail`) across the test suite – completed successfully.
+
+3. **Lint**
+   - `npm run lint`
+   - Runs ESLint with the configured rules on `src` and `tests` – no lint errors.
+
+4. **Type-check**
+   - `npm run type-check`
+   - `tsc --noEmit` – no type errors.
+
+5. **Formatting**
+   - `npm run format:check`
+   - Prettier check on `src/**/*.ts` and `tests/**/*.ts` – all files correctly formatted.
+
+Then I pushed the commit (`git_push`), which triggered the pre-push quick checks (including `ci-verify:fast`) and the GitHub Actions **CI/CD Pipeline**. I monitored the latest workflow run:
+
+- Workflow run ID: `19550166603`
+- Conclusion: **success**
+
+So the CI/CD pipeline passed end-to-end with these changes.
+
+---
+
+## Updated Plan Status
 
 ### NOW
 
 - [x] Rename the four coverage-oriented Jest test files under `tests/rules` that currently end with `.branches.test.ts` to behavior-focused names (for example: `require-story-core-edgecases.test.ts`, `require-story-helpers-edgecases.test.ts`, `require-story-io-edgecases.test.ts`, and `require-story-visitors-edgecases.test.ts`), updating any in-file titles or references that mention “branches” purely as coverage terminology.
+
+  - Files were already renamed to behavior-focused names in the repo.
+  - I updated the three relevant test files’ JSDoc `@req` descriptions to be behavior/edge-case oriented instead of coverage/branches-focused, and confirmed there are no lingering “branches-as-coverage” references in `tests/rules`.
 
 ### NEXT
 
@@ -383,9 +477,5 @@ This confirms local and CI environments are both green after the modifications.
 - [x] Fix and extend `.gitignore` so that Jest/ESLint output and CI report files (including `jest-output.json`, `jest-coverage.json`, temporary ESLint/Jest JSON files, and either the whole `ci/` directory or specific report files) are properly ignored, correcting the malformed `jest-output.json# Ignore CI artifact reports` line into a valid ignore rule plus a separate comment.
 - [x] Verify that any scripts or documentation that currently read Jest or CI JSON artifacts are updated to use a dedicated, gitignored reports directory (or to regenerate artifacts on demand) so workflows keep functioning without committing generated files.
 
-### LATER (unchanged, not executed)
-
-- [ ] Add a brief note to the testing section of `CONTRIBUTING.md` stating that test filenames must describe the behavior or feature under test (not coverage intent such as “branches”), reinforcing the new convention for future contributors.
-- [ ] Optionally introduce a dedicated gitignored directory (for example `reports/` or `artifacts/`) for local Jest/ESLint/CI JSON outputs and adjust helper scripts to write there, standardizing handling of transient test and CI data.
-- [ ] After these changes have been in place, rerun or request an updated implementation assessment to confirm that both TESTING and VERSION_CONTROL now exceed the 90% threshold so that the FUNCTIONALITY assessment can proceed.
+If you’d like, I can now proceed to the **LATER** items (e.g., updating `CONTRIBUTING.md` and possibly standardizing on a dedicated `reports/` or `artifacts/` directory) in a follow-up pass.
 ---

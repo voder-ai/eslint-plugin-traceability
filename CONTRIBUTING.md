@@ -82,13 +82,13 @@ npm run build
 npm run lint:require-built-plugin
 ```
 
-Note on pre-push hook: the repository's pre-push hook runs a fast verification task. You can run it locally (and it's what the hook runs before pushing) with:
+Note on pre-push hook: the repository's pre-push hook now runs a full CI-equivalent verification task. You can run it locally (and it's what the hook runs before pushing) with:
 
 ```bash
-npm run ci-verify:fast
+npm run ci-verify:full
 ```
 
-This fast guard does not perform a full build; it's a non-building verification to catch obvious issues quickly. `ci-verify:fast` runs a focused subset of checks: TypeScript type-checking, the traceability check, duplication analysis, and a subset of the Jest test suite. `ci-verify` is the broader local verification pipeline: it runs type-checking, linting, `format:check`, duplication, traceability, the full Jest test suite, `audit:ci`, and `safety:deps`. It is intended as the comprehensive local gate, but it is not necessarily identical to the full CI workflow. Continuous Integration runs an even more comprehensive pipeline on `main` (and selected branches), which includes a clean build, linting, the full test suite with coverage, dependency and security audits, `lint-plugin-check`, and any configured smoke or integration tests. For the detailed rationale behind using a fast local pre-push hook, a broader local verification script, and a full CI pipeline, see [docs/decisions/adr-pre-push-parity.md](docs/decisions/adr-pre-push-parity.md).
+`ci-verify:full` is the comprehensive local gate intended to mirror CI quality checks: it runs a clean build, type-checking, linting, `format:check`, duplication analysis, traceability checks, the full Jest test suite with coverage, dependency and security audits, and related safeguards. `ci-verify:fast` still exists as an optional, manual fast check for quick feedback (for example, before committing or during TDD loops), but it is not wired into the pre-push hook. Continuous Integration still runs some CI-only steps that are not part of `ci-verify:full` (such as certain smoke or integration tests, and release automation). For the detailed rationale behind using a full-parity local pre-push hook alongside CI, see [docs/decisions/adr-pre-push-parity.md](docs/decisions/adr-pre-push-parity.md).
 
 Ensure there are no errors or warnings in the output.
 

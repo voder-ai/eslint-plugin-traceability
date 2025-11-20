@@ -10,6 +10,6 @@
 # npm run check:traceability && npm run build && npm run type-check && npm run lint -- --max-warnings=0 && npm run duplication && npm test && npm run format:check && npm audit --production --audit-level=high && echo "Pre-push checks completed"
 #
 set -e
-# Use consolidated fast verification script instead of manual sequence.
-# See docs/decisions/adr-pre-push-parity.md: ci-verify:fast is the documented fast pre-push gate aligned with the CI fast path and used to reduce local feedback time.
-npm run ci-verify:fast && echo "Pre-push quick checks completed"
+# Use consolidated full verification script instead of manual sequence.
+# See docs/decisions/adr-pre-push-parity.md: ci-verify:full is the documented pre-push gate mirroring the full CI quality checks and used to ensure local parity with CI.
+npm run ci-verify:full && echo "Pre-push full CI-equivalent checks completed"
