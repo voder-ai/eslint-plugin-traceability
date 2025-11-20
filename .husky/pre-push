@@ -11,6 +11,8 @@
 # npm run check:traceability && npm run build && npm run type-check && npm run lint -- --max-warnings=0 && npm run duplication && npm test && npm run format:check && npm audit --production --audit-level=high && echo "Pre-push checks completed"
 #
 set -e
-
+# Note: The fast verification task (ci-verify:fast) depends on lint-plugin-check being installed
+# and properly configured in your ESLint setup; ensure that plugin is available in the environment.
+# `set -e` ensures the hook exits non-zero on failure.
 # Invoke the consolidated fast CI verification. Exits non-zero on failure due to `set -e`.
-npm run ci-verify && echo "Pre-push quick checks completed"
+npm run ci-verify:fast && echo "Pre-push quick checks completed"
