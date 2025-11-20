@@ -17,28 +17,25 @@ import {
   createMethodFix,
 } from "./require-story-core";
 
-export { DEFAULT_SCOPE, EXPORT_PRIORITY_VALUES };
-
 /**
  * Path to the story file for annotations
  */
-export const STORY_PATH =
-  "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
-export const ANNOTATION = `/** @story ${STORY_PATH} */`;
+const STORY_PATH = "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
+const ANNOTATION = `/** @story ${STORY_PATH} */`;
 
 /**
  * Number of physical source lines to inspect before a node when searching for @story text
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Replace magic number for lookback lines with named constant
  */
-export const LOOKBACK_LINES = 4;
+const LOOKBACK_LINES = 4;
 
 /**
  * Window (in characters) to inspect before a node as a fallback when searching for @story text
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Replace magic number for fallback text window with named constant
  */
-export const FALLBACK_WINDOW = 800;
+const FALLBACK_WINDOW = 800;
 
 /**
  * Determine if a node is in an export declaration
@@ -47,7 +44,7 @@ export const FALLBACK_WINDOW = 800;
  * @param {any} node - AST node to check for export ancestry
  * @returns {boolean} true if node is within an export declaration
  */
-export function isExportedNode(node: any): boolean {
+function isExportedNode(node: any): boolean {
   let p = node.parent;
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQUIRED - Walk parent chain to find Export declarations
@@ -71,7 +68,7 @@ export function isExportedNode(node: any): boolean {
  * @param {any} node - AST node to inspect
  * @returns {boolean} true if JSDoc contains @story
  */
-export function jsdocHasStory(sourceCode: any, node: any): boolean {
+function jsdocHasStory(sourceCode: any, node: any): boolean {
   if (typeof sourceCode?.getJSDocComment !== "function") {
     return false;
   }
@@ -91,7 +88,7 @@ export function jsdocHasStory(sourceCode: any, node: any): boolean {
  * @param {any} node - AST node to inspect
  * @returns {boolean} true if any preceding comment contains @story
  */
-export function commentsBeforeHasStory(sourceCode: any, node: any): boolean {
+function commentsBeforeHasStory(sourceCode: any, node: any): boolean {
   if (typeof sourceCode?.getCommentsBefore !== "function") {
     return false;
   }
@@ -111,7 +108,7 @@ export function commentsBeforeHasStory(sourceCode: any, node: any): boolean {
  * @param {any} node - AST node to inspect
  * @returns {boolean} true if any leading comment contains @story
  */
-export function leadingCommentsHasStory(node: any): boolean {
+function leadingCommentsHasStory(node: any): boolean {
   const leadingComments = (node && node.leadingComments) || [];
   return (
     Array.isArray(leadingComments) &&
@@ -130,7 +127,7 @@ export function leadingCommentsHasStory(node: any): boolean {
  * @param {any} node - AST node to inspect for existing annotations
  * @returns {boolean} true if @story annotation already present
  */
-export function hasStoryAnnotation(sourceCode: any, node: any): boolean {
+function hasStoryAnnotation(sourceCode: any, node: any): boolean {
   try {
     if (jsdocHasStory(sourceCode, node)) {
       return true;
@@ -164,7 +161,7 @@ export function hasStoryAnnotation(sourceCode: any, node: any): boolean {
  * @param {any} node - AST node representing a function-like construct
  * @returns {string} the resolved name or "<unknown>"
  */
-export function getNodeName(node: any): string {
+function getNodeName(node: any): string {
   let current: any = node;
   while (current) {
     if (
@@ -203,7 +200,7 @@ export function getNodeName(node: any): string {
  * @param {any} node - function-like AST node to resolve target for
  * @returns {any} AST node that should receive the annotation
  */
-export function resolveTargetNode(sourceCode: any, node: any): any {
+function resolveTargetNode(sourceCode: any, node: any): any {
   if (node.type === "TSMethodSignature") {
     // Interface method signature -> insert on interface
     return node.parent.parent;
@@ -236,13 +233,13 @@ export function resolveTargetNode(sourceCode: any, node: any): any {
  * @req REQ-ANNOTATION-REQUIRED - Determine whether a node should be processed by rule
  * @param {any} node - AST node to evaluate
  * @param {string[]} scope - allowed node types
- * @param {string} exportPriority - 'all' | 'exported' | 'non-exported'
+ * @param {string} [exportPriority='all'] - 'all' | 'exported' | 'non-exported' (default: 'all')
  * @returns {boolean} whether node should be processed
  */
-export function shouldProcessNode(
+function shouldProcessNode(
   node: any,
   scope: string[],
-  exportPriority: string,
+  exportPriority: string = "all",
 ): boolean {
   if (!scope.includes(node.type)) {
     return false;
@@ -267,7 +264,7 @@ export function shouldProcessNode(
  * @param {any} node - AST node that is missing the annotation
  * @param {any} [passedTarget] - optional AST node to use as insertion target instead of resolving from node
  */
-export function reportMissing(
+function reportMissing(
   context: Rule.RuleContext,
   sourceCode: any,
   node: any,
@@ -308,7 +305,7 @@ export function reportMissing(
  * @param {any} node - AST node that is missing the annotation
  * @param {any} [passedTarget] - optional AST node to use as insertion target instead of resolving from node
  */
-export function reportMethod(
+function reportMethod(
   context: Rule.RuleContext,
   sourceCode: any,
   node: any,
@@ -342,8 +339,18 @@ export function reportMethod(
  * @req REQ-ANNOTATION-REQUIRED - Explicitly export helper functions and constants used by requiring modules
  */
 export {
-  shouldProcessNode,
+  STORY_PATH,
+  ANNOTATION,
+  LOOKBACK_LINES,
+  FALLBACK_WINDOW,
+  isExportedNode,
+  jsdocHasStory,
+  commentsBeforeHasStory,
+  leadingCommentsHasStory,
+  hasStoryAnnotation,
+  getNodeName,
   resolveTargetNode,
+  shouldProcessNode,
   reportMissing,
   reportMethod,
   DEFAULT_SCOPE,
@@ -351,5 +358,4 @@ export {
   linesBeforeHasStory,
   parentChainHasStory,
   fallbackTextBeforeHasStory,
-  getNodeName,
 };
