@@ -1,15 +1,9 @@
 import type { Rule } from "eslint";
+import * as helpers from "../helpers/require-story-helpers";
 
 // Default node types to check for function annotations
-const DEFAULT_SCOPE = [
-  "FunctionDeclaration",
-  "FunctionExpression",
-  "ArrowFunctionExpression",
-  "MethodDefinition",
-  "TSDeclareFunction",
-  "TSMethodSignature",
-];
-const EXPORT_PRIORITY_VALUES = ["all", "exported", "non-exported"];
+export const DEFAULT_SCOPE = helpers.DEFAULT_SCOPE;
+export const EXPORT_PRIORITY_VALUES = helpers.EXPORT_PRIORITY_VALUES;
 
 /**
  * Determine if a node is in an export declaration
@@ -19,23 +13,13 @@ const EXPORT_PRIORITY_VALUES = ["all", "exported", "non-exported"];
  * @param {any} node - AST node to check for export ancestry
  * @returns {boolean} true if node is within an export declaration
  */
-function isExportedNode(node: any): boolean {
-  let p = node.parent;
-  while (p) {
-    if (
-      p.type === "ExportNamedDeclaration" ||
-      p.type === "ExportDefaultDeclaration"
-    ) {
-      return true;
-    }
-    p = p.parent;
-  }
-  return false;
+export function isExportedNode(node: any): boolean {
+  return helpers.isExportedNode(node);
 }
 
 // Path to the story file for annotations
-const STORY_PATH = "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
-const ANNOTATION = `/** @story ${STORY_PATH} */`;
+export const STORY_PATH = helpers.STORY_PATH;
+export const ANNOTATION = helpers.ANNOTATION;
 
 /**
  * Check if @story annotation already present in JSDoc or preceding comments
@@ -46,13 +30,8 @@ const ANNOTATION = `/** @story ${STORY_PATH} */`;
  * @param {any} node - AST node to inspect for existing annotations
  * @returns {boolean} true if @story annotation already present
  */
-function hasStoryAnnotation(sourceCode: any, node: any): boolean {
-  const jsdoc = sourceCode.getJSDocComment(node);
-  if (jsdoc?.value.includes("@story")) {
-    return true;
-  }
-  const comments = sourceCode.getCommentsBefore(node) || [];
-  return comments.some((c: any) => c.value.includes("@story"));
+export function hasStoryAnnotation(sourceCode: any, node: any): boolean {
+  return helpers.hasStoryAnnotation(sourceCode, node);
 }
 
 /**
@@ -63,35 +42,8 @@ function hasStoryAnnotation(sourceCode: any, node: any): boolean {
  * @param {any} node - AST node representing a function-like construct
  * @returns {string} the resolved name or "<unknown>"
  */
-function getNodeName(node: any): string {
-  let current: any = node;
-  while (current) {
-    if (
-      current.type === "VariableDeclarator" &&
-      current.id &&
-      typeof current.id.name === "string"
-    ) {
-      return current.id.name;
-    }
-    if (
-      (current.type === "FunctionDeclaration" ||
-        current.type === "TSDeclareFunction") &&
-      current.id &&
-      typeof current.id.name === "string"
-    ) {
-      return current.id.name;
-    }
-    if (
-      (current.type === "MethodDefinition" ||
-        current.type === "TSMethodSignature") &&
-      current.key &&
-      typeof current.key.name === "string"
-    ) {
-      return current.key.name;
-    }
-    current = current.parent;
-  }
-  return "<unknown>";
+export function getNodeName(node: any): string {
+  return helpers.getNodeName(node);
 }
 
 /**
@@ -103,31 +55,8 @@ function getNodeName(node: any): string {
  * @param {any} node - function-like AST node to resolve target for
  * @returns {any} AST node that should receive the annotation
  */
-function resolveTargetNode(sourceCode: any, node: any): any {
-  if (node.type === "TSMethodSignature") {
-    // Interface method signature -> insert on interface
-    return node.parent.parent;
-  }
-  if (
-    node.type === "FunctionExpression" ||
-    node.type === "ArrowFunctionExpression"
-  ) {
-    const parent = node.parent;
-    if (parent.type === "VariableDeclarator") {
-      const varDecl = parent.parent;
-      if (varDecl.parent && varDecl.parent.type === "ExportNamedDeclaration") {
-        return varDecl.parent;
-      }
-      return varDecl;
-    }
-    if (parent.type === "ExportNamedDeclaration") {
-      return parent;
-    }
-    if (parent.type === "ExpressionStatement") {
-      return parent;
-    }
-  }
-  return node;
+export function resolveTargetNode(sourceCode: any, node: any): any {
+  return helpers.resolveTargetNode(sourceCode, node);
 }
 
 /**
@@ -140,33 +69,13 @@ function resolveTargetNode(sourceCode: any, node: any): any {
  * @param {any} node - function AST node missing annotation
  * @param {any} target - AST node where annotation should be inserted
  */
-function reportMissing(
+export function reportMissing(
   context: Rule.RuleContext,
   sourceCode: any,
   node: any,
   target: any,
 ) {
-  if (
-    hasStoryAnnotation(sourceCode, node) ||
-    hasStoryAnnotation(sourceCode, target)
-  ) {
-    return;
-  }
-  let name = getNodeName(node);
-  if (node.type === "TSDeclareFunction" && node.id && node.id.name) {
-    name = node.id.name;
-  }
-  context.report({
-    node,
-    messageId: "missingStory",
-    data: { name },
-    suggest: [
-      {
-        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-        fix: (fixer: any) => fixer.insertTextBefore(target, `${ANNOTATION}\n`),
-      },
-    ],
-  });
+  return helpers.reportMissing(context, sourceCode, node, target);
 }
 
 /**
@@ -178,21 +87,12 @@ function reportMissing(
  * @param {any} sourceCode - ESLint sourceCode object
  * @param {any} node - MethodDefinition AST node
  */
-function reportMethod(context: Rule.RuleContext, sourceCode: any, node: any) {
-  if (hasStoryAnnotation(sourceCode, node)) {
-    return;
-  }
-  context.report({
-    node,
-    messageId: "missingStory",
-    data: { name: getNodeName(node) },
-    suggest: [
-      {
-        desc: `Add JSDoc @story annotation for function '${getNodeName(node)}', e.g., ${ANNOTATION}`,
-        fix: (fixer: any) => fixer.insertTextBefore(node, `${ANNOTATION}\n  `),
-      },
-    ],
-  });
+export function reportMethod(
+  context: Rule.RuleContext,
+  sourceCode: any,
+  node: any,
+) {
+  return helpers.reportMethod(context, sourceCode, node);
 }
 
 /**
@@ -205,22 +105,12 @@ function reportMethod(context: Rule.RuleContext, sourceCode: any, node: any) {
  * @param {string} exportPriority - 'all' | 'exported' | 'non-exported'
  * @returns {boolean} whether node should be processed
  */
-function shouldProcessNode(
+export function shouldProcessNode(
   node: any,
   scope: string[],
   exportPriority: string,
 ): boolean {
-  if (!scope.includes(node.type)) {
-    return false;
-  }
-  const exported = isExportedNode(node);
-  if (exportPriority === "exported" && !exported) {
-    return false;
-  }
-  if (exportPriority === "non-exported" && exported) {
-    return false;
-  }
-  return true;
+  return helpers.shouldProcessNode(node, scope, exportPriority);
 }
 
 const rule: Rule.RuleModule = {

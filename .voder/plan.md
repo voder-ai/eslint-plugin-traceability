@@ -1,105 +1,56 @@
-<scratchpad>
-Goal: implement the NEXT PRIORITY from the assessment: remediate three deficient areas (CODE_QUALITY, DOCUMENTATION traceability, SECURITY). We must make the NOW action the most important single actionable step. The oversized file src/rules/require-story-annotation.ts appears central: it exceeds max-lines rule, houses many missing branch annotations, and refactoring it will directly help code quality and make it easier to add missing @story/@req annotations. Refactor also reduces cognitive size so documentation work is easier. Security work (dry-aged-deps integration, audit capture, spawnSync shell:true removal) is independent but should follow core code quality first because traceability check and lint must pass before CI.
-
-NOW must be exactly one specific action (no multiple commands). So pick: "Refactor the oversized file to split responsibilities so the main file is <= 300 lines and add annotations for moved functions/branches". That is one task. NEXT will contain the step-by-step plan: branch, implement, run local checks, commit message examples, then run traceability-check and fix remaining missing annotations across files, then integrate dry-aged-deps into CI and replace shell:true usage, run npm audit --json, apply safe upgrades or create ADR documenting accepted risk, move heavy checks out of pre-push, enforce check:traceability in CI. After each item: commit, run checks, push, wait for CI run.
-
-We must obey constraints: no interactive instructions, don't touch .voder or prompts. Also must instruct to avoid starting server. Include commit messages using Conventional Commits. Emphasize single-item-at-a-time workflow and CI monitoring.
-
-Be concise but precise.
-</scratchpad>
-
 ## NOW
-Refactor src/rules/require-story-annotation.ts so the file is reduced to <= 300 lines by extracting helper functions / branch-handling logic into one or more new modules under src/rules/helpers/ (or src/utils/), and add the required @story/@req JSDoc annotations for any functions/branches moved during the refactor.
+Refactor src/rules/require-story-annotation.ts so the file is reduced to ≤ 300 logical lines by extracting helper functions and branch-handling logic into one or more new modules under src/rules/helpers/ (or src/utils/) and add the appropriate @story and @req JSDoc annotations to every function and branch moved during that refactor.
 
 ## NEXT
-Follow these steps in order. Complete one step, then run the local quality checklist, commit with a Conventional Commit message, push, and wait for CI to pass before moving to the next step.
+(Tasks to perform after the NOW refactor is applied; each item is a focused file/CI/documentation change)
 
-1. Create a working branch for the refactor
-   - git switch -c refactor/split-require-story-annotation
+1. Finish traceability remediation
+   - Run the repository traceability scanner (scripts/traceability-check.js) and update all remaining missing @story/@req annotations reported (priority: files under src/rules/ and src/utils/).
+   - For each fixed file add concise, parseable JSDoc @story and @req tags at function-level and for any conditional branches that implement requirements.
 
-2. Implement the refactor described in NOW
-   - Extract focused helpers (parsing, branch inspection, reporting) into new files (e.g., src/rules/helpers/annotation-parsers.ts, src/rules/helpers/annotation-branches.ts).
-   - Keep src/rules/require-story-annotation.ts as the high-level coordinator (<300 lines) that imports the helpers.
-   - Add comprehensive @story and @req JSDoc annotations to each new function and to the branch blocks you moved, following the project's traceability format.
-   - Commit: refactor: split require-story-annotation into smaller modules and add @story/@req annotations
+2. Add targeted unit tests for uncovered branches
+   - Create new Jest tests that exercise the conditional branches introduced by the refactor (helpers and coordinator). Focus on the branch cases that previously had low coverage so branch coverage rises above project thresholds.
 
-3. Run the local quality-check checklist (before push)
-   - npm run build
-   - npm run type-check
-   - npm run lint -- --max-warnings=0
-   - npm test
-   - npm run format:check
-   - npm run duplication
-   - npm run check:traceability
-   - If any check fails, fix immediately and recommit. Use targeted fix commits (fix:, style:, test:) as appropriate.
+3. Make dependency-audit output reproducible and CI-friendly
+   - Add an npm script (package.json) named safety:deps that runs dry-aged-deps producing ci/dry-aged-deps.json (non-failing).
+   - Add an npm script audit:ci that runs npm audit --json and writes ci/npm-audit.json (non-interactive JSON output).
 
-4. Push the branch and monitor CI
-   - git push --set-upstream origin refactor/split-require-story-annotation
-   - Wait for CI (CI/CD Pipeline) to run. If CI fails, read logs, fix root cause, commit and push again.
+4. Remove shell:true usage and reliably capture dev-audit JSON
+   - Update scripts/generate-dev-deps-audit.js (or equivalent) to call child_process.spawnSync without shell:true, capture stdout/stderr as UTF-8, and write JSON to ci/npm-audit.json. Add JSDoc traceability annotations to the script.
 
-5. Complete remaining traceability remediation
-   - Run scripts/traceability-check.js and review scripts/traceability-report.md.
-   - For each file/function/branch reported as missing annotations (prioritize remaining items in src/rules/require-story-annotation.ts and src/utils/branch-annotation-helpers.ts):
-     - Add precise @story and @req annotations referencing the specific story files in prompts/ or docs/stories/.
-     - Prefer small, focused commits per file: chore(docs): add @story/@req to src/XYZ.ts
-   - After each file commit run the quality-check checklist and push; wait for CI to pass.
+5. Integrate dependency reports into CI artifacts
+   - Add steps to the CI workflow to run the new safety:deps and audit:ci scripts and upload ci/dry-aged-deps.json and ci/npm-audit.json as artifacts for triage. Ensure the steps are non-interactive and produce artifacts even on partial failures so triage data is preserved.
 
-6. Integrate dry-aged-deps into CI and capture npm audit output
-   - Add an npm script: "safety:deps": "npx dry-aged-deps --format=json > ci/dry-aged-deps.json || true"
-   - Add a CI workflow step (quality-and-deploy job) that runs the script and uploads ci/dry-aged-deps.json as an artifact (run if: always()).
-   - Commit: chore(ci): add dry-aged-deps check and artifact upload
+6. Triage audit results and follow policy
+   - If dry-aged-deps suggests safe upgrades, apply those upgrades one package at a time (small commits) following the project's dependency policy.
+   - If no safe upgrade exists for a reported high-severity issue, author an ADR under docs/decisions/ (e.g., docs/decisions/adr-accept-dev-dep-risk-<id>.md) documenting:
+     - the vulnerability id(s), rationale for acceptance, owner, and reassessment schedule
+     - mitigations (runtime/workaround or CI gating) and the plan to remove the risk when upstream fixes exist
 
-7. Replace shell:true usage and make audit reproducible
-   - Update scripts/generate-dev-deps-audit.js to call spawnSync without shell (spawnSync('npm', ['audit', '--json'], { encoding: 'utf8' })) and make the script write JSON to ci/npm-audit.json.
-   - Commit: fix(security): remove shell:true from generate-dev-deps-audit and output json to ci/npm-audit.json
-   - Run node scripts/generate-dev-deps-audit.js locally to produce ci/npm-audit.json, review contents.
+7. Shorten developer pre-push hooks
+   - Replace or slim the heavy checks in .husky/pre-push (move long-running tasks such as full audit, long duplication scans, and full-duplication reports into CI). Leave quick developer checks (lint-staged, quick type-check) in pre-push to keep local hooks fast.
 
-8. Run npm audit --json (locally or in CI) and reconcile vulnerabilities
-   - Locally: npm audit --json > ci/npm-audit.json
-   - Inspect ci/npm-audit.json and the dry-aged-deps output to determine if dry-aged-deps lists safe upgrades.
-     - If dry-aged-deps suggests safe updates, apply them (one package per commit), run quality-check, commit with chore(deps): upgrade X per dry-aged-deps, push, and verify CI.
-     - If no safe upgrade exists, create an ADR documenting why the vulnerability is accepted and mitigation plan and commit it under docs/decisions/ (docs/decisions/adr-xxxx-accept-dev-dep-risk.md).
-       - Commit: docs: ADR accept dev-dep vulnerability GHSA-xxxx - rationale & mitigation
-
-9. Remove heavy/slow checks from pre-push and keep them in CI
-   - Modify .husky/pre-push to remove or shorten heavy checks (npm audit, long duplication runs) and leave fast checks (build, type-check, tests, lint).
-   - Ensure CI still runs the full heavy checks.
-   - Commit: chore(ci): move heavy checks out of pre-push into CI to speed developer workflow
-
-10. Finalize traceability and code-quality policy enforcement
-    - Ensure npm run check:traceability is included and enforced in CI (already added earlier; confirm).
-    - Re-run scripts/traceability-check.js; when it reports zero missing functions and branches, commit the regenerated scripts/traceability-report.md.
-    - Commit: chore: regenerate traceability-report after completing annotations
+8. Regenerate and commit traceability report
+   - After all annotation changes and tests are added, regenerate scripts/traceability-report.md and commit it so the repo reflects zero outstanding missing-function/missing-branch entries.
 
 ## LATER
-After the NEXT items are complete and CI is stable, perform longer-term hardening and automation:
+(Improvements to stabilize and automate ongoing maintenance)
 
-- Enforce max-lines in CI as a blocking rule (eslint rule already present — create a CI job that fails on max-lines violations if not already enforced).
-  - Commit: chore(ci): enforce eslint max-lines rule in CI
+- Make dependency maintenance automatic
+  - Add a scheduled workflow that runs safety:deps daily (or weekly) and opens informative PRs (or at least uploads reports) when dry-aged-deps finds safe updates.
 
-- Add a scheduled dry-aged-deps job in .github/workflows to run daily/weekly and automatically open PRs (or report) when safe updates are available.
-  - Commit: chore(ci): schedule dry-aged-deps run weekly and upload report
+- Enforce max-lines and file-size limits in CI as blocking checks
+  - Ensure ESLint max-lines is enforced in a CI job (fail the run on violations) so future oversized files are prevented.
 
-- Add CONTRIBUTING.md snippet with exact @story/@req annotation examples and the local reproduction commands (include the NOW reproduction command), so future contributors add annotations correctly.
-  - Commit: docs: add traceability annotation guidance to CONTRIBUTING.md
+- Harden release-time dev-dependency handling
+  - Evaluate semantic-release's bundled dev deps and, if needed, pin or replace packages to avoid bundling known-vulnerable transitive tooling; record any agreed residual risk in an ADR and re-evaluate each upstream patch.
 
-- Add a small npm script test:ci:debug that runs the exact CI-reproducible test command and writes outputs to ci/ (for developer convenience).
-  - Commit: chore(scripts): add test:ci:debug to package.json
+- Add CONTRIBUTING guidance for traceability
+  - Add a short CONTRIBUTING.md section with example @story/@req JSDoc snippets, branch/annotation conventions, and how to run the local traceability scanner.
 
-- Periodically review pre-push hook contents and keep it fast (<2 minutes). If needed, add an opt-in heavier-check script developers can run pre-push manually.
+- Secret handling follow-up
+  - Rotate any exposed local API key found in ignored .env and update repository docs to require using a secret manager (CI secrets or local keyring). Add a short note in CONTRIBUTING to not place secrets in .env.example.
 
-Notes / Process rules to follow while executing the plan
-- Single-change principle: make each change small and focused. After finishing each item:
-  1) Run the full quality-check checklist locally (build, type-check, lint, tests, format:check, duplication, check:traceability)
-  2) Commit using Conventional Commits
-  3) Push and wait for CI to run and pass
-  4) Only then move to the next item
-- Never modify files in .voder/ or prompts/ directories.
-- Do not introduce interactive steps; all scripts must be non-interactive and write artifacts to ci/.
-- Use ADRs (docs/decisions/) to document any security acceptance decisions or deviations from standard upgrade flow.
-
-If you want, I can:
-- produce a concrete split suggestion (file outlines and example function extractions) for src/rules/require-story-annotation.ts to accelerate the refactor, or
-- create the branch and make the initial extraction commit (small change), run the local checks, and open a PR for review.
-
-Which do you want me to do next: generate the concrete extraction plan (file-by-file outline) or create the initial refactor commit?
+Notes / constraints respected
+- This plan focuses on the NEXT PRIORITY from the assessment (code-quality and security remediation) and keeps the NOW step a single, highest-priority action.
+- No branches are proposed (trunk-based flow), no interactive commands, no edits to .voder/ or prompts/, and no instructions to run CI/commit/push (those are handled automatically by your process).
