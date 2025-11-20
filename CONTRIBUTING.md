@@ -16,12 +16,12 @@ If you encounter a bug or have a feature request:
 
 ## Pull Request Process
 
-When submitting a pull request (PR):
+Trunk-based development: work happens directly on the `main` branch.
 
-1. Fork the repository and create a branch for your changes.
+1. Make small, incremental commits directly on the `main` branch in this repository. Avoid long-lived feature branches or forks.
 2. Commit your changes in small, logical increments. Use descriptive commit messages.
 3. Ensure all tests pass and the project builds successfully.
-4. Push your branch to GitHub and open a PR against the `main` branch.
+4. Push your changes to GitHub and open a PR against the `main` branch if you want a review or CI verification.
 5. Reference any related issues in your PR description.
 6. A maintainer will review your changes and may request updates or approve the PR.
 
@@ -87,6 +87,8 @@ Note on pre-push hook: the repository's pre-push hook runs a fast verification t
 ```bash
 npm run ci-verify:fast
 ```
+
+This fast guard does not perform a full build; it's a non-building verification to catch obvious issues quickly. Continuous Integration runs the full lint-plugin check (build + verify) as `npm run lint-plugin-check` (or the CI-configured equivalent), so CI will perform the complete build-and-verify steps.
 
 Ensure there are no errors or warnings in the output.
 
