@@ -4,11 +4,41 @@
  * @req REQ-ANNOTATION-REQUIRED - File-level header for rule helper utilities
  */
 import type { Rule } from "eslint";
+import {
+  linesBeforeHasStory,
+  parentChainHasStory,
+  fallbackTextBeforeHasStory,
+} from "./require-story-io";
 
-// Path to the story file for annotations
+import {
+  createAddStoryFix,
+  createMethodFix,
+  DEFAULT_SCOPE,
+  EXPORT_PRIORITY_VALUES,
+} from "./require-story-core";
+
+export { DEFAULT_SCOPE, EXPORT_PRIORITY_VALUES };
+
+/**
+ * Path to the story file for annotations
+ */
 export const STORY_PATH =
   "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
 export const ANNOTATION = `/** @story ${STORY_PATH} */`;
+
+/**
+ * Number of physical source lines to inspect before a node when searching for @story text
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Replace magic number for lookback lines with named constant
+ */
+export const LOOKBACK_LINES = 4;
+
+/**
+ * Window (in characters) to inspect before a node as a fallback when searching for @story text
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Replace magic number for fallback text window with named constant
+ */
+export const FALLBACK_WINDOW = 800;
 
 /**
  * Determine if a node is in an export declaration
@@ -34,7 +64,66 @@ export function isExportedNode(node: any): boolean {
 }
 
 /**
+ * Check whether the JSDoc associated with node contains @story
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Extract JSDoc based detection into helper
+ * @param {any} sourceCode - ESLint sourceCode object
+ * @param {any} node - AST node to inspect
+ * @returns {boolean} true if JSDoc contains @story
+ */
+export function jsdocHasStory(sourceCode: any, node: any): boolean {
+  if (typeof sourceCode?.getJSDocComment !== "function") {
+    return false;
+  }
+  const jsdoc = sourceCode.getJSDocComment(node);
+  return !!(
+    jsdoc &&
+    typeof jsdoc.value === "string" &&
+    jsdoc.value.includes("@story")
+  );
+}
+
+/**
+ * Check whether comments returned by sourceCode.getCommentsBefore contain @story
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Extract comment-before detection into helper
+ * @param {any} sourceCode - ESLint sourceCode object
+ * @param {any} node - AST node to inspect
+ * @returns {boolean} true if any preceding comment contains @story
+ */
+export function commentsBeforeHasStory(sourceCode: any, node: any): boolean {
+  if (typeof sourceCode?.getCommentsBefore !== "function") {
+    return false;
+  }
+  const commentsBefore = sourceCode.getCommentsBefore(node) || [];
+  return (
+    Array.isArray(commentsBefore) &&
+    commentsBefore.some(
+      (c: any) => typeof c.value === "string" && c.value.includes("@story"),
+    )
+  );
+}
+
+/**
+ * Check whether leadingComments attached to the node contain @story
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Extract leadingComments detection into helper
+ * @param {any} node - AST node to inspect
+ * @returns {boolean} true if any leading comment contains @story
+ */
+export function leadingCommentsHasStory(node: any): boolean {
+  const leadingComments = (node && node.leadingComments) || [];
+  return (
+    Array.isArray(leadingComments) &&
+    leadingComments.some(
+      (c: any) => typeof c.value === "string" && c.value.includes("@story"),
+    )
+  );
+}
+
+/**
  * Check if @story annotation already present in JSDoc or preceding comments
+ * Consolidates a variety of heuristics through smaller helpers.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Detect existing story annotations in JSDoc or comments
  * @param {any} sourceCode - ESLint sourceCode object
@@ -42,12 +131,30 @@ export function isExportedNode(node: any): boolean {
  * @returns {boolean} true if @story annotation already present
  */
 export function hasStoryAnnotation(sourceCode: any, node: any): boolean {
-  const jsdoc = sourceCode.getJSDocComment(node);
-  if (jsdoc?.value.includes("@story")) {
-    return true;
+  try {
+    if (jsdocHasStory(sourceCode, node)) {
+      return true;
+    }
+    if (commentsBeforeHasStory(sourceCode, node)) {
+      return true;
+    }
+    if (leadingCommentsHasStory(node)) {
+      return true;
+    }
+    if (linesBeforeHasStory(sourceCode, node, LOOKBACK_LINES)) {
+      return true;
+    }
+    if (parentChainHasStory(sourceCode, node)) {
+      return true;
+    }
+    if (fallbackTextBeforeHasStory(sourceCode, node)) {
+      return true;
+    }
+  } catch {
+    /* noop */
   }
-  const comments = sourceCode.getCommentsBefore(node) || [];
-  return comments.some((c: any) => c.value.includes("@story"));
+
+  return false;
 }
 
 /**
@@ -151,135 +258,85 @@ export function shouldProcessNode(
 }
 
 /**
- * Create a fixer function that inserts a @story annotation before the target node.
+ * Report a missing @story annotation for a function-like node
+ * Provides a suggestion to add the annotation.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Provide automatic fix function for missing @story annotations
- * @param {any} target - AST node where annotation should be inserted
- * @returns {Function} fixer function to be returned in ESLint suggestion/fix
- */
-export function createAddStoryFix(target: any) {
-  /**
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-AUTOFIX - Provide automatic fix to insert @story annotation
-   */
-  return function addStoryFixer(fixer: any) {
-    return fixer.insertTextBefore(target, `${ANNOTATION}\n`);
-  };
-}
-
-/**
- * Create a fixer function for class method annotations.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
- * @param {any} node - method AST node
- * @returns {Function} fixer function for method fixes
- */
-export function createMethodFix(node: any) {
-  /**
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
-   */
-  return function methodFixer(fixer: any) {
-    return fixer.insertTextBefore(node, `${ANNOTATION}\n  `);
-  };
-}
-
-/**
- * Default set of node types to check for missing @story annotations.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Provide sensible default scope for rule checks
- */
-export const DEFAULT_SCOPE: string[] = [
-  "FunctionDeclaration",
-  "FunctionExpression",
-  "ArrowFunctionExpression",
-  "MethodDefinition",
-  "TSMethodSignature",
-  "TSDeclareFunction",
-  "VariableDeclarator",
-];
-
-/**
- * Allowed values for export priority option.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Enumerate accepted export priority option values
- */
-export const EXPORT_PRIORITY_VALUES = ["all", "exported", "non-exported"];
-
-/**
- * Report a missing @story annotation for a general function-like node.
- * Uses helpers to determine name, target insertion point and autofix.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Report missing annotation and provide autofix using createAddStoryFix
+ * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing annotations with suggestion
  * @param {Rule.RuleContext} context - ESLint rule context used to report
- * @param {any} sourceCode - ESLint sourceCode object (use context.getSourceCode() if not provided)
- * @param {any} node - AST node missing the @story annotation
- * @param {any} [target] - optional target node where annotation should be inserted
+ * @param {any} sourceCode - ESLint sourceCode object
+ * @param {any} node - AST node that is missing the annotation
  */
 export function reportMissing(
   context: Rule.RuleContext,
   sourceCode: any,
   node: any,
-  target?: any,
-) {
-  const sc = sourceCode || context.getSourceCode();
-  const resolvedTarget = target ?? resolveTargetNode(sc, node);
-  if (hasStoryAnnotation(sc, node) || hasStoryAnnotation(sc, resolvedTarget)) {
-    return;
+): void {
+  try {
+    if (hasStoryAnnotation(sourceCode, node)) {
+      return;
+    }
+    const target = resolveTargetNode(sourceCode, node);
+    const name = getNodeName(node);
+    context.report({
+      node,
+      message: `Missing @story annotation for ${name}`,
+      suggest: [
+        {
+          desc: "Add @story annotation",
+          fix: createAddStoryFix(sourceCode, target),
+        },
+      ],
+    });
+  } catch {
+    /* noop */
   }
-  const name = getNodeName(node);
-  const fixerFunc = createAddStoryFix(resolvedTarget);
-
-  const reportObj: any = {
-    node,
-    messageId: "missingStory",
-    data: { name },
-    suggest: [
-      {
-        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-        fix: fixerFunc,
-      },
-    ],
-  };
-
-  context.report(reportObj);
 }
 
 /**
- * Report a missing @story annotation specifically for class/interface methods.
- * Uses method-specific fixer to preserve indentation/placement.
+ * Report a missing @story annotation for a method-like node
+ * Provides a suggestion to update the method/interface with the annotation.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Report missing method annotation and provide autofix using createMethodFix
+ * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing method/interface annotations with suggestion
  * @param {Rule.RuleContext} context - ESLint rule context used to report
- * @param {any} sourceCode - ESLint sourceCode object (use context.getSourceCode() if not provided)
- * @param {any} node - method AST node missing the @story annotation
- * @param {any} [target] - optional target node where annotation should be inserted
+ * @param {any} sourceCode - ESLint sourceCode object
+ * @param {any} node - AST node that is missing the annotation
  */
 export function reportMethod(
   context: Rule.RuleContext,
   sourceCode: any,
   node: any,
-  target?: any,
-) {
-  const sc = sourceCode || context.getSourceCode();
-  if (hasStoryAnnotation(sc, node)) {
-    return;
+): void {
+  try {
+    if (hasStoryAnnotation(sourceCode, node)) {
+      return;
+    }
+    const target = resolveTargetNode(sourceCode, node);
+    const name = getNodeName(node);
+    context.report({
+      node,
+      message: `Missing @story annotation for method ${name}`,
+      suggest: [
+        {
+          desc: "Add @story annotation to method",
+          fix: createMethodFix(sourceCode, target),
+        },
+      ],
+    });
+  } catch {
+    /* noop */
   }
-  const name = getNodeName(node);
-  const resolvedTarget = target ?? node;
-  const fixerFunc = createMethodFix(resolvedTarget);
-
-  const reportObj: any = {
-    node,
-    messageId: "missingStory",
-    data: { name },
-    suggest: [
-      {
-        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-        fix: fixerFunc,
-      },
-    ],
-  };
-
-  context.report(reportObj);
 }
+
+/**
+ * Explicit exports for require-story-annotation consumers
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Explicitly export helper functions and constants used by requiring modules
+ */
+export {
+  shouldProcessNode,
+  resolveTargetNode,
+  reportMissing,
+  reportMethod,
+  DEFAULT_SCOPE,
+  EXPORT_PRIORITY_VALUES,
+};
