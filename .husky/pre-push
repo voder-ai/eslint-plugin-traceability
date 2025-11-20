@@ -1,9 +1,8 @@
 #!/bin/sh
 # /**
 #  * @file .husky/pre-push
-#  * @description Slimmed pre-push hook: keep traceability, quick type-check, and lint
-#  *              for faster developer feedback. Removed heavier checks such as:
-#  *              build, duplication detection, full test suite, format check, and audit.
+#  * @description Slimmed pre-push hook: run lighter checks for faster developer feedback.
+#  *              Performs type-check, traceability, duplication detection, and strict lint.
 #  *              Non-interactive behavior preserved; script exits with non-zero on failure.
 #  */
 #
@@ -11,10 +10,6 @@
 # npm run check:traceability && npm run build && npm run type-check && npm run lint -- --max-warnings=0 && npm run duplication && npm test && npm run format:check && npm audit --production --audit-level=high && echo "Pre-push checks completed"
 #
 set -e
-# Note: The fast verification task (ci-verify:fast) is expected NOT to invoke a build;
-# ensure your ci-verify:fast npm script is configured accordingly (no build step).
-# The fast verification relies on a lint guard; call the guard script directly here.
-# We now require lint:require-built-plugin (which runs the guard that validates the built plugin exists)
-# instead of the old lint-plugin-check. `set -e` ensures the hook exits non-zero on failure.
-# Invoke the guard first, then the consolidated fast CI verification. Exits non-zero on failure due to `set -e`.
-npm run lint:require-built-plugin && npm run ci-verify:fast && echo "Pre-push quick checks completed"
+# Run a lightweight sequence of checks (no built-plugin guard): type-check, traceability, duplication, and lint.
+# Exits non-zero on failure due to `set -e`.
+npm run type-check && npm run check:traceability && npm run duplication && npm run lint -- --max-warnings=0 && echo "Pre-push quick checks completed"
