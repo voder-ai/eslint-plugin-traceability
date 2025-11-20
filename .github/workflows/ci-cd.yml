@@ -9,14 +9,17 @@ on:
     - cron: '0 0 * * *'
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  id-token: write
+  contents: read # See ADR-001 for permissions rationale
 
 jobs:
   quality-and-deploy:
     name: Quality and Deploy
+    # Grant elevated permissions only at the job level for release operations per ADR-001
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
     runs-on: ubuntu-latest
     strategy:
       matrix:
