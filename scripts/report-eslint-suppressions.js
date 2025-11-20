@@ -3,7 +3,7 @@
  * Scan the repository for ESLint/TypeScript suppression comments and generate a
  * parseable markdown report at scripts/eslint-suppressions-report.md.
  *
- * This script excludes node_modules, .git, lib, dist, out, and .voder directories.
+ * This script excludes node_modules, .git, lib, dist, out, .voder directories.
  * It searches source files with extensions: .js, .cjs, .mjs, .ts, .tsx, .jsx
  *
  * Exit codes:
@@ -21,7 +21,7 @@ const root = process.cwd();
 const outPath = path.join('scripts', 'eslint-suppressions-report.md');
 
 const exts = new Set(['.js', '.cjs', '.mjs', '.ts', '.tsx', '.jsx']);
-const excludedDirs = new Set(['node_modules', '.git', 'lib', 'dist', 'out', '.voder']);
+const excludedDirs = new Set(['node_modules', '.git', 'lib', 'dist', 'out', '.voder', 'coverage']);
 
 const patterns = [
   { name: 'eslint-disable', regex: /\/\*\s*eslint-disable(?:\s|\*|$)/, type: 'block' },
@@ -46,6 +46,15 @@ function walk(dir, cb) {
   }
 }
 
+function hasJustification(text) {
+  if (!text) return false;
+  if (text.indexOf(' -- ') !== -1) return true;
+  if (/justification/i.test(text)) return true;
+  if (/ADR/i.test(text)) return true;
+  if (text.indexOf('docs/decisions/') !== -1) return true;
+  return false;
+}
+
 function scanFile(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const lines = content.split(/\r?\n/);
@@ -54,6 +63,7 @@ function scanFile(filePath) {
     const line = lines[i];
     for (const p of patterns) {
       if (p.regex.test(line)) {
+        if (hasJustification(line)) continue;
         hits.push({ filePath, line: i + 1, text: line.trim(), pattern: p.name });
       }
     }
@@ -70,7 +80,9 @@ function scanFile(filePath) {
       // compute line number
       const prefix = content.slice(0, idx);
       const lineNumber = prefix.split(/\r?\n/).length;
-      hits.push({ filePath, line: lineNumber, text: block.split(/\r?\n/)[0].trim(), pattern: 'eslint-disable-block' });
+      const firstLine = block.split(/\r?\n/)[0].trim();
+      if (hasJustification(firstLine)) continue;
+      hits.push({ filePath, line: lineNumber, text: firstLine, pattern: 'eslint-disable-block' });
     }
   }
 
@@ -83,6 +95,8 @@ walk(root, (file) => {
     const rel = path.relative(root, file);
     // skip files under scripts/eslint-suppressions-report.md output
     if (rel === outPath) return;
+    // skip this script itself
+    if (rel === path.join('scripts', 'report-eslint-suppressions.js')) return;
     const fileHits = scanFile(file);
     if (fileHits.length) results.push(...fileHits);
   } catch (err) {
