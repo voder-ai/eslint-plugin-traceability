@@ -11,6 +11,14 @@ export function updateAnnotationReferences(
   oldPath: string,
   newPath: string,
 ): number {
+  /**
+   * Check that the provided codebase path exists and is a directory.
+   * If not, abort early.
+   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+   * @req REQ-MAINT-UPDATE
+   */
+  // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+  // @req REQ-MAINT-UPDATE
   if (
     !fs.existsSync(codebasePath) ||
     !fs.statSync(codebasePath).isDirectory()

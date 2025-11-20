@@ -12,7 +12,7 @@ export function createAddStoryFix(target: any) {
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-AUTOFIX - Provide automatic fix function for missing @story annotations
    */
-   
+
   function addStoryFixer(fixer: any) {
     return fixer.insertTextBefore(target, `${ANNOTATION}\n`);
   }
@@ -30,7 +30,7 @@ export function createMethodFix(node: any) {
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
    */
-   
+
   function methodFixer(fixer: any) {
     return fixer.insertTextBefore(node, `${ANNOTATION}\n  `);
   }
@@ -72,8 +72,10 @@ export function reportMissing(
   // @req REQ-AUTOFIX - Prefer provided sourceCode, fallback to context.getSourceCode()
   const sc = sourceCode || context.getSourceCode();
 
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-AUTOFIX - Only attempt to read JSDoc comment if source supports it
+  /**
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @req REQ-AUTOFIX - Only attempt to read JSDoc comment if source supports it
+   */
   if (typeof sc?.getJSDocComment === "function") {
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
     // @req REQ-ANNOTATION-REQUIRED - If JSDoc already contains @story, do not report

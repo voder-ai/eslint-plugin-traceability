@@ -13,6 +13,11 @@ export function getAllFiles(dir: string): string[] {
    * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
    * @req REQ-MAINT-UTILS-VALIDATE-DIR - Validate input directory path
    */
+  /**
+   * Traceability for the directory-existence branch.
+   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+   * @req REQ-MAINT-UTILS-VALIDATE-DIR-BRANCH - Traceability for directory-existence branch
+   */
   if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
     return fileList;
   }
@@ -38,9 +43,16 @@ export function getAllFiles(dir: string): string[] {
          * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
          * @req REQ-MAINT-UTILS-TRAVERSE-FILE - Handle file entries during traversal
          */
-      } else if (stat.isFile()) {
-        fileList.push(fullPath);
       }
+      /**
+       * Skip non-file entries encountered during traversal.
+       * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+       * @req REQ-MAINT-UTILS-TRAVERSE-SKIP-NONFILE - Traceability for skipping non-file entries
+       */
+      if (!stat.isFile()) {
+        continue;
+      }
+      fileList.push(fullPath);
     }
   }
   traverse(dir);

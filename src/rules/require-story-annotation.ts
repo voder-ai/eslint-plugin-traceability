@@ -63,6 +63,20 @@ const rule: Rule.RuleModule = {
     const exportPriority = opts.exportPriority || "all";
 
     /**
+     * Debug log at the start of create to help diagnose rule activation in tests.
+     *
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-DEBUG-LOG
+     */
+     
+    console.debug(
+      "require-story-annotation:create",
+      typeof context.getFilename === "function"
+        ? context.getFilename()
+        : "<unknown>",
+    );
+
+    /**
      * Predicate to determine whether a given node should be processed by this rule.
      *
      * Uses configured scope and exportPriority to decide if the node is eligible.
@@ -89,6 +103,22 @@ const rule: Rule.RuleModule = {
        * @req REQ-ANNOTATION-REQUIRED
        */
       FunctionDeclaration(node: any) {
+        /**
+         * Debug log at the start of FunctionDeclaration visitor to help trace why
+         * a node may not be reported in tests.
+         *
+         * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+         * @req REQ-DEBUG-LOG
+         */
+         
+        console.debug(
+          "require-story-annotation:FunctionDeclaration",
+          typeof context.getFilename === "function"
+            ? context.getFilename()
+            : "<unknown>",
+          node && node.id ? node.id.name : "<anonymous>",
+        );
+
         if (!should(node)) return;
         let target = node;
         if (

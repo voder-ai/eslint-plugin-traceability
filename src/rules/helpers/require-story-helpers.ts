@@ -272,18 +272,21 @@ export function reportMissing(
   node: any,
 ): void {
   try {
+    const functionName = getNodeName(node);
+
     if (hasStoryAnnotation(sourceCode, node)) {
       return;
     }
     const target = resolveTargetNode(sourceCode, node);
-    const name = getNodeName(node);
+    const name = functionName;
     context.report({
       node,
-      message: `Missing @story annotation for ${name}`,
+      messageId: "missingStory",
+      data: { name },
       suggest: [
         {
-          desc: "Add @story annotation",
-          fix: createAddStoryFix(sourceCode, target),
+          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+          fix: createAddStoryFix(target),
         },
       ],
     });
@@ -297,7 +300,7 @@ export function reportMissing(
  * Provides a suggestion to update the method/interface with the annotation.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing method/interface annotations with suggestion
- * @param {Rule.RuleContext} context - ESLint rule context used to report
+ * @param {Rule.RuleContext} context - ESLint rule context to report
  * @param {any} sourceCode - ESLint sourceCode object
  * @param {any} node - AST node that is missing the annotation
  */
@@ -314,11 +317,12 @@ export function reportMethod(
     const name = getNodeName(node);
     context.report({
       node,
-      message: `Missing @story annotation for method ${name}`,
+      messageId: "missingStory",
+      data: { name },
       suggest: [
         {
-          desc: "Add @story annotation to method",
-          fix: createMethodFix(sourceCode, target),
+          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+          fix: createMethodFix(target),
         },
       ],
     });
