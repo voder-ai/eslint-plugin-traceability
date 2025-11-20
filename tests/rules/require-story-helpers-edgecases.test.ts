@@ -14,7 +14,7 @@ import {
   DEFAULT_SCOPE,
 } from "../../src/rules/helpers/require-story-helpers";
 
-describe("Require Story Helpers - additional branch coverage (Story 003.0)", () => {
+describe("Require Story Helpers - edge cases (Story 003.0)", () => {
   test("jsdocHasStory returns false when JSDoc exists but value is not a string", () => {
     const fakeSource: any = { getJSDocComment: () => ({ value: 123 }) };
     const res = jsdocHasStory(fakeSource, {} as any);

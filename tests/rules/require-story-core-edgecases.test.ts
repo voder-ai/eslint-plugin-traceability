@@ -1,5 +1,5 @@
 /**
- * Branch tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * Edge-case tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Cover additional branch cases in require-story-core (addStoryFixer/reportMissing)
  */
@@ -9,7 +9,7 @@ import {
 } from "../../src/rules/helpers/require-story-core";
 import { ANNOTATION } from "../../src/rules/helpers/require-story-helpers";
 
-describe("Require Story Core (Story 003.0)", () => {
+describe("Require Story Core - edge cases (Story 003.0)", () => {
   test("createAddStoryFix falls back to 0 when target is falsy", () => {
     const fixer = {
       insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),

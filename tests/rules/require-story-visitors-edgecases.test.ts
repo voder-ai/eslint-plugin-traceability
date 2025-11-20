@@ -6,7 +6,7 @@
 
 import { buildVisitors } from "../../src/rules/helpers/require-story-visitors";
 
-describe("Require Story Visitors - branch coverage (Story 003.0)", () => {
+describe("Require Story Visitors - behavior (Story 003.0)", () => {
   test("build visitors returns handlers for FunctionDeclaration and ArrowFunctionExpression", () => {
     const fakeContext: any = { getFilename: () => "file.ts" };
     const fakeSource: any = { getText: () => "" };

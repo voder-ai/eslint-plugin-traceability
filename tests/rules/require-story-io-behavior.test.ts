@@ -9,7 +9,7 @@ import {
   fallbackTextBeforeHasStory,
 } from "../../src/rules/helpers/require-story-io";
 
-describe("Require Story IO helpers - branch coverage (Story 003.0)", () => {
+describe("Require Story IO helpers - additional behavior (Story 003.0)", () => {
   test("parentChainHasStory returns false when sourceCode.getCommentsBefore is not a function", () => {
     const fakeSource: any = {}; // no getCommentsBefore function
     const node: any = { parent: { parent: null } };
