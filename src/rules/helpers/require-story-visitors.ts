@@ -36,6 +36,7 @@ function buildFunctionDeclarationVisitor(
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-DEBUG-LOG - Provide debug logging for visitor entry
      */
+    void _node;
     console.debug(
       "require-story-annotation:FunctionDeclaration",
       typeof context.getFilename === "function"
@@ -78,6 +79,7 @@ function buildFunctionExpressionVisitor(
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on function expressions
    */
   function handleFunctionExpression(_node: any) {
+    void _node;
     if (!options.shouldProcessNode(_node)) return;
 
     /**
@@ -119,6 +121,7 @@ function buildArrowFunctionVisitor(
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on arrow functions
    */
   function handleArrowFunctionExpression(_node: any) {
+    void _node;
     if (!options.shouldProcessNode(_node)) return;
     const target = resolveTargetNode(sourceCode, _node, {
       scope: options.scope,
@@ -152,6 +155,7 @@ function buildTSDeclareFunctionVisitor(
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on TS declare functions
    */
   function handleTSDeclareFunction(_node: any) {
+    void _node;
     if (!options.shouldProcessNode(_node)) return;
     helperReportMissing(context, sourceCode, _node, _node);
   }
@@ -181,6 +185,7 @@ function buildTSMethodSignatureVisitor(
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on TS method signatures
    */
   function handleTSMethodSignature(_node: any) {
+    void _node;
     if (!options.shouldProcessNode(_node)) return;
     const target = resolveTargetNode(sourceCode, _node, {
       scope: options.scope,
@@ -214,6 +219,7 @@ function buildMethodDefinitionVisitor(
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on class/object methods
    */
   function handleMethodDefinition(_node: any) {
+    void _node;
     if (!options.shouldProcessNode(_node)) return;
     helperReportMethod(context, sourceCode, _node);
   }
