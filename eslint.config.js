@@ -7,13 +7,32 @@
 const typescriptParser = require("@typescript-eslint/parser");
 const js = require("@eslint/js");
 
-// Try to load the plugin, but handle case where it doesn't exist yet
+// Prefer loading the plugin from the source during development if available.
+// This allows running eslint directly against the src tree without a build step.
+// Fallback to the built plugin in lib/src for CI / production use.
+// If neither exists and we are running in CI, throw an error to fail the build.
+// Otherwise warn and continue with an empty plugin object so local dev can proceed.
 let plugin;
 try {
-  plugin = require("./lib/src/index.js");
-} catch {
-  console.warn("Plugin not built yet, skipping traceability rules");
-  plugin = {};
+  // First, try to load from source (developer workflow)
+  plugin = require("./src/index.js");
+} catch (eSrc) {
+  try {
+    // Fallback to built output (production / CI workflow)
+    plugin = require("./lib/src/index.js");
+  } catch (eLib) {
+    const inCI = process.env.NODE_ENV === "ci" || process.env.CI === "true";
+    if (inCI) {
+      // In CI we want to fail fast if the plugin isn't built/installed.
+      throw new Error(
+        "Traceability plugin not found. Expected ./src/index.js or ./lib/src/index.js to be present in CI."
+      );
+    } else {
+      // Local dev: warn and continue without the plugin so eslint can still run.
+      console.warn("Traceability plugin not built yet, skipping traceability rules");
+      plugin = {};
+    }
+  }
 }
 
 module.exports = [

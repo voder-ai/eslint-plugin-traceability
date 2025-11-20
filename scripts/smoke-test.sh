@@ -12,7 +12,7 @@ if [ "$VERSION" = "local" ]; then
   tarball=$(npm pack 2>&1 | tail -1)
   echo "   Created: $tarball"
   PACKAGE_SOURCE="$PWD/$tarball"
-  INSTALL_CMD="npm install \"$PACKAGE_SOURCE\""
+  INSTALL_ARGS=(npm install "$PACKAGE_SOURCE" --no-audit --no-fund)
 else
   # Use specific version from npm registry
   echo "📦 Using version $VERSION from npm registry"
@@ -30,7 +30,7 @@ else
     sleep 5
   done
   
-  INSTALL_CMD="npm install \"$PACKAGE_SOURCE\" --prefer-online"
+  INSTALL_ARGS=(npm install "$PACKAGE_SOURCE" --prefer-online --no-audit --no-fund)
 fi
 
 # Create temporary directory
@@ -55,10 +55,10 @@ npm init -y > /dev/null
 
 # Install the package
 echo "📥 Installing eslint-plugin-traceability..."
-eval "$INSTALL_CMD" > /dev/null
+"${INSTALL_ARGS[@]}" > /dev/null
 
 # Verify it loaded correctly
-echo "� Verifying package loaded correctly..."
+echo "🔎 Verifying package loaded correctly..."
 if [ "$VERSION" != "local" ]; then
   node -e "
     const pkg = require('eslint-plugin-traceability');

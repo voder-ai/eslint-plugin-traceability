@@ -9,8 +9,8 @@
 #
 # Previous pre-push intent (kept for reference):
 # npm run check:traceability && npm run build && npm run type-check && npm run lint -- --max-warnings=0 && npm run duplication && npm test && npm run format:check && npm audit --production --audit-level=high && echo "Pre-push checks completed"
-
+#
 set -e
 
-# Fast feedback checks: traceability, quick type-check, lint.
-npm run check:traceability && npm run type-check -- --noEmit && npm run lint -- --max-warnings=0 && echo "Pre-push quick checks completed"
+# Invoke the consolidated fast CI verification. Exits non-zero on failure due to `set -e`.
+npm run ci-verify:fast && echo "Pre-push quick checks completed"
