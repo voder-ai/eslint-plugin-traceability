@@ -42,10 +42,7 @@ function buildFunctionDeclarationVisitor(
 
     if (!options.shouldProcessNode(node)) return;
 
-    const target = resolveTargetNode(sourceCode, node, {
-      scope: options.scope,
-      exportPriority: options.exportPriority,
-    });
+    const target = resolveTargetNode(sourceCode, node);
     helperReportMissing(context, sourceCode, node, target);
   }
 
@@ -79,10 +76,7 @@ function buildFunctionExpressionVisitor(
      */
     if (node.parent && node.parent.type === "MethodDefinition") return;
 
-    const target = resolveTargetNode(sourceCode, node, {
-      scope: options.scope,
-      exportPriority: options.exportPriority,
-    });
+    const target = resolveTargetNode(sourceCode, node);
     helperReportMissing(context, sourceCode, node, target);
   }
 
@@ -108,10 +102,7 @@ function buildArrowFunctionVisitor(
    */
   function handleArrowFunctionExpression(node: any) {
     if (!options.shouldProcessNode(node)) return;
-    const target = resolveTargetNode(sourceCode, node, {
-      scope: options.scope,
-      exportPriority: options.exportPriority,
-    });
+    const target = resolveTargetNode(sourceCode, node);
     helperReportMissing(context, sourceCode, node, target);
   }
 
@@ -162,10 +153,7 @@ function buildTSMethodSignatureVisitor(
    */
   function handleTSMethodSignature(node: any) {
     if (!options.shouldProcessNode(node)) return;
-    const target = resolveTargetNode(sourceCode, node, {
-      scope: options.scope,
-      exportPriority: options.exportPriority,
-    });
+    const target = resolveTargetNode(sourceCode, node);
     helperReportMissing(context, sourceCode, node, target);
   }
 
