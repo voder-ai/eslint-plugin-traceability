@@ -89,12 +89,15 @@ function reportExistenceProblems(opts: {
 
   if (existenceResult.status === "fs-error") {
     const rawError = existenceResult.error;
-    const errorMessage =
-      rawError instanceof Error
-        ? rawError.message
-        : rawError
-          ? String(rawError)
-          : "Unknown filesystem error";
+    let errorMessage: string;
+
+    if (rawError == null) {
+      errorMessage = "Unknown filesystem error";
+    } else if (rawError instanceof Error) {
+      errorMessage = rawError.message;
+    } else {
+      errorMessage = String(rawError);
+    }
 
     context.report({
       node: commentNode,
@@ -260,7 +263,7 @@ export default {
       },
     ],
   },
-  create(context) {
+  create(context: Rule.RuleContext) {
     const cwd = process.cwd();
     const opts = context.options[0] as
       | {
