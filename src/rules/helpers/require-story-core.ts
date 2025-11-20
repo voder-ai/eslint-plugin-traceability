@@ -12,9 +12,11 @@ export function createAddStoryFix(target: any) {
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-AUTOFIX - Provide automatic fix function for missing @story annotations
    */
-  return function addStoryFixer(fixer: any) {
+   
+  function addStoryFixer(fixer: any) {
     return fixer.insertTextBefore(target, `${ANNOTATION}\n`);
-  };
+  }
+  return addStoryFixer;
 }
 
 /**
@@ -28,9 +30,11 @@ export function createMethodFix(node: any) {
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
    */
-  return function methodFixer(fixer: any) {
+   
+  function methodFixer(fixer: any) {
     return fixer.insertTextBefore(node, `${ANNOTATION}\n  `);
-  };
+  }
+  return methodFixer;
 }
 
 /**
