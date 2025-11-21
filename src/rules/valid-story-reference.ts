@@ -304,7 +304,7 @@ export default {
     ],
   },
   create(context: Rule.RuleContext) {
-    const { cwd = process.cwd() } = context;
+    const cwd = (context as any).cwd ?? process.cwd();
     const opts = context.options[0] as
       | {
           storyDirectories?: string[];
