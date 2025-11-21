@@ -137,6 +137,60 @@ describe("Valid Story Reference Rule Error Handling (Story 006.0-DEV-FILE-VALIDA
   });
 
   /**
+   * @req REQ-ERROR-HANDLING - Verify storyExists handles EIO from fs.statSync
+   * by returning false and not throwing when fs.existsSync returns true.
+   * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+   */
+  it("[REQ-ERROR-HANDLING] storyExists returns false when fs.statSync throws EIO and existsSync is true", () => {
+    jest.spyOn(fs, "existsSync").mockImplementation(() => true);
+
+    jest.spyOn(fs, "statSync").mockImplementation(() => {
+      const err: NodeJS.ErrnoException = new Error(
+        "EIO: i/o error while reading file",
+      );
+      err.code = "EIO";
+      throw err;
+    });
+
+    expect(() => storyExists(["docs/stories/io-error.story.md"])).not.toThrow();
+
+    expect(storyExists(["docs/stories/io-error.story.md"])).toBe(false);
+  });
+
+  /**
+   * @req REQ-ERROR-HANDLING - Verify rule reports fileAccessError when fs.statSync throws
+   * and fs.existsSync returns true, treating it as a filesystem access problem
+   * rather than a missing file.
+   * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+   */
+  it("[REQ-ERROR-HANDLING] rule reports fileAccessError when fs.statSync throws and existsSync is true", () => {
+    const accessError = new Error(
+      "EIO: i/o error while reading file metadata",
+    ) as NodeJS.ErrnoException;
+    accessError.code = "EIO";
+
+    jest.spyOn(fs, "existsSync").mockImplementation(() => true);
+
+    jest.spyOn(fs, "statSync").mockImplementation(() => {
+      throw accessError;
+    });
+
+    const diagnostics = runRuleOnCode(
+      `// @story docs/stories/fs-stat-io-error.story.md`,
+    );
+
+    expect(diagnostics.length).toBeGreaterThan(0);
+    const fileAccessDiagnostics = diagnostics.filter(
+      (d) => d.messageId === "fileAccessError",
+    );
+    expect(fileAccessDiagnostics.length).toBeGreaterThan(0);
+
+    const errorData = fileAccessDiagnostics[0].data;
+    expect(errorData).toBeDefined();
+    expect(String(errorData.error)).toMatch(/EIO/i);
+  });
+
+  /**
    * @req REQ-ERROR-HANDLING - Verify rule reports fileAccessError when filesystem operations fail
    * instead of treating it as a missing file.
    * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
