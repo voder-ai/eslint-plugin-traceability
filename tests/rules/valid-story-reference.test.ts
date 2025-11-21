@@ -228,6 +228,7 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
 
     const diagnostics = runRuleOnCode(
       `// @story 001.0-DEV-PLUGIN-SETUP.story.md`,
+      [{ storyDirectories: ["docs/stories"] }],
     );
 
     // When storyDirectories is configured, the underlying resolution should
@@ -242,7 +243,12 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
       "docs/stories/001.0-DEV-PLUGIN-SETUP.story.md",
     );
 
-    const diagnostics = runRuleOnCode(`// @story ${absPath}`);
+    const diagnostics = runRuleOnCode(`// @story ${absPath}`, [
+      {
+        allowAbsolutePaths: true,
+        storyDirectories: ["docs/stories"],
+      },
+    ]);
 
     // Detailed behavior is verified by RuleTester above; this Jest test
     // ensures helper path construction does not throw and diagnostics are collected.
@@ -264,6 +270,93 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
     // in RuleTester projectBoundaryTester above; here ensure diagnostics collected.
     expect(Array.isArray(diagnostics)).toBe(true);
   });
+
+  /**
+   * @req REQ-PROJECT-BOUNDARY - Verify misconfigured storyDirectories pointing outside
+   * the project cannot cause external files to be treated as valid, and invalidPath is reported.
+   * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+   */
+  it("[REQ-PROJECT-BOUNDARY] misconfigured storyDirectories outside project cannot validate external files", () => {
+    const fs = require("fs");
+    const pathModule = require("path");
+
+    const outsideDir = pathModule.resolve(pathModule.sep, "tmp", "outside");
+    const outsideFile = pathModule.join(outsideDir, "external-story.story.md");
+
+    jest.spyOn(fs, "existsSync").mockImplementation((p: string) => {
+      return p === outsideFile;
+    });
+
+    jest.spyOn(fs, "statSync").mockImplementation((p: string) => {
+      if (p === outsideFile) {
+        return {
+          isFile: () => true,
+        };
+      }
+      const err: NodeJS.ErrnoException = new Error("ENOENT");
+      err.code = "ENOENT";
+      throw err;
+    });
+
+    const diagnostics = runRuleOnCode(
+      `// @story ${outsideFile}\n// @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md`,
+      [
+        {
+          allowAbsolutePaths: true,
+          storyDirectories: [outsideDir],
+        },
+      ],
+    );
+
+    expect(Array.isArray(diagnostics)).toBe(true);
+    const invalidPathDiagnostics = diagnostics.filter(
+      (d) => d.messageId === "invalidPath",
+    );
+    expect(invalidPathDiagnostics.length).toBeGreaterThan(0);
+  });
+
+  /**
+   * @req REQ-CONFIGURABLE-PATHS - Verify requireStoryExtension: false allows .md story
+   * files that do not end with .story.md when they exist in storyDirectories.
+   * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+   */
+  it("[REQ-CONFIGURABLE-PATHS] requireStoryExtension=false accepts existing .md story file", () => {
+    const fs = require("fs");
+    const pathModule = require("path");
+
+    const storyPath = pathModule.join(process.cwd(), "docs/stories/README.md");
+
+    jest.spyOn(fs, "existsSync").mockImplementation((p: string) => {
+      return p === storyPath;
+    });
+
+    jest.spyOn(fs, "statSync").mockImplementation((p: string) => {
+      if (p === storyPath) {
+        return {
+          isFile: () => true,
+        };
+      }
+      const err: NodeJS.ErrnoException = new Error("ENOENT");
+      err.code = "ENOENT";
+      throw err;
+    });
+
+    const diagnostics = runRuleOnCode(
+      `// @story docs/stories/README.md\n// @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md`,
+      [
+        {
+          storyDirectories: ["docs/stories"],
+          requireStoryExtension: false,
+        },
+      ],
+    );
+
+    expect(Array.isArray(diagnostics)).toBe(true);
+    const invalidExtensionDiagnostics = diagnostics.filter(
+      (d) => d.messageId === "invalidExtension",
+    );
+    expect(invalidExtensionDiagnostics.length).toBe(0);
+  });
 });
 
 /**
@@ -273,7 +366,7 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
  * @req REQ-ERROR-HANDLING - Used to verify fileAccessError reporting behavior
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  */
-function runRuleOnCode(code: string) {
+function runRuleOnCode(code: string, options: any[] = []) {
   const messages: any[] = [];
 
   const context: any = {
@@ -289,7 +382,7 @@ function runRuleOnCode(code: string) {
         },
       ],
     }),
-    options: [],
+    options,
     parserOptions: { ecmaVersion: 2020 },
   };
 
