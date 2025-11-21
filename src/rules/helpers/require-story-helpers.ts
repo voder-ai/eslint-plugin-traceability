@@ -265,7 +265,9 @@ function shouldProcessNode(
  * Report a missing @story annotation for a function-like node
  * Provides a suggestion to add the annotation.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing annotations with suggestion
+ * @req REQ-AUTOFIX-MISSING - Provide autofix for missing annotations while preserving suggestions
  * @param {Rule.RuleContext} context - ESLint rule context used to report
  * @param {any} sourceCode - ESLint sourceCode object
  * @param {any} node - AST node that is missing the annotation
@@ -296,6 +298,7 @@ function reportMissing(
       node: nameNode,
       messageId: "missingStory",
       data: { name },
+      fix: createAddStoryFix(resolvedTarget),
       suggest: [
         {
           desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
@@ -312,7 +315,9 @@ function reportMissing(
  * Report a missing @story annotation for a method-like node
  * Provides a suggestion to update the method/interface with the annotation.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing method/interface annotations with suggestion
+ * @req REQ-AUTOFIX-MISSING - Provide autofix for missing method/interface annotations while preserving suggestions
  * @param {Rule.RuleContext} context - ESLint rule context to report
  * @param {any} sourceCode - ESLint sourceCode object
  * @param {any} node - AST node that is missing the annotation
@@ -337,6 +342,7 @@ function reportMethod(
       node: nameNode,
       messageId: "missingStory",
       data: { name },
+      fix: createMethodFix(resolvedTarget),
       suggest: [
         {
           desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,

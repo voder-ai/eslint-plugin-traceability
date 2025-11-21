@@ -10,7 +10,7 @@ Each rule enforces traceability conventions in your code. Below is a summary of 
 
 ### traceability/require-story-annotation
 
-Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story.
+Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When run with `--fix`, the rule can insert a placeholder `@story` JSDoc comment above missing functions using a default template.
 Options:
 
 - `scope` (string[], optional) – Controls which function-like node types are required to have @story annotations. Allowed values: "FunctionDeclaration", "FunctionExpression", "MethodDefinition", "TSDeclareFunction", "TSMethodSignature". Default: ["FunctionDeclaration", "FunctionExpression", "MethodDefinition", "TSDeclareFunction", "TSMethodSignature"].
@@ -66,7 +66,7 @@ if (error) {
 
 ### traceability/valid-annotation-format
 
-Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format.
+Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule can automatically correct simple `@story` path suffix issues (for example, appending `.story.md` when the intended suffix is unambiguous).
 Options: None
 Default Severity: `error`
 Example:

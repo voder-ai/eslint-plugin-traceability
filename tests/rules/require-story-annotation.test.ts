@@ -66,6 +66,7 @@ declare function tsDecl(): void;`,
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story annotation on function",
         code: `function bar() {}`,
+        output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}`,
         errors: [
           {
             messageId: "missingStory",
@@ -81,6 +82,7 @@ declare function tsDecl(): void;`,
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on function expression",
         code: `const fnExpr = function() {};`,
+        output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst fnExpr = function() {};`,
         errors: [
           {
             messageId: "missingStory",
@@ -96,6 +98,7 @@ declare function tsDecl(): void;`,
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on class method",
         code: `class C {\n  method() {}\n}`,
+        output: `class C {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
         errors: [
           {
             messageId: "missingStory",
@@ -111,6 +114,7 @@ declare function tsDecl(): void;`,
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS declare function",
         code: `declare function tsDecl(): void;`,
+        output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ndeclare function tsDecl(): void;`,
         languageOptions: {
           parser: require("@typescript-eslint/parser") as any,
           parserOptions: { ecmaVersion: 2020, sourceType: "module" },
@@ -130,6 +134,7 @@ declare function tsDecl(): void;`,
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS method signature",
         code: `interface D {\n  method(): void;\n}`,
+        output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ninterface D {\n  method(): void;\n}`,
         languageOptions: {
           parser: require("@typescript-eslint/parser") as any,
           parserOptions: { ecmaVersion: 2020, sourceType: "module" },
@@ -171,6 +176,7 @@ declare function tsDecl(): void;`,
       {
         name: "[exportPriority] exported function missing @story annotation",
         code: `export function exportedMissing() {}`,
+        output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport function exportedMissing() {}`,
         options: [{ exportPriority: "exported" }],
         errors: [
           {
@@ -199,6 +205,7 @@ declare function tsDecl(): void;`,
       {
         name: "[scope] function declaration missing annotation when scope is FunctionDeclaration",
         code: `function onlyDecl() {}`,
+        output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction onlyDecl() {}`,
         options: [{ scope: ["FunctionDeclaration"] }],
         errors: [
           {

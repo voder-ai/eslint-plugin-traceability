@@ -67,6 +67,7 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
       {
         name: "[REQ-PATH-FORMAT] invalid story file extension",
         code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
+        output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
         errors: [
           {
             messageId: "invalidStoryFormat",
@@ -80,6 +81,7 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
       {
         name: "[REQ-PATH-FORMAT] missing extension in story path",
         code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,
+        output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
         errors: [
           {
             messageId: "invalidStoryFormat",

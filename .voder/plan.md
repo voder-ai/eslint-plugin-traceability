@@ -1,16 +1,22 @@
 ## NOW
 
-- [ ] Use modify_file on `.github/workflows/ci-cd.yml` to update the "Run production security audit" step so it uses the modern npm flag (e.g., replace `npm audit --production --audit-level=high` with `npm audit --omit=dev --audit-level=high`) to remove the recurring config warning and keep the CI/CD pipeline clean.
+- [ ] read_file docs/stories/008.0-DEV-AUTO-FIX.story.md
 
 ## NEXT
 
-- [ ] Scan `.github/workflows/ci-cd.yml` for any other direct `npm audit` invocations and normalize them to the same recommended flag pattern so all CI audit steps are consistent.
-- [ ] Update any npm audit usage in local scripts referenced by `ci-verify:full` (if they still use `--production`) to align with the CI change, keeping local and CI pipelines behaviorally in sync.
-- [ ] Review `docs/decisions/` for an ADR describing CI/audit behavior and, if missing or outdated, add or update an ADR to document the new audit flag usage and rationale (removing warnings, matching npm guidance).
+- [ ] read_file src/rules/require-story-annotation.ts
+- [ ] read_file src/rules/helpers/require-story-core.ts
+- [ ] read_file src/rules/valid-annotation-format.ts
+- [ ] read_file tests/rules/require-story-annotation.test.ts
+- [ ] generate_file tests/rules/auto-fix-behavior-008.test.ts
+- [ ] modify_file src/rules/require-story-annotation.ts
+- [ ] modify_file src/rules/valid-annotation-format.ts
+- [ ] modify_file docs/stories/008.0-DEV-AUTO-FIX.story.md
+- [ ] modify_file user-docs/api-reference.md
 
 ## LATER
 
-- [ ] Refactor `src/rules/helpers/require-story-helpers.ts` into smaller, focused helper modules (e.g., comment detection, name resolution, reporting) to reduce file size and improve maintainability while keeping behavior unchanged.
-- [ ] Extract shared logic between `src/rules/helpers/require-story-core.ts` and `src/rules/helpers/require-story-helpers.ts` into a common helper to reduce code duplication reported by jscpd.
-- [ ] Enhance TypeScript typing in ESLint rule helpers and utilities by replacing `any` with appropriate `TSESTree` node types in a gradual, non-breaking way.
-- [ ] Optionally update security incident documentation (e.g., bundled dev-deps accepted risk) to reference the most recent `dry-aged-deps` and audit runs, reaffirming residual-risk acceptance.
+- [ ] Refine auto-fix template configurability across all relevant rules (functions, branches, req annotations) using story 008.0’s option model.
+- [ ] Add configuration and docs for selectively enabling/disabling auto-fix categories per rule and preset, ensuring backward-compatible defaults.
+- [ ] Broaden test coverage for edge-case auto-fixes (complex JSDoc blocks, mixed annotations, partially-correct formats) tied to 008.0 story requirements.
+- [ ] Refine and factor shared auto-fix utilities (e.g., a central template resolver) once behavior is stable, ensuring no regression in earlier stories.

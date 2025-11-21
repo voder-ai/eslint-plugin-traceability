@@ -1,6 +1,7 @@
 /**
  * Rule to validate @story and @req annotation format and syntax
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-FORMAT-SPECIFICATION - Define clear format rules for @story and @req annotations
  * @req REQ-SYNTAX-VALIDATION - Validate annotation syntax matches specification
  * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
@@ -8,6 +9,7 @@
  * @req REQ-MULTILINE-SUPPORT - Handle annotations split across multiple lines
  * @req REQ-FLEXIBLE-PARSING - Support reasonable variations in whitespace and formatting
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
 interface PendingAnnotation {
   type: "story" | "req";
@@ -18,13 +20,25 @@ interface PendingAnnotation {
 const STORY_EXAMPLE_PATH = "docs/stories/005.0-DEV-EXAMPLE.story.md";
 
 /**
+ * Constant to represent the "tag not found" index when searching
+ * for @story or @req within a comment.
+ *
+ * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ */
+const TAG_NOT_FOUND_INDEX = -1;
+
+/**
  * Normalize a raw comment line to make annotation parsing more robust.
  *
  * This function trims whitespace, keeps any annotation tags that appear
  * later in the line, and supports common JSDoc styles such as leading "*".
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-FLEXIBLE-PARSING - Support reasonable variations in whitespace and formatting
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
 function normalizeCommentLine(rawLine: string): string {
   const trimmed = rawLine.trim();
@@ -50,7 +64,9 @@ function normalizeCommentLine(rawLine: string): string {
  *   multiple lines will be collapsed before validation.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-MULTILINE-SUPPORT - Handle annotations split across multiple lines
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
 function collapseAnnotationValue(value: string): string {
   return value.replace(/\s+/g, "");
@@ -60,7 +76,9 @@ function collapseAnnotationValue(value: string): string {
  * Build a detailed error message for invalid @story annotations.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
 function buildStoryErrorMessage(
   kind: "missing" | "invalid",
@@ -77,7 +95,9 @@ function buildStoryErrorMessage(
  * Build a detailed error message for invalid @req annotations.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
 function buildReqErrorMessage(
   kind: "missing" | "invalid",
@@ -91,11 +111,121 @@ function buildReqErrorMessage(
 }
 
 /**
- * Validate a @story annotation value and report detailed errors when needed.
+ * Attempt a minimal, safe auto-fix for common @story path suffix issues.
+ *
+ * Only handles:
+ *   - missing ".md"
+ *   - missing ".story.md"
+ * and skips any paths with traversal segments (e.g. "..").
+ *
+ * Returns the fixed path when safe, or null if no fix should be applied.
+ *
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ */
+function getFixedStoryPath(original: string): string | null {
+  if (original.includes("..")) {
+    return null;
+  }
+
+  if (/\.story\.md$/.test(original)) {
+    return null;
+  }
+
+  if (/\.story$/.test(original)) {
+    return `${original}.md`;
+  }
+
+  if (/\.md$/.test(original)) {
+    return original.replace(/\.md$/, ".story.md");
+  }
+
+  return `${original}.story.md`;
+}
+
+/**
+ * Report an invalid @story annotation without applying a fix.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ */
+function reportInvalidStoryFormat(
+  context: any,
+  comment: any,
+  collapsed: string,
+): void {
+  context.report({
+    node: comment as any,
+    messageId: "invalidStoryFormat",
+    data: { details: buildStoryErrorMessage("invalid", collapsed) },
+  });
+}
+
+/**
+ * Report an invalid @story annotation and attempt a minimal, safe auto-fix
+ * for common path suffix issues by locating and replacing the path text
+ * within the original comment.
+ *
+ * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ */
+function reportInvalidStoryFormatWithFix(
+  context: any,
+  comment: any,
+  collapsed: string,
+  fixed: string,
+): void {
+  const sourceCode = context.getSourceCode();
+  const commentText = sourceCode.getText(comment);
+  const search = "@story";
+  const tagIndex = commentText.indexOf(search);
+  if (tagIndex === TAG_NOT_FOUND_INDEX) {
+    reportInvalidStoryFormat(context, comment, collapsed);
+    return;
+  }
+
+  const afterTagIndex = tagIndex + search.length;
+  const rest = commentText.slice(afterTagIndex);
+  const valueMatch = rest.match(/[^\S\r\n]*([^\r\n*]+)/);
+  if (!valueMatch || valueMatch.index === undefined) {
+    reportInvalidStoryFormat(context, comment, collapsed);
+    return;
+  }
+
+  const valueStartInComment =
+    afterTagIndex +
+    valueMatch.index +
+    (valueMatch[0].length - valueMatch[1].length);
+  const valueEndInComment = valueStartInComment + valueMatch[1].length;
+
+  const start = comment.range[0];
+  const fixRange: [number, number] = [
+    start + valueStartInComment,
+    start + valueEndInComment,
+  ];
+
+  context.report({
+    node: comment as any,
+    messageId: "invalidStoryFormat",
+    data: { details: buildStoryErrorMessage("invalid", collapsed) },
+    fix(fixer: any) {
+      return fixer.replaceTextRange(fixRange, fixed);
+    },
+  });
+}
+
+/**
+ * Validate a @story annotation value and report detailed errors when needed.
+ * Where safe and unambiguous, apply an automatic fix for missing suffixes.
+ *
+ * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
 function validateStoryAnnotation(
   context: any,
@@ -115,19 +245,30 @@ function validateStoryAnnotation(
   const collapsed = collapseAnnotationValue(trimmed);
   const pathPattern = /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/;
 
-  if (!pathPattern.test(collapsed)) {
-    context.report({
-      node: comment as any,
-      messageId: "invalidStoryFormat",
-      data: { details: buildStoryErrorMessage("invalid", collapsed) },
-    });
+  if (pathPattern.test(collapsed)) {
+    return;
   }
+
+  if (/\s/.test(trimmed)) {
+    reportInvalidStoryFormat(context, comment, collapsed);
+    return;
+  }
+
+  const fixed = getFixedStoryPath(collapsed);
+
+  if (fixed && pathPattern.test(fixed)) {
+    reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed);
+    return;
+  }
+
+  reportInvalidStoryFormat(context, comment, collapsed);
 }
 
 /**
  * Validate a @req annotation value and report detailed errors when needed.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-REQ-FORMAT - Validate @req identifiers follow expected patterns
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
  */
@@ -166,8 +307,10 @@ function validateReqAnnotation(
  * validated against the configured patterns.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-MULTILINE-SUPPORT - Handle annotations split across multiple lines
  * @req REQ-FLEXIBLE-PARSING - Support reasonable variations in whitespace and formatting
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
 function processComment(context: any, comment: any): void {
   const rawLines = (comment.value || "").split(/\r?\n/);
@@ -177,7 +320,9 @@ function processComment(context: any, comment: any): void {
    * Finalize and validate the currently pending annotation, if any.
    *
    * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+   * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
    * @req REQ-SYNTAX-VALIDATION - Validate annotation syntax matches specification
+   * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
    */
   function finalizePending() {
     if (!pending) {
@@ -185,7 +330,9 @@ function processComment(context: any, comment: any): void {
     }
 
     // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+    // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
     // @req REQ-SYNTAX-VALIDATION - Dispatch validation based on annotation type
+    // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
     if (pending.type === "story") {
       validateStoryAnnotation(context, comment, pending.value);
     } else {
@@ -205,7 +352,9 @@ function processComment(context: any, comment: any): void {
     const isReq = /@req\b/.test(normalized);
 
     // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+    // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
     // @req REQ-SYNTAX-VALIDATION - Start new pending annotation when a tag is found
+    // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
     if (isStory || isReq) {
       finalizePending();
       const value = normalized.replace(/^@story\b|^@req\b/, "").trim();
@@ -218,7 +367,9 @@ function processComment(context: any, comment: any): void {
     }
 
     // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+    // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
     // @req REQ-MULTILINE-SUPPORT - Treat subsequent lines as continuation for pending annotation
+    // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
     if (pending) {
       const continuation = normalized.trim();
       if (!continuation) {
@@ -246,11 +397,14 @@ export default {
       invalidReqFormat: "{{details}}",
     },
     schema: [],
+    fixable: "code",
   },
   /**
    * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+   * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
    * @req REQ-SYNTAX-VALIDATION - Ensure rule create function validates annotations syntax
    * @req REQ-FORMAT-SPECIFICATION - Implement formatting checks per specification
+   * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
    */
   create(context: any) {
     const sourceCode = context.getSourceCode();
@@ -259,8 +413,10 @@ export default {
        * Program-level handler that inspects all comments for @story and @req tags
        *
        * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+       * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
        * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
        * @req REQ-REQ-FORMAT - Validate @req identifiers follow expected patterns
+       * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
        */
       Program() {
         const comments = sourceCode.getAllComments() || [];

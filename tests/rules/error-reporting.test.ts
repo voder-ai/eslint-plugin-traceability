@@ -26,6 +26,8 @@ describe("Error Reporting Enhancements for require-story-annotation (Story 007.0
       {
         name: "[REQ-ERROR-SPECIFIC] missing @story annotation should report specific details and suggestion",
         code: `function bar() {}`,
+        output:
+          "/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}",
         errors: [
           {
             messageId: "missingStory",

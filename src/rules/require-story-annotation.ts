@@ -5,6 +5,7 @@
  * on functions and methods according to configured scope and export priority.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED
  */
 import type { Rule } from "eslint";
@@ -19,6 +20,7 @@ import {
  * ESLint rule to require @story annotations on functions/methods.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED
  */
 const rule: Rule.RuleModule = {
@@ -29,6 +31,7 @@ const rule: Rule.RuleModule = {
       recommended: "error",
     },
     hasSuggestions: true,
+    fixable: "code",
     messages: {
       missingStory:
         "Missing @story annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)",
@@ -53,6 +56,7 @@ const rule: Rule.RuleModule = {
    * Create the rule visitor functions.
    *
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
    * @req REQ-CREATE-HOOK
    */
   create(context) {
