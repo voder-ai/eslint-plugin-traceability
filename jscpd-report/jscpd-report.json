@@ -1,0 +1,981 @@
+{
+  "statistics": {
+    "detectionDate": "2025-11-21T00:15:10.985Z",
+    "formats": {
+      "typescript": {
+        "sources": {
+          "tests/rules/valid-story-reference.test.ts": {
+            "lines": 225,
+            "tokens": 1539,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 22,
+            "duplicatedTokens": 214,
+            "percentage": 9.78,
+            "percentageTokens": 13.91,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/valid-req-reference.test.ts": {
+            "lines": 84,
+            "tokens": 424,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/valid-annotation-format.test.ts": {
+            "lines": 54,
+            "tokens": 330,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-visitors-edgecases.test.ts": {
+            "lines": 26,
+            "tokens": 340,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 216,
+            "percentage": 38.46,
+            "percentageTokens": 63.53,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-io.edgecases.test.ts": {
+            "lines": 59,
+            "tokens": 655,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 6,
+            "duplicatedTokens": 96,
+            "percentage": 10.17,
+            "percentageTokens": 14.66,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-io-behavior.test.ts": {
+            "lines": 57,
+            "tokens": 588,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 6,
+            "duplicatedTokens": 96,
+            "percentage": 10.53,
+            "percentageTokens": 16.33,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-helpers.test.ts": {
+            "lines": 205,
+            "tokens": 2071,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 29,
+            "duplicatedTokens": 328,
+            "percentage": 14.15,
+            "percentageTokens": 15.84,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-helpers-edgecases.test.ts": {
+            "lines": 106,
+            "tokens": 938,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-core.test.ts": {
+            "lines": 67,
+            "tokens": 785,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 5,
+            "duplicatedTokens": 70,
+            "percentage": 7.46,
+            "percentageTokens": 8.92,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-core.autofix.test.ts": {
+            "lines": 83,
+            "tokens": 1012,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 94,
+            "duplicatedTokens": 1282,
+            "percentage": 113.25,
+            "percentageTokens": 126.68,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-core-edgecases.test.ts": {
+            "lines": 83,
+            "tokens": 1012,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 72,
+            "duplicatedTokens": 974,
+            "percentage": 86.75,
+            "percentageTokens": 96.25,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-annotation.test.ts": {
+            "lines": 238,
+            "tokens": 1376,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-req-annotation.test.ts": {
+            "lines": 77,
+            "tokens": 564,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-branch-annotation.test.ts": {
+            "lines": 288,
+            "tokens": 1425,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/error-reporting.test.ts": {
+            "lines": 44,
+            "tokens": 240,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/update.test.ts": {
+            "lines": 20,
+            "tokens": 173,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/update-isolated.test.ts": {
+            "lines": 45,
+            "tokens": 324,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/report.test.ts": {
+            "lines": 36,
+            "tokens": 288,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/index.test.ts": {
+            "lines": 33,
+            "tokens": 212,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/detect.test.ts": {
+            "lines": 39,
+            "tokens": 351,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/detect-isolated.test.ts": {
+            "lines": 73,
+            "tokens": 602,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/batch.test.ts": {
+            "lines": 54,
+            "tokens": 416,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/integration/cli-integration.test.ts": {
+            "lines": 91,
+            "tokens": 528,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/config/require-story-annotation-config.test.ts": {
+            "lines": 10,
+            "tokens": 115,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/config/eslint-config-validation.test.ts": {
+            "lines": 15,
+            "tokens": 177,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/plugin-setup.test.ts": {
+            "lines": 16,
+            "tokens": 132,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/plugin-setup-error.test.ts": {
+            "lines": 46,
+            "tokens": 357,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/plugin-default-export-and-configs.test.ts": {
+            "lines": 49,
+            "tokens": 328,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/cli-error-handling.test.ts": {
+            "lines": 42,
+            "tokens": 298,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-visitors.ts": {
+            "lines": 208,
+            "tokens": 1053,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-utils.ts": {
+            "lines": 221,
+            "tokens": 1242,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-io.ts": {
+            "lines": 121,
+            "tokens": 821,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-helpers.ts": {
+            "lines": 370,
+            "tokens": 2015,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-core.ts": {
+            "lines": 154,
+            "tokens": 988,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/storyReferenceUtils.ts": {
+            "lines": 253,
+            "tokens": 1176,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/branch-annotation-helpers.ts": {
+            "lines": 277,
+            "tokens": 1548,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/annotation-checker.ts": {
+            "lines": 99,
+            "tokens": 511,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/valid-story-reference.ts": {
+            "lines": 304,
+            "tokens": 1683,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/valid-req-reference.ts": {
+            "lines": 233,
+            "tokens": 1442,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/valid-annotation-format.ts": {
+            "lines": 72,
+            "tokens": 455,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/require-story-annotation.ts": {
+            "lines": 88,
+            "tokens": 452,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/require-req-annotation.ts": {
+            "lines": 69,
+            "tokens": 306,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/require-branch-annotation.ts": {
+            "lines": 70,
+            "tokens": 396,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/utils.ts": {
+            "lines": 64,
+            "tokens": 271,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/update.ts": {
+            "lines": 80,
+            "tokens": 357,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/report.ts": {
+            "lines": 16,
+            "tokens": 87,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/index.ts": {
+            "lines": 13,
+            "tokens": 55,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/detect.ts": {
+            "lines": 45,
+            "tokens": 371,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/batch.ts": {
+            "lines": 29,
+            "tokens": 180,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/index.ts": {
+            "lines": 114,
+            "tokens": 577,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 5165,
+          "tokens": 33586,
+          "sources": 50,
+          "clones": 8,
+          "duplicatedLines": 122,
+          "duplicatedTokens": 1638,
+          "percentage": 2.36,
+          "percentageTokens": 4.88,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "markdown": {
+        "sources": {
+          "tests/fixtures/story_bullet.md": {
+            "lines": 1,
+            "tokens": 26,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 1,
+          "tokens": 26,
+          "sources": 1,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "json": {
+        "sources": {
+          "tests/config/valid-config.json": {
+            "lines": 12,
+            "tokens": 67,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 12,
+          "tokens": 67,
+          "sources": 1,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 5178,
+      "tokens": 33679,
+      "sources": 52,
+      "clones": 8,
+      "duplicatedLines": 122,
+      "duplicatedTokens": 1638,
+      "percentage": 2.36,
+      "percentageTokens": 4.86,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "typescript",
+      "lines": 12,
+      "fragment": ",\n    );\n\n    expect(diagnostics.length).toBeGreaterThan(0);\n    const fileAccessDiagnostics = diagnostics.filter(\n      (d) => d.messageId === \"fileAccessError\",\n    );\n    expect(fileAccessDiagnostics.length).toBeGreaterThan(0);\n\n    const errorData = fileAccessDiagnostics[0].data;\n    expect(errorData).toBeDefined();\n    expect(String(errorData.error)).toMatch(/EACCES/i",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 213,
+        "end": 224,
+        "startLoc": {
+          "line": 213,
+          "column": 43,
+          "position": 1421
+        },
+        "endLoc": {
+          "line": 224,
+          "column": 10,
+          "position": 1528
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 179,
+        "end": 190,
+        "startLoc": {
+          "line": 179,
+          "column": 51,
+          "position": 1175
+        },
+        "endLoc": {
+          "line": 190,
+          "column": 7,
+          "position": 1282
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 6,
+      "fragment": ", () => {\n    const fakeContext: any = { getFilename: () => \"file.ts\" };\n    const fakeSource: any = { getText: () => \"\" };\n    const options: any = { shouldProcessNode: () => true };\n    const visitors = buildVisitors(fakeContext, fakeSource, options as any);\n    const",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-visitors-edgecases.test.ts",
+        "start": 19,
+        "end": 24,
+        "startLoc": {
+          "line": 19,
+          "column": 92,
+          "position": 182
+        },
+        "endLoc": {
+          "line": 24,
+          "column": 6,
+          "position": 290
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-visitors-edgecases.test.ts",
+        "start": 10,
+        "end": 15,
+        "startLoc": {
+          "line": 10,
+          "column": 86,
+          "position": 33
+        },
+        "endLoc": {
+          "line": 15,
+          "column": 7,
+          "position": 141
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": ";\n    const full = pre + rest;\n    const fakeSource: any = { getText: () => full };\n    const node: any = { range: [full.indexOf(\"function\"), full.length] };\n    expect(fallbackTextBeforeHasStory(fakeSource, node)).toBe(true);\n  });\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-io-behavior.test.ts",
+        "start": 52,
+        "end": 58,
+        "startLoc": {
+          "line": 52,
+          "column": 18,
+          "position": 490
+        },
+        "endLoc": {
+          "line": 58,
+          "column": 2,
+          "position": 586
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-io.edgecases.test.ts",
+        "start": 37,
+        "end": 44,
+        "startLoc": {
+          "line": 37,
+          "column": 18,
+          "position": 369
+        },
+        "endLoc": {
+          "line": 44,
+          "column": 5,
+          "position": 467
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": ",\n      getText: () => \"\",\n    } as any;\n    const context: any = {\n      getSourceCode: () => fakeSource,\n      report: jest.fn(),\n    };\n\n    reportMissing(context, fakeSource, node, node);\n    expect(context.report).toHaveBeenCalledTimes",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 89,
+        "end": 98,
+        "startLoc": {
+          "line": 89,
+          "column": 5,
+          "position": 878
+        },
+        "endLoc": {
+          "line": 98,
+          "column": 22,
+          "position": 964
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 70,
+        "end": 79,
+        "startLoc": {
+          "line": 70,
+          "column": 2,
+          "position": 698
+        },
+        "endLoc": {
+          "line": 79,
+          "column": 4,
+          "position": 784
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 6,
+      "fragment": ");\n    const result = fixFn(fixer);\n\n    expect(fixer.insertTextBeforeRange).toHaveBeenCalledTimes(1);\n    const calledArgs = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];\n    expect(calledArgs[0]).toEqual([12",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core.test.ts",
+        "start": 23,
+        "end": 28,
+        "startLoc": {
+          "line": 23,
+          "column": 5,
+          "position": 178
+        },
+        "endLoc": {
+          "line": 28,
+          "column": 3,
+          "position": 248
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 32,
+        "end": 36,
+        "startLoc": {
+          "line": 32,
+          "column": 7,
+          "position": 211
+        },
+        "endLoc": {
+          "line": 36,
+          "column": 3,
+          "position": 280
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": "},\n    };\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createAddStoryFix(target);\n    const res = fixFn(fixer);\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][0]).toEqual(\n      [5",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 50,
+        "end": 58,
+        "startLoc": {
+          "line": 50,
+          "column": 2,
+          "position": 581
+        },
+        "endLoc": {
+          "line": 58,
+          "column": 2,
+          "position": 692
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 30,
+        "end": 38,
+        "startLoc": {
+          "line": 30,
+          "column": 2,
+          "position": 312
+        },
+        "endLoc": {
+          "line": 38,
+          "column": 3,
+          "position": 423
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": ", node, node);\n    expect(context.report).toHaveBeenCalledTimes(1);\n    const call = (context.report as jest.Mock).mock.calls[0][0];\n    expect(call.node).toBe(node);\n    expect(call.messageId).toBe(\"missingStory\");\n  });\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 78,
+        "end": 84,
+        "startLoc": {
+          "line": 78,
+          "column": 4,
+          "position": 924
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 2,
+          "position": 1010
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 97,
+        "end": 108,
+        "startLoc": {
+          "line": 97,
+          "column": 11,
+          "position": 947
+        },
+        "endLoc": {
+          "line": 108,
+          "column": 6,
+          "position": 1035
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 73,
+      "fragment": ", () => {\n  test(\"createAddStoryFix falls back to 0 when target is falsy\", () => {\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createAddStoryFix(null as any);\n    const res = fixFn(fixer);\n    expect(fixer.insertTextBeforeRange).toHaveBeenCalledTimes(1);\n    const args = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];\n    expect(args[0]).toEqual([0, 0]);\n    expect(args[1]).toBe(`${ANNOTATION}\\n`);\n    expect(res).toEqual({ r: [0, 0], t: `${ANNOTATION}\\n` });\n  });\n\n  test(\"createAddStoryFix uses target.range when parent not export and parent.range missing\", () => {\n    const target: any = {\n      type: \"FunctionDeclaration\",\n      range: [21, 33],\n      parent: { type: \"ClassBody\" },\n    };\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createAddStoryFix(target);\n    const res = fixFn(fixer);\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][0]).toEqual(\n      [21, 21],\n    );\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][1]).toBe(\n      `${ANNOTATION}\\n`,\n    );\n    expect(res).toEqual({ r: [21, 21], t: `${ANNOTATION}\\n` });\n  });\n\n  test(\"createAddStoryFix prefers ExportDefaultDeclaration parent.range when present\", () => {\n    const target: any = {\n      type: \"FunctionDeclaration\",\n      range: [50, 70],\n      parent: { type: \"ExportDefaultDeclaration\", range: [5, 100] },\n    };\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createAddStoryFix(target);\n    const res = fixFn(fixer);\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][0]).toEqual(\n      [5, 5],\n    );\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][1]).toBe(\n      `${ANNOTATION}\\n`,\n    );\n    expect(res).toEqual({ r: [5, 5], t: `${ANNOTATION}\\n` });\n  });\n\n  test(\"reportMissing uses context.getSourceCode fallback when sourceCode not provided and still reports\", () => {\n    const node: any = {\n      type: \"FunctionDeclaration\",\n      id: { name: \"fnX\" },\n      range: [0, 10],\n    };\n    const fakeSource: any = {\n      /* intentionally missing getJSDocComment to exercise branch */ getText:\n        () => \"\",\n    };\n    const context: any = { getSourceCode: () => fakeSource, report: jest.fn() };\n\n    reportMissing(context, undefined as any, node, node);\n    expect(context.report).toHaveBeenCalledTimes(1);\n    const call = (context.report as jest.Mock).mock.calls[0][0];\n    expect(call.node).toBe(node);\n    expect(call.messageId).toBe(\"missingStory\");\n  });\n});",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core-edgecases.test.ts",
+        "start": 12,
+        "end": 84,
+        "startLoc": {
+          "line": 12,
+          "column": 48,
+          "position": 38
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 2,
+          "position": 1012
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 12,
+        "end": 84,
+        "startLoc": {
+          "line": 12,
+          "column": 35,
+          "position": 38
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 2,
+          "position": 1012
+        }
+      }
+    }
+  ]
+}

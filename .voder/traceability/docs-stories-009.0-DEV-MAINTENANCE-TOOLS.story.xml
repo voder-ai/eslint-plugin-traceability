@@ -2,76 +2,204 @@
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-20T20:57:52.582Z</last_validated>
+  <last_validated>2025-11-21T00:25:59.192Z</last_validated>
   <last_modified>2025-11-19T04:17:32.839Z</last_modified>
-  <evidence>Story file:
-- docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md exists with the provided content.
+  <evidence>Implementation and tests related to this story:
 
-Implemented maintenance tooling (code):
-- src/maintenance/index.ts exports:
-  - detectStaleAnnotations
-  - updateAnnotationReferences
+1) Story file exists
+- docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md is present and contains the specified acceptance criteria and requirements (REQ-MAINT-DETECT, REQ-MAINT-UPDATE, REQ-MAINT-BATCH, REQ-MAINT-VERIFY, REQ-MAINT-REPORT, REQ-MAINT-SAFE).
+
+2) Maintenance tool implementations
+- src/maintenance/index.ts
+  - Exports the maintenance helpers:
+    - detectStaleAnnotations from ./detect
+    - updateAnnotationReferences from ./update
+    - batchUpdateAnnotations and verifyAnnotations from ./batch
+    - generateMaintenanceReport from ./report
+  - JSDoc:
+    - @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+    - @req REQ-MAINT-DETECT / REQ-MAINT-UPDATE / REQ-MAINT-BATCH / REQ-MAINT-VERIFY / REQ-MAINT-REPORT / REQ-MAINT-SAFE
+
+- src/maintenance/utils.ts
+  - getAllFiles(dir: string): string[]
+  - Recursively traverses directories to build a file list, with guards:
+    - If dir does not exist or is not a directory: returns []
+  - Used by detect.ts and update.ts to traverse codebases.
+
+- src/maintenance/detect.ts
+  - export function detectStaleAnnotations(codebasePath: string): string[]
+  - Behavior:
+    - If codebasePath does not exist or is not a directory: returns [] (early exit).
+    - Uses getAllFiles(codebasePath) to collect all files.
+    - For each file, parses content with regex /@story\s+([^\s]+)/g.
+    - For each @story match, constructs two possible paths:
+      - storyProjectPath = path.resolve(process.cwd(), storyPath)
+      - storyCodebasePath = path.resolve(baseDir, storyPath) where baseDir = resolved codebasePath
+    - If neither path exists, adds storyPath to a Set of stale annotations.
+    - Returns Array.from(stale).
+  - Tagged with @story 009.0 and @req REQ-MAINT-DETECT.
+
+- src/maintenance/update.ts
+  - export function updateAnnotationReferences(codebasePath: string, oldPath: string, newPath: string): number
+  - Behavior:
+    - If codebasePath does not exist or is not a directory: returns 0.
+    - Builds an escaped regex for `@story <oldPath>`
+      - escapedOldPath = oldPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      - regex = new RegExp(`(@story\\s*)${escapedOldPath}`, "g")
+    - Uses getAllFiles(codebasePath) to get files.
+    - For each file:
+      - Skips non-files via stat.isFile().
+      - Reads file, applies content.replace(regex, (match, p1) => { replacementCount++; return `${p1}${newPath}`; }).
+      - Writes file only if newContent !== content.
+    - Returns replacementCount (number of replaced annotations).
+  - Tagged with @story 009.0 and @req REQ-MAINT-UPDATE.
+
+- src/maintenance/batch.ts
+  - export function batchUpdateAnnotations(codebasePath: string, mappings: { oldPath: string; newPath: string }[]): number
+    - Iterates mappings and sums updateAnnotationReferences(...) results into totalUpdated.
+    - Returns totalUpdated.
+    - Tagged with @req REQ-MAINT-BATCH.
+  - export function verifyAnnotations(codebasePath: string): boolean
+    - Calls detectStaleAnnotations(codebasePath) and returns true iff staleAnnotations.length === 0.
+    - Tagged with @req REQ-MAINT-VERIFY.
+
+- src/maintenance/report.ts
+  - export function generateMaintenanceReport(codebasePath: string): string
+    - Calls detectStaleAnnotations(codebasePath).
+    - If staleAnnotations.length === 0: returns "".
+    - Otherwise returns staleAnnotations.join("\n").
+    - Tagged with @req REQ-MAINT-REPORT and REQ-MAINT-SAFE (for returning empty string when nothing to do).
+
+3) Tests specifically mapped to this story
+- tests/maintenance/index.test.ts
+  - Asserts that src/maintenance exports all maintenance functions as functions:
+    - detectStaleAnnotations (REQ-MAINT-DETECT)
+    - updateAnnotationReferences (REQ-MAINT-UPDATE)
+    - batchUpdateAnnotations (REQ-MAINT-BATCH)
+    - verifyAnnotations (REQ-MAINT-VERIFY)
+    - generateMaintenanceReport (REQ-MAINT-REPORT)
+
+- tests/maintenance/detect.test.ts
+  - [REQ-MAINT-DETECT] should return empty array when no stale annotations:
+    - Creates empty tmpDir, calls detectStaleAnnotations(tmpDir), expects [].
+  - [REQ-MAINT-DETECT] should detect stale annotation references:
+    - Writes a file with `@story stale.story.md`, no such story file present.
+    - detectStaleAnnotations returns array containing "stale.story.md".
+
+- tests/maintenance/detect-isolated.test.ts
+  - [REQ-MAINT-DETECT] returns empty array when directory does not exist:
+    - detectStaleAnnotations("non-existent-dir") => [].
+  - [REQ-MAINT-DETECT] detects stale annotations in nested directories:
+    - Creates nested dirs and two files with `@story stale1.story.md` and `@story stale2.story.md`.
+    - detectStaleAnnotations(tmpDir) returns length 2 and contains both names.
+  - [REQ-MAINT-DETECT] throws error on permission denied:
+    - Creates dir with a file, chmods directory to 0o000.
+    - Expects detectStaleAnnotations(tmpDir2) to throw.
+
+- tests/maintenance/update.test.ts
+  - [REQ-MAINT-UPDATE] should return 0 when no updates made:
+    - Calls updateAnnotationReferences(tmpDir, "old.md", "new.md") when no files exist; expects 0.
+
+- tests/maintenance/update-isolated.test.ts
+  - [REQ-MAINT-UPDATE] updates @story annotations in files:
+    - Writes file with `@story old.path.md`.
+    - Calls updateAnnotationReferences(tmpDir, "old.path.md", "new.path.md"); expects count 1.
+    - Verifies updated content contains `@story new.path.md`.
+  - [REQ-MAINT-UPDATE] should return 0 when directory does not exist:
+    - Calls updateAnnotationReferences("non-existent-dir", "old.md", "new.md"); expects 0.
+
+- tests/maintenance/batch.test.ts
   - batchUpdateAnnotations
+    - [REQ-MAINT-BATCH] should return 0 when no mappings applied:
+      - batchUpdateAnnotations(tmpDir, []) => 0.
   - verifyAnnotations
-  - generateMaintenanceReport
-  and is annotated with @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md and REQ-MAINT-* tags.
-- src/maintenance/detect.ts:
-  - function detectStaleAnnotations(codebasePath: string): string[]
-  - Scans all files returned by getAllFiles(codebasePath), regex-matches @story paths, and treats them as stale if the referenced file does not exist either at project-root or under the codebase root.
-  - Annotated with @req REQ-MAINT-DETECT.
-- src/maintenance/update.ts:
-  - function updateAnnotationReferences(codebasePath: string, oldPath: string, newPath: string): number
-  - Validates codebasePath is an existing directory; returns 0 otherwise.
-  - Escapes oldPath, builds RegExp /(@story\s*)oldPath/g, walks files from getAllFiles, skips non-files, replaces occurrences with newPath, writes back only when changed, and returns total replacements.
-  - Annotated with @req REQ-MAINT-UPDATE.
-- src/maintenance/batch.ts:
-  - function batchUpdateAnnotations(codebasePath, mappings): number that sums updateAnnotationReferences over mappings (REQ-MAINT-BATCH).
-  - function verifyAnnotations(codebasePath): boolean that returns detectStaleAnnotations(codebasePath).length === 0 (REQ-MAINT-VERIFY).
-- src/maintenance/report.ts:
-  - function generateMaintenanceReport(codebasePath): string
-  - Calls detectStaleAnnotations, returns "" if none, otherwise a newline-joined list of stale annotation targets.
-  - Annotated with @req REQ-MAINT-REPORT and REQ-MAINT-SAFE.
-- src/maintenance/utils.ts:
-  - function getAllFiles(dir: string): string[]
-  - Validates dir exists and is a directory; recursively traverses, collecting only regular files; used by detect/update.
+    - [REQ-MAINT-VERIFY] should return true when annotations are valid:
+      - Writes test.ts with @story my-story.story.md and a corresponding my-story.story.md file.
+      - verifyAnnotations(tmpDir) => true.
 
-Tests tied to this story:
-- tests/maintenance/detect.test.ts:
-  - Header: "Tests for: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md" and @story tag.
-  - Tests that detectStaleAnnotations returns [] for an empty temp dir and detects a stale @story reference when a story file is missing.
-- tests/maintenance/update.test.ts and tests/maintenance/update-isolated.test.ts:
-  - Both reference this story and REQ-MAINT-UPDATE.
-  - Verify 0 updates when directory exists but contains no matching references, successful update of @story old.path.md -> new.path.md, and 0 when directory does not exist.
-- tests/maintenance/batch.test.ts:
-  - References REQ-MAINT-BATCH and REQ-MAINT-VERIFY.
-  - Confirms batchUpdateAnnotations returns 0 for empty mappings and verifyAnnotations returns true when annotations and story files are consistent.
-- tests/maintenance/report.test.ts:
-  - References REQ-MAINT-REPORT and REQ-MAINT-SAFE.
-  - Asserts generateMaintenanceReport returns empty string when no stale annotations, and contains the stale story name when a non-existent story is referenced.
-- tests/maintenance/index.test.ts:
-  - Verifies that all maintenance functions are exported from src/maintenance and are functions, tied to this story.
+- tests/maintenance/report.test.ts
+  - [REQ-MAINT-REPORT] should return empty string when no operations:
+    - generateMaintenanceReport(tmpDir) => "".
+  - [REQ-MAINT-REPORT] should report stale story annotation:
+    - Writes a stub file containing `@story non-existent.md`.
+    - generateMaintenanceReport(tmpDir) returns string containing "non-existent.md".
 
-Test execution:
-- Command run: npm test -- --ci --no-watch --runInBand --verbose
-- Output shows Jest executing with no reported failures (non-zero debug output from rules, but the command completes successfully). This indicates all maintenance-related tests pass.
+4) Test execution
+- npm test -- --ci --no-watch --runInBand --verbose
+  - Command executed: jest --ci --bail --ci --no-watch --runInBand --verbose
+  - Output shows only console.debug logs from rules; no test failures or errors were reported.
+  - The npm test command returned successfully (otherwise the tool would have reported an error), indicating all Jest tests, including the maintenance tests, currently pass.
 
-Documentation and UX evidence:
-- README.md:
-  - search_file_content for "maintenance" and "Maintenance Tools" returned no matches.
-  - There is no documented section describing these maintenance helpers, their parameters, or example usage.
-- docs/custom-rules-development-guide.md:
-  - search_file_content for "maintenance" returned no matches; it documents custom rules, not maintenance tools.
-- find_files pattern "*maintenance*.md" under docs/ returned no files (no dedicated maintenance tools guide).
+5) Integration and UX/documentation evidence
+- There are no CLI commands or npm scripts that expose these maintenance tools:
+  - package.json scripts contain build, type-check, lint, test, traceability-check, etc., but no maintenance-*, or commands that invoke src/maintenance.*.
+- No references to maintenance helpers in README.md or in user-docs/ (api-reference.md, examples.md, migration-guide.md):
+  - Searches for "maintenance" returned no matches.
+  - No mentions of detectStaleAnnotations, updateAnnotationReferences, batchUpdateAnnotations, verifyAnnotations, or generateMaintenanceReport in user-facing docs.
+- No Git hooks, scripts, or ESLint configs integrate these tools:
+  - scripts/ directory contains various CI/debug tools, but none mention "maintenance".
+  - ESLint configuration and plugin exports (src/index.ts, eslint.config.js, tests for CLI integration) focus on lint rules, not the maintenance utilities.
 
-Reversibility / safety evidence:
-- REQ-MAINT-SAFE is referenced in src/maintenance/report.ts and tests/maintenance/report.test.ts.
-- Implementation ensures some safety (no-ops on missing directories, only writing changed files, empty string when nothing stale), but there is no mechanism to record changes, create backups, or otherwise support reversing a batch of updates once applied.
-- Tests do not exercise or demonstrate any reversible workflow; they only validate basic behavior and non-crashing paths.</evidence>
-  <notes>Core maintenance capabilities for detecting stale @story references, updating them, batching updates, verifying references, and generating a simple report are implemented and covered by passing tests that explicitly reference this story and its requirements. The code is integrated via src/maintenance/index.ts and uses a shared traversal utility.
+6) Gaps vs Acceptance Criteria
+- **Core Functionality** (detect and update when story files moved/renamed):
+  - Partially satisfied: the functions can detect missing (stale) @story targets and replace @story oldPath with newPath across a directory tree.
+  - However, there is no higher-level orchestration for actual "move" events (e.g., mapping old->new discovered from the filesystem); callers must provide mappings manually. This is arguably acceptable as a low-level utility.
 
-However, at least two key acceptance criteria are not fully met:
-- The **Documentation** criterion explicitly requires that maintenance tools be documented with usage examples and best practices. There is no mention of these tools in README.md, no dedicated maintenance documentation under docs/, and no examples of how a developer should invoke these helpers (CLI, programmatic usage, or workflow integration).
-- **REQ-MAINT-SAFE** is only partially addressed. While the implementations are reasonably safe in that they avoid throwing on invalid directories and only write files when content changes, there is no explicit support for reversibility (e.g., backups, change logs, or undo mechanisms), and tests do not validate any reversible maintenance workflow.
+- **Quality Standards** (preserve code functionality and formatting):
+  - updateAnnotationReferences uses a targeted regex replacement and writes files only when content changes, which reduces risk of collateral edits.
+  - No AST-level manipulation or formatting tools are involved, but tests confirm that:
+    - Non-matching files are not altered.
+    - The intended @story token is updated correctly.
+  - There are no tests verifying that complex formatting or code constructs are preserved beyond the specific scenarios.
 
-Given the missing user-facing documentation and the incomplete fulfillment of the safety/reversibility aspect, the story cannot be considered fully implemented and therefore is marked as FAILED.</notes>
+- **Integration** (work with existing project structure and ESLint configuration):
+  - The maintenance helpers live under src/maintenance and are exported via src/maintenance/index.ts.
+  - They are **not** wired into:
+    - The ESLint plugin entry point (src/index.ts exports rules/configs only).
+    - Any CLI command or npm script.
+    - Any ESLint configuration or rule behavior.
+  - There is no evidence that an end user of the plugin can invoke these tools using the existing ESLint setup; they are only available as internal programmatic utilities in this repo's source.
+
+- **User Experience** (clear feedback about what was changed):
+  - The current functions provide only numeric or boolean summaries:
+    - updateAnnotationReferences -> number of replacements (no per-file or per-annotation detail).
+    - batchUpdateAnnotations -> total count.
+    - verifyAnnotations -> boolean.
+    - detectStaleAnnotations -> list of stale story paths (but not the specific source locations).
+    - generateMaintenanceReport -> newline-separated stale story paths, **only** based on detection; it does not describe updates performed.
+  - There is no function or CLI that reports "what annotations were updated and why" as required by REQ-MAINT-REPORT and the User Experience acceptance criterion.
+
+- **Error Handling** (gracefully handle edge cases like circular references or missing files):
+  - Missing directories are handled by early returns (detectStaleAnnotations => [], updateAnnotationReferences => 0, getAllFiles => []).
+  - Missing story files (stale annotations) are detected and reported.
+  - Permission-denied scenarios intentionally cause detectStaleAnnotations to throw (tests assert a thrown error), which is not clearly "graceful" handling in terms of user-facing tools; there is no error-wrapping, structured error reporting, or recovery.
+  - There is no explicit handling of circular references (though for this particular problem domain, it might not be directly applicable); no tests or code paths reference this scenario.
+
+- **Documentation** (maintenance tools documented with usage examples and best practices):
+  - No user-facing or internal documentation currently explains:
+    - What these maintenance helpers are.
+    - How to use them (CLI, scripts, or programmatically).
+    - Example workflows (e.g., after renaming story files, run X).
+  - `user-docs/api-reference.md`, `user-docs/examples.md`, and `docs/*.md` contain no mentions of maintenance tools, and no REQ-MAINT-* references outside the story file itself.
+
+- **REQ-MAINT-SAFE** (operations reversible and don't break functionality):
+  - Safety properties implemented:
+    - No-op behavior on invalid directories (returns [] or 0; no writes).
+    - Writes are only done when file content actually changes.
+  - Reversibility:
+    - There is **no** built-in mechanism for backup or rollback.
+    - Once updateAnnotationReferences overwrites a file, the previous state can only be restored via external tooling (e.g., git), not via the maintenance API.
+  - No tests exist to validate rollback or any explicit reversibility guarantee.
+
+Overall, while the core low-level helpers and associated tests for detection, updating, batch processing, simple verification, and a minimal report are implemented and passing, several acceptance criteria and requirement aspects (integration with ESLint tooling, user-facing feedback about changes, documented usage, and strong safety/reversibility guarantees) are not fulfilled.</evidence>
+  <notes>The project includes a set of maintenance helpers under src/maintenance (detectStaleAnnotations, updateAnnotationReferences, batchUpdateAnnotations, verifyAnnotations, generateMaintenanceReport) along with focused Jest tests that validate basic detection, updating, batch aggregation, and simple reporting behaviors. All these tests pass under the existing npm test command.
+
+However, several parts of story 009.0-DEV-MAINTENANCE-TOOLS are not fully implemented as specified:
+- There is no CLI or scripted integration that ties these helpers into the existing ESLint plugin or project workflows, so the "Integration" acceptance criterion is not satisfied in a user-visible way.
+- User Experience requirements and REQ-MAINT-REPORT are only minimally realized: reporting functions list stale story paths but do not describe what annotations were updated, in which files, or why, and no higher-level feedback mechanism exists.
+- Error handling is partial: missing directories and stale files are handled, but permission errors simply surface as thrown exceptions, with no structured or user-friendly handling. Circular reference handling is not addressed.
+- Safety and reversibility (REQ-MAINT-SAFE) are not robust: there is no built-in backup or rollback mechanism, only cautious writing; reversibility depends entirely on external tooling like version control.
+- Documentation for these maintenance tools (usage examples, best practices, APIs) is missing from README, user-docs, and internal docs aside from the story itself.
+
+Because not all acceptance criteria and requirements (especially around integration, user experience, safety, and documentation) are met, this story cannot be considered fully implemented and is assessed as FAILED.</notes>
 </traceability>

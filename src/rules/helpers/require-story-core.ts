@@ -69,7 +69,6 @@ export function createMethodFix(node: any) {
 export const DEFAULT_SCOPE: string[] = [
   "FunctionDeclaration",
   "FunctionExpression",
-  "ArrowFunctionExpression",
   "MethodDefinition",
   "TSMethodSignature",
   "TSDeclareFunction",

@@ -1,17 +1,19 @@
 ## NOW
 
-- [ ] Use read_file to open `src/utils/storyReferenceUtils.ts` to analyze current story path existence and error-handling logic for file validation.
+- [ ] Use read_file to open `docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md` to fully refresh the exact requirements and acceptance criteria for function annotations.
 
 ## NEXT
 
-- [ ] Design and implement improved error-handling in `storyExists`/`normalizeStoryPath` (e.g., wrap fs calls in try/catch to gracefully handle EACCES and other IO errors, returning a safe result and possibly a distinct status for the rule to interpret).
-- [ ] Update `src/rules/valid-story-reference.ts` so it interprets new status codes from the utils (e.g., distinguishing between not-found vs. fs-error) and reports a clear, user-facing ESLint diagnostic that satisfies the story’s "Error Handling" acceptance criterion.
-- [ ] Add or extend Jest tests in `tests/rules/valid-story-reference.test.ts` (or a new focused test file) to simulate permission-denied / fs error scenarios via Jest mocking, verifying that linting does not crash and that users see the expected error messages.
-- [ ] Ensure new/updated functions and branches have correct `@story` and `@req` annotations referencing `docs/stories/006.0-DEV-FILE-VALIDATION.story.md` and the relevant requirement IDs, updating the story file if needed to align IDs with behavior.
-- [ ] Re-run the implementation assessment (or equivalent test/story-mapping scripts if present) to confirm docs/stories/006.0-DEV-FILE-VALIDATION.story.md now passes and functional coverage has increased, then identify the next failing story and repeat a similar implement-and-test cycle.
+- [ ] Use read_file on `src/rules/require-story-annotation.ts` to compare the current rule behavior (node types, messages, locations) against the story’s requirements.
+- [ ] Use read_file on `src/rules/helpers/require-story-core.ts` and `src/rules/helpers/require-story-visitors.ts` to see how function-like nodes (including arrow functions) are currently detected and reported.
+- [ ] Use read_file on `tests/rules/require-story-annotation.test.ts` (and any related helper tests) to understand the current tested behavior for arrow functions and error messages/locations.
+- [ ] Design a minimal change set to align behavior with the story by: (a) excluding ArrowFunctionExpression from the default enforced scope, and (b) changing reporting so the primary diagnostic is attached to the function name identifier and includes the function name in the message text.
+- [ ] Modify `require-story-core` / visitor helpers so the default scope excludes arrow functions per the story, while keeping types/tests compiling, and adjust any tests that assume arrow functions are enforced by default.
+- [ ] Update the reporting helpers and rule meta messages so the main `missing @story` diagnostic includes the function’s name and uses the identifier location, then update/add Jest tests to assert on message content and error location.
+- [ ] Run the existing traceability check and story tests to ensure all `@story` / `req` annotations and the 003.0 story doc remain aligned with the new behavior, updating the story markdown if specific requirement IDs or wording need small tweaks to match the implementation.
 
 ## LATER
 
-- [ ] Extend validation logic to enforce that configured `storyDirectories` cannot silently point outside the project root (project-boundary requirement), adding tests for misconfigured directories and documenting the behavior.
-- [ ] Review the other three failed stories from the assessment, one by one, and for each: inspect current implementation, fill behavior gaps, add tests, and update traceability until their acceptance criteria are fully met.
-- [ ] Once all stories are green and functional coverage ≥ 90%, consider small refactors to centralize any duplicated path/FS handling helpers and keep error-handling behavior consistent across current and future rules.
+- [ ] Re-evaluate whether the story’s “single core rule for @story and @req” requirement demands combining `require-story-annotation` and `require-req-annotation` into one rule, or whether the current split is acceptable with clarified documentation; if needed, plan a safe expand–migrate–contract refactor.
+- [ ] Once Story 003.0 passes, repeat the same inspect–design–implement–test cycle for the remaining failing stories, one at a time, using traceability and Jest tests to drive each to green.
+- [ ] After all stories are passing and functional coverage ≥ 90%, consider small refactors to further simplify the function-annotation helpers (e.g., extracting shared reporter utilities) without changing external behavior.

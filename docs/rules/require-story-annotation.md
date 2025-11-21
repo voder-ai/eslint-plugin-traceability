@@ -13,7 +13,6 @@ This rule checks function-like nodes to ensure each has a JSDoc comment containi
 
 - FunctionDeclaration
 - FunctionExpression
-- ArrowFunctionExpression
 - MethodDefinition
 - TSDeclareFunction
 - TSMethodSignature
@@ -26,15 +25,14 @@ This rule accepts a single options object with the following optional properties
   - Items enum: [
     "FunctionDeclaration",
     "FunctionExpression",
-    "ArrowFunctionExpression",
     "MethodDefinition",
     "TSDeclareFunction",
-    "TSMethodSignature"
+    "TSMethodSignature",
+    "ArrowFunctionExpression"
     ]
   - Default: [
     "FunctionDeclaration",
     "FunctionExpression",
-    "ArrowFunctionExpression",
     "MethodDefinition",
     "TSDeclareFunction",
     "TSMethodSignature"
@@ -44,14 +42,15 @@ This rule accepts a single options object with the following optional properties
   - Enum: ["all", "exported", "non-exported"]
   - Default: "all"
 
+Note: `ArrowFunctionExpression` is supported by this rule but is not included in the default scope. To enforce story annotations on arrow functions, add `"ArrowFunctionExpression"` to the `scope` option.
+
 Default:
 
-```
+```js
 {
   scope: [
     "FunctionDeclaration",
     "FunctionExpression",
-    "ArrowFunctionExpression",
     "MethodDefinition",
     "TSDeclareFunction",
     "TSMethodSignature",
@@ -72,10 +71,10 @@ JSON schema:
         "enum": [
           "FunctionDeclaration",
           "FunctionExpression",
-          "ArrowFunctionExpression",
           "MethodDefinition",
           "TSDeclareFunction",
-          "TSMethodSignature"
+          "TSMethodSignature",
+          "ArrowFunctionExpression"
         ]
       },
       "uniqueItems": true

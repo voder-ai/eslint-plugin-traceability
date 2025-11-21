@@ -30,7 +30,8 @@ const rule: Rule.RuleModule = {
     },
     hasSuggestions: true,
     messages: {
-      missingStory: "Missing @story annotation (REQ-ANNOTATION-REQUIRED)",
+      missingStory:
+        "Missing @story annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)",
     },
     schema: [
       {

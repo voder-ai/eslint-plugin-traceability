@@ -57,6 +57,10 @@ declare function tsDecl(): void;`,
           parserOptions: { ecmaVersion: 2020, sourceType: "module" },
         },
       },
+      {
+        name: "[REQ-ANNOTATION-REQUIRED] unannotated arrow function allowed by default",
+        code: `const arrowFn = () => {};`,
+      },
     ],
     invalid: [
       {
@@ -84,21 +88,6 @@ declare function tsDecl(): void;`,
               {
                 desc: `Add JSDoc @story annotation for function 'fnExpr', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst fnExpr = function() {};`,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        name: "[REQ-ANNOTATION-REQUIRED] missing @story on arrow function",
-        code: `const arrowFn = () => {};`,
-        errors: [
-          {
-            messageId: "missingStory",
-            suggestions: [
-              {
-                desc: `Add JSDoc @story annotation for function 'arrowFn', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
-                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst arrowFn = () => {};`,
               },
             ],
           },
@@ -172,6 +161,11 @@ declare function tsDecl(): void;`,
         code: `// @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\nexport function exportedAnnotated() {}`,
         options: [{ exportPriority: "exported" }],
       },
+      {
+        name: "[exportPriority] exported arrow function missing @story annotation",
+        code: `export const arrowExported = () => {};`,
+        options: [{ exportPriority: "exported" }],
+      },
     ],
     invalid: [
       {
@@ -185,22 +179,6 @@ declare function tsDecl(): void;`,
               {
                 desc: `Add JSDoc @story annotation for function 'exportedMissing', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport function exportedMissing() {}`,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        name: "[exportPriority] exported arrow function missing @story annotation",
-        code: `export const arrowExported = () => {};`,
-        options: [{ exportPriority: "exported" }],
-        errors: [
-          {
-            messageId: "missingStory",
-            suggestions: [
-              {
-                desc: `Add JSDoc @story annotation for function 'arrowExported', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
-                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport const arrowExported = () => {};`,
               },
             ],
           },

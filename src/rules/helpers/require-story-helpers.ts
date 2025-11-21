@@ -287,9 +287,13 @@ function reportMissing(
     }
     const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
     const name = functionName;
+    const nameNode =
+      (node.id && node.id.type === "Identifier" && node.id) ||
+      (node.key && node.key.type === "Identifier" && node.key) ||
+      node;
 
     context.report({
-      node,
+      node: nameNode,
       messageId: "missingStory",
       data: { name },
       suggest: [
@@ -326,8 +330,11 @@ function reportMethod(
     }
     const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
     const name = extractName(node);
+    const nameNode =
+      (node.key && node.key.type === "Identifier" && node.key) || node;
+
     context.report({
-      node,
+      node: nameNode,
       messageId: "missingStory",
       data: { name },
       suggest: [
