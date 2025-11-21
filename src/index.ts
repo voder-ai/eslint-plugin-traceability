@@ -78,6 +78,12 @@ RULE_NAMES.forEach(
   },
 );
 
+/**
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * @req REQ-ERROR-SEVERITY - Map rule types to appropriate ESLint severity levels (errors vs warnings)
+ * The recommended and strict configs treat missing annotations and missing references as errors,
+ * while formatting issues are reported as warnings, matching the story's severity conventions.
+ */
 const configs = {
   recommended: [
     {

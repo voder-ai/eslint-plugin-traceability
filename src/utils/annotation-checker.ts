@@ -174,6 +174,8 @@ function createMissingReqFix(node: any) {
  * @req REQ-ANNOTATION-REPORTING - Report missing @req annotation to context
  * @req REQ-ERROR-SPECIFIC - Provide specific error details including node name
  * @req REQ-ERROR-LOCATION - Include contextual location information in errors
+ * @req REQ-ERROR-SUGGESTION - Provide actionable suggestions or fixes where possible
+ * @req REQ-ERROR-CONTEXT - Include contextual hints to help understand the error
  */
 function reportMissing(context: any, node: any, enableFix: boolean = true) {
   const rawName =
