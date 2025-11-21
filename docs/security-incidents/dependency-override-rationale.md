@@ -20,25 +20,25 @@ This document provides the rationale for each manual dependency override specifi
 - **Reason:** Upgrade to version addressing a moderate severity HTTP caching vulnerability.
 - **Role:** Transitive dev-dependency in caching libraries.
 - **Risk Assessment:** Low; dev-only, isolated impact.
-- **References:** https://github.com/advisories/CVE-2021-xxxx
+- **References:** https://github.com/advisories/GHSA-rc47-6667-r5fw
 
 ## ip @ >=2.0.2
 - **Reason:** Address vulnerability in the `ip` package (e.g., GHSA-xxxx).
 - **Role:** Transitive dev-dependency.
 - **Risk Assessment:** Low; dev-only.
-- **References:** https://github.com/advisories/GHSA-xxxx
+- **References:** https://github.com/advisories/GHSA-5jpg-2xvr-rw5w
 
 ## semver @ >=7.5.2
 - **Reason:** Mitigate advisory in `semver` package affecting version parsing (GHSA-xxxx).
 - **Role:** Transitive dev-dependency.
 - **Risk Assessment:** Low; dev-only.
-- **References:** https://github.com/advisories/GHSA-xxxx
+- **References:** https://github.com/advisories/GHSA-vwqq-5vrc-xw9h
 
 ## socks @ >=2.7.2
 - **Reason:** Upgrade to version addressing security advisory in `socks` package (GHSA-xxxx).
 - **Role:** Transitive dev-dependency.
 - **Risk Assessment:** Low; dev-only.
-- **References:** https://github.com/advisories/GHSA-xxxx
+- **References:** https://github.com/advisories/GHSA-5v9h-799p-53ph
 
 ## Mitigation and Next Steps
 - Monitor `npm audit` and `dry-aged-deps` recommendations for upstream patches.
