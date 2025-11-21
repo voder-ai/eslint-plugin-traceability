@@ -189,7 +189,7 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
         : node) ?? node;
   const reportOptions: any = {
     node: nameNode,
-    messageId: "missingReqAnnotation",
+    messageId: "missingReq",
     data: { name, functionName: name },
   };
 
