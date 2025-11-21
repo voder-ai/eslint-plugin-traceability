@@ -160,4 +160,4 @@ jobs:
         run: npm ci
 
       - name: Run dependency health audit
-        run: npm audit --audit-level=high
+        run: npm run audit:dev-high
