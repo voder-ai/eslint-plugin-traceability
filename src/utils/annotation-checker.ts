@@ -188,7 +188,7 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
   const reportOptions: any = {
     node: nameNode,
     messageId: "missingReq",
-    data: { name },
+    data: { name, functionName: name },
   };
 
   if (enableFix) {

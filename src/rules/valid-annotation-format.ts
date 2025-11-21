@@ -409,8 +409,8 @@ export default {
       recommended: "error",
     },
     messages: {
-      invalidStoryFormat: "{{details}}",
-      invalidReqFormat: "{{details}}",
+      invalidStoryFormat: "Invalid annotation format: {{details}}.",
+      invalidReqFormat: "Invalid annotation format: {{details}}.",
     },
     schema: [],
     /**

@@ -7,10 +7,8 @@ module.exports = {
   coverageProvider: "v8",
   collectCoverageFrom: ["src/**/*.{ts,js}"],
   preset: "ts-jest",
-  globals: {
-    "ts-jest": {
-      diagnostics: false,
-    },
+  transform: {
+    "^.+\\.(ts|tsx)$": ["ts-jest", { diagnostics: false }],
   },
   testEnvironment: "node",
   testPathIgnorePatterns: ["<rootDir>/lib/"],
