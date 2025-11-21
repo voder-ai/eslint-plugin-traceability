@@ -21,7 +21,8 @@ export default {
       recommended: "error",
     },
     messages: {
-      missingReq: "Missing @req annotation",
+      missingReq:
+        "Missing @req annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)",
     },
     schema: [],
   },
@@ -31,7 +32,6 @@ export default {
    * @req REQ-FUNCTION-DETECTION - Detect function declarations, expressions, arrow functions, and methods
    */
   create(context: any) {
-    const sourceCode = context.getSourceCode();
     return {
       /**
        * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -39,21 +39,7 @@ export default {
        * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on function declarations
        */
       FunctionDeclaration(node: any) {
-        const jsdoc = sourceCode.getJSDocComment(node);
-        if (!jsdoc || !jsdoc.value.includes("@req")) {
-          context.report({
-            node,
-            messageId: "missingReq",
-            /**
-             * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-             * @req REQ-AUTOFIX - Provide automatic fix to insert @req annotation
-             * @req REQ-ANNOTATION-REQUIRED - Ensure inserted fix contains @req placeholder
-             */
-            fix(fixer: any) {
-              return fixer.insertTextBefore(node, "/** @req <REQ-ID> */\n");
-            },
-          });
-        }
+        return checkReqAnnotation(context, node);
       },
       /**
        * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

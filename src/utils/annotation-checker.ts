@@ -1,3 +1,5 @@
+import { getNodeName } from "../rules/helpers/require-story-utils";
+
 /**
  * Helper to retrieve the JSDoc comment for a node.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -71,13 +73,20 @@ function createMissingReqFix(node: any) {
 
 /**
  * Helper to report a missing @req annotation via the ESLint context API.
+ * Uses getNodeName to provide a readable name for the node.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-ANNOTATION-REPORTING - Report missing @req annotation to context
+ * @req REQ-ERROR-SPECIFIC - Provide specific error details including node name
+ * @req REQ-ERROR-LOCATION - Include contextual location information in errors
  */
 function reportMissing(context: any, node: any) {
+  const rawName = getNodeName(node);
+  const name = rawName ?? "(anonymous)";
   context.report({
     node,
     messageId: "missingReq",
+    data: { name },
     fix: createMissingReqFix(node),
   });
 }

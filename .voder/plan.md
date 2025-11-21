@@ -1,18 +1,19 @@
 ## NOW
 
-- [ ] Use read_file to open `docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md` to refresh the exact requirements (especially REQ-MULTILINE-SUPPORT and REQ-ERROR-SPECIFICITY) and examples for annotation validation.
+- [ ] Use read_file to open `docs/stories/007.0-DEV-ERROR-REPORTING.story.md` to refresh the exact error-reporting requirements and acceptance criteria.
 
 ## NEXT
 
-- [ ] Use read_file on `src/rules/valid-annotation-format.ts` to re-verify the current implementation against the refreshed 005.0 story requirements.
-- [ ] Use read_file on `tests/rules/valid-annotation-format.test.ts` to understand existing test coverage and pinpoint missing cases for multi-line annotations and specific error messages.
-- [ ] Design the concrete parsing and reporting behavior needed in `valid-annotation-format` to support multi-line annotations and more granular error categories while remaining backward compatible with existing single-line annotations.
-- [ ] Modify `src/rules/valid-annotation-format.ts` to implement the new behavior (multi-line support and more specific messageIds/messages) according to the design, keeping changes as small and focused as possible.
-- [ ] Extend `tests/rules/valid-annotation-format.test.ts` with new test cases that cover multi-line annotations, various specific failure modes, and assert on the new, more specific error messages and messageIds.
-- [ ] Update `docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md` (and any relevant rule doc under `docs/rules/`) so that REQ IDs, described behavior, and examples match the updated implementation and tests.
+- [ ] Use read_file on `tests/rules/error-reporting.test.ts` and `src/rules/require-req-annotation.ts` to understand the current error-message behavior and how it differs from the 007.0 story requirements.
+- [ ] Analyze `src/index.ts` exported rule configs (recommended/strict) and any rule meta to see how severity levels are currently applied vs. what 007.0 expects (e.g., errors for missing annotations, warnings for format issues).
+- [ ] Design concrete changes to `require-req-annotation` (and, if necessary, other rules or configs) so that all rules covered by 007.0 provide specific, context-rich error messages and appropriate severities while staying backward compatible where possible.
+- [ ] Modify `src/rules/require-req-annotation.ts` (and any other directly impacted rule or config files) to implement the new error messages, suggestions, and severity behavior defined in the design.
+- [ ] Update or extend Jest tests in `tests/rules/error-reporting.test.ts` and `tests/rules/require-req-annotation.test.ts` to cover the new error-reporting behavior, including function-name context, suggestion descriptions, and severity expectations where applicable.
+- [ ] Update `docs/stories/007.0-DEV-ERROR-REPORTING.story.md` and any relevant rule or user docs to reflect the finalized error-message formats, examples, and severity semantics, ensuring REQ IDs and examples match the implementation and tests.
+- [ ] Review the functionality assessment (or rerun the relevant tooling if available) to confirm that Story 007.0 now passes and identify the next failing story to tackle.
 
 ## LATER
 
-- [ ] Identify the other three failing stories from the functionality assessment and, one at a time, repeat the inspect–design–implement–doc-align cycle used for Story 005.0 until each reaches 90%+ alignment.
-- [ ] Once all currently failing stories pass, review cross-cutting behaviors (e.g., how annotation parsing is shared between rules) for small refactors that reduce duplication while preserving behavior.
-- [ ] After functional coverage across all stories is ≥ 90%, consider adding a small number of characterization tests around complex annotation edge cases to protect future refactors of the validation logic.
+- [ ] For each remaining failing story identified in the functionality assessment, repeat the inspect–design–implement–test–doc-align cycle used for 007.0 until all stories reach the required alignment threshold.
+- [ ] After all currently failing stories are addressed, review cross-cutting behaviors in error handling and annotation logic across rules for small, safe refactors (e.g., shared error-message helpers) to reduce duplication without changing behavior.
+- [ ] Once functional coverage is complete and stable, consider adding a few additional characterization tests for complex or rare error-reporting edge cases to guard future refactors.
