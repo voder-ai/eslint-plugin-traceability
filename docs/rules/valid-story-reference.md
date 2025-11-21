@@ -17,9 +17,21 @@ This rule inspects all comment nodes for lines starting with `@story`. It then:
 - Resolves candidate file locations in configured story directories
 - Reports a `fileMissing`, `invalidExtension`, or `invalidPath` error for violations
 
+### Boundary & Configuration
+
+The rule enforces a strict “project boundary” for story references in line with story `006.0-DEV-FILE-VALIDATION`:
+
+- All `@story` paths are interpreted relative to the current project’s root and the configured `storyDirectories`.
+- Paths that attempt to escape this boundary (e.g. using `..` segments to reach parent directories) are rejected as `invalidPath`.
+- By default, absolute paths are considered outside the project boundary and are rejected unless explicitly allowed by configuration.
+- Resolution is constrained to the configured `storyDirectories`; a `@story` reference that does not resolve to a file within those directories is reported as `fileMissing` even if a similarly named file exists elsewhere.
+- Extension handling is enforced at the boundary: when `.story.md` is required, any reference that resolves to a file with a different extension is reported as `invalidExtension` even if the base name matches.
+
+These constraints ensure that story references are deterministic, prevent accidental coupling to files outside the intended documentation area, and avoid security issues from arbitrary filesystem traversal.
+
 ### Options
 
-Configure rule behavior using an options object:
+Configure rule behavior using an options object that controls how paths are resolved and validated against the project boundary:
 
 ```json
 {
@@ -28,6 +40,61 @@ Configure rule behavior using an options object:
   "requireStoryExtension": true
 }
 ```
+
+#### `storyDirectories`
+
+- Type: `string[]`
+- Default: `["docs/stories", "stories"]` (may vary by project)
+
+Defines the set of directories (relative to the project root) that are considered valid locations for `.story.md` files.
+
+Behavior and interaction with boundaries:
+
+- All relative `@story` paths are first normalized and then resolved **within** these directories.
+- The rule will only look for matching files under these directories; files with the same name outside them are ignored.
+- A path that cannot be mapped into any configured `storyDirectories` without leaving the project boundary is reported as `invalidPath`.
+- If a normalized path is inside a `storyDirectories` entry but the target file does not exist, the rule reports `fileMissing`.
+
+Use this to centrally control where story files are allowed to live (e.g. `docs/stories`, `stories/api`).
+
+#### `allowAbsolutePaths`
+
+- Type: `boolean`
+- Default: `false`
+
+Controls whether `@story` can use absolute filesystem paths (e.g. `/full/path/to/story.story.md`).
+
+Boundary and security implications:
+
+- When `false`:
+  - Any absolute path is reported as `invalidPath`.
+  - All `@story` references must be relative to the project and are resolved only within `storyDirectories`.
+  - This is the recommended setting to prevent references to files outside the repository or project boundary.
+- When `true`:
+  - Absolute paths are permitted and resolved directly on the filesystem.
+  - Other checks still apply:
+    - Path traversal checks still apply (e.g. disallowing obvious escape patterns if the project sets such constraints).
+    - `requireStoryExtension` still controls which extensions are accepted.
+  - Use with caution, as it weakens project-boundary guarantees and may introduce portability issues across machines.
+
+#### `requireStoryExtension`
+
+- Type: `boolean`
+- Default: `true`
+
+Controls whether `@story` references must end with the `.story.md` extension.
+
+Extension and boundary interaction:
+
+- When `true`:
+  - Only files with a `.story.md` suffix are considered valid story files.
+  - If a referenced path resolves to a file with the wrong extension (e.g. `.md` without `.story`), the rule reports `invalidExtension`.
+  - This applies regardless of whether the file exists within the project boundary; a mismatched extension is always flagged as `invalidExtension` (even if the underlying file exists).
+- When `false`:
+  - Other markdown extensions (e.g. `.md`, `.markdown`) may be allowed, subject to the rule’s implementation.
+  - Path and boundary checks still apply: the file must still be within `storyDirectories` (or be a permitted absolute path), and traversal outside the project boundary is still rejected as `invalidPath`.
+
+Use `requireStoryExtension: true` to enforce a clear, consistent naming convention for story files and to make it unambiguous which markdown files are intended to be executable stories.
 
 ### Examples
 
@@ -44,4 +111,3 @@ Configure rule behavior using an options object:
 // @story docs/stories/001.0-DEV-PLUGIN-SETUP.md   // @story invalidExtension
 // @story ../outside.story.md                      // @story invalidPath
 // @story /etc/passwd.story.md                     // @story invalidPath
-```
