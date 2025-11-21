@@ -102,6 +102,7 @@ declare function tsDecl(): void;`,
         errors: [
           {
             messageId: "missingStory",
+            data: { name: "method", functionName: "method" },
             suggestions: [
               {
                 desc: `Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
