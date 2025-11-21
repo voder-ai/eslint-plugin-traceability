@@ -1,222 +1,456 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: get_git_status with input: {}
-Used tool: read_file with input: {"filePath":".github/workflows/ci-cd.yml"}
-Used tool: search_file_content with input: {"filePath":".github/workflows/ci-cd.yml","pattern":"npm audit","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"package.json","pattern":"npm audit","isRegex":false}
-Used tool: find_files with input: {"pattern":"*.js","directory":"scripts"}
-Used tool: modify_file with input: {"filePath":".github/workflows/ci-cd.yml","instruction":"In the job 'quality-and-deploy', find the step named 'Run production security audit'. In that step, replace the run command `npm audit --production --audit-level=high` with `npm audit --omit=dev --audit-level=high` so that npm uses the modern flag instead of --production."}
-Used tool: modify_file with input: {"filePath":"package.json","instruction":"In the scripts section, locate the ci-verify:full script. In its command string, replace `npm audit --production --audit-level=high` with `npm audit --omit=dev --audit-level=high` so that local CI verification uses the same modern npm audit flag as CI."}
-Used tool: search_file_content with input: {"filePath":".github/workflows/ci-cd.yml","pattern":"npm audit","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"scripts/ci-audit.js","pattern":"npm audit","isRegex":false}
-Used tool: read_file with input: {"filePath":"scripts/ci-audit.js"}
-Used tool: modify_file with input: {"filePath":"scripts/ci-audit.js","instruction":"Update the JSDoc description comment so that it no longer hardcodes the exact npm audit flags. Change the first line from `* CI helper to run npm audit --json and write output to ci/npm-audit.json` to `* CI helper to run npm audit in JSON mode and write output to ci/npm-audit.json`. Do not alter the implementation code or other comments."}
-Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:full"]}
+**Action:** Used tool: read_file with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md"}
+Used tool: read_file with input: {"filePath":"src/rules/require-story-annotation.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-core.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts"}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"STORY_PATH","isRegex":false}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","startLine":260,"endLine":420}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-visitors.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-core.autofix.test.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"tests/integration/cli-integration.test.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"tests/utils/annotation-checker.test.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"tests/rules/valid-annotation-format.test.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"user-docs/api-reference.md","startLine":1,"endLine":260}
+Used tool: generate_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","overwrite":false,"content":"/**\n * Tests for: docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @req REQ-AUTOFIX-MISSING - Verify ESLint --fix automatically adds missing @story annotations to functions\n * @req REQ-AUTOFIX-FORMAT - Verify ESLint --fix corrects simple annotation format issues for @story annotations\n */\nimport { RuleTester } from \"eslint\";\nimport requireStoryRule from \"../../src/rules/require-story-annotation\";\nimport validAnnotationFormatRule from \"../../src/rules/valid-annotation-format\";\n\nconst functionRuleTester = new RuleTester({\n  languageOptions: {\n    parserOptions: { ecmaVersion: 2020, sourceType: \"module\" },\n  },\n} as any);\n\nconst formatRuleTester = new RuleTester({\n  languageOptions: { parserOptions: { ecmaVersion: 2020 } },\n} as any);\n\ndescribe(\"Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)\", () => {\n  describe(\"[REQ-AUTOFIX-MISSING] require-story-annotation auto-fix\", () => {\n    functionRuleTester.run(\n      \"require-story-annotation --fix\",\n      requireStoryRule,\n      {\n        valid: [\n          {\n            name: \"[REQ-AUTOFIX-MISSING] already annotated function is unchanged\",\n            code: `/**\\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\\n */\\nfunction alreadyAnnotated() {}`,\n          },\n        ],\n        invalid: [\n          {\n            name: \"[REQ-AUTOFIX-MISSING] adds @story before function declaration when missing\",\n            code: `function autoFixMe() {}`,\n            output:\n              `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction autoFixMe() {}`,\n            errors: [\n              {\n                messageId: \"missingStory\",\n              },\n            ],\n          },\n        ],\n      },\n    );\n  });\n\n  describe(\"[REQ-AUTOFIX-FORMAT] valid-annotation-format auto-fix\", () => {\n    formatRuleTester.run(\n      \"valid-annotation-format --fix simple @story extension issues\",\n      validAnnotationFormatRule as any,\n      {\n        valid: [\n          {\n            name: \"[REQ-AUTOFIX-FORMAT] already-correct story path is unchanged\",\n            code: `// @story docs/stories/005.0-DEV-EXAMPLE.story.md`,\n          },\n        ],\n        invalid: [\n          {\n            name: \"[REQ-AUTOFIX-FORMAT] adds .md extension for .story path\",\n            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,\n            output:\n              `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,\n            errors: [\n              {\n                messageId: \"invalidStoryFormat\",\n              },\n            ],\n          },\n          {\n            name: \"[REQ-AUTOFIX-FORMAT] adds .story.md extension when missing entirely\",\n            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,\n            output:\n              `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,\n            errors: [\n              {\n                messageId: \"invalidStoryFormat\",\n              },\n            ],\n          },\n        ],\n      },\n    );\n  });\n});\n"}
+Used tool: modify_file with input: {"filePath":"src/rules/require-story-annotation.ts","instruction":"Add meta.fixable: \"code\" to mark the rule as fixable, and update JSDoc to reference story 008.0-DEV-AUTO-FIX.story.md for the new auto-fix capability while retaining existing story reference. Then adjust imports so that we can rely on helper-level suggestions but still support ESLint --fix via hasSuggestions+fixable combination (no change needed to helper behavior yet)."}
+Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"Update the rule meta to mark it as fixable with \"code\" and extend the JSDoc to reference docs/stories/008.0-DEV-AUTO-FIX.story.md and REQ-AUTOFIX-FORMAT. Then introduce minimal, safe auto-fix behavior: when a @story annotation value matches the same string as the invalid cases in tests (missing .md or missing .story.md) and has no path traversal, apply a fixer that appends the appropriate suffix instead of only reporting. Keep existing error messages for cases the fixer does not handle (e.g., path traversal)."}
+Used tool: modify_file with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md","instruction":"Update acceptance criteria checkboxes and implementation notes to reflect that initial auto-fix support has been added for missing @story annotations on functions and simple story path suffix issues, but that template configurability and selective enable/disable are still future work. Specifically: mark Core Functionality, Quality Standards, Integration, User Experience, Error Handling, Documentation as partially addressed by this iteration (e.g., with a short note next to the checkbox) rather than fully checked, since the story is not yet complete."}
+Used tool: modify_file with input: {"filePath":"user-docs/api-reference.md","instruction":"In the rule descriptions for traceability/require-story-annotation and traceability/valid-annotation-format, add brief notes documenting the new auto-fix behavior introduced by story 008.0. For require-story-annotation, mention that when used with --fix, the rule can insert a placeholder @story JSDoc comment above missing functions using a default template. For valid-annotation-format, mention that when used with --fix, the rule can automatically correct simple @story path suffix issues (e.g., missing .story.md) where the intended suffix is unambiguous. Make sure to keep wording concise and user-facing, and do not change examples or options sections beyond these notes."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","tests/rules/auto-fix-behavior-008.test.ts"]}
+Used tool: search_file_content with input: {"filePath":"tests","pattern":"has suggestions","isRegex":false}
+Used tool: find_files with input: {"pattern":"*.test.ts","directory":"tests"}
+Used tool: search_file_content with input: {"filePath":"tests/rules/require-story-annotation.test.ts","pattern":"suggestions","isRegex":false}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","instruction":"In the reportMissing and reportMethod functions, add a top-level `fix` property to the context.report call that uses the same createAddStoryFix/createMethodFix as the suggestion, so that ESLint --fix can automatically apply the placeholder @story annotation while still exposing suggestions for IDE users. Do not remove or change the existing suggestions array. Also extend the JSDoc for these functions to reference docs/stories/008.0-DEV-AUTO-FIX.story.md and REQ-AUTOFIX-MISSING."}
+Used tool: modify_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","instruction":"Update the invalid test case for require-story-annotation to include an explicit `suggestions` array in the expected error object, mirroring the style used in tests/rules/require-story-annotation.test.ts. Keep the top-level `output` property so that the test also asserts the auto-fix behavior, and set the suggestion's `output` to the same fixed code string. This satisfies RuleTester’s requirement to account for suggestions while still verifying the fix output."}
+Used tool: modify_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","instruction":"In the invalid test case for require-story-annotation, replace the suggestion object to use `desc` and `output` fields (no messageId), and set `desc` to exactly match the description used by the rule: `Add JSDoc @story annotation for function 'autoFixMe', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`. Keep the `output` value matching the fixed code string. Remove the incorrect `messageId` field from the suggestion."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","tests/rules/auto-fix-behavior-008.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts","startLine":60,"endLine":260}
+Used tool: modify_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts","instruction":"For each invalid test case, add a top-level `output` property that matches the expected fixed code shown in the first suggestion's `output`. Specifically:\n- For \"missing @story annotation on function\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction bar() {}`.\n- For \"missing @story on function expression\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nconst fnExpr = function() {};\"`.\n- For \"missing @story on class method\", set output to `\"class C {\\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\n  method() {}\\n}\"`.\n- For \"missing @story on TS declare function\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\ndeclare function tsDecl(): void;\"`.\n- For \"missing @story on TS method signature\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\ninterface D {\\n  method(): void;\\n}\"`.\n- For \"[exportPriority] exported function missing @story annotation\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nexport function exportedMissing() {}\"`.\n- For \"[scope] function declaration missing annotation when scope is FunctionDeclaration\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction onlyDecl() {}\"`."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: read_file with input: {"filePath":"tests/rules/error-reporting.test.ts","startLine":1,"endLine":260}
+Used tool: modify_file with input: {"filePath":"tests/rules/error-reporting.test.ts","instruction":"In the invalid test case for \"[REQ-ERROR-SPECIFIC] missing @story annotation should report specific details and suggestion\", add a top-level `output` property set to the same fixed code string currently used in the suggestion's `output` field: `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction bar() {}\"`."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"In validateStoryAnnotation, after computing `collapsed` and checking `if (pathPattern.test(collapsed)) { return; }`, add a guard that skips auto-fix when the raw annotation value spans multiple segments (e.g., multi-line values). Concretely, if `/\\s/.test(trimmed)` is true, immediately `context.report` with `messageId: \"invalidStoryFormat\"` and `details: buildStoryErrorMessage(\"invalid\", collapsed)`, then `return;`. This ensures the fixer only runs for simple, single-segment values and leaves complex multi-line cases as validation-only errors."}
+Used tool: modify_file with input: {"filePath":"tests/rules/valid-annotation-format.test.ts","instruction":"In the invalid test cases, add `output` properties for the single-line story path suffix issues that are now auto-fixed:\n- For \"[REQ-PATH-FORMAT] invalid story file extension\", set `output` to `\"// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\"`.\n- For \"[REQ-PATH-FORMAT] missing extension in story path\", set `output` to `\"// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\"`.\nDo not add `output` to the multi-line or other invalid cases that should remain validation-only."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0","--debug"]}
+Used tool: read_file with input: {"filePath":"package.json","startLine":1,"endLine":120}
+Used tool: run_command with input: {"command":"npx","args":["eslint","--config","eslint.config.js","src/rules/require-story-annotation.ts","src/rules/valid-annotation-format.ts","src/rules/helpers/require-story-helpers.ts","tests/rules/auto-fix-behavior-008.test.ts","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npx","args":["eslint","src/rules/valid-annotation-format.ts","--no-eslintrc","--rule","max-lines-per-function:[\"error\",60]"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npx","args":["eslint","--config","eslint.config.js","src/**/*.{js,ts}","tests/**/*.{js,ts}","--max-warnings=0","--format","json","--output-file","lint-output.json"]}
+Used tool: read_file with input: {"filePath":"lint-output.json","startLine":1,"endLine":400}
+Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"Refactor validateStoryAnnotation to reduce its size and remove the magic number -1:\n1. Introduce a file-level constant near STORY_EXAMPLE_PATH: `const TAG_NOT_FOUND_INDEX = -1;` with appropriate @story/@req JSDoc for traceability.\n2. Extract the repeated \"invalid story\" reporting logic into a small helper:\n   `function reportInvalidStoryFormat(context: any, comment: any, collapsed: string): void { context.report({ node: comment as any, messageId: \"invalidStoryFormat\", data: { details: buildStoryErrorMessage(\"invalid\", collapsed) }, }); }`\n   Place this helper above validateStoryAnnotation and document it with @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md, @story docs/stories/008.0-DEV-AUTO-FIX.story.md, and @req REQ-AUTOFIX-FORMAT.\n3. Extract the fix-application block into a separate helper:\n   `function reportInvalidStoryFormatWithFix(context: any, comment: any, collapsed: string, fixed: string): void { ... }`\n   Move all logic that currently computes `commentText`, `search`, `tagIndex`, `afterTagIndex`, `rest`, `valueMatch`, `valueStartInComment`, `valueEndInComment`, `fixRange`, and the `context.report` with `fix` into this helper.\n   - Replace the literal `-1` comparison with `TAG_NOT_FOUND_INDEX`.\n   - Where the original code would `context.report` without a fix in the early `tagIndex === -1` or `!valueMatch` branches, now delegate to `reportInvalidStoryFormat(context, comment, collapsed)`.\n4. Simplify validateStoryAnnotation so it only:\n   - Handles the empty `trimmed` case (report \"missing\" and return).\n   - Computes `collapsed` and `pathPattern` and early-returns on a valid path.\n   - Applies the whitespace guard: if `/\\s/.test(trimmed)` is true, call `reportInvalidStoryFormat(context, comment, collapsed)` and return.\n   - Computes `fixed = getFixedStoryPath(collapsed)` and, if `fixed && pathPattern.test(fixed)`, calls `reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed)` and returns.\n   - Otherwise calls `reportInvalidStoryFormat(context, comment, collapsed)`.\nKeep all existing JSDoc annotations updated so that the new helpers and the refactored validateStoryAnnotation still reference both stories and REQ-AUTOFIX-FORMAT / REQ-PATH-FORMAT as appropriate."}
+Used tool: run_command with input: {"command":"npx","args":["eslint","--config","eslint.config.js","src/**/*.{js,ts}","tests/**/*.{js,ts}","--max-warnings=0","--format","json","--output-file","lint-output.json"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
+Used tool: get_git_status with input: {}
+Used tool: remove_file with input: {"filePath":"lint-output.json"}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"ci: use modern npm audit flags for CI and local checks"}
+Used tool: git_commit with input: {"message":"feat: add initial auto-fix support for annotations"}
 Used tool: git_push with input: {}
-Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
-Used tool: list_directory with input: {"dirPath":"docs/decisions"}
-Used tool: search_file_content with input: {"filePath":"docs/decisions","pattern":"audit","isRegex":false}
-Used tool: find_files with input: {"pattern":"*audit*.md","directory":"docs/decisions"}
-Used tool: generate_file with input: {"filePath":"docs/decisions/008-ci-audit-flags.accepted.md","content":"# ADR-008: Standardize npm audit flags in CI and local verification\n\n## Status\n\nAccepted\n\n## Context\n\nNewer versions of `npm` emit a configuration warning when the `--production` flag is used with `npm audit`:\n\n> npm WARN config production Use `--omit=dev` instead.\n\nOur CI/CD pipeline and local `ci-verify:full` script were invoking:\n\n- `npm audit --production --audit-level=high` in the GitHub Actions workflow\n- `npm audit --production --audit-level=high` inside the `ci-verify:full` npm script\n\nThis produced noisy warnings during both local verification and CI runs, even though the intent was simply to exclude development dependencies from the production-focused audit.\n\n## Decision\n\nWe will standardize on the modern, npm-recommended flag set for production-focused audits:\n\n- Use `npm audit --omit=dev --audit-level=high` instead of `npm audit --production --audit-level=high`.\n\nConcretely:\n\n1. **GitHub Actions CI/CD workflow**\n   - In `.github/workflows/ci-cd.yml`, the \"Run production security audit\" step now runs:\n     - `npm audit --omit=dev --audit-level=high`\n\n2. **Local CI verification script**\n   - In `package.json`, the `ci-verify:full` script now runs:\n     - `npm audit --omit=dev --audit-level=high`\n\n3. **CI audit helper script**\n   - `scripts/ci-audit.js` continues to run `npm audit --json` to capture a complete machine-readable audit report for CI artifacts. The JSDoc description was updated to avoid hard-coding specific flag combinations in documentation, keeping behavior and documentation loosely coupled.\n\n## Rationale\n\n- **Align with npm guidance**: Using `--omit=dev` is the officially recommended modern way to exclude development dependencies from production operations. This avoids the recurring `npm WARN config production` warning.\n- **Consistency between local and CI behavior**: Both the GitHub Actions workflow and the local `ci-verify:full` script now use the same `npm audit` flags for production-focused audits, ensuring developers see the same behavior locally that CI enforces.\n- **Separation of concerns**:\n  - Production-focused audits use `--omit=dev --audit-level=high` to focus on runtime dependencies and fail the pipeline if high-severity issues are detected.\n  - Dev-dependency audits are handled separately via `npm run audit:dev-high` (which is already wired into both `ci-verify:full` and the CI workflow) and through our `dry-aged-deps`-backed safety checks.\n- **Noise reduction**: Removing the `--production` flag eliminates unnecessary warnings from CI logs, making real problems easier to spot.\n\n## Consequences\n\n- **Positive**:\n  - CI logs are cleaner, with no spurious `npm WARN config production` messages.\n  - The project follows current npm best practices for production audits.\n  - Local and CI verification remain in sync, preventing \"works locally but fails in CI\" discrepancies for security audits.\n\n- **Neutral/Expected**:\n  - The effective set of audited packages for the production-focused audit remains equivalent to what we intended with `--production`: runtime (non-dev) dependencies only.\n  - Our separate dev-dependency audit and `dry-aged-deps` processes remain unchanged.\n\n- **Future work**:\n  - If npm introduces further changes to `npm audit` flags or behavior, we will revisit this ADR and update the workflow and scripts accordingly.\n"}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"docs: record ADR for standardized npm audit flags"}
-Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
 Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
 
 **Response:**
 
 ```
-Here’s what I implemented for the ##NOW and ##NEXT items, and their current status.
+Here’s what I implemented and verified for the ##NOW and ##NEXT plan items.
 
 ---
 
-## Changes Implemented
+## What I changed
 
-### 1) Update CI workflow to use modern npm audit flags (**NOW**)
+### 1. Read and aligned with Story 008.0
 
-**What I changed**
+- Reviewed `docs/stories/008.0-DEV-AUTO-FIX.story.md` to understand:
+  - REQ-AUTOFIX-MISSING
+  - REQ-AUTOFIX-FORMAT
+  - Safety/format preservation expectations
+- Updated the story to note that this iteration **partially** implements the acceptance criteria (function @story autofix + simple path suffix fixes), with template configurability and selective enable/disable left for future work.
 
-- File: `.github/workflows/ci-cd.yml`
-- Step: `"Run production security audit"`
+Files:
+- `docs/stories/008.0-DEV-AUTO-FIX.story.md` (acceptance criteria notes + current capabilities section)
 
-Updated the command from:
+### 2. Auto-fix for missing `@story` on functions (REQ-AUTOFIX-MISSING)
 
-```yaml
-- name: Run production security audit
-  run: npm audit --production --audit-level=high
+**Rule metadata**
+
+- Marked the rule as fixable and traced it to story 008.0:
+
+```ts
+// src/rules/require-story-annotation.ts
+meta: {
+  type: "problem",
+  docs: { description: "Require @story annotations on functions", recommended: "error" },
+  hasSuggestions: true,
+  fixable: "code",
+  ...
+}
 ```
 
-to:
+- Added `@story docs/stories/008.0-DEV-AUTO-FIX.story.md` to the file-level and `create` JSDoc for traceability.
 
-```yaml
-- name: Run production security audit
-  run: npm audit --omit=dev --audit-level=high
+**Actual fix behavior**
+
+- Previously, `require-story-annotation` only exposed **suggestions**.
+- I extended the helper to also provide a real ESLint `fix` so `eslint --fix` works.
+
+```ts
+// src/rules/helpers/require-story-helpers.ts
+
+function reportMissing(context, sourceCode, node, passedTarget?) {
+  ...
+  const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
+  ...
+  context.report({
+    node: nameNode,
+    messageId: "missingStory",
+    data: { name },
+    fix: createAddStoryFix(resolvedTarget),          // NEW: real fix for --fix
+    suggest: [                                       // existing suggestion kept
+      {
+        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+        fix: createAddStoryFix(resolvedTarget),
+      },
+    ],
+  });
+}
 ```
 
-This removes the `npm WARN config production Use --omit=dev instead.` warning and aligns with modern npm guidance.
-
-**Verification**
-
-- Ran full local CI-equivalent checks:
-
-  ```bash
-  npm run ci-verify:full
-  ```
-
-  This executed:
-
-  - `check:traceability`
-  - `safety:deps`
-  - `audit:ci`
-  - `build`
-  - `type-check`
-  - `lint-plugin-check`
-  - `lint -- --max-warnings=0`
-  - `duplication`
-  - `test -- --coverage`
-  - `format:check`
-  - `npm audit --omit=dev --audit-level=high`
-  - `audit:dev-high`
-
-  All completed successfully; `npm audit --omit=dev --audit-level=high` reported `found 0 vulnerabilities`.
-
-- Committed and pushed as:
-
-  ```text
-  ci: use modern npm audit flags for CI and local checks
-  ```
-
-- CI/CD:
-
-  - GitHub Actions workflow `CI/CD Pipeline` run `19560177215` completed with conclusion: `success` after this push.
-
----
-
-### 2) Normalize all npm audit usage in CI workflow (**NEXT #1**)
-
-**What I checked**
-
-- Searched `.github/workflows/ci-cd.yml` for `npm audit`:
-
-  - One match is just the step name `"Upload npm audit artifact"` (no command to change).
-  - The only command is now:
-
-    ```yaml
-    run: npm audit --omit=dev --audit-level=high
-    ```
-
-There are no other direct `npm audit` invocations in the workflow that need flag normalization, so CI now consistently uses the new flag where applicable.
-
----
-
-### 3) Align local scripts / ci-verify:full with new flags (**NEXT #2**)
-
-**package.json**
-
-- File: `package.json`
-- Script: `ci-verify:full`
-
-Updated the script from:
-
-```json
-"ci-verify:full": "npm run check:traceability && npm run safety:deps && npm run audit:ci && npm run build && npm run type-check && npm run lint-plugin-check && npm run lint -- --max-warnings=0 && npm run duplication && npm run test -- --coverage && npm run format:check && npm audit --production --audit-level=high && npm run audit:dev-high",
+```ts
+function reportMethod(context, sourceCode, node, passedTarget?) {
+  ...
+  const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
+  ...
+  context.report({
+    node: nameNode,
+    messageId: "missingStory",
+    data: { name },
+    fix: createMethodFix(resolvedTarget),
+    suggest: [
+      {
+        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+        fix: createMethodFix(resolvedTarget),
+      },
+    ],
+  });
+}
 ```
 
-to:
+- This preserves earlier error-reporting and suggestion behavior (Story 003.0 / 007.0) while enabling `eslint --fix` to insert:
 
-```json
-"ci-verify:full": "npm run check:traceability && npm run safety:deps && npm run audit:ci && npm run build && npm run type-check && npm run lint-plugin-check && npm run lint -- --max-warnings=0 && npm run duplication && npm run test -- --coverage && npm run format:check && npm audit --omit=dev --audit-level=high && npm run audit:dev-high",
+```ts
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+function foo() {}
 ```
 
-This keeps local pre-push checks (and any manual `npm run ci-verify:full` runs) behaviorally in sync with CI.
+**Updated tests for existing rule**
 
-**scripts/ci-audit.js**
+- Updated existing tests to assert the new fix output while still validating suggestions:
 
-- File: `scripts/ci-audit.js`
-
-This helper is used by `npm run audit:ci`, which is already referenced by `ci-verify:full`. It runs a full JSON audit for artifact generation, not as a gating step.
-
-Implementation remains:
-
-```js
-const res = spawnSync("npm", ["audit", "--json"], { encoding: "utf8" });
+```ts
+// tests/rules/require-story-annotation.test.ts (examples)
+{
+  name: "[REQ-ANNOTATION-REQUIRED] missing @story annotation on function",
+  code: `function bar() {}`,
+  output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}`,
+  errors: [
+    {
+      messageId: "missingStory",
+      suggestions: [
+        {
+          desc: `Add JSDoc @story annotation for function 'bar', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+          output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}`,
+        },
+      ],
+    },
+  ],
+}
 ```
 
-I only adjusted the JSDoc description to avoid hard-coding a specific flag combination:
+- Similarly updated:
+  - TS declare function / TS method signature invalid cases
+  - `exportPriority` invalid case
+  - `scope` invalid case
 
-From:
+**Error-reporting story tests**
 
-```js
+- Adjusted `tests/rules/error-reporting.test.ts` to also expect fix output now that the rule is fixable:
+
+```ts
+output:
+  "/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}",
+```
+
+**New auto-fix behavior test for story 008.0**
+
+- Added a focused test file for Story 008.0:
+
+```ts
+// tests/rules/auto-fix-behavior-008.test.ts
 /**
- * CI helper to run npm audit --json and write output to ci/npm-audit.json
+ * Tests for: docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-AUTOFIX-MISSING
+ * @req REQ-AUTOFIX-FORMAT
  */
+
+describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
+  describe("[REQ-AUTOFIX-MISSING] require-story-annotation auto-fix", () => {
+    functionRuleTester.run("require-story-annotation --fix", requireStoryRule, {
+      valid: [...],
+      invalid: [
+        {
+          name: "[REQ-AUTOFIX-MISSING] adds @story before function declaration when missing",
+          code: `function autoFixMe() {}`,
+          output:
+            `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction autoFixMe() {}`,
+          errors: [
+            {
+              messageId: "missingStory",
+              suggestions: [
+                {
+                  desc:
+                    "Add JSDoc @story annotation for function 'autoFixMe', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  output:
+                    `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction autoFixMe() {}`,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  });
+});
 ```
 
-To:
+This ties directly to `docs/stories/008.0-DEV-AUTO-FIX.story.md` and REQ-AUTOFIX-MISSING.
 
-```js
-/**
- * CI helper to run npm audit in JSON mode and write output to ci/npm-audit.json
- */
+### 3. Auto-fix for simple `@story` path suffix issues (REQ-AUTOFIX-FORMAT)
+
+**Core behavior in rule**
+
+- Marked `valid-annotation-format` as fixable and traced it to story 008.0:
+
+```ts
+// src/rules/valid-annotation-format.ts
+meta: {
+  type: "problem",
+  docs: { description: "Validate format and syntax of @story and @req annotations", recommended: "error" },
+  messages: { invalidStoryFormat: "{{details}}", invalidReqFormat: "{{details}}" },
+  schema: [],
+  fixable: "code",
+}
 ```
 
-This keeps documentation accurate if we later tweak flags, while preserving the intended behavior (full audit report for CI artifacts).
+- Added REQ-AUTOFIX-FORMAT references across relevant helpers and create().
 
-**Verification**
+**New helpers & refactor**
 
-- Re-ran:
+To satisfy `max-lines-per-function` and remove the magic `-1`, I refactored the story-validation area:
 
-  ```bash
-  npm run ci-verify:full
-  ```
+```ts
+const TAG_NOT_FOUND_INDEX = -1;
 
-  All steps, including `npm audit --omit=dev --audit-level=high`, passed successfully.
+function reportInvalidStoryFormat(context: any, comment: any, collapsed: string): void {
+  context.report({
+    node: comment as any,
+    messageId: "invalidStoryFormat",
+    data: { details: buildStoryErrorMessage("invalid", collapsed) },
+  });
+}
 
-- The subsequent `git push` automatically ran the Husky pre-push hook (`ci-verify:full`) and succeeded.
+function reportInvalidStoryFormatWithFix(
+  context: any,
+  comment: any,
+  collapsed: string,
+  fixed: string,
+): void {
+  const sourceCode = context.getSourceCode();
+  const commentText = sourceCode.getText(comment);
+  const search = "@story";
+  const tagIndex = commentText.indexOf(search);
+
+  if (tagIndex === TAG_NOT_FOUND_INDEX) {
+    reportInvalidStoryFormat(context, comment, collapsed);
+    return;
+  }
+
+  const afterTagIndex = tagIndex + search.length;
+  const rest = commentText.slice(afterTagIndex);
+  const valueMatch = rest.match(/[^\S\r\n]*([^\r\n*]+)/);
+
+  if (!valueMatch || valueMatch.index === undefined) {
+    reportInvalidStoryFormat(context, comment, collapsed);
+    return;
+  }
+
+  const valueStartInComment =
+    afterTagIndex + valueMatch.index + (valueMatch[0].length - valueMatch[1].length);
+  const valueEndInComment = valueStartInComment + valueMatch[1].length;
+
+  const start = comment.range[0];
+  const fixRange: [number, number] = [
+    start + valueStartInComment,
+    start + valueEndInComment,
+  ];
+
+  context.report({
+    node: comment as any,
+    messageId: "invalidStoryFormat",
+    data: { details: buildStoryErrorMessage("invalid", collapsed) },
+    fix(fixer: any) {
+      return fixer.replaceTextRange(fixRange, fixed);
+    },
+  });
+}
+```
+
+**Simplified `validateStoryAnnotation`**
+
+Now `validateStoryAnnotation` just orchestrates the logic:
+
+```ts
+function validateStoryAnnotation(context: any, comment: any, rawValue: string): void {
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    context.report({
+      node: comment as any,
+      messageId: "invalidStoryFormat",
+      data: { details: buildStoryErrorMessage("missing", null) },
+    });
+    return;
+  }
+
+  const collapsed = collapseAnnotationValue(trimmed);
+  const pathPattern = /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/;
+
+  if (pathPattern.test(collapsed)) {
+    return;
+  }
+
+  // Multi-segment (e.g., multi-line) values are treated as invalid-only; no auto-fix.
+  if (/\s/.test(trimmed)) {
+    reportInvalidStoryFormat(context, comment, collapsed);
+    return;
+  }
+
+  const fixed = getFixedStoryPath(collapsed);
+
+  if (fixed && pathPattern.test(fixed)) {
+    reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed);
+    return;
+  }
+
+  reportInvalidStoryFormat(context, comment, collapsed);
+}
+```
+
+Key points:
+
+- **Single-segment values** like:
+  - `docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`
+  - `docs/stories/005.0-DEV-ANNOTATION-VALIDATION`
+  are auto-fixed to `...story.md` when safe and matching the pattern.
+- **Multi-line or otherwise whitespace-containing values** (e.g., the multi-line invalid test) are **not auto-fixed**; they continue to report validation errors only (safer, aligns with “minimal, safe fixes”).
+
+**Tests for format auto-fix**
+
+- New Story 008.0 test cases:
+
+```ts
+// tests/rules/auto-fix-behavior-008.test.ts
+describe("[REQ-AUTOFIX-FORMAT] valid-annotation-format auto-fix", () => {
+  formatRuleTester.run("valid-annotation-format --fix simple @story extension issues", rule, {
+    valid: [...],
+    invalid: [
+      {
+        name: "[REQ-AUTOFIX-FORMAT] adds .md extension for .story path",
+        code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
+        output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+        errors: [{ messageId: "invalidStoryFormat" }],
+      },
+      {
+        name: "[REQ-AUTOFIX-FORMAT] adds .story.md extension when missing entirely",
+        code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,
+        output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+        errors: [{ messageId: "invalidStoryFormat" }],
+      },
+    ],
+  });
+});
+```
+
+- Existing format rule tests updated so expectations match the new fix behavior:
+
+```ts
+// tests/rules/valid-annotation-format.test.ts (invalid section)
+{
+  name: "[REQ-PATH-FORMAT] invalid story file extension",
+  code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
+  output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+  errors: [ ... ],
+},
+{
+  name: "[REQ-PATH-FORMAT] missing extension in story path",
+  code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,
+  output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+  errors: [ ... ],
+},
+// multi-line invalid case remains validation-only, no output property
+```
+
+### 4. Documentation updates
+
+- **API reference** now mentions auto-fix behavior:
+
+```md
+### traceability/require-story-annotation
+
+Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation ...  
+When run with `--fix`, the rule can insert a placeholder `@story` JSDoc comment above missing functions using a default template.
+```
+
+```md
+### traceability/valid-annotation-format
+
+Description: Validates that all traceability annotations ...  
+When run with `--fix`, the rule can automatically correct simple `@story` path suffix issues (for example, appending `.story.md` when the intended suffix is unambiguous).
+```
+
+File:
+- `user-docs/api-reference.md`
 
 ---
 
-### 4) Document audit behavior in an ADR (**NEXT #3**)
+## Quality checks run
 
-**New ADR**
+All run locally and in CI (via pre-push hook and GitHub Actions):
 
-- File created: `docs/decisions/008-ci-audit-flags.accepted.md`
+- `npm test -- --runInBand` (full Jest suite, including new tests) – **pass**
+- `npm run build` – **pass**
+- `npm run type-check` – **pass**
+- `npm run lint` – **pass**
+  - Also verified via `npx eslint ... --format json --output-file lint-output.json` (no remaining errors).
+- `npm run duplication` – **pass** (same small, acceptable clones as before)
+- `npm run format` and `npm run format:check` – **pass**
+- Pre-push `ci-verify:full` pipeline – **pass**
+- GitHub Actions “CI/CD Pipeline” on `main` – **success**
 
-Contents (high level):
-
-- **Title**: ADR-008: Standardize npm audit flags in CI and local verification
-- **Status**: Accepted
-- **Context**:
-  - npm now warns when using `--production` for audit and recommends `--omit=dev`.
-  - Our CI and `ci-verify:full` previously used `npm audit --production --audit-level=high`.
-- **Decision**:
-  - Use `npm audit --omit=dev --audit-level=high` for production-focused audits in:
-    - `.github/workflows/ci-cd.yml` ("Run production security audit" step)
-    - `package.json` `ci-verify:full` script
-  - Keep `scripts/ci-audit.js` running `npm audit --json` for a comprehensive machine-readable report, with description updated to be flag-agnostic.
-- **Rationale**:
-  - Aligns with npm guidance.
-  - Ensures consistency between local and CI behavior.
-  - Separates production audits (`--omit=dev`) from dev-deps audits (`npm run audit:dev-high` + dry-aged-deps).
-  - Reduces log noise by removing `npm WARN config production`.
-- **Consequences**:
-  - Cleaner CI logs; consistent behavior; no change to intended production audit scope.
-
-**Commit**
-
-- Staged and committed as:
-
-  ```text
-  docs: record ADR for standardized npm audit flags
-  ```
-
-- Pushed to `main`.
-
-**CI/CD**
-
-- After this push, GitHub Actions `CI/CD Pipeline` run `19560208005` completed with conclusion: `success`.
+A new file `lint-output.json` created during debugging was removed before committing.
 
 ---
 
@@ -224,20 +458,26 @@ Contents (high level):
 
 ### NOW
 
-- [x] Use modify_file on `.github/workflows/ci-cd.yml` to update the "Run production security audit" step so it uses the modern npm flag (e.g., replace `npm audit --production --audit-level=high` with `npm audit --omit=dev --audit-level=high`) to remove the recurring config warning and keep the CI/CD pipeline clean.
+- [x] read_file docs/stories/008.0-DEV-AUTO-FIX.story.md
 
 ### NEXT
 
-- [x] Scan `.github/workflows/ci-cd.yml` for any other direct `npm audit` invocations and normalize them to the same recommended flag pattern so all CI audit steps are consistent.
-- [x] Update any npm audit usage in local scripts referenced by `ci-verify:full` (if they still use `--production`) to align with the CI change, keeping local and CI pipelines behaviorally in sync.
-- [x] Review `docs/decisions/` for an ADR describing CI/audit behavior and, if missing or outdated, add or update an ADR to document the new audit flag usage and rationale (removing warnings, matching npm guidance).
+- [x] read_file src/rules/require-story-annotation.ts
+- [x] read_file src/rules/helpers/require-story-core.ts
+- [x] read_file src/rules/valid-annotation-format.ts
+- [x] read_file tests/rules/require-story-annotation.test.ts
+- [x] generate_file tests/rules/auto-fix-behavior-008.test.ts
+- [x] modify_file src/rules/require-story-annotation.ts
+- [x] modify_file src/rules/valid-annotation-format.ts
+- [x] modify_file docs/stories/008.0-DEV-AUTO-FIX.story.md
+- [x] modify_file user-docs/api-reference.md
 
-### LATER
+### LATER (not executed yet)
 
-- [ ] Refactor `src/rules/helpers/require-story-helpers.ts` into smaller, focused helper modules (e.g., comment detection, name resolution, reporting) to reduce file size and improve maintainability while keeping behavior unchanged.
-- [ ] Extract shared logic between `src/rules/helpers/require-story-core.ts` and `src/rules/helpers/require-story-helpers.ts` into a common helper to reduce code duplication reported by jscpd.
-- [ ] Enhance TypeScript typing in ESLint rule helpers and utilities by replacing `any` with appropriate `TSESTree` node types in a gradual, non-breaking way.
-- [ ] Optionally update security incident documentation (e.g., bundled dev-deps accepted risk) to reference the most recent `dry-aged-deps` and audit runs, reaffirming residual-risk acceptance.
+- [ ] Refine auto-fix template configurability across all relevant rules (functions, branches, req annotations) using story 008.0’s option model.
+- [ ] Add configuration and docs for selectively enabling/disabling auto-fix categories per rule and preset, ensuring backward-compatible defaults.
+- [ ] Broaden test coverage for edge-case auto-fixes (complex JSDoc blocks, mixed annotations, partially-correct formats) tied to 008.0 story requirements.
+- [ ] Refine and factor shared auto-fix utilities (e.g., a central template resolver) once behavior is stable, ensuring no regression in earlier stories.
 
-All tasks in the ##NOW and ##NEXT sections are complete, local quality checks are passing, and the CI/CD pipeline is green after each push.
+If you’d like, I can next focus on the LATER items, especially configuration for templates and selective auto-fix toggles.
 ```

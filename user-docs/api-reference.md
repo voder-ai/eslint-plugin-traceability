@@ -10,7 +10,8 @@ Each rule enforces traceability conventions in your code. Below is a summary of 
 
 ### traceability/require-story-annotation
 
-Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When run with `--fix`, the rule can insert a placeholder `@story` JSDoc comment above missing functions using a default template.
+Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When run with `--fix`, the rule can insert a placeholder `@story` JSDoc comment above missing functions/methods using a built-in template aligned with Story 008.0. The auto-fix behavior is currently limited to this default template; advanced template customization and selective auto-fix toggles (for example, enabling fixes only for certain scopes) are not yet available.
+
 Options:
 
 - `scope` (string[], optional) – Controls which function-like node types are required to have @story annotations. Allowed values: "FunctionDeclaration", "FunctionExpression", "MethodDefinition", "TSDeclareFunction", "TSMethodSignature". Default: ["FunctionDeclaration", "FunctionExpression", "MethodDefinition", "TSDeclareFunction", "TSMethodSignature"].
@@ -66,7 +67,8 @@ if (error) {
 
 ### traceability/valid-annotation-format
 
-Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule can automatically correct simple `@story` path suffix issues (for example, appending `.story.md` when the intended suffix is unambiguous).
+Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule can automatically correct simple `@story` path suffix issues by appending or normalizing the `.story.md` suffix when it is safe and unambiguous to do so, in line with Story 008.0. More advanced behaviors—such as custom path normalization templates or fine-grained toggles to selectively enable/disable auto-fix for specific annotations—are not yet supported.
+
 Options: None
 Default Severity: `error`
 Example:

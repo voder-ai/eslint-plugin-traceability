@@ -27,10 +27,17 @@ const rule: Rule.RuleModule = {
   meta: {
     type: "problem",
     docs: {
-      description: "Require @story annotations on functions",
+      description:
+        "Require @story annotations on functions and auto-fix missing annotations where possible",
       recommended: "error",
     },
     hasSuggestions: true,
+    /**
+     * Auto-fix support for inserting @story annotations.
+     *
+     * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+     * @req REQ-ANNOTATION-REQUIRED
+     */
     fixable: "code",
     messages: {
       missingStory:

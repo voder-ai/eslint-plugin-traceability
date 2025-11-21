@@ -1,25 +1,25 @@
-Here’s a concise, history-only summary of what’s been done so far on the project.
+Here’s a concise history-only summary of what’s been done so far on the project, including the most recent work.
 
 ---
 
 ## Repository, CI, and Local Workflow
 
-- Reviewed repository structure, ADRs, Husky hooks, `CONTRIBUTING.md`, `package.json`, and CI workflows.
-- Added an ADR defining local CI scripts:
+- Reviewed repo structure, ADRs, Husky hooks, `CONTRIBUTING.md`, `package.json`, and CI workflows.
+- Defined local CI scripts via an ADR:
   - `ci-verify` as the standard local CI pipeline.
   - `ci-verify:fast` as a lighter subset.
 - Documented that `.husky/pre-push` mirrors the `main`-branch CI pipeline.
 - Ran `build`, `test`, `lint`, `type-check`, `format:check` locally; confirmed CI run `19549516983` passed.
-- Introduced `ci-verify:full` aggregating all CI checks (traceability, audits, build, type-check, lint, duplication, coverage, formatting).
-- Updated `.husky/pre-push` to call `ci-verify:full`, refreshed ADR and `CONTRIBUTING.md`, documented rollback steps, and confirmed CI run `19550681639` passed.
+- Added `ci-verify:full` aggregating all CI checks (traceability, audits, build, type-check, lint, duplication, coverage, formatting).
+- Updated `.husky/pre-push` to call `ci-verify:full`, refreshed ADR and `CONTRIBUTING.md`, documented rollback steps; CI run `19550681639` passed.
 
 ---
 
 ## Test Naming and Terminology Cleanup
 
 - Renamed rule tests from `*.branches.test.ts` to `*-edgecases.test.ts` / `*-behavior.test.ts`.
-- Updated comments and `describe` blocks to remove “branch coverage” wording and focus on behavior.
-- Updated `@req` annotations to describe behavior requirements instead of coverage.
+- Updated comments and `describe` blocks to focus on behavior instead of “branch coverage”.
+- Updated `@req` annotations to describe behavior requirements rather than coverage goals.
 - Ran Jest and full local checks.
 - Committed:
   - `test: rename branch-coverage rule tests to edgecase-focused names`
@@ -34,7 +34,7 @@ Here’s a concise, history-only summary of what’s been done so far on the pro
   - `jest-coverage.json`, `jest-output.json`
   - `tmp_eslint_report.json`, `tmp_jest_output.json`
   - `ci/jest-output.json`, `ci/npm-audit.json`
-- Fixed malformed `.gitignore` entry and added ignores for these artifacts and `ci/` directory.
+- Fixed malformed `.gitignore` entry; added ignores for these artifacts and `ci/` directory.
 - Committed `chore: clean up and ignore test/CI JSON artifacts`.
 - Re-ran `build`, `lint`, `type-check`, `test`, `format:check`; CI run `19549866757` passed.
 
@@ -44,99 +44,75 @@ Here’s a concise, history-only summary of what’s been done so far on the pro
 
 ### Safer File-Existence Checks
 
-- Reviewed `storyReferenceUtils`, `valid-story-reference` rule/tests, and story `006.0-DEV-FILE-VALIDATION.story.md`.
+- Reviewed `storyReferenceUtils`, `valid-story-reference` rule/tests, and `006.0-DEV-FILE-VALIDATION.story.md`.
 - Reimplemented `storyExists` to:
   - Wrap `fs.existsSync` / `fs.statSync` in `try/catch`.
   - Treat filesystem errors as “file does not exist” instead of throwing.
   - Cache results to reduce repeated filesystem calls.
-- Kept `normalizeStoryPath` responsible for normalization, delegating error handling to `storyExists`.
-- Added `@story` / `@req` annotations for file existence and error handling behavior.
-- Updated `valid-story-reference` rule to:
-  - Use the safer utilities.
-  - Treat inaccessible files as missing.
-  - Remove unused `fsError` messageId.
+- Clarified responsibility between `normalizeStoryPath` and `storyExists`.
+- Added `@story` / `@req` annotations for file existence and error-handling behavior.
+- Updated `valid-story-reference` rule to use the safer utilities, treat inaccessible files as missing, and remove unused `fsError` messageId.
 - Added Jest tests mocking `fs` errors (`EACCES`) to ensure `storyExists` returns `false` without throwing.
-- Updated story doc; ran full checks (`test`, `lint`, `type-check`, `format`, `format:check`, `build`, `ci-verify:full`).
-- Committed `fix: handle filesystem errors in story file validation`; CI passed.
+- Updated story doc; ran full checks; committed `fix: handle filesystem errors in story file validation`; CI passed.
 
 ### Rich Existence Status Model and Rule Integration
 
-- Added rich types:
+- Introduced:
   - `StoryExistenceStatus = "exists" | "missing" | "fs-error"`.
   - `StoryPathCheckResult`, `StoryExistenceResult`.
   - `fileExistStatusCache` storing status and error.
 - Implemented:
-  - `checkSingleCandidate` returning `"exists"`, `"missing"`, or `"fs-error"` and capturing errors.
-  - `getStoryExistence(candidates)` to:
-    - Prefer `"exists"` (with `matchedPath`).
-    - Otherwise prefer `"fs-error"` if any error occurred.
-    - Otherwise `"missing"`.
+  - `checkSingleCandidate` returning `"exists"`, `"missing"`, or `"fs-error"`.
+  - `getStoryExistence(candidates)` preferring `"exists"`, then `"fs-error"`, else `"missing"`.
 - Updated:
-  - `storyExists` to call `getStoryExistence` and return `true` only on `"exists"`.
-  - `normalizeStoryPath` to expose candidate paths, boolean `exists`, and the detailed existence status object.
-- Added detailed traceability annotations for existence handling and performance.
+  - `storyExists` to delegate to `getStoryExistence`.
+  - `normalizeStoryPath` to expose candidate paths, boolean `exists`, and existence metadata.
+- Added detailed traceability annotations.
 
 ### Rule Behavior for Missing vs Inaccessible Files
 
 - Updated `valid-story-reference` rule to:
   - Silence diagnostics when status is `"exists"`.
   - Report `fileMissing` for `"missing"`.
-  - Report `fileAccessError` for `"fs-error"`, including path and error text.
-- Added `fileAccessError` messageId to `meta.messages`.
-- Extracted `reportExistenceProblems` helper to centralize reporting behavior.
+  - Report `fileAccessError` for `"fs-error"` with path and error text.
+- Added `fileAccessError` messageId and a `reportExistenceProblems` helper.
 
 ### Filesystem Error Tests and Harness
 
 - Extended `valid-story-reference` tests:
-  - Kept unit test where `EACCES` causes `storyExists` to return `false`.
+  - Retained unit test for `EACCES` in `storyExists`.
   - Added `runRuleOnCode` helper for end-to-end ESLint rule testing.
   - Added `[REQ-ERROR-HANDLING]` integration test mocking `fs` `EACCES` and asserting `fileAccessError` includes “EACCES”.
-  - Removed nested `RuleTester` usage to simplify test structure.
+  - Removed nested `RuleTester` usage.
 - Ran Jest, ESLint (`--max-warnings=0`), `build`, `type-check`, `format:check`, `check:traceability`.
 - Committed `fix: improve story file existence error handling and tests`; CI passed.
 
 ### Documentation, Traceability, and Type Safety
 
-- Re-reviewed:
-  - `storyReferenceUtils.ts`, `valid-story-reference.ts`, and tests.
-  - Story doc `006.0-DEV-FILE-VALIDATION.story.md`.
-  - Tooling configs and `scripts/traceability-report.md`.
-- Verified coverage of existence-status handling and error scenarios.
-- Aligned story doc requirements (`REQ-ERROR-HANDLING`, etc.) with code annotations.
-- Ran `check:traceability`, focused tests, `lint`, `format:check`, `build`, `type-check`.
+- Re-reviewed story utils, rule, tests, story doc, configs, and `scripts/traceability-report.md`.
+- Verified coverage of error scenarios and existence-status handling.
 - Regenerated `scripts/traceability-report.md`.
-- Refined error handling in `valid-story-reference.ts`:
-  - In `reportExistenceProblems`, treated `existence.error` as `unknown`:
-    - “Unknown filesystem error” when `null`/`undefined`.
-    - Use `.message` for `Error` instances.
-    - Fallback to `String(rawError)` otherwise.
-  - Added explicit `Rule.RuleContext` typing in `create`.
+- Refined `valid-story-reference` error handling to treat `existence.error` as `unknown` with sensible fallbacks.
+- Added explicit `Rule.RuleContext` typing.
 - Ran `type-check`, `test`, `build`, `check:traceability`.
 - Committed `fix: improve filesystem error handling for story validation`.
 
 ### Additional Filesystem Error Tests and CI
 
-- Verified consistent use of `storyExists`, `normalizeStoryPath`, and `StoryExistenceStatus`.
-- Updated tests to include:
-  - Scenario where `fs.existsSync` returns `true` but `fs.statSync` throws `EIO`; ensured `storyExists` returns `false`.
-  - Integration test asserting `fileAccessError` includes error code and message.
-  - Traceability annotations aligning with story 006.0 and `REQ-ERROR-HANDLING`.
-- Ran targeted tests, `lint`, `build`, `type-check`, full `test`, `format:check`, `duplication`, `check:traceability`, `audit:ci`, `safety:deps`.
+- Ensured consistent use of `storyExists`, `normalizeStoryPath`, and `StoryExistenceStatus`.
+- Added tests for:
+  - `fs.existsSync` true but `fs.statSync` throwing `EIO`.
+  - Integration checks ensuring error codes/messages are included.
+- Maintained traceability annotations for story 006.0 and `REQ-ERROR-HANDLING`.
+- Ran full quality checks including audits and safety scripts.
 - Committed `test: add fs error handling tests for valid-story-reference rule`; CI and `ci-verify:full` passed.
 
 ### Latest Test Harness Refinement
 
-- Adjusted `valid-story-reference.test.ts` for type-safe ESLint API usage (e.g., `listeners.Program({} as any)`).
-- Ran:
-  - `npm test -- --runInBand`
-  - `npm run type-check -- --pretty false`
-  - `npm run lint`
-  - `npm run build`
-  - `npm run format:check`
-  - `npm run format -- tests/rules/valid-story-reference.test.ts`
+- Adjusted `valid-story-reference.test.ts` for type-safe ESLint API (e.g., `listeners.Program({} as any)`).
+- Ran tests, type-check, lint, build, format-related scripts.
 - Committed `test: add error-handling coverage for valid-story-reference rule`.
-- Re-ran `build`, tests, `lint`, `type-check`, `format:check`; CI (including `ci-verify:full`) succeeded.
-- Re-verified alignment with story `006.0-DEV-FILE-VALIDATION.story.md`.
+- Re-verified alignment with `006.0-DEV-FILE-VALIDATION.story.md`; CI and `ci-verify:full` succeeded.
 
 ---
 
@@ -144,27 +120,19 @@ Here’s a concise, history-only summary of what’s been done so far on the pro
 
 ### Requirements Analysis and Rule Review
 
-- Re-read `003.0-DEV-FUNCTION-ANNOTATIONS.story.md` and confirmed:
-  - Scope: function declarations/expressions, methods, TS declare functions, TS method signatures.
-  - Arrow functions out-of-scope by default.
-  - Diagnostics must appear at function names, include function name, and mention missing `@story`.
-  - Both `@story` and `@req` are required.
-- Reviewed:
-  - `require-story-annotation.ts`
-  - `require-story-core.ts`
-  - `require-story-visitors.ts`
-  - `require-story-helpers.ts`
-  - `annotation-checker.ts`
-  - `require-req-annotation.ts`
-- Identified mismatches:
-  - `DEFAULT_SCOPE` incorrectly included arrow functions.
+- Re-read `003.0-DEV-FUNCTION-ANNOTATIONS.story.md` and confirmed scope and behavior:
+  - In-scope: function declarations/expressions, methods, TS declare functions, TS method signatures.
+  - Arrow functions out of scope by default.
+  - Diagnostics must appear at function names and mention missing `@story` and `@req`.
+- Reviewed `require-story-annotation` implementation and helpers; identified:
+  - `DEFAULT_SCOPE` wrongly included arrow functions.
   - Visitors processed `ArrowFunctionExpression` by default.
-  - `missingStory` messages did not always include function name.
-  - Some tests enforced incorrect arrow-function behavior.
+  - Some `missingStory` messages lacked function names.
+  - Tests expecting incorrect arrow-function behavior.
 
 ### Scope and Error Location Fixes
 
-- Updated `require-story-core.ts`:
+- Updated `require-story-core.ts` to set:
 
   ```ts
   const DEFAULT_SCOPE = [
@@ -176,104 +144,69 @@ Here’s a concise, history-only summary of what’s been done so far on the pro
   ];
   ```
 
-- Ensured `require-story-visitors.ts` still supports `ArrowFunctionExpression` when explicitly configured via `scope`.
-- Verified `require-story-annotation.ts` `messages.missingStory` template always includes function name.
-- Confirmed helpers use `extractName`, attach reports at the name node, and autofix operates on the full function node.
+- Ensured arrow functions are only processed when explicitly configured via `scope`.
+- Ensured `messages.missingStory` always includes function name and reports attach at the name node.
 
 ### Documentation and Tests
 
-- Updated `docs/rules/require-story-annotation.md`:
-  - “Supported Node Types” matches default scope (no arrows).
-  - Default `scope` example lists the five default node types.
-  - Clarified that `ArrowFunctionExpression` support exists only via explicit config, not by default.
-- Updated `tests/rules/require-story-annotation.test.ts`:
-  - Added valid test where unannotated arrow functions are allowed under default config.
-  - Removed invalid cases expecting errors on unannotated arrows by default.
-  - Adjusted export-priority tests so exported arrows without `@story` are valid by default (even with `exportPriority: "exported"`).
+- Updated `docs/rules/require-story-annotation.md` to:
+  - Reflect the correct default scope (no arrow functions).
+  - Clarify optional arrow-function support via configuration.
+- Updated tests:
+  - Added valid case for unannotated arrow functions under default config.
+  - Removed invalid arrow cases under default config.
+  - Adjusted export-priority tests so exported arrows without `@story` are valid by default.
   - Ensured invalid cases assert `messageId`.
-- Re-ran targeted Jest and full checks (`test`, `lint --max-warnings=0`, `type-check`, `build`, `format`, `format:check`, `ci-verify:full`).
-- Committed `fix: align require-story-annotation behavior with function annotation story`; CI passed.
+- Ran full checks; committed `fix: align require-story-annotation behavior with function annotation story`; CI passed.
 
 ---
 
 ## Story 005.0-DEV-ANNOTATION-VALIDATION (valid-annotation-format)
 
-### Story Review and Existing Implementation
+### Story Review and Implementation Verification
 
-- Reviewed:
-  - `005.0-DEV-ANNOTATION-VALIDATION.story.md`
-  - `valid-annotation-format.ts`
-  - `valid-annotation-format.test.ts`
-  - `docs/rules/valid-annotation-format.md`
-  - `annotation-checker.ts`
-  - `branch-annotation-helpers.ts`
-- Confirmed rule already satisfied:
-  - `REQ-FORMAT-SPECIFICATION`
-  - `REQ-SYNTAX-VALIDATION`
-  - `REQ-PATH-FORMAT`
-  - `REQ-REQ-FORMAT`
-  - `REQ-MULTILINE-SUPPORT`
-  - `REQ-FLEXIBLE-PARSING`
-  - `REQ-ERROR-SPECIFICITY`.
+- Reviewed story, rule, tests, docs, and helpers.
+- Confirmed rule already satisfied requirements:
+  - Format specification, syntax validation, path and REQ formats, multi-line support, flexible parsing, and error specificity.
 
 ### Rule Implementation Details
 
-- Verified `valid-annotation-format.ts` implements:
-  - `PendingAnnotation` for `@story` / `@req`.
-  - Example story path `docs/stories/005.0-DEV-EXAMPLE.story.md`.
-  - `normalizeCommentLine` to trim and strip line markers (including JSDoc `*`).
+- Verified:
+  - Use of `PendingAnnotation` for `@story` / `@req`.
+  - `normalizeCommentLine` for trimming and stripping markers (including JSDoc `*`).
   - `collapseAnnotationValue` to remove internal whitespace from multi-line values.
-  - Error builders:
-    - `buildStoryErrorMessage`
-    - `buildReqErrorMessage`
-  - Validators:
-    - `validateStoryAnnotation`:
-      - Empty/whitespace → “missing story path”.
-      - Collapsed value must match:
+  - Regex validations:
+    - Story paths:
 
-        ```ts
-        /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/
-        ```
+      ```ts
+      /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/
+      ```
 
-    - `validateReqAnnotation`:
-      - Empty/whitespace → “missing requirement ID”.
-      - Collapsed value must match:
+    - Requirement IDs:
 
-        ```ts
-        /^REQ-[A-Z0-9-]+$/
-        ```
+      ```ts
+      /^REQ-[A-Z0-9-]+$/
+      ```
 
-  - `processComment` to scan comments, handle pending annotation state, and finalize multi-line annotations.
-  - Rule messages `invalidStoryFormat` / `invalidReqFormat` using `{{details}}`.
+  - `processComment` to handle comments and multi-line annotations.
+  - Rule messages using `{{details}}`.
   - Traceability annotations linking to story 005.0.
 
-### Tests and Additional Cases
+### Tests and Doc Updates
 
 - Reworked tests to cover:
-  - Valid single-line and multi-line `@story` / `@req` in line, block, and JSDoc comments.
-  - Invalid cases for missing/invalid story paths (including malformed multi-line values and wrong extensions).
-  - Invalid `@req` formats, including whitespace-only and multi-line issues.
-- Ensured invalid cases assert exact `data.details`.
-- Added tests for:
-  - Missing `.story.md` in paths.
-  - Paths containing `../`.
-  - `@req` lines with only whitespace.
-- Updated `normalizeCommentLine` to strip leading `*` in JSDoc continuations.
-- Added explicit `rawLine: string` type in `processComment`.
-- Adjusted `valid-story-reference` tests for listener typing to keep type-check clean.
-- Updated `005.0-DEV-ANNOTATION-VALIDATION.story.md`:
-  - Marked acceptance criteria and DoD items complete.
-  - Added examples for missing `.story.md`, `../` paths, and invalid/missing `@req` IDs.
-- Updated `docs/rules/valid-annotation-format.md`:
-  - Clarified multi-line normalization (removal of all internal whitespace).
-  - Documented regex patterns for paths and `REQ-*` IDs.
-  - Added example values and error categories.
+  - Valid and invalid single-line/multi-line `@story` / `@req` across comment types.
+  - Missing `.story.md`, `../` in paths, and invalid `@req` formats.
+- Updated `normalizeCommentLine` to better handle JSDoc continuations.
+- Tightened types (e.g., `rawLine: string`).
+- Adjusted related tests for proper typing.
+- Updated story doc to mark acceptance criteria as complete and add examples.
+- Updated `docs/rules/valid-annotation-format.md` with regex patterns and multi-line behavior.
 - Committed:
   - `feat: support multiline annotation values and detailed errors`
   - `chore: update traceability report for annotation validation changes`
   - `chore: fix type-check and formatting for annotation validation`
-- Ran comprehensive checks (`test`, `lint --max-warnings=0`, `type-check`, `build`, `format`, `format:check`, `build --listFilesOnly`, `tsc --noEmit`).
-- Verified CI “CI/CD Pipeline” run `19557650401` passed.
+- Ran comprehensive checks; CI run `19557650401` passed.
 
 ---
 
@@ -281,28 +214,16 @@ Here’s a concise, history-only summary of what’s been done so far on the pro
 
 ### Requirements Review and Rule Analysis
 
-- Reviewed `007.0-DEV-ERROR-REPORTING.story.md` for specificity, location accuracy, suggestions, context, consistency, severity.
-- Examined:
-  - `tests/rules/error-reporting.test.ts`
-  - `require-req-annotation.ts`
-  - `src/index.ts`
-  - `annotation-checker.ts`
-  - `require-story-annotation.ts`
-  - `require-story-helpers.ts`
-  - `require-story-utils.ts`
-- Confirmed:
-  - `require-story-annotation` already emitted context-rich messages.
-  - `require-req-annotation` used more generic messaging.
-  - Plugin configs initially had all rules, including `valid-annotation-format`, at `"error"`.
+- Reviewed `007.0-DEV-ERROR-REPORTING.story.md` and examined core rules and helpers.
+- Confirmed `require-story-annotation` already had context-rich messages, while `require-req-annotation` was more generic.
+- Noted that presets had all rules, including `valid-annotation-format`, at `"error"`.
 
 ### Enhanced Error Reporting for @req
 
 - Updated `annotation-checker.ts`:
-  - Imported `getNodeName` from `require-story-utils`.
-  - Updated `reportMissing` to:
-    - Use `getNodeName(node)` with `"(anonymous)"` fallback.
-    - Include `name` in `data` for `missingReq`.
-    - Added `@story` / `@req` annotations for stories 003.0 and 007.0.
+  - Used `getNodeName` to capture function names.
+  - Updated `reportMissing` to include `data.name` for `missingReq`.
+  - Added traceability annotations for stories 003.0 and 007.0.
 - Updated `require-req-annotation.ts`:
   - Set message template:
 
@@ -311,53 +232,23 @@ Here’s a concise, history-only summary of what’s been done so far on the pro
       "Missing @req annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)",
     ```
 
-  - Changed `create` to call `checkReqAnnotation(context, node)` for:
-    - `FunctionDeclaration`
-    - `TSDeclareFunction`
-    - `TSMethodSignature`
-  - Removed duplicated inline comment-scanning and fix logic in favor of `checkReqAnnotation`.
-  - Removed unused `sourceCode` variable per lint feedback.
+  - Delegated checking to `checkReqAnnotation` for the appropriate node types.
+  - Removed duplicated inline scanning logic and unused variables.
 
-### Tests and Severity Changes
+### Tests, Severity, and Docs
 
-- Updated `require-req-annotation.test.ts`:
-  - Added traceability header for stories 003.0 and 007.0.
-  - Updated invalid cases to assert `data.name` for:
-    - Named function without JSDoc (`baz`).
-    - Function with only `@story` (`qux`).
-    - `TSDeclareFunction` (`baz`).
-    - `TSMethodSignature` (`method`).
-  - Retained autofix behavior tests.
-- Confirmed `error-reporting.test.ts` already covered suggestions and context for `require-story-annotation`.
-- Updated `src/index.ts` presets:
-  - Set `"traceability/valid-annotation-format": "warn"` in both `configs.recommended` and `configs.strict`.
-  - Left other rules at `"error"`.
-
-### Documentation and CI
-
-- Updated `007.0-DEV-ERROR-REPORTING.story.md`:
-  - Marked acceptance criteria and DoD items as completed (pending external signoff).
-  - Added “Error Message Conventions” section describing:
-    - Function rules including function/method names.
-    - Branch rules using `missingAnnotation` with `{{missing}}`.
-    - Format rules using `{{details}}`.
-    - File/reference rules including paths and IDs.
-    - Severity patterns (most rules as errors, format rule as warning in presets).
-- Edited:
-  - `annotation-checker.ts`
-  - `require-req-annotation.ts`
-  - `require-req-annotation.test.ts`
-  - `src/index.ts`
-  - `007.0-DEV-ERROR-REPORTING.story.md`
-- Ran:
-  - `npm test`
-  - `npm run lint`
-  - `npm run type-check`
-  - `npm run build`
-  - `npm run format:check`
-- Fixed ESLint issues (unused variables).
-- Committed `fix: enhance @req error reporting and align severities with error reporting story`.
-- CI “CI/CD Pipeline” run `19558647869` passed.
+- Updated `require-req-annotation.test.ts` to:
+  - Add traceability header.
+  - Assert `data.name` for various function, declare, and method cases.
+  - Retain autofix tests.
+- Confirmed `error-reporting.test.ts` already covered suggestions and context.
+- Updated `src/index.ts` presets to:
+  - Set `"traceability/valid-annotation-format": "warn"` in both `recommended` and `strict`.
+- Updated `007.0-DEV-ERROR-REPORTING.story.md` with:
+  - Completed acceptance criteria.
+  - “Error Message Conventions” section detailing patterns and severities.
+- Ran tests, lint, type-check, build, format:check; fixed ESLint issues.
+- Committed `fix: enhance @req error reporting and align severities with error reporting story`; CI run `19558647869` passed.
 
 ---
 
@@ -365,36 +256,30 @@ Here’s a concise, history-only summary of what’s been done so far on the pro
 
 ### jscpd Report Ignoring
 
-- Observed `jscpd-report/` was not ignored.
-- Added `jscpd-report/` to `.gitignore` under CI artifacts.
-- Removed `jscpd-report/jscpd-report.json` from the repo.
-- Ran `build`, `test`, `lint`, `type-check`, `format:check`.
-- Included in `chore: ignore jscpd report and update ci tooling`.
+- Added `jscpd-report/` to `.gitignore` as a CI artifact.
+- Removed `jscpd-report/jscpd-report.json` from version control.
+- Ran build, tests, lint, type-check, `format:check`.
+- Included changes in `chore: ignore jscpd report and update ci tooling`.
 
 ### Husky Deprecation Warning
 
-- Reviewed:
-  - `.husky/pre-commit` (runs `npx --no-install lint-staged`).
-  - `.husky/pre-push` (runs `npm run ci-verify:full`).
-  - `package.json` (`"prepare": "husky install"`).
-- Removed `"prepare": "husky install"` to avoid running Husky install on `npm ci` and to silence deprecation warnings, while retaining existing hooks.
+- Reviewed Husky setup and `package.json`.
+- Removed `"prepare": "husky install"` to avoid running Husky install on `npm ci` and to silence deprecation warnings, keeping existing hooks intact.
 - Re-ran build, tests, lint, type-check, `format:check`.
-- Changes captured in:
+- Captured in:
   - `chore: ignore jscpd report and update ci tooling`
   - `ci: adjust dependency health audit and husky setup`.
 
 ### Dependency-Health Job
 
 - Updated `.github/workflows/ci-cd.yml`:
-  - Changed `dependency-health` job Node.js version from `18.x` to `20.x`.
-  - Replaced `npm audit --audit-level=high` with `npm run audit:dev-high`, which:
-    - Runs `npm audit --omit=prod --audit-level=high --json`.
-    - Records results via `scripts/generate-dev-deps-audit.js` without failing CI on known dev-only issues.
-- Re-ran `build`, `test`, `lint`, `type-check`, `format:check`.
+  - `dependency-health` job Node.js version from `18.x` to `20.x`.
+  - Replaced `npm audit --audit-level=high` with `npm run audit:dev-high` to handle dev-only vulnerabilities without failing CI.
+- Re-ran quality checks.
 - Committed and pushed:
   - `chore: ignore jscpd report and update ci tooling`
   - `ci: adjust dependency health audit and husky setup`
-- Verified CI runs `19559031454` and `19559073411` passed.
+- CI runs `19559031454` and `19559073411` passed.
 
 ---
 
@@ -402,46 +287,26 @@ Here’s a concise, history-only summary of what’s been done so far on the pro
 
 ### Security Override Rationale Updates
 
-- Edited `docs/security-incidents/dependency-override-rationale.md`:
-  - Replaced placeholder advisory IDs with actual GitHub Security Advisory links for:
-    - `http-cache-semantics` (GHSA-rc47-6667-r5fw)
-    - `ip` (GHSA-5jpg-2xvr-rw5w)
-    - `semver` (GHSA-vwqq-5vrc-xw9h)
-    - `socks` (GHSA-5v9h-799p-53ph)
-- Left risk rationale and roles unchanged.
+- Updated `docs/security-incidents/dependency-override-rationale.md` with real GitHub advisories for:
+  - `http-cache-semantics`
+  - `ip`
+  - `semver`
+  - `socks`
+- Left existing risk rationale and roles unchanged.
 
 ### Tar Race-Condition Incident Reclassification
 
 - Updated `docs/security-incidents/2025-11-18-tar-race-condition.md`:
-  - Marked remediation status as “Mitigated / resolved via dependency overrides and upstream updates”.
-  - Documented fixed version `tar >=6.1.12` enforced via overrides.
+  - Marked remediation as “Mitigated / resolved”.
+  - Documented fixed version `tar >=6.1.12` via overrides.
   - Noted that `npm audit` no longer reports tar vulnerabilities.
-  - Added a 2025-11-21 timeline entry confirming mitigation and reclassification to resolved.
-  - Added “Current Status (as of 2025-11-21)” summarizing:
-    - No tar vulnerabilities in the dependency graph.
-    - `npm audit --omit=dev --audit-level=high` shows no tar-related issues.
-    - Incident is now historical.
+  - Added 2025-11-21 status and timeline entries summarizing resolution and current state.
 
 ### Audit Cross-Checks and Quality Checks
 
-- Due to ignore rules, could not use `ci/npm-audit.json`; instead:
-  - Ran `npm audit --omit=dev --audit-level=high` and observed `0` high/production vulnerabilities.
-  - Relied on existing `audit:dev-high` script for dev-only audit checks.
-- Left `docs/security-incidents/bundled-dev-deps-accepted-risk.md` unchanged.
-- Ran full local CI via `npm run ci-verify:full`, including:
-  - `check:traceability`
-  - `safety:deps`
-  - `audit:ci`
-  - `build`
-  - `type-check`
-  - `lint-plugin-check`
-  - `lint -- --max-warnings=0`
-  - `duplication`
-  - `test -- --coverage`
-  - `format:check`
-  - `npm audit --production --audit-level=high`
-  - `audit:dev-high`
-- All checks passed; production audits showed no vulnerabilities.
+- Manually ran `npm audit --omit=dev --audit-level=high` and confirmed no high/production vulnerabilities.
+- Relied on `audit:dev-high` for dev-only checks.
+- Ran full local CI via `npm run ci-verify:full` (traceability, safety, audits, build, type-check, lint, duplication, coverage, formatting).
 - Committed `docs: update security override rationale and tar incident status`.
 - CI/CD Pipeline run `19559370301` passed.
 
@@ -451,407 +316,576 @@ Here’s a concise, history-only summary of what’s been done so far on the pro
 
 ### Rule and Config Documentation Alignment
 
-- Read:
-  - `user-docs/api-reference.md`
-  - Rule docs:
-    - `docs/rules/require-story-annotation.md`
-    - `docs/rules/require-branch-annotation.md`
-    - `docs/rules/valid-story-reference.md`
-    - `docs/rules/valid-annotation-format.md`
-    - `docs/rules/require-req-annotation.md`
-    - `docs/rules/valid-req-reference.md`
-  - Implementations:
-    - `src/rules/require-story-annotation.ts`
-    - `src/rules/require-branch-annotation.ts`
-    - `src/rules/valid-story-reference.ts`
-    - `src/rules/require-req-annotation.ts`
-    - `src/rules/valid-annotation-format.ts`
-    - `src/rules/valid-req-reference.ts`
-  - Configs:
-    - `docs/config-presets.md`
-    - `src/index.ts`
-  - `README.md`
-  - Helpers:
-    - `src/rules/helpers/require-story-helpers.ts`
-    - `src/rules/helpers/require-story-visitors.ts`
-    - `src/rules/helpers/require-story-core.ts`
-  - `package.json`
-  - `src/utils/branch-annotation-helpers.ts`
+- Reviewed API and rule docs, implementations, configs, helpers, and `README.md`.
 
-#### API Reference Updates (`user-docs/api-reference.md`)
+#### API Reference (`user-docs/api-reference.md`)
 
-- `traceability/require-story-annotation`:
-  - Updated `scope` option:
-    - Allowed values: `"FunctionDeclaration"`, `"FunctionExpression"`, `"MethodDefinition"`, `"TSDeclareFunction"`, `"TSMethodSignature"`.
-    - Default: that exact list.
-    - Removed any implication that `ArrowFunctionExpression` is configurable via `scope`.
-  - Left `exportPriority` description unchanged.
-  - Moved “Default Severity: `error`” outside the options bullet list.
-- `traceability/require-branch-annotation`:
-  - Documented `branchTypes` option:
-    - Allowed values: `IfStatement`, `SwitchCase`, `TryStatement`, `CatchClause`, `ForStatement`, `ForOfStatement`, `ForInStatement`, `WhileStatement`, `DoWhileStatement`.
-    - Default is the full list.
-    - Noted that invalid values cause configuration errors, consistent with `validateBranchTypes`.
-- `traceability/valid-story-reference`:
-  - Updated options to match implementation:
-    - `storyDirectories?: string[]` (default `["docs/stories", "stories"]`).
-    - `allowAbsolutePaths?: boolean` (default `false`).
-    - `requireStoryExtension?: boolean` (default `true`).
-  - Clarified usage with an example configuration block.
-- Confirmed rules with no options are labeled `Options: None`:
-  - `require-req-annotation`, `valid-annotation-format`, `valid-req-reference`.
-- Fixed an open code block in the strict preset example by adding missing closing backticks.
+- Updated `traceability/require-story-annotation`:
+  - Documented `scope` allowed values and default list (no arrows).
+- Documented `branchTypes` option for `traceability/require-branch-annotation` with allowed values and defaults.
+- Updated `traceability/valid-story-reference` options to match implementation:
+  - `storyDirectories`, `allowAbsolutePaths`, `requireStoryExtension`.
+- Labeled rules with no options as `Options: None`.
+- Fixed an open code block in the strict preset example.
 
-#### Config Presets Doc Alignment (`docs/config-presets.md`)
+#### Config Presets (`docs/config-presets.md`)
 
-- Cross-checked `docs/config-presets.md` against `src/index.ts`:
-  - Both `recommended` and `strict` presets enable:
+- Aligned docs with `src/index.ts` for `recommended` and `strict` presets:
 
-    ```ts
-    "traceability/require-story-annotation": "error",
-    "traceability/require-req-annotation": "error",
-    "traceability/require-branch-annotation": "error",
-    "traceability/valid-annotation-format": "warn",
-    "traceability/valid-story-reference": "error",
-    "traceability/valid-req-reference": "error",
-    ```
+  ```ts
+  "traceability/require-story-annotation": "error",
+  "traceability/require-req-annotation": "error",
+  "traceability/require-branch-annotation": "error",
+  "traceability/valid-annotation-format": "warn",
+  "traceability/valid-story-reference": "error",
+  "traceability/valid-req-reference": "error",
+  ```
 
-- Maintained the explanation that `valid-annotation-format` is configured as `warn` in the recommended preset.
-- Clarified that the strict preset currently mirrors this and also uses `valid-annotation-format` as `warn` to avoid noise from format-only issues.
-- Left example code blocks and bullet lists intact.
+- Clarified that both presets currently keep `valid-annotation-format` as `warn`.
 
 ### Traceability Annotation Normalization
 
 #### `src/rules/require-branch-annotation.ts`
 
-- Normalized file-level JSDoc to:
-
-  ```ts
-  /**
-   * Rule to enforce @story and @req annotations on significant code branches.
-   *
-   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-BRANCH-DETECTION
-   * @req REQ-CONFIGURABLE-SCOPE
-   */
-  ```
-
-- Updated `create(context)` JSDoc to keep `@story` and `@req` lines with bare IDs only and consistent formatting.
-- Converted inline guard comments into JSDoc for the branch configuration guard:
-
-  ```ts
-  /**
-   * Branch configuration guard: if validation returns a listener, use it directly
-   * instead of branch-type iteration.
-   *
-   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-CONFIGURABLE-SCOPE
-   */
-  if (!Array.isArray(branchTypesOrListener)) {
-    return branchTypesOrListener;
-  }
-  ```
-
-- Ensured the JSDoc for the per-branch handler directly precedes the handler assignment without extra blank lines:
-
-  ```ts
-  /**
-   * Handler for a specific branch node type.
-   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-BRANCH-DETECTION
-   * @req REQ-CONFIGURABLE-SCOPE
-   */
-  handlers[type] = function branchHandler(node) { ... };
-  ```
-
-- Added rule-level JSDoc above `const rule: Rule.RuleModule = { ... }`:
-
-  ```ts
-  /**
-   * ESLint rule definition for require-branch-annotation.
-   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-BRANCH-DETECTION - Enforce @story/@req presence on configured branch types
-   * @req REQ-CONFIGURABLE-SCOPE - Respect configurable branchTypes option
-   */
-  const rule: Rule.RuleModule = { ... };
-  ```
-
-- No TypeScript logic changes.
+- Normalized file-level and function-level JSDoc annotations:
+  - Single `@story` line for `004.0-DEV-BRANCH-ANNOTATIONS.story.md`.
+  - Consolidated `@req` tags for branch detection and configurable scope.
+- Added JSDoc around the branch configuration guard and per-branch handlers.
+- Added rule-level JSDoc above the exported `rule` definition.
+- No logic changes.
 
 #### `src/rules/valid-req-reference.ts`
 
-- Normalized top-of-file JSDoc:
-
-  ```ts
-  /**
-   * Rule to validate @req annotation references refer to existing requirements in story files
-   * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-   * @req REQ-DEEP-PARSE - Parse comments and extract story/requirement metadata
-   * @req REQ-DEEP-MATCH - Match @req annotations to story file requirements
-   * @req REQ-DEEP-CACHE - Cache requirement IDs per story file for efficient validation
-   * @req REQ-DEEP-PATH - Validate and resolve story file paths safely
-   */
-  ```
-
-- Added or consolidated JSDoc blocks immediately above each major function, each with one `@story` line and concise `@req` lines:
-  - `extractStoryPath` – focuses on parsing JSDoc for `@story`.
-  - `validateReqLine` – describes path validation, caching, and requirement existence checks.
-  - `handleAnnotationLine` – describes parsing of annotation lines.
-  - `handleComment` – describes processing of JSDoc blocks and coordinating `@story`/`@req` handling.
-  - `programListener` and its inner `Program` visitor – describe comment collection and delegation to `handleComment`, with appropriate `REQ-DEEP-*` tags.
-  - The exported `create` method – describes registering the Program visitor and tying in cache/path context.
-- Removed scattered duplicate traceability comments and replaced them with single, canonical JSDoc blocks per function.
-- Did not change any executable behavior.
+- Normalized top-of-file JSDoc with `@story` and `REQ-DEEP-*` requirements.
+- Added or consolidated JSDoc blocks above:
+  - `extractStoryPath`
+  - `validateReqLine`
+  - `handleAnnotationLine`
+  - `handleComment`
+  - `programListener` and `create`
+- Removed scattered, duplicated traceability comments in favor of canonical blocks.
+- Left behavior unchanged.
 
 ### README Configuration Note
 
-- In `README.md`, under “Available Rules”:
-  - Added a “Configuration options” paragraph immediately after the rule list:
-
-    > Configuration options: For detailed per-rule options (such as scopes, branch types, and story directory settings), see the individual rule docs in `docs/rules/` and the consolidated [API Reference](user-docs/api-reference.md).
-
-  - Removed the older two-line paragraph that previously conveyed similar information.
+- Updated `README.md`:
+  - Added a concise note pointing to rule docs and the API Reference for configuration details.
+  - Removed an older, redundant paragraph.
 
 ### Quality Checks and Commits
 
-- Ran:
-  - `npm test`
-  - `npm run lint -- --max-warnings=0`
-  - `npm run type-check`
-  - `npm run format:check` (fixed `require-branch-annotation.ts` and `valid-req-reference.ts` using `npm run format`, then re-ran `format:check`).
+- Ran tests, lint with `--max-warnings=0`, type-check, and `format:check`; applied formatting fixes where needed.
 - Committed:
   - `docs: sync rule options and presets with implementation`
-    - Included updates to:
-      - `user-docs/api-reference.md`
-      - `docs/rules/require-story-annotation.md`
-      - `docs/config-presets.md`
-      - `src/rules/valid-req-reference.ts`
-      - `src/rules/require-branch-annotation.ts`
-      - `README.md`
   - `chore: update traceability report artifact`
-    - Included regenerated `scripts/traceability-report.md`.
-- Pushed both commits; pre-push `ci-verify:full` and the GitHub “CI/CD Pipeline” ran successfully, with all checks green.
+- Pushed; pre-push `ci-verify:full` and GitHub `CI/CD Pipeline` both passed.
+
+---
+
+## Modernizing npm Audit Usage (Most Recent Work)
+
+### CI Workflow and Local Scripts
+
+- Updated `.github/workflows/ci-cd.yml` “Run production security audit” step to use:
+
+  ```yaml
+  npm audit --omit=dev --audit-level=high
+  ```
+
+  instead of `npm audit --production --audit-level=high`.
+
+- Updated `package.json` `ci-verify:full` script to replace:
+
+  ```bash
+  npm audit --production --audit-level=high
+  ```
+
+  with:
+
+  ```bash
+  npm audit --omit=dev --audit-level=high
+  ```
+
+- Confirmed there are no other direct `npm audit` invocations in the workflow needing changes.
+
+### CI Audit Helper Script
+
+- Left `scripts/ci-audit.js` behavior unchanged (`npm audit --json`), but updated its JSDoc description to:
+
+  > CI helper to run npm audit in JSON mode and write output to ci/npm-audit.json
+
+so it’s not tied to a specific flag combination.
+
+### ADR for Audit Flags
+
+- Added `docs/decisions/008-ci-audit-flags.accepted.md` (ADR-008) documenting:
+  - The move from `--production` to `--omit=dev` for production-focused audits.
+  - Alignment between CI and local `ci-verify:full`.
+  - Separation of production audits (`--omit=dev`) from dev-dependency checks (`audit:dev-high`, safety tooling).
+  - Motivations (following npm guidance, reducing log noise, ensuring consistency).
+
+### Verification and CI
+
+- Ran `npm run ci-verify:full` locally; all steps, including `npm audit --omit=dev --audit-level=high`, passed.
+- Committed and pushed:
+  - `ci: use modern npm audit flags for CI and local checks`
+  - `docs: record ADR for standardized npm audit flags`
+- GitHub `CI/CD Pipeline` runs `19560177215` and `19560208005` completed successfully.
 
 **Most recently we've executed the following action:**
 
 ---
+Used tool: read_file with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md"}
+Used tool: read_file with input: {"filePath":"src/rules/require-story-annotation.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-core.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts"}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"STORY_PATH","isRegex":false}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","startLine":260,"endLine":420}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-visitors.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-core.autofix.test.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"tests/integration/cli-integration.test.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"tests/utils/annotation-checker.test.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"tests/rules/valid-annotation-format.test.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"user-docs/api-reference.md","startLine":1,"endLine":260}
+Used tool: generate_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","overwrite":false,"content":"/**\n * Tests for: docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @req REQ-AUTOFIX-MISSING - Verify ESLint --fix automatically adds missing @story annotations to functions\n * @req REQ-AUTOFIX-FORMAT - Verify ESLint --fix corrects simple annotation format issues for @story annotations\n */\nimport { RuleTester } from \"eslint\";\nimport requireStoryRule from \"../../src/rules/require-story-annotation\";\nimport validAnnotationFormatRule from \"../../src/rules/valid-annotation-format\";\n\nconst functionRuleTester = new RuleTester({\n  languageOptions: {\n    parserOptions: { ecmaVersion: 2020, sourceType: \"module\" },\n  },\n} as any);\n\nconst formatRuleTester = new RuleTester({\n  languageOptions: { parserOptions: { ecmaVersion: 2020 } },\n} as any);\n\ndescribe(\"Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)\", () => {\n  describe(\"[REQ-AUTOFIX-MISSING] require-story-annotation auto-fix\", () => {\n    functionRuleTester.run(\n      \"require-story-annotation --fix\",\n      requireStoryRule,\n      {\n        valid: [\n          {\n            name: \"[REQ-AUTOFIX-MISSING] already annotated function is unchanged\",\n            code: `/**\\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\\n */\\nfunction alreadyAnnotated() {}`,\n          },\n        ],\n        invalid: [\n          {\n            name: \"[REQ-AUTOFIX-MISSING] adds @story before function declaration when missing\",\n            code: `function autoFixMe() {}`,\n            output:\n              `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction autoFixMe() {}`,\n            errors: [\n              {\n                messageId: \"missingStory\",\n              },\n            ],\n          },\n        ],\n      },\n    );\n  });\n\n  describe(\"[REQ-AUTOFIX-FORMAT] valid-annotation-format auto-fix\", () => {\n    formatRuleTester.run(\n      \"valid-annotation-format --fix simple @story extension issues\",\n      validAnnotationFormatRule as any,\n      {\n        valid: [\n          {\n            name: \"[REQ-AUTOFIX-FORMAT] already-correct story path is unchanged\",\n            code: `// @story docs/stories/005.0-DEV-EXAMPLE.story.md`,\n          },\n        ],\n        invalid: [\n          {\n            name: \"[REQ-AUTOFIX-FORMAT] adds .md extension for .story path\",\n            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,\n            output:\n              `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,\n            errors: [\n              {\n                messageId: \"invalidStoryFormat\",\n              },\n            ],\n          },\n          {\n            name: \"[REQ-AUTOFIX-FORMAT] adds .story.md extension when missing entirely\",\n            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,\n            output:\n              `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,\n            errors: [\n              {\n                messageId: \"invalidStoryFormat\",\n              },\n            ],\n          },\n        ],\n      },\n    );\n  });\n});\n"}
+Used tool: modify_file with input: {"filePath":"src/rules/require-story-annotation.ts","instruction":"Add meta.fixable: \"code\" to mark the rule as fixable, and update JSDoc to reference story 008.0-DEV-AUTO-FIX.story.md for the new auto-fix capability while retaining existing story reference. Then adjust imports so that we can rely on helper-level suggestions but still support ESLint --fix via hasSuggestions+fixable combination (no change needed to helper behavior yet)."}
+Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"Update the rule meta to mark it as fixable with \"code\" and extend the JSDoc to reference docs/stories/008.0-DEV-AUTO-FIX.story.md and REQ-AUTOFIX-FORMAT. Then introduce minimal, safe auto-fix behavior: when a @story annotation value matches the same string as the invalid cases in tests (missing .md or missing .story.md) and has no path traversal, apply a fixer that appends the appropriate suffix instead of only reporting. Keep existing error messages for cases the fixer does not handle (e.g., path traversal)."}
+Used tool: modify_file with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md","instruction":"Update acceptance criteria checkboxes and implementation notes to reflect that initial auto-fix support has been added for missing @story annotations on functions and simple story path suffix issues, but that template configurability and selective enable/disable are still future work. Specifically: mark Core Functionality, Quality Standards, Integration, User Experience, Error Handling, Documentation as partially addressed by this iteration (e.g., with a short note next to the checkbox) rather than fully checked, since the story is not yet complete."}
+Used tool: modify_file with input: {"filePath":"user-docs/api-reference.md","instruction":"In the rule descriptions for traceability/require-story-annotation and traceability/valid-annotation-format, add brief notes documenting the new auto-fix behavior introduced by story 008.0. For require-story-annotation, mention that when used with --fix, the rule can insert a placeholder @story JSDoc comment above missing functions using a default template. For valid-annotation-format, mention that when used with --fix, the rule can automatically correct simple @story path suffix issues (e.g., missing .story.md) where the intended suffix is unambiguous. Make sure to keep wording concise and user-facing, and do not change examples or options sections beyond these notes."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","tests/rules/auto-fix-behavior-008.test.ts"]}
+Used tool: search_file_content with input: {"filePath":"tests","pattern":"has suggestions","isRegex":false}
+Used tool: find_files with input: {"pattern":"*.test.ts","directory":"tests"}
+Used tool: search_file_content with input: {"filePath":"tests/rules/require-story-annotation.test.ts","pattern":"suggestions","isRegex":false}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","instruction":"In the reportMissing and reportMethod functions, add a top-level `fix` property to the context.report call that uses the same createAddStoryFix/createMethodFix as the suggestion, so that ESLint --fix can automatically apply the placeholder @story annotation while still exposing suggestions for IDE users. Do not remove or change the existing suggestions array. Also extend the JSDoc for these functions to reference docs/stories/008.0-DEV-AUTO-FIX.story.md and REQ-AUTOFIX-MISSING."}
+Used tool: modify_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","instruction":"Update the invalid test case for require-story-annotation to include an explicit `suggestions` array in the expected error object, mirroring the style used in tests/rules/require-story-annotation.test.ts. Keep the top-level `output` property so that the test also asserts the auto-fix behavior, and set the suggestion's `output` to the same fixed code string. This satisfies RuleTester’s requirement to account for suggestions while still verifying the fix output."}
+Used tool: modify_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","instruction":"In the invalid test case for require-story-annotation, replace the suggestion object to use `desc` and `output` fields (no messageId), and set `desc` to exactly match the description used by the rule: `Add JSDoc @story annotation for function 'autoFixMe', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`. Keep the `output` value matching the fixed code string. Remove the incorrect `messageId` field from the suggestion."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","tests/rules/auto-fix-behavior-008.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts","startLine":60,"endLine":260}
+Used tool: modify_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts","instruction":"For each invalid test case, add a top-level `output` property that matches the expected fixed code shown in the first suggestion's `output`. Specifically:\n- For \"missing @story annotation on function\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction bar() {}`.\n- For \"missing @story on function expression\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nconst fnExpr = function() {};\"`.\n- For \"missing @story on class method\", set output to `\"class C {\\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\n  method() {}\\n}\"`.\n- For \"missing @story on TS declare function\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\ndeclare function tsDecl(): void;\"`.\n- For \"missing @story on TS method signature\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\ninterface D {\\n  method(): void;\\n}\"`.\n- For \"[exportPriority] exported function missing @story annotation\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nexport function exportedMissing() {}\"`.\n- For \"[scope] function declaration missing annotation when scope is FunctionDeclaration\", set output to `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction onlyDecl() {}\"`."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: read_file with input: {"filePath":"tests/rules/error-reporting.test.ts","startLine":1,"endLine":260}
+Used tool: modify_file with input: {"filePath":"tests/rules/error-reporting.test.ts","instruction":"In the invalid test case for \"[REQ-ERROR-SPECIFIC] missing @story annotation should report specific details and suggestion\", add a top-level `output` property set to the same fixed code string currently used in the suggestion's `output` field: `\"/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction bar() {}\"`."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"In validateStoryAnnotation, after computing `collapsed` and checking `if (pathPattern.test(collapsed)) { return; }`, add a guard that skips auto-fix when the raw annotation value spans multiple segments (e.g., multi-line values). Concretely, if `/\\s/.test(trimmed)` is true, immediately `context.report` with `messageId: \"invalidStoryFormat\"` and `details: buildStoryErrorMessage(\"invalid\", collapsed)`, then `return;`. This ensures the fixer only runs for simple, single-segment values and leaves complex multi-line cases as validation-only errors."}
+Used tool: modify_file with input: {"filePath":"tests/rules/valid-annotation-format.test.ts","instruction":"In the invalid test cases, add `output` properties for the single-line story path suffix issues that are now auto-fixed:\n- For \"[REQ-PATH-FORMAT] invalid story file extension\", set `output` to `\"// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\"`.\n- For \"[REQ-PATH-FORMAT] missing extension in story path\", set `output` to `\"// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\"`.\nDo not add `output` to the multi-line or other invalid cases that should remain validation-only."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0","--debug"]}
+Used tool: read_file with input: {"filePath":"package.json","startLine":1,"endLine":120}
+Used tool: run_command with input: {"command":"npx","args":["eslint","--config","eslint.config.js","src/rules/require-story-annotation.ts","src/rules/valid-annotation-format.ts","src/rules/helpers/require-story-helpers.ts","tests/rules/auto-fix-behavior-008.test.ts","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npx","args":["eslint","src/rules/valid-annotation-format.ts","--no-eslintrc","--rule","max-lines-per-function:[\"error\",60]"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npx","args":["eslint","--config","eslint.config.js","src/**/*.{js,ts}","tests/**/*.{js,ts}","--max-warnings=0","--format","json","--output-file","lint-output.json"]}
+Used tool: read_file with input: {"filePath":"lint-output.json","startLine":1,"endLine":400}
+Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"Refactor validateStoryAnnotation to reduce its size and remove the magic number -1:\n1. Introduce a file-level constant near STORY_EXAMPLE_PATH: `const TAG_NOT_FOUND_INDEX = -1;` with appropriate @story/@req JSDoc for traceability.\n2. Extract the repeated \"invalid story\" reporting logic into a small helper:\n   `function reportInvalidStoryFormat(context: any, comment: any, collapsed: string): void { context.report({ node: comment as any, messageId: \"invalidStoryFormat\", data: { details: buildStoryErrorMessage(\"invalid\", collapsed) }, }); }`\n   Place this helper above validateStoryAnnotation and document it with @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md, @story docs/stories/008.0-DEV-AUTO-FIX.story.md, and @req REQ-AUTOFIX-FORMAT.\n3. Extract the fix-application block into a separate helper:\n   `function reportInvalidStoryFormatWithFix(context: any, comment: any, collapsed: string, fixed: string): void { ... }`\n   Move all logic that currently computes `commentText`, `search`, `tagIndex`, `afterTagIndex`, `rest`, `valueMatch`, `valueStartInComment`, `valueEndInComment`, `fixRange`, and the `context.report` with `fix` into this helper.\n   - Replace the literal `-1` comparison with `TAG_NOT_FOUND_INDEX`.\n   - Where the original code would `context.report` without a fix in the early `tagIndex === -1` or `!valueMatch` branches, now delegate to `reportInvalidStoryFormat(context, comment, collapsed)`.\n4. Simplify validateStoryAnnotation so it only:\n   - Handles the empty `trimmed` case (report \"missing\" and return).\n   - Computes `collapsed` and `pathPattern` and early-returns on a valid path.\n   - Applies the whitespace guard: if `/\\s/.test(trimmed)` is true, call `reportInvalidStoryFormat(context, comment, collapsed)` and return.\n   - Computes `fixed = getFixedStoryPath(collapsed)` and, if `fixed && pathPattern.test(fixed)`, calls `reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed)` and returns.\n   - Otherwise calls `reportInvalidStoryFormat(context, comment, collapsed)`.\nKeep all existing JSDoc annotations updated so that the new helpers and the refactored validateStoryAnnotation still reference both stories and REQ-AUTOFIX-FORMAT / REQ-PATH-FORMAT as appropriate."}
+Used tool: run_command with input: {"command":"npx","args":["eslint","--config","eslint.config.js","src/**/*.{js,ts}","tests/**/*.{js,ts}","--max-warnings=0","--format","json","--output-file","lint-output.json"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
 Used tool: get_git_status with input: {}
-Used tool: read_file with input: {"filePath":".github/workflows/ci-cd.yml"}
-Used tool: search_file_content with input: {"filePath":".github/workflows/ci-cd.yml","pattern":"npm audit","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"package.json","pattern":"npm audit","isRegex":false}
-Used tool: find_files with input: {"pattern":"*.js","directory":"scripts"}
-Used tool: modify_file with input: {"filePath":".github/workflows/ci-cd.yml","instruction":"In the job 'quality-and-deploy', find the step named 'Run production security audit'. In that step, replace the run command `npm audit --production --audit-level=high` with `npm audit --omit=dev --audit-level=high` so that npm uses the modern flag instead of --production."}
-Used tool: modify_file with input: {"filePath":"package.json","instruction":"In the scripts section, locate the ci-verify:full script. In its command string, replace `npm audit --production --audit-level=high` with `npm audit --omit=dev --audit-level=high` so that local CI verification uses the same modern npm audit flag as CI."}
-Used tool: search_file_content with input: {"filePath":".github/workflows/ci-cd.yml","pattern":"npm audit","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"scripts/ci-audit.js","pattern":"npm audit","isRegex":false}
-Used tool: read_file with input: {"filePath":"scripts/ci-audit.js"}
-Used tool: modify_file with input: {"filePath":"scripts/ci-audit.js","instruction":"Update the JSDoc description comment so that it no longer hardcodes the exact npm audit flags. Change the first line from `* CI helper to run npm audit --json and write output to ci/npm-audit.json` to `* CI helper to run npm audit in JSON mode and write output to ci/npm-audit.json`. Do not alter the implementation code or other comments."}
-Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:full"]}
+Used tool: remove_file with input: {"filePath":"lint-output.json"}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"ci: use modern npm audit flags for CI and local checks"}
+Used tool: git_commit with input: {"message":"feat: add initial auto-fix support for annotations"}
 Used tool: git_push with input: {}
-Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
-Used tool: list_directory with input: {"dirPath":"docs/decisions"}
-Used tool: search_file_content with input: {"filePath":"docs/decisions","pattern":"audit","isRegex":false}
-Used tool: find_files with input: {"pattern":"*audit*.md","directory":"docs/decisions"}
-Used tool: generate_file with input: {"filePath":"docs/decisions/008-ci-audit-flags.accepted.md","content":"# ADR-008: Standardize npm audit flags in CI and local verification\n\n## Status\n\nAccepted\n\n## Context\n\nNewer versions of `npm` emit a configuration warning when the `--production` flag is used with `npm audit`:\n\n> npm WARN config production Use `--omit=dev` instead.\n\nOur CI/CD pipeline and local `ci-verify:full` script were invoking:\n\n- `npm audit --production --audit-level=high` in the GitHub Actions workflow\n- `npm audit --production --audit-level=high` inside the `ci-verify:full` npm script\n\nThis produced noisy warnings during both local verification and CI runs, even though the intent was simply to exclude development dependencies from the production-focused audit.\n\n## Decision\n\nWe will standardize on the modern, npm-recommended flag set for production-focused audits:\n\n- Use `npm audit --omit=dev --audit-level=high` instead of `npm audit --production --audit-level=high`.\n\nConcretely:\n\n1. **GitHub Actions CI/CD workflow**\n   - In `.github/workflows/ci-cd.yml`, the \"Run production security audit\" step now runs:\n     - `npm audit --omit=dev --audit-level=high`\n\n2. **Local CI verification script**\n   - In `package.json`, the `ci-verify:full` script now runs:\n     - `npm audit --omit=dev --audit-level=high`\n\n3. **CI audit helper script**\n   - `scripts/ci-audit.js` continues to run `npm audit --json` to capture a complete machine-readable audit report for CI artifacts. The JSDoc description was updated to avoid hard-coding specific flag combinations in documentation, keeping behavior and documentation loosely coupled.\n\n## Rationale\n\n- **Align with npm guidance**: Using `--omit=dev` is the officially recommended modern way to exclude development dependencies from production operations. This avoids the recurring `npm WARN config production` warning.\n- **Consistency between local and CI behavior**: Both the GitHub Actions workflow and the local `ci-verify:full` script now use the same `npm audit` flags for production-focused audits, ensuring developers see the same behavior locally that CI enforces.\n- **Separation of concerns**:\n  - Production-focused audits use `--omit=dev --audit-level=high` to focus on runtime dependencies and fail the pipeline if high-severity issues are detected.\n  - Dev-dependency audits are handled separately via `npm run audit:dev-high` (which is already wired into both `ci-verify:full` and the CI workflow) and through our `dry-aged-deps`-backed safety checks.\n- **Noise reduction**: Removing the `--production` flag eliminates unnecessary warnings from CI logs, making real problems easier to spot.\n\n## Consequences\n\n- **Positive**:\n  - CI logs are cleaner, with no spurious `npm WARN config production` messages.\n  - The project follows current npm best practices for production audits.\n  - Local and CI verification remain in sync, preventing \"works locally but fails in CI\" discrepancies for security audits.\n\n- **Neutral/Expected**:\n  - The effective set of audited packages for the production-focused audit remains equivalent to what we intended with `--production`: runtime (non-dev) dependencies only.\n  - Our separate dev-dependency audit and `dry-aged-deps` processes remain unchanged.\n\n- **Future work**:\n  - If npm introduces further changes to `npm audit` flags or behavior, we will revisit this ADR and update the workflow and scripts accordingly.\n"}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"docs: record ADR for standardized npm audit flags"}
-Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
 Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
 ---
 
 **This was the result:**
 ---
-Here’s what I implemented for the ##NOW and ##NEXT items, and their current status.
+Here’s what I implemented and verified for the ##NOW and ##NEXT plan items.
 
 ---
 
-## Changes Implemented
+## What I changed
 
-### 1) Update CI workflow to use modern npm audit flags (**NOW**)
+### 1. Read and aligned with Story 008.0
 
-**What I changed**
+- Reviewed `docs/stories/008.0-DEV-AUTO-FIX.story.md` to understand:
+  - REQ-AUTOFIX-MISSING
+  - REQ-AUTOFIX-FORMAT
+  - Safety/format preservation expectations
+- Updated the story to note that this iteration **partially** implements the acceptance criteria (function @story autofix + simple path suffix fixes), with template configurability and selective enable/disable left for future work.
 
-- File: `.github/workflows/ci-cd.yml`
-- Step: `"Run production security audit"`
+Files:
+- `docs/stories/008.0-DEV-AUTO-FIX.story.md` (acceptance criteria notes + current capabilities section)
 
-Updated the command from:
+### 2. Auto-fix for missing `@story` on functions (REQ-AUTOFIX-MISSING)
 
-```yaml
-- name: Run production security audit
-  run: npm audit --production --audit-level=high
+**Rule metadata**
+
+- Marked the rule as fixable and traced it to story 008.0:
+
+```ts
+// src/rules/require-story-annotation.ts
+meta: {
+  type: "problem",
+  docs: { description: "Require @story annotations on functions", recommended: "error" },
+  hasSuggestions: true,
+  fixable: "code",
+  ...
+}
 ```
 
-to:
+- Added `@story docs/stories/008.0-DEV-AUTO-FIX.story.md` to the file-level and `create` JSDoc for traceability.
 
-```yaml
-- name: Run production security audit
-  run: npm audit --omit=dev --audit-level=high
+**Actual fix behavior**
+
+- Previously, `require-story-annotation` only exposed **suggestions**.
+- I extended the helper to also provide a real ESLint `fix` so `eslint --fix` works.
+
+```ts
+// src/rules/helpers/require-story-helpers.ts
+
+function reportMissing(context, sourceCode, node, passedTarget?) {
+  ...
+  const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
+  ...
+  context.report({
+    node: nameNode,
+    messageId: "missingStory",
+    data: { name },
+    fix: createAddStoryFix(resolvedTarget),          // NEW: real fix for --fix
+    suggest: [                                       // existing suggestion kept
+      {
+        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+        fix: createAddStoryFix(resolvedTarget),
+      },
+    ],
+  });
+}
 ```
 
-This removes the `npm WARN config production Use --omit=dev instead.` warning and aligns with modern npm guidance.
-
-**Verification**
-
-- Ran full local CI-equivalent checks:
-
-  ```bash
-  npm run ci-verify:full
-  ```
-
-  This executed:
-
-  - `check:traceability`
-  - `safety:deps`
-  - `audit:ci`
-  - `build`
-  - `type-check`
-  - `lint-plugin-check`
-  - `lint -- --max-warnings=0`
-  - `duplication`
-  - `test -- --coverage`
-  - `format:check`
-  - `npm audit --omit=dev --audit-level=high`
-  - `audit:dev-high`
-
-  All completed successfully; `npm audit --omit=dev --audit-level=high` reported `found 0 vulnerabilities`.
-
-- Committed and pushed as:
-
-  ```text
-  ci: use modern npm audit flags for CI and local checks
-  ```
-
-- CI/CD:
-
-  - GitHub Actions workflow `CI/CD Pipeline` run `19560177215` completed with conclusion: `success` after this push.
-
----
-
-### 2) Normalize all npm audit usage in CI workflow (**NEXT #1**)
-
-**What I checked**
-
-- Searched `.github/workflows/ci-cd.yml` for `npm audit`:
-
-  - One match is just the step name `"Upload npm audit artifact"` (no command to change).
-  - The only command is now:
-
-    ```yaml
-    run: npm audit --omit=dev --audit-level=high
-    ```
-
-There are no other direct `npm audit` invocations in the workflow that need flag normalization, so CI now consistently uses the new flag where applicable.
-
----
-
-### 3) Align local scripts / ci-verify:full with new flags (**NEXT #2**)
-
-**package.json**
-
-- File: `package.json`
-- Script: `ci-verify:full`
-
-Updated the script from:
-
-```json
-"ci-verify:full": "npm run check:traceability && npm run safety:deps && npm run audit:ci && npm run build && npm run type-check && npm run lint-plugin-check && npm run lint -- --max-warnings=0 && npm run duplication && npm run test -- --coverage && npm run format:check && npm audit --production --audit-level=high && npm run audit:dev-high",
+```ts
+function reportMethod(context, sourceCode, node, passedTarget?) {
+  ...
+  const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
+  ...
+  context.report({
+    node: nameNode,
+    messageId: "missingStory",
+    data: { name },
+    fix: createMethodFix(resolvedTarget),
+    suggest: [
+      {
+        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
+        fix: createMethodFix(resolvedTarget),
+      },
+    ],
+  });
+}
 ```
 
-to:
+- This preserves earlier error-reporting and suggestion behavior (Story 003.0 / 007.0) while enabling `eslint --fix` to insert:
 
-```json
-"ci-verify:full": "npm run check:traceability && npm run safety:deps && npm run audit:ci && npm run build && npm run type-check && npm run lint-plugin-check && npm run lint -- --max-warnings=0 && npm run duplication && npm run test -- --coverage && npm run format:check && npm audit --omit=dev --audit-level=high && npm run audit:dev-high",
+```ts
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+function foo() {}
 ```
 
-This keeps local pre-push checks (and any manual `npm run ci-verify:full` runs) behaviorally in sync with CI.
+**Updated tests for existing rule**
 
-**scripts/ci-audit.js**
+- Updated existing tests to assert the new fix output while still validating suggestions:
 
-- File: `scripts/ci-audit.js`
-
-This helper is used by `npm run audit:ci`, which is already referenced by `ci-verify:full`. It runs a full JSON audit for artifact generation, not as a gating step.
-
-Implementation remains:
-
-```js
-const res = spawnSync("npm", ["audit", "--json"], { encoding: "utf8" });
+```ts
+// tests/rules/require-story-annotation.test.ts (examples)
+{
+  name: "[REQ-ANNOTATION-REQUIRED] missing @story annotation on function",
+  code: `function bar() {}`,
+  output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}`,
+  errors: [
+    {
+      messageId: "missingStory",
+      suggestions: [
+        {
+          desc: `Add JSDoc @story annotation for function 'bar', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+          output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}`,
+        },
+      ],
+    },
+  ],
+}
 ```
 
-I only adjusted the JSDoc description to avoid hard-coding a specific flag combination:
+- Similarly updated:
+  - TS declare function / TS method signature invalid cases
+  - `exportPriority` invalid case
+  - `scope` invalid case
 
-From:
+**Error-reporting story tests**
 
-```js
+- Adjusted `tests/rules/error-reporting.test.ts` to also expect fix output now that the rule is fixable:
+
+```ts
+output:
+  "/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}",
+```
+
+**New auto-fix behavior test for story 008.0**
+
+- Added a focused test file for Story 008.0:
+
+```ts
+// tests/rules/auto-fix-behavior-008.test.ts
 /**
- * CI helper to run npm audit --json and write output to ci/npm-audit.json
+ * Tests for: docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-AUTOFIX-MISSING
+ * @req REQ-AUTOFIX-FORMAT
  */
+
+describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
+  describe("[REQ-AUTOFIX-MISSING] require-story-annotation auto-fix", () => {
+    functionRuleTester.run("require-story-annotation --fix", requireStoryRule, {
+      valid: [...],
+      invalid: [
+        {
+          name: "[REQ-AUTOFIX-MISSING] adds @story before function declaration when missing",
+          code: `function autoFixMe() {}`,
+          output:
+            `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction autoFixMe() {}`,
+          errors: [
+            {
+              messageId: "missingStory",
+              suggestions: [
+                {
+                  desc:
+                    "Add JSDoc @story annotation for function 'autoFixMe', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  output:
+                    `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction autoFixMe() {}`,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  });
+});
 ```
 
-To:
+This ties directly to `docs/stories/008.0-DEV-AUTO-FIX.story.md` and REQ-AUTOFIX-MISSING.
 
-```js
-/**
- * CI helper to run npm audit in JSON mode and write output to ci/npm-audit.json
- */
+### 3. Auto-fix for simple `@story` path suffix issues (REQ-AUTOFIX-FORMAT)
+
+**Core behavior in rule**
+
+- Marked `valid-annotation-format` as fixable and traced it to story 008.0:
+
+```ts
+// src/rules/valid-annotation-format.ts
+meta: {
+  type: "problem",
+  docs: { description: "Validate format and syntax of @story and @req annotations", recommended: "error" },
+  messages: { invalidStoryFormat: "{{details}}", invalidReqFormat: "{{details}}" },
+  schema: [],
+  fixable: "code",
+}
 ```
 
-This keeps documentation accurate if we later tweak flags, while preserving the intended behavior (full audit report for CI artifacts).
+- Added REQ-AUTOFIX-FORMAT references across relevant helpers and create().
 
-**Verification**
+**New helpers & refactor**
 
-- Re-ran:
+To satisfy `max-lines-per-function` and remove the magic `-1`, I refactored the story-validation area:
 
-  ```bash
-  npm run ci-verify:full
-  ```
+```ts
+const TAG_NOT_FOUND_INDEX = -1;
 
-  All steps, including `npm audit --omit=dev --audit-level=high`, passed successfully.
+function reportInvalidStoryFormat(context: any, comment: any, collapsed: string): void {
+  context.report({
+    node: comment as any,
+    messageId: "invalidStoryFormat",
+    data: { details: buildStoryErrorMessage("invalid", collapsed) },
+  });
+}
 
-- The subsequent `git push` automatically ran the Husky pre-push hook (`ci-verify:full`) and succeeded.
+function reportInvalidStoryFormatWithFix(
+  context: any,
+  comment: any,
+  collapsed: string,
+  fixed: string,
+): void {
+  const sourceCode = context.getSourceCode();
+  const commentText = sourceCode.getText(comment);
+  const search = "@story";
+  const tagIndex = commentText.indexOf(search);
+
+  if (tagIndex === TAG_NOT_FOUND_INDEX) {
+    reportInvalidStoryFormat(context, comment, collapsed);
+    return;
+  }
+
+  const afterTagIndex = tagIndex + search.length;
+  const rest = commentText.slice(afterTagIndex);
+  const valueMatch = rest.match(/[^\S\r\n]*([^\r\n*]+)/);
+
+  if (!valueMatch || valueMatch.index === undefined) {
+    reportInvalidStoryFormat(context, comment, collapsed);
+    return;
+  }
+
+  const valueStartInComment =
+    afterTagIndex + valueMatch.index + (valueMatch[0].length - valueMatch[1].length);
+  const valueEndInComment = valueStartInComment + valueMatch[1].length;
+
+  const start = comment.range[0];
+  const fixRange: [number, number] = [
+    start + valueStartInComment,
+    start + valueEndInComment,
+  ];
+
+  context.report({
+    node: comment as any,
+    messageId: "invalidStoryFormat",
+    data: { details: buildStoryErrorMessage("invalid", collapsed) },
+    fix(fixer: any) {
+      return fixer.replaceTextRange(fixRange, fixed);
+    },
+  });
+}
+```
+
+**Simplified `validateStoryAnnotation`**
+
+Now `validateStoryAnnotation` just orchestrates the logic:
+
+```ts
+function validateStoryAnnotation(context: any, comment: any, rawValue: string): void {
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    context.report({
+      node: comment as any,
+      messageId: "invalidStoryFormat",
+      data: { details: buildStoryErrorMessage("missing", null) },
+    });
+    return;
+  }
+
+  const collapsed = collapseAnnotationValue(trimmed);
+  const pathPattern = /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/;
+
+  if (pathPattern.test(collapsed)) {
+    return;
+  }
+
+  // Multi-segment (e.g., multi-line) values are treated as invalid-only; no auto-fix.
+  if (/\s/.test(trimmed)) {
+    reportInvalidStoryFormat(context, comment, collapsed);
+    return;
+  }
+
+  const fixed = getFixedStoryPath(collapsed);
+
+  if (fixed && pathPattern.test(fixed)) {
+    reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed);
+    return;
+  }
+
+  reportInvalidStoryFormat(context, comment, collapsed);
+}
+```
+
+Key points:
+
+- **Single-segment values** like:
+  - `docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`
+  - `docs/stories/005.0-DEV-ANNOTATION-VALIDATION`
+  are auto-fixed to `...story.md` when safe and matching the pattern.
+- **Multi-line or otherwise whitespace-containing values** (e.g., the multi-line invalid test) are **not auto-fixed**; they continue to report validation errors only (safer, aligns with “minimal, safe fixes”).
+
+**Tests for format auto-fix**
+
+- New Story 008.0 test cases:
+
+```ts
+// tests/rules/auto-fix-behavior-008.test.ts
+describe("[REQ-AUTOFIX-FORMAT] valid-annotation-format auto-fix", () => {
+  formatRuleTester.run("valid-annotation-format --fix simple @story extension issues", rule, {
+    valid: [...],
+    invalid: [
+      {
+        name: "[REQ-AUTOFIX-FORMAT] adds .md extension for .story path",
+        code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
+        output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+        errors: [{ messageId: "invalidStoryFormat" }],
+      },
+      {
+        name: "[REQ-AUTOFIX-FORMAT] adds .story.md extension when missing entirely",
+        code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,
+        output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+        errors: [{ messageId: "invalidStoryFormat" }],
+      },
+    ],
+  });
+});
+```
+
+- Existing format rule tests updated so expectations match the new fix behavior:
+
+```ts
+// tests/rules/valid-annotation-format.test.ts (invalid section)
+{
+  name: "[REQ-PATH-FORMAT] invalid story file extension",
+  code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
+  output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+  errors: [ ... ],
+},
+{
+  name: "[REQ-PATH-FORMAT] missing extension in story path",
+  code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,
+  output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+  errors: [ ... ],
+},
+// multi-line invalid case remains validation-only, no output property
+```
+
+### 4. Documentation updates
+
+- **API reference** now mentions auto-fix behavior:
+
+```md
+### traceability/require-story-annotation
+
+Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation ...  
+When run with `--fix`, the rule can insert a placeholder `@story` JSDoc comment above missing functions using a default template.
+```
+
+```md
+### traceability/valid-annotation-format
+
+Description: Validates that all traceability annotations ...  
+When run with `--fix`, the rule can automatically correct simple `@story` path suffix issues (for example, appending `.story.md` when the intended suffix is unambiguous).
+```
+
+File:
+- `user-docs/api-reference.md`
 
 ---
 
-### 4) Document audit behavior in an ADR (**NEXT #3**)
+## Quality checks run
 
-**New ADR**
+All run locally and in CI (via pre-push hook and GitHub Actions):
 
-- File created: `docs/decisions/008-ci-audit-flags.accepted.md`
+- `npm test -- --runInBand` (full Jest suite, including new tests) – **pass**
+- `npm run build` – **pass**
+- `npm run type-check` – **pass**
+- `npm run lint` – **pass**
+  - Also verified via `npx eslint ... --format json --output-file lint-output.json` (no remaining errors).
+- `npm run duplication` – **pass** (same small, acceptable clones as before)
+- `npm run format` and `npm run format:check` – **pass**
+- Pre-push `ci-verify:full` pipeline – **pass**
+- GitHub Actions “CI/CD Pipeline” on `main` – **success**
 
-Contents (high level):
-
-- **Title**: ADR-008: Standardize npm audit flags in CI and local verification
-- **Status**: Accepted
-- **Context**:
-  - npm now warns when using `--production` for audit and recommends `--omit=dev`.
-  - Our CI and `ci-verify:full` previously used `npm audit --production --audit-level=high`.
-- **Decision**:
-  - Use `npm audit --omit=dev --audit-level=high` for production-focused audits in:
-    - `.github/workflows/ci-cd.yml` ("Run production security audit" step)
-    - `package.json` `ci-verify:full` script
-  - Keep `scripts/ci-audit.js` running `npm audit --json` for a comprehensive machine-readable report, with description updated to be flag-agnostic.
-- **Rationale**:
-  - Aligns with npm guidance.
-  - Ensures consistency between local and CI behavior.
-  - Separates production audits (`--omit=dev`) from dev-deps audits (`npm run audit:dev-high` + dry-aged-deps).
-  - Reduces log noise by removing `npm WARN config production`.
-- **Consequences**:
-  - Cleaner CI logs; consistent behavior; no change to intended production audit scope.
-
-**Commit**
-
-- Staged and committed as:
-
-  ```text
-  docs: record ADR for standardized npm audit flags
-  ```
-
-- Pushed to `main`.
-
-**CI/CD**
-
-- After this push, GitHub Actions `CI/CD Pipeline` run `19560208005` completed with conclusion: `success`.
+A new file `lint-output.json` created during debugging was removed before committing.
 
 ---
 
@@ -859,20 +893,26 @@ Contents (high level):
 
 ### NOW
 
-- [x] Use modify_file on `.github/workflows/ci-cd.yml` to update the "Run production security audit" step so it uses the modern npm flag (e.g., replace `npm audit --production --audit-level=high` with `npm audit --omit=dev --audit-level=high`) to remove the recurring config warning and keep the CI/CD pipeline clean.
+- [x] read_file docs/stories/008.0-DEV-AUTO-FIX.story.md
 
 ### NEXT
 
-- [x] Scan `.github/workflows/ci-cd.yml` for any other direct `npm audit` invocations and normalize them to the same recommended flag pattern so all CI audit steps are consistent.
-- [x] Update any npm audit usage in local scripts referenced by `ci-verify:full` (if they still use `--production`) to align with the CI change, keeping local and CI pipelines behaviorally in sync.
-- [x] Review `docs/decisions/` for an ADR describing CI/audit behavior and, if missing or outdated, add or update an ADR to document the new audit flag usage and rationale (removing warnings, matching npm guidance).
+- [x] read_file src/rules/require-story-annotation.ts
+- [x] read_file src/rules/helpers/require-story-core.ts
+- [x] read_file src/rules/valid-annotation-format.ts
+- [x] read_file tests/rules/require-story-annotation.test.ts
+- [x] generate_file tests/rules/auto-fix-behavior-008.test.ts
+- [x] modify_file src/rules/require-story-annotation.ts
+- [x] modify_file src/rules/valid-annotation-format.ts
+- [x] modify_file docs/stories/008.0-DEV-AUTO-FIX.story.md
+- [x] modify_file user-docs/api-reference.md
 
-### LATER
+### LATER (not executed yet)
 
-- [ ] Refactor `src/rules/helpers/require-story-helpers.ts` into smaller, focused helper modules (e.g., comment detection, name resolution, reporting) to reduce file size and improve maintainability while keeping behavior unchanged.
-- [ ] Extract shared logic between `src/rules/helpers/require-story-core.ts` and `src/rules/helpers/require-story-helpers.ts` into a common helper to reduce code duplication reported by jscpd.
-- [ ] Enhance TypeScript typing in ESLint rule helpers and utilities by replacing `any` with appropriate `TSESTree` node types in a gradual, non-breaking way.
-- [ ] Optionally update security incident documentation (e.g., bundled dev-deps accepted risk) to reference the most recent `dry-aged-deps` and audit runs, reaffirming residual-risk acceptance.
+- [ ] Refine auto-fix template configurability across all relevant rules (functions, branches, req annotations) using story 008.0’s option model.
+- [ ] Add configuration and docs for selectively enabling/disabling auto-fix categories per rule and preset, ensuring backward-compatible defaults.
+- [ ] Broaden test coverage for edge-case auto-fixes (complex JSDoc blocks, mixed annotations, partially-correct formats) tied to 008.0 story requirements.
+- [ ] Refine and factor shared auto-fix utilities (e.g., a central template resolver) once behavior is stable, ensuring no regression in earlier stories.
 
-All tasks in the ##NOW and ##NEXT sections are complete, local quality checks are passing, and the CI/CD pipeline is green after each push.
+If you’d like, I can next focus on the LATER items, especially configuration for templates and selective auto-fix toggles.
 ---

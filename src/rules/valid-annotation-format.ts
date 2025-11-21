@@ -122,6 +122,7 @@ function buildReqErrorMessage(
  *
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ * @req REQ-AUTOFIX-SAFE - Auto-fix must be conservative and never broaden the referenced path
  */
 function getFixedStoryPath(original: string): string | null {
   if (original.includes("..")) {
@@ -167,10 +168,18 @@ function reportInvalidStoryFormat(
  * for common path suffix issues by locating and replacing the path text
  * within the original comment.
  *
+ * This helper:
+ *   - only adjusts the story path suffix when a safe, well-understood
+ *     transformation is available, satisfying REQ-AUTOFIX-SAFE.
+ *   - preserves all surrounding comment formatting, spacing, and text
+ *     outside the path substring, satisfying REQ-AUTOFIX-PRESERVE.
+ *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ * @req REQ-AUTOFIX-SAFE - Auto-fix must be conservative and avoid changing semantics
+ * @req REQ-AUTOFIX-PRESERVE - Auto-fix must preserve surrounding formatting and comments
  */
 function reportInvalidStoryFormatWithFix(
   context: any,
