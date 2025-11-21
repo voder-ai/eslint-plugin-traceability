@@ -72,7 +72,6 @@ export const DEFAULT_SCOPE: string[] = [
   "MethodDefinition",
   "TSMethodSignature",
   "TSDeclareFunction",
-  "VariableDeclarator",
 ];
 
 /**
@@ -113,8 +112,14 @@ export function reportMissing(
   // @req REQ-ANNOTATION-REQUIRED - Resolve function name for reporting, default to <unknown>
   const name = node && node.id && node.id.name ? node.id.name : "<unknown>";
   const resolvedTarget = target ?? node;
+  const nameNode =
+    node && node.id && node.id.type === "Identifier"
+      ? node.id
+      : node && node.key && node.key.type === "Identifier"
+        ? node.key
+        : node;
   context.report({
-    node,
+    node: nameNode,
     messageId: "missingStory",
     data: { name },
     suggest: [
