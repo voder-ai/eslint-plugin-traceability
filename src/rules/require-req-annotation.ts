@@ -38,6 +38,11 @@ const rule: Rule.RuleModule = {
        * @req REQ-ERROR-SPECIFIC - Provide specific function name in error message
        * @req REQ-ERROR-SUGGESTION - Suggest adding a @req annotation with an example identifier
        * @req REQ-ERROR-CONTEXT - Include @req format guidance in the error text
+       * @req REQ-ERROR-LOCATION - Report the error at the function identifier location
+       * @req REQ-ERROR-SEVERITY - Use ESLint severity level "error" for missing @req annotations
+       *
+       * This rule uses ESLint's message data placeholders for the function name,
+       * specifically the {{name}} placeholder populated via context.report.
        */
       missingReq:
         "Function '{{name}}' is missing a required @req annotation. Add a JSDoc or line comment with @req (for example, '@req REQ-EXAMPLE') referencing the appropriate requirement from the story file.",
