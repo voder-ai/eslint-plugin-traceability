@@ -1,1 +1,82 @@
-{"numFailedTestSuites":0,"numFailedTests":0,"numPassedTestSuites":1,"numPassedTests":2,"numPendingTestSuites":0,"numPendingTests":0,"numRuntimeErrorTestSuites":0,"numTodoTests":0,"numTotalTestSuites":1,"numTotalTests":2,"openHandles":[],"snapshot":{"added":0,"didUpdate":false,"failure":false,"filesAdded":0,"filesRemoved":0,"filesRemovedList":[],"filesUnmatched":0,"filesUpdated":0,"matched":0,"total":0,"unchecked":0,"uncheckedKeysByFile":[],"unmatched":0,"updated":0},"startTime":1763720113279,"success":true,"testResults":[{"assertionResults":[{"ancestorTitles":["Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING)","require-story-annotation","valid"],"duration":31,"failing":false,"failureDetails":[],"failureMessages":[],"fullName":"Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING) require-story-annotation valid [007.0-DEV-ERROR-REPORTING] valid with existing annotation","invocations":1,"location":null,"numPassingAsserts":0,"retryReasons":[],"startAt":1763720114241,"status":"passed","title":"[007.0-DEV-ERROR-REPORTING] valid with existing annotation"},{"ancestorTitles":["Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING)","require-story-annotation","invalid"],"duration":9,"failing":false,"failureDetails":[],"failureMessages":[],"fullName":"Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING) require-story-annotation invalid [REQ-ERROR-SPECIFIC] missing @story annotation should report specific details and suggestion","invocations":1,"location":null,"numPassingAsserts":0,"retryReasons":[],"startAt":1763720114273,"status":"passed","title":"[REQ-ERROR-SPECIFIC] missing @story annotation should report specific details and suggestion"}],"endTime":1763720114283,"message":"","name":"/Users/tomhoward/Projects/eslint-plugin-traceability/tests/rules/error-reporting.test.ts","startTime":1763720113401,"status":"passed","summary":""}],"wasInterrupted":false}
+{
+  "numFailedTestSuites": 0,
+  "numFailedTests": 0,
+  "numPassedTestSuites": 1,
+  "numPassedTests": 2,
+  "numPendingTestSuites": 0,
+  "numPendingTests": 0,
+  "numRuntimeErrorTestSuites": 0,
+  "numTodoTests": 0,
+  "numTotalTestSuites": 1,
+  "numTotalTests": 2,
+  "openHandles": [],
+  "snapshot": {
+    "added": 0,
+    "didUpdate": false,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0
+  },
+  "startTime": 1763720113279,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING)",
+            "require-story-annotation",
+            "valid"
+          ],
+          "duration": 31,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING) require-story-annotation valid [007.0-DEV-ERROR-REPORTING] valid with existing annotation",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "startAt": 1763720114241,
+          "status": "passed",
+          "title": "[007.0-DEV-ERROR-REPORTING] valid with existing annotation"
+        },
+        {
+          "ancestorTitles": [
+            "Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING)",
+            "require-story-annotation",
+            "invalid"
+          ],
+          "duration": 9,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING) require-story-annotation invalid [REQ-ERROR-SPECIFIC] missing @story annotation should report specific details and suggestion",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "startAt": 1763720114273,
+          "status": "passed",
+          "title": "[REQ-ERROR-SPECIFIC] missing @story annotation should report specific details and suggestion"
+        }
+      ],
+      "endTime": 1763720114283,
+      "message": "",
+      "name": "/Users/tomhoward/Projects/eslint-plugin-traceability/tests/rules/error-reporting.test.ts",
+      "startTime": 1763720113401,
+      "status": "passed",
+      "summary": ""
+    }
+  ],
+  "wasInterrupted": false
+}
