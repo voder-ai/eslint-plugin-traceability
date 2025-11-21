@@ -195,7 +195,7 @@ function processComment(context: any, comment: any): void {
     pending = null;
   }
 
-  rawLines.forEach((rawLine) => {
+  rawLines.forEach((rawLine: string) => {
     const normalized = normalizeCommentLine(rawLine);
     if (!normalized) {
       return;

@@ -93,7 +93,7 @@ function runRuleOnCode(code: string) {
     parserOptions: { ecmaVersion: 2020 },
   };
 
-  const listeners = rule.create(context);
+  const listeners: any = rule.create(context as any);
 
   if (typeof listeners.Program === "function") {
     listeners.Program({} as any);
