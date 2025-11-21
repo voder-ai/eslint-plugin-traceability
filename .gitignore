@@ -142,3 +142,4 @@ tmp_jest_output.json
 # Ignore CI artifact reports
 
 ci/
+jscpd-report/

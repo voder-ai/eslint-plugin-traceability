@@ -30,8 +30,7 @@
     "audit:dev-high": "node scripts/generate-dev-deps-audit.js",
     "safety:deps": "node scripts/ci-safety-deps.js",
     "audit:ci": "node scripts/ci-audit.js",
-    "smoke-test": "./scripts/smoke-test.sh",
-    "prepare": "husky install"
+    "smoke-test": "./scripts/smoke-test.sh"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,md}": [

@@ -1,19 +1,20 @@
 ## NOW
 
-- [ ] Use read_file to open `docs/stories/007.0-DEV-ERROR-REPORTING.story.md` to refresh the exact error-reporting requirements and acceptance criteria.
+- [ ] Use read_file on `.gitignore` to see the current ignore rules and confirm whether `jscpd-report/` or `jscpd-report/jscpd-report.json` are already listed or need to be added.
 
 ## NEXT
 
-- [ ] Use read_file on `tests/rules/error-reporting.test.ts` and `src/rules/require-req-annotation.ts` to understand the current error-message behavior and how it differs from the 007.0 story requirements.
-- [ ] Analyze `src/index.ts` exported rule configs (recommended/strict) and any rule meta to see how severity levels are currently applied vs. what 007.0 expects (e.g., errors for missing annotations, warnings for format issues).
-- [ ] Design concrete changes to `require-req-annotation` (and, if necessary, other rules or configs) so that all rules covered by 007.0 provide specific, context-rich error messages and appropriate severities while staying backward compatible where possible.
-- [ ] Modify `src/rules/require-req-annotation.ts` (and any other directly impacted rule or config files) to implement the new error messages, suggestions, and severity behavior defined in the design.
-- [ ] Update or extend Jest tests in `tests/rules/error-reporting.test.ts` and `tests/rules/require-req-annotation.test.ts` to cover the new error-reporting behavior, including function-name context, suggestion descriptions, and severity expectations where applicable.
-- [ ] Update `docs/stories/007.0-DEV-ERROR-REPORTING.story.md` and any relevant rule or user docs to reflect the finalized error-message formats, examples, and severity semantics, ensuring REQ IDs and examples match the implementation and tests.
-- [ ] Review the functionality assessment (or rerun the relevant tooling if available) to confirm that Story 007.0 now passes and identify the next failing story to tackle.
+- [ ] If `jscpd-report/` is not ignored, use modify_file on `.gitignore` to add an entry for `jscpd-report/` so future duplication reports are not tracked.
+- [ ] Use find_files to confirm whether `jscpd-report/jscpd-report.json` (or any other files under `jscpd-report/`) are currently tracked in the repo.
+- [ ] If a tracked `jscpd-report` artifact exists, remove it from the repository using the appropriate file-removal tool (not touching .voder/ or prompts/).
+- [ ] Open `.husky/pre-commit`, `.husky/pre-push`, and `package.json` (prepare script) with read_file to understand the current Husky setup that is causing the `husky - install command is DEPRECATED` warning.
+- [ ] Design a minimal Husky configuration change (likely updating the prepare script and/or how hooks are installed) that removes use of the deprecated `husky install` pattern while preserving existing hook behavior.
+- [ ] Apply the Husky configuration change using modify_file on `package.json` and any affected `.husky/*` scripts to eliminate the deprecation warning without altering which checks run.
+- [ ] Open `.github/workflows/ci-cd.yml` with read_file and locate the `dependency-health` job, including its Node version and the `npm audit` command used there.
+- [ ] Update the `dependency-health` job configuration via modify_file on `.github/workflows/ci-cd.yml` so it uses a Node version compatible with all devDependencies (e.g., Node 20.x) and handles the known, documented high-severity dev-only vulnerabilities in a way that lets the job pass while still running `npm audit` (for example, by adjusting the audit command or delegating to the existing non-failing audit scripts).
 
 ## LATER
 
-- [ ] For each remaining failing story identified in the functionality assessment, repeat the inspect–design–implement–test–doc-align cycle used for 007.0 until all stories reach the required alignment threshold.
-- [ ] After all currently failing stories are addressed, review cross-cutting behaviors in error handling and annotation logic across rules for small, safe refactors (e.g., shared error-message helpers) to reduce duplication without changing behavior.
-- [ ] Once functional coverage is complete and stable, consider adding a few additional characterization tests for complex or rare error-reporting edge cases to guard future refactors.
+- [ ] Re-run the VERSION_CONTROL portion of the implementation assessment (or equivalent tooling) after CI has had a chance to run with the updated workflow, to confirm that the CI/CD pipeline (including the scheduled dependency-health job) is consistently green.
+- [ ] Once VERSION_CONTROL meets its threshold and FUNCTIONALITY assessment is unblocked, iterate on any remaining failing stories using the established inspect–design–implement–test–doc-align cycle.
+- [ ] Consider adding lightweight documentation in `docs/decisions` describing the rationale for the updated dependency-health job behavior and Husky setup, to keep future maintenance aligned with the current CI/CD and security policies.
