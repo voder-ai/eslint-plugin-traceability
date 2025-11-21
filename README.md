@@ -55,6 +55,8 @@ module.exports = [
 - `traceability/valid-story-reference` Validates that `@story` references point to existing story files. ([Documentation](docs/rules/valid-story-reference.md))
 - `traceability/valid-req-reference` Validates that `@req` references point to existing requirement IDs. ([Documentation](docs/rules/valid-req-reference.md))
 
+For advanced configuration (per-rule options such as scopes, branch types, and story directory settings), see the individual rule docs in `docs/rules/` and the [API Reference](user-docs/api-reference.md).
+
 For development and contribution guidelines, see docs/eslint-plugin-development-guide.md.
 
 ## Quick Start

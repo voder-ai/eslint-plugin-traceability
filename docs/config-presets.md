@@ -14,14 +14,14 @@ import traceability from "eslint-plugin-traceability";
 export default [js.configs.recommended, traceability.configs.recommended];
 ```
 
-This preset enables the following rules at the `error` level:
+This preset enables the following rules with their default severities (most at `error`, one at `warn`):
 
-- `traceability/require-story-annotation`
-- `traceability/require-req-annotation`
-- `traceability/require-branch-annotation`
-- `traceability/valid-annotation-format`
-- `traceability/valid-story-reference`
-- `traceability/valid-req-reference`
+- `traceability/require-story-annotation`: `error`
+- `traceability/require-req-annotation`: `error`
+- `traceability/require-branch-annotation`: `error`
+- `traceability/valid-annotation-format`: `warn`
+- `traceability/valid-story-reference`: `error`
+- `traceability/valid-req-reference`: `error`
 
 ## Strict Preset
 

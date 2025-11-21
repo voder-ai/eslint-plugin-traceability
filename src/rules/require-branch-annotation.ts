@@ -44,6 +44,9 @@ const rule: Rule.RuleModule = {
    */
   create(context) {
     const branchTypesOrListener = validateBranchTypes(context);
+    // Branch configuration guard: if validation returns a listener, use it directly instead of branch-type iteration.
+    // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+    // @req REQ-CONFIGURABLE-SCOPE - Allow the rule to short-circuit when configuration is invalid or specialized
     if (!Array.isArray(branchTypesOrListener)) {
       return branchTypesOrListener;
     }

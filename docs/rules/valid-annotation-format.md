@@ -94,3 +94,4 @@ if (condition) {
  * @req REQ-EXAMPLE
  */
 function badExample() {}
+```

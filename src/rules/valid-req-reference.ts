@@ -104,8 +104,6 @@ function validateReqLine(opts: {
 
 /**
  * Handle a single annotation line.
- * @story Updates the current story path when encountering an @story annotation
- * @req Validates the requirement reference against the current story content
  *
  * @param opts handler options
  *
