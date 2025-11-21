@@ -240,9 +240,30 @@ export default {
       recommended: "error",
     },
     messages: {
+      /**
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+       * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+       * @req REQ-ERROR-SPECIFIC - Provide specific diagnostics when a referenced story file cannot be found
+       * @req REQ-ERROR-CONTEXT - Include the original story path in the error message for troubleshooting
+       * @req REQ-ERROR-CONSISTENCY - Use consistent file-related error wording and placeholders across rules
+       */
       fileMissing: "Story file '{{path}}' not found",
+      /**
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+       * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+       * @req REQ-ERROR-SPECIFIC - Indicate that the story file extension is invalid and what is expected
+       * @req REQ-ERROR-CONTEXT - Include the provided path so developers can see which reference is wrong
+       * @req REQ-ERROR-CONSISTENCY - Reuse the same pattern of "{{path}}" placeholder across file validation messages
+       */
       invalidExtension:
         "Invalid story file extension for '{{path}}', expected '.story.md'",
+      /**
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+       * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+       * @req REQ-ERROR-SPECIFIC - Explain that the story path is invalid due to absolute or unsafe traversal
+       * @req REQ-ERROR-CONTEXT - Surface the offending path to assist with correcting the reference
+       * @req REQ-ERROR-CONSISTENCY - Maintain a consistent template for invalid path diagnostics across rules
+       */
       invalidPath: "Invalid story path '{{path}}'",
       /**
        * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md

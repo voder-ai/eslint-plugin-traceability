@@ -409,7 +409,19 @@ export default {
       recommended: "error",
     },
     messages: {
+      /**
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+       * @req REQ-ERROR-SPECIFIC - Provide specific details about invalid @story annotation format
+       * @req REQ-ERROR-CONTEXT - Include human-readable details about the expected @story annotation format
+       * @req REQ-ERROR-CONSISTENCY - Use shared "Invalid annotation format: {{details}}." message pattern across rules
+       */
       invalidStoryFormat: "Invalid annotation format: {{details}}.",
+      /**
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+       * @req REQ-ERROR-SPECIFIC - Provide specific details about invalid @req annotation format
+       * @req REQ-ERROR-CONTEXT - Include human-readable details about the expected @req annotation format
+       * @req REQ-ERROR-CONSISTENCY - Use shared "Invalid annotation format: {{details}}." message pattern across rules
+       */
       invalidReqFormat: "Invalid annotation format: {{details}}.",
     },
     schema: [],
