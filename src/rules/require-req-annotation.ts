@@ -32,8 +32,12 @@ const rule: Rule.RuleModule = {
       recommended: "error",
     },
     messages: {
-      missingReq:
-        "Missing @req annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)",
+      /**
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+       * @req REQ-ERROR-CONSISTENCY - Align missing @req function error with cross-rule conventions
+       * @req REQ-ERROR-SPECIFIC - Provide specific function name in error message
+       */
+      missingReq: "Function '{{name}}' is missing a required @req annotation.",
     },
     schema: [
       {

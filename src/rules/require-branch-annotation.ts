@@ -26,7 +26,11 @@ const rule: Rule.RuleModule = {
     },
     fixable: "code",
     messages: {
-      missingAnnotation: "Missing {{missing}} annotation on code branch",
+      /**
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+       * @req REQ-ERROR-CONSISTENCY - Use shared branch error message convention with {{missing}} placeholder
+       */
+      missingAnnotation: "Branch is missing required annotation: {{missing}}.",
     },
     schema: [
       {

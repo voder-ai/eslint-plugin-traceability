@@ -105,7 +105,12 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @req on function without JSDoc",
         code: `function baz() {}`,
-        errors: [{ messageId: "missingReq", data: { name: "baz" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "baz" },
+          },
+        ],
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @req on function with only @story annotation",
