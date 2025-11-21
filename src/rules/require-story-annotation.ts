@@ -23,9 +23,13 @@ import {
  * ESLint rule to require @story annotations on functions/methods.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED
  * @req REQ-AUTOFIX-MISSING - This rule participates in auto-fix for missing @story annotations.
+ * @req REQ-ERROR-MSG-CONTENT - Error message instructs adding an explicit @story annotation that points to the implementing story file.
+ * @req REQ-ERROR-MSG-PLACEHOLDER - Error message retains the {{name}} placeholder for the function name.
+ * @req REQ-ERROR-MSG-ACTIONABLE - Error message text is concise, imperative, and describes the required remediation.
  */
 const rule: Rule.RuleModule = {
   meta: {
@@ -48,7 +52,7 @@ const rule: Rule.RuleModule = {
     fixable: "code",
     messages: {
       missingStory:
-        "Function '{{name}}' is missing a required @story annotation. Add a JSDoc or line comment with @story pointing to the implementing story file (for example, docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md).",
+        "Function '{{name}}' must have an explicit @story annotation. Add a JSDoc or line comment with @story that points to the implementing story file (for example, docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md).",
     },
     schema: [
       {
