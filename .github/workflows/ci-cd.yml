@@ -108,7 +108,7 @@ jobs:
         run: npm run format:check
 
       - name: Run production security audit
-        run: npm audit --production --audit-level=high
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Run dev dependency security audit
         run: npm run audit:dev-high

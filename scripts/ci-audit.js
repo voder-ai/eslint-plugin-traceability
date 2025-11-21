@@ -1,5 +1,5 @@
 /**
- * CI helper to run npm audit --json and write output to ci/npm-audit.json
+ * CI helper to run npm audit in JSON mode and write output to ci/npm-audit.json
  * @story docs/stories/012.0-DEV-CI-AUDIT-INTEGRATION.story.md
  * @req REQ-CI-AUDIT - Produce machine-readable npm audit reports for CI artifacts
  */
