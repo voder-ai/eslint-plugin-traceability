@@ -108,19 +108,29 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         errors: [
           {
             messageId: "missingReq",
-            data: { name: "baz" },
+            data: { name: "baz", functionName: "baz" },
           },
         ],
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @req on function with only @story annotation",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction qux() {}`,
-        errors: [{ messageId: "missingReq", data: { name: "qux" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "qux", functionName: "qux" },
+          },
+        ],
       },
       {
         name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction",
         code: `declare function baz(): void;`,
-        errors: [{ messageId: "missingReq", data: { name: "baz" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "baz", functionName: "baz" },
+          },
+        ],
         languageOptions: {
           parser: require("@typescript-eslint/parser") as any,
           parserOptions: { ecmaVersion: 2022, sourceType: "module" },
@@ -129,7 +139,12 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
       {
         name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
         code: `interface I { method(): void; }`,
-        errors: [{ messageId: "missingReq", data: { name: "method" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "method", functionName: "method" },
+          },
+        ],
         languageOptions: {
           parser: require("@typescript-eslint/parser") as any,
           parserOptions: { ecmaVersion: 2022, sourceType: "module" },
@@ -138,27 +153,52 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on FunctionExpression assigned to variable",
         code: `const fn = function () {};`,
-        errors: [{ messageId: "missingReq", data: { name: "fn" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "fn", functionName: "fn" },
+          },
+        ],
       },
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on anonymous FunctionExpression (no variable name)",
         code: `(function () {})();`,
-        errors: [{ messageId: "missingReq", data: { name: "(anonymous)" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "(anonymous)", functionName: "(anonymous)" },
+          },
+        ],
       },
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on MethodDefinition in class",
         code: `class C {\n  m() {}\n}`,
-        errors: [{ messageId: "missingReq", data: { name: "m" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "m", functionName: "m" },
+          },
+        ],
       },
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on MethodDefinition in object literal",
         code: `const o = { m() {} };`,
-        errors: [{ messageId: "missingReq", data: { name: "m" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "m", functionName: "m" },
+          },
+        ],
       },
       {
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on TS FunctionExpression in variable declarator",
         code: `const fn = function () {};`,
-        errors: [{ messageId: "missingReq", data: { name: "fn" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "fn", functionName: "fn" },
+          },
+        ],
         languageOptions: {
           parser: require("@typescript-eslint/parser") as any,
           parserOptions: { ecmaVersion: 2022, sourceType: "module" },
@@ -167,7 +207,12 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
       {
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on exported TS FunctionExpression in variable declarator",
         code: `export const fn = function () {};`,
-        errors: [{ messageId: "missingReq", data: { name: "fn" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "fn", functionName: "fn" },
+          },
+        ],
         languageOptions: {
           parser: require("@typescript-eslint/parser") as any,
           parserOptions: { ecmaVersion: 2022, sourceType: "module" },
@@ -177,43 +222,78 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         name: "[REQ-CONFIGURABLE-SCOPE][Story 003.0] FunctionDeclaration still reported when scope only includes FunctionDeclaration",
         code: `function scoped() {}`,
         options: [{ scope: ["FunctionDeclaration"] }],
-        errors: [{ messageId: "missingReq", data: { name: "scoped" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "scoped", functionName: "scoped" },
+          },
+        ],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] exported function reported when exportPriority is 'exported'",
         code: `export function exportedFn() {}`,
         options: [{ exportPriority: "exported" }],
-        errors: [{ messageId: "missingReq", data: { name: "exportedFn" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "exportedFn", functionName: "exportedFn" },
+          },
+        ],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] non-exported function reported when exportPriority is 'non-exported'",
         code: `function nonExported() {}`,
         options: [{ exportPriority: "non-exported" }],
-        errors: [{ messageId: "missingReq", data: { name: "nonExported" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "nonExported", functionName: "nonExported" },
+          },
+        ],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] exported method reported when exportPriority is 'exported'",
         code: `export class C {\n  m() {}\n}`,
-        errors: [{ messageId: "missingReq" }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "m", functionName: "m" },
+          },
+        ],
         options: [{ exportPriority: "exported" }],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] non-exported method reported when exportPriority is 'non-exported'",
         code: `class C {\n  m() {}\n}`,
-        errors: [{ messageId: "missingReq" }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "m", functionName: "m" },
+          },
+        ],
         options: [{ exportPriority: "non-exported" }],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] exported FunctionExpression reported when exportPriority is 'exported'",
         code: `export const fn = function () {};`,
         options: [{ exportPriority: "exported" }],
-        errors: [{ messageId: "missingReq", data: { name: "fn" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "fn", functionName: "fn" },
+          },
+        ],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] non-exported FunctionExpression reported when exportPriority is 'non-exported'",
         code: `const fn = function () {};`,
         options: [{ exportPriority: "non-exported" }],
-        errors: [{ messageId: "missingReq", data: { name: "fn" } }],
+        errors: [
+          {
+            messageId: "missingReq",
+            data: { name: "fn", functionName: "fn" },
+          },
+        ],
       },
     ],
   });

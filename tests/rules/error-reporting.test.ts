@@ -32,7 +32,7 @@ describe("Error Reporting Enhancements for require-story-annotation (Story 007.0
         errors: [
           {
             messageId: "missingStory",
-            data: { name: "bar" },
+            data: { name: "bar", functionName: "bar" },
             suggestions: [
               {
                 desc: "Add JSDoc @story annotation for function 'bar', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
