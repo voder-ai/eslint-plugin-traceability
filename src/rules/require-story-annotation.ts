@@ -8,6 +8,8 @@
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED
  * @req REQ-AUTOFIX-MISSING - This rule supports auto-fixing missing @story annotations per Story 008.0 auto-fix behavior.
+ * @req REQ-AUTOFIX-SAFE - Auto-fix behavior only inserts @story annotation JSDoc comments and never changes executable or runtime code.
+ * @req REQ-AUTOFIX-PRESERVE - Auto-fix inserts a minimal placeholder JSDoc in a way that preserves existing surrounding formatting and structure.
  */
 import type { Rule } from "eslint";
 import { buildVisitors } from "./helpers/require-story-visitors";
@@ -40,6 +42,8 @@ const rule: Rule.RuleModule = {
      * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
      * @req REQ-ANNOTATION-REQUIRED
      * @req REQ-AUTOFIX-MISSING - `fixable: \"code\"` is used to implement REQ-AUTOFIX-MISSING for missing @story annotations.
+     * @req REQ-AUTOFIX-SAFE - Auto-fix is conservative and only adds a single-line JSDoc @story annotation without modifying existing runtime expressions.
+     * @req REQ-AUTOFIX-PRESERVE - Auto-fix behavior preserves surrounding code formatting and indentation when inserting the placeholder JSDoc.
      */
     fixable: "code",
     messages: {

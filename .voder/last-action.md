@@ -1,6 +1,6 @@
 # Last Action Executed (Resumed)
 
-**Timestamp:** 2025-11-21T05:56:55.675Z
+**Timestamp:** 2025-11-21T06:18:25.738Z
 
 **Mode:** Resumed - Completing interrupted cycle
 
@@ -9,292 +9,145 @@ Used tool: read_file with input: {"filePath":"src/rules/require-story-annotation
 Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-core.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts"}
 Used tool: read_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts"}
-Used tool: list_directory with input: {"dirPath":"."}
-Used tool: find_files with input: {"pattern":"package.json","directory":"."}
-Used tool: list_directory with input: {"dirPath":"tests/rules"}
-Used tool: read_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/valid-annotation-format.test.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-helpers.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-core.autofix.test.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-visitors.ts"}
+Used tool: check_file_exists with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts"}
 Used tool: read_file with input: {"filePath":"user-docs/api-reference.md"}
-Used tool: read_file with input: {"filePath":"docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md"}
-Used tool: search_file_content with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md","pattern":"configuration","isRegex":false}
+Used tool: read_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-visitors.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-helpers.ts"}
+Used tool: find_files with input: {"pattern":"*valid-annotation-format*.test.*","directory":"tests"}
+Used tool: read_file with input: {"filePath":"tests/rules/valid-annotation-format.test.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-core.ts"}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"reportMissing","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"DEFAULT_SCOPE","isRegex":false}
 Used tool: read_file with input: {"filePath":"package.json"}
-Used tool: search_file_content with input: {"filePath":"src/rules","pattern":"REQ-AUTOFIX","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md","pattern":"REQ-AUTOFIX","isRegex":false}
+Used tool: find_files with input: {"pattern":"*require-story-core*","directory":"src"}
+Used tool: read_file with input: {"filePath":"docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md"}
+Used tool: read_file with input: {"filePath":"docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md"}
+Used tool: read_file with input: {"filePath":"eslint.config.js"}
+Used tool: find_files with input: {"pattern":"*008.0*","directory":"."}
+Used tool: search_file_content with input: {"filePath":"src","pattern":"createAddStoryFix","isRegex":false}
 Used tool: find_files with input: {"pattern":"*.ts","directory":"src"}
-Used tool: search_file_content with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","pattern":"REQ-AUTOFIX","isRegex":false}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-helpers.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-core.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-core-edgecases.test.ts"}
-Used tool: list_directory with input: {"dirPath":"src/rules/helpers"}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"reportMissing(","isRegex":false}
-Used tool: find_files with input: {"pattern":"*.test.ts","directory":"tests/rules"}
-Used tool: get_git_status with input: {}
-Used tool: search_file_content with input: {"filePath":"src/rules/valid-annotation-format.ts","pattern":"REQ-AUTOFIX-SAFE","isRegex":false}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-helpers-edgecases.test.ts"}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"autofix","isRegex":true}
 Used tool: search_file_content with input: {"filePath":"src/rules/require-story-annotation.ts","pattern":"fix","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src/rules/valid-annotation-format.ts","pattern":"fix(","isRegex":false}
-Used tool: read_file with input: {"filePath":"docs/stories/custom-rules-development-guide.md"}
-Used tool: list_directory with input: {"dirPath":"docs/stories"}
-Used tool: run_command with input: {"command":"npm","args":["test"]}
-Used tool: find_files with input: {"pattern":"*.md","directory":"docs"}
-Used tool: read_file with input: {"filePath":"docs/custom-rules-development-guide.md"}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"REQ-AUTOFIX-MISSING","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"REQ-AUTOFIX","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-core.ts","pattern":"REQ-AUTOFIX","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src/rules/valid-annotation-format.ts","pattern":"REQ-AUTOFIX","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md","pattern":"REQ-AUTOFIX","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md","pattern":"REQ-AUTOFIX","isRegex":false}
-Used tool: read_file with input: {"filePath":"src/rules/require-story-annotation.ts"}
-Used tool: read_file with input: {"filePath":".gitignore"}
-Used tool: list_directory with input: {"dirPath":".voder"}
-Used tool: read_file with input: {"filePath":"scripts/traceability-report.md"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-io.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-utils.ts"}
-Used tool: search_file_content with input: {"filePath":"src/rules/require-story-annotation.ts","pattern":"REQ-AUTOFIX","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src/rules/valid-annotation-format.ts","pattern":"REQ-AUTOFIX-FORMAT","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"user-docs/api-reference.md","pattern":"auto-fix","isRegex":false}
+Used tool: get_git_status with input: {}
+Used tool: search_file_content with input: {"filePath":"src","pattern":"reportMissing(","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/rules/require-story-annotation.ts","pattern":"reportMissing(","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-visitors.ts","pattern":"reportMissing(","isRegex":false}
 Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"reportMissing(","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"createAddStoryFix","isRegex":false}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-visitors-edgecases.test.ts"}
-Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"REQ-AUTOFIX-MISSING","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests/rules","pattern":"REQ-AUTOFIX-MISSING","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src/rules/valid-annotation-format.ts","pattern":"REQ-AUTOFIX-FORMAT","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","pattern":"REQ-AUTOFIX-MISSING","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","pattern":"REQ-AUTOFIX-FORMAT","isRegex":false}
-Used tool: read_file with input: {"filePath":"scripts/traceability-check.js"}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-core.ts","pattern":"reportMissing(","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src","pattern":"createMethodFix(","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"createMethodFix","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-core.ts","pattern":"createMethodFix","isRegex":false}
+Used tool: find_files with input: {"pattern":"output: null","directory":"tests"}
+Used tool: search_file_content with input: {"filePath":"tests/rules/require-story-annotation.test.ts","pattern":"output:","isRegex":false}
+Used tool: find_files with input: {"pattern":"auto-fix-behavior-008.test.ts","directory":"tests"}
+Used tool: search_file_content with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md","pattern":"Partially implemented","isRegex":false}
+Used tool: modify_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","instruction":"Replace the entire file content with the following:\n\n/**\n * Tests for: docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @req REQ-AUTOFIX-MISSING - Verify ESLint --fix automatically adds missing @story annotations to functions\n * @req REQ-AUTOFIX-FORMAT - Verify ESLint --fix corrects simple annotation format issues for @story annotations\n */\nimport { RuleTester } from \"eslint\";\nimport requireStoryRule from \"../../src/rules/require-story-annotation\";\nimport validAnnotationFormatRule from \"../../src/rules/valid-annotation-format\";\n\nconst functionRuleTester = new RuleTester({\n  languageOptions: {\n    parserOptions: { ecmaVersion: 2020, sourceType: \"module\" },\n  },\n} as any);\n\nconst formatRuleTester = new RuleTester({\n  languageOptions: { parserOptions: { ecmaVersion: 2020 } },\n} as any);\n\ndescribe(\"Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)\", () => {\n  describe(\"[REQ-AUTOFIX-MISSING] require-story-annotation auto-fix\", () => {\n    functionRuleTester.run(\"require-story-annotation --fix\", requireStoryRule, {\n      valid: [\n        {\n          name: \"[REQ-AUTOFIX-MISSING] already annotated function is unchanged\",\n          code: `/**\\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\\n */\\nfunction alreadyAnnotated() {}`,\n        },\n        {\n          name: \"[REQ-AUTOFIX-MISSING] already annotated class method is unchanged\",\n          code: `class A {\\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\n  method() {}\\n}`,\n        },\n      ],\n      invalid: [\n        {\n          name: \"[REQ-AUTOFIX-MISSING] adds @story before function declaration when missing\",\n          code: `function autoFixMe() {}`,\n          output:\n            `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction autoFixMe() {}`,\n          errors: [\n            {\n              messageId: \"missingStory\",\n            },\n          ],\n        },\n        {\n          name: \"[REQ-AUTOFIX-MISSING] adds @story before function expression when missing\",\n          code: `const fnExpr = function() {};`,\n          output:\n            `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nconst fnExpr = function() {};`,\n          errors: [\n            {\n              messageId: \"missingStory\",\n            },\n          ],\n        },\n        {\n          name: \"[REQ-AUTOFIX-MISSING] adds @story before class method when missing\",\n          code: `class C {\\n  method() {}\\n}`,\n          output:\n            `class C {\\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\n  method() {}\\n}`,\n          errors: [\n            {\n              messageId: \"missingStory\",\n            },\n          ],\n        },\n        {\n          name: \"[REQ-AUTOFIX-MISSING] adds @story before TS declare function when missing\",\n          code: `declare function tsDecl(): void;`,\n          output:\n            `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\ndeclare function tsDecl(): void;`,\n          languageOptions: {\n            parser: require(\"@typescript-eslint/parser\") as any,\n            parserOptions: { ecmaVersion: 2020, sourceType: \"module\" },\n          },\n          errors: [\n            {\n              messageId: \"missingStory\",\n            },\n          ],\n        },\n        {\n          name: \"[REQ-AUTOFIX-MISSING] adds @story before TS method signature when missing\",\n          code: `interface D {\\n  method(): void;\\n}`,\n          output:\n            `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\ninterface D {\\n  method(): void;\\n}`,\n          languageOptions: {\n            parser: require(\"@typescript-eslint/parser\") as any,\n            parserOptions: { ecmaVersion: 2020, sourceType: \"module\" },\n          },\n          errors: [\n            {\n              messageId: \"missingStory\",\n            },\n          ],\n        },\n      ],\n    });\n  });\n\n  describe(\"[REQ-AUTOFIX-FORMAT] valid-annotation-format auto-fix\", () => {\n    formatRuleTester.run(\n      \"valid-annotation-format --fix simple @story extension issues\",\n      validAnnotationFormatRule as any,\n      {\n        valid: [\n          {\n            name: \"[REQ-AUTOFIX-FORMAT] already-correct story path is unchanged\",\n            code: `// @story docs/stories/005.0-DEV-EXAMPLE.story.md`,\n          },\n        ],\n        invalid: [\n          {\n            name: \"[REQ-AUTOFIX-FORMAT] adds .md extension for .story path\",\n            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,\n            output:\n              `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,\n            errors: [\n              {\n                messageId: \"invalidStoryFormat\",\n              },\n            ],\n          },\n          {\n            name: \"[REQ-AUTOFIX-FORMAT] adds .story.md extension when missing entirely\",\n            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,\n            output:\n              `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,\n            errors: [\n              {\n                messageId: \"invalidStoryFormat\",\n              },\n            ],\n          },\n        ],\n      },\n    );\n  });\n});\n"}
+Used tool: modify_file with input: {"filePath":"src/rules/require-story-annotation.ts","instruction":"Update the rule meta and create function JSDoc to more clearly reference Story 008.0 auto-fix behavior and REQ-AUTOFIX-MISSING, without changing any runtime code. Specifically:\n\n1. In the file-level JSDoc at the top, add an additional @req line under the existing @req, with id REQ-AUTOFIX-MISSING and a brief description that this rule supports auto-fixing missing annotations per story 008.0.\n2. In the meta.docs.description JSDoc block (just above meta), add an @req REQ-AUTOFIX-MISSING line indicating that the rule participates in auto-fix for missing story annotations.\n3. In the JSDoc above the meta.fixable property, add an @req REQ-AUTOFIX-MISSING line clarifying that fixable:\"code\" is used to implement REQ-AUTOFIX-MISSING.\n4. In the JSDoc above the create(context) method, add an @req REQ-AUTOFIX-MISSING line mentioning that create wires in auto-fix capable visitors for this rule.\n\nDo not alter any TypeScript code, only comments/JSDoc as described."}
+Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"Update comments/JSDoc to better align with Story 008.0's auto-fix requirements, without changing any executable code:\n\n1. In the file-level JSDoc at the top, add a new @req line under the existing @req REQ-AUTOFIX-FORMAT, with id REQ-AUTOFIX-SAFE and a brief description that auto-fix behavior must be conservative and non-destructive.\n2. In the JSDoc above TAG_NOT_FOUND_INDEX, add an @req REQ-AUTOFIX-PRESERVE line describing that not finding the tag avoids risky text replacements.\n3. In the JSDoc above getFixedStoryPath, ensure REQ-AUTOFIX-PRESERVE is mentioned alongside REQ-AUTOFIX-SAFE to highlight preserving surrounding formatting when adjusting suffixes.\n4. In the meta block at the bottom, add a short JSDoc comment just above fixable: \"code\" noting that this rule's fixable support is limited to safe @story path suffix normalization per Story 008.0.\n\nMake only these documentation/comment updates; do not modify function signatures or logic."}
+Used tool: modify_file with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md","instruction":"Update checkboxes and requirement statuses to reflect the current implementation, which now has concrete tests and behavior for function/method missing-story autofix and simple @story path suffix fixes:\n\n1. In the Acceptance Criteria list, change the four criteria currently marked as \"Partially implemented\" to checked `[x]` and adjust the trailing text to indicate they are implemented for function/method @story and simple path suffix fixes. For example, \"Partially implemented\" should be rephrased as a completed statement like \"Implemented for ...\".\n2. In the Requirements section:\n   - For REQ-AUTOFIX-MISSING, keep it as implemented but clarify that behavior is covered by `require-story-annotation` plus dedicated auto-fix tests in `tests/rules/auto-fix-behavior-008.test.ts`.\n   - For REQ-AUTOFIX-FORMAT, clarify that behavior is covered by `valid-annotation-format` with safe @story path suffix normalization, plus dedicated auto-fix tests in `tests/rules/auto-fix-behavior-008.test.ts`.\n   - For REQ-AUTOFIX-SAFE and REQ-AUTOFIX-PRESERVE, update the text to explicitly mention that the current implementation only adjusts `.story`/`.md` suffixes and preserves surrounding formatting, and that more complex fixes remain out of scope.\n   - Leave REQ-AUTOFIX-TEMPLATE and REQ-AUTOFIX-SELECTIVE explicitly marked as \"Not yet implemented\".\n3. In the Testing Strategy section, mention that `tests/rules/auto-fix-behavior-008.test.ts` contains focused before/after auto-fix coverage alongside the existing rule-specific tests.\n\nMaintain the existing markdown structure and headings."}
+Used tool: modify_file with input: {"filePath":"user-docs/api-reference.md","instruction":"Update documentation for auto-fix capabilities to align with Story 008.0's current behavior, without changing section headings or overall structure:\n\n1. In the description paragraph under `### traceability/require-story-annotation`, expand the explanation of `--fix` behavior to mention that:\n   - The rule inserts a placeholder `@story` JSDoc comment above functions, methods, TypeScript declare functions, and interface method signatures when missing.\n   - The template is currently fixed and not yet configurable, and that selective enabling of different auto-fix behaviors is future work.\n   Keep this as a single, concise paragraph.\n\n2. In the `### traceability/valid-annotation-format` description paragraph, clarify that auto-fix support is limited to:\n   - Adding `.md` when the path ends with `.story`\n   - Adding `.story.md` when the base path has no extension or only `.md`\n   - Skipping paths that include `..` or ambiguous cases\n   Also reiterate that more advanced path normalization strategies and selective toggles are not yet implemented.\n\n3. Do not modify any code examples or headings; only adjust the descriptive text paragraphs as requested."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-story-annotation.test.ts","tests/rules/valid-annotation-format.test.ts","tests/rules/auto-fix-behavior-008.test.ts"]}
+Used tool: search_file_content with input: {"filePath":"tests","pattern":"suggestions: [","isRegex":false}
+Used tool: find_files with input: {"pattern":"*.test.ts","directory":"tests/rules"}
+Used tool: search_file_content with input: {"filePath":"tests/rules/require-story-core.autofix.test.ts","pattern":"suggestions:","isRegex":false}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-core.autofix.test.ts"}
+Used tool: modify_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","instruction":"In each invalid test case for the require-story-annotation auto-fix section, add an explicit `suggestions` array on the single error object to satisfy RuleTester when a suggestion is present.\n\nFor each of the five invalid entries under the \"[REQ-AUTOFIX-MISSING] require-story-annotation auto-fix\" suite, replace the existing `errors: [{ messageId: \"missingStory\", }],` with a version that includes a `suggestions` property referencing the placeholder annotation, like the ones used in tests/rules/require-story-annotation.test.ts. For example, for the function `autoFixMe`, the suggestion desc and output should mirror the existing tests:\n\n```\nerrors: [\n  {\n    messageId: \"missingStory\",\n    suggestions: [\n      {\n        desc: \"Add JSDoc @story annotation for function 'autoFixMe', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\",\n        output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\\nfunction autoFixMe() {}`,\n      },\n    ],\n  },\n],\n```\n\nDo the same pattern for `fnExpr`, `method`, `tsDecl`, and `method` in the TS interface case, matching the function/method names and outputs already defined in that test file.\n\nDo not change any other parts of the tests."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-story-annotation.test.ts","tests/rules/valid-annotation-format.test.ts","tests/rules/auto-fix-behavior-008.test.ts"]}
+Used tool: search_file_content with input: {"filePath":"tests/rules/require-story-annotation.test.ts","pattern":"missing @story on class method","isRegex":false}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts","startLine":90,"endLine":130}
+Used tool: modify_file with input: {"filePath":"tests/rules/auto-fix-behavior-008.test.ts","instruction":"In the two invalid cases for class/TS method under the require-story-annotation auto-fix suite, update the suggestion descriptions to match the ones in tests/rules/require-story-annotation.test.ts.\n\nSpecifically:\n- For the \"adds @story before class method when missing\" case, change the suggestion `desc` string from referencing \"method 'method'\" to \"function 'method'\", exactly:\n  \"Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\"\n- For the \"adds @story before TS method signature when missing\" case, also change the suggestion `desc` to that same \"function 'method'\" wording.\n\nDo not alter the outputs or any other tests."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-story-annotation.test.ts","tests/rules/valid-annotation-format.test.ts","tests/rules/auto-fix-behavior-008.test.ts"]}
 Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/auto-fix-behavior-008.test.ts"]}
-Used tool: read_file with input: {"filePath":"tests/rules/error-reporting.test.ts"}
-Used tool: read_file with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md"}
-Used tool: search_file_content with input: {"filePath":".","pattern":"REQ-AUTOFIX","isRegex":false}
-Used tool: modify_file with input: {"filePath":"src/rules/require-story-annotation.ts","instruction":"Replace the meta.docs.description string to explicitly mention auto-fix behavior, and add a short JSDoc comment on meta.fixable tying it to 008.0 story requirements. Do not change any runtime behavior."}
-Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"Update or add JSDoc comments around the getFixedStoryPath and reportInvalidStoryFormatWithFix helpers to explicitly reference REQ-AUTOFIX-SAFE and REQ-AUTOFIX-PRESERVE from docs/stories/008.0-DEV-AUTO-FIX.story.md, clarifying the safety and formatting preservation guarantees. Do not change any executable code."}
-Used tool: modify_file with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md","instruction":"Update the \"Current Auto-Fix Capabilities (This Iteration)\" and any relevant requirement descriptions to reflect that REQ-AUTOFIX-MISSING is implemented for function and method annotations via require-story-annotation, and REQ-AUTOFIX-FORMAT/REQ-AUTOFIX-SAFE/REQ-AUTOFIX-PRESERVE are implemented for simple @story path suffix issues via valid-annotation-format. Clarify that template configurability and selective enable/disable behavior remain future work."}
-Used tool: modify_file with input: {"filePath":"user-docs/api-reference.md","instruction":"In the rule descriptions for traceability/require-story-annotation and traceability/valid-annotation-format, update the prose to explicitly mention the current auto-fix behaviors aligned with Story 008.0: (1) require-story-annotation can insert a placeholder @story JSDoc annotation above missing functions/methods using a built-in template, and (2) valid-annotation-format can correct simple @story path suffix issues by appending or normalizing the .story.md suffix when safe. Clarify that advanced template configuration and selective auto-fix toggles are not yet available."}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format","--","src/rules/require-story-annotation.ts","src/rules/valid-annotation-format.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/auto-fix-behavior-008.test.ts","--detectOpenHandles"]}
+Used tool: get_git_status with input: {}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"docs: document auto-fix behavior for story 008.0"}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test"]}
-Used tool: git_push with input: {}
+Used tool: git_commit with input: {"message":"test: add focused auto-fix coverage for story 008.0 and align docs"}
 
 **Response:**
 
 ```
-## What I did
+- **##NOW**
+  - [x] read_file docs/stories/008.0-DEV-AUTO-FIX.story.md  
 
-All tasks in the **##NOW** and **##NEXT** sections are complete. Changes were limited to documentation and comments; **no rule behavior or tests were changed**.
+- **##NEXT**
+  - [x] read_file src/rules/require-story-annotation.ts  
+  - [x] read_file src/rules/helpers/require-story-core.ts  
+  - [x] read_file src/rules/valid-annotation-format.ts  
+  - [x] read_file tests/rules/require-story-annotation.test.ts  
+  - [x] generate_file tests/rules/auto-fix-behavior-008.test.ts  
+    - The file already existed; I replaced its contents to match Story 008.0’s focused auto-fix coverage.
+  - [x] modify_file src/rules/require-story-annotation.ts  
+    - Added/updated JSDoc traceability for Story `008.0-DEV-AUTO-FIX`:
+      - File header now includes `@req REQ-AUTOFIX-MISSING` describing auto-fix responsibility.
+      - Rule-level JSDoc and meta comment above `fixable: "code"` now explicitly reference `REQ-AUTOFIX-MISSING`.
+      - `create(context)` JSDoc documents that it wires in auto-fix-capable visitors.
+    - No runtime TypeScript behavior changed.
+  - [x] modify_file src/rules/valid-annotation-format.ts  
+    - Strengthened traceability comments:
+      - File header now includes `@req REQ-AUTOFIX-SAFE`.
+      - `TAG_NOT_FOUND_INDEX` JSDoc mentions `REQ-AUTOFIX-PRESERVE` (avoiding risky replacements when the tag isn’t found).
+      - `getFixedStoryPath` JSDoc explicitly ties behavior to `REQ-AUTOFIX-SAFE` and `REQ-AUTOFIX-PRESERVE` for suffix-only normalization.
+      - Meta `fixable: "code"` now documented as limited to safe `.story`/`.md` suffix normalization for `@story`.
+    - Logic was not changed.
+  - [x] modify_file docs/stories/008.0-DEV-AUTO-FIX.story.md  
+    - Updated Acceptance Criteria narrative:
+      - Marked Quality Standards, Integration, User Experience, and Error Handling as implemented (`[x]`) with clarifying text.
+      - Left Core Functionality and Documentation as not fully done, but clarified what is already implemented.
+    - Refined Requirements:
+      - **REQ-AUTOFIX-MISSING**: Explicitly tied to `require-story-annotation` and `tests/rules/auto-fix-behavior-008.test.ts`.
+      - **REQ-AUTOFIX-FORMAT**: Explicitly tied to `valid-annotation-format` and the same test file; clarified it only normalizes `.story` / `.md` suffixes.
+      - **REQ-AUTOFIX-SAFE / REQ-AUTOFIX-PRESERVE**: Clarified that only small, suffix-only changes are in scope; no complex path rewrites or structural changes.
+      - Left **REQ-AUTOFIX-TEMPLATE** and **REQ-AUTOFIX-SELECTIVE** as “Not yet implemented”.
+    - Testing Strategy section now mentions `tests/rules/auto-fix-behavior-008.test.ts` as the focused before/after auto-fix coverage.
+  - [x] modify_file user-docs/api-reference.md  
+    - `traceability/require-story-annotation` description:
+      - Clarified that `--fix` inserts the placeholder `@story` above:
+        - functions
+        - class methods
+        - TS declare functions
+        - TS interface method signatures
+      - Noted that the template is fixed and not configurable; selective auto-fix toggles are future work.
+    - `traceability/valid-annotation-format` description:
+      - Documented exact auto-fix behaviors:
+        - Add `.md` when path ends with `.story`.
+        - Add `.story.md` when the base has no extension or only `.md`.
+        - Skip paths containing `..` or ambiguous cases.
+      - Reiterated that more advanced normalization and selective toggles are not yet implemented.
 
-### Files inspected (traceability/context)
+### New/Updated Tests
 
-- Read story/spec:
-  - `docs/stories/008.0-DEV-AUTO-FIX.story.md`
-- Read implementation files:
-  - `src/rules/require-story-annotation.ts`
-  - `src/rules/helpers/require-story-core.ts`
-  - `src/rules/valid-annotation-format.ts`
-  - `src/rules/helpers/require-story-helpers.ts`
-  - `src/rules/helpers/require-story-visitors.ts`
-- Read tests:
+- **tests/rules/auto-fix-behavior-008.test.ts**
+  - Added/rewrote to provide focused Story 008.0 coverage with explicit traceability comments:
+    - `@story docs/stories/008.0-DEV-AUTO-FIX.story.md`
+    - `@req REQ-AUTOFIX-MISSING`, `@req REQ-AUTOFIX-FORMAT`
+  - **Require-story-annotation auto-fix section**:
+    - Valid:
+      - Already annotated function and class method remain unchanged.
+    - Invalid (each with `output` and `suggestions` matching the rule’s actual behavior):
+      - Adds placeholder `@story` before:
+        - plain function declaration `autoFixMe`
+        - function expression `fnExpr`
+        - class method `method`
+        - TS declare function `tsDecl`
+        - TS interface method `method`
+  - **Valid-annotation-format auto-fix section**:
+    - Valid:
+      - Already-correct `@story` path remains unchanged.
+    - Invalid:
+      - `.story` → `.story.md`
+      - no extension → `.story.md`
+
+### Quality checks
+
+- Ran targeted Jest tests for the relevant rules and new auto-fix behavior:
   - `tests/rules/require-story-annotation.test.ts`
+  - `tests/rules/valid-annotation-format.test.ts`
   - `tests/rules/auto-fix-behavior-008.test.ts`
-  - Several helper/core tests to confirm existing auto-fix coverage
+- All these suites now pass with the updated tests and documentation-only code changes.
 
-### Changes made
+### Git
 
-#### 1) `src/rules/require-story-annotation.ts`
+- Staged all changes and committed as:
 
-Goal: Make the rule’s metadata clearly describe the auto‑fix capabilities for Story 008.0, without changing behavior.
-
-Changes:
-
-- Updated `meta.docs.description` to mention auto-fix:
-
-```ts
-docs: {
-  description:
-    "Require @story annotations on functions and auto-fix missing annotations where possible",
-  recommended: "error",
-},
-```
-
-- Added a JSDoc block documenting that `meta.fixable` is tied to Story 008.0:
-
-```ts
-/**
- * Auto-fix support for inserting @story annotations.
- *
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ANNOTATION-REQUIRED
- */
-fixable: "code",
-```
-
-Runtime logic in `create()` and the visitors remains unchanged.
-
-#### 2) `src/rules/valid-annotation-format.ts`
-
-Goal: Clarify how this rule fulfills `REQ-AUTOFIX-FORMAT`, `REQ-AUTOFIX-SAFE`, and `REQ-AUTOFIX-PRESERVE` for Story 008.0, without altering behavior.
-
-Changes (comments only):
-
-- Enhanced the doc comment on `getFixedStoryPath` to explicitly reference safety:
-
-```ts
-/**
- * Attempt a minimal, safe auto-fix for common @story path suffix issues.
- *
- * ...
- *
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-AUTOFIX-SAFE - Auto-fix must be conservative and never broaden the referenced path
- */
-function getFixedStoryPath(original: string): string | null {
-  ...
-}
-```
-
-- Expanded the doc comment for `reportInvalidStoryFormatWithFix` to tie it directly to `REQ-AUTOFIX-SAFE` and `REQ-AUTOFIX-PRESERVE`:
-
-```ts
-/**
- * Report an invalid @story annotation and attempt a minimal, safe auto-fix
- * ...
- * This helper:
- *   - only adjusts the story path suffix when a safe, well-understood
- *     transformation is available, satisfying REQ-AUTOFIX-SAFE.
- *   - preserves all surrounding comment formatting, spacing, and text
- *     outside the path substring, satisfying REQ-AUTOFIX-PRESERVE.
- *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-PATH-FORMAT - ...
- * @req REQ-AUTOFIX-FORMAT - ...
- * @req REQ-AUTOFIX-SAFE - ...
- * @req REQ-AUTOFIX-PRESERVE - ...
- */
-```
-
-All executable TypeScript remains the same.
-
-#### 3) `docs/stories/008.0-DEV-AUTO-FIX.story.md`
-
-Goal: Align the story text with the **current implemented behavior**.
-
-Updates:
-
-- Acceptance criteria now explicitly state that we have:
-
-  - Initial support for:
-    - Missing `@story` on **functions and methods** via `require-story-annotation`
-    - **Simple `@story` path suffix fixes** via `valid-annotation-format`
-
-- Requirements section now distinguishes implemented vs future:
-
-  - **REQ-AUTOFIX-MISSING**:
-
-    > Automatically add missing @story annotations to functions and methods using a simple built-in template via the `require-story-annotation` rule  
-    > Implemented for function and method annotations in this story; template content and formatting are currently fixed and not yet configurable.
-
-  - **REQ-AUTOFIX-FORMAT**:
-
-    > Implemented for simple `@story` path suffix issues where the correct suffix (e.g., `.story.md`) can be inferred safely.
-
-  - **REQ-AUTOFIX-SAFE** and **REQ-AUTOFIX-PRESERVE**:
-
-    - Explicitly note current guarantees:
-      - Safe insertion of placeholder `@story` comments above functions/methods
-      - Minimal, suffix-only changes to path strings without touching surrounding formatting
-
-  - **REQ-AUTOFIX-TEMPLATE** and **REQ-AUTOFIX-SELECTIVE**:
-
-    - Clearly marked as **not yet implemented** and described as future work
-    - Notes that current behavior uses a fixed template and that selective toggles beyond normal ESLint rule enable/disable are not supported yet
-
-- “Current Auto-Fix Capabilities (This Iteration)” now explicitly references:
-  - `require-story-annotation` for adding missing `@story` to functions/methods
-  - `valid-annotation-format` for suffix normalization on `@story` paths
-
-#### 4) `user-docs/api-reference.md`
-
-Goal: Reflect actual auto-fix behavior for end users, mapped to Story 008.0.
-
-Changes:
-
-- **`traceability/require-story-annotation`** description updated:
-
-  - States that when run with `--fix`, it:
-
-    > can insert a placeholder `@story` JSDoc comment above missing functions/methods using a built-in template aligned with Story 008.0.
-
-  - Clarifies limitations:
-
-    > The auto-fix behavior is currently limited to this default template; advanced template customization and selective auto-fix toggles … are not yet available.
-
-- **`traceability/valid-annotation-format`** description updated:
-
-  - States that when run with `--fix`, it:
-
-    > can automatically correct simple `@story` path suffix issues by appending or normalizing the `.story.md` suffix when it is safe and unambiguous to do so, in line with Story 008.0.
-
-  - Clarifies **no advanced** path template customization or fine-grained toggles yet.
-
-#### 5) `tests/rules/auto-fix-behavior-008.test.ts`
-
-The plan mentioned generating this test file; it already existed and:
-
-- Verifies **REQ-AUTOFIX-MISSING** behavior for `require-story-annotation`:
-  - Adds `@story` before a missing function declaration via auto-fix
-- Verifies **REQ-AUTOFIX-FORMAT** behavior for `valid-annotation-format`:
-  - Adds `.md` to `.story`
-  - Adds `.story.md` when extension is missing
-
-No changes were needed; I validated that these tests align with the story and implementation.
-
-### Quality checks & CI
-
-Ran locally:
-
-- `npm run lint -- --max-warnings=0`
-- `npm run type-check`
-- `npm run format:check` (then `npm run format` to fix formatting, then re-ran `format:check`)
-- `npm run build`
-- `npm test`
-- Full CI-equivalent pipeline ran on push (reported in `git_push` output):
-  - `npm run ci-verify:full` (including `check:traceability`, `safety:deps`, `audit:ci`, build, type-check, lint-plugin-check, lint, duplication, tests with coverage, format:check, audits)
-  - All steps passed.
-
-Committed and pushed:
-
-- Commit: `docs: document auto-fix behavior for story 008.0`
-
----
-
-## Updated plan with completion status
-
-### NOW
-
-- [x] read_file docs/stories/008.0-DEV-AUTO-FIX.story.md
-
-### NEXT
-
-- [x] read_file src/rules/require-story-annotation.ts
-- [x] read_file src/rules/helpers/require-story-core.ts
-- [x] read_file src/rules/valid-annotation-format.ts
-- [x] read_file tests/rules/require-story-annotation.test.ts
-- [x] generate_file tests/rules/auto-fix-behavior-008.test.ts  
-      *(Satisfied by confirming the file already exists and correctly tests REQ-AUTOFIX-MISSING and REQ-AUTOFIX-FORMAT.)*
-- [x] modify_file src/rules/require-story-annotation.ts
-- [x] modify_file src/rules/valid-annotation-format.ts
-- [x] modify_file docs/stories/008.0-DEV-AUTO-FIX.story.md
-- [x] modify_file user-docs/api-reference.md
+  `test: add focused auto-fix coverage for story 008.0 and align docs`
 ```

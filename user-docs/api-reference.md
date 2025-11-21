@@ -10,7 +10,7 @@ Each rule enforces traceability conventions in your code. Below is a summary of 
 
 ### traceability/require-story-annotation
 
-Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When run with `--fix`, the rule inserts a placeholder `@story` JSDoc comment above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. The template is currently fixed and not configurable, and selective enabling of different auto-fix behaviors (such as applying fixes only to certain scopes or node types) is planned for a future version.
+Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When run with `--fix`, the rule inserts a single-line placeholder JSDoc `@story` annotation above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. This template is currently fixed but structured for future configurability, and fixes are strictly limited to adding this placeholder annotation without altering the function body or changing any runtime behavior. Selective enabling of different auto-fix behaviors (such as applying fixes only to certain scopes or node types) is planned for a future version.
 
 Options:
 
@@ -67,7 +67,7 @@ if (error) {
 
 ### traceability/valid-annotation-format
 
-Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule can automatically correct simple `@story` path suffix issues by adding `.md` when the path ends with `.story`, adding `.story.md` when the base path has no extension or only `.md`, and skipping paths that include `..` or other ambiguous cases, in line with Story 008.0; more advanced path normalization strategies and selective toggles to enable or disable specific auto-fix behaviors are not yet implemented.
+Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule limits changes to safe `@story` path suffix normalization only—for example, adding `.md` when the path ends with `.story`, or adding `.story.md` when the base path has no extension—using targeted replacements implemented in the `getFixedStoryPath` and `reportInvalidStoryFormatWithFix` helpers. It does not change directories, infer new story names, or modify any surrounding comment text or whitespace, in line with Story 008.0; more advanced path normalization strategies and selective toggles to enable or disable specific auto-fix behaviors are not yet implemented.
 
 Options: None
 Default Severity: `error`

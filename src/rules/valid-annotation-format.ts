@@ -1,5 +1,9 @@
 /**
- * Rule to validate @story and @req annotation format and syntax
+ * Rule to validate @story and @req annotation format and syntax. When run with
+ * ESLint's `--fix` option, this rule performs only safe @story path suffix
+ * normalization (for example, adding `.md` or `.story.md`) and never changes
+ * directories or infers new story names, in line with Story 008.0.
+ *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-FORMAT-SPECIFICATION - Define clear format rules for @story and @req annotations
@@ -411,6 +415,12 @@ export default {
     schema: [],
     /**
      * This rule's fixable support is limited to safe @story path suffix normalization per Story 008.0.
+     * Fixes are limited strictly to adjusting the suffix portion of the @story path (e.g., adding
+     * `.md` or `.story.md`), preserving all other comment text and whitespace exactly as written.
+     *
+     * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+     * @req REQ-AUTOFIX-SAFE
+     * @req REQ-AUTOFIX-PRESERVE
      */
     fixable: "code",
   },
