@@ -2,9 +2,6 @@ import { getNodeName } from "../rules/helpers/require-story-utils";
 import {
   FALLBACK_WINDOW,
   LOOKBACK_LINES,
-  fallbackTextBeforeHasStory,
-  linesBeforeHasStory,
-  parentChainHasStory,
 } from "../rules/helpers/require-story-io";
 
 /**
@@ -56,27 +53,81 @@ function commentContainsReq(c: any) {
  * Line-based helper adapted from linesBeforeHasStory to detect @req.
  */
 function linesBeforeHasReq(sourceCode: any, node: any) {
-  const res = linesBeforeHasStory(sourceCode, node, LOOKBACK_LINES);
-  if (!res) return false;
-  return typeof res.text === "string" && res.text.includes("@req");
+  const lines = sourceCode && sourceCode.lines;
+  const startLine =
+    node && node.loc && typeof node.loc.start?.line === "number"
+      ? node.loc.start.line
+      : null;
+  if (!Array.isArray(lines) || typeof startLine !== "number") {
+    return false;
+  }
+  const from = Math.max(0, startLine - 1 - LOOKBACK_LINES);
+  const to = Math.max(0, startLine - 1);
+  for (let i = from; i < to; i++) {
+    const text = lines[i];
+    if (typeof text === "string" && text.includes("@req")) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
  * Parent-chain helper adapted from parentChainHasStory to detect @req.
  */
 function parentChainHasReq(sourceCode: any, node: any) {
-  const res = parentChainHasStory(sourceCode, node);
-  if (!res) return false;
-  return typeof res.text === "string" && res.text.includes("@req");
+  let p = node && node.parent;
+  while (p) {
+    const pComments =
+      typeof sourceCode?.getCommentsBefore === "function"
+        ? sourceCode.getCommentsBefore(p) || []
+        : [];
+    if (
+      Array.isArray(pComments) &&
+      pComments.some(
+        (c: any) => typeof c.value === "string" && c.value.includes("@req"),
+      )
+    ) {
+      return true;
+    }
+    const pLeading = p.leadingComments || [];
+    if (
+      Array.isArray(pLeading) &&
+      pLeading.some(
+        (c: any) => typeof c.value === "string" && c.value.includes("@req"),
+      )
+    ) {
+      return true;
+    }
+    p = p.parent;
+  }
+  return false;
 }
 
 /**
  * Fallback text window helper adapted from fallbackTextBeforeHasStory to detect @req.
  */
 function fallbackTextBeforeHasReq(sourceCode: any, node: any) {
-  const res = fallbackTextBeforeHasStory(sourceCode, node, FALLBACK_WINDOW);
-  if (!res) return false;
-  return typeof res.text === "string" && res.text.includes("@req");
+  if (
+    typeof sourceCode?.getText !== "function" ||
+    !Array.isArray((node && node.range) || [])
+  ) {
+    return false;
+  }
+  const range = node.range;
+  if (!Array.isArray(range) || typeof range[0] !== "number") {
+    return false;
+  }
+  try {
+    const start = Math.max(0, range[0] - FALLBACK_WINDOW);
+    const textBefore = sourceCode.getText().slice(start, range[0]);
+    if (typeof textBefore === "string" && textBefore.includes("@req")) {
+      return true;
+    }
+  } catch {
+    /* noop */
+  }
+  return false;
 }
 
 /**
