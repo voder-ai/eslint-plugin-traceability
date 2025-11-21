@@ -324,7 +324,10 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
     const fs = require("fs");
     const pathModule = require("path");
 
-    const storyPath = pathModule.join(process.cwd(), "docs/stories/README.md");
+    const storyPath = pathModule.join(
+      process.cwd(),
+      "docs/stories/developer-story.map.md",
+    );
 
     jest.spyOn(fs, "existsSync").mockImplementation((p: string) => {
       return p === storyPath;
@@ -342,7 +345,7 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
     });
 
     const diagnostics = runRuleOnCode(
-      `// @story docs/stories/README.md\n// @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md`,
+      `// @story docs/stories/developer-story.map.md\n// @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md`,
       [
         {
           storyDirectories: ["docs/stories"],
