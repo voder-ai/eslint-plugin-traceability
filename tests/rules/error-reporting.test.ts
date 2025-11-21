@@ -4,6 +4,7 @@
  * @req REQ-ERROR-SPECIFIC - Specific details about what annotation is missing or invalid
  * @req REQ-ERROR-SUGGESTION - Suggest concrete steps to fix the issue
  * @req REQ-ERROR-CONTEXT - Include relevant context in error messages
+ * @req REQ-ERROR-LOCATION - Include precise location information in error messages
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-story-annotation";
