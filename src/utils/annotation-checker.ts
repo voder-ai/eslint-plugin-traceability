@@ -51,6 +51,9 @@ function commentContainsReq(c: any) {
  * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation
  */
 function hasReqAnnotation(jsdoc: any, comments: any[]) {
+  // BRANCH @req detection on JSDoc or comments
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQ-DETECTION
   return (
     (jsdoc &&
       typeof jsdoc.value === "string" &&
@@ -60,14 +63,48 @@ function hasReqAnnotation(jsdoc: any, comments: any[]) {
 }
 
 /**
+ * Determine the most appropriate node to attach an inserted JSDoc to.
+ * Prefers outer function-like constructs such as methods, variable declarators,
+ * or wrapping expression statements for function expressions.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation
+ */
+function getFixTargetNode(node: any) {
+  const parent = node && (node as any).parent;
+
+  if (!parent) {
+    return node;
+  }
+
+  // If the node is part of a class/obj method definition, attach to the MethodDefinition
+  if (parent.type === "MethodDefinition") {
+    return parent;
+  }
+
+  // If the node is the init of a variable declarator, attach to the VariableDeclarator
+  if (parent.type === "VariableDeclarator" && parent.init === node) {
+    return parent;
+  }
+
+  // If the parent is an expression statement (e.g. IIFE or assigned via expression),
+  // attach to the outer ExpressionStatement.
+  if (parent.type === "ExpressionStatement") {
+    return parent;
+  }
+
+  return node;
+}
+
+/**
  * Creates a fix function that inserts a missing @req JSDoc before the node.
  * Returned function is a proper named function so no inline arrow is used.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation
  */
 function createMissingReqFix(node: any) {
+  const target = getFixTargetNode(node);
   return function missingReqFix(fixer: any) {
-    return fixer.insertTextBefore(node, "/** @req <REQ-ID> */\n");
+    return fixer.insertTextBefore(target, "/** @req <REQ-ID> */\n");
   };
 }
 
@@ -80,30 +117,49 @@ function createMissingReqFix(node: any) {
  * @req REQ-ERROR-SPECIFIC - Provide specific error details including node name
  * @req REQ-ERROR-LOCATION - Include contextual location information in errors
  */
-function reportMissing(context: any, node: any) {
-  const rawName = getNodeName(node);
+function reportMissing(context: any, node: any, enableFix: boolean = true) {
+  const rawName =
+    getNodeName(node) ?? (node && getNodeName((node as any).parent));
   const name = rawName ?? "(anonymous)";
-  context.report({
+  const reportOptions: any = {
     node,
     messageId: "missingReq",
     data: { name },
-    fix: createMissingReqFix(node),
-  });
+  };
+
+  if (enableFix) {
+    reportOptions.fix = createMissingReqFix(node);
+  }
+
+  context.report(reportOptions);
 }
 
 /**
  * Helper to check @req annotation presence on TS declare functions and method signatures.
+ * This helper is intentionally scope/exportPriority agnostic and focuses solely
+ * on detection and reporting of @req annotations for the given node.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
+ * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation
+ * @req REQ-ANNOTATION-REPORTING - Report missing @req annotation to context
  */
-export function checkReqAnnotation(context: any, node: any) {
+export function checkReqAnnotation(
+  context: any,
+  node: any,
+  options?: { enableFix?: boolean },
+) {
+  const { enableFix = true } = options ?? {};
   const sourceCode = context.getSourceCode();
   const jsdoc = getJsdocComment(sourceCode, node);
   const leading = getLeadingComments(node);
   const comments = getCommentsBefore(sourceCode, node);
   const all = combineComments(leading, comments);
   const hasReq = hasReqAnnotation(jsdoc, all);
+  // BRANCH when a @req annotation is missing and must be reported
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQ-DETECTION
+  // @req REQ-ANNOTATION-REPORTING
   if (!hasReq) {
-    reportMissing(context, node);
+    reportMissing(context, node, enableFix);
   }
 }

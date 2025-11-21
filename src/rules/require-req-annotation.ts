@@ -2,55 +2,130 @@
  * Rule to enforce @req annotation on functions
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Require @req annotation on functions
- * @req REQ-FUNCTION-DETECTION - Detect function declarations, expressions, arrow functions, and methods
+ * @req REQ-FUNCTION-DETECTION - Detect function declarations, function expressions, and method definitions (including TypeScript declarations)
  * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
+ * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of which exports are checked
+ * @req REQ-EXPORT-PRIORITY - Allow configuration of export priority behavior
  */
+import type { Rule } from "eslint";
+import {
+  DEFAULT_SCOPE,
+  EXPORT_PRIORITY_VALUES,
+  shouldProcessNode,
+} from "./helpers/require-story-helpers";
 import { checkReqAnnotation } from "../utils/annotation-checker";
 
-/**
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-RULE-EXPORT - Export the rule object for ESLint
- * @req REQ-ANNOTATION-REQUIRED - Require @req annotation on functions
- */
-export default {
+type Options = [
+  {
+    scope?: (typeof DEFAULT_SCOPE)[number][];
+    exportPriority?: (typeof EXPORT_PRIORITY_VALUES)[number];
+  }?,
+];
+
+const rule: Rule.RuleModule = {
   meta: {
     type: "problem",
     fixable: "code",
     docs: {
-      description: "Require @req annotations on functions",
+      description:
+        "Require @req annotations on function-like exports (declarations, expressions, and methods, excluding arrow functions)",
       recommended: "error",
     },
     messages: {
       missingReq:
         "Missing @req annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)",
     },
-    schema: [],
+    schema: [
+      {
+        type: "object",
+        properties: {
+          scope: {
+            type: "array",
+            items: {
+              enum: DEFAULT_SCOPE,
+            },
+            uniqueItems: true,
+          },
+          exportPriority: {
+            enum: EXPORT_PRIORITY_VALUES,
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
   /**
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-CREATE-HOOK - Provide create(context) hook for rule behavior
-   * @req REQ-FUNCTION-DETECTION - Detect function declarations, expressions, arrow functions, and methods
+   * @req REQ-FUNCTION-DETECTION - Detect function declarations, function expressions, and method definitions (including TS-specific nodes)
+   * @req REQ-CONFIGURABLE-SCOPE - Respect configurable scope of which exports are checked
+   * @req REQ-EXPORT-PRIORITY - Respect configurable export priority when determining which nodes to check
    */
-  create(context: any) {
+  create(context: Rule.RuleContext): Rule.RuleListener {
+    const options: Options[0] = context.options?.[0] ?? {};
+    const rawScope = options?.scope;
+    const scope =
+      Array.isArray(rawScope) && rawScope.length > 0 ? rawScope : DEFAULT_SCOPE;
+    const exportPriority = options?.exportPriority ?? "all";
+
+    const shouldCheck = (node: any): boolean =>
+      shouldProcessNode(node, scope, exportPriority);
+
+    /**
+     * Helper to conditionally run the annotation check only when the node
+     * should be processed according to scope/exportPriority.
+     */
+    const runCheck = (node: any) => {
+      if (!shouldCheck(node)) return;
+      checkReqAnnotation(context, node, { enableFix: false });
+    };
+
     return {
       /**
        * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
        * @req REQ-FUNCTION-DETECTION - Detect function declarations
        * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on function declarations
        */
-      FunctionDeclaration(node: any) {
-        return checkReqAnnotation(context, node);
+      FunctionDeclaration(node) {
+        runCheck(node);
       },
       /**
        * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
+       * @req REQ-FUNCTION-DETECTION - Detect function expressions
+       * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on function expressions
        */
-      TSDeclareFunction: (node: any) => checkReqAnnotation(context, node),
+      FunctionExpression(node: any) {
+        if (node.parent && node.parent.type === "MethodDefinition") {
+          return;
+        }
+        runCheck(node);
+      },
       /**
        * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
+       * @req REQ-FUNCTION-DETECTION - Detect method definitions
+       * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on method definitions
        */
-      TSMethodSignature: (node: any) => checkReqAnnotation(context, node),
+      MethodDefinition(node) {
+        runCheck(node);
+      },
+      /**
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript declare functions
+       * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on TS declare functions
+       */
+      TSDeclareFunction(node: any) {
+        runCheck(node);
+      },
+      /**
+       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript method signatures
+       * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on TS method signatures
+       */
+      TSMethodSignature(node: any) {
+        runCheck(node);
+      },
     };
   },
-} as any;
+};
+
+export default rule;

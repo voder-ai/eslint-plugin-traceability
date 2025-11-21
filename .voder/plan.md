@@ -1,22 +1,25 @@
 ## NOW
 
-- [ ] read_file docs/stories/008.0-DEV-AUTO-FIX.story.md
+- [ ] read_file docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
 
 ## NEXT
 
+- [ ] read_file src/rules/require-req-annotation.ts
+- [ ] read_file src/utils/annotation-checker.ts
 - [ ] read_file src/rules/require-story-annotation.ts
 - [ ] read_file src/rules/helpers/require-story-core.ts
-- [ ] read_file src/rules/valid-annotation-format.ts
+- [ ] read_file src/rules/helpers/require-story-helpers.ts
+- [ ] read_file tests/rules/require-req-annotation.test.ts
 - [ ] read_file tests/rules/require-story-annotation.test.ts
-- [ ] generate_file tests/rules/auto-fix-behavior-008.test.ts
-- [ ] modify_file src/rules/require-story-annotation.ts
-- [ ] modify_file src/rules/valid-annotation-format.ts
-- [ ] modify_file docs/stories/008.0-DEV-AUTO-FIX.story.md
+- [ ] modify_file src/rules/require-req-annotation.ts
+- [ ] modify_file src/utils/annotation-checker.ts
+- [ ] modify_file tests/rules/require-req-annotation.test.ts
+- [ ] modify_file docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+- [ ] modify_file docs/rules/require-req-annotation.md
 - [ ] modify_file user-docs/api-reference.md
 
 ## LATER
 
-- [ ] Refine auto-fix template configurability across all relevant rules (functions, branches, req annotations) using story 008.0’s option model.
-- [ ] Add configuration and docs for selectively enabling/disabling auto-fix categories per rule and preset, ensuring backward-compatible defaults.
-- [ ] Broaden test coverage for edge-case auto-fixes (complex JSDoc blocks, mixed annotations, partially-correct formats) tied to 008.0 story requirements.
-- [ ] Refine and factor shared auto-fix utilities (e.g., a central template resolver) once behavior is stable, ensuring no regression in earlier stories.
+- [ ] Identify and complete the other remaining failing story from the functionality assessment once 003.0 is fully satisfied and validated.
+- [ ] After 003.0 is stable, consider extracting shared helpers for configurable scope/exportPriority between @story and @req rules to reduce duplication, using a small, incremental refactor.
+- [ ] Add any missing traceability annotations uncovered by the traceability report, especially around the new @req handling branches, and regenerate the traceability report.
