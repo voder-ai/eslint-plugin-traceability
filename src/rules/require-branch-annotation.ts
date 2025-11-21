@@ -1,8 +1,9 @@
-/****
- * Rule to enforce @story and @req annotations on significant code branches
+/**
+ * Rule to enforce @story and @req annotations on significant code branches.
+ *
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-BRANCH-DETECTION - Detect significant code branches for traceability annotations
- * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of branch types for annotation enforcement
+ * @req REQ-BRANCH-DETECTION
+ * @req REQ-CONFIGURABLE-SCOPE
  */
 import type { Rule } from "eslint";
 import {
@@ -38,15 +39,20 @@ const rule: Rule.RuleModule = {
 
   /**
    * Create visitor for require-branch-annotation rule.
+   *
    * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-BRANCH-DETECTION - Detect significant code branches for traceability annotations
-   * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of branch types for annotation enforcement
+   * @req REQ-BRANCH-DETECTION
+   * @req REQ-CONFIGURABLE-SCOPE
    */
   create(context) {
     const branchTypesOrListener = validateBranchTypes(context);
-    // Branch configuration guard: if validation returns a listener, use it directly instead of branch-type iteration.
-    // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-    // @req REQ-CONFIGURABLE-SCOPE - Allow the rule to short-circuit when configuration is invalid or specialized
+    /**
+     * Branch configuration guard: if validation returns a listener, use it directly
+     * instead of branch-type iteration.
+     *
+     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+     * @req REQ-CONFIGURABLE-SCOPE
+     */
     if (!Array.isArray(branchTypesOrListener)) {
       return branchTypesOrListener;
     }
@@ -57,8 +63,8 @@ const rule: Rule.RuleModule = {
       /**
        * Handler for a specific branch node type.
        * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-       * @req REQ-BRANCH-DETECTION - Detect significant code branches for traceability annotations
-       * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of branch types for annotation enforcement
+       * @req REQ-BRANCH-DETECTION
+       * @req REQ-CONFIGURABLE-SCOPE
        */
       handlers[type] = function branchHandler(node) {
         if (type === "SwitchCase" && (node as any).test == null) {

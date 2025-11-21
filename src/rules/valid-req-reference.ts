@@ -1,11 +1,12 @@
 /* eslint-env node */
 /**
  * Rule to validate @req annotation references refer to existing requirements in story files
+ *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE - Parse story files to extract requirement identifiers
- * @req REQ-DEEP-MATCH - Validate @req references against story file content
- * @req REQ-DEEP-CACHE - Cache parsed story content for performance
- * @req REQ-DEEP-PATH - Protect against path traversal in story paths
+ * @req REQ-DEEP-PARSE
+ * @req REQ-DEEP-MATCH
+ * @req REQ-DEEP-CACHE
+ * @req REQ-DEEP-PATH
  */
 import fs from "fs";
 import path from "path";
@@ -18,7 +19,7 @@ import type { Rule } from "eslint";
  * @returns story path or null if not found
  *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE - Extracts @story annotation from comment content
+ * @req REQ-DEEP-PARSE
  */
 function extractStoryPath(comment: any): string | null {
   const rawLines = comment.value.split(/\r?\n/);
@@ -39,10 +40,10 @@ function extractStoryPath(comment: any): string | null {
  * @param opts options bag
  *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PATH - Validates and protects against path traversal and absolute paths
- * @req REQ-DEEP-CACHE - Caches parsed story files to avoid repeated IO
- * @req REQ-DEEP-MATCH - Ensures referenced requirement IDs exist in the story file
- * @req REQ-DEEP-PARSE - Parses story file content to find REQ- identifiers
+ * @req REQ-DEEP-PATH
+ * @req REQ-DEEP-CACHE
+ * @req REQ-DEEP-MATCH
+ * @req REQ-DEEP-PARSE
  */
 function validateReqLine(opts: {
   comment: any;
@@ -108,8 +109,8 @@ function validateReqLine(opts: {
  * @param opts handler options
  *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE - Recognizes @story and @req annotation lines
- * @req REQ-DEEP-MATCH - Delegates @req validation to validateReqLine
+ * @req REQ-DEEP-PARSE
+ * @req REQ-DEEP-MATCH
  */
 function handleAnnotationLine(opts: {
   line: string;
@@ -136,9 +137,9 @@ function handleAnnotationLine(opts: {
  * @param opts options for comment handling
  *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE - Parses comment blocks to extract annotation lines
- * @req REQ-DEEP-MATCH - Uses handleAnnotationLine to validate @req entries
- * @req REQ-DEEP-CACHE - Passes shared cache for parsed story files
+ * @req REQ-DEEP-PARSE
+ * @req REQ-DEEP-MATCH
+ * @req REQ-DEEP-CACHE
  */
 function handleComment(opts: {
   comment: any;
@@ -171,8 +172,8 @@ function handleComment(opts: {
  * @returns Program visitor function
  *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-CACHE - Maintains a cache across comment processing
- * @req REQ-DEEP-PATH - Resolves and protects story paths against traversal
+ * @req REQ-DEEP-CACHE
+ * @req REQ-DEEP-PATH
  */
 function programListener(context: any) {
   const sourceCode = context.getSourceCode();
@@ -186,10 +187,10 @@ function programListener(context: any) {
      * Process each comment to handle story and requirement annotations.
      *
      * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-     * @req REQ-DEEP-PARSE - Parse annotations from comment blocks
-     * @req REQ-DEEP-MATCH - Validate @req references found in comments
-     * @req REQ-DEEP-CACHE - Use cache for parsed story files to avoid repeated IO
-     * @req REQ-DEEP-PATH - Enforce path validation when resolving story files
+     * @req REQ-DEEP-PARSE
+     * @req REQ-DEEP-MATCH
+     * @req REQ-DEEP-CACHE
+     * @req REQ-DEEP-PATH
      */
     comments.forEach((comment: any) => {
       rawStoryPath = handleComment({
@@ -221,10 +222,10 @@ export default {
    * Rule create entrypoint that returns the Program visitor.
    *
    * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-   * @req REQ-DEEP-MATCH - Entrypoint orchestrates validation of @req annotations
-   * @req REQ-DEEP-PARSE - Uses parsing helpers to extract annotations and story paths
-   * @req REQ-DEEP-CACHE - Establishes cache used during validation
-   * @req REQ-DEEP-PATH - Ensures path validation is applied during checks
+   * @req REQ-DEEP-MATCH
+   * @req REQ-DEEP-PARSE
+   * @req REQ-DEEP-CACHE
+   * @req REQ-DEEP-PATH
    */
   create(context) {
     return { Program: programListener(context) };

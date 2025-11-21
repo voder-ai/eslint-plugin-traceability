@@ -14,7 +14,7 @@ import traceability from "eslint-plugin-traceability";
 export default [js.configs.recommended, traceability.configs.recommended];
 ```
 
-This preset enables the following rules with their default severities (most at `error`, one at `warn`):
+This preset enables the following rules with severities tuned for common usage (most at `error`, with `traceability/valid-annotation-format` at `warn` to reduce noise):
 
 - `traceability/require-story-annotation`: `error`
 - `traceability/require-req-annotation`: `error`
