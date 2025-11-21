@@ -27,8 +27,7 @@ This rule accepts a single options object with the following optional properties
     "FunctionExpression",
     "MethodDefinition",
     "TSDeclareFunction",
-    "TSMethodSignature",
-    "ArrowFunctionExpression"
+    "TSMethodSignature"
     ]
   - Default: [
     "FunctionDeclaration",
@@ -42,7 +41,7 @@ This rule accepts a single options object with the following optional properties
   - Enum: ["all", "exported", "non-exported"]
   - Default: "all"
 
-Note: `ArrowFunctionExpression` is supported by this rule but is not included in the default scope. To enforce story annotations on arrow functions, add `"ArrowFunctionExpression"` to the `scope` option.
+Note: The `scope` option is limited to the listed node types; arrow functions are not currently configurable via this option.
 
 Default:
 
@@ -73,8 +72,7 @@ JSON schema:
           "FunctionExpression",
           "MethodDefinition",
           "TSDeclareFunction",
-          "TSMethodSignature",
-          "ArrowFunctionExpression"
+          "TSMethodSignature"
         ]
       },
       "uniqueItems": true
@@ -96,7 +94,7 @@ module.exports = {
     "traceability/require-story-annotation": [
       "error",
       {
-        scope: ["FunctionDeclaration", "ArrowFunctionExpression"],
+        scope: ["FunctionDeclaration"],
         exportPriority: "exported",
       },
     ],

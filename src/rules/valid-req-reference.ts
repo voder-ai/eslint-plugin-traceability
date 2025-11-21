@@ -1,12 +1,11 @@
 /* eslint-env node */
 /**
  * Rule to validate @req annotation references refer to existing requirements in story files
- *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE
- * @req REQ-DEEP-MATCH
- * @req REQ-DEEP-CACHE
- * @req REQ-DEEP-PATH
+ * @req REQ-DEEP-PARSE - Parse comments and extract story/requirement metadata
+ * @req REQ-DEEP-MATCH - Match @req annotations to story file requirements
+ * @req REQ-DEEP-CACHE - Cache requirement IDs per story file for efficient validation
+ * @req REQ-DEEP-PATH - Validate and resolve story file paths safely
  */
 import fs from "fs";
 import path from "path";
@@ -14,12 +13,8 @@ import type { Rule } from "eslint";
 
 /**
  * Extract the story path from a JSDoc comment.
- * Parses comment.value lines for @story annotation.
- * @param comment any JSDoc comment node
- * @returns story path or null if not found
- *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE
+ * @req REQ-DEEP-PARSE - Parse JSDoc comment lines to locate @story annotations
  */
 function extractStoryPath(comment: any): string | null {
   const rawLines = comment.value.split(/\r?\n/);
@@ -36,14 +31,11 @@ function extractStoryPath(comment: any): string | null {
 /**
  * Validate a @req annotation line against the extracted story content.
  * Performs path validation, file reading, caching, and requirement existence checks.
- *
- * @param opts options bag
- *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PATH
- * @req REQ-DEEP-CACHE
- * @req REQ-DEEP-MATCH
- * @req REQ-DEEP-PARSE
+ * @req REQ-DEEP-PATH - Validate and resolve referenced story file paths
+ * @req REQ-DEEP-CACHE - Cache requirement IDs discovered in story files
+ * @req REQ-DEEP-MATCH - Verify that a referenced requirement ID exists in the story
+ * @req REQ-DEEP-PARSE - Parse story file contents to extract requirement identifiers
  */
 function validateReqLine(opts: {
   comment: any;
@@ -104,13 +96,10 @@ function validateReqLine(opts: {
 }
 
 /**
- * Handle a single annotation line.
- *
- * @param opts handler options
- *
+ * Handle a single annotation line for story or requirement metadata.
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE
- * @req REQ-DEEP-MATCH
+ * @req REQ-DEEP-PARSE - Parse annotation lines for @story and @req tags
+ * @req REQ-DEEP-MATCH - Dispatch @req lines for validation against story requirements
  */
 function handleAnnotationLine(opts: {
   line: string;
@@ -132,14 +121,11 @@ function handleAnnotationLine(opts: {
 }
 
 /**
- * Handle JSDoc story and req annotations.
- *
- * @param opts options for comment handling
- *
+ * Handle JSDoc story and req annotations for a single comment block.
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE
- * @req REQ-DEEP-MATCH
- * @req REQ-DEEP-CACHE
+ * @req REQ-DEEP-PARSE - Iterate comment lines to process @story/@req annotations
+ * @req REQ-DEEP-MATCH - Coordinate annotation handling across a comment block
+ * @req REQ-DEEP-CACHE - Maintain and reuse discovered story path across comments
  */
 function handleComment(opts: {
   comment: any;
@@ -167,13 +153,9 @@ function handleComment(opts: {
 
 /**
  * Create a Program listener that iterates comments and validates annotations.
- *
- * @param context ESLint rule context
- * @returns Program visitor function
- *
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-CACHE
- * @req REQ-DEEP-PATH
+ * @req REQ-DEEP-CACHE - Initialize and share a requirement cache for the program
+ * @req REQ-DEEP-PATH - Derive the working directory context for path resolution
  */
 function programListener(context: any) {
   const sourceCode = context.getSourceCode();
@@ -181,17 +163,16 @@ function programListener(context: any) {
   const reqCache = new Map<string, Set<string>>();
   let rawStoryPath: string | null = null;
 
+  /**
+   * Program visitor that walks all comments to validate story/requirement references.
+   * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+   * @req REQ-DEEP-PARSE - Collect all comments from the source code
+   * @req REQ-DEEP-MATCH - Drive comment-level handling for traceability checks
+   * @req REQ-DEEP-CACHE - Reuse story path and requirement cache across comments
+   * @req REQ-DEEP-PATH - Ensure validation respects project-relative paths
+   */
   return function Program() {
     const comments = sourceCode.getAllComments() || [];
-    /**
-     * Process each comment to handle story and requirement annotations.
-     *
-     * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-     * @req REQ-DEEP-PARSE
-     * @req REQ-DEEP-MATCH
-     * @req REQ-DEEP-CACHE
-     * @req REQ-DEEP-PATH
-     */
     comments.forEach((comment: any) => {
       rawStoryPath = handleComment({
         comment,
@@ -220,12 +201,11 @@ export default {
   },
   /**
    * Rule create entrypoint that returns the Program visitor.
-   *
    * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-   * @req REQ-DEEP-MATCH
-   * @req REQ-DEEP-PARSE
-   * @req REQ-DEEP-CACHE
-   * @req REQ-DEEP-PATH
+   * @req REQ-DEEP-MATCH - Register the Program visitor with ESLint
+   * @req REQ-DEEP-PARSE - Integrate comment parsing into the ESLint rule lifecycle
+   * @req REQ-DEEP-CACHE - Ensure cache and context are wired into the listener
+   * @req REQ-DEEP-PATH - Propagate path context into the program listener
    */
   create(context) {
     return { Program: programListener(context) };

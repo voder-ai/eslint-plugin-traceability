@@ -25,7 +25,7 @@ This preset enables the following rules with severities tuned for common usage (
 
 ## Strict Preset
 
-Use the **strict** preset to enforce the same core rules, with potential future enhancements for stricter policies.
+Use the **strict** preset to enforce the same core rules, with potential future enhancements for stricter policies. Like the recommended preset, it configures `traceability/valid-annotation-format` as a `warn` to avoid excessive noise from format-only issues.
 
 ```javascript
 // eslint.config.js

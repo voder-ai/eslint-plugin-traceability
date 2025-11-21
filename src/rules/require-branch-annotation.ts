@@ -11,6 +11,12 @@ import {
   reportMissingAnnotations,
 } from "../utils/branch-annotation-helpers";
 
+/**
+ * ESLint rule definition for require-branch-annotation.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @req REQ-BRANCH-DETECTION - Enforce @story/@req presence on configured branch types
+ * @req REQ-CONFIGURABLE-SCOPE - Respect configurable branchTypes option
+ */
 const rule: Rule.RuleModule = {
   meta: {
     type: "problem",
