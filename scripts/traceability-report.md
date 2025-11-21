@@ -24,4 +24,4 @@ Branches missing annotations: 12
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-checker.ts:138 - IfStatement - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-checker.ts:143 - IfStatement - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-checker.ts:149 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-checker.ts:194 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-checker.ts:196 - IfStatement - missing: @story, @req
