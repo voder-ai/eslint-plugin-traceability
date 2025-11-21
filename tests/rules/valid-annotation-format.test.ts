@@ -78,6 +78,32 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
         ],
       },
       {
+        name: "[REQ-PATH-FORMAT] missing extension in story path",
+        code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,
+        errors: [
+          {
+            messageId: "invalidStoryFormat",
+            data: {
+              details:
+                'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+            },
+          },
+        ],
+      },
+      {
+        name: "[REQ-PATH-FORMAT] story path must not use path traversal",
+        code: `// @story ../docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+        errors: [
+          {
+            messageId: "invalidStoryFormat",
+            data: {
+              details:
+                'Invalid story path "../docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+            },
+          },
+        ],
+      },
+      {
         name: "[REQ-REQ-FORMAT] missing req id (single line)",
         code: `// @req`,
         errors: [
@@ -99,6 +125,19 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
             data: {
               details:
                 'Invalid requirement ID "invalid-format" for @req annotation. Expected an identifier like "REQ-EXAMPLE" (uppercase letters, numbers, and dashes only).',
+            },
+          },
+        ],
+      },
+      {
+        name: "[REQ-REQ-FORMAT] missing req identifier with trailing space",
+        code: `// @req `,
+        errors: [
+          {
+            messageId: "invalidReqFormat",
+            data: {
+              details:
+                'Missing requirement ID for @req annotation. Expected an identifier like "REQ-EXAMPLE".',
             },
           },
         ],
