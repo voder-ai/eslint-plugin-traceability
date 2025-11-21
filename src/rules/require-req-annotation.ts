@@ -45,7 +45,7 @@ const rule: Rule.RuleModule = {
        * specifically the {{name}} placeholder populated via context.report.
        */
       missingReq:
-        "Function '{{name}}' is missing a required @req annotation. Add a JSDoc or line comment with @req (for example, '@req REQ-EXAMPLE') referencing the appropriate requirement from the story file.",
+        "Function '{{functionName}}' is missing a required @req annotation. Add a JSDoc or line comment with @req (for example, '@req REQ-EXAMPLE') referencing the appropriate requirement from the story file.",
     },
     schema: [
       {

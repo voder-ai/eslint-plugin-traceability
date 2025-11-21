@@ -265,9 +265,11 @@ function shouldProcessNode(
  * Report a missing @story annotation for a function-like node
  * Provides a suggestion to add the annotation.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing annotations with suggestion
  * @req REQ-AUTOFIX-MISSING - Provide autofix for missing annotations while preserving suggestions
+ * @req REQ-ERROR-SPECIFIC - Error reports must include both name and functionName in the data payload for specific function context
  * @param {Rule.RuleContext} context - ESLint rule context used to report
  * @param {any} sourceCode - ESLint sourceCode object
  * @param {any} node - AST node that is missing the annotation
@@ -314,12 +316,13 @@ function reportMissing(
 /**
  * Report a missing @story annotation for a method-like node
  * Provides a suggestion to update the method/interface with the annotation.
+ * The error data payload uses both name and functionName for consistent, specific error context.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing method/interface annotations with suggestion
  * @req REQ-AUTOFIX-MISSING - Provide autofix for missing method/interface annotations while preserving suggestions
- * @req REQ-ERROR-SPECIFIC - Method error reports must include specific function name in data payload
+ * @req REQ-ERROR-SPECIFIC - Method error reports must include both name and functionName in the data payload for specific function context
  * @req REQ-ERROR-LOCATION - Method error reports must use the method name node to anchor error location
  * @req REQ-ERROR-CONTEXT - Method error reports must include functionName data for consistent error context
  * @param {Rule.RuleContext} context - ESLint rule context to report

@@ -28,7 +28,7 @@ import {
  * @req REQ-ANNOTATION-REQUIRED
  * @req REQ-AUTOFIX-MISSING - This rule participates in auto-fix for missing @story annotations.
  * @req REQ-ERROR-MSG-CONTENT - Error message instructs adding an explicit @story annotation that points to the implementing story file.
- * @req REQ-ERROR-MSG-PLACEHOLDER - Error message retains the {{name}} placeholder for the function name.
+ * @req REQ-ERROR-MSG-PLACEHOLDER - Error message retains the {{functionName}} placeholder for the function name.
  * @req REQ-ERROR-MSG-ACTIONABLE - Error message text is concise, imperative, and describes the required remediation.
  */
 const rule: Rule.RuleModule = {
