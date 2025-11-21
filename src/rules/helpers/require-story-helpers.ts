@@ -316,8 +316,12 @@ function reportMissing(
  * Provides a suggestion to update the method/interface with the annotation.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing method/interface annotations with suggestion
  * @req REQ-AUTOFIX-MISSING - Provide autofix for missing method/interface annotations while preserving suggestions
+ * @req REQ-ERROR-SPECIFIC - Method error reports must include specific function name in data payload
+ * @req REQ-ERROR-LOCATION - Method error reports must use the method name node to anchor error location
+ * @req REQ-ERROR-CONTEXT - Method error reports must include functionName data for consistent error context
  * @param {Rule.RuleContext} context - ESLint rule context to report
  * @param {any} sourceCode - ESLint sourceCode object
  * @param {any} node - AST node that is missing the annotation
@@ -341,7 +345,7 @@ function reportMethod(
     context.report({
       node: nameNode,
       messageId: "missingStory",
-      data: { name },
+      data: { name, functionName: name },
       fix: createMethodFix(resolvedTarget),
       suggest: [
         {
