@@ -21,7 +21,7 @@ Key behaviors:
 
 - **Multiline annotation support**
   - Annotation values may be split across multiple lines within the same block or JSDoc comment.
-  - The rule concatenates all lines that belong to the same annotation, collapsing intermediate whitespace into single spaces before validating the final value.
+  - The rule concatenates all lines that belong to the same annotation, removing all internal whitespace characters (spaces, tabs, and newlines) before validating the final value.
   - This allows patterns such as:
     ```js
     /**
@@ -33,12 +33,12 @@ Key behaviors:
     `@story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`.
 
 - **Validated patterns**
-  - `@story` paths must match:
-    - `docs/stories/NN.N-DEV-<NAME>.story.md`
-    - `NN` and `N` are numeric segments (e.g. `01.0`, `123.4`).
-    - `<NAME>` uses uppercase letters, digits, and dashes (no spaces or other punctuation).
-  - `@req` identifiers must match:
-    - `REQ-<UPPERCASE|NUMERIC|DASH>+` (e.g. `REQ-FOO`, `REQ-123-ABC`, `REQ-MY-FEATURE-1`).
+  - `@story` paths must match the regex:
+    - `^docs/stories/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$`
+    - Example of a valid value: `docs/stories/005.0-DEV-EXAMPLE.story.md`
+  - `@req` identifiers must match the regex:
+    - `^REQ-[A-Z0-9-]+$`
+    - Example of a valid value: `REQ-EXAMPLE`
 
 - **Error messages**
   - The rule reports targeted, specific messages depending on what failed:
@@ -46,11 +46,13 @@ Key behaviors:
       - `@story` with no path: e.g. `* @story`
       - `@req` with no identifier: e.g. `// @req`
     - **Invalid story path format**
-      - Path present but not matching the required pattern, e.g. wrong directory, missing `.story.md`, bad numeric segments, or invalid characters in `<NAME>`.
-      - Example message: `Invalid @story path "foo/bar.story.md". Expected "docs/stories/NN.N-DEV-NAME.story.md".`
+      - Path present but not matching the required pattern (wrong directory, missing `.story.md`, bad numeric segments, or invalid characters in the name).
+      - Example message (from `buildStoryErrorMessage`):
+        - `Invalid @story path "foo/bar.story.md". Expected something like "docs/stories/005.0-DEV-EXAMPLE.story.md".`
     - **Invalid requirement ID format**
-      - Identifier present but not matching `REQ-...` rules, e.g. lowercase letters, spaces, or missing `REQ-` prefix.
-      - Example message: `Invalid @req identifier "Req-foo". Expected "REQ-[A-Z0-9-]+".`
+      - Identifier present but not matching `^REQ-[A-Z0-9-]+$` (e.g. lowercase letters, spaces, or missing `REQ-` prefix).
+      - Example message (from `buildReqErrorMessage`):
+        - `Invalid @req identifier "Req-foo". Expected something like "REQ-EXAMPLE".`
     - **Extra unexpected tokens**
       - If the annotation token is present but contains malformed structure around it (e.g. multiple `@story` tokens on one line), the rule narrows the reported span to the problematic token and points out the unexpected content.
 
@@ -92,4 +94,3 @@ if (condition) {
  * @req REQ-EXAMPLE
  */
 function badExample() {}
-```
