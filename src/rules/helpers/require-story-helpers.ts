@@ -297,7 +297,7 @@ function reportMissing(
     context.report({
       node: nameNode,
       messageId: "missingStory",
-      data: { name },
+      data: { name, functionName: name },
       fix: createAddStoryFix(resolvedTarget),
       suggest: [
         {
