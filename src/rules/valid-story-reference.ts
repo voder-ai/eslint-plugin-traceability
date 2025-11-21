@@ -12,6 +12,7 @@ import {
   normalizeStoryPath,
   containsPathTraversal,
   hasValidExtension,
+  enforceProjectBoundary,
 } from "../utils/storyReferenceUtils";
 
 const defaultStoryDirs = ["docs/stories", "stories"];
@@ -73,6 +74,22 @@ function reportExistenceProblems(opts: {
 
   const result = normalizeStoryPath(storyPath, cwd, storyDirs);
   const existenceResult = result.existence;
+
+  if (
+    existenceResult &&
+    existenceResult.status === "exists" &&
+    existenceResult.matchedPath
+  ) {
+    const boundary = enforceProjectBoundary(existenceResult.matchedPath, cwd);
+    if (!boundary.isWithinProject) {
+      context.report({
+        node: commentNode,
+        messageId: "invalidPath",
+        data: { path: storyPath },
+      });
+      return;
+    }
+  }
 
   if (!existenceResult || existenceResult.status === "exists") {
     return;
@@ -149,8 +166,10 @@ function processStoryPath(opts: {
         messageId: "invalidPath",
         data: { path: storyPath },
       });
+      return;
     }
-    return;
+    // When absolute paths are allowed, we still enforce extension and
+    // project-boundary checks below via the existence phase.
   }
 
   // Path traversal check

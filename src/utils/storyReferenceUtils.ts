@@ -46,6 +46,54 @@ export interface StoryExistenceResult {
 }
 
 /**
+ * Result of validating that a candidate path stays within the project boundary.
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-PROJECT-BOUNDARY - Validate files are within project boundaries
+ */
+export interface ProjectBoundaryCheckResult {
+  candidate: string;
+  isWithinProject: boolean;
+}
+
+/**
+ * Validate that a candidate path stays within the project boundary.
+ * This compares the resolved candidate path against the normalized cwd
+ * prefix, ensuring that even when storyDirectories are misconfigured, we
+ * never treat files outside the project as valid story references.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-PROJECT-BOUNDARY - Validate files are within project boundaries
+ */
+export function enforceProjectBoundary(
+  candidate: string,
+  cwd: string,
+): ProjectBoundaryCheckResult {
+  const normalizedCwd = path.resolve(cwd);
+  const normalizedCandidate = path.resolve(candidate);
+
+  const isWithinProject =
+    normalizedCandidate === normalizedCwd ||
+    normalizedCandidate.startsWith(normalizedCwd + path.sep);
+
+  return {
+    candidate: normalizedCandidate,
+    isWithinProject,
+  };
+}
+
+/**
+ * Internal helper to reset the filesystem existence cache. This is primarily
+ * intended for tests that need to run multiple scenarios with different
+ * mocked filesystem behavior without carrying over cached results.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-PERFORMANCE-OPTIMIZATION - Allow safe cache reset in tests to avoid stale entries
+ */
+export function __resetStoryExistenceCacheForTests(): void {
+  fileExistStatusCache.clear();
+}
+
+/**
  * Build candidate file paths for a given story path.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
