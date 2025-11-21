@@ -1,7 +1,9 @@
 /**
  * Tests for: docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-PLUGIN-STRUCTURE - Validate plugin default export and configs in src/index.ts
+ * @req REQ-ERROR-SEVERITY - Validate error severity configuration in plugin configs
  */
 import plugin, { rules, configs } from "../src/index";
 
@@ -46,5 +48,41 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
   it("[REQ-CONFIG-SYSTEM] configs.strict contains same rules as recommended", () => {
     const strictRules = configs.strict[0].rules;
     expect(strictRules).toEqual(configs.recommended[0].rules);
+  });
+
+  it("[REQ-ERROR-SEVERITY] configs.recommended maps valid-annotation-format to warn and others to error", () => {
+    const recommendedRules = configs.recommended[0].rules;
+
+    expect(recommendedRules).toHaveProperty(
+      "traceability/valid-annotation-format",
+      "warn",
+    );
+    expect(recommendedRules).toHaveProperty(
+      "traceability/require-story-annotation",
+      "error",
+    );
+    expect(recommendedRules).toHaveProperty(
+      "traceability/require-req-annotation",
+      "error",
+    );
+    expect(recommendedRules).toHaveProperty(
+      "traceability/require-branch-annotation",
+      "error",
+    );
+    expect(recommendedRules).toHaveProperty(
+      "traceability/valid-story-reference",
+      "error",
+    );
+    expect(recommendedRules).toHaveProperty(
+      "traceability/valid-req-reference",
+      "error",
+    );
+  });
+
+  it("[REQ-ERROR-SEVERITY] configs.strict uses same severity mapping as recommended", () => {
+    const strictRules = configs.strict[0].rules;
+    const recommendedRules = configs.recommended[0].rules;
+
+    expect(strictRules).toEqual(recommendedRules);
   });
 });
