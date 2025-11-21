@@ -10,6 +10,7 @@
  * @req REQ-FLEXIBLE-PARSING - Support reasonable variations in whitespace and formatting
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ * @req REQ-AUTOFIX-SAFE - Auto-fix behavior must be conservative and non-destructive
  */
 interface PendingAnnotation {
   type: "story" | "req";
@@ -26,6 +27,7 @@ const STORY_EXAMPLE_PATH = "docs/stories/005.0-DEV-EXAMPLE.story.md";
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ * @req REQ-AUTOFIX-PRESERVE - Avoid risky text replacements when the annotation tag cannot be located
  */
 const TAG_NOT_FOUND_INDEX = -1;
 
@@ -123,6 +125,7 @@ function buildReqErrorMessage(
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  * @req REQ-AUTOFIX-SAFE - Auto-fix must be conservative and never broaden the referenced path
+ * @req REQ-AUTOFIX-PRESERVE - Preserve surrounding formatting when normalizing story path suffixes
  */
 function getFixedStoryPath(original: string): string | null {
   if (original.includes("..")) {
@@ -406,6 +409,9 @@ export default {
       invalidReqFormat: "{{details}}",
     },
     schema: [],
+    /**
+     * This rule's fixable support is limited to safe @story path suffix normalization per Story 008.0.
+     */
     fixable: "code",
   },
   /**

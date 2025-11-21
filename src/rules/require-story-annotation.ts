@@ -7,6 +7,7 @@
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED
+ * @req REQ-AUTOFIX-MISSING - This rule supports auto-fixing missing @story annotations per Story 008.0 auto-fix behavior.
  */
 import type { Rule } from "eslint";
 import { buildVisitors } from "./helpers/require-story-visitors";
@@ -22,6 +23,7 @@ import {
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED
+ * @req REQ-AUTOFIX-MISSING - This rule participates in auto-fix for missing @story annotations.
  */
 const rule: Rule.RuleModule = {
   meta: {
@@ -37,6 +39,7 @@ const rule: Rule.RuleModule = {
      *
      * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
      * @req REQ-ANNOTATION-REQUIRED
+     * @req REQ-AUTOFIX-MISSING - `fixable: \"code\"` is used to implement REQ-AUTOFIX-MISSING for missing @story annotations.
      */
     fixable: "code",
     messages: {
@@ -65,6 +68,7 @@ const rule: Rule.RuleModule = {
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
    * @req REQ-CREATE-HOOK
+   * @req REQ-AUTOFIX-MISSING - The create hook wires in visitors that are capable of providing auto-fix suggestions for missing @story annotations.
    */
   create(context) {
     const sourceCode = context.getSourceCode();

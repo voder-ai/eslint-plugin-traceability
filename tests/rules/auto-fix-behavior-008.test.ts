@@ -26,6 +26,10 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
           name: "[REQ-AUTOFIX-MISSING] already annotated function is unchanged",
           code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction alreadyAnnotated() {}`,
         },
+        {
+          name: "[REQ-AUTOFIX-MISSING] already annotated class method is unchanged",
+          code: `class A {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
+        },
       ],
       invalid: [
         {
@@ -39,6 +43,78 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
                 {
                   desc: "Add JSDoc @story annotation for function 'autoFixMe', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
                   output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction autoFixMe() {}`,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "[REQ-AUTOFIX-MISSING] adds @story before function expression when missing",
+          code: `const fnExpr = function() {};`,
+          output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst fnExpr = function() {};`,
+          errors: [
+            {
+              messageId: "missingStory",
+              suggestions: [
+                {
+                  desc: "Add JSDoc @story annotation for function 'fnExpr', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst fnExpr = function() {};`,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "[REQ-AUTOFIX-MISSING] adds @story before class method when missing",
+          code: `class C {\n  method() {}\n}`,
+          output: `class C {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
+          errors: [
+            {
+              messageId: "missingStory",
+              suggestions: [
+                {
+                  desc: "Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  output: `class C {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "[REQ-AUTOFIX-MISSING] adds @story before TS declare function when missing",
+          code: `declare function tsDecl(): void;`,
+          output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ndeclare function tsDecl(): void;`,
+          languageOptions: {
+            parser: require("@typescript-eslint/parser") as any,
+            parserOptions: { ecmaVersion: 2020, sourceType: "module" },
+          },
+          errors: [
+            {
+              messageId: "missingStory",
+              suggestions: [
+                {
+                  desc: "Add JSDoc @story annotation for function 'tsDecl', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ndeclare function tsDecl(): void;`,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "[REQ-AUTOFIX-MISSING] adds @story before TS method signature when missing",
+          code: `interface D {\n  method(): void;\n}`,
+          output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ninterface D {\n  method(): void;\n}`,
+          languageOptions: {
+            parser: require("@typescript-eslint/parser") as any,
+            parserOptions: { ecmaVersion: 2020, sourceType: "module" },
+          },
+          errors: [
+            {
+              messageId: "missingStory",
+              suggestions: [
+                {
+                  desc: "Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ninterface D {\n  method(): void;\n}`,
                 },
               ],
             },

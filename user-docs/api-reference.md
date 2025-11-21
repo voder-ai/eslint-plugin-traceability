@@ -10,7 +10,7 @@ Each rule enforces traceability conventions in your code. Below is a summary of 
 
 ### traceability/require-story-annotation
 
-Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When run with `--fix`, the rule can insert a placeholder `@story` JSDoc comment above missing functions/methods using a built-in template aligned with Story 008.0. The auto-fix behavior is currently limited to this default template; advanced template customization and selective auto-fix toggles (for example, enabling fixes only for certain scopes) are not yet available.
+Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When run with `--fix`, the rule inserts a placeholder `@story` JSDoc comment above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. The template is currently fixed and not configurable, and selective enabling of different auto-fix behaviors (such as applying fixes only to certain scopes or node types) is planned for a future version.
 
 Options:
 
@@ -67,7 +67,7 @@ if (error) {
 
 ### traceability/valid-annotation-format
 
-Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule can automatically correct simple `@story` path suffix issues by appending or normalizing the `.story.md` suffix when it is safe and unambiguous to do so, in line with Story 008.0. More advanced behaviors—such as custom path normalization templates or fine-grained toggles to selectively enable/disable auto-fix for specific annotations—are not yet supported.
+Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule can automatically correct simple `@story` path suffix issues by adding `.md` when the path ends with `.story`, adding `.story.md` when the base path has no extension or only `.md`, and skipping paths that include `..` or other ambiguous cases, in line with Story 008.0; more advanced path normalization strategies and selective toggles to enable or disable specific auto-fix behaviors are not yet implemented.
 
 Options: None
 Default Severity: `error`
@@ -175,4 +175,3 @@ import js from "@eslint/js";
 import traceability from "eslint-plugin-traceability";
 
 export default [js.configs.recommended, traceability.configs.strict];
-```
