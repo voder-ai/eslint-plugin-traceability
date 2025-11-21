@@ -143,12 +143,12 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on MethodDefinition in class",
         code: `class C {\n  m() {}\n}`,
-        errors: [{ messageId: "missingReq" }],
+        errors: [{ messageId: "missingReq", data: { name: "m" } }],
       },
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on MethodDefinition in object literal",
         code: `const o = { m() {} };`,
-        errors: [{ messageId: "missingReq" }],
+        errors: [{ messageId: "missingReq", data: { name: "m" } }],
       },
       {
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on TS FunctionExpression in variable declarator",

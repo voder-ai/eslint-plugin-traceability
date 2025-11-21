@@ -1,4 +1,11 @@
 import { getNodeName } from "../rules/helpers/require-story-utils";
+import {
+  FALLBACK_WINDOW,
+  LOOKBACK_LINES,
+  fallbackTextBeforeHasStory,
+  linesBeforeHasStory,
+  parentChainHasStory,
+} from "../rules/helpers/require-story-io";
 
 /**
  * Helper to retrieve the JSDoc comment for a node.
@@ -46,11 +53,62 @@ function commentContainsReq(c: any) {
 }
 
 /**
+ * Line-based helper adapted from linesBeforeHasStory to detect @req.
+ */
+function linesBeforeHasReq(sourceCode: any, node: any) {
+  const res = linesBeforeHasStory(sourceCode, node, LOOKBACK_LINES);
+  if (!res) return false;
+  return typeof res.text === "string" && res.text.includes("@req");
+}
+
+/**
+ * Parent-chain helper adapted from parentChainHasStory to detect @req.
+ */
+function parentChainHasReq(sourceCode: any, node: any) {
+  const res = parentChainHasStory(sourceCode, node);
+  if (!res) return false;
+  return typeof res.text === "string" && res.text.includes("@req");
+}
+
+/**
+ * Fallback text window helper adapted from fallbackTextBeforeHasStory to detect @req.
+ */
+function fallbackTextBeforeHasReq(sourceCode: any, node: any) {
+  const res = fallbackTextBeforeHasStory(sourceCode, node, FALLBACK_WINDOW);
+  if (!res) return false;
+  return typeof res.text === "string" && res.text.includes("@req");
+}
+
+/**
  * Helper to determine whether a JSDoc or any nearby comments contain a @req annotation.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation
  */
-function hasReqAnnotation(jsdoc: any, comments: any[]) {
+function hasReqAnnotation(
+  jsdoc: any,
+  comments: any[],
+  context?: any,
+  node?: any,
+) {
+  try {
+    const sourceCode =
+      context && typeof context.getSourceCode === "function"
+        ? context.getSourceCode()
+        : undefined;
+
+    if (sourceCode && node) {
+      if (
+        linesBeforeHasReq(sourceCode, node) ||
+        parentChainHasReq(sourceCode, node) ||
+        fallbackTextBeforeHasReq(sourceCode, node)
+      ) {
+        return true;
+      }
+    }
+  } catch {
+    // Swallow detection errors and fall through to simple checks.
+  }
+
   // BRANCH @req detection on JSDoc or comments
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQ-DETECTION
@@ -121,8 +179,14 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
   const rawName =
     getNodeName(node) ?? (node && getNodeName((node as any).parent));
   const name = rawName ?? "(anonymous)";
+  const nameNode =
+    (node && (node as any).id && (node as any).id.type === "Identifier"
+      ? (node as any).id
+      : node && (node as any).key && (node as any).key.type === "Identifier"
+        ? (node as any).key
+        : node) ?? node;
   const reportOptions: any = {
-    node,
+    node: nameNode,
     messageId: "missingReq",
     data: { name },
   };
@@ -154,7 +218,7 @@ export function checkReqAnnotation(
   const leading = getLeadingComments(node);
   const comments = getCommentsBefore(sourceCode, node);
   const all = combineComments(leading, comments);
-  const hasReq = hasReqAnnotation(jsdoc, all);
+  const hasReq = hasReqAnnotation(jsdoc, all, context, node);
   // BRANCH when a @req annotation is missing and must be reported
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQ-DETECTION

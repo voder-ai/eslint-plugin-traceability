@@ -2,63 +2,253 @@
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-21T07:38:57.631Z</last_validated>
-  <last_modified>2025-11-20T08:52:45.534Z</last_modified>
-  <evidence>Key implementation files and tests:
-- Story file present: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md.
-- Core @story rule:
-  - src/rules/require-story-annotation.ts implements the ESLint rule `require-story-annotation`.
-  - Uses helpers in src/rules/helpers/require-story-helpers.ts and src/rules/helpers/require-story-core.ts.
-  - DEFAULT_SCOPE in require-story-core.ts = ["FunctionDeclaration", "FunctionExpression", "MethodDefinition", "TSMethodSignature", "TSDeclareFunction"]. Arrow functions are not included in the default scope, matching the story’s exclusion.
-  - Meta.schema supports configurable `scope` and `exportPriority`.
-  - Error message: messageId "missingStory" with data { name } and a clear suggestion using the concrete story path.
-- @story detection & robustness:
-  - src/rules/helpers/require-story-helpers.ts provides jsdocHasStory, commentsBeforeHasStory, leadingCommentsHasStory, linesBeforeHasStory, parentChainHasStory, fallbackTextBeforeHasStory, hasStoryAnnotation, resolveTargetNode, extractName, shouldProcessNode, reportMissing, reportMethod.
-  - src/rules/helpers/require-story-io.ts encapsulates IO-heavy helper logic and handles malformed inputs in try/catch blocks.
-- @req rule:
-  - src/rules/require-req-annotation.ts exports a rule requiring @req, tagged with this story.
-  - Meta:
-    - messages.missingReq: "Missing @req annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)".
-    - schema: [] (no options), so there is NO configurable scope or exportPriority for @req.
-  - create(context) listeners:
-    - FunctionDeclaration(node) → checkReqAnnotation(context, node).
-    - TSDeclareFunction(node) → checkReqAnnotation(context, node).
-    - TSMethodSignature(node) → checkReqAnnotation(context, node).
-    - There are NO listeners for FunctionExpression, MethodDefinition, or ArrowFunctionExpression.
-- @req detection logic:
-  - src/utils/annotation-checker.ts (used by require-req-annotation):
-    - hasReqAnnotation checks jsdoc.value and combined leading/before comments for "@req".
-    - checkReqAnnotation(context, node) calls reportMissing(context, node) when hasReqAnnotation is false.
-    - reportMissing uses getNodeName(node) and reports with messageId "missingReq" and a fix inserting "/** @req <REQ-ID> */\n" before the node.
-- Tests specifically tied to this story:
-  - tests/rules/require-story-annotation.test.ts:
-    - Header: "Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md" and @story annotation.
-    - Valid cases:
-      - FunctionDeclaration, FunctionExpression, ArrowFunctionExpression (with @story), MethodDefinition, TSDeclareFunction, TSMethodSignature.
-      - Confirms unannotated arrow functions are allowed by default.
-    - Invalid cases:
-      - Missing @story on FunctionDeclaration, FunctionExpression, MethodDefinition, TSDeclareFunction, TSMethodSignature, with expected auto-fix outputs and suggestion messages.
-    - Additional runs cover `exportPriority` (exported vs non-exported) and `scope` options.
-  - tests/rules/require-story-core.test.ts and tests/rules/require-story-core-edgecases.test.ts:
-    - Exercise createAddStoryFix, createMethodFix, and reportMissing/reportMethod edge cases, including export parent range handling and fallback behaviors.
-  - tests/rules/require-story-helpers-edgecases.test.ts:
-    - Exercise jsdocHasStory, commentsBeforeHasStory, leadingCommentsHasStory, resolveTargetNode, shouldProcessNode (exportPriority), and ensure reportMissing doesn’t report when a preceding @story is found via linesBeforeHasStory.
-  - tests/rules/require-req-annotation.test.ts:
-    - Header ties to docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md.
-    - Valid @req coverage:
-      - FunctionDeclaration with @req (and with @story + @req).
-      - TSDeclareFunction and TSMethodSignature with @req.
-    - Invalid coverage:
-      - FunctionDeclaration with no JSDoc.
-      - FunctionDeclaration with only @story.
-      - TSDeclareFunction without @req.
-      - TSMethodSignature without @req.
-    - No tests for FunctionExpression or MethodDefinition with respect to @req.
-- Plugin integration and docs:
-  - src/index.ts includes both rules in RULE_NAMES and in configs.recommended/strict ("traceability/require-story-annotation" and "traceability/require-req-annotation": "error").
-  - docs/rules/require-story-annotation.md and docs/rules/require-req-annotation.md both reference @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md and document rule purpose and examples.
-- Test execution:
-  - Command run: npm test -- --ci --bail --runInBand --verbose.
-  - Output shows Jest executing tests and debug messages from require-story-annotation, with no failures reported, indicating all story-related tests currently pass.</evidence>
-  <notes>The implementation robustly covers @story annotations for functions and methods via the `require-story-annotation` rule, including TypeScript support, configurable scope and export priority, clear error messages, auto-fix and suggestions, and extensive tests and documentation. However, the story explicitly requires that functions have both @story and @req annotations (REQ-ANNOTATION-REQUIRED) and that function detection includes function declarations and function expressions (excluding arrow functions) with configurable scope and export-priority. The `require-req-annotation` rule, which is tagged to this same story, only enforces @req on FunctionDeclaration, TSDeclareFunction, and TSMethodSignature, with no listeners for FunctionExpression or MethodDefinition and no options for scope or exportPriority (schema is []). Thus, function expressions and methods can lack @req annotations without being flagged, and the @req enforcement cannot be configured in the same way as @story enforcement. These gaps contradict REQ-FUNCTION-DETECTION, REQ-ANNOTATION-REQUIRED (for @req across all relevant function kinds), and REQ-CONFIGURABLE-SCOPE/REQ-EXPORT-PRIORITY at the story level. Since these discrepancies are evident in the current code and tests, the story is only partially implemented and the assessment status is FAILED.</notes>
+  <last_validated>2025-11-21T08:35:35.287Z</last_validated>
+  <last_modified>2025-11-21T08:08:09.637Z</last_modified>
+  <evidence>Key implementation and test evidence for Story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md:
+
+1) Rules and shared helpers exist and are wired into plugin
+- src/index.ts
+  - Exports rules:
+    - "require-story-annotation"
+    - "require-req-annotation"
+  - Both rules are enabled in configs.recommended and configs.strict:
+    - "traceability/require-story-annotation": "error"
+    - "traceability/require-req-annotation": "error"
+- src/rules/require-story-annotation.ts
+  - ESLint RuleModule with meta, schema, messages, create():
+    - Uses DEFAULT_SCOPE and EXPORT_PRIORITY_VALUES from ./helpers/require-story-helpers
+    - Delegates visitor construction to buildVisitors(...)
+    - Error message: missingStory: "Missing @story annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)"
+  - @story annotation points to docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+- src/rules/require-req-annotation.ts
+  - ESLint RuleModule with meta, schema, messages, create():
+    - Imports DEFAULT_SCOPE, EXPORT_PRIORITY_VALUES, shouldProcessNode from ./helpers/require-story-helpers
+    - Visitors: FunctionDeclaration, FunctionExpression, MethodDefinition, TSDeclareFunction, TSMethodSignature
+    - Each visitor calls runCheck(node) -> shouldProcessNode(...) then checkReqAnnotation(context, node, { enableFix: false })
+    - Error message: missingReq: "Missing @req annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)"
+    - fixable: "code" declared, but create() always passes enableFix: false, so no fix is actually offered at runtime.
+
+2) Function detection scope and shared configuration semantics
+- src/rules/helpers/require-story-core.ts
+  - DEFAULT_SCOPE:
+    [
+      "FunctionDeclaration",
+      "FunctionExpression",
+      "MethodDefinition",
+      "TSMethodSignature",
+      "TSDeclareFunction",
+    ]
+  - EXPORT_PRIORITY_VALUES: ["all", "exported", "non-exported"]
+- src/rules/helpers/require-story-helpers.ts
+  - shouldProcessNode(node, scope, exportPriority):
+    - Returns false if node.type not in scope
+    - Applies exportPriority === 'exported' / 'non-exported' using isExportedNode()
+  - isExportedNode() walks parent chain for ExportNamedDeclaration or ExportDefaultDeclaration
+- src/rules/require-story-annotation.ts
+  - meta.schema.scope items enum: DEFAULT_SCOPE (same types as above)
+  - meta.schema.exportPriority enum: EXPORT_PRIORITY_VALUES
+  - create() binds shouldProcessNode(node, scope, exportPriority) and passes it into buildVisitors
+- src/rules/require-req-annotation.ts
+  - Options type uses DEFAULT_SCOPE and EXPORT_PRIORITY_VALUES
+  - meta.schema.scope and .exportPriority share the same enums as require-story-annotation
+  - create() computes scope & exportPriority identically and uses shouldProcessNode for gating nodes
+
+Conclusion: For the standard, supported configuration, both rules operate over the same default function-like constructs and share the same scope/exportPriority semantics, satisfying much of REQ-FUNCTION-DETECTION, REQ-CONFIGURABLE-SCOPE, and REQ-EXPORT-PRIORITY from an implementation perspective.
+
+3) Actual node coverage vs story requirements and internal consistency issues
+- Story requirement REQ-FUNCTION-DETECTION (from docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md):
+  - Required detected constructs: FunctionDeclaration, FunctionExpression, MethodDefinition, TSDeclareFunction, TSMethodSignature
+  - Arrow functions are explicitly excluded by default
+- Implementation:
+  - src/rules/helpers/require-story-core.ts DEFAULT_SCOPE exactly matches the 5 listed node types, excluding arrow functions by default.
+  - src/rules/helpers/require-story-visitors.ts defines visitors for:
+    - FunctionDeclaration
+    - FunctionExpression
+    - ArrowFunctionExpression
+    - TSDeclareFunction
+    - TSMethodSignature
+    - MethodDefinition
+  - However, buildVisitors passes options.shouldProcessNode to each handler and shouldProcessNode() only returns true if node.type is in "scope".
+  - meta.schema for require-story-annotation restricts scope enums to DEFAULT_SCOPE only, so users cannot (via validated options) add "ArrowFunctionExpression"; arrow visitor is effectively inert under valid configuration, which keeps arrow functions excluded by default as per the requirement.
+  - src/rules/require-req-annotation.ts does NOT have an ArrowFunctionExpression visitor at all.
+
+=> In practice, under supported configurations, both rules analyze the same function-like node kinds; the extra arrow visitor in require-story-annotation is unreachable under the documented schema. Slight asymmetry in internal implementation exists, but not observable with valid options.
+
+4) JSDoc / annotation parsing behavior – divergence between the two rules
+- Story requirement **REQ-JSDOC-PARSING**: “Parse JSDoc comments to extract @story and @req annotations, using a common parsing strategy for both rules.”
+
+- For @story (require-story-annotation):
+  - src/rules/helpers/require-story-helpers.ts
+    - jsdocHasStory(sourceCode, node): uses sourceCode.getJSDocComment(node) and checks jsdoc.value.includes("@story").
+    - commentsBeforeHasStory(sourceCode, node):
+      - Uses sourceCode.getCommentsBefore(node) and scans for "@story".
+    - leadingCommentsHasStory(node):
+      - Looks at node.leadingComments and scans for "@story".
+    - hasStoryAnnotation(sourceCode, node):
+      - Wraps detection in try/catch and composes:
+        - jsdocHasStory
+        - commentsBeforeHasStory
+        - leadingCommentsHasStory
+        - linesBeforeHasStory(sourceCode, node, LOOKBACK_LINES)
+        - parentChainHasStory(sourceCode, node)
+        - fallbackTextBeforeHasStory(sourceCode, node)
+      - Any exception is caught and treated as "no story" rather than crashing the rule.
+- For @req (require-req-annotation):
+  - src/utils/annotation-checker.ts
+    - getJsdocComment(sourceCode, node): returns sourceCode.getJSDocComment(node) (no try/catch here).
+    - getLeadingComments(node): node.leadingComments || []
+    - getCommentsBefore(sourceCode, node): sourceCode.getCommentsBefore(node) || []
+    - combineComments(leading, before): concatenates both arrays.
+    - commentContainsReq(c): checks typeof c.value === "string" && c.value.includes("@req").
+    - hasReqAnnotation(jsdoc, comments): considers jsdoc.value.includes("@req") or any commentContainsReq.
+    - checkReqAnnotation(context, node, options):
+      - Derives jsdoc & combined comments, computes hasReq, and if false calls reportMissing(context, node, enableFix).
+
+=> The two rules do **not** share a common parsing helper or a fully common strategy. @story detection uses additional heuristics (linesBeforeHasStory, parentChainHasStory, fallbackTextBeforeHasStory) and has internal try/catch shielding, whereas @req detection only considers direct JSDoc and immediate surrounding comments, with no try/catch at this level. This diverges from the story’s explicit requirement that JSDoc parsing should use a common strategy for both rules.
+
+5) Error reporting location (REQ-ERROR-LOCATION)
+- Story requirement: “Both rules report errors at the function name (or closest equivalent for anonymous constructs) for precise error location.”
+
+- require-story-annotation:
+  - src/rules/helpers/require-story-helpers.ts reportMissing():
+    - Computes functionName via extractName(...), which walks node and parents for id/key/name, returning "(anonymous)" as fallback.
+    - Chooses nameNode as:
+      - node.id (Identifier) OR
+      - node.key (Identifier) OR
+      - node
+    - Calls context.report({ node: nameNode, messageId: "missingStory", data: { name }, ... })
+  - For TSMethodSignature and MethodDefinition, reportMethod() similarly uses node.key as nameNode.
+  - This aligns well with REQ-ERROR-LOCATION: the actual AST sub-node representing the function/method name is used when available.
+
+- require-req-annotation:
+  - src/utils/annotation-checker.ts reportMissing(context, node, enableFix):
+    - Derives name via getNodeName(node) (or parent) and passes it into data: { name }.
+    - **Crucially**, it reports on the full node, not on the identifier sub-node:
+      - context.report({ node, messageId: "missingReq", data: { name } });
+    - For a FunctionDeclaration, this means the error is attached to the function AST node (typically highlighting the `function` keyword), not specifically to the identifier name, even though a more precise Identifier node is available.
+
+=> For the @req rule, error locations are not focused on the function name node as specified. They are attached to the entire function/method node instead of the identifier sub-node, so REQ-ERROR-LOCATION is only partially satisfied and not implemented consistently across both rules.
+
+6) TypeScript support (REQ-TYPESCRIPT-SUPPORT) and tests
+- Implementation:
+  - Both rules explicitly handle TSDeclareFunction and TSMethodSignature.
+  - require-story-annotation:
+    - Visitors TSDeclareFunction and TSMethodSignature call helperReportMissing with appropriate targets.
+  - require-req-annotation:
+    - Visitors TSDeclareFunction(node) and TSMethodSignature(node) call runCheck(node) -> checkReqAnnotation(...).
+- Tests:
+  - tests/rules/require-story-annotation.test.ts
+    - Valid TSDeclareFunction with @story using @typescript-eslint/parser.
+    - Valid TSMethodSignature with @story using @typescript-eslint/parser.
+    - Invalid TSDeclareFunction missing @story (with expected autofix and suggestion).
+    - Invalid TSMethodSignature missing @story (with expected autofix and suggestion).
+  - tests/rules/require-req-annotation.test.ts
+    - Valid TSDeclareFunction with @req.
+    - Valid TSMethodSignature with @req.
+    - Invalid TSDeclareFunction missing @req.
+    - Invalid TSMethodSignature missing @req.
+
+=> REQ-TYPESCRIPT-SUPPORT is well exercised and appears satisfied.
+
+7) Configurability and export priority (REQ-CONFIGURABLE-SCOPE, REQ-EXPORT-PRIORITY)
+- Implementation (shared):
+  - DEFAULT_SCOPE & EXPORT_PRIORITY_VALUES defined in src/rules/helpers/require-story-core.ts.
+  - shouldProcessNode(node, scope, exportPriority) in src/rules/helpers/require-story-helpers.ts enforces both.
+  - require-story-annotation.create() and require-req-annotation.create() both derive scope and exportPriority similarly and use shouldProcessNode.
+- Tests:
+  - tests/rules/require-story-annotation.test.ts
+    - "require-story-annotation with exportPriority option":
+      - Valid: unexported function without @story under exportPriority: "exported".
+      - Invalid: exported function missing @story under exportPriority: "exported".
+    - "require-story-annotation with scope option":
+      - Valid: arrow function ignored when scope only includes "FunctionDeclaration".
+      - Invalid: function declaration missing annotation when scope only includes "FunctionDeclaration".
+  - tests/rules/require-req-annotation.test.ts
+    - Multiple valid and invalid cases explicitly tagged with [REQ-CONFIGURABLE-SCOPE] and [REQ-EXPORT-PRIORITY] for:
+      - scope: ["FunctionDeclaration"]
+      - exportPriority: "exported" and "non-exported" for both functions and methods.
+
+=> From behavior and tests, both rules share and correctly exercise the same scope and exportPriority semantics.
+
+8) Rule documentation (Documentation acceptance criterion)
+- docs/rules/require-story-annotation.md
+  - Documents:
+    - Purpose of the rule.
+    - Supported node types: FunctionDeclaration, FunctionExpression, MethodDefinition, TSDeclareFunction, TSMethodSignature.
+    - Options schema matching implementation:
+      - scope: array of node type strings as in DEFAULT_SCOPE.
+      - exportPriority: "all" | "exported" | "non-exported".
+    - Correct/incorrect examples including TypeScript.
+  - This is aligned with actual implementation & schema.
+
+- docs/rules/require-req-annotation.md
+  - Documents:
+    - Purpose of the rule.
+    - Node coverage including: "Function expressions (including arrow functions)" and TypeScript nodes.
+    - Options schema **does NOT match implementation**:
+      - Documented config:
+        ```json
+        {
+          "scope": "all" | "module" | "exports" | "named-exports" | "default-export",
+          "exportPriority": "jsdoc" | "syntax"
+        }
+        ```
+      - Actual implementation (src/rules/require-req-annotation.ts and helpers):
+        - scope: array of node type strings (DEFAULT_SCOPE), **not** the string values described in docs.
+        - exportPriority: "all" | "exported" | "non-exported", **not** "jsdoc" | "syntax".
+  - This directly contradicts both the implementation and the story’s requirement REQ-CONFIGURABLE-SCOPE and REQ-EXPORT-PRIORITY that these rules share configuration semantics.
+
+=> While documentation files exist for both rules and contain examples, the require-req-annotation documentation is materially incorrect regarding configuration shape and semantics. This means the acceptance criterion “Documentation: Rule documentation with examples and configuration options” is **not** fully satisfied in a truthful/usable sense.
+
+9) Tests for this story and test status
+- tests/rules/require-story-annotation.test.ts
+  - Header:
+    - @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    - Explicit test names referencing [REQ-ANNOTATION-REQUIRED], [REQ-FUNCTION-DETECTION], exportPriority, scope.
+  - Exercises:
+    - Required annotations on functions, function expressions, class methods, TSDeclareFunction, TSMethodSignature.
+    - Default behavior where unannotated arrow functions are allowed.
+    - Scope and exportPriority options.
+- tests/rules/require-req-annotation.test.ts
+  - Header includes:
+    - @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    - @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+    - Requirements tags including REQ-ANNOTATION-REQUIRED, REQ-ERROR-SPECIFIC.
+  - Exercises:
+    - Presence/absence of @req in multiple function-like shapes, including TS nodes and anonymous functions.
+    - Scope and exportPriority semantics extensively.
+    - Some UX aspects (error messages include name, specific messaging as per Story 007.0), but error node location remains at the whole node (see point 5).
+- Global test run:
+  - Command executed (by this assessment):
+    - npm test -- --runInBand --verbose
+    - npm test -- --runInBand --verbose --testLocationInResults
+  - Both invocations completed successfully (Jest ran with --ci --bail and produced only console.debug output from require-story-annotation rule), indicating all tests, including the above, are passing.
+
+10) Story file acceptance checkboxes and Definition of Done
+- docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  - Acceptance Criteria marked in the story itself:
+    - [x] Core Functionality
+    - [ ] Quality Standards
+    - [ ] Integration
+    - [ ] User Experience
+    - [ ] Error Handling
+    - [ ] Documentation
+  - Definition of Done includes items such as:
+    - All acceptance criteria met (unchecked)
+    - Documentation updated (rule documentation with examples) (unchecked)
+    - Performance tested with large codebases (no evidence in repo or tests)
+
+=> The story author has not updated the checkboxes to mark non-core items as done, which is a soft signal that the story is considered incomplete in those dimensions. More importantly, we have concrete evidence that at least some of those acceptance criteria (Documentation accuracy, common parsing strategy, precise error location for both rules) are not fully met in the current implementation.
+</evidence>
+  <notes>The story is partially implemented: both `require-story-annotation` and `require-req-annotation` exist, share default function-like detection via DEFAULT_SCOPE and `shouldProcessNode`, are integrated into the plugin configs, and have solid RuleTester coverage including TypeScript syntax. However, several specified acceptance criteria and requirements are not fully satisfied:
+
+1) **Common JSDoc parsing strategy (REQ-JSDOC-PARSING)** is not actually shared. `require-story-annotation` uses a richer, try/catch-protected set of heuristics (`hasStoryAnnotation` leveraging multiple helpers and IO functions), while `require-req-annotation` uses a separate, simpler parsing pipeline in `annotation-checker.ts` that does not reuse the same heuristics. This contradicts the story’s requirement for a common parsing strategy across both rules.
+
+2) **Error location consistency (REQ-ERROR-LOCATION)** is only properly implemented for `require-story-annotation`. It reports on the identifier/key sub-node representing the function/method name. In contrast, `require-req-annotation` reports on the entire function/method node, not the name identifier, even though a more precise node is available. The story requires both rules to report at the function name (or closest equivalent), so this behavior is incomplete for the @req rule.
+
+3) **Documentation accuracy and configuration semantics (Documentation acceptance criterion, REQ-CONFIGURABLE-SCOPE, REQ-EXPORT-PRIORITY)** are not met for `require-req-annotation`. Its documentation file describes a completely different options shape (`scope` as high-level strings like "all"/"module" and `exportPriority` as "jsdoc"/"syntax"), while the actual implementation uses `scope` as an array of node-type strings and `exportPriority` as "all"/"exported"/"non-exported", matching `require-story-annotation`. This misleads users and violates the requirement that both rules share configuration semantics.
+
+4) **Quality Standards** are therefore not fully satisfied: the divergence between docs and implementation, non-shared parsing strategy, and imprecise error location in one rule are all counter to the story’s intent of tightly aligned, best-practice ESLint rules.
+
+Given these concrete discrepancies, not all acceptance criteria and requirements of Story 003.0 are met. The feature is close, but the story must be considered FAILED until the @req rule’s parsing strategy, error location, and documentation are corrected to align with the story specification and with the @story rule behavior.</notes>
 </traceability>

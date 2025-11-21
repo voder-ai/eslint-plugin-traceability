@@ -1,25 +1,19 @@
 ## NOW
 
-- [ ] read_file docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+- [ ] find_files docs/stories/*.story.md
 
 ## NEXT
 
-- [ ] read_file src/rules/require-req-annotation.ts
-- [ ] read_file src/utils/annotation-checker.ts
-- [ ] read_file src/rules/require-story-annotation.ts
-- [ ] read_file src/rules/helpers/require-story-core.ts
-- [ ] read_file src/rules/helpers/require-story-helpers.ts
-- [ ] read_file tests/rules/require-req-annotation.test.ts
-- [ ] read_file tests/rules/require-story-annotation.test.ts
-- [ ] modify_file src/rules/require-req-annotation.ts
-- [ ] modify_file src/utils/annotation-checker.ts
-- [ ] modify_file tests/rules/require-req-annotation.test.ts
-- [ ] modify_file docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-- [ ] modify_file docs/rules/require-req-annotation.md
-- [ ] modify_file user-docs/api-reference.md
+- [ ] read_file docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+- [ ] read_file the primary implementation files associated with the identified failing story (e.g., relevant rule or maintenance modules and their helper utilities) to compare behavior with the story’s acceptance criteria
+- [ ] read_file the corresponding test files (for that rule or feature) to understand current coverage and any missing cases related to the story’s requirements
+- [ ] modify_file the relevant source file(s) to implement any missing behavior required by the failing story, keeping changes minimal and clearly annotated with @story/@req traceability
+- [ ] modify_file the associated test file(s) to add or adjust tests that validate the new or corrected behavior against the story’s acceptance criteria
+- [ ] modify_file the story markdown and any relevant rule/user documentation to mark satisfied acceptance criteria and ensure docs align with the implemented behavior
 
 ## LATER
 
-- [ ] Identify and complete the other remaining failing story from the functionality assessment once 003.0 is fully satisfied and validated.
-- [ ] After 003.0 is stable, consider extracting shared helpers for configurable scope/exportPriority between @story and @req rules to reduce duplication, using a small, incremental refactor.
-- [ ] Add any missing traceability annotations uncovered by the traceability report, especially around the new @req handling branches, and regenerate the traceability report.
+- [ ] After updating the identified failing story, re-run or review the functionality assessment to verify that all stories now pass and no new functional regressions have been introduced
+- [ ] If multiple rules or utilities share behavior required by the fixed story, consider a small follow-up refactor to extract shared helpers, using branch-by-abstraction so behavior stays stable
+- [ ] Review and extend traceability annotations where needed in newly modified files to ensure every new or changed function/branch points to the correct story and requirement IDs
+- [ ] Once all documented stories pass, consider tightening or adding targeted tests in any areas where coverage is minimal for the last-fixed story, without overcomplicating the suite

@@ -21,45 +21,65 @@ If a function or method is in scope and does not have a JSDoc with an `@req` tag
 
 ## Options
 
-This rule accepts an options object with the same shape and semantics as `require-story-annotation`, but applied to `@req` detection:
+This rule accepts an options object with the same overall semantics and defaults as `require-story-annotation`, but applied to `@req` detection:
 
 ```json
 {
-  "scope": "all" | "module" | "exports" | "named-exports" | "default-export",
-  "exportPriority": "jsdoc" | "syntax"
+  "scope": [
+    "FunctionDeclaration",
+    "FunctionExpression",
+    "MethodDefinition",
+    "TSDeclareFunction",
+    "TSMethodSignature"
+  ],
+  "exportPriority": "all" | "exported" | "non-exported"
 }
 ```
 
-If no options are provided, the rule uses the same default `scope` and `exportPriority` as `require-story-annotation`.
+Both properties are optional.
 
 ### `scope`
 
-Controls which functions/methods must have an `@req` annotation:
+`scope` is an optional array of node type strings that controls which kinds of function-like nodes are required to have an `@req` annotation.
 
-- `"all"`  
-  Check all detected functions and methods.
+Allowed values in the array are:
 
-- `"module"`  
-  Check top-level functions and methods defined in the module (including class methods), regardless of export status.
+- `"FunctionDeclaration"`
+- `"FunctionExpression"`
+- `"MethodDefinition"`
+- `"TSDeclareFunction"`
+- `"TSMethodSignature"`
 
-- `"exports"`  
-  Check only functions and methods that are exported from the module (either via syntax exports or via JSDoc, depending on `exportPriority`).
+If `scope` is omitted, the rule defaults to the full set:
 
-- `"named-exports"`  
-  Check only functions and methods that are named exports.
+```json
+{
+  "scope": [
+    "FunctionDeclaration",
+    "FunctionExpression",
+    "MethodDefinition",
+    "TSDeclareFunction",
+    "TSMethodSignature"
+  ]
+}
+```
 
-- `"default-export"`  
-  Check only the default-exported function or method.
+These semantics and defaults mirror `require-story-annotation`.
 
 ### `exportPriority`
 
-Controls how export status is determined when `scope` is export-based (`"module"` may also use this in implementations that infer exports):
+`exportPriority` is an optional string that controls which functions/methods are considered in scope based on their export status. It uses the same semantics and defaults as `require-story-annotation`:
 
-- `"syntax"` (recommended)  
-  Use ES module / CommonJS syntax (e.g., `export`, `module.exports`, `exports.foo`) as the source of truth.
+- `"all"` (default)  
+  Check all nodes of the types listed in `scope`, regardless of export status.
 
-- `"jsdoc"`  
-  Prefer JSDoc export tags (e.g., `@public`, `@export`) over syntax when deciding if something is exported.
+- `"exported"`  
+  Check only nodes of the types listed in `scope` that are considered exported.
+
+- `"non-exported"`  
+  Check only nodes of the types listed in `scope` that are not considered exported.
+
+If `exportPriority` is omitted, it defaults to `"all"`.
 
 ## Examples
 
@@ -178,3 +198,4 @@ Correct:
 interface I {
   method(): void;
 }
+```
