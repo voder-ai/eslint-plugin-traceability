@@ -38,6 +38,8 @@ describe("CLI Error Handling for Traceability Plugin (Story 001.0-DEV-PLUGIN-SET
 
     // Expect non-zero exit and missing annotation message on stdout
     expect(result.status).not.toBe(0);
-    expect(result.stdout).toContain("Missing @story annotation");
+    expect(result.stdout).toContain(
+      "Function 'foo' is missing a required @story annotation",
+    );
   });
 });
