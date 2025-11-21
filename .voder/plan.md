@@ -1,19 +1,18 @@
 ## NOW
 
-- [ ] Use read_file to open `docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md` to fully refresh the exact requirements and acceptance criteria for function annotations.
+- [ ] Use read_file to open `docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md` to refresh the exact requirements (especially REQ-MULTILINE-SUPPORT and REQ-ERROR-SPECIFICITY) and examples for annotation validation.
 
 ## NEXT
 
-- [ ] Use read_file on `src/rules/require-story-annotation.ts` to compare the current rule behavior (node types, messages, locations) against the story’s requirements.
-- [ ] Use read_file on `src/rules/helpers/require-story-core.ts` and `src/rules/helpers/require-story-visitors.ts` to see how function-like nodes (including arrow functions) are currently detected and reported.
-- [ ] Use read_file on `tests/rules/require-story-annotation.test.ts` (and any related helper tests) to understand the current tested behavior for arrow functions and error messages/locations.
-- [ ] Design a minimal change set to align behavior with the story by: (a) excluding ArrowFunctionExpression from the default enforced scope, and (b) changing reporting so the primary diagnostic is attached to the function name identifier and includes the function name in the message text.
-- [ ] Modify `require-story-core` / visitor helpers so the default scope excludes arrow functions per the story, while keeping types/tests compiling, and adjust any tests that assume arrow functions are enforced by default.
-- [ ] Update the reporting helpers and rule meta messages so the main `missing @story` diagnostic includes the function’s name and uses the identifier location, then update/add Jest tests to assert on message content and error location.
-- [ ] Run the existing traceability check and story tests to ensure all `@story` / `req` annotations and the 003.0 story doc remain aligned with the new behavior, updating the story markdown if specific requirement IDs or wording need small tweaks to match the implementation.
+- [ ] Use read_file on `src/rules/valid-annotation-format.ts` to re-verify the current implementation against the refreshed 005.0 story requirements.
+- [ ] Use read_file on `tests/rules/valid-annotation-format.test.ts` to understand existing test coverage and pinpoint missing cases for multi-line annotations and specific error messages.
+- [ ] Design the concrete parsing and reporting behavior needed in `valid-annotation-format` to support multi-line annotations and more granular error categories while remaining backward compatible with existing single-line annotations.
+- [ ] Modify `src/rules/valid-annotation-format.ts` to implement the new behavior (multi-line support and more specific messageIds/messages) according to the design, keeping changes as small and focused as possible.
+- [ ] Extend `tests/rules/valid-annotation-format.test.ts` with new test cases that cover multi-line annotations, various specific failure modes, and assert on the new, more specific error messages and messageIds.
+- [ ] Update `docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md` (and any relevant rule doc under `docs/rules/`) so that REQ IDs, described behavior, and examples match the updated implementation and tests.
 
 ## LATER
 
-- [ ] Re-evaluate whether the story’s “single core rule for @story and @req” requirement demands combining `require-story-annotation` and `require-req-annotation` into one rule, or whether the current split is acceptable with clarified documentation; if needed, plan a safe expand–migrate–contract refactor.
-- [ ] Once Story 003.0 passes, repeat the same inspect–design–implement–test cycle for the remaining failing stories, one at a time, using traceability and Jest tests to drive each to green.
-- [ ] After all stories are passing and functional coverage ≥ 90%, consider small refactors to further simplify the function-annotation helpers (e.g., extracting shared reporter utilities) without changing external behavior.
+- [ ] Identify the other three failing stories from the functionality assessment and, one at a time, repeat the inspect–design–implement–doc-align cycle used for Story 005.0 until each reaches 90%+ alignment.
+- [ ] Once all currently failing stories pass, review cross-cutting behaviors (e.g., how annotation parsing is shared between rules) for small refactors that reduce duplication while preserving behavior.
+- [ ] After functional coverage across all stories is ≥ 90%, consider adding a small number of characterization tests around complex annotation edge cases to protect future refactors of the validation logic.

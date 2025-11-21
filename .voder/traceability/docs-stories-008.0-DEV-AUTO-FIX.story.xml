@@ -2,126 +2,97 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-21T00:25:58.669Z</last_validated>
+  <last_validated>2025-11-21T01:25:58.766Z</last_validated>
   <last_modified>2025-11-19T04:17:32.825Z</last_modified>
-  <evidence>Key findings from the repository:
+  <evidence>Key findings for docs/stories/008.0-DEV-AUTO-FIX.story.md:
 
-1. Story file exists but is not referenced by code or tests
-- docs/stories/008.0-DEV-AUTO-FIX.story.md is present and contains the requirements REQ-AUTOFIX-MISSING, REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-SAFE, REQ-AUTOFIX-PRESERVE, REQ-AUTOFIX-TEMPLATE, REQ-AUTOFIX-SELECTIVE.
-- grep -R -n 008.0-DEV-AUTO-FIX tests src docs
-  - Only matches are in docs/stories/008.0-DEV-AUTO-FIX.story.md and docs/stories/developer-story.map.md.
-  - No @story annotations or tests reference this story file.
+1) Traceability to Story 008.0
+- `grep -R 008.0-DEV-AUTO-FIX .` shows references only in:
+  - `docs/stories/008.0-DEV-AUTO-FIX.story.md`
+  - `docs/stories/developer-story.map.md`
+  - `.voder/traceability/docs-stories-008.0-DEV-AUTO-FIX.story.xml`
+- No `@story docs/stories/008.0-DEV-AUTO-FIX.story.md` annotations appear in any `src` or `tests` files.
+- No code or tests reference the REQ IDs from this story (`REQ-AUTOFIX-MISSING`, `REQ-AUTOFIX-FORMAT`, `REQ-AUTOFIX-SAFE`, `REQ-AUTOFIX-PRESERVE`, `REQ-AUTOFIX-TEMPLATE`, `REQ-AUTOFIX-SELECTIVE`).
 
-2. Existing auto-fix implementations are tied to earlier stories, not 008.0
-- require-story @story autofix helpers and tests are attributed to story 003.0, not 008.0:
-  - src/rules/helpers/require-story-core.ts
-    - Exports createAddStoryFix and createMethodFix using ANNOTATION from require-story-helpers.
-    - All JSDoc annotations use @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md and @req REQ-AUTOFIX (generic), not the REQ-AUTOFIX-* IDs from 008.0.
-  - src/rules/helpers/require-story-helpers.ts
-    - Defines const STORY_PATH = "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
-      const ANNOTATION = `/** @story ${STORY_PATH} */`;
-    - reportMissing/reportMethod use context.report with suggestions (not direct fixes) using createAddStoryFix/createMethodFix.
-  - tests/rules/require-story-core.autofix.test.ts
-    - Header: "Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md" and @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md.
-    - Tests only behavior of createAddStoryFix/reportMissing; no reference to story 008.0 or its REQ-AUTOFIX-* requirement IDs.
+2) Existing Auto-fix Implementations (tied to earlier stories)
+- Missing @req on functions (003.0 story):
+  - `src/rules/require-req-annotation.ts`:
+    - `meta.fixable: "code"` (auto-fix enabled).
+    - `create(context)` reports `missingReq` with an inline `fix(fixer) { return fixer.insertTextBefore(node, "/** @req <REQ-ID> */\n"); }` for `FunctionDeclaration`.
+  - Tests: `tests/rules/require-req-annotation.test.ts`:
+    - Invalid cases assert `output` with the inserted `/** @req <REQ-ID> */` and verify auto-fix behavior via ESLint RuleTester.
+- Missing branch @story/@req (004.0 story):
+  - `src/rules/require-branch-annotation.ts`:
+    - `meta.fixable: "code"`.
+    - Delegates to `reportMissingAnnotations` in `src/utils/branch-annotation-helpers.ts`.
+  - `src/utils/branch-annotation-helpers.ts`:
+    - `reportMissingStory` defines an `insertStoryFixer(fixer)` inserting `"${indent}// @story <story-file>.story.md\n"` before the branch.
+    - `reportMissingReq` defines `insertReqFixer(fixer)` inserting `"${indent}// @req <REQ-ID>\n"`.
+    - These fixers are used in `context.report({ ..., fix: insertStoryFixer })` / `fix: insertReqFixer` when safe.
+  - Tests: `tests/rules/require-branch-annotation.test.ts` verify auto-fix `output` for many invalid cases (if/for/while/switch/try-catch), e.g.:
+    - Missing annotations on `if (condition) {}` => output starts with `// @story <story-file>.story.md` and `// @req <REQ-ID>`.
+- Auto-fix helpers for missing @story on functions (003.0 story):
+  - `src/rules/helpers/require-story-core.ts`:
+    - `createAddStoryFix(target)` returns a fixer that inserts `${ANNOTATION}\n` at the correct range.
+    - `reportMissing(...)` uses `context.report({ ..., suggest: [{ desc: ..., fix: createAddStoryFix(resolvedTarget) }] })`.
+  - `src/rules/helpers/require-story-helpers.ts` exports `ANNOTATION` as:
+    - `const STORY_PATH = "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";`
+    - `const ANNOTATION = `/** @story ${STORY_PATH} */`;`
+  - Tests: `tests/rules/require-story-annotation.test.ts` and `tests/rules/require-story-core-edgecases.test.ts` / `tests/rules/require-story-core.autofix.test.ts` assert suggestion-based fixes and edge cases, but all are annotated with story 003.0 and generic `REQ-AUTOFIX`, not the REQ-AUTOFIX-* IDs from 008.0.
 
-3. Missing @story on functions is NOT auto-fixed by ESLint --fix
-- src/rules/require-story-annotation.ts:
-  - meta.hasSuggestions: true
-  - meta DOES NOT declare fixable, and the rule never passes a `fix` property directly to context.report.
-  - reportMissing and reportMethod are implemented in helpers (require-story-helpers.ts) and only provide `suggest` entries:
-    context.report({
-      node,
-      messageId: "missingStory",
-      data: { name },
-      suggest: [
-        {
-          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-          fix: createAddStoryFix(resolvedTarget),
-        },
-      ],
-    });
-  - ESLint CLI `--fix` applies `fix` functions declared directly, but suggestions are only applied interactively or with explicit suggestion tooling. There is no rule-level `fix` configured for missing @story on functions.
-  - Therefore REQ-AUTOFIX-MISSING ("Automatically add missing @story annotations to functions using template format") is not satisfied for the primary function rule via standard `--fix`.
+3) Behavior of require-story-annotation vs story 008.0 expectations
+- `src/rules/require-story-annotation.ts`:
+  - `meta`:
+    - `hasSuggestions: true` but **no** `fixable` field.
+    - Messages only define `missingStory`.
+  - `create(context)` builds visitors and logs debug output, but **does not** expose a `fix` property in `meta` or top-level `context.report` calls.
+- In ESLint, rules with only `suggest` entries (and no `meta.fixable`) do **not** execute those fixes on plain `eslint --fix`; they require `--fix-type suggestion` or editor-driven suggestion application.
+- Story 008.0's core requirement is: "when I run ESLint with the --fix option"; this is not met for missing `@story` on functions, because that rule is suggestion-only.
 
-4. Some auto-fixes exist, but they target other concerns and stories
-- Branch annotations (story 004.0):
-  - src/utils/branch-annotation-helpers.ts and src/rules/require-branch-annotation.ts
-    - meta.fixable: "code" in require-branch-annotation.ts.
-    - reportMissingStory and reportMissingReq define fixers that insert placeholder annotations above branches:
-      - insertStoryFixer inserts `${indent}// @story <story-file>.story.md\n`.
-      - insertReqFixer inserts `${indent}// @req <REQ-ID>\n`.
-    - tests/rules/require-branch-annotation.test.ts assert before/after `output` for many invalid cases, proving `--fix` auto-fixes branches:
-      - E.g. missing annotations on if-statement -> output has `// @story <story-file>.story.md` above the branch.
-  - These are traceability-related auto-fixes, but all code and tests are tagged to docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md, not 008.0, and they do not implement the specific requirements REQ-AUTOFIX-FORMAT/TEMPLATE/SELECTIVE.
+4) No implementation of 008.0-specific requirements
+- `REQ-AUTOFIX-MISSING`: Automatically add missing @story annotations to functions using template format
+  - While there is a suggestion-based fixer (`createAddStoryFix`) inserting a hard-coded template `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`, it is:
+    - Tied to story 003.0 via `STORY_PATH` and annotations.
+    - Exposed only as a **suggestion**, not an auto-fix triggered by `eslint --fix`.
+    - Not traceably linked to `REQ-AUTOFIX-MISSING` or to story 008.0.
+- `REQ-AUTOFIX-FORMAT`: Fix common annotation format issues (spacing, syntax, casing)
+  - `src/rules/valid-annotation-format.ts` only reports `invalidStoryFormat` / `invalidReqFormat` and has **no `meta.fixable`** and no `fix` callbacks.
+  - No rule automatically rewrites malformed annotation lines.
+- `REQ-AUTOFIX-SAFE` and `REQ-AUTOFIX-PRESERVE`: safety and formatting preservation
+  - Existing fixers insert placeholder comments/annotations but there is no logic (or tests) explicitly ensuring non-destructive behavior or preserving arbitrary existing formatting beyond basic indentation handling in branches.
+  - No tests are tagged to REQ-AUTOFIX-SAFE or REQ-AUTOFIX-PRESERVE, and no configuration exists to limit or toggle risky fixes.
+- `REQ-AUTOFIX-TEMPLATE`: Use configurable annotation templates for consistent formatting
+  - Templates are hard-coded:
+    - Functions: `ANNOTATION` constant for 003.0 story path.
+    - Branches: string literals like `"// @story <story-file>.story.md\n"` and `"// @req <REQ-ID>\n"`.
+  - No rule options or config mechanism exists to customize template text or placeholders.
+- `REQ-AUTOFIX-SELECTIVE`: Allow developers to choose which types of fixes to enable/disable
+  - `require-req-annotation` has no options at all.
+  - `require-branch-annotation` has `branchTypes` to restrict node types, but nothing to enable/disable auto-fix behavior independently of detection.
+  - No rule offers an option to, for example, enable format fixes but disable missing-annotation insertion.
 
-- @req on functions (story 003.0):
-  - src/utils/annotation-checker.ts:
-    - createMissingReqFix(node) returns a fixer that inserts `"/** @req <REQ-ID> */\n"` before the node.
-    - reportMissing uses that fixer in context.report with `fix`.
-  - src/rules/require-req-annotation.ts:
-    - meta: { fixable: "code" }.
-    - FunctionDeclaration handler reports missing @req with a `fix` callback:
-      fix(fixer: any) { return fixer.insertTextBefore(node, "/** @req <REQ-ID> */\n"); }
-  - tests/rules/require-req-annotation.test.ts verify before/after `output` for missing @req on functions and TS nodes.
-  - These again are tied to 003.0 story and generic REQ-ANNOTATION-AUTOFIX/REQ-AUTOFIX (via comments), not the 008.0 REQ-AUTOFIX-* requirements.
+5) Acceptance Criteria vs Current Implementation
+- **Core Functionality**: "ESLint --fix automatically resolves common annotation violations"
+  - Partially true for **some** earlier-scope violations (missing @req on functions; missing @story/@req on branches) but **not** for the core missing `@story`-on-function scenario described in this story, and not traceably tied to story 008.
+- **Quality Standards** / **User Experience** / **Error Handling**:
+  - There are tests ensuring branch and @req fixes produce expected output, but no tests for 008-specific REQ-AUTOFIX-* behaviors or for edge cases where fixes should be skipped.
+- **Integration**:
+  - Jest test run (`npm test -- --runInBand --verbose`) passes, so existing auto-fixes integrate with ESLint/Jest, but there is no coverage tied to story 008.
+- **Documentation**:
+  - Rule docs (`docs/rules/*.md`) describe behavior but do **not** mention auto-fix capabilities for annotation issues as a distinct feature, nor do they reference story 008.0 or its REQ-AUTOFIX-* requirements.
 
-5. No auto-fix behavior for annotation format correctness (REQ-AUTOFIX-FORMAT)
-- src/rules/valid-annotation-format.ts:
-  - meta has no `fixable` property.
-  - create(context) only reads comments and reports `invalidStoryFormat` or `invalidReqFormat` via context.report.
-  - No `fix` function is provided; invalid format issues are reported only, not auto-fixed.
-  - tests/rules/valid-annotation-format.test.ts only assert that invalid inputs trigger errors; there are no before/after outputs or fix expectations.
-  - This means REQ-AUTOFIX-FORMAT is not implemented.
-
-6. No configurability for templates or selective enabling of fix types
-- Template behavior is hard-coded:
-  - For functions: ANNOTATION in src/rules/helpers/require-story-helpers.ts is a hard-coded string with a specific story path: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`.
-  - For branches: branch-annotation-helpers.ts uses fixed placeholders `<story-file>.story.md` and `<REQ-ID>`.
-- There are no rule options in require-story-annotation, require-req-annotation, valid-annotation-format, or require-branch-annotation that allow configuring the annotation template used in fixes.
-  - REQ-AUTOFIX-TEMPLATE ("Use configurable annotation templates for consistent formatting") is not satisfied.
-- There are no options to enable/disable auto-fix types independently (e.g., turn on missing-story fixes but not format fixes).
-  - The only configuration around fixes is indirect and limited (e.g., branchTypes for which branch node kinds are checked); that controls scope of enforcement, not which fix strategies run.
-  - REQ-AUTOFIX-SELECTIVE is not implemented.
-
-7. Safety and preservation requirements only partially and implicitly addressed
-- Some safety considerations exist (e.g., storyFixCountRef in branch-annotation-helpers ensures only the first missing-story branch gets an auto-fix, subsequent ones just report):
-  - This is a basic guard but not clearly implemented as REQ-AUTOFIX-SAFE or REQ-AUTOFIX-PRESERVE from story 008.0.
-- Fix implementations for branches and @req insert comments before nodes, but there is no explicit logic to preserve more complex existing formatting structures or indentation beyond simple prefixing using computed `indent`.
-- There is no explicit handling of edge cases where auto-fix should be skipped for safety, beyond a few local conditions (e.g., default switch cases, missingStory gating on reportMissingReq).
-- No tests are labeled or scoped to REQ-AUTOFIX-SAFE or REQ-AUTOFIX-PRESERVE, and no behavior is wired to story 008.0.
-
-8. No auto-fix specific documentation per story 008.0
-- README.md and docs/rules/*.md:
-  - describe rules and examples but do not document auto-fix capabilities or show `--fix` examples for traceability rules.
-  - grep -R -n auto-fix docs src tests
-    - Matches only in story 008.0 and in narrative docs (developer-story.map.md, 009.0 story, custom-rules-development-guide) – not in rule docs or README usage examples.
-  - There is no dedicated documentation that lists which annotation issues are auto-fixable, nor before/after examples as required by "Documentation: Auto-fix capabilities are documented with examples of fixable issues".
-
-9. Tests do not trace back to story 008.0
-- All tests under tests/rules reference earlier stories in @story annotations:
-  - require-story-annotation.test.ts, require-req-annotation.test.ts, require-story-core*.test.ts -> docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md.
-  - require-branch-annotation.test.ts -> docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md.
-  - valid-annotation-format.test.ts -> docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md.
-  - valid-story-reference.test.ts, valid-req-reference.test.ts -> docs/stories/006.0-DEV-FILE-VALIDATION.story.md, etc.
-- No test file header or describe block references docs/stories/008.0-DEV-AUTO-FIX.story.md, so none of the tests explicitly validate the REQ-AUTOFIX-* requirements.
-
-10. Tests pass, but they validate earlier stories and generic autofix utilities
-- npm test (Jest) runs successfully (see prior output), exercising many rules including require-branch-annotation and require-req-annotation auto-fix behavior and require-story-core autofix helpers.
-- However, passing tests alone do not prove that story 008.0’s specific acceptance criteria and requirements have been fully implemented, because:
-  - There are no tests referencing the story file or its REQ-AUTOFIX-* requirement IDs.
-  - Function-missing-@story auto-fix is only exposed as suggestions (not applied by `--fix`).
-  - Format auto-fix, configurable templates, and selective enabling are completely absent.
+6) Test Execution
+- Command executed: `npm test -- --runInBand --verbose`
+- Jest runs with `--ci --bail --runInBand --verbose`; all tests pass.
+- No test file header or `describe` block references `docs/stories/008.0-DEV-AUTO-FIX.story.md`; all auto-fix-related tests are attributed to 003.0 or 004.0 stories instead.
 </evidence>
-  <notes>This is a real user story/specification, not a generic planning document, so it must be evaluated as implemented or not. While the project already includes several auto-fix mechanisms (for missing @req annotations on functions and for missing @story/@req on branches) and helper utilities to insert @story annotations, these are all implemented under earlier stories (primarily 003.0 and 004.0) and do not fulfill the specific scope of 008.0-DEV-AUTO-FIX.
+  <notes>This is a real, concrete story defining specific new auto-fix capabilities (REQ-AUTOFIX-MISSING/FORMAT/SAFE/PRESERVE/TEMPLATE/SELECTIVE). The project already has several auto-fix behaviors, but they are implemented and traced as part of earlier stories (003.0 function annotations, 004.0 branch annotations, 005.0 validation, 007.0 error reporting) and do not satisfy the full scope of 008.0:
 
-Key gaps vs. 008.0:
-- Missing-core behavior: Missing @story annotations on functions are only offered as ESLint suggestions, not as standard `--fix` autofixes. As a result, `eslint --fix` does not automatically add @story annotations to functions, so REQ-AUTOFIX-MISSING and the core acceptance criterion (ESLint --fix automatically resolves common annotation violations) are not met for the primary function rule.
-- No format auto-fix: The valid-annotation-format rule validates syntax but does not provide any fixes (no `fixable` meta, no `fix` functions), so REQ-AUTOFIX-FORMAT is unimplemented.
-- No configuration for templates or selective fixes: Annotation templates used by fixes are hard-coded, and there are no rule options allowing users to configure templates or enable/disable specific auto-fix strategies, so REQ-AUTOFIX-TEMPLATE and REQ-AUTOFIX-SELECTIVE are not satisfied.
-- Safety/preservation: While some conservative behaviors exist (e.g., only one branch story auto-fix per file), there is no explicit, story-aligned implementation ensuring only guaranteed-safe, non-destructive fixes that preserve formatting and structure as described by REQ-AUTOFIX-SAFE and REQ-AUTOFIX-PRESERVE.
-- Documentation: There is no user-facing documentation describing auto-fix capabilities, fixable issues, or before/after examples, so the documentation acceptance criterion is not met.
-- Traceability: No code or test files contain @story references to docs/stories/008.0-DEV-AUTO-FIX.story.md or its REQ-AUTOFIX-* IDs, meaning the implementation is not traceably tied to this story.
+- Missing @story on functions is only suggestion-fixable (not applied by plain `eslint --fix`), conflicting with the user story which targets `--fix`.
+- There is no implementation or configuration for template-based, configurable annotation insertion (REQ-AUTOFIX-TEMPLATE) or selective enabling/disabling of fix types (REQ-AUTOFIX-SELECTIVE).
+- Format-fixing of malformed annotations (REQ-AUTOFIX-FORMAT) is not implemented; the `valid-annotation-format` rule only validates.
+- No code or tests are traceably linked to docs/stories/008.0-DEV-AUTO-FIX.story.md or its REQ-AUTOFIX-* IDs.
+- Documentation does not describe 008.0-style auto-fix capabilities or provide examples tied to this story.
 
-Because multiple explicit requirements (REQ-AUTOFIX-MISSING, REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-TEMPLATE, REQ-AUTOFIX-SELECTIVE, and parts of REQ-AUTOFIX-SAFE/PRESERVE) and several acceptance criteria (core functionality for function @story fixes via --fix, documentation, and explicit edge-case handling) are not fully implemented or validated by tests, this story cannot be considered complete. The correct assessment for docs/stories/008.0-DEV-AUTO-FIX.story.md is therefore FAILED.</notes>
+Because several explicit requirements and multiple acceptance criteria remain unimplemented or untested, this story is not fully delivered. Status: FAILED.</notes>
 </traceability>
