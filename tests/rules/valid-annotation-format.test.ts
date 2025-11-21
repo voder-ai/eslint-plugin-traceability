@@ -2,6 +2,11 @@
  * Tests for: docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @req REQ-FORMAT-SPECIFICATION - Verify valid-annotation-format rule enforces annotation format syntax
+ * Tests for: docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * @req REQ-ERROR-MESSAGES-CONSISTENT - Verify invalid annotation errors use consistent wording and structure
+ * @req REQ-ERROR-MESSAGES-ACTIONABLE - Verify invalid annotation errors provide actionable guidance and examples
+ * @req REQ-ERROR-MESSAGES-IDENTIFIERS - Verify invalid annotation errors echo the offending identifier/path in the message
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/valid-annotation-format";

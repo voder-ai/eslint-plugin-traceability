@@ -1,7 +1,11 @@
 /**
- * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md, docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-BRANCH-DETECTION - Verify require-branch-annotation rule enforces branch annotations
+ * @req REQ-ERROR-SPECIFIC - Branch-level missing-annotation error messages are specific and informative
+ * @req REQ-ERROR-CONSISTENCY - Branch-level missing-annotation error messages follow shared conventions
+ * @req REQ-ERROR-SUGGESTION - Branch-level missing-annotation errors include suggestions when applicable
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-branch-annotation";
