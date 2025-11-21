@@ -48,7 +48,7 @@ const rule: Rule.RuleModule = {
     fixable: "code",
     messages: {
       missingStory:
-        "Missing @story annotation for function '{{name}}' (REQ-ANNOTATION-REQUIRED)",
+        "Function '{{name}}' is missing a required @story annotation. Add a JSDoc or line comment with @story pointing to the implementing story file (for example, docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md).",
     },
     schema: [
       {
