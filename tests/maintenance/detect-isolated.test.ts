@@ -74,19 +74,26 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
 
   /**
    * [REQ-MAINT-DETECT]
-   * Ensure detectStaleAnnotations does not perform filesystem checks for malicious
-   * @story paths that escape the workspace (Story 009.0-DEV-MAINTENANCE-TOOLS).
+   * Ensure detectStaleAnnotations performs security validation for unsafe
+   * and invalid-extension story paths and does not perform filesystem checks
+   * for malicious @story paths that escape the workspace
+   * (Story 009.0-DEV-MAINTENANCE-TOOLS).
    */
-  it("[REQ-MAINT-DETECT] does not stat or check existence of malicious story paths outside workspace", () => {
+  it("[REQ-MAINT-DETECT] performs security validation for unsafe and invalid-extension story paths without stat'ing outside workspace", () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-workspace-"));
     const maliciousRelative = "../outside-project.story.md";
     const maliciousAbsolute = "/etc/passwd.story.md";
+    const traversalInside = "nested/../inside.story.md";
+    const invalidExtension = "invalid.txt";
 
     const filePath = path.join(tmpDir, "file.ts");
     const content = `
 /**
  * @story ${maliciousRelative}
  * @story ${maliciousAbsolute}
+ * @story ${traversalInside}
+ * @story ${invalidExtension}
+ * @story legitimate.story.md
  */
 `;
     fs.writeFileSync(filePath, content, "utf8");
@@ -107,18 +114,37 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
 
       const allPathsChecked = [...existsCalls];
 
+      // Ensure no raw malicious values were checked
       expect(allPathsChecked).not.toContain(maliciousRelative);
       expect(allPathsChecked).not.toContain(maliciousAbsolute);
+      expect(allPathsChecked).not.toContain(invalidExtension);
 
       // Also ensure no resolved variants of these paths were checked
       const resolvedRelative = path.resolve(tmpDir, maliciousRelative);
+      const resolvedAbsolute = path.resolve(maliciousAbsolute);
+      const resolvedInvalid = path.resolve(tmpDir, invalidExtension);
+
       expect(allPathsChecked).not.toContain(resolvedRelative);
+      expect(allPathsChecked).not.toContain(resolvedAbsolute);
+      expect(allPathsChecked).not.toContain(resolvedInvalid);
+
       expect(
         allPathsChecked.some((p) => p.includes("outside-project.story.md")),
       ).toBe(false);
       expect(allPathsChecked.some((p) => p.includes("passwd.story.md"))).toBe(
         false,
       );
+      expect(allPathsChecked.some((p) => p.includes("invalid.txt"))).toBe(
+        false,
+      );
+
+      // traversalInside normalizes within workspace and should be checked
+      const resolvedTraversalInside = path.resolve(tmpDir, traversalInside);
+      expect(allPathsChecked).toContain(resolvedTraversalInside);
+
+      // legitimate in-workspace .story.md path should also be checked
+      const resolvedLegit = path.resolve(tmpDir, "legitimate.story.md");
+      expect(allPathsChecked).toContain(resolvedLegit);
     } finally {
       existsSpy.mockRestore();
       try {

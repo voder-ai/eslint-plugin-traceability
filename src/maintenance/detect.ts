@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { getAllFiles } from "./utils";
 import {
-  isTraversalUnsafe,
+  isUnsafeStoryPath,
   enforceProjectBoundary,
 } from "../utils/storyReferenceUtils";
 import type { ProjectBoundaryCheckResult } from "../utils/storyReferenceUtils";
@@ -69,7 +69,7 @@ function processFileForStaleAnnotations(
 
 /**
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-DETECT - Handle individual @story matches within a file
+ * @req REQ-MAINT-DETECT REQ-SECURITY-VALIDATION - Handle individual @story matches within a file
  */
 function handleStoryMatch(
   storyPath: string,
@@ -78,8 +78,8 @@ function handleStoryMatch(
   stale: Set<string>,
 ): void {
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-  // @req REQ-MAINT-DETECT - Skip traversal/absolute-unsafe story paths before any filesystem or boundary checks
-  if (isTraversalUnsafe(storyPath)) {
+  // @req REQ-MAINT-DETECT REQ-SECURITY-VALIDATION - Skip traversal/absolute-unsafe or invalid-extension story paths before any filesystem or boundary checks
+  if (isUnsafeStoryPath(storyPath)) {
     return;
   }
 
