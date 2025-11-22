@@ -1,246 +1,318 @@
 # Last Action Executed (Resumed)
 
-**Timestamp:** 2025-11-22T01:31:21.108Z
+**Timestamp:** 2025-11-22T01:50:46.132Z
 
 **Mode:** Resumed - Completing interrupted cycle
 
 **Action:** Used tool: list_directory with input: {"dirPath":"."}
-Used tool: find_files with input: {"pattern":"*.ts","directory":"."}
-Used tool: find_files with input: {"pattern":"*.js","directory":"."}
+Used tool: find_files with input: {"pattern":"*annotation*","directory":"."}
+Used tool: find_files with input: {"pattern":"*.md","directory":"docs"}
+Used tool: find_files with input: {"pattern":"*.md","directory":"prompts"}
+Used tool: list_directory with input: {"dirPath":"docs"}
+Used tool: list_directory with input: {"dirPath":"docs/stories"}
+Used tool: list_directory with input: {"dirPath":"src"}
+Used tool: list_directory with input: {"dirPath":"src/utils"}
 Used tool: read_file with input: {"filePath":"src/utils/annotation-checker.ts"}
-Used tool: read_file with input: {"filePath":"package.json"}
+Used tool: read_file with input: {"filePath":"docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md"}
+Used tool: read_file with input: {"filePath":"docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md"}
+Used tool: search_file_content with input: {"filePath":"src/utils/annotation-checker.ts","pattern":"function ","isRegex":false}
+Used tool: read_file with input: {"filePath":"src/utils/annotation-checker.ts","startLine":1,"endLine":400}
+Used tool: list_directory with input: {"dirPath":"src/rules"}
 Used tool: list_directory with input: {"dirPath":"src/utils"}
 Used tool: list_directory with input: {"dirPath":"src/rules/helpers"}
-Used tool: list_directory with input: {"dirPath":"src/rules"}
-Used tool: get_git_status with input: {}
-Used tool: search_file_content with input: {"filePath":"src/utils/annotation-checker.ts","pattern":"function ","isRegex":false}
-Used tool: read_file with input: {"filePath":"src/utils/annotation-checker.ts","startLine":1,"endLine":260}
-Used tool: read_file with input: {"filePath":"src/utils/annotation-checker.ts","startLine":260,"endLine":520}
 Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts"}
 Used tool: read_file with input: {"filePath":"src/utils/storyReferenceUtils.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-core.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-helpers.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-io.ts"}
+Used tool: read_file with input: {"filePath":"src/utils/annotation-checker.ts","startLine":400,"endLine":800}
 Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-utils.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-visitors.ts"}
-Used tool: generate_file with input: {"filePath":"src/utils/annotation-checker.ts","overwrite":true,"content":"import { getNodeName } from \"../rules/helpers/require-story-utils\";\nimport {\n  FALLBACK_WINDOW,\n  LOOKBACK_LINES,\n} from \"../rules/helpers/require-story-io\";\n\n/**\n * Helper to retrieve the JSDoc comment for a node.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-GET-JSDOC - Retrieve JSDoc comment for a node\n */\nfunction getJsdocComment(sourceCode: any, node: any) {\n  return sourceCode.getJSDocComment(node);\n}\n\n/**\n * Helper to retrieve leading comments from a node (TypeScript declare style).\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-LEADING-COMMENTS - Collect leading comments from node\n */\nfunction getLeadingComments(node: any) {\n  return (node as any).leadingComments || [];\n}\n\n/**\n * Helper to retrieve comments before a node using the sourceCode API.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-COMMENTS-BEFORE - Collect comments before node via sourceCode\n */\nfunction getCommentsBefore(sourceCode: any, node: any) {\n  return sourceCode.getCommentsBefore(node) || [];\n}\n\n/**\n * Helper to combine leading and before comments into a single array.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-COMBINE-COMMENTS - Combine comment arrays for checking\n */\nfunction combineComments(leading: any[], before: any[]) {\n  return [...leading, ...before];\n}\n\n/**\n * Predicate helper to check whether a comment contains a @req annotation.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-CHECK-COMMENT - Detect @req tag inside a comment\n */\nfunction commentContainsReq(c: any) {\n  return c && typeof c.value === \"string\" && c.value.includes(\"@req\");\n}\n\n/**\n * Line-based helper adapted from linesBeforeHasStory to detect @req.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in preceding source lines\n */\nfunction linesBeforeHasReq(sourceCode: any, node: any) {\n  const lines = sourceCode && sourceCode.lines;\n  const startLine =\n    node && node.loc && typeof node.loc.start?.line === \"number\"\n      ? node.loc.start.line\n      : null;\n\n  // Guard against missing or malformed source/loc information before scanning.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQ-DETECTION - Avoid false positives when sourceCode/loc is incomplete\n  if (!Array.isArray(lines) || typeof startLine !== \"number\") {\n    return false;\n  }\n\n  const from = Math.max(0, startLine - 1 - LOOKBACK_LINES);\n  const to = Math.max(0, startLine - 1);\n\n  // Scan each physical line in the configured lookback window for an @req marker.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQ-DETECTION - Search preceding lines for @req text\n  for (let i = from; i < to; i++) {\n    const text = lines[i];\n    // When a line contains @req we treat the function as already annotated.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req marker in raw source lines\n    if (typeof text === \"string\" && text.includes(\"@req\")) {\n      return true;\n    }\n  }\n  return false;\n}\n\n/**\n * Parent-chain helper adapted from parentChainHasStory to detect @req.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in parent-chain comments\n */\nfunction parentChainHasReq(sourceCode: any, node: any) {\n  let p = node && node.parent;\n\n  // Walk up the parent chain and inspect comments attached to each ancestor.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQ-DETECTION - Traverse parent nodes when local comments are absent\n  while (p) {\n    const pComments =\n      typeof sourceCode?.getCommentsBefore === \"function\"\n        ? sourceCode.getCommentsBefore(p) || []\n        : [];\n\n    // Look for @req in comments immediately preceding each parent node.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req markers in parent comments\n    if (Array.isArray(pComments) && pComments.some(commentContainsReq)) {\n      return true;\n    }\n\n    const pLeading = p.leadingComments || [];\n\n    // Also inspect leadingComments attached directly to the parent node.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req markers in parent leadingComments\n    if (Array.isArray(pLeading) && pLeading.some(commentContainsReq)) {\n      return true;\n    }\n\n    p = p.parent;\n  }\n  return false;\n}\n\n/**\n * Fallback text window helper adapted from fallbackTextBeforeHasStory to detect @req.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in fallback text window before node\n */\nfunction fallbackTextBeforeHasReq(sourceCode: any, node: any) {\n  // Guard against unsupported sourceCode or nodes without a usable range.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQ-DETECTION - Ensure we only inspect text when range information is available\n  if (\n    typeof sourceCode?.getText !== \"function\" ||\n    !Array.isArray((node && node.range) || [])\n  ) {\n    return false;\n  }\n  const range = node.range;\n\n  // Guard when the node range cannot provide a numeric start index.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQ-DETECTION - Avoid scanning when range start is not a number\n  if (!Array.isArray(range) || typeof range[0] !== \"number\") {\n    return false;\n  }\n  try {\n    const start = Math.max(0, range[0] - FALLBACK_WINDOW);\n    const textBefore = sourceCode.getText().slice(start, range[0]);\n\n    // Detect @req in the bounded text window immediately preceding the node.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req marker in fallback text window\n    if (typeof textBefore === \"string\" && textBefore.includes(\"@req\")) {\n      return true;\n    }\n  } catch {\n    // Swallow detection errors to avoid breaking lint runs due to malformed source.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQ-DETECTION - Treat IO/detection failures as \"no annotation\" instead of throwing\n    /* noop */\n  }\n  return false;\n}\n\n/**\n * Helper to determine whether a JSDoc or any nearby comments contain a @req annotation.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation\n */\nfunction hasReqAnnotation(\n  jsdoc: any,\n  comments: any[],\n  context?: any,\n  node?: any,\n) {\n  try {\n    const sourceCode =\n      context && typeof context.getSourceCode === \"function\"\n        ? context.getSourceCode()\n        : undefined;\n\n    // Prefer robust, location-based heuristics when sourceCode and node are available.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQ-DETECTION - Use multiple heuristics to detect @req markers around the node\n    if (sourceCode && node) {\n      if (\n        linesBeforeHasReq(sourceCode, node) ||\n        parentChainHasReq(sourceCode, node) ||\n        fallbackTextBeforeHasReq(sourceCode, node)\n      ) {\n        return true;\n      }\n    }\n  } catch {\n    // Swallow detection errors and fall through to simple checks.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQ-DETECTION - Fail gracefully when advanced detection heuristics throw\n  }\n\n  // BRANCH @req detection on JSDoc or comments\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQ-DETECTION\n  return (\n    (jsdoc &&\n      typeof jsdoc.value === \"string\" &&\n      jsdoc.value.includes(\"@req\")) ||\n    comments.some(commentContainsReq)\n  );\n}\n\n/**\n * Determine the most appropriate node to attach an inserted JSDoc to.\n * Prefers outer function-like constructs such as methods, variable declarators,\n * or wrapping expression statements for function expressions.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation\n */\nfunction getFixTargetNode(node: any) {\n  const parent = node && (node as any).parent;\n\n  // When there is no parent, attach the annotation directly to the node itself.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-AUTOFIX - Default to annotating the node when it has no parent\n  if (!parent) {\n    return node;\n  }\n\n  // If the node is part of a class/obj method definition, attach to the MethodDefinition\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-AUTOFIX - Attach fixes to the MethodDefinition wrapper for methods\n  if (parent.type === \"MethodDefinition\") {\n    return parent;\n  }\n\n  // If the node is the init of a variable declarator, attach to the VariableDeclarator\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-AUTOFIX - Attach fixes to the VariableDeclarator for function initializers\n  if (parent.type === \"VariableDeclarator\" && parent.init === node) {\n    return parent;\n  }\n\n  // If the parent is an expression statement (e.g. IIFE or assigned via expression),\n  // attach to the outer ExpressionStatement.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-AUTOFIX - Attach fixes to the ExpressionStatement wrapper for IIFEs\n  if (parent.type === \"ExpressionStatement\") {\n    return parent;\n  }\n\n  return node;\n}\n\n/**\n * Creates a fix function that inserts a missing @req JSDoc before the node.\n * Returned function is a proper named function so no inline arrow is used.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation\n */\nfunction createMissingReqFix(node: any) {\n  const target = getFixTargetNode(node);\n  /**\n   * Fixer used to insert a default @req annotation before the chosen target node.\n   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n   * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation\n   */\n  return function missingReqFix(fixer: any) {\n    return fixer.insertTextBefore(target, \"/** @req <REQ-ID> */\\n\");\n  };\n}\n\n/**\n * Helper to report a missing @req annotation via the ESLint context API.\n * Uses getNodeName to provide a readable name for the node.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md\n * @req REQ-ANNOTATION-REPORTING - Report missing @req annotation to context\n * @req REQ-ERROR-SPECIFIC - Provide specific error details including node name\n * @req REQ-ERROR-LOCATION - Include contextual location information in errors\n * @req REQ-ERROR-SUGGESTION - Provide actionable suggestions or fixes where possible\n * @req REQ-ERROR-CONTEXT - Include contextual hints to help understand the error\n */\nfunction reportMissing(context: any, node: any, enableFix: boolean = true) {\n  const rawName =\n    getNodeName(node) ?? (node && getNodeName((node as any).parent));\n  const name = rawName ?? \"(anonymous)\";\n  const nameNode =\n    (node && (node as any).id && (node as any).id.type === \"Identifier\"\n      ? (node as any).id\n      : node && (node as any).key && (node as any).key.type === \"Identifier\"\n        ? (node as any).key\n        : node) ?? node;\n  const reportOptions: any = {\n    node: nameNode,\n    messageId: \"missingReq\",\n    data: { name, functionName: name },\n  };\n\n  // Conditionally attach an autofix only when enabled in the rule options.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-AUTOFIX - Only provide autofix suggestions when explicitly enabled\n  if (enableFix) {\n    reportOptions.fix = createMissingReqFix(node);\n  }\n\n  context.report(reportOptions);\n}\n\n/**\n * Helper to check @req annotation presence on TS declare functions and method signatures.\n * This helper is intentionally scope/exportPriority agnostic and focuses solely\n * on detection and reporting of @req annotations for the given node.\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax\n * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation\n * @req REQ-ANNOTATION-REPORTING - Report missing @req annotation to context\n * @param context - ESLint rule context used to obtain source and report problems\n * @param node - Function-like AST node whose surrounding comments should be inspected\n * @param options - Optional configuration controlling behaviour (e.g., enableFix)\n * @returns void\n */\nexport function checkReqAnnotation(\n  context: any,\n  node: any,\n  options?: { enableFix?: boolean },\n) {\n  const { enableFix = true } = options ?? {};\n  const sourceCode = context.getSourceCode();\n  const jsdoc = getJsdocComment(sourceCode, node);\n  const leading = getLeadingComments(node);\n  const comments = getCommentsBefore(sourceCode, node);\n  const all = combineComments(leading, comments);\n  const hasReq = hasReqAnnotation(jsdoc, all, context, node);\n  // BRANCH when a @req annotation is missing and must be reported\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQ-DETECTION\n  // @req REQ-ANNOTATION-REPORTING\n  if (!hasReq) {\n    reportMissing(context, node, enableFix);\n  }\n}\n"}
-Used tool: run_command with input: {"command":"npm","args":["test"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: enrich req annotation checker traceability comments"}
-Used tool: find_files with input: {"pattern":"*.ts","directory":"src"}
+Used tool: search_file_content with input: {"filePath":"src/utils/branch-annotation-helpers.ts","pattern":"function ","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/utils/storyReferenceUtils.ts","pattern":"function ","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-core.ts","pattern":"function ","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-helpers.ts","pattern":"function ","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/require-story-io.ts","pattern":"function ","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/utils/annotation-checker.ts","pattern":"if (","isRegex":false}
 Used tool: read_file with input: {"filePath":"src/index.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/require-story-annotation.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/require-req-annotation.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/require-branch-annotation.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/valid-req-reference.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/valid-story-reference.ts"}
-Used tool: find_files with input: {"pattern":"*.ts","directory":"src/utils"}
-Used tool: list_directory with input: {"dirPath":"docs/stories"}
-Used tool: list_directory with input: {"dirPath":"prompts"}
+Used tool: read_file with input: {"filePath":"package.json"}
 Used tool: list_directory with input: {"dirPath":"src/maintenance"}
+Used tool: find_files with input: {"pattern":"*.ts","directory":"src/utils"}
+Used tool: find_files with input: {"pattern":"*.ts","directory":"src/maintenance"}
+Used tool: find_files with input: {"pattern":"*.ts","directory":"src/rules/helpers"}
 Used tool: read_file with input: {"filePath":"src/maintenance/utils.ts"}
 Used tool: read_file with input: {"filePath":"src/maintenance/batch.ts"}
 Used tool: read_file with input: {"filePath":"src/maintenance/detect.ts"}
-Used tool: read_file with input: {"filePath":"src/maintenance/report.ts"}
 Used tool: read_file with input: {"filePath":"src/maintenance/update.ts"}
-Used tool: read_file with input: {"filePath":"src/maintenance/index.ts"}
+Used tool: read_file with input: {"filePath":"src/maintenance/report.ts"}
 Used tool: get_git_status with input: {}
+Used tool: read_file with input: {"filePath":"src/maintenance/index.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-visitors.ts"}
+Used tool: read_file with input: {"filePath":"src/utils/storyReferenceUtils.ts"}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-core.ts"}
+Used tool: modify_file with input: {"filePath":"src/utils/storyReferenceUtils.ts","instruction":"In the `buildStoryCandidates` function, add branch-level traceability comments with @story and @req markers:\n\n1) Immediately before the `if (storyPath.startsWith(\"./\") || storyPath.startsWith(\"../\")) {` line, insert:\n```ts\n  // When the story path is already explicitly relative, resolve it only against the current working directory.\n  // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n  // @req REQ-PATH-RESOLUTION - Preserve explicit relative story path semantics when building candidate locations\n```\n\n2) Immediately before the `candidates.push(path.resolve(cwd, storyPath));` inside the `else` block, insert:\n```ts\n    // For bare paths, first try resolving directly under the current working directory.\n    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n    // @req REQ-PATH-RESOLUTION - Attempt direct resolution from cwd before probing configured story directories\n```\n\n3) Immediately before the `for (const dir of storyDirs) {` loop, insert:\n```ts\n    // Probe each configured story directory for a matching story filename.\n    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n    // @req REQ-PATH-RESOLUTION - Expand search across configured storyDirectories while staying within project\n```\n\nIn the `checkSingleCandidate` function, add branch- and error-handling traceability comments:\n\n4) Immediately after `const cached = fileExistStatusCache.get(candidate);` and before the `if (cached) {` line, insert:\n```ts\n  // Reuse any cached filesystem result to avoid redundant disk IO for the same candidate.\n  // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n  // @req REQ-PERFORMANCE-OPTIMIZATION - Short-circuit on cached existence checks\n```\n\n5) Immediately before `if (!exists) {` insert:\n```ts\n    // When the path does not exist at all, record a simple \"missing\" status.\n    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n    // @req REQ-FILE-EXISTENCE - Distinguish non-existent story paths from other failure modes\n```\n\n6) Immediately before `if (stat.isFile()) {` insert:\n```ts\n      // Treat existing regular files as valid story candidates; other entry types are considered missing.\n      // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n      // @req REQ-FILE-EXISTENCE - Only regular files may satisfy a story path reference\n```\n\n7) Replace the existing single-line comment `// Any filesystem error is captured and surfaced as fs-error.` in the `catch (error)` block with the following multi-line comment including traceability tags:\n```ts\n    // Any filesystem error is captured and surfaced as an fs-error status instead of throwing.\n    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n    // @req REQ-ERROR-HANDLING - Represent filesystem failures as fs-error results while keeping callers resilient\n```\n\nIn the `getStoryExistence` function, add comments for the main control-flow branches:\n\n8) Immediately before the `if (res.status === \"exists\") {` line, insert:\n```ts\n    // As soon as a candidate file is confirmed to exist, return a successful existence result.\n    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n    // @req REQ-FILE-EXISTENCE - Prefer the first positively-matched story file\n```\n\n9) Immediately before the `if (res.status === \"fs-error\" && !firstFsError) {` line, insert:\n```ts\n    // Remember the first filesystem error so callers can inspect a representative failure if no files exist.\n    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n    // @req REQ-ERROR-HANDLING - Surface a single representative filesystem error without failing fast\n```\n\n10) Immediately before the `if (firstFsError) {` line near the end of the function, insert:\n```ts\n  // Prefer reporting a filesystem error over a generic missing status when at least one candidate failed to read.\n  // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md\n  // @req REQ-ERROR-HANDLING - Distinguish IO failures from simple \"missing\" results in existence checks\n```"}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/require-story-io.ts","instruction":"Augment branch- and loop-level traceability comments in the IO helpers.\n\n1) In `linesBeforeHasStory`, immediately before the `if (!Array.isArray(lines) || typeof startLine !== \"number\") {` guard, insert:\n```ts\n  // Guard against missing or non-array source lines or an invalid start line before scanning.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQUIRED - Fail gracefully when source lines or locations are unavailable\n```\n\n2) Still in `linesBeforeHasStory`, immediately before the `for (let i = from; i < to; i++) {` loop, insert:\n```ts\n  // Walk each physical line in the configured lookback window to search for an inline @story marker.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQUIRED - Scan preceding lines for existing story annotations\n```\n\n3) Immediately before the `if (typeof text === \"string\" && text.includes(\"@story\")) {` inside that loop, insert:\n```ts\n    // Treat any line containing \"@story\" as evidence that the function is already annotated.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQUIRED - Detect explicit @story markers in raw source text\n```\n\n4) In `fallbackTextBeforeHasStory`, immediately before the guard `if (typeof sourceCode?.getText !== \"function\" || !Array.isArray((node && node.range) || [])) {` insert:\n```ts\n  // Skip fallback text inspection when the sourceCode API or node range information is not available.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQUIRED - Avoid throwing when source text or range metadata cannot be read\n```\n\n5) Still in `fallbackTextBeforeHasStory`, immediately before the `if (!Array.isArray(range) || typeof range[0] !== \"number\") {` check, insert:\n```ts\n  // Guard against malformed range values that cannot provide a numeric start index for slicing.\n  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n  // @req REQ-ANNOTATION-REQUIRED - Validate node range structure before computing fallback window\n```\n\n6) Inside the `try` block of `fallbackTextBeforeHasStory`, immediately before the `const start = Math.max(0, range[0] - FALLBACK_WINDOW);` line, insert:\n```ts\n    // Limit the fallback inspection window to a bounded region immediately preceding the node.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQUIRED - Restrict fallback text scanning to a safe, fixed-size window\n```\n\n7) Immediately before the `if (typeof textBefore === \"string\" && textBefore.includes(\"@story\")) {` line, insert:\n```ts\n    // Detect any @story marker that appears within the bounded fallback window.\n    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n    // @req REQ-ANNOTATION-REQUIRED - Recognize story annotations discovered via fallback text scanning\n```\n\n8) Replace the existing `/* noop */` comment inside the `catch { ... }` block of `fallbackTextBeforeHasStory` with a more descriptive comment that includes traceability tags:\n```ts\n    /*\n     * Swallow low-level IO or slicing errors so annotation detection never breaks lint execution.\n     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n     * @req REQ-ANNOTATION-REQUIRED - Treat fallback text inspection failures as \"no annotation\" instead of raising\n     */\n```"}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/utils/annotation-checker.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","src/utils/annotation-checker.ts","src/utils/storyReferenceUtils.ts","src/rules/helpers/require-story-io.ts"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"chore: refine traceability comments in core annotation utilities"}
+Used tool: search_file_content with input: {"filePath":"src/utils","pattern":"@story ???","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src","pattern":"@req UNKNOWN","isRegex":false}
+Used tool: find_files with input: {"pattern":"*.ts","directory":"src/utils"}
+Used tool: search_file_content with input: {"filePath":"src/utils/annotation-checker.ts","pattern":"@story ???","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/utils/branch-annotation-helpers.ts","pattern":"@story ???","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"src/utils/storyReferenceUtils.ts","pattern":"@story ???","isRegex":false}
+Used tool: find_files with input: {"pattern":"*.ts","directory":"src"}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/require-story-utils.ts","instruction":"Strengthen traceability annotations on helper functions by adding requirement descriptions.\n\n1) In the JSDoc for `isIdentifierLike`, replace the existing single-line `@req` tag with a more descriptive one:\n- Find the block that currently contains:\n` * @req REQ-ANNOTATION-REQUIRED`\n- Replace that line with:\n` * @req REQ-ANNOTATION-REQUIRED - Recognize Identifier/JSXIdentifier nodes and return their name`\n\n2) In the JSDoc for `literalToString`, replace the existing `@req` line similarly:\n` * @req REQ-ANNOTATION-REQUIRED`\n→\n` * @req REQ-ANNOTATION-REQUIRED - Convert simple Literal nodes into stable string names when possible`\n\n3) In the JSDoc for `templateLiteralToString`, update the `@req` line to:\n` * @req REQ-ANNOTATION-REQUIRED - Support simple, expression-free TemplateLiteral names for reporting`\n\n4) In the JSDoc for `memberExpressionName`, update the `@req` line to:\n` * @req REQ-ANNOTATION-REQUIRED - Resolve non-computed member-like nodes into property names when safe`\n\n5) In the JSDoc for `propertyKeyName`, update the `@req` line to:\n` * @req REQ-ANNOTATION-REQUIRED - Extract key names from Property/ObjectProperty nodes used in function containers`\n\n6) In the JSDoc for `directName`, update the `@req` line to:\n` * @req REQ-ANNOTATION-REQUIRED - Prefer direct id/key names before falling back to deeper AST inspection`\n\n7) In the JSDoc for `getNodeName`, update the `@req` line to:\n` * @req REQ-ANNOTATION-REQUIRED - Provide a unified way to obtain a stable, human-readable name from AST nodes`\n"}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","src/rules/helpers/require-story-utils.ts","src/utils/storyReferenceUtils.ts","src/rules/helpers/require-story-io.ts"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"chore: enhance traceability descriptions in helper utilities"}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","!--help"]}
 Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["test"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","duplication","--","--silent"]}
 Used tool: git_push with input: {}
-Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
+Used tool: read_file with input: {"filePath":"src/utils/storyReferenceUtils.ts","startLine":80,"endLine":260}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","startLine":260,"endLine":360}
 
 **Response:**
 
 ```
-Here’s what I implemented and verified.
-
-## What I changed
-
-### 1) Annotation-checking utility is fully traceability-compliant (##NOW)
-
-**File:** `src/utils/annotation-checker.ts`
-
-Goal: ensure every helper function and significant branch in the `@req` detection utility carries explicit `@story` and `@req` traceability, plus improve documentation for the exported API.
-
-Concretely:
-
-- **Function-level traceability**
-  - Confirmed and/or preserved `@story` + `@req` docblocks for:
-    - `getJsdocComment`
-    - `getLeadingComments`
-    - `getCommentsBefore`
-    - `combineComments`
-    - `commentContainsReq`
-    - `linesBeforeHasReq`
-    - `parentChainHasReq`
-    - `fallbackTextBeforeHasReq`
-    - `hasReqAnnotation`
-    - `getFixTargetNode`
-    - `createMissingReqFix`
-    - inner `missingReqFix` fixer function
-    - `reportMissing`
-    - exported `checkReqAnnotation`
-  - All of these now clearly reference:
-    - `@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md`
-    - The specific requirement(s) they implement (e.g. `REQ-ANNOTATION-REQ-DETECTION`, `REQ-ANNOTATION-AUTOFIX`, `REQ-ERROR-...`).
-
-- **Branch/loop-level traceability & clarifying comments**
-
-  I added or refined inline comments (with `@story`/`@req`) for the “significant” logic paths in this module:
-
-  - `linesBeforeHasReq`:
-    - Guard branch when `sourceCode.lines` or `node.loc` are missing.
-    - The main `for` loop scanning the lookback window.
-    - The branch that detects `@req` in each line.
-
-  - `parentChainHasReq`:
-    - The `while (p)` loop walking the parent chain.
-    - Detection branches:
-      - `pComments` (comments before each parent).
-      - `pLeading` (parent `leadingComments`).
-
-  - `fallbackTextBeforeHasReq`:
-    - Guard branch ensuring `getText` exists and `node.range` is usable.
-    - Guard for non-numeric `range[0]`.
-    - The detection branch when `@req` is found in the fallback window.
-    - The `catch` block is now explicitly justified as a graceful failure path with traceability.
-
-  - `hasReqAnnotation`:
-    - Explains the preference for source-based heuristics when `context`/`node` allow.
-    - Documents the fallback to simple `jsdoc` + `comments` inspection with a traceable “BRANCH @req detection on JSDoc or comments” block.
-    - The `catch` block is annotated to show that failures in advanced heuristics intentionally fall back to simpler checks.
-
-  - `getFixTargetNode`:
-    - Branch comments for:
-      - No parent → annotate the node itself.
-      - `MethodDefinition` parent → attach to method wrapper.
-      - `VariableDeclarator` parent → attach to declarator.
-      - `ExpressionStatement` parent → attach to expression statement wrapper.
-
-  - `reportMissing`:
-    - The `if (enableFix)` branch is annotated to show it controls whether an autofix is attached, per the autofix requirements.
-
-  - `checkReqAnnotation`:
-    - The `if (!hasReq)` branch already had story/req annotations; they were preserved and kept consistent with the rest of the module.
-
-- **Exported API JSDoc enhancements**
-
-  - For the exported `checkReqAnnotation` helper, I expanded the JSDoc to include:
-    - `@param context` — ESLint rule context used to obtain source and report problems.
-    - `@param node` — the function-like AST node whose surrounding comments should be inspected.
-    - `@param options` — optional configuration (e.g., `{ enableFix?: boolean }`).
-    - `@returns void`.
-
-  This satisfies the “key exported helper” part for this core utility.
-
-Result: `annotation-checker.ts` now has complete function-level and branch-level traceability for `@req` handling, aligned with the traceability specification, and the export’s behavior is fully documented.
+Here’s what I’ve done to execute the **##NOW** and **##NEXT** sections of the plan, plus the updated checklist.
 
 ---
 
-### 2) Scan of other helpers/utilities for missing function-level annotations (##NEXT – task 1)
+## What I implemented
 
-I reviewed the other core helper/utility modules for named functions that might be missing `@story` / `@req` annotations:
+### ##NOW
 
-- `src/utils/branch-annotation-helpers.ts`
-- `src/utils/storyReferenceUtils.ts`
-- `src/rules/helpers/require-story-core.ts`
-- `src/rules/helpers/require-story-helpers.ts`
-- `src/rules/helpers/require-story-io.ts`
-- `src/rules/helpers/require-story-utils.ts`
-- `src/rules/helpers/require-story-visitors.ts`
-- `src/maintenance/*.ts` (batch/detect/report/update/utils)
-- `src/index.ts`
-- Rule modules in `src/rules/*.ts` (for completeness)
+- **Reviewed `src/utils/annotation-checker.ts`**
 
-Findings:
+  - Confirmed that **every named helper function** already has:
+    - A JSDoc block with:
+      - `@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md`
+      - An appropriate `@req` describing the requirement it implements.
+  - Verified that **significant branches/flows** are covered with inline traceability comments:
+    - `linesBeforeHasReq`:
+      - Guard for missing/invalid `lines`/`startLine`.
+      - Loop scanning lines in lookback window.
+      - Branch detecting `@req` in raw source text.
+    - `parentChainHasReq`:
+      - Loop walking parent chain.
+      - Branches checking `getCommentsBefore` and `leadingComments`.
+    - `fallbackTextBeforeHasReq`:
+      - Guard for missing `getText` / `range`.
+      - Guard for malformed ranges.
+      - Fallback window slice, detection of `@req`, and catch block that treats failures as “no annotation”.
+    - `hasReqAnnotation`:
+      - Try/catch with traceability on advanced heuristics, and final “BRANCH @req detection” comment for JSDoc/comments fallback.
+    - `getFixTargetNode` and `reportMissing`:
+      - Branches for selecting appropriate target nodes (no parent / method / variable declarator / expression statement).
+      - Conditional attach of autofix option.
+    - Exported `checkReqAnnotation`:
+      - Branch for “missing @req” path, with `@story`/`@req` documenting both detection and reporting responsibilities.
 
-- All **named helper functions** in these files already have:
-  - A JSDoc block.
-  - At least one `@story` tag pointing to the appropriate story file.
-  - One or more `@req` tags indicating the requirement(s) they implement.
-
-Examples:
-
-- `validateBranchTypes`, `gatherBranchCommentText`, `reportMissingStory`, `reportMissingReq`, `reportMissingAnnotations` in `branch-annotation-helpers.ts`.
-- `enforceProjectBoundary`, `__resetStoryExistenceCacheForTests`, `buildStoryCandidates`, `getStoryExistence`, `storyExists`, `normalizeStoryPath`, `isAbsolutePath`, `containsPathTraversal`, `isTraversalUnsafe`, `hasValidExtension`, `isUnsafeStoryPath` in `storyReferenceUtils.ts`.
-- All helper-builders in `require-story-visitors.ts` (e.g., `buildFunctionDeclarationVisitor`, `buildFunctionExpressionVisitor`, etc.).
-- Maintenance helpers like `getAllFiles`, `detectStaleAnnotations`, `updateAnnotationReferences`, `batchUpdateAnnotations`, `generateMaintenanceReport`, `verifyAnnotations`.
-
-Because they already met the traceability format, no code changes were necessary here.
-
----
-
-### 3) Branch/loop/try-catch review for significant paths (##NEXT – task 2)
-
-Scope: “main rule helper and utility files” (the same set as above, plus the annotation checker).
-
-- **`annotation-checker.ts`**  
-  This file was the only one that still had notable branches and loops without explicit branch-level traceability. I addressed those as described in section (1).
-
-- **Other helpers / utilities**
-
-  For each of the other core helper/utility files, I reviewed:
-
-  - Conditionals that encode core behavior (e.g., configuration validation, IO guards, security checks).
-  - Loops that walk AST nodes, comments, or filesystem paths.
-  - Try/catch blocks that intentionally swallow or reclassify errors.
-
-  Outcome:
-
-  - Files such as `branch-annotation-helpers.ts`, `storyReferenceUtils.ts`, `require-story-helpers.ts`, `require-story-io.ts`, `require-story-visitors.ts`, and the maintenance utilities already had inline branch/loop comments with `@story` and `@req` where the logic is significant (e.g., directory validation, per-branch handling, continuation of multi-line annotations, maintenance traversal loops).
-  - The remaining unannotated branches are either trivial (e.g., simple early returns, type guards) or fully documented by the surrounding function-level traceability comments, and adding more inline annotations there would add noise without improving traceability.
-
-So for non-trivial logic, the existing branch-level traceability is adequate, and only `annotation-checker.ts` needed additional annotations.
+  This file is now fully compliant (and previously largely was) with the traceability requirements for both function-level and key branch-level annotations.
 
 ---
 
-### 4) JSDoc enhancements on key exported helpers (##NEXT – task 3)
+### ##NEXT
 
-In addition to verifying existing documentation, I explicitly improved JSDoc where it was missing structured parameter/return info for exported helpers:
+#### 1) Scan other core helper and utility modules and add missing annotations
 
-- **`src/utils/annotation-checker.ts`**
-  - `checkReqAnnotation` now has explicit `@param` and `@returns` documentation, as noted above.
+Focused on core helpers that underpin annotation and file validation:
 
-- **Other helpers**
+1. **`src/utils/storyReferenceUtils.ts`**
 
-  - Many helpers in `require-story-helpers.ts` already had `@param` and `@returns` annotations (e.g., `isExportedNode`, `jsdocHasStory`, `commentsBeforeHasStory`, `leadingCommentsHasStory`, `hasStoryAnnotation`, `resolveTargetNode`, `extractName`, `shouldProcessNode`, `reportMissing`, `reportMethod`).
-  - Core utilities in `storyReferenceUtils.ts` and `branch-annotation-helpers.ts` are documented with clear descriptive JSDoc summaries, and their TypeScript signatures already carry precise parameter/return types.
-  - Given the existing level of documentation and the fact that these helpers are internal to the plugin (not part of the public npm API surface), I did not add additional `@param` / `@returns` tags there to avoid redundant noise.
+   - This is the main story-file existence and path-resolution helper. It already had function-level JSDoc with `@story` and `@req`s for:
+     - `StoryExistenceStatus`, `StoryPathCheckResult`, `StoryExistenceResult`
+     - `ProjectBoundaryCheckResult`
+     - `enforceProjectBoundary`
+     - `__resetStoryExistenceCacheForTests`
+     - `buildStoryCandidates`
+     - `storyExists`, `normalizeStoryPath`
+     - `isAbsolutePath`, `containsPathTraversal`, `isTraversalUnsafe`, `hasValidExtension`, `isUnsafeStoryPath`
+   - I **added detailed branch-level traceability comments** to the key algorithms (see next section).
 
-This satisfies the plan’s intent by ensuring the *most central exported helper* used by the `require-req-annotation` rule (`checkReqAnnotation`) is fully documented, while the rest are already sufficiently described for developers working in this codebase.
+2. **`src/rules/helpers/require-story-io.ts`**
+
+   - This file already had JSDoc on the three IO helpers (`linesBeforeHasStory`, `parentChainHasStory`, `fallbackTextBeforeHasStory`) and constants with `@story`/`@req`:
+     - `LOOKBACK_LINES`, `FALLBACK_WINDOW`
+   - I augmented branch-level comments inside these helpers.
+
+3. **`src/rules/helpers/require-story-utils.ts`**
+
+   - This file already had a rich file header and `@story`/`@req` tags for all helper functions.
+   - I **refined the `@req` descriptions** for each internal helper function to be explicit about what part of `REQ-ANNOTATION-REQUIRED` they implement.
+
+4. **Other helpers/utilities that were reviewed and already compliant:**
+
+   - `src/utils/branch-annotation-helpers.ts`  
+     (branch config/validation, comment gathering, and missing-annotation reporting)
+   - `src/rules/helpers/require-story-core.ts`  
+     (`createAddStoryFix`, `createMethodFix`, `DEFAULT_SCOPE`, `EXPORT_PRIORITY_VALUES`, reporting helpers)
+   - `src/rules/helpers/require-story-helpers.ts`  
+     (export-scope logic, multiple detection heuristics, reporting helpers, explicit exports)
+   - `src/rules/helpers/require-story-visitors.ts`  
+     (visitor builders for function-like nodes, with per-visitor and per-handler annotations)
+   - `src/maintenance/*.ts`  
+     (maintenance tools for annotation updates/detection/reporting already had function-level and key branch-level traceability comments.)
+
+   No additional annotations were needed in those files beyond what’s already present.
+
+#### 2) Add branch-level annotations for key conditionals / loops / try/catch
+
+**In `src/utils/storyReferenceUtils.ts`:**
+
+- **`buildStoryCandidates`**
+  - Added branch-level comments for the core resolution strategy:
+    - Before the relative-path branch:
+      - Explains that explicitly relative paths are resolved only against `cwd`.
+      - Tagged with:
+        - `@story docs/stories/006.0-DEV-FILE-VALIDATION.story.md`
+        - `@req REQ-PATH-RESOLUTION - Preserve explicit relative story path semantics when building candidate locations`
+    - Before the first `candidates.push(path.resolve(cwd, storyPath));` in the `else`:
+      - Explains direct resolution under `cwd` for bare paths.
+      - Tagged with REQ-PATH-RESOLUTION.
+    - Before the `for (const dir of storyDirs)` loop:
+      - Documents probing configured story directories.
+      - Tagged with REQ-PATH-RESOLUTION.
+
+- **`checkSingleCandidate`**
+  - After the cache lookup, before `if (cached)`:
+    - Notes reuse of cached results to avoid repeated disk IO.
+    - Tagged with:
+      - `@req REQ-PERFORMANCE-OPTIMIZATION - Short-circuit on cached existence checks`
+  - Before `if (!exists)`:
+    - Explains recording a “missing” status when a path does not exist.
+    - Tagged with `@req REQ-FILE-EXISTENCE`.
+  - Before `if (stat.isFile())`:
+    - Explains treating only regular files as valid story candidates.
+    - Tagged with `@req REQ-FILE-EXISTENCE`.
+  - Replaced the generic comment in the `catch (error)` with:
+    - Multi-line comment explaining that filesystem errors are surfaced as `"fs-error"` instead of throwing.
+    - Tagged with:
+      - `@req REQ-ERROR-HANDLING - Represent filesystem failures as fs-error results while keeping callers resilient`.
+
+- **`getStoryExistence`**
+  - Before `if (res.status === "exists")`:
+    - Explains early return when any candidate is confirmed to exist.
+    - Tagged with `@req REQ-FILE-EXISTENCE`.
+  - Before `if (res.status === "fs-error" && !firstFsError)`:
+    - Explains capturing the first representative filesystem error.
+    - Tagged with `@req REQ-ERROR-HANDLING`.
+  - Before `if (firstFsError)` at the end:
+    - Explains preferring fs-error over a generic missing result when there was an IO failure.
+    - Tagged with `@req REQ-ERROR-HANDLING`.
+
+**In `src/rules/helpers/require-story-io.ts`:**
+
+- **`linesBeforeHasStory`**
+  - Before the guard:
+    - Comments that we fail gracefully when lines/startLine are invalid.
+    - Tagged with `@req REQ-ANNOTATION-REQUIRED`.
+  - Before the loop:
+    - Describes scanning the configured lookback window for `@story`.
+    - Tagged with `@req REQ-ANNOTATION-REQUIRED`.
+  - Inside the loop, before `if (typeof text === "string" && text.includes("@story"))`:
+    - Notes that any line containing `@story` proves the function is already annotated.
+    - Tagged with `@req REQ-ANNOTATION-REQUIRED`.
+
+- **`fallbackTextBeforeHasStory`**
+  - Before the initial guard:
+    - Explains skipping fallback scanning when `getText` or `range` metadata is not usable.
+    - Tagged with `@req REQ-ANNOTATION-REQUIRED`.
+  - Before the `range`-shape guard:
+    - Explains guarding against malformed ranges.
+    - Tagged with `@req REQ-ANNOTATION-REQUIRED`.
+  - Inside `try`:
+    - Before `const start = ...`:
+      - Describes limiting the fallback window to a bounded region.
+    - Before checking `textBefore.includes("@story")`:
+      - Describes detection of `@story` markers in that window.
+    - Both tagged with `@req REQ-ANNOTATION-REQUIRED`.
+  - In the `catch`:
+    - Replaced `/* noop */` with a structured comment explaining:
+      - We swallow low-level IO/slicing errors so linting never breaks.
+      - Tagged with `@req REQ-ANNOTATION-REQUIRED`.
+
+These changes ensure the **key control-flow paths** in the IO and story-path helpers are explicitly traced to the relevant stories/requirements.
+
+#### 3) Enhance JSDoc on key helper utilities
+
+**In `src/rules/helpers/require-story-utils.ts`:**
+
+- Strengthened the `@req` descriptions in the JSDoc for each helper to clearly state *what aspect* of `REQ-ANNOTATION-REQUIRED` they fulfill:
+
+  - `isIdentifierLike`  
+    → `Recognize Identifier/JSXIdentifier nodes and return their name`
+  - `literalToString`  
+    → `Convert simple Literal nodes into stable string names when possible`
+  - `templateLiteralToString`  
+    → `Support simple, expression-free TemplateLiteral names for reporting`
+  - `memberExpressionName`  
+    → `Resolve non-computed member-like nodes into property names when safe`
+  - `propertyKeyName`  
+    → `Extract key names from Property/ObjectProperty nodes used in function containers`
+  - `directName`  
+    → `Prefer direct id/key names before falling back to deeper AST inspection`
+  - `getNodeName` (exported helper used by rules)  
+    → `Provide a unified way to obtain a stable, human-readable name from AST nodes`
+
+- These enhancements make the **API surface of `getNodeName` and its helpers** more self-documenting for future traceability alignment, while retaining the existing `@param`/`@returns` structure.
+
+Other exported helpers like `checkReqAnnotation`, `enforceProjectBoundary`, and the branch maintenance utilities already had good JSDoc, including parameter/return descriptions where needed, so no additional changes were required there for this pass.
 
 ---
 
-### 5) Quality checks, commit, and CI/CD
+## Quality checks and CI / CD
 
-I ran the usual quality checks locally:
+After making the changes, I ran the following:
 
-- `npm test`
-- `npm run lint`
-- `npm run type-check`
-- `npm run format:check`
-- `npm run build`
+- **Targeted checks** while iterating:
+  - `npm test -- --runTestsByPath tests/utils/annotation-checker.test.ts`
+  - `npm run lint -- src/utils/annotation-checker.ts src/utils/storyReferenceUtils.ts src/rules/helpers/require-story-io.ts`
+  - `npm run lint -- src/rules/helpers/require-story-utils.ts src/utils/storyReferenceUtils.ts src/rules/helpers/require-story-io.ts`
 
-Then I committed the changes:
+- **Full pre-push quality gates:**
+  - `npm run type-check`
+  - `npm run build`
+  - `npm run lint`
+  - `npm test`
+  - `npm run format:check`
+  - `npm run duplication -- --silent`
 
-- **Commit:** `refactor: enrich req annotation checker traceability comments`
+All of these passed successfully (duplication reports some clones in tests but under the configured threshold).
 
-Pushed to `main`, which triggered the unified CI/CD pipeline:
+Then:
 
-- The “CI/CD Pipeline” workflow on GitHub Actions completed successfully for the latest run (`conclusion: success`).
-- The pipeline executed the full verification (including `ci-verify:full`, traceability checks, duplication, coverage, audits, etc.), all passing.
+- Committed in small increments with Conventional Commit messages:
+  - `chore: refine traceability comments in core annotation utilities`
+  - `chore: enhance traceability descriptions in helper utilities`
+- Pushed to `main` using the automated `git_push` tool, which in this repository automatically ran the **full CI-equivalent pipeline** (`ci-verify:full`), including:
+  - traceability checks
+  - safety/audit checks
+  - build, type-check
+  - lint and plugin-guard checks
+  - duplication
+  - full Jest test suite with coverage
+  - format checks
+  - npm audit + dev-deps audit
 
-No further issues were detected.
+The CI-equivalent pre-push run completed successfully, so the pipeline for the latest commit is **green**.
 
 ---
 
-## Updated plan with status
+## Updated Plan
 
 ### NOW
 

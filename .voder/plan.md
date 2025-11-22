@@ -1,14 +1,15 @@
 ## NOW
 
-- [ ] Review the annotation-checking utility module and add missing @story and @req annotations to every named helper function and any obvious significant branches so that this core file fully complies with the traceability format requirements.
+- [ ] Strengthen the path validation logic in the maintenance tool that scans for stale annotations so it enforces the same project-boundary and path-traversal protections as the runtime story-reference validation, ensuring it never probes files outside the intended workspace even when annotations contain malicious or malformed paths.
 
 ## NEXT
 
-- [ ] Scan other core helper and utility modules for any remaining named functions that lack @story and @req annotations, and add concise, accurate traceability comments referencing the appropriate stories and requirements.
-- [ ] Review conditional branches, loops, and try/catch blocks across the main rule helper and utility files to identify significant logic paths that still lack branch-level @story and @req comments, and add those annotations where needed.
-- [ ] Enhance the JSDoc on key exported helper functions by adding clear @param and @returns descriptions where they are currently missing, focusing on utilities that are part of the public or semi-public API surface so their behavior is fully documented.
+- [ ] Review the error and debug logging in the annotation rules, especially any console.debug output, and either remove or gate it behind a clearly documented debug flag so normal usage cannot leak file paths or other sensitive details into logs.
+- [ ] Re-examine the documented accepted security risks for development-only dependencies against the current dependency tree and advisory data, updating the security incident documentation to reflect any new mitigations or clarifications about why the residual risks remain acceptable.
+- [ ] Confirm that the security-focused scripts and checks (dependency safety checks, audits, and path-validation tests) fully cover the updated maintenance and rule behavior, adjusting or extending them if necessary so that future regressions in these areas are automatically detected.
 
 ## LATER
 
-- [ ] Once traceability annotations and JSDoc improvements are in place, reassess overall documentation quality against the project’s stories and traceability rules to confirm it reaches the threshold needed to support a reliable functionality assessment.
-- [ ] If that reassessment reveals any residual documentation inconsistencies or redundancies (for example, overlapping explanations of particular rules or presets), plan and implement a small follow-up cleanup pass to simplify and align user-facing and internal docs without changing behavior.
+- [ ] Perform a focused internal security review of the plugin and maintenance tools using the updated path-validation and logging behavior, verifying that file access and logging remain safe under both normal and adversarial inputs.
+- [ ] Once the security posture is confirmed to meet or exceed the required threshold, trigger a fresh implementation assessment that includes functionality evaluation against the documented stories and requirements.
+- [ ] Based on that reassessment, identify and schedule any remaining hardening or documentation tasks needed to keep security, dependency management, and functionality aligned over time.

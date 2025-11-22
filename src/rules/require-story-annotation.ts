@@ -85,17 +85,28 @@ const rule: Rule.RuleModule = {
     const exportPriority = opts.exportPriority || "all";
 
     /**
+     * Environment-gated debug logging to avoid leaking file paths unless
+     * explicitly enabled.
+     *
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-DEBUG-LOG
+     */
+    const debugEnabled = process.env.TRACEABILITY_DEBUG === "1";
+
+    /**
      * Debug log at the start of create to help diagnose rule activation in tests.
      *
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-DEBUG-LOG
      */
-    console.debug(
-      "require-story-annotation:create",
-      typeof context.getFilename === "function"
-        ? context.getFilename()
-        : "<unknown>",
-    );
+    if (debugEnabled) {
+      console.debug(
+        "require-story-annotation:create",
+        typeof context.getFilename === "function"
+          ? context.getFilename()
+          : "<unknown>",
+      );
+    }
 
     // Local closure that binds configured scope and export priority to the helper.
     const should = (node: any) =>

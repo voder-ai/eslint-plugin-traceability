@@ -22,6 +22,13 @@ function buildFunctionDeclarationVisitor(
   options: any,
 ): Rule.RuleListener {
   /**
+   * Debug flag for optional visitor logging.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @req REQ-DEBUG-LOG-TOGGLE - Allow opt-in debug logging via TRACEABILITY_DEBUG
+   */
+  const debugEnabled = process.env.TRACEABILITY_DEBUG === "1";
+
+  /**
    * Handle FunctionDeclaration nodes.
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on function declarations
@@ -32,13 +39,15 @@ function buildFunctionDeclarationVisitor(
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-DEBUG-LOG - Provide debug logging for visitor entry
      */
-    console.debug(
-      "require-story-annotation:FunctionDeclaration",
-      typeof context.getFilename === "function"
-        ? context.getFilename()
-        : "<unknown>",
-      node && node.id ? node.id.name : "<anonymous>",
-    );
+    if (debugEnabled) {
+      console.debug(
+        "require-story-annotation:FunctionDeclaration",
+        typeof context.getFilename === "function"
+          ? context.getFilename()
+          : "<unknown>",
+        node && node.id ? node.id.name : "<anonymous>",
+      );
+    }
 
     if (!options.shouldProcessNode(node)) return;
 
