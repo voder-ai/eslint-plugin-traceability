@@ -22,33 +22,16 @@ function buildFunctionDeclarationVisitor(
   options: any,
 ): Rule.RuleListener {
   /**
-   * Debug flag for optional visitor logging.
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-DEBUG-LOG-TOGGLE - Allow opt-in debug logging via TRACEABILITY_DEBUG
-   */
-  const debugEnabled = process.env.TRACEABILITY_DEBUG === "1";
-
-  /**
    * Handle FunctionDeclaration nodes.
+   *
+   * Developers who need to troubleshoot this handler may temporarily add
+   * console.debug statements here, but by default no debug logging runs so that
+   * file paths and other details are not leaked during normal linting.
+   *
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-ANNOTATION-REQUIRED - Report missing @story on function declarations
    */
   function handleFunctionDeclaration(node: any) {
-    /**
-     * Debug logging for visitor entry
-     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-     * @req REQ-DEBUG-LOG - Provide debug logging for visitor entry
-     */
-    if (debugEnabled) {
-      console.debug(
-        "require-story-annotation:FunctionDeclaration",
-        typeof context.getFilename === "function"
-          ? context.getFilename()
-          : "<unknown>",
-        node && node.id ? node.id.name : "<anonymous>",
-      );
-    }
-
     if (!options.shouldProcessNode(node)) return;
 
     const target = resolveTargetNode(sourceCode, node);
