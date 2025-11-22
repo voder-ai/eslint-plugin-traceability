@@ -117,3 +117,4 @@ Use `requireStoryExtension: true` to enforce a clear, consistent naming conventi
 // @story docs/stories/001.0-DEV-PLUGIN-SETUP.md   // @story invalidExtension
 // @story ../outside.story.md                      // @story invalidPath
 // @story /etc/passwd.story.md                     // @story invalidPath
+```

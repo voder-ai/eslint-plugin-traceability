@@ -213,11 +213,13 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
       "docs/stories/001.0-DEV-PLUGIN-SETUP.story.md",
     );
 
-    jest.spyOn(fs, "existsSync").mockImplementation((p: string) => {
+    jest.spyOn(fs, "existsSync").mockImplementation((...args: any[]) => {
+      const p = args[0] as string;
       return p === storyPath;
     });
 
-    jest.spyOn(fs, "statSync").mockImplementation((p: string) => {
+    jest.spyOn(fs, "statSync").mockImplementation((...args: any[]) => {
+      const p = args[0] as string;
       if (p === storyPath) {
         return {
           isFile: () => true,
@@ -283,11 +285,13 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
     const outsideDir = pathModule.resolve(pathModule.sep, "tmp", "outside");
     const outsideFile = pathModule.join(outsideDir, "external-story.story.md");
 
-    jest.spyOn(fs, "existsSync").mockImplementation((p: string) => {
+    jest.spyOn(fs, "existsSync").mockImplementation((...args: any[]) => {
+      const p = args[0] as string;
       return p === outsideFile;
     });
 
-    jest.spyOn(fs, "statSync").mockImplementation((p: string) => {
+    jest.spyOn(fs, "statSync").mockImplementation((...args: any[]) => {
+      const p = args[0] as string;
       if (p === outsideFile) {
         return {
           isFile: () => true,
@@ -329,11 +333,13 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
       "docs/stories/developer-story.map.md",
     );
 
-    jest.spyOn(fs, "existsSync").mockImplementation((p: string) => {
+    jest.spyOn(fs, "existsSync").mockImplementation((...args: any[]) => {
+      const p = args[0] as string;
       return p === storyPath;
     });
 
-    jest.spyOn(fs, "statSync").mockImplementation((p: string) => {
+    jest.spyOn(fs, "statSync").mockImplementation((...args: any[]) => {
+      const p = args[0] as string;
       if (p === storyPath) {
         return {
           isFile: () => true,
