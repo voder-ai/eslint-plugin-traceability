@@ -60,13 +60,25 @@ function linesBeforeHasReq(sourceCode: any, node: any) {
     node && node.loc && typeof node.loc.start?.line === "number"
       ? node.loc.start.line
       : null;
+
+  // Guard against missing or malformed source/loc information before scanning.
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQ-DETECTION - Avoid false positives when sourceCode/loc is incomplete
   if (!Array.isArray(lines) || typeof startLine !== "number") {
     return false;
   }
+
   const from = Math.max(0, startLine - 1 - LOOKBACK_LINES);
   const to = Math.max(0, startLine - 1);
+
+  // Scan each physical line in the configured lookback window for an @req marker.
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQ-DETECTION - Search preceding lines for @req text
   for (let i = from; i < to; i++) {
     const text = lines[i];
+    // When a line contains @req we treat the function as already annotated.
+    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req marker in raw source lines
     if (typeof text === "string" && text.includes("@req")) {
       return true;
     }
@@ -81,28 +93,32 @@ function linesBeforeHasReq(sourceCode: any, node: any) {
  */
 function parentChainHasReq(sourceCode: any, node: any) {
   let p = node && node.parent;
+
+  // Walk up the parent chain and inspect comments attached to each ancestor.
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQ-DETECTION - Traverse parent nodes when local comments are absent
   while (p) {
     const pComments =
       typeof sourceCode?.getCommentsBefore === "function"
         ? sourceCode.getCommentsBefore(p) || []
         : [];
-    if (
-      Array.isArray(pComments) &&
-      pComments.some(
-        (c: any) => typeof c.value === "string" && c.value.includes("@req"),
-      )
-    ) {
+
+    // Look for @req in comments immediately preceding each parent node.
+    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req markers in parent comments
+    if (Array.isArray(pComments) && pComments.some(commentContainsReq)) {
       return true;
     }
+
     const pLeading = p.leadingComments || [];
-    if (
-      Array.isArray(pLeading) &&
-      pLeading.some(
-        (c: any) => typeof c.value === "string" && c.value.includes("@req"),
-      )
-    ) {
+
+    // Also inspect leadingComments attached directly to the parent node.
+    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req markers in parent leadingComments
+    if (Array.isArray(pLeading) && pLeading.some(commentContainsReq)) {
       return true;
     }
+
     p = p.parent;
   }
   return false;
@@ -114,6 +130,9 @@ function parentChainHasReq(sourceCode: any, node: any) {
  * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in fallback text window before node
  */
 function fallbackTextBeforeHasReq(sourceCode: any, node: any) {
+  // Guard against unsupported sourceCode or nodes without a usable range.
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQ-DETECTION - Ensure we only inspect text when range information is available
   if (
     typeof sourceCode?.getText !== "function" ||
     !Array.isArray((node && node.range) || [])
@@ -121,16 +140,27 @@ function fallbackTextBeforeHasReq(sourceCode: any, node: any) {
     return false;
   }
   const range = node.range;
+
+  // Guard when the node range cannot provide a numeric start index.
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQ-DETECTION - Avoid scanning when range start is not a number
   if (!Array.isArray(range) || typeof range[0] !== "number") {
     return false;
   }
   try {
     const start = Math.max(0, range[0] - FALLBACK_WINDOW);
     const textBefore = sourceCode.getText().slice(start, range[0]);
+
+    // Detect @req in the bounded text window immediately preceding the node.
+    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req marker in fallback text window
     if (typeof textBefore === "string" && textBefore.includes("@req")) {
       return true;
     }
   } catch {
+    // Swallow detection errors to avoid breaking lint runs due to malformed source.
+    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-REQ-DETECTION - Treat IO/detection failures as "no annotation" instead of throwing
     /* noop */
   }
   return false;
@@ -153,6 +183,9 @@ function hasReqAnnotation(
         ? context.getSourceCode()
         : undefined;
 
+    // Prefer robust, location-based heuristics when sourceCode and node are available.
+    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-REQ-DETECTION - Use multiple heuristics to detect @req markers around the node
     if (sourceCode && node) {
       if (
         linesBeforeHasReq(sourceCode, node) ||
@@ -164,6 +197,8 @@ function hasReqAnnotation(
     }
   } catch {
     // Swallow detection errors and fall through to simple checks.
+    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-REQ-DETECTION - Fail gracefully when advanced detection heuristics throw
   }
 
   // BRANCH @req detection on JSDoc or comments
@@ -187,22 +222,31 @@ function hasReqAnnotation(
 function getFixTargetNode(node: any) {
   const parent = node && (node as any).parent;
 
+  // When there is no parent, attach the annotation directly to the node itself.
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-AUTOFIX - Default to annotating the node when it has no parent
   if (!parent) {
     return node;
   }
 
   // If the node is part of a class/obj method definition, attach to the MethodDefinition
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-AUTOFIX - Attach fixes to the MethodDefinition wrapper for methods
   if (parent.type === "MethodDefinition") {
     return parent;
   }
 
   // If the node is the init of a variable declarator, attach to the VariableDeclarator
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-AUTOFIX - Attach fixes to the VariableDeclarator for function initializers
   if (parent.type === "VariableDeclarator" && parent.init === node) {
     return parent;
   }
 
   // If the parent is an expression statement (e.g. IIFE or assigned via expression),
   // attach to the outer ExpressionStatement.
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-AUTOFIX - Attach fixes to the ExpressionStatement wrapper for IIFEs
   if (parent.type === "ExpressionStatement") {
     return parent;
   }
@@ -255,6 +299,9 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
     data: { name, functionName: name },
   };
 
+  // Conditionally attach an autofix only when enabled in the rule options.
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-AUTOFIX - Only provide autofix suggestions when explicitly enabled
   if (enableFix) {
     reportOptions.fix = createMissingReqFix(node);
   }
@@ -270,6 +317,10 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
  * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
  * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation
  * @req REQ-ANNOTATION-REPORTING - Report missing @req annotation to context
+ * @param context - ESLint rule context used to obtain source and report problems
+ * @param node - Function-like AST node whose surrounding comments should be inspected
+ * @param options - Optional configuration controlling behaviour (e.g., enableFix)
+ * @returns void
  */
 export function checkReqAnnotation(
   context: any,
