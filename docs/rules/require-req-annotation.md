@@ -200,3 +200,4 @@ Correct:
 interface I {
   method(): void;
 }
+```

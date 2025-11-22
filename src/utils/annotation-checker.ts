@@ -51,6 +51,8 @@ function commentContainsReq(c: any) {
 
 /**
  * Line-based helper adapted from linesBeforeHasStory to detect @req.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in preceding source lines
  */
 function linesBeforeHasReq(sourceCode: any, node: any) {
   const lines = sourceCode && sourceCode.lines;
@@ -74,6 +76,8 @@ function linesBeforeHasReq(sourceCode: any, node: any) {
 
 /**
  * Parent-chain helper adapted from parentChainHasStory to detect @req.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in parent-chain comments
  */
 function parentChainHasReq(sourceCode: any, node: any) {
   let p = node && node.parent;
@@ -106,6 +110,8 @@ function parentChainHasReq(sourceCode: any, node: any) {
 
 /**
  * Fallback text window helper adapted from fallbackTextBeforeHasStory to detect @req.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in fallback text window before node
  */
 function fallbackTextBeforeHasReq(sourceCode: any, node: any) {
   if (
@@ -212,6 +218,11 @@ function getFixTargetNode(node: any) {
  */
 function createMissingReqFix(node: any) {
   const target = getFixTargetNode(node);
+  /**
+   * Fixer used to insert a default @req annotation before the chosen target node.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation
+   */
   return function missingReqFix(fixer: any) {
     return fixer.insertTextBefore(target, "/** @req <REQ-ID> */\n");
   };
