@@ -104,10 +104,19 @@ export function buildStoryCandidates(
   storyDirs: string[],
 ): string[] {
   const candidates: string[] = [];
+  // When the story path is already explicitly relative, resolve it only against the current working directory.
+  // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+  // @req REQ-PATH-RESOLUTION - Preserve explicit relative story path semantics when building candidate locations
   if (storyPath.startsWith("./") || storyPath.startsWith("../")) {
     candidates.push(path.resolve(cwd, storyPath));
   } else {
+    // For bare paths, first try resolving directly under the current working directory.
+    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+    // @req REQ-PATH-RESOLUTION - Attempt direct resolution from cwd before probing configured story directories
     candidates.push(path.resolve(cwd, storyPath));
+    // Probe each configured story directory for a matching story filename.
+    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+    // @req REQ-PATH-RESOLUTION - Expand search across configured storyDirectories while staying within project
     for (const dir of storyDirs) {
       candidates.push(path.resolve(cwd, dir, path.basename(storyPath)));
     }
@@ -135,6 +144,9 @@ const fileExistStatusCache = new Map<string, StoryPathCheckResult>();
  */
 function checkSingleCandidate(candidate: string): StoryPathCheckResult {
   const cached = fileExistStatusCache.get(candidate);
+  // Reuse any cached filesystem result to avoid redundant disk IO for the same candidate.
+  // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+  // @req REQ-PERFORMANCE-OPTIMIZATION - Short-circuit on cached existence checks
   if (cached) {
     return cached;
   }
@@ -143,10 +155,16 @@ function checkSingleCandidate(candidate: string): StoryPathCheckResult {
 
   try {
     const exists = fs.existsSync(candidate);
+    // When the path does not exist at all, record a simple "missing" status.
+    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+    // @req REQ-FILE-EXISTENCE - Distinguish non-existent story paths from other failure modes
     if (!exists) {
       result = { path: candidate, status: "missing" };
     } else {
       const stat = fs.statSync(candidate);
+      // Treat existing regular files as valid story candidates; other entry types are considered missing.
+      // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+      // @req REQ-FILE-EXISTENCE - Only regular files may satisfy a story path reference
       if (stat.isFile()) {
         result = { path: candidate, status: "exists" };
       } else {
@@ -155,7 +173,9 @@ function checkSingleCandidate(candidate: string): StoryPathCheckResult {
       }
     }
   } catch (error) {
-    // Any filesystem error is captured and surfaced as fs-error.
+    // Any filesystem error is captured and surfaced as an fs-error status instead of throwing.
+    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+    // @req REQ-ERROR-HANDLING - Represent filesystem failures as fs-error results while keeping callers resilient
     result = { path: candidate, status: "fs-error", error };
   }
 
@@ -183,6 +203,9 @@ export function getStoryExistence(candidates: string[]): StoryExistenceResult {
   for (const candidate of candidates) {
     const res = checkSingleCandidate(candidate);
 
+    // As soon as a candidate file is confirmed to exist, return a successful existence result.
+    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+    // @req REQ-FILE-EXISTENCE - Prefer the first positively-matched story file
     if (res.status === "exists") {
       return {
         candidates,
@@ -191,11 +214,17 @@ export function getStoryExistence(candidates: string[]): StoryExistenceResult {
       };
     }
 
+    // Remember the first filesystem error so callers can inspect a representative failure if no files exist.
+    // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+    // @req REQ-ERROR-HANDLING - Surface a single representative filesystem error without failing fast
     if (res.status === "fs-error" && !firstFsError) {
       firstFsError = res;
     }
   }
 
+  // Prefer reporting a filesystem error over a generic missing status when at least one candidate failed to read.
+  // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+  // @req REQ-ERROR-HANDLING - Distinguish IO failures from simple "missing" results in existence checks
   if (firstFsError) {
     return {
       candidates,
