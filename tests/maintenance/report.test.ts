@@ -28,10 +28,10 @@ describe("generateMaintenanceReport (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => 
   it("[REQ-MAINT-REPORT] should report stale story annotation", () => {
     const filePath = path.join(tmpDir, "stub.md");
     const content = `/**
- * @story non-existent.md
+ * @story non-existent.story.md
  */`;
     fs.writeFileSync(filePath, content);
     const report = generateMaintenanceReport(tmpDir);
-    expect(report).toContain("non-existent.md");
+    expect(report).toContain("non-existent.story.md");
   });
 });
