@@ -27,7 +27,7 @@
  * Check for identifier-like nodes and return their name when available.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
+ * @req REQ-ANNOTATION-REQUIRED - Recognize Identifier/JSXIdentifier nodes and return their name
  *
  * @param node - AST node to inspect
  * @returns the identifier name or null
@@ -45,7 +45,7 @@ function isIdentifierLike(node: any): string | null {
  * Convert a Literal node to a string when it represents a stable primitive (string/number/boolean).
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
+ * @req REQ-ANNOTATION-REQUIRED - Convert simple Literal nodes into stable string names when possible
  *
  * @param node - AST node expected to be a Literal
  * @returns the literal as string or null if not stable/resolvable
@@ -64,7 +64,7 @@ function literalToString(node: any): string | null {
  * Convert a TemplateLiteral node to a string if it contains no expressions.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
+ * @req REQ-ANNOTATION-REQUIRED - Support simple, expression-free TemplateLiteral names for reporting
  *
  * @param node - AST node expected to be a TemplateLiteral
  * @returns the cooked/raw concatenated template string or null if it contains expressions
@@ -88,7 +88,7 @@ function templateLiteralToString(node: any): string | null {
  * Resolve a MemberExpression / TSQualifiedName / JSXMemberExpression-like node to a name when non-computed.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
+ * @req REQ-ANNOTATION-REQUIRED - Resolve non-computed member-like nodes into property names when safe
  *
  * @param node - AST node to inspect
  * @returns resolved member/property name or null
@@ -118,7 +118,7 @@ function memberExpressionName(node: any): string | null {
  * Extract the key name from Property/ObjectProperty nodes.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
+ * @req REQ-ANNOTATION-REQUIRED - Extract key names from Property/ObjectProperty nodes used in function containers
  *
  * @param node - AST node expected to be Property/ObjectProperty
  * @returns the resolved key name or null
@@ -138,7 +138,7 @@ function propertyKeyName(node: any): string | null {
  * Branch-level traceability: prefer direct .key.name early (common on variable declarators, properties)
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
+ * @req REQ-ANNOTATION-REQUIRED - Prefer direct id/key names before falling back to deeper AST inspection
  *
  * @param node - AST node to inspect for direct .id/.key name
  * @returns the resolved direct name or null
@@ -171,7 +171,7 @@ function directName(node: any): string | null {
  * Get a readable name for a given AST node.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
+ * @req REQ-ANNOTATION-REQUIRED - Provide a unified way to obtain a stable, human-readable name from AST nodes
  *
  * @param node - An AST node (ESTree/TSESTree/JSX-like). Can be null/undefined.
  * @returns The resolved name string, or null if a stable name cannot be determined.
