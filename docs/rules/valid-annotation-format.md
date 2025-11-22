@@ -50,7 +50,7 @@ Key behaviors:
       - Example message (from `buildStoryErrorMessage`):
         - `Invalid @story path "foo/bar.story.md". Expected something like "docs/stories/005.0-DEV-EXAMPLE.story.md".`
     - **Invalid requirement ID format**
-      - Identifier present but not matching `^REQ-[A-Z0-9-]+$` (e.g. lowercase letters, spaces, or missing `REQ-` prefix).
+      - Identifier present but not matching `^REQ-[A-Z09-]+$` (e.g. lowercase letters, spaces, or missing `REQ-` prefix).
       - Example message (from `buildReqErrorMessage`):
         - `Invalid @req identifier "Req-foo". Expected something like "REQ-EXAMPLE".`
     - **Extra unexpected tokens**
@@ -94,4 +94,3 @@ if (condition) {
  * @req REQ-EXAMPLE
  */
 function badExample() {}
-```

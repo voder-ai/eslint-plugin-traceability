@@ -156,4 +156,3 @@ declare function initAuth(): void;
 interface IAuth {
   logout(): void;
 }
-```

@@ -32,7 +32,7 @@ function initAuth() {
 
 ### traceability/require-req-annotation
 
-Description: Ensures that function-like constructs consistently declare their linked requirement using an `@req` annotation in JSDoc. The rule targets the same function-like node types as `traceability/require-story-annotation` (including standard functions, function expressions used as callbacks or assignments, class/object methods, TypeScript declare functions, and interface method signatures), and enforces that each of them has at least one `@req` tag in the nearest associated JSDoc comment.
+Description: Ensures that function-like constructs consistently declare their linked requirement using an `@req` annotation in JSDoc. The rule targets the same function-like node types as `traceability/require-story-annotation` (standard function declarations, non-arrow function expressions used as callbacks or assignments, class/object methods, TypeScript declare functions, and interface method signatures), and enforces that each of them has at least one `@req` tag in the nearest associated JSDoc comment. Arrow functions (`ArrowFunctionExpression`) are not currently checked by this rule.
 
 This rule is typically used alongside `traceability/require-story-annotation` so that each function-level traceability block includes both an `@story` and an `@req` annotation, but it can also be enabled independently if you only want to enforce requirement linkage. Unlike `traceability/require-story-annotation`, this rule does not currently provide an auto-fix mode for inserting placeholder `@req` annotations; it only reports missing or malformed requirement annotations on the configured scopes.
 

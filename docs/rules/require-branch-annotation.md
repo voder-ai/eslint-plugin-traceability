@@ -22,7 +22,7 @@ Example (.eslintrc.js):
 ```js
 module.exports = {
   rules: {
-    "require-branch-annotation": [
+    "traceability/require-branch-annotation": [
       "error",
       {
         branchTypes: ["IfStatement", "ForStatement"],
@@ -58,7 +58,7 @@ if (error) {
 // .eslintrc.js
 module.exports = {
   rules: {
-    "require-branch-annotation": [
+    "traceability/require-branch-annotation": [
       "error",
       {
         branchTypes: ["IfStatement", "InvalidType"],
@@ -68,4 +68,3 @@ module.exports = {
 };
 
 // Error: Value "InvalidType" should be equal to one of the allowed values.
-```

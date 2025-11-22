@@ -10,6 +10,7 @@ This guide shows how to properly set up ESLint 9 with flat configuration format.
 
 - [Quick Setup](#quick-setup)
 - [Configuration File Format](#configuration-file-format)
+- [ESM vs CommonJS Config Files](#esm-vs-commonjs-config-files)
 - [Common Configuration Patterns](#common-configuration-patterns)
 - [Package.json Scripts](#packagejson-scripts)
 - [TypeScript Integration](#typescript-integration)
@@ -113,6 +114,22 @@ export default [
   },
 ];
 ```
+
+## ESM vs CommonJS Config Files
+
+ESLint 9's flat config system works with both ESM and CommonJS configs; which one you use depends on your Node setup:
+
+- **ESM (recommended for new projects)**
+  - Use `eslint.config.js` or `eslint.config.mjs` that exports with `export default [...]`.
+  - Your `package.json` typically has `{ "type": "module" }`, or you use the `.mjs` extension.
+  - Examples in this guide that use `import ... from` and `export default [...]` assume an ESM config.
+
+- **CommonJS**
+  - Use `eslint.config.cjs` or `eslint.config.js` with `module.exports = [...]`.
+  - Your `package.json` typically omits `"type": "module"` (or explicitly sets `"type": "commonjs"`).
+  - This style matches the example in the project README that shows `module.exports = [...]`.
+
+Both forms are supported by ESLint 9 as long as the file extension and `package.json` `type` setting are consistent. Pick the style that matches the rest of your Node tooling and stick to it across your project.
 
 ## Common Configuration Patterns
 

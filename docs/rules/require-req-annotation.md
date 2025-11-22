@@ -10,10 +10,12 @@ Enforces the presence of `@req` annotations on functions and methods to ensure e
 This rule validates that the following nodes have a leading JSDoc comment containing an `@req` annotation:
 
 - Function declarations
-- Function expressions (including arrow functions)
+- Function expressions (non-arrow function expressions used in assignments or callbacks)
 - Method definitions (class and object methods)
 - TypeScript declare functions (`TSDeclareFunction`)
 - TypeScript method signatures (`TSMethodSignature`)
+
+Note: Arrow functions (`ArrowFunctionExpression`) are not currently checked by this rule. Support for arrow functions may be added in a future version once the underlying stories and schemas are extended.
 
 By default, this rule uses the same detection scope as `require-story-annotation`, meaning it only checks functions and methods that are considered "in scope" by the same rules (e.g., exported functions when using export‑based scopes).
 
@@ -140,7 +142,7 @@ Missing `@req` on a function expression:
 /**
  * This initializes authentication.
  */
-const initAuth = () => {
+const initAuth = function () {
   // authentication logic
 };
 ```
@@ -198,4 +200,3 @@ Correct:
 interface I {
   method(): void;
 }
-```
