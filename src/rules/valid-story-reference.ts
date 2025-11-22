@@ -55,42 +55,50 @@ function validateStoryPath(opts: {
 }
 
 /**
- * Report any problems related to the existence or accessibility of the
- * referenced story file. Filesystem and I/O errors are surfaced with a
- * dedicated diagnostic that differentiates them from missing files.
+ * Analyze candidate paths against the project boundary, returning whether any
+ * are within the project and whether any are outside.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-PROJECT-BOUNDARY - Validate files are within project boundaries
+ * @req REQ-CONFIGURABLE-PATHS - Respect configured storyDirectories while enforcing project boundaries
+ */
+function analyzeCandidateBoundaries(
+  candidates: string[],
+  cwd: string,
+): {
+  hasInProjectCandidate: boolean;
+  hasOutOfProjectCandidate: boolean;
+} {
+  let hasInProjectCandidate = false;
+  let hasOutOfProjectCandidate = false;
+
+  for (const candidate of candidates) {
+    const boundary = enforceProjectBoundary(candidate, cwd);
+    if (boundary.isWithinProject) {
+      hasInProjectCandidate = true;
+    } else {
+      hasOutOfProjectCandidate = true;
+    }
+  }
+
+  return { hasInProjectCandidate, hasOutOfProjectCandidate };
+}
+
+/**
+ * Handle existence status and report appropriate diagnostics for missing
+ * or filesystem-error conditions, assuming project-boundary checks have
+ * already been applied.
  *
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-FILE-EXISTENCE - Ensure referenced files exist
  * @req REQ-ERROR-HANDLING - Differentiate missing files from filesystem errors
  */
-function reportExistenceProblems(opts: {
-  storyPath: string;
-  commentNode: any;
-  context: any;
-  cwd: string;
-  storyDirs: string[];
-}): void {
-  const { storyPath, commentNode, context, cwd, storyDirs } = opts;
-
-  const result = normalizeStoryPath(storyPath, cwd, storyDirs);
-  const existenceResult = result.existence;
-
-  if (
-    existenceResult &&
-    existenceResult.status === "exists" &&
-    existenceResult.matchedPath
-  ) {
-    const boundary = enforceProjectBoundary(existenceResult.matchedPath, cwd);
-    if (!boundary.isWithinProject) {
-      context.report({
-        node: commentNode,
-        messageId: "invalidPath",
-        data: { path: storyPath },
-      });
-      return;
-    }
-  }
-
+function reportExistenceStatus(
+  existenceResult: ReturnType<typeof normalizeStoryPath>["existence"],
+  storyPath: string,
+  commentNode: any,
+  context: any,
+): void {
   if (!existenceResult || existenceResult.status === "exists") {
     return;
   }
@@ -125,6 +133,63 @@ function reportExistenceProblems(opts: {
       },
     });
   }
+}
+
+/**
+ * Report any problems related to the existence or accessibility of the
+ * referenced story file. Filesystem and I/O errors are surfaced with a
+ * dedicated diagnostic that differentiates them from missing files.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-FILE-EXISTENCE - Ensure referenced files exist
+ * @req REQ-ERROR-HANDLING - Differentiate missing files from filesystem errors
+ * @req REQ-PROJECT-BOUNDARY - Ensure resolved candidate paths remain within the project root
+ * @req REQ-CONFIGURABLE-PATHS - Respect configured storyDirectories while enforcing project boundaries
+ */
+function reportExistenceProblems(opts: {
+  storyPath: string;
+  commentNode: any;
+  context: any;
+  cwd: string;
+  storyDirs: string[];
+}): void {
+  const { storyPath, commentNode, context, cwd, storyDirs } = opts;
+
+  const result = normalizeStoryPath(storyPath, cwd, storyDirs);
+  const existenceResult = result.existence;
+
+  const candidates = result.candidates || [];
+  if (candidates.length > 0) {
+    const { hasInProjectCandidate, hasOutOfProjectCandidate } =
+      analyzeCandidateBoundaries(candidates, cwd);
+
+    if (hasOutOfProjectCandidate && !hasInProjectCandidate) {
+      context.report({
+        node: commentNode,
+        messageId: "invalidPath",
+        data: { path: storyPath },
+      });
+      return;
+    }
+  }
+
+  if (
+    existenceResult &&
+    existenceResult.status === "exists" &&
+    existenceResult.matchedPath
+  ) {
+    const boundary = enforceProjectBoundary(existenceResult.matchedPath, cwd);
+    if (!boundary.isWithinProject) {
+      context.report({
+        node: commentNode,
+        messageId: "invalidPath",
+        data: { path: storyPath },
+      });
+      return;
+    }
+  }
+
+  reportExistenceStatus(existenceResult, storyPath, commentNode, context);
 }
 
 /**

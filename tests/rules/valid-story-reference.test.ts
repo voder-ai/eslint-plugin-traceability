@@ -181,7 +181,7 @@ projectBoundaryTester.run("valid-story-reference", rule, {
       ],
       errors: [
         {
-          messageId: "fileMissing",
+          messageId: "invalidPath",
         },
       ],
     },

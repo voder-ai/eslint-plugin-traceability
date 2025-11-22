@@ -21,11 +21,17 @@ This rule inspects all comment nodes for lines starting with `@story`. It then:
 
 The rule enforces a strict “project boundary” for story references in line with story `006.0-DEV-FILE-VALIDATION`:
 
-- All `@story` paths are interpreted relative to the current project’s root and the configured `storyDirectories`.
-- Paths that attempt to escape this boundary (e.g. using `..` segments to reach parent directories) are rejected as `invalidPath`.
-- By default, absolute paths are considered outside the project boundary and are rejected unless explicitly allowed by configuration.
-- Resolution is constrained to the configured `storyDirectories`; a `@story` reference that does not resolve to a file within those directories is reported as `fileMissing` even if a similarly named file exists elsewhere.
-- Extension handling is enforced at the boundary: when `.story.md` is required, any reference that resolves to a file with a different extension is reported as `invalidExtension` even if the base name matches.
+- All candidate filesystem paths are built (from `@story` text, `storyDirectories`, and allowed absolute paths) and then checked against the project root using a `ProjectBoundaryCheckResult`.
+- A candidate that the boundary checker classifies as outside the project root is treated as out-of-bounds and is not used for existence/access decisions.
+- If **all** resolved candidates are out-of-bounds, the rule reports `invalidPath` even if filesystem queries (were they to be run) would indicate that a file exists at one or more of those locations.
+- When **at least one** candidate path is within the project boundary:
+  - Normal extension rules are applied first (e.g. `.story.md` when `requireStoryExtension` is `true`), and mismatches are reported as `invalidExtension`.
+  - For in-bounds candidates with acceptable extensions, the rule performs filesystem checks and distinguishes between:
+    - `fileMissing` – the candidate is within the boundary and has a valid extension, but no file exists at that path.
+    - `fileAccessError` – the candidate is within the boundary, but the filesystem check fails for reasons other than “file not found” (e.g. permission errors).
+    - Success – the file exists and is accessible within the project boundary.
+- By default, absolute paths are considered outside the project boundary and are rejected as `invalidPath` by the boundary checker unless explicitly allowed by configuration; when allowed, they are still subject to the same boundary classification and existence/access logic as relative candidates.
+- Resolution is constrained to candidates that remain within the project root according to `ProjectBoundaryCheckResult`; candidates that would escape the project (e.g. via `..` traversal) are classified as out-of-bounds and contribute to `invalidPath` when no in-bounds alternatives exist.
 
 These constraints ensure that story references are deterministic, prevent accidental coupling to files outside the intended documentation area, and avoid security issues from arbitrary filesystem traversal.
 
