@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Identify the production TypeScript and JavaScript functions that currently have the largest bodies and are likely to exceed a 55-line limit, and decide which ones should be refactored into smaller helpers first to support tightening the max-lines-per-function rule.
+- [ ] Design and integrate an automated, non-interactive secret scanning step into the existing continuous integration pipeline so that every change to the main branch is checked for accidentally committed credentials or sensitive data.
 
 ## NEXT
 
-- [ ] Update the linting configuration so that the maximum allowed function length for production code is reduced from 60 lines to 55 lines, keeping test-specific relaxations unchanged.
-- [ ] Refactor the selected long functions into smaller, clearly named helper functions that each have a single responsibility while preserving existing behavior and maintaining the current traceability annotations.
-- [ ] Revisit any remaining functions that hit the new limit and iteratively split or simplify them until they comply with the 55-line constraint without introducing duplication or unnecessary complexity.
+- [ ] Tune the secret scanning configuration so it focuses on relevant project files, avoids noisy directories and known-safe patterns, and produces clear, actionable findings when potential secrets are detected.
+- [ ] Add the dependency-safety tool currently invoked via ad‑hoc execution as an explicit development dependency and adjust the existing safety scripts to use the local tool for reproducible, reliable security checks.
+- [ ] Review the updated security tooling setup and incident documentation to ensure they accurately describe the new secret scanning and dependency-safety processes, keeping the formal security procedure in sync with the implementation.
 
 ## LATER
 
-- [ ] Plan the next incremental reduction of the max-lines-per-function limit (for example from 55 to 50) in alignment with the existing code-quality ratcheting ADR and identify future refactor targets to support that change.
-- [ ] Address the modest duplication reported in larger test files by extracting common setup and assertion helpers, improving maintainability without changing test behavior.
-- [ ] Reassess overall code-quality metrics after these refactors to confirm that function size, complexity, and duplication trends are heading in the desired direction and update the ratcheting ADR to reflect the new baseline.
+- [ ] Periodically refine secret scanning rules and allowlists based on any false positives encountered, keeping the signal-to-noise ratio high without weakening protections.
+- [ ] Extend security checks to cover any future tooling or scripts that interact with external services, ensuring they follow the same standards for dependency vetting and secret handling.
+- [ ] Once the strengthened security controls are in place and stable, re-run the overall implementation assessment so that a full functionality evaluation can be performed on a solid security foundation.

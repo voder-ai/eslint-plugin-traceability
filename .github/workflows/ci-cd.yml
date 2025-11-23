@@ -47,6 +47,9 @@ jobs:
       - name: Run full CI verification
         run: npm run ci-verify:full
 
+      - name: Run secret scanning
+        run: npm run security:secrets
+
       - name: Upload dry-aged deps artifact
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

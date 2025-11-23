@@ -22,6 +22,7 @@ This procedure applies to all security-related issues discovered in both product
    - Evaluate severity and exploitability in the project context.
    - Determine if an automated patch or upgrade is available via `dry-aged-deps` or other tooling.
    - If a safe version exists, prefer automated upgrades; do not use manual overrides.
+   - All changes merged into `main` are automatically scanned for secrets via the `npm run security:secrets` script in CI; any findings must be investigated and either remediated or explicitly documented as false positives in the issue tracker.
 
 3. **Decision to Override**  
    - If no safe version is available (e.g., bundled dependency cannot be patched), propose a manual override in `package.json`.
