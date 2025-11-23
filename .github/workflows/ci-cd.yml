@@ -44,14 +44,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run traceability check
-        run: npm run check:traceability
-
-      - name: Run dependency safety check
-        run: npm run safety:deps
-
-      - name: Run CI audit
-        run: npm run audit:ci
+      - name: Run full CI verification
+        run: npm run ci-verify:full
 
       - name: Upload dry-aged deps artifact
         if: ${{ always() }}
@@ -76,26 +70,6 @@ jobs:
           name: traceability-report-${{ matrix['node-version'] }}
           path: scripts/traceability-report.md
 
-      - name: Build project
-        run: npm run build
-
-      - name: Run type checking
-        run: npm run type-check
-
-      - name: Verify built plugin exports
-        run: npm run lint-plugin-check
-
-      - name: Run linting
-        env:
-          NODE_ENV: ci
-        run: npm run lint -- --max-warnings=0
-
-      - name: Run duplication check
-        run: npm run duplication
-
-      - name: Run tests with coverage
-        run: npm run test -- --coverage
-
       - name: Upload jest artifacts (primary)
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -103,15 +77,6 @@ jobs:
         with:
           name: jest-artifacts-${{ matrix['node-version'] }}
           path: ci/
-
-      - name: Check code formatting
-        run: npm run format:check
-
-      - name: Run production security audit
-        run: npm audit --omit=dev --audit-level=high
-
-      - name: Run dev dependency security audit
-        run: npm run audit:dev-high
 
       - name: Release with semantic-release
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix['node-version'] == '20.x' && success() }}

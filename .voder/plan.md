@@ -1,17 +1,14 @@
 ## NOW
 
-- [ ] Review and tighten the user-facing maintenance documentation so that the described maintenance API functions and `traceability-maint` CLI commands, options, examples, and exit codes exactly match the current implementation and no longer claim unsupported behavior.
+- [ ] Review the existing continuous integration and deployment workflow configuration and recent pipeline runs to identify any remaining fragility or misalignment that could cause the CI/CD pipeline to fail or violate the intended continuous deployment behavior.
 
 ## NEXT
 
-- [ ] Audit the maintenance and CLI source files for any remaining missing or inconsistent traceability annotations on functions and significant branches, and add or correct @story and @req tags so they align with the maintenance tools story and requirements.
-- [ ] Adjust the declared Node engine version in the project metadata to reflect the true minimum supported runtime implied by the ESLint 9 toolchain, and confirm that this change is consistent with how the project is currently built and tested.
-- [ ] Revisit the documented dev-only security incidents and dependency override rationale to ensure they still accurately describe the present dependency tree and accepted residual risks, updating timelines or notes where necessary.
-- [ ] After documentation and security updates are in place, re-assess the maintenance tools story against the implementation and tests to confirm all acceptance criteria are met and that functionality can be considered complete for this story.
+- [ ] Adjust the CI/CD workflow definition so that every quality gate step is driven entirely by the project’s existing scripts and runs in a consistent order across all environments, ensuring there are no duplicated or conflicting checks.
+- [ ] Refine the release and publishing step in the workflow so that only genuinely unrecoverable errors cause the job to fail while expected conditions like missing release changes or authentication quirks are handled gracefully without breaking the pipeline.
+- [ ] Validate that the workflow’s triggering conditions and matrix configuration strictly follow the continuous deployment requirements, including automatic publishing on every successful push to the main branch, and update the workflow if any gaps are discovered.
 
 ## LATER
 
-- [ ] Enhance the maintenance reporting capabilities to include file and line level information for each stale annotation, and reflect that richer detail in both the programmatic API and CLI output formats.
-- [ ] Improve the robustness of maintenance utilities when encountering filesystem edge cases such as permission-denied directories or unexpected file types, ensuring these scenarios are handled gracefully and are clearly surfaced through the CLI without crashing.
-- [ ] Refine the maintenance documentation to include more advanced usage patterns, such as integrating the CLI into CI workflows or project scripts, once the core behavior and basic docs are fully aligned and stable.
-- [ ] Evaluate whether any additional automated checks are helpful to continuously enforce documentation–implementation alignment for the maintenance tools, such as lightweight tests that parse example commands or compare documented signatures against exported APIs.
+- [ ] Improve the resilience and observability of the CI helper scripts used by the workflow, such as audit and dependency-safety wrappers, so that transient tool or network issues are reported clearly and do not cause misleading pipeline failures.
+- [ ] Optimize the CI/CD workflow for speed and maintainability by removing redundant steps or consolidating similar checks, while keeping the full set of required quality gates and post-deployment smoke tests intact.
