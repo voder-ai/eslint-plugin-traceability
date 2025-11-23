@@ -29,6 +29,143 @@ function extractStoryPath(comment: any): string | null {
 }
 
 /**
+ * Validate and resolve the referenced story path.
+ * Performs traversal/absolute checks and resolves to a disk path.
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-PATH - Validate and resolve referenced story file paths
+ */
+function validateAndResolveStoryPath(opts: {
+  comment: any;
+  context: any;
+  storyPath: string;
+  cwd: string;
+}): string | null {
+  const { comment, context, storyPath, cwd } = opts;
+
+  if (storyPath.includes("..") || path.isAbsolute(storyPath)) {
+    context.report({
+      node: comment as any,
+      messageId: "invalidPath",
+      data: { storyPath },
+    });
+    return null;
+  }
+
+  const resolvedStoryPath = path.resolve(cwd, storyPath);
+  if (
+    !resolvedStoryPath.startsWith(cwd + path.sep) &&
+    resolvedStoryPath !== cwd
+  ) {
+    context.report({
+      node: comment as any,
+      messageId: "invalidPath",
+      data: { storyPath },
+    });
+    return null;
+  }
+
+  return resolvedStoryPath;
+}
+
+/**
+ * Load and cache requirement IDs from a story file.
+ * Reads the story file, extracts requirement IDs, and updates the cache.
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-CACHE - Cache requirement IDs discovered in story files
+ * @req REQ-DEEP-PARSE - Parse story file contents to extract requirement identifiers
+ */
+function loadAndCacheRequirements(opts: {
+  resolvedStoryPath: string;
+  reqCache: Map<string, Set<string>>;
+}): Set<string> {
+  const { resolvedStoryPath, reqCache } = opts;
+
+  if (!reqCache.has(resolvedStoryPath)) {
+    try {
+      const content = fs.readFileSync(resolvedStoryPath, "utf8");
+      const found = new Set<string>();
+      const regex = /REQ-[A-Z0-9-]+/g;
+      let match: RegExpExecArray | null;
+      while ((match = regex.exec(content)) !== null) {
+        found.add(match[0]);
+      }
+      reqCache.set(resolvedStoryPath, found);
+    } catch {
+      reqCache.set(resolvedStoryPath, new Set());
+    }
+  }
+
+  return reqCache.get(resolvedStoryPath)!;
+}
+
+/**
+ * Perform the final requirement existence check and report if missing.
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-MATCH - Verify that a referenced requirement ID exists in the story
+ */
+function checkRequirementExists(opts: {
+  comment: any;
+  context: any;
+  reqId: string;
+  storyPath: string;
+  reqSet: Set<string>;
+}): void {
+  const { comment, context, reqId, storyPath, reqSet } = opts;
+
+  if (!reqSet.has(reqId)) {
+    context.report({
+      node: comment as any,
+      messageId: "reqMissing",
+      data: { reqId, storyPath },
+    });
+  }
+}
+
+/**
+ * Extract requirement ID from a @req line.
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-PARSE - Parse annotation lines to extract requirement IDs
+ */
+function extractReqIdFromLine(line: string): string | undefined {
+  const parts = line.split(/\s+/);
+  return parts[1];
+}
+
+/**
+ * Resolve story path and load requirements set for validation.
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-PATH - Validate and resolve referenced story file paths
+ * @req REQ-DEEP-CACHE - Cache requirement IDs discovered in story files
+ */
+function resolveStoryAndRequirements(opts: {
+  comment: any;
+  context: any;
+  storyPath: string;
+  cwd: string;
+  reqCache: Map<string, Set<string>>;
+}): { resolvedStoryPath: string | null; reqSet: Set<string> | null } {
+  const { comment, context, storyPath, cwd, reqCache } = opts;
+
+  const resolvedStoryPath = validateAndResolveStoryPath({
+    comment,
+    context,
+    storyPath,
+    cwd,
+  });
+
+  if (!resolvedStoryPath) {
+    return { resolvedStoryPath: null, reqSet: null };
+  }
+
+  const reqSet = loadAndCacheRequirements({
+    resolvedStoryPath,
+    reqCache,
+  });
+
+  return { resolvedStoryPath, reqSet };
+}
+
+/**
  * Validate a @req annotation line against the extracted story content.
  * Performs path validation, file reading, caching, and requirement existence checks.
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
@@ -46,53 +183,30 @@ function validateReqLine(opts: {
   reqCache: Map<string, Set<string>>;
 }): void {
   const { comment, context, line, storyPath, cwd, reqCache } = opts;
-  const parts = line.split(/\s+/);
-  const reqId = parts[1];
+  const reqId = extractReqIdFromLine(line);
   if (!reqId || !storyPath) {
     return;
   }
-  if (storyPath.includes("..") || path.isAbsolute(storyPath)) {
-    context.report({
-      node: comment as any,
-      messageId: "invalidPath",
-      data: { storyPath },
-    });
+
+  const { reqSet } = resolveStoryAndRequirements({
+    comment,
+    context,
+    storyPath,
+    cwd,
+    reqCache,
+  });
+
+  if (!reqSet) {
     return;
   }
-  const resolvedStoryPath = path.resolve(cwd, storyPath);
-  if (
-    !resolvedStoryPath.startsWith(cwd + path.sep) &&
-    resolvedStoryPath !== cwd
-  ) {
-    context.report({
-      node: comment as any,
-      messageId: "invalidPath",
-      data: { storyPath },
-    });
-    return;
-  }
-  if (!reqCache.has(resolvedStoryPath)) {
-    try {
-      const content = fs.readFileSync(resolvedStoryPath, "utf8");
-      const found = new Set<string>();
-      const regex = /REQ-[A-Z0-9-]+/g;
-      let match: RegExpExecArray | null;
-      while ((match = regex.exec(content)) !== null) {
-        found.add(match[0]);
-      }
-      reqCache.set(resolvedStoryPath, found);
-    } catch {
-      reqCache.set(resolvedStoryPath, new Set());
-    }
-  }
-  const reqSet = reqCache.get(resolvedStoryPath)!;
-  if (!reqSet.has(reqId)) {
-    context.report({
-      node: comment as any,
-      messageId: "reqMissing",
-      data: { reqId, storyPath },
-    });
-  }
+
+  checkRequirementExists({
+    comment,
+    context,
+    reqId,
+    storyPath,
+    reqSet,
+  });
 }
 
 /**
@@ -121,6 +235,36 @@ function handleAnnotationLine(opts: {
 }
 
 /**
+ * Iterate over all raw lines in a comment and update storyPath as needed.
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-PARSE - Iterate comment lines to process @story/@req annotations
+ * @req REQ-DEEP-MATCH - Coordinate annotation handling across a comment block
+ */
+function processCommentLines(opts: {
+  comment: any;
+  context: any;
+  cwd: string;
+  reqCache: Map<string, Set<string>>;
+  initialStoryPath: string | null;
+}): string | null {
+  const { comment, context, cwd, reqCache, initialStoryPath } = opts;
+  let storyPath = initialStoryPath;
+  const rawLines = comment.value.split(/\r?\n/);
+  for (const rawLine of rawLines) {
+    const line = rawLine.trim().replace(/^\*+\s*/, "");
+    storyPath = handleAnnotationLine({
+      line,
+      comment,
+      context,
+      cwd,
+      reqCache,
+      storyPath,
+    });
+  }
+  return storyPath;
+}
+
+/**
  * Handle JSDoc story and req annotations for a single comment block.
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
  * @req REQ-DEEP-PARSE - Iterate comment lines to process @story/@req annotations
@@ -135,20 +279,41 @@ function handleComment(opts: {
   rawStoryPath: string | null;
 }): string | null {
   const { comment, context, cwd, reqCache, rawStoryPath } = opts;
-  let storyPath = rawStoryPath;
-  const rawLines = comment.value.split(/\r?\n/);
-  for (const rawLine of rawLines) {
-    const line = rawLine.trim().replace(/^\*+\s*/, "");
-    storyPath = handleAnnotationLine({
-      line,
+  return processCommentLines({
+    comment,
+    context,
+    cwd,
+    reqCache,
+    initialStoryPath: rawStoryPath,
+  });
+}
+
+/**
+ * Get all comments from source and drive comment-level handling.
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-DEEP-PARSE - Collect all comments from the source code
+ * @req REQ-DEEP-MATCH - Drive comment-level handling for traceability checks
+ * @req REQ-DEEP-CACHE - Reuse story path and requirement cache across comments
+ */
+function processAllComments(opts: {
+  sourceCode: any;
+  context: any;
+  cwd: string;
+  reqCache: Map<string, Set<string>>;
+  initialStoryPath: string | null;
+}): void {
+  const { sourceCode, context, cwd, reqCache } = opts;
+  let rawStoryPath = opts.initialStoryPath;
+  const comments = sourceCode.getAllComments() || [];
+  comments.forEach((comment: any) => {
+    rawStoryPath = handleComment({
       comment,
       context,
       cwd,
       reqCache,
-      storyPath,
+      rawStoryPath,
     });
-  }
-  return storyPath;
+  });
 }
 
 /**
@@ -172,15 +337,12 @@ function programListener(context: any) {
    * @req REQ-DEEP-PATH - Ensure validation respects project-relative paths
    */
   return function Program() {
-    const comments = sourceCode.getAllComments() || [];
-    comments.forEach((comment: any) => {
-      rawStoryPath = handleComment({
-        comment,
-        context,
-        cwd,
-        reqCache,
-        rawStoryPath,
-      });
+    processAllComments({
+      sourceCode,
+      context,
+      cwd,
+      reqCache,
+      initialStoryPath: rawStoryPath,
     });
   };
 }

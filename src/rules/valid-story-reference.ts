@@ -6,14 +6,15 @@
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
  * @req REQ-SECURITY-VALIDATION - Prevent path traversal and absolute path usage
  */
-import path from "path";
 import type { Rule } from "eslint";
 import {
   normalizeStoryPath,
-  containsPathTraversal,
   hasValidExtension,
-  enforceProjectBoundary,
 } from "../utils/storyReferenceUtils";
+import {
+  performSecurityValidations,
+  handleProjectBoundaryForExistence,
+} from "./helpers/valid-story-reference-helpers";
 
 const defaultStoryDirs = ["docs/stories", "stories"];
 
@@ -77,36 +78,6 @@ function validateStoryPath(opts: {
 }
 
 /**
- * Analyze candidate paths against the project boundary, returning whether any
- * are within the project and whether any are outside.
- *
- * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
- * @req REQ-PROJECT-BOUNDARY - Validate files are within project boundaries
- * @req REQ-CONFIGURABLE-PATHS - Respect configured storyDirectories while enforcing project boundaries
- */
-function analyzeCandidateBoundaries(
-  candidates: string[],
-  cwd: string,
-): {
-  hasInProjectCandidate: boolean;
-  hasOutOfProjectCandidate: boolean;
-} {
-  let hasInProjectCandidate = false;
-  let hasOutOfProjectCandidate = false;
-
-  for (const candidate of candidates) {
-    const boundary = enforceProjectBoundary(candidate, cwd);
-    if (boundary.isWithinProject) {
-      hasInProjectCandidate = true;
-    } else {
-      hasOutOfProjectCandidate = true;
-    }
-  }
-
-  return { hasInProjectCandidate, hasOutOfProjectCandidate };
-}
-
-/**
  * Handle existence status and report appropriate diagnostics for missing
  * or filesystem-error conditions, assuming project-boundary checks have
  * already been applied.
@@ -158,54 +129,6 @@ function reportExistenceStatus(
 }
 
 /**
- * Determine whether any candidate or matched path crosses the project
- * boundary, and report an invalid path if so.
- *
- * This centralizes project-boundary invalidation logic used during
- * existence checks, so the decision of *when* to call the invalid-path
- * reporter is not duplicated.
- *
- * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
- * @req REQ-PROJECT-BOUNDARY - Ensure resolved candidate paths remain within the project root
- * @req REQ-CONFIGURABLE-PATHS - Respect configured storyDirectories while enforcing project boundaries
- */
-function handleProjectBoundaryForExistence(opts: {
-  storyPath: string;
-  commentNode: any;
-  context: any;
-  cwd: string;
-  candidates: string[];
-  existenceResult: ReturnType<typeof normalizeStoryPath>["existence"];
-}): boolean {
-  const { storyPath, commentNode, context, cwd, candidates, existenceResult } =
-    opts;
-
-  if (candidates.length > 0) {
-    const { hasInProjectCandidate, hasOutOfProjectCandidate } =
-      analyzeCandidateBoundaries(candidates, cwd);
-
-    if (hasOutOfProjectCandidate && !hasInProjectCandidate) {
-      reportInvalidPath({ storyPath, commentNode, context });
-      return true;
-    }
-  }
-
-  if (
-    existenceResult &&
-    existenceResult.status === "exists" &&
-    existenceResult.matchedPath
-  ) {
-    const boundary = enforceProjectBoundary(existenceResult.matchedPath, cwd);
-    if (!boundary.isWithinProject) {
-      reportInvalidPath({ storyPath, commentNode, context });
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
  * Report any problems related to the existence or accessibility of the
  * referenced story file. Filesystem and I/O errors are surfaced with a
  * dedicated diagnostic that differentiates them from missing files.
@@ -237,6 +160,7 @@ function reportExistenceProblems(opts: {
     cwd,
     candidates,
     existenceResult,
+    reportInvalidPath,
   });
 
   if (invalidByBoundary) {
@@ -277,23 +201,17 @@ function processStoryPath(opts: {
     requireExt,
   } = opts;
 
-  // Absolute path check
-  if (path.isAbsolute(storyPath)) {
-    if (!allowAbsolute) {
-      reportInvalidPath({ storyPath, commentNode, context });
-      return;
-    }
-    // When absolute paths are allowed, we still enforce extension and
-    // project-boundary checks below via the existence phase.
-  }
+  const securityOk = performSecurityValidations({
+    storyPath,
+    commentNode,
+    context,
+    cwd,
+    allowAbsolute,
+    reportInvalidPath,
+  });
 
-  // Path traversal check
-  if (containsPathTraversal(storyPath)) {
-    const full = path.resolve(cwd, path.normalize(storyPath));
-    if (!full.startsWith(cwd + path.sep)) {
-      reportInvalidPath({ storyPath, commentNode, context });
-      return;
-    }
+  if (!securityOk) {
+    return;
   }
 
   // Extension check

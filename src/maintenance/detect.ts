@@ -90,6 +90,37 @@ function handleStoryMatch(
 
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-DETECT - Enforce workspaceRoot as the project boundary for resolved story paths
+  const inProjectCandidates = getInProjectCandidates(
+    storyProjectCandidate,
+    storyCodebaseCandidate,
+    workspaceRoot,
+  );
+
+  // If both candidates are out-of-project, do not mark as stale and skip FS checks
+  if (inProjectCandidates.length === 0) {
+    return;
+  }
+
+  // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+  // @req REQ-MAINT-DETECT - Only check existence for in-project candidates
+  const anyExists = anyInProjectCandidateExists(inProjectCandidates);
+
+  // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+  // @req REQ-MAINT-DETECT - Mark story as stale if any in-project candidate exists conceptually but none exist on disk
+  if (!anyExists) {
+    stale.add(storyPath);
+  }
+}
+
+/**
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-DETECT - Enforce project boundary and return in-project candidates
+ */
+function getInProjectCandidates(
+  storyProjectCandidate: string,
+  storyCodebaseCandidate: string,
+  workspaceRoot: string,
+): string[] {
   let projectBoundary: ProjectBoundaryCheckResult;
   let codebaseBoundary: ProjectBoundaryCheckResult;
 
@@ -125,18 +156,13 @@ function handleStoryMatch(
     inProjectCandidates.push(codebaseBoundary.candidate);
   }
 
-  // If both candidates are out-of-project, do not mark as stale and skip FS checks
-  if (inProjectCandidates.length === 0) {
-    return;
-  }
+  return inProjectCandidates;
+}
 
-  // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-  // @req REQ-MAINT-DETECT - Only check existence for in-project candidates
-  const anyExists = inProjectCandidates.some((p) => fs.existsSync(p));
-
-  // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-  // @req REQ-MAINT-DETECT - Mark story as stale if any in-project candidate exists conceptually but none exist on disk
-  if (!anyExists) {
-    stale.add(storyPath);
-  }
+/**
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-DETECT - Check on-disk existence of in-project candidates
+ */
+function anyInProjectCandidateExists(inProjectCandidates: string[]): boolean {
+  return inProjectCandidates.some((p) => fs.existsSync(p));
 }

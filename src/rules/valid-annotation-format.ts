@@ -1,11 +1,17 @@
 import {
-  getDefaultReqExample,
   getResolvedDefaults,
   resolveOptions,
   type ResolvedAnnotationOptions,
   getRuleSchema,
   getOptionErrors,
 } from "./helpers/valid-annotation-options";
+import {
+  collapseAnnotationValue,
+  TAG_NOT_FOUND_INDEX,
+  getFixedStoryPath,
+  buildStoryErrorMessage,
+  buildReqErrorMessage,
+} from "./helpers/valid-annotation-utils";
 
 /**
  * Rule to validate @story and @req annotation format and syntax. When run with
@@ -32,19 +38,6 @@ interface PendingAnnotation {
 }
 
 /**
- * Constant to represent the "tag not found" index when searching
- * for @story or @req within a comment.
- *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-AUTOFIX-PRESERVE - Avoid risky text replacements when the annotation tag cannot be located
- */
-const TAG_NOT_FOUND_INDEX = -1;
-
-const STORY_EXAMPLE_PATH = "docs/stories/005.0-DEV-EXAMPLE.story.md";
-
-/**
  * Normalize a raw comment line to make annotation parsing more robust.
  *
  * This function trims whitespace, keeps any annotation tags that appear
@@ -68,100 +61,6 @@ function normalizeCommentLine(rawLine: string): string {
   }
 
   return trimmed.slice(annotationMatch.index);
-}
-
-/**
- * Collapse internal whitespace in an annotation value so that multi-line
- * annotations are treated as a single logical value.
- *
- * Example:
- *   "docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md" across
- *   multiple lines will be collapsed before validation.
- *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-MULTILINE-SUPPORT - Handle annotations split across multiple lines
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- */
-function collapseAnnotationValue(value: string): string {
-  return value.replace(/\s+/g, "");
-}
-
-/**
- * Attempt a minimal, safe auto-fix for common @story path suffix issues.
- *
- * Only handles:
- *   - missing ".md"
- *   - missing ".story.md"
- * and skips any paths with traversal segments (e.g. "..").
- *
- * Returns the fixed path when safe, or null if no fix should be applied.
- *
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-AUTOFIX-SAFE - Auto-fix must be conservative and never broaden the referenced path
- * @req REQ-AUTOFIX-PRESERVE - Preserve surrounding formatting when normalizing story path suffixes
- */
-function getFixedStoryPath(original: string): string | null {
-  if (original.includes("..")) {
-    return null;
-  }
-
-  if (/\.story\.md$/.test(original)) {
-    return null;
-  }
-
-  if (/\.story$/.test(original)) {
-    return `${original}.md`;
-  }
-
-  if (/\.md$/.test(original)) {
-    return original.replace(/\.md$/, ".story.md");
-  }
-
-  return `${original}.story.md`;
-}
-
-/**
- * Build a detailed error message for invalid @story annotations.
- *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- */
-function buildStoryErrorMessage(
-  kind: "missing" | "invalid",
-  value: string | null,
-  options: ResolvedAnnotationOptions,
-): string {
-  const example = options.storyExample || STORY_EXAMPLE_PATH;
-  if (kind === "missing") {
-    return `Missing story path for @story annotation. Expected a path like "${example}".`;
-  }
-
-  return `Invalid story path "${value ?? ""}" for @story annotation. Expected a path like "${example}".`;
-}
-
-/**
- * Build a detailed error message for invalid @req annotations.
- *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- */
-function buildReqErrorMessage(
-  kind: "missing" | "invalid",
-  value: string | null,
-  options: ResolvedAnnotationOptions,
-): string {
-  const example = options.reqExample || getDefaultReqExample();
-  if (kind === "missing") {
-    return `Missing requirement ID for @req annotation. Expected an identifier like "${example}".`;
-  }
-
-  return `Invalid requirement ID "${value ?? ""}" for @req annotation. Expected an identifier like "${example}" (uppercase letters, numbers, and dashes only).`;
 }
 
 /**
@@ -371,6 +270,102 @@ function validateReqAnnotation(
 }
 
 /**
+ * Finalize and validate the currently pending annotation, if any.
+ *
+ * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-SYNTAX-VALIDATION - Validate annotation syntax matches specification
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ */
+function finalizePendingAnnotation(
+  context: any,
+  comment: any,
+  options: ResolvedAnnotationOptions,
+  pending: PendingAnnotation | null,
+): PendingAnnotation | null {
+  if (!pending) {
+    return null;
+  }
+
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+  // @req REQ-SYNTAX-VALIDATION - Dispatch validation based on annotation type
+  // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+  if (pending.type === "story") {
+    validateStoryAnnotation(context, comment, pending.value, options);
+  } else {
+    validateReqAnnotation(context, comment, pending.value, options);
+  }
+
+  return null;
+}
+
+/**
+ * Process a single normalized comment line and update the pending annotation state.
+ *
+ * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-SYNTAX-VALIDATION - Start new pending annotation when a tag is found
+ * @req REQ-MULTILINE-SUPPORT - Treat subsequent lines as continuation for pending annotation
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ */
+function processCommentLine({
+  normalized,
+  pending,
+  context,
+  comment,
+  options,
+}: {
+  normalized: string;
+  pending: PendingAnnotation | null;
+  context: any;
+  comment: any;
+  options: ResolvedAnnotationOptions;
+}): PendingAnnotation | null {
+  if (!normalized) {
+    return pending;
+  }
+
+  const isStory = /@story\b/.test(normalized);
+  const isReq = /@req\b/.test(normalized);
+
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+  // @req REQ-SYNTAX-VALIDATION - Start new pending annotation when a tag is found
+  // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+  if (isStory || isReq) {
+    finalizePendingAnnotation(context, comment, options, pending);
+    const value = normalized.replace(/^@story\b|^@req\b/, "").trim();
+    return {
+      type: isStory ? "story" : "req",
+      value,
+      hasValue: value.trim().length > 0,
+    };
+  }
+
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+  // @req REQ-MULTILINE-SUPPORT - Treat subsequent lines as continuation for pending annotation
+  // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+  if (pending) {
+    const continuation = normalized.trim();
+    if (!continuation) {
+      return pending;
+    }
+    const updatedValue = pending.value
+      ? `${pending.value} ${continuation}`
+      : continuation;
+    return {
+      ...pending,
+      value: updatedValue,
+      hasValue: pending.hasValue || continuation.length > 0,
+    };
+  }
+
+  return pending;
+}
+
+/**
  * Process a single comment node and validate any @story/@req annotations it contains.
  *
  * Supports annotations whose values span multiple lines within the same
@@ -391,73 +386,18 @@ function processComment(
   const rawLines = (comment.value || "").split(/\r?\n/);
   let pending: PendingAnnotation | null = null;
 
-  /**
-   * Finalize and validate the currently pending annotation, if any.
-   *
-   * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-   * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-   * @req REQ-SYNTAX-VALIDATION - Validate annotation syntax matches specification
-   * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
-   */
-  function finalizePending() {
-    if (!pending) {
-      return;
-    }
-
-    // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-    // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-    // @req REQ-SYNTAX-VALIDATION - Dispatch validation based on annotation type
-    // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
-    if (pending.type === "story") {
-      validateStoryAnnotation(context, comment, pending.value, options);
-    } else {
-      validateReqAnnotation(context, comment, pending.value, options);
-    }
-
-    pending = null;
-  }
-
   rawLines.forEach((rawLine: string) => {
     const normalized = normalizeCommentLine(rawLine);
-    if (!normalized) {
-      return;
-    }
-
-    const isStory = /@story\b/.test(normalized);
-    const isReq = /@req\b/.test(normalized);
-
-    // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-    // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-    // @req REQ-SYNTAX-VALIDATION - Start new pending annotation when a tag is found
-    // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
-    if (isStory || isReq) {
-      finalizePending();
-      const value = normalized.replace(/^@story\b|^@req\b/, "").trim();
-      pending = {
-        type: isStory ? "story" : "req",
-        value,
-        hasValue: value.trim().length > 0,
-      };
-      return;
-    }
-
-    // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-    // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-    // @req REQ-MULTILINE-SUPPORT - Treat subsequent lines as continuation for pending annotation
-    // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
-    if (pending) {
-      const continuation = normalized.trim();
-      if (!continuation) {
-        return;
-      }
-      pending.value = pending.value
-        ? `${pending.value} ${continuation}`
-        : continuation;
-      pending.hasValue = pending.hasValue || continuation.length > 0;
-    }
+    pending = processCommentLine({
+      normalized,
+      pending,
+      context,
+      comment,
+      options,
+    });
   });
 
-  finalizePending();
+  finalizePendingAnnotation(context, comment, options, pending);
 }
 
 export default {

@@ -221,6 +221,33 @@ export function reportMissingReq(
 }
 
 /**
+ * Compute annotation-related metadata for a branch node.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
+ */
+function getBranchAnnotationInfo(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+): {
+  missingStory: boolean;
+  missingReq: boolean;
+  indent: string;
+  insertPos: number;
+} {
+  const text = gatherBranchCommentText(sourceCode, node);
+  const missingStory = !/@story\b/.test(text);
+  const missingReq = !/@req\b/.test(text);
+  const indent =
+    sourceCode.lines[node.loc.start.line - 1].match(/^(\s*)/)?.[1] || "";
+  const insertPos = sourceCode.getIndexFromLoc({
+    line: node.loc.start.line,
+    column: 0,
+  });
+
+  return { missingStory, missingReq, indent, insertPos };
+}
+
+/**
  * Report missing annotations on a branch node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
@@ -231,15 +258,9 @@ export function reportMissingAnnotations(
   storyFixCountRef: { count: number },
 ): void {
   const sourceCode = context.getSourceCode();
-  const text = gatherBranchCommentText(sourceCode, node);
-  const missingStory = !/@story\b/.test(text);
-  const missingReq = !/@req\b/.test(text);
-  const indent =
-    sourceCode.lines[node.loc.start.line - 1].match(/^(\s*)/)?.[1] || "";
-  const insertPos = sourceCode.getIndexFromLoc({
-    line: node.loc.start.line,
-    column: 0,
-  });
+
+  const { missingStory, missingReq, indent, insertPos } =
+    getBranchAnnotationInfo(sourceCode, node);
 
   const actions: Array<{ missing: boolean; fn: Function; args: any[] }> = [
     {
