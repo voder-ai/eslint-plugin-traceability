@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Review the configurable patterns story specification and the existing valid-annotation-format rule implementation and tests to extract the exact required behaviors, defaults, and error-message expectations for configurable story and requirement patterns.
+- [ ] Identify the production TypeScript and JavaScript functions that currently have the largest bodies and are likely to exceed a 55-line limit, and decide which ones should be refactored into smaller helpers first to support tightening the max-lines-per-function rule.
 
 ## NEXT
 
-- [ ] Refactor the valid-annotation-format rule to derive its story and requirement validation regexes from optional configuration while preserving the current hardcoded defaults when no options are provided.
-- [ ] Extend the rule metadata to define a JSON-schema-style options object that supports story and requirement pattern and example fields, and add runtime validation that reports clear ESLint configuration errors when invalid regex strings are supplied.
-- [ ] Add or update unit tests for the valid-annotation-format rule to cover default behavior, custom patterns, example-based error messages, and invalid configuration scenarios, ensuring they reference the configurable patterns story and its requirements.
-- [ ] Update the rule documentation and any relevant user-facing guides to describe the new configuration options, including examples that match the implemented defaults and behaviors, and verify that the docs stay consistent with the code.
+- [ ] Update the linting configuration so that the maximum allowed function length for production code is reduced from 60 lines to 55 lines, keeping test-specific relaxations unchanged.
+- [ ] Refactor the selected long functions into smaller, clearly named helper functions that each have a single responsibility while preserving existing behavior and maintaining the current traceability annotations.
+- [ ] Revisit any remaining functions that hit the new limit and iteratively split or simplify them until they comply with the 55-line constraint without introducing duplication or unnecessary complexity.
 
 ## LATER
 
-- [ ] Review other rules and utilities that assume fixed annotation formats to ensure they remain consistent with, or explicitly document differences from, the newly configurable patterns.
-- [ ] Enhance higher-level documentation to include a dedicated section on configuring annotation patterns across a project, with recommended conventions and migration advice for teams adopting custom story and requirement naming schemes.
+- [ ] Plan the next incremental reduction of the max-lines-per-function limit (for example from 55 to 50) in alignment with the existing code-quality ratcheting ADR and identify future refactor targets to support that change.
+- [ ] Address the modest duplication reported in larger test files by extracting common setup and assertion helpers, improving maintainability without changing test behavior.
+- [ ] Reassess overall code-quality metrics after these refactors to confirm that function size, complexity, and duplication trends are heading in the desired direction and update the ratcheting ADR to reflect the new baseline.

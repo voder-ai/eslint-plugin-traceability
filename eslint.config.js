@@ -95,7 +95,7 @@ module.exports = [
     rules: {
       complexity: ["error", { max: 18 }],
       // Enforce maximum lines per function for maintainability
-      "max-lines-per-function": ["error", { max: 60, skipBlankLines: true, skipComments: true }],
+      "max-lines-per-function": ["error", { max: 55, skipBlankLines: true, skipComments: true }],
       // Enforce maximum lines per file for maintainability
       "max-lines": ["error", { max: 300, skipBlankLines: true, skipComments: true }],
       // Disallow magic numbers with sensible exceptions for 0 and 1
@@ -118,7 +118,7 @@ module.exports = [
     rules: {
       complexity: ["error", { max: 18 }],
       // Enforce maximum lines per function for maintainability
-      "max-lines-per-function": ["error", { max: 60, skipBlankLines: true, skipComments: true }],
+      "max-lines-per-function": ["error", { max: 55, skipBlankLines: true, skipComments: true }],
       // Enforce maximum lines per file for maintainability
       "max-lines": ["error", { max: 300, skipBlankLines: true, skipComments: true }],
       // Disallow magic numbers with sensible exceptions for 0 and 1
