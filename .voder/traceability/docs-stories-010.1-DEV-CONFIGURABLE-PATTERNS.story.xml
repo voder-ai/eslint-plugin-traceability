@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-11-23T01:02:20.473Z</last_validated>
+  <last_modified>2025-11-23T00:13:38.735Z</last_modified>
+  <evidence>Key implementation files and tests show no support for configurable patterns or new options:
+
+1. Rule implementation `src/rules/valid-annotation-format.ts`:
+   - The rule still uses hardcoded patterns with no configuration options:
+     - Story path pattern is fixed:
+       ```ts
+       const pathPattern = /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/;
+       ```
+     - Requirement ID pattern is fixed:
+       ```ts
+       const reqPattern = /^REQ-[A-Z0-9-]+$/;
+       ```
+   - No references to configurable options such as `storyPathPattern`, `requirementIdPattern`, `storyPathExample`, or `requirementIdExample` anywhere in the file.
+   - The rule schema does not define any options at all:
+     ```ts
+     meta: {
+       ...
+       schema: [],
+       fixable: "code",
+     },
+     ```
+   - The `create` function does not read `context.options` or any configuration for patterns; it only uses the internal hardcoded regexes.
+
+2. Integration with `valid-story-reference` rule:
+   - `src/rules/valid-story-reference.ts` shows how configuration is supposed to work (for comparison):
+     ```ts
+     const defaultStoryDirs = ["docs/stories", "stories"];
+     ...
+     schema: [
+       {
+         type: "object",
+         properties: {
+           storyDirectories: { type: "array", items: { type: "string" } },
+           allowAbsolutePaths: { type: "boolean" },
+           requireStoryExtension: { type: "boolean" },
+         },
+         additionalProperties: false,
+       },
+     ],
+     ...
+     const opts = context.options[0] as { storyDirectories?: string[]; ... } | undefined;
+     const storyDirs = opts?.storyDirectories || defaultStoryDirs;
+     ```
+   - No similar configuration handling exists in `valid-annotation-format.ts`, so there is no "consistency" or integration as required.
+
+3. Tests `tests/rules/valid-annotation-format.test.ts`:
+   - Tests are focused only on fixed formats and error messages for the hardcoded patterns and examples:
+     - Story example path is hardcoded to `docs/stories/005.0-DEV-EXAMPLE.story.md` via `STORY_EXAMPLE_PATH` constant.
+     - Requirement example is hardcoded to `REQ-EXAMPLE` in error messages.
+   - The RuleTester invocation does not pass any options for configurable patterns:
+     ```ts
+     ruleTester.run("valid-annotation-format", rule, {
+       valid: [ ... ],
+       invalid: [ ... ],
+     });
+     ```
+   - There are no tests covering:
+     - Custom `storyPathPattern` or `requirementIdPattern`.
+     - Validation of regex validity.
+     - Custom example strings for error messages.
+     - Interaction with configuration similar to `storyDirectories` in `valid-story-reference`.
+   - No test file or describe block references story `010.1-DEV-CONFIGURABLE-PATTERNS` or any of its requirement IDs (e.g. `REQ-PATTERN-CONFIG`).
+
+4. Story presence only as documentation:
+   - The story file `docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md` exists and describes:
+     - New options: `storyPathPattern`, `requirementIdPattern`, `storyPathExample`, `requirementIdExample`.
+     - Requirements: `REQ-PATTERN-CONFIG`, `REQ-REGEX-VALIDATION`, `REQ-BACKWARD-COMPAT`, `REQ-EXAMPLE-MESSAGES`, `REQ-SCHEMA-VALIDATION`, `REQ-CONSISTENCY`, `REQ-PATTERN-TESTING`.
+   - None of these identifiers or option names appear in `src/rules/valid-annotation-format.ts` or the associated tests.
+
+5. ESLint rule schema and option validation:
+   - `valid-annotation-format` still declares `schema: []`, so there is no JSON Schema-based validation for any options, contrary to REQ-SCHEMA-VALIDATION and the acceptance criteria.
+
+6. Test execution:
+   - `npm test -- --runInBand --verbose` runs Jest with the existing suite, but since no tests target the new behavior, there is no evidence that configurable patterns or their validation are implemented or tested.</evidence>
+  <notes>The story 010.1-DEV-CONFIGURABLE-PATTERNS is not implemented. The `valid-annotation-format` rule continues to enforce hardcoded regex patterns for story paths and requirement IDs, with no configurable `storyPathPattern` or `requirementIdPattern` options, no example overrides, and an empty `schema` definition. There is also no configuration handling analogous to `storyDirectories` in `valid-story-reference`, no regex validation logic for user-supplied patterns, and no tests or documentation demonstrating custom pattern configuration. Consequently, the core functionality, backward compatibility via options, pattern validation, enhanced error messages, quality/schema standards, integration consistency, and test coverage required by this story are all missing or unverified. Therefore this story must be marked as FAILED.</notes>
+</traceability>

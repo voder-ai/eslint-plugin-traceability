@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Ensure the npm publishing credentials and continuous delivery configuration are corrected so that the release job on the main branch can authenticate to the npm registry and successfully publish new versions using the existing semantic-release setup.
+- [ ] Review and refine the release step in the continuous integration workflow so that, when valid npm credentials are present, any semantic-release failure correctly fails the job while successful runs reliably publish new versions and set the outputs needed for post-deployment smoke tests.
 
 ## NEXT
 
-- [ ] Review and, if necessary, adjust the CI workflow’s release step so that any semantic-release publishing failure causes the overall job to fail rather than being treated as a successful pipeline run.
-- [ ] Validate that the semantic-release configuration, including plugins, package metadata, and registry settings, correctly matches the intended npm package and repository so that a successful run produces the expected release artifacts and versioning.
-- [ ] Trigger and inspect a fresh main-branch CI run after the credential and workflow adjustments to confirm that, when a new release is warranted, semantic-release completes publishing and the post-deployment smoke tests run and pass, and that when no release is needed the workflow cleanly skips publishing without errors.
+- [ ] Confirm that the continuous delivery workflow’s logic for deciding when to run the release step (branch filters, event conditions, and Node version matrix) exactly matches the intended semantic-release configuration and publishing strategy.
+- [ ] Verify that the post-deployment smoke test job is correctly wired to the release step outputs so it only runs when a new version is published and accurately validates the freshly released package.
+- [ ] Once a maintainer has updated the npm publishing credentials in the CI environment, observe a new main-branch workflow execution to ensure that a commit requiring a release results in a successful publish and passing smoke tests, while a commit that does not require a release cleanly skips publishing without errors.
 
 ## LATER
 
-- [ ] Document the end-to-end continuous deployment behavior for this project, including how semantic-release is wired into the main-branch workflow and what conditions cause a new release to be published.
-- [ ] Refine the CI configuration to address any remaining deprecation warnings from transitive tooling (such as the Markdown processor) used during release so that future runs are free of deprecation noise.
-- [ ] Revisit related version-control hygiene items, such as ensuring Husky hooks are reliably installed for all contributors and that the documented development workflow matches the enforced CI/CD pipeline and release process.
+- [ ] Document the end-to-end continuous deployment behavior for this project, including how semantic-release is integrated into the main-branch workflow, what conditions trigger a new release, and how failures are surfaced.
+- [ ] Address any remaining deprecation warnings or minor issues in the release toolchain (such as warnings from transitive Markdown tooling) to keep future CI/CD runs clean and forward-compatible.
+- [ ] Periodically re-evaluate the interplay between local hooks and CI (for example, Husky pre-push checks versus the GitHub Actions workflow) to ensure contributors experience the same quality and release gates locally as in the shared pipeline.
