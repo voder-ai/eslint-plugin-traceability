@@ -34,10 +34,10 @@ function foo() {}`,
         code: `// @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
 const arrowFn = () => {};`,
       },
-      {
+      withTsLanguageOptions({
         name: "[REQ-ANNOTATION-REQUIRED] valid on class method with annotation",
         code: `class A {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
-      },
+      }),
       withTsLanguageOptions({
         name: "[REQ-FUNCTION-DETECTION] valid with annotation on TS declare function",
         code: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
@@ -88,7 +88,7 @@ declare function tsDecl(): void;`,
           },
         ],
       },
-      {
+      withTsLanguageOptions({
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on class method",
         code: `class C {\n  method() {}\n}`,
         output: `class C {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
@@ -104,7 +104,7 @@ declare function tsDecl(): void;`,
             ],
           },
         ],
-      },
+      }),
       withTsLanguageOptions({
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS declare function",
         code: `declare function tsDecl(): void;`,

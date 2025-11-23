@@ -21,6 +21,35 @@ const ruleTester = new RuleTester({
   languageOptions: { parserOptions: { ecmaVersion: 2020 } },
 } as any);
 
+const makeInvalid = ({
+  name,
+  code,
+  output,
+  messageId,
+  details,
+  options,
+}: {
+  name: string;
+  code: string;
+  output?: string;
+  messageId: string;
+  details: string;
+  options?: any[];
+}) => ({
+  name,
+  code,
+  ...(output ? { output } : {}),
+  ...(options ? { options } : {}),
+  errors: [
+    {
+      messageId,
+      data: {
+        details,
+      },
+    },
+  ],
+});
+
 describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)", () => {
   ruleTester.run("valid-annotation-format", rule, {
     valid: [
@@ -141,161 +170,95 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
       },
     ],
     invalid: [
-      {
+      makeInvalid({
         name: "[REQ-PATH-FORMAT] missing story path (single line)",
         code: `// @story`,
-        errors: [
-          {
-            messageId: "invalidStoryFormat",
-            data: {
-              details:
-                'Missing story path for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidStoryFormat",
+        details:
+          'Missing story path for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+      }),
+      makeInvalid({
         name: "[REQ-PATH-FORMAT] invalid story file extension",
         code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
         output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
-        errors: [
-          {
-            messageId: "invalidStoryFormat",
-            data: {
-              details:
-                'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidStoryFormat",
+        details:
+          'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+      }),
+      makeInvalid({
         name: "[REQ-PATH-FORMAT] missing extension in story path",
         code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,
         output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
-        errors: [
-          {
-            messageId: "invalidStoryFormat",
-            data: {
-              details:
-                'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidStoryFormat",
+        details:
+          'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+      }),
+      makeInvalid({
         name: "[REQ-PATH-FORMAT] story path must not use path traversal",
         code: `// @story ../docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
-        errors: [
-          {
-            messageId: "invalidStoryFormat",
-            data: {
-              details:
-                'Invalid story path "../docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidStoryFormat",
+        details:
+          'Invalid story path "../docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+      }),
+      makeInvalid({
         name: "[REQ-REQ-FORMAT] missing req id (single line)",
         code: `// @req`,
-        errors: [
-          {
-            messageId: "invalidReqFormat",
-            data: {
-              details:
-                'Missing requirement ID for @req annotation. Expected an identifier like "REQ-EXAMPLE".',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidReqFormat",
+        details:
+          'Missing requirement ID for @req annotation. Expected an identifier like "REQ-EXAMPLE".',
+      }),
+      makeInvalid({
         name: "[REQ-REQ-FORMAT] invalid req id format (single line)",
         code: `// @req invalid-format`,
-        errors: [
-          {
-            messageId: "invalidReqFormat",
-            data: {
-              details:
-                'Invalid requirement ID "invalid-format" for @req annotation. Expected an identifier like "REQ-EXAMPLE" (uppercase letters, numbers, and dashes only).',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidReqFormat",
+        details:
+          'Invalid requirement ID "invalid-format" for @req annotation. Expected an identifier like "REQ-EXAMPLE" (uppercase letters, numbers, and dashes only).',
+      }),
+      makeInvalid({
         name: "[REQ-REQ-FORMAT] missing req identifier with trailing space",
         code: `// @req `,
-        errors: [
-          {
-            messageId: "invalidReqFormat",
-            data: {
-              details:
-                'Missing requirement ID for @req annotation. Expected an identifier like "REQ-EXAMPLE".',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidReqFormat",
+        details:
+          'Missing requirement ID for @req annotation. Expected an identifier like "REQ-EXAMPLE".',
+      }),
+      makeInvalid({
         name: "[REQ-MULTILINE-SUPPORT] missing story path with multi-line block comment",
         code: `/**
  * @story
  */`,
-        errors: [
-          {
-            messageId: "invalidStoryFormat",
-            data: {
-              details:
-                'Missing story path for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidStoryFormat",
+        details:
+          'Missing story path for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+      }),
+      makeInvalid({
         name: "[REQ-MULTILINE-SUPPORT] invalid multi-line story path after collapsing whitespace",
         code: `/**
  * @story docs/stories/005.0-
  * DEV-ANNOTATION-VALIDATION.story
  */`,
-        errors: [
-          {
-            messageId: "invalidStoryFormat",
-            data: {
-              details:
-                'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidStoryFormat",
+        details:
+          'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+      }),
+      makeInvalid({
         name: "[REQ-MULTILINE-SUPPORT] missing req id with multi-line block comment",
         code: `/**
  * @req
  */`,
-        errors: [
-          {
-            messageId: "invalidReqFormat",
-            data: {
-              details:
-                'Missing requirement ID for @req annotation. Expected an identifier like "REQ-EXAMPLE".',
-            },
-          },
-        ],
-      },
-      {
+        messageId: "invalidReqFormat",
+        details:
+          'Missing requirement ID for @req annotation. Expected an identifier like "REQ-EXAMPLE".',
+      }),
+      makeInvalid({
         name: "[REQ-MULTILINE-SUPPORT] invalid multi-line req id after collapsing whitespace",
         code: `/**
  * @req invalid-
  * format
  */`,
-        errors: [
-          {
-            messageId: "invalidReqFormat",
-            data: {
-              details:
-                'Invalid requirement ID "invalid-format" for @req annotation. Expected an identifier like "REQ-EXAMPLE" (uppercase letters, numbers, and dashes only).',
-            },
-          },
-        ],
-      },
+        messageId: "invalidReqFormat",
+        details:
+          'Invalid requirement ID "invalid-format" for @req annotation. Expected an identifier like "REQ-EXAMPLE" (uppercase letters, numbers, and dashes only).',
+      }),
       {
         name: "[REQ-CONFIGURABLE-PATTERNS-EXAMPLES] custom story example appears in error message",
         code: `// @story invalid/path.txt`,
