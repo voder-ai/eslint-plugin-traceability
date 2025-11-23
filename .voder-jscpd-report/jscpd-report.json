@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2025-11-23T00:03:54.218Z",
+    "detectionDate": "2025-11-23T00:13:55.586Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -413,14 +413,14 @@
             "newClones": 0
           },
           "src/rules/helpers/require-story-io.ts": {
-            "lines": 146,
-            "tokens": 882,
+            "lines": 189,
+            "tokens": 1054,
             "sources": 1,
-            "clones": 5,
-            "duplicatedLines": 35,
-            "duplicatedTokens": 290,
-            "percentage": 23.97,
-            "percentageTokens": 32.88,
+            "clones": 2,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 119,
+            "percentage": 8.47,
+            "percentageTokens": 11.29,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -476,23 +476,23 @@
             "lines": 344,
             "tokens": 1994,
             "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 23,
-            "duplicatedTokens": 188,
-            "percentage": 6.69,
-            "percentageTokens": 9.43,
+            "clones": 2,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 119,
+            "percentage": 4.65,
+            "percentageTokens": 5.97,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/rules/valid-story-reference.ts": {
-            "lines": 410,
-            "tokens": 2174,
+            "lines": 456,
+            "tokens": 2359,
             "sources": 1,
-            "clones": 10,
-            "duplicatedLines": 90,
-            "duplicatedTokens": 566,
-            "percentage": 21.95,
-            "percentageTokens": 26.03,
+            "clones": 4,
+            "duplicatedLines": 34,
+            "duplicatedTokens": 240,
+            "percentage": 7.46,
+            "percentageTokens": 10.17,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -629,27 +629,27 @@
             "newClones": 0
           },
           "src/index.ts": {
-            "lines": 121,
-            "tokens": 580,
+            "lines": 125,
+            "tokens": 560,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 30,
-            "duplicatedTokens": 170,
-            "percentage": 24.79,
-            "percentageTokens": 29.31,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           }
         },
         "total": {
-          "lines": 7449,
-          "tokens": 46421,
+          "lines": 7542,
+          "tokens": 46758,
           "sources": 53,
-          "clones": 65,
-          "duplicatedLines": 603,
-          "duplicatedTokens": 5302,
-          "percentage": 8.1,
-          "percentageTokens": 11.42,
+          "clones": 59,
+          "duplicatedLines": 547,
+          "duplicatedTokens": 4934,
+          "percentage": 7.25,
+          "percentageTokens": 10.55,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -712,14 +712,14 @@
       }
     },
     "total": {
-      "lines": 7468,
-      "tokens": 46520,
+      "lines": 7561,
+      "tokens": 46857,
       "sources": 55,
-      "clones": 65,
-      "duplicatedLines": 603,
-      "duplicatedTokens": 5302,
-      "percentage": 8.07,
-      "percentageTokens": 11.4,
+      "clones": 59,
+      "duplicatedLines": 547,
+      "duplicatedTokens": 4934,
+      "percentage": 7.23,
+      "percentageTokens": 10.53,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -2599,42 +2599,6 @@
     },
     {
       "format": "typescript",
-      "lines": 7,
-      "fragment": "\n        (c: any) => typeof c.value === \"string\" && c.value.includes(\"@story\"),\n      )\n    ) {\n      return true;\n    }\n    p",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/rules/helpers/require-story-io.ts",
-        "start": 90,
-        "end": 96,
-        "startLoc": {
-          "line": 90,
-          "column": 12,
-          "position": 532
-        },
-        "endLoc": {
-          "line": 96,
-          "column": 2,
-          "position": 583
-        }
-      },
-      "secondFile": {
-        "name": "src/rules/helpers/require-story-io.ts",
-        "start": 77,
-        "end": 83,
-        "startLoc": {
-          "line": 77,
-          "column": 12,
-          "position": 442
-        },
-        "endLoc": {
-          "line": 83,
-          "column": 6,
-          "position": 493
-        }
-      }
-    },
-    {
-      "format": "typescript",
       "lines": 6,
       "fragment": "\n    if (hasStoryAnnotation(sourceCode, node)) {\n      return;\n    }\n    const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);\n    const name = extractName",
       "tokens": 0,
@@ -2672,42 +2636,6 @@
     {
       "format": "typescript",
       "lines": 8,
-      "fragment": " {\n  const lines = sourceCode && sourceCode.lines;\n  const startLine =\n    node && node.loc && typeof node.loc.start?.line === \"number\"\n      ? node.loc.start.line\n      : null;\n\n",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/utils/annotation-checker.ts",
-        "start": 57,
-        "end": 64,
-        "startLoc": {
-          "line": 57,
-          "column": 2,
-          "position": 245
-        },
-        "endLoc": {
-          "line": 64,
-          "column": 1,
-          "position": 314
-        }
-      },
-      "secondFile": {
-        "name": "src/rules/helpers/require-story-io.ts",
-        "start": 30,
-        "end": 36,
-        "startLoc": {
-          "line": 30,
-          "column": 8,
-          "position": 66
-        },
-        "endLoc": {
-          "line": 36,
-          "column": 3,
-          "position": 135
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 8,
       "fragment": "\n  while (p) {\n    const pComments =\n      typeof sourceCode?.getCommentsBefore === \"function\"\n        ? sourceCode.getCommentsBefore(p) || []\n        : [];\n\n",
       "tokens": 0,
       "firstFile": {
@@ -2727,17 +2655,17 @@
       },
       "secondFile": {
         "name": "src/rules/helpers/require-story-io.ts",
-        "start": 65,
-        "end": 71,
+        "start": 108,
+        "end": 114,
         "startLoc": {
-          "line": 65,
+          "line": 108,
           "column": 2,
-          "position": 368
+          "position": 572
         },
         "endLoc": {
-          "line": 71,
+          "line": 114,
           "column": 5,
-          "position": 419
+          "position": 623
         }
       }
     },
@@ -2763,53 +2691,17 @@
       },
       "secondFile": {
         "name": "src/rules/helpers/require-story-io.ts",
-        "start": 112,
-        "end": 120,
+        "start": 155,
+        "end": 163,
         "startLoc": {
-          "line": 112,
+          "line": 155,
           "column": 99,
-          "position": 642
+          "position": 814
         },
         "endLoc": {
-          "line": 120,
+          "line": 163,
           "column": 3,
-          "position": 710
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 11,
-      "fragment": ") {\n      context.report({\n        node: commentNode,\n        messageId: \"invalidPath\",\n        data: { path: storyPath },\n      });\n      return;\n    }\n  }\n\n  reportExistenceStatus",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/rules/valid-story-reference.ts",
-        "start": 182,
-        "end": 192,
-        "startLoc": {
-          "line": 182,
-          "column": 16,
-          "position": 1015
-        },
-        "endLoc": {
-          "line": 192,
-          "column": 22,
-          "position": 1071
-        }
-      },
-      "secondFile": {
-        "name": "src/rules/valid-story-reference.ts",
-        "start": 166,
-        "end": 176,
-        "startLoc": {
-          "line": 166,
-          "column": 22,
-          "position": 903
-        },
-        "endLoc": {
-          "line": 176,
-          "column": 3,
-          "position": 959
+          "position": 882
         }
       }
     },
@@ -2820,104 +2712,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/rules/valid-story-reference.ts",
-        "start": 208,
-        "end": 217,
+        "start": 262,
+        "end": 271,
         "startLoc": {
-          "line": 208,
+          "line": 262,
           "column": 10,
-          "position": 1102
+          "position": 1333
         },
         "endLoc": {
-          "line": 217,
+          "line": 271,
           "column": 10,
-          "position": 1165
-        }
-      },
-      "secondFile": {
-        "name": "src/rules/valid-story-reference.ts",
-        "start": 26,
-        "end": 35,
-        "startLoc": {
-          "line": 26,
-          "column": 5,
-          "position": 84
-        },
-        "endLoc": {
-          "line": 35,
-          "column": 5,
-          "position": 147
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 9,
-      "fragment": ") {\n      context.report({\n        node: commentNode,\n        messageId: \"invalidPath\",\n        data: { path: storyPath },\n      });\n      return;\n    }\n    ",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/rules/valid-story-reference.ts",
-        "start": 228,
-        "end": 236,
-        "startLoc": {
-          "line": 228,
-          "column": 14,
-          "position": 1224
-        },
-        "endLoc": {
-          "line": 236,
-          "column": 5,
-          "position": 1275
-        }
-      },
-      "secondFile": {
-        "name": "src/rules/valid-story-reference.ts",
-        "start": 166,
-        "end": 174,
-        "startLoc": {
-          "line": 166,
-          "column": 22,
-          "position": 903
-        },
-        "endLoc": {
-          "line": 174,
-          "column": 3,
-          "position": 954
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 11,
-      "fragment": ") {\n      context.report({\n        node: commentNode,\n        messageId: \"invalidPath\",\n        data: { path: storyPath },\n      });\n      return;\n    }\n  }\n\n  // Extension check",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/rules/valid-story-reference.ts",
-        "start": 243,
-        "end": 253,
-        "startLoc": {
-          "line": 243,
-          "column": 2,
-          "position": 1340
-        },
-        "endLoc": {
-          "line": 253,
-          "column": 19,
           "position": 1396
         }
       },
       "secondFile": {
         "name": "src/rules/valid-story-reference.ts",
-        "start": 166,
-        "end": 176,
+        "start": 48,
+        "end": 57,
         "startLoc": {
-          "line": 166,
-          "column": 22,
-          "position": 903
+          "line": 48,
+          "column": 5,
+          "position": 187
         },
         "endLoc": {
-          "line": 176,
-          "column": 3,
-          "position": 959
+          "line": 57,
+          "column": 5,
+          "position": 250
         }
       }
     },
@@ -2928,32 +2748,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/rules/valid-story-reference.ts",
-        "start": 286,
-        "end": 294,
+        "start": 332,
+        "end": 340,
         "startLoc": {
-          "line": 286,
+          "line": 332,
           "column": 2,
-          "position": 1509
+          "position": 1694
         },
         "endLoc": {
-          "line": 294,
+          "line": 340,
           "column": 2,
-          "position": 1566
+          "position": 1751
         }
       },
       "secondFile": {
         "name": "src/rules/valid-story-reference.ts",
-        "start": 26,
-        "end": 35,
+        "start": 48,
+        "end": 57,
         "startLoc": {
-          "line": 26,
+          "line": 48,
           "column": 2,
-          "position": 88
+          "position": 191
         },
         "endLoc": {
-          "line": 35,
+          "line": 57,
           "column": 1,
-          "position": 145
+          "position": 248
         }
       }
     },
@@ -3026,42 +2846,6 @@
           "line": 255,
           "column": 21,
           "position": 1105
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 16,
-      "fragment": ": [\n    {\n      plugins: {\n        traceability: {},\n      },\n      rules: {\n        \"traceability/require-story-annotation\": \"error\",\n        \"traceability/require-req-annotation\": \"error\",\n        \"traceability/require-branch-annotation\": \"error\",\n        \"traceability/valid-annotation-format\": \"warn\",\n        \"traceability/valid-story-reference\": \"error\",\n        \"traceability/valid-req-reference\": \"error\",\n      },\n    },\n  ],\n}",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/index.ts",
-        "start": 103,
-        "end": 118,
-        "startLoc": {
-          "line": 103,
-          "column": 7,
-          "position": 466
-        },
-        "endLoc": {
-          "line": 118,
-          "column": 2,
-          "position": 551
-        }
-      },
-      "secondFile": {
-        "name": "src/index.ts",
-        "start": 88,
-        "end": 103,
-        "startLoc": {
-          "line": 88,
-          "column": 12,
-          "position": 379
-        },
-        "endLoc": {
-          "line": 103,
-          "column": 3,
-          "position": 464
         }
       }
     }
