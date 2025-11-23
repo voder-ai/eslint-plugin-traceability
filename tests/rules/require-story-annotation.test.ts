@@ -5,6 +5,7 @@
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-story-annotation";
+import { tsRuleTesterLanguageOptions } from "../utils/ts-language-options";
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -41,10 +42,7 @@ const arrowFn = () => {};`,
         name: "[REQ-FUNCTION-DETECTION] valid with annotation on TS declare function",
         code: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 declare function tsDecl(): void;`,
-        languageOptions: {
-          parser: require("@typescript-eslint/parser") as any,
-          parserOptions: { ecmaVersion: 2020, sourceType: "module" },
-        },
+        languageOptions: tsRuleTesterLanguageOptions,
       },
       {
         name: "[REQ-FUNCTION-DETECTION] valid with annotation on TS method signature",
@@ -52,10 +50,7 @@ declare function tsDecl(): void;`,
   /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
   method(): void;
 }`,
-        languageOptions: {
-          parser: require("@typescript-eslint/parser") as any,
-          parserOptions: { ecmaVersion: 2020, sourceType: "module" },
-        },
+        languageOptions: tsRuleTesterLanguageOptions,
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] unannotated arrow function allowed by default",
@@ -116,10 +111,7 @@ declare function tsDecl(): void;`,
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS declare function",
         code: `declare function tsDecl(): void;`,
         output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ndeclare function tsDecl(): void;`,
-        languageOptions: {
-          parser: require("@typescript-eslint/parser") as any,
-          parserOptions: { ecmaVersion: 2020, sourceType: "module" },
-        },
+        languageOptions: tsRuleTesterLanguageOptions,
         errors: [
           {
             messageId: "missingStory",
@@ -136,10 +128,7 @@ declare function tsDecl(): void;`,
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS method signature",
         code: `interface D {\n  method(): void;\n}`,
         output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ninterface D {\n  method(): void;\n}`,
-        languageOptions: {
-          parser: require("@typescript-eslint/parser") as any,
-          parserOptions: { ecmaVersion: 2020, sourceType: "module" },
-        },
+        languageOptions: tsRuleTesterLanguageOptions,
         errors: [
           {
             messageId: "missingStory",
