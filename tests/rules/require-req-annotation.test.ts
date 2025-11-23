@@ -4,16 +4,65 @@
  * @req REQ-ANNOTATION-REQUIRED - Verify require-req-annotation rule enforces @req on functions
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-ERROR-SPECIFIC - Verify enhanced, specific error messaging behavior
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-TYPESCRIPT-SUPPORT - Verify TypeScript declarations are checked via shared annotation checker helper
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-req-annotation";
 import { withTsLanguageOptions } from "../utils/ts-language-options";
+import { runAnnotationCheckerTests } from "../utils/annotation-checker.test";
 
 const ruleTester = new RuleTester({
   languageOptions: {
     parserOptions: { ecmaVersion: 2022, sourceType: "module" },
   },
 } as any);
+
+/**
+ * @trace Story 003.0-DEV-FUNCTION-ANNOTATIONS / REQ-TYPESCRIPT-SUPPORT
+ * Exercise the require-req-annotation rule's behavior on TSDeclareFunction and
+ * TSMethodSignature via the shared runAnnotationCheckerTests helper.
+ *
+ * The helper delegates to the real rule's TypeScript-specific visitors
+ * without changing its behavior; it provides the common TS parser
+ * configuration and assertion plumbing.
+ */
+runAnnotationCheckerTests("require-req-annotation", {
+  rule,
+  valid: [
+    {
+      name: "[REQ-TYPESCRIPT-SUPPORT] valid with @req annotation on TSDeclareFunction",
+      code: `/**\n * @req REQ-EXAMPLE\n */\ndeclare function foo(): void;`,
+    },
+    {
+      name: "[REQ-TYPESCRIPT-SUPPORT] valid with @req annotation on TSMethodSignature",
+      code: `interface I {\n  /**\n   * @req REQ-EXAMPLE\n   */\n  method(): void;\n}`,
+    },
+  ],
+  invalid: [
+    {
+      name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction",
+      code: `declare function baz(): void;`,
+      errors: [
+        {
+          messageId: "missingReq",
+          data: { name: "baz", functionName: "baz" },
+        },
+      ],
+    },
+    {
+      name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
+      code: `interface I { method(): void; }`,
+      errors: [
+        {
+          messageId: "missingReq",
+          data: { name: "method", functionName: "method" },
+        },
+      ],
+    },
+  ],
+});
 
 describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", () => {
   ruleTester.run("require-req-annotation", rule, {
@@ -26,14 +75,6 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         name: "[REQ-ANNOTATION-REQUIRED] valid with @story and @req annotations",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-EXAMPLE\n */\nfunction bar() {}`,
       },
-      withTsLanguageOptions({
-        name: "[REQ-TYPESCRIPT-SUPPORT] valid with @req annotation on TSDeclareFunction",
-        code: `/**\n * @req REQ-EXAMPLE\n */\ndeclare function foo(): void;`,
-      }),
-      withTsLanguageOptions({
-        name: "[REQ-TYPESCRIPT-SUPPORT] valid with @req annotation on TSMethodSignature",
-        code: `interface I {\n  /**\n   * @req REQ-EXAMPLE\n   */\n  method(): void;\n}`,
-      }),
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] valid FunctionExpression with @req annotation",
         code: `const fn = /**\n * @req REQ-EXAMPLE\n */\nfunction() {};`,
@@ -107,26 +148,6 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
           },
         ],
       },
-      withTsLanguageOptions({
-        name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction",
-        code: `declare function baz(): void;`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "baz", functionName: "baz" },
-          },
-        ],
-      }),
-      withTsLanguageOptions({
-        name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
-        code: `interface I { method(): void; }`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "method", functionName: "method" },
-          },
-        ],
-      }),
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on FunctionExpression assigned to variable",
         code: `const fn = function () {};`,
