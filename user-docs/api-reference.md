@@ -291,7 +291,7 @@ Higher-level helper that combines detection and updates in a single call, suitab
     filesTouched: number;
     storyUpdates: number;
     reqUpdates: number;
-  };
+  }
   details: {
     updates: Array<{
       file: string;
@@ -300,7 +300,7 @@ Higher-level helper that combines detection and updates in a single call, suitab
       from: string;
       to: string;
     }>;
-  };
+  }
   dryRun: boolean;
 }
 ```
@@ -366,7 +366,7 @@ Generates an aggregated report combining stale references, verification results,
     staleStories: number;
     staleRequirements: number;
     violations: number;
-  };
+  }
 }
 ```
 
@@ -503,3 +503,4 @@ In CI:
 
 ```bash
 npm run traceability:verify
+```

@@ -251,6 +251,5 @@ Options:
 }
 
 if (require.main === module) {
-   
   process.exit(runMaintenanceCli(process.argv));
 }
