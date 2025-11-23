@@ -102,6 +102,10 @@ module.exports = [
       "no-magic-numbers": ["error", { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true }],
       // Limit max parameters per function
       "max-params": ["error", { max: 4 }],
+      "no-eval": "error",
+      "no-implied-eval": "error",
+      "no-new-func": "error",
+      "no-new-wrappers": "error",
       "no-undef": "off",
       "no-console": "off",
     },
@@ -125,6 +129,10 @@ module.exports = [
       "no-magic-numbers": ["error", { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true }],
       // Limit max parameters per function
       "max-params": ["error", { max: 4 }],
+      "no-eval": "error",
+      "no-implied-eval": "error",
+      "no-new-func": "error",
+      "no-new-wrappers": "error",
     },
   },
   {

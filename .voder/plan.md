@@ -1,15 +1,18 @@
 ## NOW
 
-- [ ] Review the existing CI/CD workflow and release configuration to confirm that every successful change on the main branch automatically passes through all quality gates and triggers publishing and post-deployment smoke tests without any hidden manual gates or tag-based conditions.
+- [ ] Review the existing linting and static analysis configuration to identify specific, security-relevant rules that can be safely enabled or tightened to catch risky patterns without overwhelming the current codebase.
 
 ## NEXT
 
-- [ ] Adjust the CI/CD workflow configuration if any remaining conditions, branches, or legacy steps could prevent automatic publishing on successful main-branch builds, ensuring the pipeline strictly follows the single unified quality-and-deploy pattern.
-- [ ] Update internal development documentation to clearly describe the current continuous deployment behavior, including when releases occur, how semantic versioning is derived from commit messages, and how post-deployment verification is performed.
-- [ ] Align user-facing documentation with the actual runtime and CI environment constraints (for example, clarifying supported Node.js and ESLint versions) so that expectations about the deployment pipeline and supported platforms match reality.
+- [ ] Enable a small, well-justified set of additional security-focused lint rules and update the configuration accordingly, then address any reported issues in the code so the project continues to pass all checks.
+- [ ] Inspect the most complex or largest source module related to traceability or maintenance logic and design a small, behavior-preserving refactor that simplifies its structure or splits responsibilities without changing public behavior.
+- [ ] Implement the planned refactor in that module, keeping changes narrowly scoped and ensuring the code remains clear, traceable, and easy to test.
+- [ ] Use the existing duplication reports to pinpoint one or two of the most duplicated test or helper patterns and plan a small extraction into shared utilities to reduce copy-paste while preserving test readability.
+- [ ] Apply the selected duplication reduction by introducing shared helpers or fixtures, updating the affected tests to use them, and confirming that behavior and coverage remain unchanged.
 
 ## LATER
 
-- [ ] Introduce a lightweight automated validation step for the CI configuration itself (for example, syntax and best-practice checks) to catch workflow misconfigurations early in future changes.
-- [ ] Expand post-deployment verification to include additional smoke scenarios that exercise more of the published package’s functionality in a realistic consumer project.
-- [ ] Periodically revisit CI/CD configuration and documentation together whenever new quality gates or tools are added, to ensure the pipeline remains a single, unified path from commit to deployment without divergence or manual steps.
+- [ ] Introduce a dedicated static application security analysis workflow that integrates with the existing pipeline to scan the TypeScript codebase for deeper security issues beyond what linting can detect.
+- [ ] Progressively expand the set of security-oriented lint rules as the codebase adapts, periodically reviewing rule impact to ensure a good balance between safety and developer ergonomics.
+- [ ] Continue iteratively decomposing remaining large or complex files into smaller, focused modules so that future changes are easier and less error-prone, especially in maintenance and rule helper code.
+- [ ] Refine and automate reporting from duplication and security tools so that maintainers can quickly see trends and hotspots over time without manually inspecting raw reports.
