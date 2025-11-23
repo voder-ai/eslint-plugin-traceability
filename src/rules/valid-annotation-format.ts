@@ -1,3 +1,11 @@
+import {
+  getDefaultReqExample,
+  getResolvedDefaults,
+  resolveOptions,
+  type ResolvedAnnotationOptions,
+  getRuleSchema,
+} from "./helpers/valid-annotation-options";
+
 /**
  * Rule to validate @story and @req annotation format and syntax. When run with
  * ESLint's `--fix` option, this rule performs only safe @story path suffix
@@ -22,8 +30,6 @@ interface PendingAnnotation {
   hasValue: boolean;
 }
 
-const STORY_EXAMPLE_PATH = "docs/stories/005.0-DEV-EXAMPLE.story.md";
-
 /**
  * Constant to represent the "tag not found" index when searching
  * for @story or @req within a comment.
@@ -34,6 +40,8 @@ const STORY_EXAMPLE_PATH = "docs/stories/005.0-DEV-EXAMPLE.story.md";
  * @req REQ-AUTOFIX-PRESERVE - Avoid risky text replacements when the annotation tag cannot be located
  */
 const TAG_NOT_FOUND_INDEX = -1;
+
+const STORY_EXAMPLE_PATH = "docs/stories/005.0-DEV-EXAMPLE.story.md";
 
 /**
  * Normalize a raw comment line to make annotation parsing more robust.
@@ -79,44 +87,6 @@ function collapseAnnotationValue(value: string): string {
 }
 
 /**
- * Build a detailed error message for invalid @story annotations.
- *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- */
-function buildStoryErrorMessage(
-  kind: "missing" | "invalid",
-  value: string | null,
-): string {
-  if (kind === "missing") {
-    return `Missing story path for @story annotation. Expected a path like "${STORY_EXAMPLE_PATH}".`;
-  }
-
-  return `Invalid story path "${value ?? ""}" for @story annotation. Expected a path like "${STORY_EXAMPLE_PATH}".`;
-}
-
-/**
- * Build a detailed error message for invalid @req annotations.
- *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- */
-function buildReqErrorMessage(
-  kind: "missing" | "invalid",
-  value: string | null,
-): string {
-  if (kind === "missing") {
-    return 'Missing requirement ID for @req annotation. Expected an identifier like "REQ-EXAMPLE".';
-  }
-
-  return `Invalid requirement ID "${value ?? ""}" for @req annotation. Expected an identifier like "REQ-EXAMPLE" (uppercase letters, numbers, and dashes only).`;
-}
-
-/**
  * Attempt a minimal, safe auto-fix for common @story path suffix issues.
  *
  * Only handles:
@@ -152,6 +122,48 @@ function getFixedStoryPath(original: string): string | null {
 }
 
 /**
+ * Build a detailed error message for invalid @story annotations.
+ *
+ * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ */
+function buildStoryErrorMessage(
+  kind: "missing" | "invalid",
+  value: string | null,
+  options: ResolvedAnnotationOptions,
+): string {
+  const example = options.storyExample || STORY_EXAMPLE_PATH;
+  if (kind === "missing") {
+    return `Missing story path for @story annotation. Expected a path like "${example}".`;
+  }
+
+  return `Invalid story path "${value ?? ""}" for @story annotation. Expected a path like "${example}".`;
+}
+
+/**
+ * Build a detailed error message for invalid @req annotations.
+ *
+ * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
+ * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ */
+function buildReqErrorMessage(
+  kind: "missing" | "invalid",
+  value: string | null,
+  options: ResolvedAnnotationOptions,
+): string {
+  const example = options.reqExample || getDefaultReqExample();
+  if (kind === "missing") {
+    return `Missing requirement ID for @req annotation. Expected an identifier like "${example}".`;
+  }
+
+  return `Invalid requirement ID "${value ?? ""}" for @req annotation. Expected an identifier like "${example}" (uppercase letters, numbers, and dashes only).`;
+}
+
+/**
  * Report an invalid @story annotation without applying a fix.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
@@ -162,12 +174,62 @@ function reportInvalidStoryFormat(
   context: any,
   comment: any,
   collapsed: string,
+  options: ResolvedAnnotationOptions,
 ): void {
   context.report({
     node: comment as any,
     messageId: "invalidStoryFormat",
-    data: { details: buildStoryErrorMessage("invalid", collapsed) },
+    data: { details: buildStoryErrorMessage("invalid", collapsed, options) },
   });
+}
+
+/**
+ * Compute the text replacement for an invalid @story annotation within a comment.
+ *
+ * This helper:
+ *   - finds the @story tag in the raw comment text,
+ *   - computes the character range of its value,
+ *   - and returns an ESLint fix that replaces only that range.
+ *
+ * Returns null when the tag or value cannot be safely located.
+ *
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+ * @req REQ-AUTOFIX-SAFE
+ * @req REQ-AUTOFIX-PRESERVE
+ */
+function createStoryFix(
+  context: any,
+  comment: any,
+  fixed: string,
+): null | (() => any) {
+  const sourceCode = context.getSourceCode();
+  const commentText = sourceCode.getText(comment);
+  const search = "@story";
+  const tagIndex = commentText.indexOf(search);
+  if (tagIndex === TAG_NOT_FOUND_INDEX) {
+    return null;
+  }
+
+  const afterTagIndex = tagIndex + search.length;
+  const rest = commentText.slice(afterTagIndex);
+  const valueMatch = rest.match(/[^\S\r\n]*([^\r\n*]+)/);
+  if (!valueMatch || valueMatch.index === undefined) {
+    return null;
+  }
+
+  const valueStartInComment =
+    afterTagIndex +
+    valueMatch.index +
+    (valueMatch[0].length - valueMatch[1].length);
+  const valueEndInComment = valueStartInComment + valueMatch[1].length;
+
+  const start = comment.range[0];
+  const fixRange: [number, number] = [
+    start + valueStartInComment,
+    start + valueEndInComment,
+  ];
+
+  return () => (fixer: any) => fixer.replaceTextRange(fixRange, fixed);
 }
 
 /**
@@ -194,42 +256,28 @@ function reportInvalidStoryFormatWithFix(
   collapsed: string,
   fixed: string,
 ): void {
-  const sourceCode = context.getSourceCode();
-  const commentText = sourceCode.getText(comment);
-  const search = "@story";
-  const tagIndex = commentText.indexOf(search);
-  if (tagIndex === TAG_NOT_FOUND_INDEX) {
-    reportInvalidStoryFormat(context, comment, collapsed);
+  const fixFactory = createStoryFix(context, comment, fixed);
+  if (!fixFactory) {
+    reportInvalidStoryFormat(
+      context,
+      comment,
+      collapsed,
+      getResolvedDefaults(),
+    );
     return;
   }
-
-  const afterTagIndex = tagIndex + search.length;
-  const rest = commentText.slice(afterTagIndex);
-  const valueMatch = rest.match(/[^\S\r\n]*([^\r\n*]+)/);
-  if (!valueMatch || valueMatch.index === undefined) {
-    reportInvalidStoryFormat(context, comment, collapsed);
-    return;
-  }
-
-  const valueStartInComment =
-    afterTagIndex +
-    valueMatch.index +
-    (valueMatch[0].length - valueMatch[1].length);
-  const valueEndInComment = valueStartInComment + valueMatch[1].length;
-
-  const start = comment.range[0];
-  const fixRange: [number, number] = [
-    start + valueStartInComment,
-    start + valueEndInComment,
-  ];
 
   context.report({
     node: comment as any,
     messageId: "invalidStoryFormat",
-    data: { details: buildStoryErrorMessage("invalid", collapsed) },
-    fix(fixer: any) {
-      return fixer.replaceTextRange(fixRange, fixed);
+    data: {
+      details: buildStoryErrorMessage(
+        "invalid",
+        collapsed,
+        getResolvedDefaults(),
+      ),
     },
+    fix: fixFactory(),
   });
 }
 
@@ -247,26 +295,27 @@ function validateStoryAnnotation(
   context: any,
   comment: any,
   rawValue: string,
+  options: ResolvedAnnotationOptions,
 ): void {
   const trimmed = rawValue.trim();
   if (!trimmed) {
     context.report({
       node: comment as any,
       messageId: "invalidStoryFormat",
-      data: { details: buildStoryErrorMessage("missing", null) },
+      data: { details: buildStoryErrorMessage("missing", null, options) },
     });
     return;
   }
 
   const collapsed = collapseAnnotationValue(trimmed);
-  const pathPattern = /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/;
+  const pathPattern = options.storyPattern;
 
   if (pathPattern.test(collapsed)) {
     return;
   }
 
   if (/\s/.test(trimmed)) {
-    reportInvalidStoryFormat(context, comment, collapsed);
+    reportInvalidStoryFormat(context, comment, collapsed, options);
     return;
   }
 
@@ -277,7 +326,7 @@ function validateStoryAnnotation(
     return;
   }
 
-  reportInvalidStoryFormat(context, comment, collapsed);
+  reportInvalidStoryFormat(context, comment, collapsed, options);
 }
 
 /**
@@ -292,25 +341,26 @@ function validateReqAnnotation(
   context: any,
   comment: any,
   rawValue: string,
+  options: ResolvedAnnotationOptions,
 ): void {
   const trimmed = rawValue.trim();
   if (!trimmed) {
     context.report({
       node: comment as any,
       messageId: "invalidReqFormat",
-      data: { details: buildReqErrorMessage("missing", null) },
+      data: { details: buildReqErrorMessage("missing", null, options) },
     });
     return;
   }
 
   const collapsed = collapseAnnotationValue(trimmed);
-  const reqPattern = /^REQ-[A-Z0-9-]+$/;
+  const reqPattern = options.reqPattern;
 
   if (!reqPattern.test(collapsed)) {
     context.report({
       node: comment as any,
       messageId: "invalidReqFormat",
-      data: { details: buildReqErrorMessage("invalid", collapsed) },
+      data: { details: buildReqErrorMessage("invalid", collapsed, options) },
     });
   }
 }
@@ -328,7 +378,11 @@ function validateReqAnnotation(
  * @req REQ-FLEXIBLE-PARSING - Support reasonable variations in whitespace and formatting
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
-function processComment(context: any, comment: any): void {
+function processComment(
+  context: any,
+  comment: any,
+  options: ResolvedAnnotationOptions,
+): void {
   const rawLines = (comment.value || "").split(/\r?\n/);
   let pending: PendingAnnotation | null = null;
 
@@ -350,9 +404,9 @@ function processComment(context: any, comment: any): void {
     // @req REQ-SYNTAX-VALIDATION - Dispatch validation based on annotation type
     // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
     if (pending.type === "story") {
-      validateStoryAnnotation(context, comment, pending.value);
+      validateStoryAnnotation(context, comment, pending.value, options);
     } else {
-      validateReqAnnotation(context, comment, pending.value);
+      validateReqAnnotation(context, comment, pending.value, options);
     }
 
     pending = null;
@@ -424,7 +478,7 @@ export default {
        */
       invalidReqFormat: "Invalid annotation format: {{details}}.",
     },
-    schema: [],
+    schema: getRuleSchema(),
     /**
      * This rule's fixable support is limited to safe @story path suffix normalization per Story 008.0.
      * Fixes are limited strictly to adjusting the suffix portion of the @story path (e.g., adding
@@ -445,6 +499,7 @@ export default {
    */
   create(context: any) {
     const sourceCode = context.getSourceCode();
+    const options = resolveOptions(context.options || []);
     return {
       /**
        * Program-level handler that inspects all comments for @story and @req tags
@@ -458,7 +513,7 @@ export default {
       Program() {
         const comments = sourceCode.getAllComments() || [];
         comments.forEach((comment: any) => {
-          processComment(context, comment);
+          processComment(context, comment, options);
         });
       },
     };

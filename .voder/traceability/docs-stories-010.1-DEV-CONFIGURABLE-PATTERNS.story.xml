@@ -2,52 +2,76 @@
 <traceability>
   <specification>docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-11-23T02:31:19.759Z</last_validated>
+  <last_validated>2025-11-23T04:19:33.707Z</last_validated>
   <last_modified>2025-11-23T00:13:38.735Z</last_modified>
-  <evidence>1) Story file exists but acceptance criteria are unchecked:
-- docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
-  - All checkboxes (Core Functionality, Backward Compatibility, Pattern Validation, Error Messages, Quality Standards, Integration, Documentation) remain `[ ]`, indicating not marked as completed.
+  <evidence>1) Rule implementation lacks configurable patterns:
+- File: src/rules/valid-annotation-format.ts
+- Story/requirements referenced in this file: only 005.0-DEV-ANNOTATION-VALIDATION and 008.0-DEV-AUTO-FIX (and 007.0 for error messages), not 010.1-DEV-CONFIGURABLE-PATTERNS.
+- Story path validation uses a hardcoded regex:
+  const pathPattern = /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/;
+- Requirement ID validation uses a hardcoded regex:
+  const reqPattern = /^REQ-[A-Z0-9-]+$/;
+- Rule meta schema is empty, so no options can be configured:
+  meta: {
+    ...
+    schema: [],
+    fixable: "code",
+  }
+- The create(context) function never reads rule options; it always uses the above hardcoded patterns.
 
-2) valid-annotation-format rule does not support configurable patterns:
-- src/rules/valid-annotation-format.ts
-  - The rule meta has `schema: []`, so it declares no configuration options at all.
-  - `validateStoryAnnotation` uses a hardcoded regex:
-    `const pathPattern = /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/;`
-    It never reads a pattern from rule options.
-  - `validateReqAnnotation` uses a hardcoded regex:
-    `const reqPattern = /^REQ-[A-Z0-9-]+$/;`
-    It also never reads from configuration.
-  - The `create(context)` function does not inspect `context.options` and contains no references to `storyPathPattern`, `requirementIdPattern`, `storyPathExample`, or `requirementIdExample`.
-  - JSDoc on this rule references stories 005.0 and 008.0 only; there is no @story reference to docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md.
+2) Search for configurable pattern option names shows they exist only in the story file, not in code or tests:
+- Command: grep -R -n storyPathPattern src tests docs
+  Output:
+  docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md:30:- [ ] **Core Functionality**: Add `storyPathPattern` and `requirementIdPattern` options to `valid-annotation-format` rule
+  docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md:89:  storyPathPattern?: string; // Regex pattern for story paths
+  docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md:103:    "storyPathPattern": "^prompts/[0-9]+\\.[0-9]+-DEV-[\\w-]+\\.md$",
+  docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md:125:    "storyPathPattern": "^specifications/[A-Z]+-[0-9]+\\.markdown$",
+- Command: grep -R -n requirementIdPattern src tests docs
+  Output:
+  docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md:30:- [ ] **Core Functionality**: Add `storyPathPattern` and `requirementIdPattern` options to `valid-annotation-format` rule
+  docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md:90:  requirementIdPattern?: string; // Regex pattern for requirement IDs
+  docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md:114:    "requirementIdPattern": "^(REQ|SPEC|FR)-[A-Z0-9-]+$",
+- No occurrences of storyPathPattern or requirementIdPattern in src/ or tests/, only in the story markdown.
 
-3) No code or tests reference the new configuration fields or this story:
-- Searches show:
-  - No occurrences of `storyPathPattern` or `requirementIdPattern` in src/ (including src/rules/valid-annotation-format.ts).
-  - No occurrences of `010.1-DEV-CONFIGURABLE-PATTERNS` in tests/.
-- tests/rules/valid-annotation-format.test.ts:
-  - Header references only stories 005.0 and 007.0.
-  - All test cases assume the fixed built-in patterns:
-    - Valid/invalid examples use `docs/stories/005.0-DEV-... .story.md` for @story.
-    - Valid/invalid examples use `REQ-...` for @req.
-  - No test passes options into the rule (no `options` field with custom patterns or examples), so configurable behavior is not exercised.
+3) Tests for valid-annotation-format do not cover configurable patterns:
+- File: tests/rules/valid-annotation-format.test.ts
+- File header references stories:
+  @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+- No reference to docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md or its requirement IDs.
+- Tests only exercise default, hardcoded patterns and messages:
+  - Valid examples like:
+    // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+    // @req REQ-EXAMPLE
+  - Invalid examples asserting fixed error message strings that embed the hardcoded example path and REQ-EXAMPLE identifier.
+- There are no tests that:
+  - Pass rule options (no options object supplied in ruleTester.run config).
+  - Provide custom storyPathPattern or requirementIdPattern.
+  - Validate behavior or error messages with custom patterns or examples.
 
-4) Documentation still describes fixed patterns, not configurable ones:
-- docs/rules/valid-annotation-format.md:
-  - Under “Validated patterns” it documents only fixed regexes:
-    - `@story` paths: `^docs/stories/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$`
-    - `@req` identifiers: `^REQ-[A-Z0-9-]+$`
-  - There is no section describing rule options such as `storyPathPattern`, `requirementIdPattern`, `storyPathExample`, or `requirementIdExample`.
-  - No configuration examples are provided matching the use cases in the story (different directories, different requirement prefixes, custom story file formats).
+4) Rule documentation lacks configuration information:
+- File: docs/rules/valid-annotation-format.md
+- Describes only fixed patterns:
+  - @story paths must match: ^docs/stories/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$
+  - @req identifiers must match: ^REQ-[A-Z0-9-]+$
+- No sections or examples describing:
+  - storyPathPattern / requirementIdPattern options.
+  - storyPathExample / requirementIdExample.
+  - Any JSON Schema for these options or integration with valid-story-reference configuration.
 
-5) No visible integration alignment with valid-story-reference configuration:
-- eslint.config.js and other configs do not show any options on `traceability/valid-annotation-format` related to patterns or examples.
-- There is no code demonstrating or wiring up consistency with `storyDirectories` from the valid-story-reference rule.
+5) Search for story and requirement IDs from this story:
+- Command: grep -R -n 010.1-DEV-CONFIGURABLE-PATTERNS tests src docs
+  Output:
+  docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md:1:# 010.1-DEV-CONFIGURABLE-PATTERNS: Configurable Annotation Format Patterns
+- Command: grep -R -n REQ-PATTERN-CONFIG tests src docs
+  Output:
+  docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md:42:- **REQ-PATTERN-CONFIG**: Support configuration of custom story path and requirement ID patterns
+- No implementation or test files reference this story or any of its requirement IDs (REQ-PATTERN-CONFIG, REQ-REGEX-VALIDATION, REQ-BACKWARD-COMPAT, REQ-EXAMPLE-MESSAGES, REQ-SCHEMA-VALIDATION, REQ-CONSISTENCY, REQ-PATTERN-TESTING).</evidence>
+  <notes>The story 010.1-DEV-CONFIGURABLE-PATTERNS specifies that the valid-annotation-format rule must support configurable storyPathPattern and requirementIdPattern options, validate these as regular expressions, support example strings in error messages, define a JSON Schema for these options, maintain backward-compatible defaults, integrate cleanly with existing configuration, and provide documentation and tests for these behaviors.
 
-6) Tests run for this rule reflect only existing behavior:
-- Command executed:
-  - `npm test -- --runTestsByPath tests/rules/valid-annotation-format.test.ts --verbose --runInBand`
-- Jest invocation output:
-  - `jest --ci --bail --runTestsByPath tests/rules/valid-annotation-format.test.ts --verbose --runInBand`
-- The referenced test file contains only tests for the fixed regex patterns and existing error messages; nothing relates to configurable patterns, regex validation, or example strings.</evidence>
-  <notes>Story 010.1-DEV-CONFIGURABLE-PATTERNS is not implemented. The `valid-annotation-format` rule still uses hardcoded regex patterns for @story paths and @req identifiers, exposes no configuration schema (meta.schema is empty), and never reads configuration options from `context.options`. There is no logic to validate custom regex patterns, no support for custom example strings in error messages, and no alignment with `valid-story-reference` configuration. Tests and documentation cover only the fixed patterns and do not reference this story or its new options. Therefore, multiple key acceptance criteria—core functionality (configurable patterns), backward compatibility via defaults, pattern validation, enhanced error messages, quality/schema standards, integration, and documentation—are not met.</notes>
+Current code shows that valid-annotation-format uses fixed, hardcoded regexes for story paths and requirement IDs, exposes an empty schema (no options allowed), and never reads configuration options from context.options. There is no logic for validating custom regexes, no support for example fields, and no JSON Schema implementation.
+
+Tests for this rule only exercise the hardcoded behavior for the default patterns and static error messages, and do not configure or verify any custom patterns. Documentation for the rule similarly documents only the fixed patterns and provides no guidance or examples for configuration.
+
+Because none of the core acceptance criteria for this story (configurable patterns, regex validation, error message customization, schema-based options, integration, and documentation) are implemented or tested, this story is not satisfied in the current codebase.</notes>
 </traceability>

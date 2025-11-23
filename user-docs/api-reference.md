@@ -76,7 +76,21 @@ if (error) {
 
 Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule limits changes to safe `@story` path suffix normalization only—for example, adding `.md` when the path ends with `.story`, or adding `.story.md` when the base path has no extension—using targeted replacements implemented in the `getFixedStoryPath` and `reportInvalidStoryFormatWithFix` helpers. It does not change directories, infer new story names, or modify any surrounding comment text or whitespace, in line with Story 008.0; more advanced path normalization strategies and selective toggles to enable or disable specific auto-fix behaviors are not yet implemented.
 
-Options: None
+Options:
+
+This rule accepts an optional configuration object:
+
+- `storyPathPattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that all `@story` values must match. If provided, the rule validates each `@story` against this pattern in addition to its built‑in structural checks. Defaults to a pattern equivalent to `^docs/stories/.*\.story\.md$`, aligning with the standard `docs/stories/<name>.story.md` convention.
+- `storyPathExample` (string, optional) – A short example path shown in error messages when `storyPathPattern` is configured. Defaults to `"docs/stories/001.0-EXAMPLE.story.md"`. This value is used **only** for guidance and does not affect validation.
+- `requirementIdPattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that all `@req` values must match. If provided, the rule validates each `@req` identifier against this pattern. Defaults to a pattern equivalent to `^REQ-[A-Z0-9_-]+$`, matching IDs such as `REQ-USER-AUTH` or `REQ-1234`.
+- `requirementIdExample` (string, optional) – A short example requirement ID shown in error messages when `requirementIdPattern` is configured. Defaults to `"REQ-USER-AUTH"`. This is purely informational and does not participate in matching.
+
+Behavior notes:
+
+- Patterns are compiled with the `u` flag; invalid patterns cause a rule configuration error.
+- When options are omitted, the rule behaves exactly as in earlier versions, relying on its built‑in defaults and path‑suffix normalization logic only.
+- The pattern checks are additional validation; they do not change the existing auto‑fix behavior, which remains limited to safe `@story` suffix normalization described above.
+
 Default Severity: `error`
 Example:
 
@@ -458,4 +472,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```
