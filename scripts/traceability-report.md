@@ -7,7 +7,7 @@ Functions missing annotations: 8
 Branches missing annotations: 71
 
 ## Functions missing @story/@req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:160 - ArrowFunction '<unknown>' - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:174 - ArrowFunction '<unknown>' - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:167 - ArrowFunction '<unknown>' - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-annotation-format.ts:132 - ArrowFunction '<unknown>' - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-annotation-format.ts:132 - ArrowFunction '<unknown>' - missing: @story, @req
@@ -17,32 +17,32 @@ Branches missing annotations: 71
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-checker.ts:270 - FunctionExpression 'missingReqFix' - missing: @story, @req
 
 ## Branches missing @story/@req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:27 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:32 - TryStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:33 - SwitchStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:34 - CaseClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:36 - CaseClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:38 - CaseClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:40 - CaseClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:47 - CatchClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:88 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:93 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:98 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:100 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:108 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:113 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:118 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:134 - ForStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:152 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:157 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:186 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:210 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:213 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:236 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:245 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:257 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:274 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:315 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:41 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:46 - TryStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:47 - SwitchStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:48 - CaseClause - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:50 - CaseClause - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:52 - CaseClause - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:54 - CaseClause - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:61 - CatchClause - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:102 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:107 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:112 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:114 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:122 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:127 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:132 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:148 - ForStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:166 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:171 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:200 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:224 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:227 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:250 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:259 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:271 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:288 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:329 - IfStatement - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:35 - ForOfStatement - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:57 - CatchClause - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:100 - IfStatement - missing: @story, @req
