@@ -1,516 +1,329 @@
-# Last Action Executed (Resumed)
+# Last Action Executed (Agentic)
 
-**Timestamp:** 2025-11-23T07:03:05.373Z
-
-**Mode:** Resumed - Completing interrupted cycle
-
-**Action:** Used tool: list_directory with input: {"dirPath":"."}
-Used tool: find_files with input: {"pattern":"package.json","directory":"."}
+**Action:** Used tool: get_git_status with input: {}
 Used tool: read_file with input: {"filePath":"package.json"}
-Used tool: list_directory with input: {"dirPath":"src"}
-Used tool: list_directory with input: {"dirPath":"src/rules"}
-Used tool: read_file with input: {"filePath":"eslint.config.js"}
-Used tool: list_directory with input: {"dirPath":"src/utils"}
-Used tool: list_directory with input: {"dirPath":"src/maintenance"}
-Used tool: read_file with input: {"filePath":"src/index.ts"}
-Used tool: search_file_content with input: {"filePath":"eslint.config.js","pattern":"max-lines-per-function","isRegex":false}
+Used tool: read_file with input: {"filePath":".github/workflows/ci-cd.yml"}
+Used tool: list_directory with input: {"dirPath":"scripts"}
+Used tool: list_directory with input: {"dirPath":"docs/security-incidents"}
+Used tool: read_file with input: {"filePath":"scripts/ci-safety-deps.js"}
 Used tool: list_directory with input: {"dirPath":"docs/stories"}
-Used tool: list_directory with input: {"dirPath":"docs/decisions"}
-Used tool: read_file with input: {"filePath":"docs/decisions/003-code-quality-ratcheting-plan.md"}
-Used tool: list_directory with input: {"dirPath":"src/maintenance"}
-Used tool: find_files with input: {"pattern":"*.ts","directory":"src"}
-Used tool: run_command with input: {"command":"npx","args":["eslint","src","--ext",".ts",".js","--format","json","--max-warnings","0"]}
+Used tool: search_file_content with input: {"filePath":".github/workflows/ci-cd.yml","pattern":"gitleaks","isRegex":false}
+Used tool: read_file with input: {"filePath":"docs/security-incidents/handling-procedure.md"}
+Used tool: get_git_status with input: {}
+Used tool: search_file_content with input: {"filePath":"scripts/ci-safety-deps.js","pattern":"dry-aged-deps","isRegex":false}
+Used tool: find_files with input: {"pattern":"*secret*","directory":"tests"}
+Used tool: search_file_content with input: {"filePath":"docs/stories/001.0-DEV-PLUGIN-SETUP.story.md","pattern":"012.0","isRegex":false}
+Used tool: read_file with input: {"filePath":"scripts/ci-audit.js"}
+Used tool: run_command with input: {"command":"npx","args":["dry-aged-deps","--version"]}
+Used tool: run_command with input: {"command":"npm","args":["view","secretlint","version"]}
+Used tool: run_command with input: {"command":"npm","args":["view","gitleaks","version"]}
+Used tool: run_command with input: {"command":"npm","args":["view","@secretlint/secretlint-rule-preset-recommend","version"]}
+Used tool: run_command with input: {"command":"npm","args":["view","@secretlint/secretlint-formatter-json","version"]}
+Used tool: run_command with input: {"command":"npm","args":["view","@secretlint/secretlint-formatter-sarif","version"]}
+Used tool: read_file with input: {"filePath":"docs/stories/012.0-DEV-CI-AUDIT-INTEGRATION.story.md"}
+Used tool: search_file_content with input: {"filePath":".gitignore","pattern":"012.0-DEV-CI-AUDIT-INTEGRATION.story.md","isRegex":false}
+Used tool: find_files with input: {"pattern":"012.0-DEV-CI-AUDIT-INTEGRATION.story.md","directory":"."}
+Used tool: run_command with input: {"command":"npx","args":["secretlint","--help"]}
+Used tool: run_command with input: {"command":"npm","args":["view","@secretlint/secretlint-formatter-table","version"]}
+Used tool: search_file_content with input: {"filePath":"package.json","pattern":"secretlint","isRegex":false}
+Used tool: modify_file with input: {"filePath":"package.json","instruction":"Add secretlint and @secretlint/secretlint-rule-preset-recommend as devDependencies, keeping versions aligned to 11.2.5 and preserving existing fields. Also add an npm script named \"security:secrets\" that runs `secretlint \"**/*\" --ignore-pattern \"node_modules/**\" --ignore-pattern \"lib/**\" --ignore-pattern \"coverage/**\" --ignore-pattern \"ci/**\" --ignore-pattern \".voder/**\" --ignore-pattern \".git/**\" --ignore-pattern \"*.png\" --ignore-pattern \"*.jpg\" --ignore-pattern \"*.jpeg\" --ignore-pattern \"*.gif\"`. Place the script near other security-related scripts (alongside audit:ci and safety:deps). Ensure valid JSON and do not otherwise reorder keys."}
+Used tool: generate_file with input: {"filePath":".secretlintrc.json","overwrite":false,"content":"{\n  \"version\": 1,\n  \"rules\": [\n    {\n      \"id\": \"@secretlint/secretlint-rule-preset-recommend\"\n    }\n  ]\n}\n"}
+Used tool: modify_file with input: {"filePath":".github/workflows/ci-cd.yml","instruction":"In the quality-and-deploy job steps, immediately after the \"Run full CI verification\" step, add a new step named \"Run secret scanning\" that runs `npm run security:secrets` with no additional options. Ensure indentation and YAML syntax remain valid. Do not modify other steps."}
+Used tool: modify_file with input: {"filePath":"docs/security-incidents/handling-procedure.md","instruction":"Append a new bullet under \"Procedure\" after step 2 describing that all changes to main are automatically scanned for secrets via the `npm run security:secrets` script in CI, and that any findings must be investigated and either fixed or documented as false positives. Keep the markdown style consistent."}
+Used tool: run_command with input: {"command":"npm","args":["install"]}
+Used tool: read_file with input: {"filePath":"scripts/ci-safety-deps.js"}
+Used tool: modify_file with input: {"filePath":"scripts/ci-safety-deps.js","instruction":"Refactor this script to use the locally installed dry-aged-deps binary via npx with the `--no-install` flag so that it no longer depends on downloading the package at runtime. Keep existing behavior and traceability annotations, but update the spawnSync call to include `--no-install` and add a brief comment explaining that we rely on the devDependency for reproducible checks."}
+Used tool: modify_file with input: {"filePath":"package.json","instruction":"Add dry-aged-deps as a devDependency with version \"^2.3.1\" without removing or reordering any existing devDependencies. Place it alphabetically within the devDependencies object. Ensure JSON remains valid."}
+Used tool: run_command with input: {"command":"npx","args":["secretlint","--version"]}
+Used tool: run_command with input: {"command":"npm","args":["run","security:secrets","--","--no-color"]}
+Used tool: read_file with input: {"filePath":".gitignore"}
+Used tool: modify_file with input: {"filePath":".secretlintrc.json","instruction":"Extend the configuration to ignore directories and file types we do not want to scan by adding an \"ignores\" array with patterns for \"node_modules/**\", \"lib/**\", \"coverage/**\", \"ci/**\", \".voder/**\", \".git/**\", \"**/*.png\", \"**/*.jpg\", \"**/*.jpeg\", and \"**/*.gif\". Keep existing \"version\" and \"rules\" entries intact."}
+Used tool: modify_file with input: {"filePath":"package.json","instruction":"Update the \"security:secrets\" npm script to simply run `secretlint \"**/*\" --no-color` with no ignore-pattern flags, relying on .secretlintrc.json for ignore configuration. Leave all other scripts untouched."}
+Used tool: run_command with input: {"command":"npm","args":["run","security:secrets"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"chore: add automated secret scanning and local safety tooling"}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["test"]}
 Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--format","json","--output-file",".voder-eslint-report.json"]}
-Used tool: run_command with input: {"command":"npx","args":["eslint","src","--ext",".ts","--format","json","--max-warnings","0"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings","0","--format","stylish"]}
-Used tool: run_command with input: {"command":"node","args":["scripts/lint-plugin-check.js"]}
-Used tool: run_command with input: {"command":"npx","args":["eslint","src/rules","--ext",".ts",".js","--print-config","src/rules/require-story-annotation.ts"]}
-Used tool: run_command with input: {"command":"npx","args":["eslint","src/rules/require-story-annotation.ts","--print-config"]}
-Used tool: run_command with input: {"command":"node","args":["-e","\"console.log('skip')\""]}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"max-lines-per-function","isRegex":false}
-Used tool: find_files with input: {"pattern":"*.*","directory":"."}
-Used tool: find_files with input: {"pattern":"*.ts","directory":"src"}
-Used tool: read_file with input: {"filePath":"src/maintenance/detect.ts"}
-Used tool: read_file with input: {"filePath":"src/maintenance/report.ts"}
-Used tool: read_file with input: {"filePath":"src/maintenance/update.ts"}
-Used tool: read_file with input: {"filePath":"src/maintenance/cli.ts"}
-Used tool: read_file with input: {"filePath":".voder-eslint-report.json"}
-Used tool: read_file with input: {"filePath":"docs/decisions/code-quality-ratcheting-plan.md"}
-Used tool: read_file with input: {"filePath":"docs/decisions/adr-pre-push-parity.md"}
-Used tool: read_file with input: {"filePath":"src/maintenance/batch.ts"}
-Used tool: run_command with input: {"command":"wc","args":["-l","src/**/*.ts"]}
-Used tool: run_command with input: {"command":"find","args":["src","-name","\"*.ts\"","-print0"]}
-Used tool: run_command with input: {"command":"ls","args":["-R","src"]}
-Used tool: run_command with input: {"command":"bash","args":["-lc","for f in $(ls src/**/*.ts); do echo \"---- $f\"; nl -ba \"$f\" | sed -n '1,200p'; done"]}
-Used tool: read_file with input: {"filePath":"src/maintenance/cli.ts","startLine":193,"endLine":400}
-Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts","startLine":184,"endLine":340}
-Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts","startLine":340,"endLine":520}
-Used tool: read_file with input: {"filePath":"src/rules/valid-req-reference.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/valid-annotation-options.ts"}
-Used tool: run_command with input: {"command":"nl","args":["-ba","src/rules/valid-req-reference.ts"]}
-Used tool: run_command with input: {"command":"nl","args":["-ba","src/maintenance/cli.ts"]}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-core.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-io.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-visitors.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-utils.ts"}
-Used tool: run_command with input: {"command":"nl","args":["-ba","src/rules/helpers/valid-annotation-options.ts"]}
-Used tool: get_git_status with input: {}
-Used tool: search_file_content with input: {"filePath":".voder/history.md","pattern":"max-lines-per-function","isRegex":false}
-Used tool: read_file with input: {"filePath":"src/rules/valid-story-reference.ts"}
-Used tool: read_file with input: {"filePath":"src/utils/storyReferenceUtils.ts"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--listTests"]}
-Used tool: run_command with input: {"command":"nl","args":["-ba","tests/maintenance/cli.test.ts"]}
-Used tool: run_command with input: {"command":"nl","args":["-ba","tests/rules/valid-annotation-format.test.ts"]}
-Used tool: modify_file with input: {"filePath":"src/maintenance/cli.ts","instruction":"Refactor the parseFlags function into smaller helpers: one to initialize default flags, and another to handle a single argument, to reduce the body size of parseFlags while preserving behavior and comments. Keep traceability comments associated with relevant logic."}
-Used tool: run_command with input: {"command":"nl","args":["-ba","src/maintenance/cli.ts"]}
-Used tool: modify_file with input: {"filePath":"src/rules/valid-req-reference.ts","instruction":"Refactor longer functions into smaller helpers where it reduces function body length while keeping behavior identical and preserving traceability annotations. Focus on validateReqLine, handleComment, and programListener if they are long."}
-Used tool: run_command with input: {"command":"nl","args":["-ba","src/rules/valid-annotation-format.ts"]}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: split long maintenance and validation helpers"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts"}
-Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts","instruction":"Remove the unused 'arg' parameter in the ReportInvalidPathFn type definition to satisfy no-unused-vars while preserving the shape of the function argument object."}
-Used tool: get_git_status with input: {}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: split long maintenance and validation helpers"}
-Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts","instruction":"Update the ReportInvalidPathFn type so the parameter is named but referenced only as a destructured object in call sites where needed; to avoid no-unused-vars, use an anonymous parameter `_` in the type definition instead of a named one."}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: split long maintenance and validation helpers"}
-Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts","instruction":"Change the ReportInvalidPathFn type to use an anonymous parameter (e.g., `(_: { ... }) => void` is still named) would still trip no-unused-vars. Instead, define it as a type alias for a function that destructures its parameter inline: `(args: { storyPath: string; commentNode: any; context: any }) => void` is the same. To satisfy no-unused-vars, remove the parameter name entirely from the type and just describe the function shape via an interface instead (e.g., `interface ReportInvalidPathArgs { ... }` and `type ReportInvalidPathFn = (args: ReportInvalidPathArgs) => void;`) ensuring all identifiers are used."}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: split long maintenance and validation helpers"}
-Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts","instruction":"Introduce an ESLint disable comment for no-unused-vars specifically on the ReportInvalidPathFn type alias, referencing the justification. Keep the ReportInvalidPathArgs interface and ReportInvalidPathFn alias, but ensure the alias reads:\n\n// eslint-disable-next-line no-unused-vars -- Parameter name used only in type position for documentation and IDE hints\nexport type ReportInvalidPathFn = (args: ReportInvalidPathArgs) => void;"}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: split long maintenance and validation helpers"}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings","0"]}
 Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/maintenance/cli.test.ts","tests/rules/valid-annotation-format.test.ts","tests/rules/valid-req-reference.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
+Used tool: wait_for_github_workflow with input: {"runId":19607843697,"timeout":600000}
+Used tool: get_github_run_details with input: {"runId":19607843697}
+Used tool: get_github_workflow_logs with input: {"runId":19607843697}
+Used tool: run_command with input: {"command":"npm","args":["install"]}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["test"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"chore: sync lockfile after adding security tooling"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: wait_for_github_workflow with input: {"runId":19607858355,"timeout":600000}
+Used tool: get_github_run_details with input: {"runId":19607858355}
+Used tool: get_github_workflow_logs with input: {"runId":19607858355}
+Used tool: get_github_workflow_logs with input: {"runId":19607858355,"jobId":"Quality and Deploy (18.x)"}
+Used tool: get_github_workflow_logs with input: {"runId":19607858355}
+Used tool: get_github_workflow_logs with input: {"runId":19607858355,"jobId":"Quality and Deploy (18.x)"}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: run_command with input: {"command":"npm","args":["view","secretlint","engines"]}
+Used tool: read_file with input: {"filePath":"scripts/ci-audit.js"}
+Used tool: modify_file with input: {"filePath":".github/workflows/ci-cd.yml","instruction":"Change the \"Run secret scanning\" step so that it only runs on Node 20.x by adding an appropriate `if:` condition using `matrix['node-version'] == '20.x'`. Leave the run command unchanged."}
+Used tool: run_command with input: {"command":"npm","args":["run","security:secrets"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"ci: run secret scanning only on supported node version"}
+Used tool: git_push with input: {}
+Used tool: wait_for_github_workflow with input: {"runId":19607858355,"timeout":600000}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: wait_for_github_workflow with input: {"runId":19607892450,"timeout":600000}
+Used tool: get_git_status with input: {}
 
 **Response:**
 
 ```
-Here’s what I implemented for the ##NOW and ##NEXT sections and how they map to the plan.
+Here’s what’s been implemented and verified for the **NOW** and **NEXT** items.
 
 ---
 
-## What I did
+## What I implemented
 
-### NOW: Identify long production functions and refactor targets
+### 1) Automated secret scanning in CI (##NOW)
 
-- Scanned `src/**/*.ts` to find larger, central production functions using `nl -ba` and manual inspection, focusing on:
-  - `src/maintenance/cli.ts`
-    - `runMaintenanceCli`
-    - `parseFlags`
-    - Subcommand handlers (`handleDetect`, `handleVerify`, `handleReport`, `handleUpdate`)
-  - `src/rules/valid-req-reference.ts`
-    - `validateReqLine`
-    - `handleComment`
-    - `programListener`’s inner `Program` visitor
-  - Confirmed overall enforcement via ESLint `max-lines-per-function` (see below).
+**Changes made**
 
-These functions were approaching the existing limit and are central to maintenance and deep validation, so they were chosen as the first refactor targets to keep the codebase safely below a 55‑line ceiling and prepare for future ratcheting.
+1. **Added secret scanning tooling**
 
----
+   - Updated `package.json` devDependencies:
+     ```json
+     "devDependencies": {
+       ...
+       "dry-aged-deps": "^2.3.1",
+       "eslint": "^9.39.1",
+       ...
+       "secretlint": "11.2.5",
+       "@secretlint/secretlint-rule-preset-recommend": "11.2.5"
+     }
+     ```
+   - Created Secretlint config `.secretlintrc.json`:
+     ```json
+     {
+       "version": 1,
+       "rules": [
+         {
+           "id": "@secretlint/secretlint-rule-preset-recommend"
+         }
+       ],
+       "ignores": [
+         "node_modules/**",
+         "lib/**",
+         "coverage/**",
+         "ci/**",
+         ".voder/**",
+         ".git/**",
+         "**/*.png",
+         "**/*.jpg",
+         "**/*.jpeg",
+         "**/*.gif"
+       ]
+     }
+     ```
 
-### NEXT-1: Lint configuration for 55-line functions
+   - Added an npm script to run secret scanning non‑interactively:
+     ```json
+     "scripts": {
+       ...
+       "security:secrets": "secretlint \"**/*\" --no-color",
+       ...
+     }
+     ```
+     This relies on `.secretlintrc.json` for ignore patterns, so the command stays simple and stable.
 
-- Verified `eslint.config.js` already enforces a **55-line** maximum for production code:
+2. **Integrated secret scanning into the CI/CD pipeline**
 
-  ```js
-  // TypeScript files
-  "max-lines-per-function": [
-    "error",
-    { max: 55, skipBlankLines: true, skipComments: true },
-  ],
-  // JavaScript files
-  "max-lines-per-function": [
-    "error",
-    { max: 55, skipBlankLines: true, skipComments: true },
-  ],
-  ```
+   - Updated `.github/workflows/ci-cd.yml` to add a dedicated step in the `quality-and-deploy` job:
+     ```yaml
+     - name: Run secret scanning
+       if: ${{ matrix['node-version'] == '20.x' }}
+       run: npm run security:secrets
+     ```
+   - Rationale:
+     - `secretlint@11.2.5` has engines `node: '>=20.0.0'`.
+     - Our CI matrix runs Node `18.x` and `20.x`, so running it only on `20.x` avoids engine errors while still enforcing scanning on every main-branch change and PR (because the 20.x leg always runs).
 
-- Confirmed the **test override block** keeps `max-lines-per-function` disabled for tests:
+3. **Updated security procedure documentation**
 
-  ```js
-  {
-    // Test files
-    files: [
-      "**/*.test.{js,ts,tsx}",
-      "**/__tests__/**/*.{js,ts,tsx}",
-    ],
-    rules: {
-      complexity: "off",
-      "max-lines-per-function": "off",
-      "max-lines": "off",
-      "no-magic-numbers": "off",
-      "max-params": "off",
-    },
-  },
-  ```
+   - Extended `docs/security-incidents/handling-procedure.md` under **Initial Assessment**:
+     ```md
+     - All changes merged into `main` are automatically scanned for secrets via the `npm run security:secrets` script in CI; any findings must be investigated and either remediated or explicitly documented as false positives in the issue tracker.
+     ```
+   - This records the new control in the formal security process.
 
-No change was necessary here; the project is already at the 55‑line limit for production code and has the requested test relaxations.
+4. **Verified locally**
 
----
+   - Installed dependencies and updated lockfile via `npm install` (then committed).
+   - Confirmed the secret scan runs clean locally:
+     ```bash
+     npm run security:secrets
+     # -> secretlint "**/*" --no-color (exit 0)
+     ```
 
-### NEXT-2: Refactor selected long functions into smaller helpers
+5. **CI pipeline behavior and fixes**
 
-#### 1. `src/maintenance/cli.ts` (maintenance CLI flag parsing)
-
-**Before**: `parseFlags` contained initialization plus all argument handling logic in one function.
-
-**After**: Split into two helpers plus a slimmer `parseFlags`, preserving traceability comments:
-
-- New helper: `createDefaultFlags`
-
-  ```ts
-  /**
-   * Initialize default flags for the maintenance CLI.
-   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-   * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
-   */
-  function createDefaultFlags(): ParsedFlags {
-    return {
-      root: process.cwd(),
-      json: false,
-    };
-  }
-  ```
-
-- New helper: `applyFlag`
-
-  ```ts
-  /**
-   * Handle a single CLI argument and update the flags accordingly.
-   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-   * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
-   */
-  function applyFlag(flags: ParsedFlags, args: string[], index: number): number {
-    const arg = args[index];
-
-    if (arg === "--root" && typeof args[index + 1] === "string") {
-      flags.root = path.resolve(args[index + 1]);
-      return index + 1;
-    }
-
-    if (arg === "--json") {
-      flags.json = true;
-      return index;
-    }
-
-    if (arg === "--format" && typeof args[index + 1] === "string") {
-      const value = args[index + 1];
-      if (value === "text" || value === "json") {
-        flags.format = value;
-      } else {
-        throw new Error(
-          `Invalid format: ${value}. Expected 'text' or 'json'.`,
-        );
-      }
-      return index + 1;
-    }
-
-    if (arg === "--from" && typeof args[index + 1] === "string") {
-      flags.from = args[index + 1];
-      return index + 1;
-    }
-
-    if (arg === "--to" && typeof args[index + 1] === "string") {
-      flags.to = args[index + 1];
-      return index + 1;
-    }
-
-    if (arg === "--dry-run") {
-      flags.dryRun = true;
-      return index;
-    }
-
-    return index;
-  }
-  ```
-
-- Updated `parseFlags` to delegate:
-
-  ```ts
-  /**
-   * Basic flag parser for maintenance CLI subcommands.
-   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-   * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
-   */
-  function parseFlags(args: string[]): ParsedFlags {
-    const flags: ParsedFlags = createDefaultFlags();
-
-    for (let i = 0; i < args.length; i += 1) {
-      i = applyFlag(flags, args, i);
-    }
-
-    return flags;
-  }
-  ```
-
-Result: `parseFlags` is shorter and more focused; flag semantics and error behavior are unchanged and still fully covered by `tests/maintenance/cli.test.ts`.
+   - **First CI failure**: `npm ci` failed because `dry-aged-deps` was added to devDependencies but not present in `package-lock.json`.
+     - Fixed by running `npm install` locally to regenerate the lockfile and committing it.
+   - **Second CI failure**: `Run secret scanning` failed on the Node 18.x job because `secretlint` requires Node >= 20.
+     - Fixed by adding the `if: ${{ matrix['node-version'] == '20.x' }}` condition so scanning only runs on the supported Node version.
+   - After these fixes, a subsequent CI run (`runId: 19607892450`) completed **successfully** for both matrix jobs.
 
 ---
 
-#### 2. `src/rules/valid-req-reference.ts` (deep @req validation rule)
+### 2) Tuning secret scanning configuration (##NEXT, item 1)
 
-Refactored to reduce function sizes and clarify responsibilities while preserving behavior and traceability.
+**What I did**
 
-Key extractions:
-
-- Extracted requirement ID parsing:
-
-  ```ts
-  /**
-   * Extract requirement ID from a @req line.
-   * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-   * @req REQ-DEEP-PARSE - Parse annotation lines to extract requirement IDs
-   */
-  function extractReqIdFromLine(line: string): string | undefined {
-    const parts = line.split(/\s+/);
-    return parts[1];
-  }
+- Centralized ignores into `.secretlintrc.json` instead of CLI flags:
+  ```json
+  "ignores": [
+    "node_modules/**",
+    "lib/**",
+    "coverage/**",
+    "ci/**",
+    ".voder/**",
+    ".git/**",
+    "**/*.png",
+    "**/*.jpg",
+    "**/*.jpeg",
+    "**/*.gif"
+  ]
   ```
-
-- Extracted story-path resolution and requirement loading:
-
-  ```ts
-  /**
-   * Resolve story path and load requirements set for validation.
-   * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-   * @req REQ-DEEP-PATH - Validate and resolve referenced story file paths
-   * @req REQ-DEEP-CACHE - Cache requirement IDs discovered in story files
-   */
-  function resolveStoryAndRequirements(opts: {
-    comment: any;
-    context: any;
-    storyPath: string;
-    cwd: string;
-    reqCache: Map<string, Set<string>>;
-  }): { resolvedStoryPath: string | null; reqSet: Set<string> | null } {
-    const { comment, context, storyPath, cwd, reqCache } = opts;
-
-    const resolvedStoryPath = validateAndResolveStoryPath({
-      comment,
-      context,
-      storyPath,
-      cwd,
-    });
-
-    if (!resolvedStoryPath) {
-      return { resolvedStoryPath: null, reqSet: null };
-    }
-
-    const reqSet = loadAndCacheRequirements({
-      resolvedStoryPath,
-      reqCache,
-    });
-
-    return { resolvedStoryPath, reqSet };
-  }
+- Updated the `security:secrets` script to be very simple:
+  ```json
+  "security:secrets": "secretlint \"**/*\" --no-color"
   ```
-
-- Simplified `validateReqLine` using the helpers:
-
-  ```ts
-  function validateReqLine(opts: {
-    comment: any;
-    context: any;
-    line: string;
-    storyPath: string | null;
-    cwd: string;
-    reqCache: Map<string, Set<string>>;
-  }): void {
-    const { comment, context, line, storyPath, cwd, reqCache } = opts;
-    const reqId = extractReqIdFromLine(line);
-    if (!reqId || !storyPath) {
-      return;
-    }
-
-    const { reqSet } = resolveStoryAndRequirements({
-      comment,
-      context,
-      storyPath,
-      cwd,
-      reqCache,
-    });
-
-    if (!reqSet) {
-      return;
-    }
-
-    checkRequirementExists({
-      comment,
-      context,
-      reqId,
-      storyPath,
-      reqSet,
-    });
-  }
-  ```
-
-- Split comment processing and program-level iteration:
-
-  ```ts
-  function processCommentLines(opts: {
-    comment: any;
-    context: any;
-    cwd: string;
-    reqCache: Map<string, Set<string>>;
-    initialStoryPath: string | null;
-  }): string | null {
-    const { comment, context, cwd, reqCache, initialStoryPath } = opts;
-    let storyPath = initialStoryPath;
-    const rawLines = comment.value.split(/\r?\n/);
-    for (const rawLine of rawLines) {
-      const line = rawLine.trim().replace(/^\*+\s*/, "");
-      storyPath = handleAnnotationLine({
-        line,
-        comment,
-        context,
-        cwd,
-        reqCache,
-        storyPath,
-      });
-    }
-    return storyPath;
-  }
-
-  function handleComment(opts: {
-    comment: any;
-    context: any;
-    cwd: string;
-    reqCache: Map<string, Set<string>>;
-    rawStoryPath: string | null;
-  }): string | null {
-    const { comment, context, cwd, reqCache, rawStoryPath } = opts;
-    return processCommentLines({
-      comment,
-      context,
-      cwd,
-      reqCache,
-      initialStoryPath: rawStoryPath,
-    });
-  }
-
-  function processAllComments(opts: {
-    sourceCode: any;
-    context: any;
-    cwd: string;
-    reqCache: Map<string, Set<string>>;
-    initialStoryPath: string | null;
-  }): void {
-    const { sourceCode, context, cwd, reqCache } = opts;
-    let rawStoryPath = opts.initialStoryPath;
-    const comments = sourceCode.getAllComments() || [];
-    comments.forEach((comment: any) => {
-      rawStoryPath = handleComment({
-        comment,
-        context,
-        cwd,
-        reqCache,
-        rawStoryPath,
-      });
-    });
-  }
-
-  function programListener(context: any) {
-    const sourceCode = context.getSourceCode();
-    const cwd = process.cwd();
-    const reqCache = new Map<string, Set<string>>();
-    let rawStoryPath: string | null = null;
-
-    return function Program() {
-      processAllComments({
-        sourceCode,
-        context,
-        cwd,
-        reqCache,
-        initialStoryPath: rawStoryPath,
-      });
-    };
-  }
-  ```
-
-Result: the main functional pieces (`validateReqLine`, `handleComment`, the `Program` visitor) are shorter and clearer. All behavior is still covered by `tests/rules/valid-req-reference.test.ts`.
+- Effects:
+  - Scans **all tracked text/code files** by default, while skipping:
+    - dependency & build directories (`node_modules`, `lib`, `coverage`, `ci`)
+    - tool metadata (`.voder`, `.git`)
+    - image assets (png/jpg/jpeg/gif)
+  - Reduces noise and runtime while still covering the code and docs where secrets could realistically appear.
+  - Keeps the CLI invocation portable and easy to run locally and in CI.
 
 ---
 
-#### 3. `src/rules/helpers/valid-story-reference-helpers.ts` (small cleanup for lint)
+### 3) Making the dependency-safety tool local & reproducible (##NEXT, item 2)
 
-While not a length refactor, this file was involved in lint failures and was cleaned up in a small, traceable way:
+**Previously**
 
-- Introduced a documented argument type and a dedicated function type alias:
+- `scripts/ci-safety-deps.js` invoked `npx dry-aged-deps --format=json`, which depended on downloading `dry-aged-deps` at runtime if not already installed.
 
-  ```ts
-  export interface ReportInvalidPathArgs {
-    storyPath: string;
-    commentNode: any;
-    context: any;
-  }
+**Changes**
 
-  // eslint-disable-next-line no-unused-vars -- Parameter name used only in type position for documentation and IDE hints
-  export type ReportInvalidPathFn = (args: ReportInvalidPathArgs) => void;
-  ```
+1. **Added `dry-aged-deps` as a devDependency**
 
-This resolved the `no-unused-vars` lint error on the type parameter while keeping the existing runtime behavior and traceability annotations unchanged.
+   - `package.json` devDependencies now include:
+     ```json
+     "dry-aged-deps": "^2.3.1",
+     ```
+   - `npm install` and `package-lock.json` were updated and committed so CI can use `npm ci` reproducibly.
+
+2. **Refactored the safety script to rely on the local dependency**
+
+   - Updated `scripts/ci-safety-deps.js`:
+     ```js
+     // Use the locally installed dry-aged-deps via npx with --no-install so we rely on the devDependency for reproducible checks.
+     // Attempt to run dry-aged-deps; if missing, run a best-effort npm ls --json
+     let res = spawnSync(
+       "npx",
+       ["--no-install", "dry-aged-deps", "--format=json"],
+       {
+         encoding: "utf8",
+       },
+     );
+     ```
+   - Rest of the script is unchanged:
+     - Writes `ci/dry-aged-deps.json`
+     - Ensures it is non-empty, with a fallback `{ packages: [] }`
+     - Always exits `0` so CI can treat it as a reporting artifact, not a gate.
+
+3. **Verification**
+
+   - Local command used by CI:
+     ```bash
+     npm run safety:deps
+     # -> node scripts/ci-safety-deps.js
+     ```
+   - `ci-verify:full` (invoked by pre-push and CI) now uses:
+     - `dry-aged-deps` from **devDependencies**, not ad-hoc downloads.
 
 ---
 
-### NEXT-3: Ensure no remaining functions violate the 55-line limit
+### 4) Reviewing tooling & docs to match new behavior (##NEXT, item 3)
 
-- ESLint is configured to error on `max-lines-per-function` > 55 for production code.
-- I ran:
+**Updates & checks**
 
-  ```bash
-  npm run lint -- --max-warnings 0
-  ```
-
-- Lint completed successfully with **no `max-lines-per-function` violations**, which confirms:
-  - All production TS/JS functions are at or under the 55‑line limit (excluding comments/blank lines, as configured).
-  - Tests are exempt via their separate config block, as required.
-
-Combined with the targeted refactors above, the codebase now complies cleanly with the 55‑line function constraint.
+- **Security procedure doc** updated (as above) to mention:
+  - automatic secret scanning for all merges into `main`
+  - required investigation/remediation or false-positive documentation of any findings.
+- **Tooling alignment**
+  - `package.json`:
+    - Contains both `dry-aged-deps` and secretlint devDependencies.
+    - Security-related scripts:
+      ```json
+      "safety:deps": "node scripts/ci-safety-deps.js",
+      "audit:ci": "node scripts/ci-audit.js",
+      "audit:dev-high": "node scripts/generate-dev-deps-audit.js",
+      "security:secrets": "secretlint \"**/*\" --no-color"
+      ```
+  - `scripts/ci-safety-deps.js` and `scripts/ci-audit.js` both reference `docs/stories/012.0-DEV-CI-AUDIT-INTEGRATION.story.md` via `@story` annotations, maintaining traceability; behavior (JSON outputs in `ci/`) remains unchanged aside from the dependency source.
+  - CI workflow:
+    - Still runs `npm run ci-verify:full` as the primary quality gate.
+    - Now additionally runs `npm run security:secrets` on Node 20.x in the same unified job.
 
 ---
 
-### Quality checks and CI/CD
+### 5) Quality checks and CI status
 
-Before and after refactoring, I ran and/or relied on:
+**Local checks run after each logical change set**
 
-- Local checks:
-  - `npm run lint -- --max-warnings 0`
+- After adding secretlint + CI step + docs + dry-aged-deps refactor and syncing the lockfile:
+  - `npm run build`
+  - `npm test`
+  - `npm run lint`
   - `npm run type-check`
-  - Focused Jest subset over the affected areas:
-    ```bash
-    npm test -- --runTestsByPath \
-      tests/maintenance/cli.test.ts \
-      tests/rules/valid-annotation-format.test.ts \
-      tests/rules/valid-req-reference.test.ts
-    ```
-- Husky pre-push hook (triggered by `git push`) ran `npm run ci-verify:full`, which includes:
-  - build, type-check, lint (with built plugin guard), duplication, traceability check,
-  - full Jest suite with coverage, format:check, and audits (including dev-high).
-- GitHub Actions:
-  - Monitored the `CI/CD Pipeline` workflow for the latest push; run `19607497618` completed with **conclusion: success**.
+  - `npm run format:check`
+  - `npm run security:secrets`
+- All passed successfully.
 
-All quality gates passed.
+**Commits pushed**
+
+1. `chore: add automated secret scanning and local safety tooling`
+2. `chore: sync lockfile after adding security tooling`
+3. `ci: run secret scanning only on supported node version`
+
+**CI/CD**
+
+- Initial two runs failed due to:
+  - Out-of-sync lockfile (missing `dry-aged-deps` entry).
+  - Secretlint’s Node >= 20 requirement on Node 18.x job.
+- Both root causes were fixed (lockfile updated; CI step gated to Node 20.x).
+- Latest workflow run (`CI/CD Pipeline`, run ID `19607892450`) completed with **conclusion: success**.
 
 ---
 
-## Updated plan with statuses
+## Updated Plan with Status
 
 ### NOW
 
-- [x] Identify the production TypeScript and JavaScript functions that currently have the largest bodies and are likely to exceed a 55-line limit, and decide which ones should be refactored into smaller helpers first to support tightening the max-lines-per-function rule.
+- [x] Design and integrate an automated, non-interactive secret scanning step into the existing continuous integration pipeline so that every change to the main branch is checked for accidentally committed credentials or sensitive data.
 
 ### NEXT
 
-- [x] Update the linting configuration so that the maximum allowed function length for production code is reduced from 60 lines to 55 lines, keeping test-specific relaxations unchanged.  
-      *(Verified the limit is already 55 in `eslint.config.js`; no change required.)*
-- [x] Refactor the selected long functions into smaller, clearly named helper functions that each have a single responsibility while preserving existing behavior and maintaining the current traceability annotations.
-- [x] Revisit any remaining functions that hit the new limit and iteratively split or simplify them until they comply with the 55-line constraint without introducing duplication or unnecessary complexity.  
-      *(Confirmed via `npm run lint -- --max-warnings 0` that there are no `max-lines-per-function` violations in production code.)*
+- [x] Tune the secret scanning configuration so it focuses on relevant project files, avoids noisy directories and known-safe patterns, and produces clear, actionable findings when potential secrets are detected.
+- [x] Add the dependency-safety tool currently invoked via ad‑hoc execution as an explicit development dependency and adjust the existing safety scripts to use the local tool for reproducible, reliable security checks.
+- [x] Review the updated security tooling setup and incident documentation to ensure they accurately describe the new secret scanning and dependency-safety processes, keeping the formal security procedure in sync with the implementation.
+
+All requested NOW and NEXT items are implemented, verified locally, and passing in CI.
 ```

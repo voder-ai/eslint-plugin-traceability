@@ -3,6 +3,7 @@
 Created autonomously by [voder.ai](https://voder.ai).
 Last updated: 2025-11-19
 Version: 1.0.5
+Supported runtime: Node.js >=18.18.0, ESLint ^9.0.0
 
 ## Rules
 
@@ -481,4 +482,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```

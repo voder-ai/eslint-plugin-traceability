@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Design and integrate an automated, non-interactive secret scanning step into the existing continuous integration pipeline so that every change to the main branch is checked for accidentally committed credentials or sensitive data.
+- [ ] Review the existing CI/CD workflow and release configuration to confirm that every successful change on the main branch automatically passes through all quality gates and triggers publishing and post-deployment smoke tests without any hidden manual gates or tag-based conditions.
 
 ## NEXT
 
-- [ ] Tune the secret scanning configuration so it focuses on relevant project files, avoids noisy directories and known-safe patterns, and produces clear, actionable findings when potential secrets are detected.
-- [ ] Add the dependency-safety tool currently invoked via ad‑hoc execution as an explicit development dependency and adjust the existing safety scripts to use the local tool for reproducible, reliable security checks.
-- [ ] Review the updated security tooling setup and incident documentation to ensure they accurately describe the new secret scanning and dependency-safety processes, keeping the formal security procedure in sync with the implementation.
+- [ ] Adjust the CI/CD workflow configuration if any remaining conditions, branches, or legacy steps could prevent automatic publishing on successful main-branch builds, ensuring the pipeline strictly follows the single unified quality-and-deploy pattern.
+- [ ] Update internal development documentation to clearly describe the current continuous deployment behavior, including when releases occur, how semantic versioning is derived from commit messages, and how post-deployment verification is performed.
+- [ ] Align user-facing documentation with the actual runtime and CI environment constraints (for example, clarifying supported Node.js and ESLint versions) so that expectations about the deployment pipeline and supported platforms match reality.
 
 ## LATER
 
-- [ ] Periodically refine secret scanning rules and allowlists based on any false positives encountered, keeping the signal-to-noise ratio high without weakening protections.
-- [ ] Extend security checks to cover any future tooling or scripts that interact with external services, ensuring they follow the same standards for dependency vetting and secret handling.
-- [ ] Once the strengthened security controls are in place and stable, re-run the overall implementation assessment so that a full functionality evaluation can be performed on a solid security foundation.
+- [ ] Introduce a lightweight automated validation step for the CI configuration itself (for example, syntax and best-practice checks) to catch workflow misconfigurations early in future changes.
+- [ ] Expand post-deployment verification to include additional smoke scenarios that exercise more of the published package’s functionality in a realistic consumer project.
+- [ ] Periodically revisit CI/CD configuration and documentation together whenever new quality gates or tools are added, to ensure the pipeline remains a single, unified path from commit to deployment without divergence or manual steps.

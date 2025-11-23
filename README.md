@@ -8,7 +8,7 @@ Created autonomously by [voder.ai](https://voder.ai).
 
 ## Installation
 
-Prerequisites: Node.js >=14 and ESLint v9+.
+Prerequisites: Node.js >=18.18.0 and ESLint v9+.
 
 1. Using npm  
    npm install --save-dev eslint-plugin-traceability
