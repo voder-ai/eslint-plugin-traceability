@@ -101,14 +101,14 @@ Practical usage examples and sample configurations are available in the [Example
 
 ## Maintenance CLI
 
-The `traceability-maint` CLI helps you maintain and audit traceability data outside of ESLint runs. It focuses on repository-wide checks and batch updates.
+The `traceability-maint` CLI helps you maintain and audit `@story` annotations outside of ESLint runs. It focuses on repository-wide checks for stale story references and safe batch updates.
 
-### Basic Commands
+### Commands
 
-- `detect` – Scan the codebase and detect traceability annotations and references.
-- `verify` – Verify that all detected references (stories, requirements, branches) resolve correctly.
-- `report` – Generate machine-readable and/or human-readable reports from the traceability index.
-- `update` – Apply safe, scripted updates to annotations (e.g., renaming a story file or requirement ID).
+- `detect` – Scan the workspace and detect `@story` annotations that reference missing story files.
+- `verify` – Verify that no stale `@story` annotations exist under the workspace root.
+- `report` – Generate a human-readable or JSON report of stale story references.
+- `update` – Apply safe, scripted updates to `@story` annotations (e.g., when a story file is renamed).
 
 ### Usage
 
@@ -118,26 +118,23 @@ All commands are run from your project root:
 # Show help and all options
 npx traceability-maint --help
 
-# Detect annotations and build a traceability index
-npx traceability-maint detect --src "src/**/*.@(js|ts|tsx)" --out .traceability/index.json
+# Detect stale story references
+npx traceability-maint detect --root .
 
-# Verify that stories and requirements exist
-npx traceability-maint verify --index .traceability/index.json
-
-# Generate a text summary report
-npx traceability-maint report --index .traceability/index.json --format text --out traceability-report.txt
+# Verify that annotations are valid
+npx traceability-maint verify --root .
 
 # Generate a JSON report for CI pipelines
-npx traceability-maint report --index .traceability/index.json --format json --out traceability-report.json
+npx traceability-maint report --root . --format json
 
 # Update references when a story file is renamed
 npx traceability-maint update \
-  --index .traceability/index.json \
+  --root . \
   --from "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md" \
   --to "docs/stories/003.0-DEV-FN-ANNOTATIONS.story.md"
 ```
 
-You can add `traceability-maint` to CI workflows to enforce repository-wide traceability standards alongside ESLint.
+For a full description of options and JSON payloads, see the [Maintenance API and CLI](user-docs/api-reference.md#maintenance-api-and-cli) section in the API Reference.
 
 ## Plugin Validation
 

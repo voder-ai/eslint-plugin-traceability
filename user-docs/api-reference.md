@@ -186,7 +186,7 @@ export default [js.configs.recommended, traceability.configs.strict];
 
 ## Maintenance API and CLI
 
-The plugin exposes a small maintenance API and a companion CLI, `traceability-maint`, for bulk operations on traceability annotations. These utilities are intended for scripted maintenance and CI workflows rather than runtime use.
+The plugin exposes a small maintenance API and a companion CLI, `traceability-maint`, for bulk operations on `@story` annotations. As of v1.0.5 these tools are intentionally minimal and focused on stale **story** references only; requirement-level maintenance and more advanced filtering are planned but **not yet implemented**.
 
 ### Programmatic Maintenance API
 
@@ -202,177 +202,103 @@ import {
 } from "eslint-plugin-traceability/maintenance";
 ```
 
-#### `detectStaleAnnotations(options)`
+The current maintenance API operates on a **single workspace root** and scans all files beneath that directory. It does not yet accept include/exclude globs or explicit story/requirement lists.
 
-Scans one or more source roots for `@story` and `@req` annotations that point to missing or deprecated artifacts.
+#### `detectStaleAnnotations(rootDir)`
 
-**Parameters:**
-
-- `options` (object, required):
-  - `rootDir` (string, required) – Project root to scan from.
-  - `include` (string[] | undefined) – Glob patterns for included files (default: `["**/*.{js,jsx,ts,tsx}"]`).
-  - `exclude` (string[] | undefined) – Glob patterns to ignore (e.g., `["**/dist/**", "**/node_modules/**"]`).
-  - `storyDirectories` (string[] | undefined) – Overrides for story lookup directories (see `valid-story-reference`).
-  - `knownRequirements` (string[] | undefined) – Optional explicit list of valid requirement IDs.
-
-**Returns:**
-
-- Promise resolving to:
-
-```ts
-{
-  staleStories: Array<{
-    file: string;
-    line: number;
-    storyPath: string;
-    reason: "MISSING" | "DEPRECATED";
-  }>;
-  staleRequirements: Array<{
-    file: string;
-    line: number;
-    requirementId: string;
-    reason: "UNKNOWN" | "DEPRECATED";
-  }>;
-}
-```
-
-#### `updateAnnotationReferences(options)`
-
-Performs targeted updates of `@story` and/or `@req` values according to mapping rules.
+Scans the workspace for `@story` annotations that point to missing or out-of-project story files.
 
 **Parameters:**
 
-- `options` (object, required):
-  - `rootDir` (string, required)
-  - `storyMap` (Record<string, string> | undefined) – Mapping from old story paths to new paths.
-  - `reqMap` (Record<string, string> | undefined) – Mapping from old requirement IDs to new IDs.
-  - `dryRun` (boolean | undefined) – If `true`, no files are written; the function only reports potential changes (default: `false`).
-  - `include`, `exclude` (string[] | undefined) – Glob patterns as in `detectStaleAnnotations`.
+- `rootDir` (string, required) – Workspace root to scan. This is resolved against `process.cwd()`.
 
 **Returns:**
 
-- Promise resolving to:
+- `string[]` – A de-duplicated list of stale story paths exactly as they appear in `@story` annotations.
 
-```ts
-{
-  filesTouched: number;
-  changes: Array<{
-    file: string;
-    line: number;
-    kind: "story" | "req";
-    from: string;
-    to: string;
-  }>;
-  dryRun: boolean;
-}
-```
+**Behavior notes:**
 
-#### `batchUpdateAnnotations(options)`
+- The function recursively walks all files under `rootDir`.
+- Story paths that would escape the workspace (e.g., path traversal or unsafe absolute paths) are ignored rather than treated as stale.
+- If `rootDir` does not exist or is not a directory, an empty array is returned.
 
-Higher-level helper that combines detection and updates in a single call, suitable for bulk migrations.
+#### `updateAnnotationReferences(rootDir, oldPath, newPath)`
+
+Performs a targeted text replacement of `@story` values across the workspace.
 
 **Parameters:**
 
-- `options` (object, required):
-  - `rootDir` (string, required)
-  - `strategy` ("stories" | "requirements" | "all") – Which annotations to operate on.
-  - `storyMap`, `reqMap` (as in `updateAnnotationReferences`)
-  - `dryRun` (boolean | undefined)
-  - `include`, `exclude` (string[] | undefined)
+- `rootDir` (string, required) – Workspace root to update in-place.
+- `oldPath` (string, required) – The story path to search for after `@story`.
+- `newPath` (string, required) – The replacement story path.
 
 **Returns:**
 
-- Promise resolving to:
+- `number` – The count of `@story` annotations that were updated.
 
-```ts
-{
-  summary: {
-    filesScanned: number;
-    filesTouched: number;
-    storyUpdates: number;
-    reqUpdates: number;
-  }
-  details: {
-    updates: Array<{
-      file: string;
-      line: number;
-      kind: "story" | "req";
-      from: string;
-      to: string;
-    }>;
-  }
-  dryRun: boolean;
-}
-```
+**Behavior notes:**
 
-#### `verifyAnnotations(options)`
+- Only `@story` annotations are modified; `@req` annotations are never changed.
+- Files are only written when the content actually changes.
+- If `rootDir` does not exist or is not a directory, the function returns `0` without modifying anything.
 
-Runs the equivalent of the core traceability rules over the specified files and returns a machine-readable result suitable for CI checks.
+#### `batchUpdateAnnotations(rootDir, mappings)`
+
+Runs multiple `updateAnnotationReferences` operations in sequence.
 
 **Parameters:**
 
-- `options` (object, required):
-  - `rootDir` (string, required)
-  - `include`, `exclude` (string[] | undefined)
-  - `storyDirectories` (string[] | undefined)
-  - `knownRequirements` (string[] | undefined)
+- `rootDir` (string, required)
+- `mappings` (array, required) – Array of objects `{ oldPath: string; newPath: string }`.
 
 **Returns:**
 
-- Promise resolving to:
+- `number` – The total number of `@story` annotations updated across all mappings.
 
-```ts
-{
-  ok: boolean; // false if any violations are present
-  violations: Array<{
-    file: string;
-    line: number;
-    ruleId:
-      | "traceability/require-story-annotation"
-      | "traceability/require-req-annotation"
-      | "traceability/require-branch-annotation"
-      | "traceability/valid-annotation-format"
-      | "traceability/valid-story-reference"
-      | "traceability/valid-req-reference";
-    message: string;
-    severity: "error" | "warn";
-  }>;
-}
-```
+**Behavior notes:**
 
-#### `generateMaintenanceReport(options)`
+- There is no special batching logic; this helper simply loops over the provided mappings.
+- For each mapping, it calls `updateAnnotationReferences(rootDir, oldPath, newPath)` and sums the counts.
 
-Generates an aggregated report combining stale references, verification results, and basic statistics.
+#### `verifyAnnotations(rootDir)`
+
+Checks whether any stale `@story` annotations exist under the workspace.
 
 **Parameters:**
 
-- `options` (object, required):
-  - `rootDir` (string, required)
-  - `include`, `exclude` (string[] | undefined)
-  - `storyDirectories` (string[] | undefined)
-  - `knownRequirements` (string[] | undefined)
-  - `format` ("json" | "text" | "markdown" | undefined) – Output format (default: `"json"`).
+- `rootDir` (string, required)
 
 **Returns:**
 
-- Promise resolving to:
+- `boolean` – `true` if **no** stale annotations are found, `false` otherwise.
 
-```ts
-{
-  format: "json" | "text" | "markdown";
-  report: string; // serialized report in the requested format
-  stats: {
-    filesScanned: number;
-    staleStories: number;
-    staleRequirements: number;
-    violations: number;
-  }
-}
-```
+**Behavior notes:**
+
+- Internally, this function calls `detectStaleAnnotations(rootDir)` and returns `stale.length === 0`.
+- Verification is currently limited to story references; requirement IDs are not re-validated here.
+
+#### `generateMaintenanceReport(rootDir)`
+
+Generates a simple, text-only report of stale `@story` annotations.
+
+**Parameters:**
+
+- `rootDir` (string, required)
+
+**Returns:**
+
+- `string` – A newline-separated list of stale story paths, or an empty string if none are found.
+
+**Behavior notes:**
+
+- This function is intentionally simple and is used by the CLI to produce human-readable output.
+- It does not write to the filesystem or perform any updates.
 
 ### `traceability-maint` CLI
 
 The `traceability-maint` CLI wraps the maintenance API for use in scripts and CI. It is typically available via `npx traceability-maint` or as an npm script.
+
+The CLI currently focuses on stale `@story` annotations only. It does **not** build or consume a separate index file, and it does not yet support requirement-level maintenance.
 
 #### General usage
 
@@ -382,119 +308,148 @@ traceability-maint <command> [options]
 
 Common options:
 
-- `--root <path>` – Project root (default: current working directory).
-- `--include <globs>` – Comma-separated include patterns.
-- `--exclude <globs>` – Comma-separated exclude patterns.
-- `--stories <dirs>` – Comma-separated story directories.
-- `--req-file <path>` – JSON file containing an array of valid requirement IDs.
-- `--dry-run` – Perform a dry run without modifying files (where applicable).
-- `--format <json|text|markdown>` – Report format (for reporting commands).
+- `--root <dir>` – Workspace root to scan (defaults to the current working directory).
+- `--json` – For commands that support it, emit machine-readable JSON instead of human-readable text.
+- `--format <text|json>` – Output format for the `report` command only (default: `text`).
+- `--from <oldPath>` – Old story path for the `update` command.
+- `--to <newPath>` – New story path for the `update` command.
+- `--dry-run` – For `update`, estimate impact without modifying any files.
+- `-h`, `--help` – Show command help and exit.
 
-All commands exit with:
+Exit codes:
 
-- Exit code `0` on success (no violations for verification-type commands).
-- Exit code `1` on validation failure, stale references detected, or if any update operation fails.
-- Exit code `2` on configuration or usage errors (e.g., missing or unreadable files).
+- `0` – Success (no stale annotations for detection/verification commands, or command completed successfully).
+- `1` – Stale or invalid annotations detected.
+- `2` – Usage or configuration error (e.g., unknown command, missing required flags).
 
 #### Commands
 
-##### `detect-stale`
+##### `detect`
 
-Detects annotations referencing non-existent or deprecated stories/requirements.
+Detects `@story` annotations that reference missing story files under the chosen workspace root.
 
 ```bash
-traceability-maint detect-stale --root . --stories docs/stories
+traceability-maint detect --root .
 ```
 
-- Output: JSON or text summary to stdout (controlled by `--format`).
+- Output (text):
+  - When no stale annotations are found: prints `No stale @story annotations found.`
+  - When stale annotations are found: prints each stale story path on its own line, followed by a short summary.
+- Output (JSON with `--json`):
+
+  ```json
+  {
+    "root": "/absolute/path/to/workspace",
+    "stale": ["missing.story.md", "old/renamed.story.md"]
+  }
+  ```
+
 - Exit code:
   - `0` if no stale annotations are found.
-  - `1` if any stale story or requirement is detected.
-
-##### `update-references`
-
-Applies mapping files to update `@story` and/or `@req` annotations.
-
-```bash
-traceability-maint update-references \
-  --root . \
-  --story-map ./scripts/story-map.json \
-  --req-map ./scripts/req-map.json \
-  --dry-run
-```
-
-Options:
-
-- `--story-map <path>` – JSON object mapping old story paths to new paths.
-- `--req-map <path>` – JSON object mapping old requirement IDs to new IDs.
-- `--dry-run` – Report planned changes without writing files.
-
-Exit code:
-
-- `0` if the command completes successfully.
-- `1` if any file update fails or input mapping files are invalid.
-
-##### `batch-update`
-
-Higher-level batch operation that combines detection and updates.
-
-```bash
-traceability-maint batch-update \
-  --root . \
-  --strategy all \
-  --story-map ./scripts/story-map.json \
-  --req-map ./scripts/req-map.json
-```
-
-Options:
-
-- `--strategy <stories|requirements|all>` – Type of annotations to update.
-- `--story-map`, `--req-map`, `--dry-run` – As in `update-references`.
-
-Exit code:
-
-- `0` on success.
-- `1` if any update fails.
+  - `1` if any stale annotations are detected.
 
 ##### `verify`
 
-Runs the traceability rules in verification mode (read-only).
+Runs a simple verification check using the same logic as `detect` and reports whether any stale `@story` annotations exist.
 
 ```bash
-traceability-maint verify --root . --stories docs/stories --req-file ./reqs.json
+traceability-maint verify --root .
 ```
 
-Exit code:
+- Output (text):
+  - `All traceability annotations under <root> are valid.` when no stale annotations are found.
+  - A short message indicating that stale or invalid annotations were detected, with guidance to run `detect` or `report` for details.
+- Exit code:
+  - `0` if all annotations pass verification.
+  - `1` if any stale annotations are found.
 
-- `0` if all files pass verification.
-- `1` if any violations are found.
+> Note: The `verify` command does **not** currently support `--json` output.
 
 ##### `report`
 
-Generates a consolidated maintenance report.
+Generates a plain-text or JSON report of stale story references.
 
 ```bash
-traceability-maint report --root . --format markdown > traceability-report.md
+# Human-readable text report (default)
+traceability-maint report --root .
+
+# JSON report suitable for CI
+traceability-maint report --root . --format json
 ```
 
-Options:
+- Output (text, default):
+  - When there are no stale annotations: `No stale @story annotations found. Nothing to report.`
+  - When stale annotations exist, a small Markdown-style report, including a header and a list of stale story paths.
+- Output (JSON with `--format json`):
 
-- `--format <json|text|markdown>` – Output format (default: `json`).
+  ```json
+  {
+    "root": "/absolute/path/to/workspace",
+    "report": "missing.story.md\nold/renamed.story.md"
+  }
+  ```
 
-Exit code:
+- Exit code:
+  - Always `0` (report generation is considered successful even when stale annotations are present).
 
-- `0` on success.
-- `1` if generation fails (e.g., scan errors).
+##### `update`
 
-### Minimal CLI example
+Updates `@story` annotations that reference a specific path.
+
+```bash
+# Perform an in-place update
+traceability-maint update --root . --from old.path.story.md --to new.path.story.md
+
+# Estimate impact without modifying files
+traceability-maint update --root . --from old.path.story.md --to new.path.story.md --dry-run
+```
+
+Required options:
+
+- `--from <oldPath>` – The existing story path to replace.
+- `--to <newPath>` – The new story path.
+
+Optional options:
+
+- `--root <dir>` – Workspace root (defaults to current directory).
+- `--dry-run` – Show an estimated impact without modifying files.
+- `--json` – JSON output for both normal and dry-run modes.
+
+Behavior:
+
+- When `--dry-run` is **not** provided, the command:
+  - Replaces `@story <oldPath>` with `@story <newPath>` across the workspace.
+  - Prints a short summary (or a JSON object with `root`, `from`, `to`, and `updated` fields when `--json` is used).
+  - Exits with code `0`.
+- When `--dry-run` **is** provided, the command:
+  - Does **not** modify any files.
+  - Uses `generateMaintenanceReport` to estimate the number of stale annotations before changes.
+  - Prints a human-readable summary, or a JSON object of the form:
+
+    ```json
+    {
+      "mode": "dry-run",
+      "root": "/absolute/path/to/workspace",
+      "from": "old.path.story.md",
+      "to": "new.path.story.md",
+      "estimatedStaleCount": 3
+    }
+    ```
+
+  - Exits with code `0`.
+
+If `--from` or `--to` is missing, the CLI prints an error, shows the help text, and exits with code `2`.
+
+### Minimal CLI integration example
 
 `package.json`:
 
 ```json
 {
   "scripts": {
-    "traceability:verify": "traceability-maint verify --root . --stories docs/stories --req-file ./requirements.json",
-    "traceability:report": "traceability-maint report --root . --format markdown > traceability-report.md"
+    "traceability:detect": "traceability-maint detect --root .",
+    "traceability:verify": "traceability-maint verify --root .",
+    "traceability:report": "traceability-maint report --root . --format json > traceability-report.json"
   }
 }
 ```
@@ -503,4 +458,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```

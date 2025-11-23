@@ -37,3 +37,6 @@ This vulnerability affects development-time dependencies bundled within the npm 
 
 **Testing:**
 Continuous `npm audit` checks in CI and pre-push hooks will detect if this vulnerability is resolved or if new vulnerabilities are introduced.
+
+**Status Update (2025-11-23):**
+As of 2025-11-23, there is still no mature, dry-aged safe upgrade path available according to dry-aged-deps for the bundled npm dependency chain containing brace-expansion. The vulnerability continues to be tracked, and the risk remains accepted as a dev-only residual risk with no production impact.

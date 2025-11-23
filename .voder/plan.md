@@ -1,17 +1,17 @@
 ## NOW
 
-- [ ] Review the maintenance tools story and the existing maintenance utilities and tests to map each documented requirement and acceptance criterion to current behavior, producing a clear list of functional gaps that must be closed for the maintenance tools to fully satisfy the story.
+- [ ] Review and tighten the user-facing maintenance documentation so that the described maintenance API functions and `traceability-maint` CLI commands, options, examples, and exit codes exactly match the current implementation and no longer claim unsupported behavior.
 
 ## NEXT
 
-- [ ] Design a minimal, safe command-line or workflow interface around the existing maintenance utilities that lets users run the key maintenance operations in a way that matches the story’s user experience requirements, and specify the data each command reports back.
-- [ ] Enhance the maintenance reporting behavior so it provides clear, human-readable information about which annotations are stale or changed (and where), aligned with the story’s reporting and safety requirements, and add tests that capture this expected output.
-- [ ] Refine the maintenance error-handling behavior for edge cases such as permission-denied paths or invalid inputs so it is explicitly defined and, where appropriate, graceful, and update or add tests to assert the chosen behavior for each scenario.
-- [ ] Update or create user-facing documentation that explains how to use the maintenance tools (both programmatic APIs and any new CLI/workflow entrypoints), including examples and cautions about safety and reversibility, ensuring it is consistent with the implemented behavior and the story’s acceptance criteria.
-- [ ] Re-run the full story against the updated implementation and tests to verify that all acceptance criteria for the maintenance tools are now met and that the functionality assessment for this story can be considered passing.
+- [ ] Audit the maintenance and CLI source files for any remaining missing or inconsistent traceability annotations on functions and significant branches, and add or correct @story and @req tags so they align with the maintenance tools story and requirements.
+- [ ] Adjust the declared Node engine version in the project metadata to reflect the true minimum supported runtime implied by the ESLint 9 toolchain, and confirm that this change is consistent with how the project is currently built and tested.
+- [ ] Revisit the documented dev-only security incidents and dependency override rationale to ensure they still accurately describe the present dependency tree and accepted residual risks, updating timelines or notes where necessary.
+- [ ] After documentation and security updates are in place, re-assess the maintenance tools story against the implementation and tests to confirm all acceptance criteria are met and that functionality can be considered complete for this story.
 
 ## LATER
 
-- [ ] Consider adding optional automation, such as file-watching or integration with existing project scripts or hooks, to run maintenance operations when story files are moved or renamed if the story explicitly calls for it and it can be implemented without overcomplicating the workflow.
-- [ ] Refine and, if helpful, generalize the maintenance reporting format so it can be consumed by other tools (for example, machine-readable JSON alongside human-readable output) while keeping the primary user experience simple.
-- [ ] Look for opportunities to further simplify or refactor the maintenance code and tests once all functionality is complete, ensuring they remain easy to read, maintain, and extend without changing external behavior.
+- [ ] Enhance the maintenance reporting capabilities to include file and line level information for each stale annotation, and reflect that richer detail in both the programmatic API and CLI output formats.
+- [ ] Improve the robustness of maintenance utilities when encountering filesystem edge cases such as permission-denied directories or unexpected file types, ensuring these scenarios are handled gracefully and are clearly surfaced through the CLI without crashing.
+- [ ] Refine the maintenance documentation to include more advanced usage patterns, such as integrating the CLI into CI workflows or project scripts, once the core behavior and basic docs are fully aligned and stable.
+- [ ] Evaluate whether any additional automated checks are helpful to continuously enforce documentation–implementation alignment for the maintenance tools, such as lightweight tests that parse example commands or compare documented signatures against exported APIs.

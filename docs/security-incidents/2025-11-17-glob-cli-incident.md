@@ -36,3 +36,6 @@ This vulnerability affects development-time CLI tools bundled within the npm pac
 
 **Testing:**
 Continuous `npm audit` checks in CI and pre-push hooks will detect if this vulnerability is resolved or if new vulnerabilities are introduced.
+
+**Status (2025-11-23):**
+As of 2025-11-23, dry-aged-deps reports no mature, dry-aged safe upgrade path for the affected glob dependency bundled via @semantic-release/npm. The risk remains accepted for dev-only tooling, with continued monitoring for an upstream fix.

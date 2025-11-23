@@ -77,3 +77,10 @@ Where possible, we now mitigate related transitive risks via explicit `package.j
 - **js-yaml (GHSA-mh29-5h37-fv8m)**: Prototype pollution vulnerability resolved by upgrading to `js-yaml` >= 4.1.1 via `npm audit fix` and package.json override.
 - **tar (node-tar) (CVE-2023-47146)**: Arbitrary file write via directory traversal vulnerability resolved by enforcing `tar` >= 6.1.11 via package.json override.
 - **tar race condition (GHSA-29xp-372q-xqph)**: Resolved by downgrading semantic-release packages to v10.x/v21.x which don't bundle vulnerable npm versions.
+
+## Status Update (2025-11-23)
+
+As of 2025-11-23:
+- The previously documented glob/npm/brace-expansion vulnerabilities remain present only within dev tooling (semantic-release/@semantic-release/npm bundled npm).
+- `dry-aged-deps` has not yet surfaced a mature, vulnerability-free upgrade path for the affected semantic-release/npm combination.
+- The existing risk acceptance decision is unchanged and remains in force, and will be revisited once a stable, vulnerability-free upgrade is available and validated by our dependency safety tooling.

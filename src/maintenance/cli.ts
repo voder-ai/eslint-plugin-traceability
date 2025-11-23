@@ -105,6 +105,12 @@ function parseFlags(args: string[]): ParsedFlags {
   return flags;
 }
 
+/**
+ * Handle the `detect` subcommand for stale @story annotations.
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-DETECT - CLI surface for detection of stale annotations
+ * @req REQ-MAINT-SAFE - Return specific exit codes for stale vs clean states
+ */
 function handleDetect(args: string[]): number {
   const flags = parseFlags(args);
   const root = flags.root;
@@ -133,6 +139,12 @@ Run 'traceability-maint report' for a structured summary.`,
   return stale.length === 0 ? EXIT_OK : EXIT_STALE;
 }
 
+/**
+ * Handle the `verify` subcommand to validate traceability annotations.
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-VERIFY - CLI surface for verification of annotations
+ * @req REQ-MAINT-SAFE - Return distinct exit codes for verification failures
+ */
 function handleVerify(args: string[]): number {
   const flags = parseFlags(args);
   const root = flags.root;
@@ -149,6 +161,12 @@ function handleVerify(args: string[]): number {
   return EXIT_STALE;
 }
 
+/**
+ * Handle the `report` subcommand to generate a maintenance report.
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-REPORT - CLI surface for human-readable maintenance reports
+ * @req REQ-MAINT-SAFE - Support machine-readable formats for safe automation
+ */
 function handleReport(args: string[]): number {
   const flags = parseFlags(args);
   const root = flags.root;
@@ -172,6 +190,12 @@ function handleReport(args: string[]): number {
   return EXIT_OK;
 }
 
+/**
+ * Handle the `update` subcommand to rewrite @story annotation references.
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-UPDATE - CLI surface for updating annotation references
+ * @req REQ-MAINT-SAFE - Provide dry-run mode and explicit parameter checks
+ */
 function handleUpdate(args: string[]): number {
   const flags = parseFlags(args);
   const root = flags.root;
@@ -225,6 +249,11 @@ function handleUpdate(args: string[]): number {
   return EXIT_OK;
 }
 
+/**
+ * Print CLI usage help for the maintenance tools.
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide discoverable CLI usage information
+ */
 function printHelp(): void {
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-SAFE - Provide discoverable CLI usage information
