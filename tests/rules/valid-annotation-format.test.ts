@@ -50,6 +50,33 @@ const makeInvalid = ({
   ],
 });
 
+/**
+ * Test-only convenience for Story 005.0 error messaging consistency.
+ * Preconfigures the invalidStoryFormat messageId so tests only specify
+ * name, code, and details (plus optional output/options).
+ */
+const makeInvalidStory = ({
+  name,
+  code,
+  details,
+  output,
+  options,
+}: {
+  name: string;
+  code: string;
+  details: string;
+  output?: string;
+  options?: any[];
+}) =>
+  makeInvalid({
+    name,
+    code,
+    output,
+    options,
+    messageId: "invalidStoryFormat",
+    details,
+  });
+
 describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)", () => {
   ruleTester.run("valid-annotation-format", rule, {
     valid: [
@@ -170,33 +197,29 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
       },
     ],
     invalid: [
-      makeInvalid({
+      makeInvalidStory({
         name: "[REQ-PATH-FORMAT] missing story path (single line)",
         code: `// @story`,
-        messageId: "invalidStoryFormat",
         details:
           'Missing story path for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
       }),
-      makeInvalid({
+      makeInvalidStory({
         name: "[REQ-PATH-FORMAT] invalid story file extension",
         code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
         output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
-        messageId: "invalidStoryFormat",
         details:
           'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
       }),
-      makeInvalid({
+      makeInvalidStory({
         name: "[REQ-PATH-FORMAT] missing extension in story path",
         code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,
         output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
-        messageId: "invalidStoryFormat",
         details:
           'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
       }),
-      makeInvalid({
+      makeInvalidStory({
         name: "[REQ-PATH-FORMAT] story path must not use path traversal",
         code: `// @story ../docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
-        messageId: "invalidStoryFormat",
         details:
           'Invalid story path "../docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
       }),
@@ -221,22 +244,20 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
         details:
           'Missing requirement ID for @req annotation. Expected an identifier like "REQ-EXAMPLE".',
       }),
-      makeInvalid({
+      makeInvalidStory({
         name: "[REQ-MULTILINE-SUPPORT] missing story path with multi-line block comment",
         code: `/**
  * @story
  */`,
-        messageId: "invalidStoryFormat",
         details:
           'Missing story path for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
       }),
-      makeInvalid({
+      makeInvalidStory({
         name: "[REQ-MULTILINE-SUPPORT] invalid multi-line story path after collapsing whitespace",
         code: `/**
  * @story docs/stories/005.0-
  * DEV-ANNOTATION-VALIDATION.story
  */`,
-        messageId: "invalidStoryFormat",
         details:
           'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
       }),
