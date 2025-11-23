@@ -84,37 +84,41 @@ RULE_NAMES.forEach(
  * The recommended and strict configs treat missing annotations and missing references as errors,
  * while formatting issues are reported as warnings, matching the story's severity conventions.
  */
+const TRACEABILITY_RULE_SEVERITIES: Readonly<Record<string, "error" | "warn">> =
+  {
+    "traceability/require-story-annotation": "error",
+    "traceability/require-req-annotation": "error",
+    "traceability/require-branch-annotation": "error",
+    "traceability/valid-annotation-format": "warn",
+    "traceability/valid-story-reference": "error",
+    "traceability/valid-req-reference": "error",
+  } as const;
+
+/**
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * @req REQ-PLUGIN-STRUCTURE - Provide foundational plugin export and registration
+ * @req REQ-ERROR-SEVERITY - Map rule types to appropriate ESLint severity levels (errors vs warnings)
+ */
+function createTraceabilityFlatConfig() {
+  return {
+    plugins: {
+      traceability: {},
+    },
+    rules: {
+      ...TRACEABILITY_RULE_SEVERITIES,
+    },
+  };
+}
+
+/**
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * @req REQ-ERROR-SEVERITY - Map rule types to appropriate ESLint severity levels (errors vs warnings)
+ * The recommended and strict configs treat missing annotations and missing references as errors,
+ * while formatting issues are reported as warnings, matching the story's severity conventions.
+ */
 const configs = {
-  recommended: [
-    {
-      plugins: {
-        traceability: {},
-      },
-      rules: {
-        "traceability/require-story-annotation": "error",
-        "traceability/require-req-annotation": "error",
-        "traceability/require-branch-annotation": "error",
-        "traceability/valid-annotation-format": "warn",
-        "traceability/valid-story-reference": "error",
-        "traceability/valid-req-reference": "error",
-      },
-    },
-  ],
-  strict: [
-    {
-      plugins: {
-        traceability: {},
-      },
-      rules: {
-        "traceability/require-story-annotation": "error",
-        "traceability/require-req-annotation": "error",
-        "traceability/require-branch-annotation": "error",
-        "traceability/valid-annotation-format": "warn",
-        "traceability/valid-story-reference": "error",
-        "traceability/valid-req-reference": "error",
-      },
-    },
-  ],
+  recommended: [createTraceabilityFlatConfig()],
+  strict: [createTraceabilityFlatConfig()],
 };
 
 export { rules, configs };

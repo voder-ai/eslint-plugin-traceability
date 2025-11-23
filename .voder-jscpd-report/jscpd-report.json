@@ -1,0 +1,3069 @@
+{
+  "statistics": {
+    "detectionDate": "2025-11-23T00:03:54.218Z",
+    "formats": {
+      "typescript": {
+        "sources": {
+          "tests/utils/branch-annotation-helpers.test.ts": {
+            "lines": 50,
+            "tokens": 490,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/utils/annotation-checker.test.ts": {
+            "lines": 81,
+            "tokens": 561,
+            "sources": 1,
+            "clones": 11,
+            "duplicatedLines": 79,
+            "duplicatedTokens": 651,
+            "percentage": 97.53,
+            "percentageTokens": 116.04,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/valid-story-reference.test.ts": {
+            "lines": 528,
+            "tokens": 3703,
+            "sources": 1,
+            "clones": 10,
+            "duplicatedLines": 96,
+            "duplicatedTokens": 902,
+            "percentage": 18.18,
+            "percentageTokens": 24.36,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/valid-req-reference.test.ts": {
+            "lines": 91,
+            "tokens": 425,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/valid-annotation-format.test.ts": {
+            "lines": 216,
+            "tokens": 953,
+            "sources": 1,
+            "clones": 8,
+            "duplicatedLines": 96,
+            "duplicatedTokens": 440,
+            "percentage": 44.44,
+            "percentageTokens": 46.17,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-visitors-edgecases.test.ts": {
+            "lines": 27,
+            "tokens": 341,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 216,
+            "percentage": 37.04,
+            "percentageTokens": 63.34,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-io.edgecases.test.ts": {
+            "lines": 60,
+            "tokens": 656,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 168,
+            "percentage": 26.67,
+            "percentageTokens": 25.61,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-io-behavior.test.ts": {
+            "lines": 58,
+            "tokens": 589,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 6,
+            "duplicatedTokens": 96,
+            "percentage": 10.34,
+            "percentageTokens": 16.3,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-helpers.test.ts": {
+            "lines": 206,
+            "tokens": 2072,
+            "sources": 1,
+            "clones": 9,
+            "duplicatedLines": 65,
+            "duplicatedTokens": 707,
+            "percentage": 31.55,
+            "percentageTokens": 34.12,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-helpers-edgecases.test.ts": {
+            "lines": 107,
+            "tokens": 939,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-core.test.ts": {
+            "lines": 68,
+            "tokens": 786,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 6,
+            "duplicatedTokens": 56,
+            "percentage": 8.82,
+            "percentageTokens": 7.12,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-core.autofix.test.ts": {
+            "lines": 84,
+            "tokens": 1013,
+            "sources": 1,
+            "clones": 6,
+            "duplicatedLines": 104,
+            "duplicatedTokens": 1382,
+            "percentage": 123.81,
+            "percentageTokens": 136.43,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-core-edgecases.test.ts": {
+            "lines": 84,
+            "tokens": 1013,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 73,
+            "duplicatedTokens": 975,
+            "percentage": 86.9,
+            "percentageTokens": 96.25,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-story-annotation.test.ts": {
+            "lines": 225,
+            "tokens": 1336,
+            "sources": 1,
+            "clones": 5,
+            "duplicatedLines": 44,
+            "duplicatedTokens": 341,
+            "percentage": 19.56,
+            "percentageTokens": 25.52,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-req-annotation.test.ts": {
+            "lines": 300,
+            "tokens": 2129,
+            "sources": 1,
+            "clones": 23,
+            "duplicatedLines": 197,
+            "duplicatedTokens": 1425,
+            "percentage": 65.67,
+            "percentageTokens": 66.93,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/require-branch-annotation.test.ts": {
+            "lines": 293,
+            "tokens": 1426,
+            "sources": 1,
+            "clones": 14,
+            "duplicatedLines": 94,
+            "duplicatedTokens": 966,
+            "percentage": 32.08,
+            "percentageTokens": 67.74,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/error-reporting.test.ts": {
+            "lines": 109,
+            "tokens": 808,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 77,
+            "percentage": 9.17,
+            "percentageTokens": 9.53,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/rules/auto-fix-behavior-008.test.ts": {
+            "lines": 163,
+            "tokens": 936,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 20,
+            "duplicatedTokens": 150,
+            "percentage": 12.27,
+            "percentageTokens": 16.03,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/update.test.ts": {
+            "lines": 21,
+            "tokens": 174,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/update-isolated.test.ts": {
+            "lines": 46,
+            "tokens": 325,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/report.test.ts": {
+            "lines": 37,
+            "tokens": 289,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 14,
+            "duplicatedTokens": 107,
+            "percentage": 37.84,
+            "percentageTokens": 37.02,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/index.test.ts": {
+            "lines": 34,
+            "tokens": 213,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/detect.test.ts": {
+            "lines": 40,
+            "tokens": 352,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/detect-isolated.test.ts": {
+            "lines": 157,
+            "tokens": 1266,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/maintenance/batch.test.ts": {
+            "lines": 55,
+            "tokens": 417,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 14,
+            "duplicatedTokens": 107,
+            "percentage": 25.45,
+            "percentageTokens": 25.66,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/integration/cli-integration.test.ts": {
+            "lines": 92,
+            "tokens": 529,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/config/require-story-annotation-config.test.ts": {
+            "lines": 11,
+            "tokens": 116,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/config/eslint-config-validation.test.ts": {
+            "lines": 16,
+            "tokens": 178,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/plugin-setup.test.ts": {
+            "lines": 17,
+            "tokens": 133,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/plugin-setup-error.test.ts": {
+            "lines": 47,
+            "tokens": 358,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/plugin-default-export-and-configs.test.ts": {
+            "lines": 88,
+            "tokens": 558,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 26,
+            "duplicatedTokens": 130,
+            "percentage": 29.55,
+            "percentageTokens": 23.3,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "tests/cli-error-handling.test.ts": {
+            "lines": 45,
+            "tokens": 304,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-visitors.ts": {
+            "lines": 201,
+            "tokens": 988,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 14,
+            "duplicatedTokens": 134,
+            "percentage": 6.97,
+            "percentageTokens": 13.56,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-utils.ts": {
+            "lines": 222,
+            "tokens": 1243,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-io.ts": {
+            "lines": 146,
+            "tokens": 882,
+            "sources": 1,
+            "clones": 5,
+            "duplicatedLines": 35,
+            "duplicatedTokens": 290,
+            "percentage": 23.97,
+            "percentageTokens": 32.88,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-helpers.ts": {
+            "lines": 391,
+            "tokens": 2157,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 102,
+            "percentage": 2.56,
+            "percentageTokens": 4.73,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/helpers/require-story-core.ts": {
+            "lines": 159,
+            "tokens": 1055,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/storyReferenceUtils.ts": {
+            "lines": 331,
+            "tokens": 1433,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/branch-annotation-helpers.ts": {
+            "lines": 278,
+            "tokens": 1549,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/annotation-checker.ts": {
+            "lines": 344,
+            "tokens": 1994,
+            "sources": 1,
+            "clones": 3,
+            "duplicatedLines": 23,
+            "duplicatedTokens": 188,
+            "percentage": 6.69,
+            "percentageTokens": 9.43,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/valid-story-reference.ts": {
+            "lines": 410,
+            "tokens": 2174,
+            "sources": 1,
+            "clones": 10,
+            "duplicatedLines": 90,
+            "duplicatedTokens": 566,
+            "percentage": 21.95,
+            "percentageTokens": 26.03,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/valid-req-reference.ts": {
+            "lines": 227,
+            "tokens": 1449,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 106,
+            "percentage": 7.05,
+            "percentageTokens": 7.32,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/valid-annotation-format.ts": {
+            "lines": 466,
+            "tokens": 2196,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 18,
+            "duplicatedTokens": 152,
+            "percentage": 3.86,
+            "percentageTokens": 6.92,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/require-story-annotation.ts": {
+            "lines": 115,
+            "tokens": 443,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/require-req-annotation.ts": {
+            "lines": 143,
+            "tokens": 669,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/rules/require-branch-annotation.ts": {
+            "lines": 90,
+            "tokens": 405,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/utils.ts": {
+            "lines": 65,
+            "tokens": 272,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/update.ts": {
+            "lines": 81,
+            "tokens": 358,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/report.ts": {
+            "lines": 17,
+            "tokens": 88,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/index.ts": {
+            "lines": 14,
+            "tokens": 56,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/detect.ts": {
+            "lines": 142,
+            "tokens": 861,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/maintenance/batch.ts": {
+            "lines": 30,
+            "tokens": 181,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/index.ts": {
+            "lines": 121,
+            "tokens": 580,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 30,
+            "duplicatedTokens": 170,
+            "percentage": 24.79,
+            "percentageTokens": 29.31,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 7449,
+          "tokens": 46421,
+          "sources": 53,
+          "clones": 65,
+          "duplicatedLines": 603,
+          "duplicatedTokens": 5302,
+          "percentage": 8.1,
+          "percentageTokens": 11.42,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "markdown": {
+        "sources": {
+          "tests/fixtures/story_bullet.md": {
+            "lines": 6,
+            "tokens": 31,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 6,
+          "tokens": 31,
+          "sources": 1,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "json": {
+        "sources": {
+          "tests/config/valid-config.json": {
+            "lines": 13,
+            "tokens": 68,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 13,
+          "tokens": 68,
+          "sources": 1,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 7468,
+      "tokens": 46520,
+      "sources": 55,
+      "clones": 65,
+      "duplicatedLines": 603,
+      "duplicatedTokens": 5302,
+      "percentage": 8.07,
+      "percentageTokens": 11.4,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": ",\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n    ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 51,
+        "end": 57,
+        "startLoc": {
+          "line": 51,
+          "column": 55,
+          "position": 313
+        },
+        "endLoc": {
+          "line": 57,
+          "column": 5,
+          "position": 363
+        }
+      },
+      "secondFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 43,
+        "end": 49,
+        "startLoc": {
+          "line": 43,
+          "column": 54,
+          "position": 248
+        },
+        "endLoc": {
+          "line": 49,
+          "column": 7,
+          "position": 298
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 63,
+        "end": 70,
+        "startLoc": {
+          "line": 63,
+          "column": 2,
+          "position": 411
+        },
+        "endLoc": {
+          "line": 70,
+          "column": 61,
+          "position": 468
+        }
+      },
+      "secondFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 43,
+        "end": 50,
+        "startLoc": {
+          "line": 43,
+          "column": 54,
+          "position": 248
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 61,
+          "position": 305
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": ",\n        errors: [{ messageId: \"missingReq\" }],\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n    ],\n  ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 72,
+        "end": 80,
+        "startLoc": {
+          "line": 72,
+          "column": 56,
+          "position": 483
+        },
+        "endLoc": {
+          "line": 80,
+          "column": 3,
+          "position": 553
+        }
+      },
+      "secondFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 62,
+        "end": 58,
+        "startLoc": {
+          "line": 62,
+          "column": 54,
+          "position": 395
+        },
+        "endLoc": {
+          "line": 58,
+          "column": 5,
+          "position": 367
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 6,
+      "fragment": ";\n    });\n\n    jest.spyOn(fs, \"statSync\").mockImplementation((...args: any[]) => {\n      const p = args[0] as string;\n      if (p === outsideFile",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 290,
+        "end": 295,
+        "startLoc": {
+          "line": 290,
+          "column": 12,
+          "position": 1943
+        },
+        "endLoc": {
+          "line": 295,
+          "column": 12,
+          "position": 2003
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 218,
+        "end": 223,
+        "startLoc": {
+          "line": 218,
+          "column": 10,
+          "position": 1388
+        },
+        "endLoc": {
+          "line": 223,
+          "column": 10,
+          "position": 1448
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 16,
+      "fragment": ",\n    );\n\n    jest.spyOn(fs, \"existsSync\").mockImplementation((...args: any[]) => {\n      const p = args[0] as string;\n      return p === storyPath;\n    });\n\n    jest.spyOn(fs, \"statSync\").mockImplementation((...args: any[]) => {\n      const p = args[0] as string;\n      if (p === storyPath) {\n        return {\n          isFile: () => true,\n        };\n      }\n      const",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 333,
+        "end": 348,
+        "startLoc": {
+          "line": 333,
+          "column": 38,
+          "position": 2261
+        },
+        "endLoc": {
+          "line": 348,
+          "column": 6,
+          "position": 2410
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 213,
+        "end": 228,
+        "startLoc": {
+          "line": 213,
+          "column": 47,
+          "position": 1329
+        },
+        "endLoc": {
+          "line": 228,
+          "column": 6,
+          "position": 1478
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 12,
+      "fragment": ") {\n        return {\n          isFile: () => true,\n        };\n      }\n      const err: NodeJS.ErrnoException = new Error(\"ENOENT\");\n      err.code = \"ENOENT\";\n      throw err;\n    });\n\n    const diagnostics = runRuleOnCode(\n      `// @story docs/stories/developer-story.map.md\\n// @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md`",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 343,
+        "end": 354,
+        "startLoc": {
+          "line": 343,
+          "column": 10,
+          "position": 2381
+        },
+        "endLoc": {
+          "line": 354,
+          "column": 107,
+          "position": 2462
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 295,
+        "end": 306,
+        "startLoc": {
+          "line": 295,
+          "column": 12,
+          "position": 2004
+        },
+        "endLoc": {
+          "line": 306,
+          "column": 12,
+          "position": 2085
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": ").mockImplementation(() => {\n      const err: NodeJS.ErrnoException = new Error(\"EACCES: permission denied\");\n      err.code = \"EACCES\";\n      throw err;\n    });\n\n    expect",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 426,
+        "end": 432,
+        "startLoc": {
+          "line": 426,
+          "column": 11,
+          "position": 2956
+        },
+        "endLoc": {
+          "line": 432,
+          "column": 7,
+          "position": 3010
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 420,
+        "end": 426,
+        "startLoc": {
+          "line": 420,
+          "column": 13,
+          "position": 2894
+        },
+        "endLoc": {
+          "line": 426,
+          "column": 5,
+          "position": 2948
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 12,
+      "fragment": ",\n    );\n\n    expect(diagnostics.length).toBeGreaterThan(0);\n    const fileAccessDiagnostics = diagnostics.filter(\n      (d) => d.messageId === \"fileAccessError\",\n    );\n    expect(fileAccessDiagnostics.length).toBeGreaterThan(0);\n\n    const errorData = fileAccessDiagnostics[0].data;\n    expect(errorData).toBeDefined();\n    expect(String(errorData.error)).toMatch(/EACCES/i",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 515,
+        "end": 526,
+        "startLoc": {
+          "line": 515,
+          "column": 43,
+          "position": 3584
+        },
+        "endLoc": {
+          "line": 526,
+          "column": 10,
+          "position": 3691
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-story-reference.test.ts",
+        "start": 481,
+        "end": 492,
+        "startLoc": {
+          "line": 481,
+          "column": 51,
+          "position": 3338
+        },
+        "endLoc": {
+          "line": 492,
+          "column": 7,
+          "position": 3445
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 13,
+      "fragment": ",\n        errors: [\n          {\n            messageId: \"invalidReqFormat\",\n            data: {\n              details:\n                'Missing requirement ID for @req annotation. Expected an identifier like \"REQ-EXAMPLE\".',\n            },\n          },\n        ],\n      },\n      {\n        name: \"[REQ-MULTILINE-SUPPORT] missing story path with multi-line block comment\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-annotation-format.test.ts",
+        "start": 141,
+        "end": 153,
+        "startLoc": {
+          "line": 141,
+          "column": 11,
+          "position": 641
+        },
+        "endLoc": {
+          "line": 153,
+          "column": 75,
+          "position": 696
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-annotation-format.test.ts",
+        "start": 115,
+        "end": 127,
+        "startLoc": {
+          "line": 115,
+          "column": 10,
+          "position": 515
+        },
+        "endLoc": {
+          "line": 127,
+          "column": 55,
+          "position": 570
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 13,
+      "fragment": ",\n        errors: [\n          {\n            messageId: \"invalidStoryFormat\",\n            data: {\n              details:\n                'Missing story path for @story annotation. Expected a path like \"docs/stories/005.0-DEV-EXAMPLE.story.md\".',\n            },\n          },\n        ],\n      },\n      {\n        name: \"[REQ-MULTILINE-SUPPORT] invalid multi-line story path after collapsing whitespace\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-annotation-format.test.ts",
+        "start": 156,
+        "end": 168,
+        "startLoc": {
+          "line": 156,
+          "column": 5,
+          "position": 704
+        },
+        "endLoc": {
+          "line": 168,
+          "column": 84,
+          "position": 759
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-annotation-format.test.ts",
+        "start": 61,
+        "end": 73,
+        "startLoc": {
+          "line": 61,
+          "column": 12,
+          "position": 249
+        },
+        "endLoc": {
+          "line": 73,
+          "column": 49,
+          "position": 304
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 13,
+      "fragment": ",\n        errors: [\n          {\n            messageId: \"invalidStoryFormat\",\n            data: {\n              details:\n                'Invalid story path \"docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story\" for @story annotation. Expected a path like \"docs/stories/005.0-DEV-EXAMPLE.story.md\".',\n            },\n          },\n        ],\n      },\n      {\n        name: \"[REQ-MULTILINE-SUPPORT] missing req id with multi-line block comment\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-annotation-format.test.ts",
+        "start": 172,
+        "end": 184,
+        "startLoc": {
+          "line": 172,
+          "column": 5,
+          "position": 767
+        },
+        "endLoc": {
+          "line": 184,
+          "column": 71,
+          "position": 822
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-annotation-format.test.ts",
+        "start": 75,
+        "end": 87,
+        "startLoc": {
+          "line": 75,
+          "column": 66,
+          "position": 319
+        },
+        "endLoc": {
+          "line": 87,
+          "column": 52,
+          "position": 374
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 13,
+      "fragment": ",\n        errors: [\n          {\n            messageId: \"invalidReqFormat\",\n            data: {\n              details:\n                'Missing requirement ID for @req annotation. Expected an identifier like \"REQ-EXAMPLE\".',\n            },\n          },\n        ],\n      },\n      {\n        name: \"[REQ-MULTILINE-SUPPORT] invalid multi-line req id after collapsing whitespace\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/valid-annotation-format.test.ts",
+        "start": 187,
+        "end": 199,
+        "startLoc": {
+          "line": 187,
+          "column": 5,
+          "position": 830
+        },
+        "endLoc": {
+          "line": 199,
+          "column": 80,
+          "position": 885
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/valid-annotation-format.test.ts",
+        "start": 115,
+        "end": 127,
+        "startLoc": {
+          "line": 115,
+          "column": 10,
+          "position": 515
+        },
+        "endLoc": {
+          "line": 127,
+          "column": 55,
+          "position": 570
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 6,
+      "fragment": ", () => {\n    const fakeContext: any = { getFilename: () => \"file.ts\" };\n    const fakeSource: any = { getText: () => \"\" };\n    const options: any = { shouldProcessNode: () => true };\n    const visitors = buildVisitors(fakeContext, fakeSource, options as any);\n    const",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-visitors-edgecases.test.ts",
+        "start": 19,
+        "end": 24,
+        "startLoc": {
+          "line": 19,
+          "column": 92,
+          "position": 182
+        },
+        "endLoc": {
+          "line": 24,
+          "column": 6,
+          "position": 290
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-visitors-edgecases.test.ts",
+        "start": 10,
+        "end": 15,
+        "startLoc": {
+          "line": 10,
+          "column": 86,
+          "position": 33
+        },
+        "endLoc": {
+          "line": 15,
+          "column": 7,
+          "position": 141
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": ";\n    const full = pre + rest;\n    const fakeSource: any = { getText: () => full };\n    const node: any = { range: [full.indexOf(\"function\"), full.length] };\n    expect(fallbackTextBeforeHasStory(fakeSource, node)).toBe(true);\n  });\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-io-behavior.test.ts",
+        "start": 52,
+        "end": 58,
+        "startLoc": {
+          "line": 52,
+          "column": 18,
+          "position": 490
+        },
+        "endLoc": {
+          "line": 58,
+          "column": 2,
+          "position": 586
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-io.edgecases.test.ts",
+        "start": 37,
+        "end": 44,
+        "startLoc": {
+          "line": 37,
+          "column": 18,
+          "position": 369
+        },
+        "endLoc": {
+          "line": 44,
+          "column": 1,
+          "position": 465
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 6,
+      "fragment": " },\n    };\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createMethodFix",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 45,
+        "end": 50,
+        "startLoc": {
+          "line": 45,
+          "column": 12,
+          "position": 401
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 16,
+          "position": 463
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 27,
+        "end": 32,
+        "startLoc": {
+          "line": 27,
+          "column": 2,
+          "position": 146
+        },
+        "endLoc": {
+          "line": 32,
+          "column": 18,
+          "position": 208
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": ",\n      getText: () => \"\",\n    } as any;\n    const context: any = {\n      getSourceCode: () => fakeSource,\n      report: jest.fn(),\n    };\n\n    reportMissing(context, fakeSource, node, node);\n    expect(context.report).toHaveBeenCalledTimes",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 89,
+        "end": 98,
+        "startLoc": {
+          "line": 89,
+          "column": 5,
+          "position": 878
+        },
+        "endLoc": {
+          "line": 98,
+          "column": 22,
+          "position": 964
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 70,
+        "end": 79,
+        "startLoc": {
+          "line": 70,
+          "column": 2,
+          "position": 698
+        },
+        "endLoc": {
+          "line": 79,
+          "column": 4,
+          "position": 784
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ", () => {\n    const fakeSource: any = {\n      getCommentsBefore: () => [\n        {\n          type: \"Block\",\n          value: \"@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\",\n        },\n      ],\n    };\n    const node: any = {\n",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 190,
+        "end": 200,
+        "startLoc": {
+          "line": 190,
+          "column": 67,
+          "position": 1932
+        },
+        "endLoc": {
+          "line": 200,
+          "column": 1,
+          "position": 2004
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-io.edgecases.test.ts",
+        "start": 44,
+        "end": 53,
+        "startLoc": {
+          "line": 44,
+          "column": 73,
+          "position": 470
+        },
+        "endLoc": {
+          "line": 53,
+          "column": 2,
+          "position": 542
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": "] },\n    };\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n\n",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core.test.ts",
+        "start": 17,
+        "end": 23,
+        "startLoc": {
+          "line": 17,
+          "column": 3,
+          "position": 111
+        },
+        "endLoc": {
+          "line": 23,
+          "column": 1,
+          "position": 167
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 27,
+        "end": 32,
+        "startLoc": {
+          "line": 27,
+          "column": 3,
+          "position": 145
+        },
+        "endLoc": {
+          "line": 32,
+          "column": 5,
+          "position": 201
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": "],\n      parent: { type: \"ClassBody\" },\n    };\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createAddStoryFix(target);\n    const res",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 29,
+        "end": 36,
+        "startLoc": {
+          "line": 29,
+          "column": 3,
+          "position": 298
+        },
+        "endLoc": {
+          "line": 36,
+          "column": 4,
+          "position": 382
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 44,
+        "end": 33,
+        "startLoc": {
+          "line": 44,
+          "column": 3,
+          "position": 388
+        },
+        "endLoc": {
+          "line": 33,
+          "column": 7,
+          "position": 217
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": "] },\n    };\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createAddStoryFix(target);\n    const res = fixFn(fixer);\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][0]).toEqual(\n      [5",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 50,
+        "end": 58,
+        "startLoc": {
+          "line": 50,
+          "column": 4,
+          "position": 579
+        },
+        "endLoc": {
+          "line": 58,
+          "column": 2,
+          "position": 692
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 27,
+        "end": 38,
+        "startLoc": {
+          "line": 27,
+          "column": 3,
+          "position": 145
+        },
+        "endLoc": {
+          "line": 38,
+          "column": 3,
+          "position": 423
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 6,
+      "fragment": "],\n    );\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][1]).toBe(\n      `${ANNOTATION}\\n`,\n    );\n    expect(res).toEqual({ r: [5",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 58,
+        "end": 63,
+        "startLoc": {
+          "line": 58,
+          "column": 2,
+          "position": 696
+        },
+        "endLoc": {
+          "line": 63,
+          "column": 2,
+          "position": 758
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 38,
+        "end": 43,
+        "startLoc": {
+          "line": 38,
+          "column": 3,
+          "position": 427
+        },
+        "endLoc": {
+          "line": 43,
+          "column": 3,
+          "position": 489
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": ", node, node);\n    expect(context.report).toHaveBeenCalledTimes(1);\n    const call = (context.report as jest.Mock).mock.calls[0][0];\n    expect(call.node).toBe(node);\n    expect(call.messageId).toBe(\"missingStory\");\n  });\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 78,
+        "end": 84,
+        "startLoc": {
+          "line": 78,
+          "column": 4,
+          "position": 924
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 2,
+          "position": 1010
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-helpers.test.ts",
+        "start": 97,
+        "end": 104,
+        "startLoc": {
+          "line": 97,
+          "column": 11,
+          "position": 947
+        },
+        "endLoc": {
+          "line": 104,
+          "column": 1,
+          "position": 1033
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 74,
+      "fragment": ", () => {\n  test(\"createAddStoryFix falls back to 0 when target is falsy\", () => {\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createAddStoryFix(null as any);\n    const res = fixFn(fixer);\n    expect(fixer.insertTextBeforeRange).toHaveBeenCalledTimes(1);\n    const args = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];\n    expect(args[0]).toEqual([0, 0]);\n    expect(args[1]).toBe(`${ANNOTATION}\\n`);\n    expect(res).toEqual({ r: [0, 0], t: `${ANNOTATION}\\n` });\n  });\n\n  test(\"createAddStoryFix uses target.range when parent not export and parent.range missing\", () => {\n    const target: any = {\n      type: \"FunctionDeclaration\",\n      range: [21, 33],\n      parent: { type: \"ClassBody\" },\n    };\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createAddStoryFix(target);\n    const res = fixFn(fixer);\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][0]).toEqual(\n      [21, 21],\n    );\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][1]).toBe(\n      `${ANNOTATION}\\n`,\n    );\n    expect(res).toEqual({ r: [21, 21], t: `${ANNOTATION}\\n` });\n  });\n\n  test(\"createAddStoryFix prefers ExportDefaultDeclaration parent.range when present\", () => {\n    const target: any = {\n      type: \"FunctionDeclaration\",\n      range: [50, 70],\n      parent: { type: \"ExportDefaultDeclaration\", range: [5, 100] },\n    };\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),\n    } as any;\n    const fixFn = createAddStoryFix(target);\n    const res = fixFn(fixer);\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][0]).toEqual(\n      [5, 5],\n    );\n    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][1]).toBe(\n      `${ANNOTATION}\\n`,\n    );\n    expect(res).toEqual({ r: [5, 5], t: `${ANNOTATION}\\n` });\n  });\n\n  test(\"reportMissing uses context.getSourceCode fallback when sourceCode not provided and still reports\", () => {\n    const node: any = {\n      type: \"FunctionDeclaration\",\n      id: { name: \"fnX\" },\n      range: [0, 10],\n    };\n    const fakeSource: any = {\n      /* intentionally missing getJSDocComment to exercise branch */ getText:\n        () => \"\",\n    };\n    const context: any = { getSourceCode: () => fakeSource, report: jest.fn() };\n\n    reportMissing(context, undefined as any, node, node);\n    expect(context.report).toHaveBeenCalledTimes(1);\n    const call = (context.report as jest.Mock).mock.calls[0][0];\n    expect(call.node).toBe(node);\n    expect(call.messageId).toBe(\"missingStory\");\n  });\n});\n",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-core-edgecases.test.ts",
+        "start": 12,
+        "end": 85,
+        "startLoc": {
+          "line": 12,
+          "column": 48,
+          "position": 38
+        },
+        "endLoc": {
+          "line": 85,
+          "column": 1,
+          "position": 1013
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-core.autofix.test.ts",
+        "start": 12,
+        "end": 85,
+        "startLoc": {
+          "line": 12,
+          "column": 35,
+          "position": 38
+        },
+        "endLoc": {
+          "line": 85,
+          "column": 1,
+          "position": 1013
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2020, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-ANNOTATION-REQUIRED] unannotated arrow function allowed by default\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-annotation.test.ts",
+        "start": 54,
+        "end": 61,
+        "startLoc": {
+          "line": 54,
+          "column": 3,
+          "position": 292
+        },
+        "endLoc": {
+          "line": 61,
+          "column": 74,
+          "position": 349
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-annotation.test.ts",
+        "start": 43,
+        "end": 50,
+        "startLoc": {
+          "line": 43,
+          "column": 34,
+          "position": 227
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 72,
+          "position": 284
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ",\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2020, sourceType: \"module\" },\n        },\n        errors: [\n          {\n            messageId: \"missingStory\",\n            suggestions: [\n              {\n                desc: `Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-story-annotation.test.ts",
+        "start": 138,
+        "end": 148,
+        "startLoc": {
+          "line": 138,
+          "column": 106,
+          "position": 791
+        },
+        "endLoc": {
+          "line": 148,
+          "column": 126,
+          "position": 866
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-annotation.test.ts",
+        "start": 118,
+        "end": 128,
+        "startLoc": {
+          "line": 118,
+          "column": 103,
+          "position": 664
+        },
+        "endLoc": {
+          "line": 128,
+          "column": 126,
+          "position": 739
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-TYPESCRIPT-SUPPORT] valid with @req annotation on TSMethodSignature\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 30,
+        "end": 37,
+        "startLoc": {
+          "line": 30,
+          "column": 63,
+          "position": 164
+        },
+        "endLoc": {
+          "line": 37,
+          "column": 75,
+          "position": 221
+        }
+      },
+      "secondFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 43,
+        "end": 50,
+        "startLoc": {
+          "line": 43,
+          "column": 54,
+          "position": 248
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 61,
+          "position": 305
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-FUNCTION-DETECTION][Story 003.0] valid FunctionExpression with @req annotation\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 38,
+        "end": 45,
+        "startLoc": {
+          "line": 38,
+          "column": 75,
+          "position": 229
+        },
+        "endLoc": {
+          "line": 45,
+          "column": 86,
+          "position": 286
+        }
+      },
+      "secondFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 43,
+        "end": 50,
+        "startLoc": {
+          "line": 43,
+          "column": 54,
+          "position": 248
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 61,
+          "position": 305
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] valid exported TS FunctionExpression in variable declarator with @req\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 54,
+        "end": 61,
+        "startLoc": {
+          "line": 54,
+          "column": 60,
+          "position": 336
+        },
+        "endLoc": {
+          "line": 61,
+          "column": 134,
+          "position": 393
+        }
+      },
+      "secondFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 43,
+        "end": 50,
+        "startLoc": {
+          "line": 43,
+          "column": 54,
+          "position": 248
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 61,
+          "position": 305
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-CONFIGURABLE-SCOPE][Story 003.0] FunctionExpression ignored when scope only includes FunctionDeclaration\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 62,
+        "end": 69,
+        "startLoc": {
+          "line": 62,
+          "column": 67,
+          "position": 401
+        },
+        "endLoc": {
+          "line": 69,
+          "column": 112,
+          "position": 458
+        }
+      },
+      "secondFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 43,
+        "end": 50,
+        "startLoc": {
+          "line": 43,
+          "column": 54,
+          "position": 248
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 61,
+          "position": 305
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": "],\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature\",\n        code: `interface I { method(): void; }`,\n        errors",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 133,
+        "end": 142,
+        "startLoc": {
+          "line": 133,
+          "column": 9,
+          "position": 910
+        },
+        "endLoc": {
+          "line": 142,
+          "column": 7,
+          "position": 979
+        }
+      },
+      "secondFile": {
+        "name": "tests/utils/annotation-checker.test.ts",
+        "start": 63,
+        "end": 72,
+        "startLoc": {
+          "line": 63,
+          "column": 2,
+          "position": 410
+        },
+        "endLoc": {
+          "line": 72,
+          "column": 7,
+          "position": 479
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": " },\n          },\n        ],\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on FunctionExpression assigned to variable\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 145,
+        "end": 154,
+        "startLoc": {
+          "line": 145,
+          "column": 9,
+          "position": 1010
+        },
+        "endLoc": {
+          "line": 154,
+          "column": 96,
+          "position": 1077
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 131,
+        "end": 50,
+        "startLoc": {
+          "line": 131,
+          "column": 6,
+          "position": 901
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 61,
+          "position": 305
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": ",\n        errors: [\n          {\n            messageId: \"missingReq\",\n            data: { name: \"m\", functionName: \"m\" },\n          },\n        ],\n      },\n      {\n        name: \"[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on TS FunctionExpression in variable declarator\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 185,
+        "end": 194,
+        "startLoc": {
+          "line": 185,
+          "column": 24,
+          "position": 1280
+        },
+        "endLoc": {
+          "line": 194,
+          "column": 125,
+          "position": 1337
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 175,
+        "end": 184,
+        "startLoc": {
+          "line": 175,
+          "column": 25,
+          "position": 1215
+        },
+        "endLoc": {
+          "line": 184,
+          "column": 91,
+          "position": 1272
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": ",\n        code: `const fn = function () {};`,\n        errors: [\n          {\n            messageId: \"missingReq\",\n            data: { name: \"fn\", functionName: \"fn\" },\n          },\n        ],\n        ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 194,
+        "end": 202,
+        "startLoc": {
+          "line": 194,
+          "column": 125,
+          "position": 1338
+        },
+        "endLoc": {
+          "line": 202,
+          "column": 9,
+          "position": 1391
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 154,
+        "end": 162,
+        "startLoc": {
+          "line": 154,
+          "column": 96,
+          "position": 1078
+        },
+        "endLoc": {
+          "line": 162,
+          "column": 7,
+          "position": 1131
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": " },\n          },\n        ],\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on exported TS FunctionExpression in variable declarator\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 199,
+        "end": 208,
+        "startLoc": {
+          "line": 199,
+          "column": 5,
+          "position": 1379
+        },
+        "endLoc": {
+          "line": 208,
+          "column": 134,
+          "position": 1446
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 131,
+        "end": 50,
+        "startLoc": {
+          "line": 131,
+          "column": 6,
+          "position": 901
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 61,
+          "position": 305
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 14,
+      "fragment": ",\n        errors: [\n          {\n            messageId: \"missingReq\",\n            data: { name: \"fn\", functionName: \"fn\" },\n          },\n        ],\n        languageOptions: {\n          parser: require(\"@typescript-eslint/parser\") as any,\n          parserOptions: { ecmaVersion: 2022, sourceType: \"module\" },\n        },\n      },\n      {\n        name: \"[REQ-CONFIGURABLE-SCOPE][Story 003.0] FunctionDeclaration still reported when scope only includes FunctionDeclaration\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 209,
+        "end": 222,
+        "startLoc": {
+          "line": 209,
+          "column": 36,
+          "position": 1454
+        },
+        "endLoc": {
+          "line": 222,
+          "column": 120,
+          "position": 1555
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 195,
+        "end": 50,
+        "startLoc": {
+          "line": 195,
+          "column": 29,
+          "position": 1345
+        },
+        "endLoc": {
+          "line": 50,
+          "column": 61,
+          "position": 305
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": ",\n        code: `class C {\\n  m() {}\\n}`,\n        errors: [\n          {\n            messageId: \"missingReq\",\n            data: { name: \"m\", functionName: \"m\" },\n          },\n        ],\n        ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 266,
+        "end": 274,
+        "startLoc": {
+          "line": 266,
+          "column": 104,
+          "position": 1882
+        },
+        "endLoc": {
+          "line": 274,
+          "column": 9,
+          "position": 1935
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 174,
+        "end": 182,
+        "startLoc": {
+          "line": 174,
+          "column": 82,
+          "position": 1208
+        },
+        "endLoc": {
+          "line": 182,
+          "column": 7,
+          "position": 1261
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        errors: [\n          {\n            messageId: \"missingReq\",\n            data: { name: \"m\", functionName: \"m\" },\n          },\n        ],\n        options: [{ exportPriority: \"non-exported\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 267,
+        "end": 274,
+        "startLoc": {
+          "line": 267,
+          "column": 25,
+          "position": 1889
+        },
+        "endLoc": {
+          "line": 274,
+          "column": 15,
+          "position": 1945
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 256,
+        "end": 263,
+        "startLoc": {
+          "line": 256,
+          "column": 32,
+          "position": 1808
+        },
+        "endLoc": {
+          "line": 263,
+          "column": 11,
+          "position": 1864
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": ",\n        errors: [\n          {\n            messageId: \"missingReq\",\n            data: { name: \"fn\", functionName: \"fn\" },\n          },\n        ],\n      },\n      {\n        name: \"[REQ-EXPORT-PRIORITY][Story 003.0] non-exported FunctionExpression reported when exportPriority is 'non-exported'\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 279,
+        "end": 288,
+        "startLoc": {
+          "line": 279,
+          "column": 2,
+          "position": 1986
+        },
+        "endLoc": {
+          "line": 288,
+          "column": 116,
+          "position": 2043
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 155,
+        "end": 164,
+        "startLoc": {
+          "line": 155,
+          "column": 29,
+          "position": 1085
+        },
+        "endLoc": {
+          "line": 164,
+          "column": 104,
+          "position": 1142
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": " }],\n        errors: [\n          {\n            messageId: \"missingReq\",\n            data: { name: \"fn\", functionName: \"fn\" },\n          },\n        ],\n      },\n    ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 290,
+        "end": 298,
+        "startLoc": {
+          "line": 290,
+          "column": 15,
+          "position": 2064
+        },
+        "endLoc": {
+          "line": 298,
+          "column": 5,
+          "position": 2117
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-req-annotation.test.ts",
+        "start": 279,
+        "end": 163,
+        "startLoc": {
+          "line": 279,
+          "column": 11,
+          "position": 1983
+        },
+        "endLoc": {
+          "line": 163,
+          "column": 7,
+          "position": 1135
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        errors: [\n          { messageId: \"missingAnnotation\", data: { missing: \"@story\" } },\n          { messageId: \"missingAnnotation\", data: { missing: \"@req\" } },\n        ],\n      },\n      {\n        name: \"[REQ-BRANCH-DETECTION] missing annotations on do-while loop\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 178,
+        "end": 185,
+        "startLoc": {
+          "line": 178,
+          "column": 3,
+          "position": 668
+        },
+        "endLoc": {
+          "line": 185,
+          "column": 62,
+          "position": 739
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 142,
+        "end": 149,
+        "startLoc": {
+          "line": 142,
+          "column": 19,
+          "position": 463
+        },
+        "endLoc": {
+          "line": 149,
+          "column": 74,
+          "position": 534
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        errors: [\n          { messageId: \"missingAnnotation\", data: { missing: \"@story\" } },\n          { messageId: \"missingAnnotation\", data: { missing: \"@req\" } },\n        ],\n      },\n      {\n        name: \"[REQ-BRANCH-DETECTION] missing annotations on for-of loop\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 192,
+        "end": 199,
+        "startLoc": {
+          "line": 192,
+          "column": 22,
+          "position": 754
+        },
+        "endLoc": {
+          "line": 199,
+          "column": 60,
+          "position": 825
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 142,
+        "end": 149,
+        "startLoc": {
+          "line": 142,
+          "column": 19,
+          "position": 463
+        },
+        "endLoc": {
+          "line": 149,
+          "column": 74,
+          "position": 534
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        errors: [\n          { messageId: \"missingAnnotation\", data: { missing: \"@story\" } },\n          { messageId: \"missingAnnotation\", data: { missing: \"@req\" } },\n        ],\n      },\n      {\n        name: \"[REQ-BRANCH-DETECTION] missing annotations on for-in loop\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 206,
+        "end": 213,
+        "startLoc": {
+          "line": 206,
+          "column": 3,
+          "position": 840
+        },
+        "endLoc": {
+          "line": 213,
+          "column": 60,
+          "position": 911
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 142,
+        "end": 149,
+        "startLoc": {
+          "line": 142,
+          "column": 19,
+          "position": 463
+        },
+        "endLoc": {
+          "line": 149,
+          "column": 74,
+          "position": 534
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        errors: [\n          { messageId: \"missingAnnotation\", data: { missing: \"@story\" } },\n          { messageId: \"missingAnnotation\", data: { missing: \"@req\" } },\n        ],\n      },\n      {\n        name: \"[REQ-BRANCH-DETECTION] missing annotations on try-catch blocks\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 220,
+        "end": 227,
+        "startLoc": {
+          "line": 220,
+          "column": 3,
+          "position": 926
+        },
+        "endLoc": {
+          "line": 227,
+          "column": 65,
+          "position": 997
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 142,
+        "end": 149,
+        "startLoc": {
+          "line": 142,
+          "column": 19,
+          "position": 463
+        },
+        "endLoc": {
+          "line": 149,
+          "column": 74,
+          "position": 534
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": "\n          { messageId: \"missingAnnotation\", data: { missing: \"@story\" } },\n          { messageId: \"missingAnnotation\", data: { missing: \"@req\" } },\n        ],\n      },\n      {\n        name: \"[REQ-BRANCH-DETECTION] missing annotations on switch-case with blank line\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 241,
+        "end": 247,
+        "startLoc": {
+          "line": 241,
+          "column": 2,
+          "position": 1067
+        },
+        "endLoc": {
+          "line": 247,
+          "column": 76,
+          "position": 1131
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 143,
+        "end": 149,
+        "startLoc": {
+          "line": 143,
+          "column": 2,
+          "position": 470
+        },
+        "endLoc": {
+          "line": 149,
+          "column": 74,
+          "position": 534
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ",\n        errors: [\n          { messageId: \"missingAnnotation\", data: { missing: \"@story\" } },\n          { messageId: \"missingAnnotation\", data: { missing: \"@req\" } },\n        ],\n      },\n      {\n        name: \"[REQ-CONFIGURABLE-SCOPE] missing annotations on configured branch type ForStatement\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 258,
+        "end": 265,
+        "startLoc": {
+          "line": 258,
+          "column": 3,
+          "position": 1146
+        },
+        "endLoc": {
+          "line": 265,
+          "column": 86,
+          "position": 1217
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 142,
+        "end": 149,
+        "startLoc": {
+          "line": 142,
+          "column": 19,
+          "position": 463
+        },
+        "endLoc": {
+          "line": 149,
+          "column": 74,
+          "position": 534
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": ",\n        errors: [\n          { messageId: \"missingAnnotation\", data: { missing: \"@story\" } },\n          { messageId: \"missingAnnotation\", data: { missing: \"@req\" } },\n        ],\n      },\n    ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 269,
+        "end": 275,
+        "startLoc": {
+          "line": 269,
+          "column": 32,
+          "position": 1250
+        },
+        "endLoc": {
+          "line": 275,
+          "column": 5,
+          "position": 1314
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-branch-annotation.test.ts",
+        "start": 142,
+        "end": 148,
+        "startLoc": {
+          "line": 142,
+          "column": 19,
+          "position": 463
+        },
+        "endLoc": {
+          "line": 148,
+          "column": 7,
+          "position": 527
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "\nimport { RuleTester } from \"eslint\";\nimport rule from \"../../src/rules/require-story-annotation\";\n\nconst ruleTester = new RuleTester({\n  languageOptions: {\n    parserOptions: { ecmaVersion: 2020, sourceType: \"module\" },\n  },\n} as any);\n\ndescribe(\"Error Reporting Enhancements for require-story-annotation (Story 007.0-DEV-ERROR-REPORTING)\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/error-reporting.test.ts",
+        "start": 8,
+        "end": 18,
+        "startLoc": {
+          "line": 8,
+          "column": 4,
+          "position": 1
+        },
+        "endLoc": {
+          "line": 18,
+          "column": 94,
+          "position": 78
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/require-story-annotation.test.ts",
+        "start": 5,
+        "end": 15,
+        "startLoc": {
+          "line": 5,
+          "column": 4,
+          "position": 1
+        },
+        "endLoc": {
+          "line": 15,
+          "column": 71,
+          "position": 78
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ",\n          languageOptions: {\n            parser: require(\"@typescript-eslint/parser\") as any,\n            parserOptions: { ecmaVersion: 2020, sourceType: \"module\" },\n          },\n          errors: [\n            {\n              messageId: \"missingStory\",\n              suggestions: [\n                {\n                  desc: \"Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/rules/auto-fix-behavior-008.test.ts",
+        "start": 106,
+        "end": 116,
+        "startLoc": {
+          "line": 106,
+          "column": 106,
+          "position": 621
+        },
+        "endLoc": {
+          "line": 116,
+          "column": 126,
+          "position": 696
+        }
+      },
+      "secondFile": {
+        "name": "tests/rules/auto-fix-behavior-008.test.ts",
+        "start": 86,
+        "end": 96,
+        "startLoc": {
+          "line": 86,
+          "column": 103,
+          "position": 494
+        },
+        "endLoc": {
+          "line": 96,
+          "column": 126,
+          "position": 569
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": "));\n  });\n\n  afterAll(() => {\n    fs.rmSync(tmpDir, { recursive: true, force: true });\n  });\n\n  it(\"[REQ-MAINT-BATCH] should return 0 when no mappings applied\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/maintenance/batch.test.ts",
+        "start": 19,
+        "end": 26,
+        "startLoc": {
+          "line": 19,
+          "column": 14,
+          "position": 114
+        },
+        "endLoc": {
+          "line": 26,
+          "column": 61,
+          "position": 168
+        }
+      },
+      "secondFile": {
+        "name": "tests/maintenance/report.test.ts",
+        "start": 16,
+        "end": 23,
+        "startLoc": {
+          "line": 16,
+          "column": 15,
+          "position": 108
+        },
+        "endLoc": {
+          "line": 23,
+          "column": 67,
+          "position": 162
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ");\n  });\n\n  afterAll(() => {\n    fs.rmSync(tmpDir, { recursive: true, force: true });\n  });\n\n  it(\"[REQ-MAINT-VERIFY] should return true when annotations are valid\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/maintenance/batch.test.ts",
+        "start": 44,
+        "end": 51,
+        "startLoc": {
+          "line": 44,
+          "column": 16,
+          "position": 321
+        },
+        "endLoc": {
+          "line": 51,
+          "column": 67,
+          "position": 374
+        }
+      },
+      "secondFile": {
+        "name": "tests/maintenance/report.test.ts",
+        "start": 16,
+        "end": 23,
+        "startLoc": {
+          "line": 16,
+          "column": 2,
+          "position": 109
+        },
+        "endLoc": {
+          "line": 23,
+          "column": 67,
+          "position": 162
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 14,
+      "fragment": ";\n    expect(recommendedRules).toHaveProperty(\n      \"traceability/require-story-annotation\",\n      \"error\",\n    );\n    expect(recommendedRules).toHaveProperty(\n      \"traceability/require-req-annotation\",\n      \"error\",\n    );\n    expect(recommendedRules).toHaveProperty(\n      \"traceability/require-branch-annotation\",\n      \"error\",\n    );\n    ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "tests/plugin-default-export-and-configs.test.ts",
+        "start": 59,
+        "end": 72,
+        "startLoc": {
+          "line": 59,
+          "column": 2,
+          "position": 377
+        },
+        "endLoc": {
+          "line": 72,
+          "column": 5,
+          "position": 442
+        }
+      },
+      "secondFile": {
+        "name": "tests/plugin-default-export-and-configs.test.ts",
+        "start": 33,
+        "end": 46,
+        "startLoc": {
+          "line": 33,
+          "column": 6,
+          "position": 201
+        },
+        "endLoc": {
+          "line": 46,
+          "column": 3,
+          "position": 266
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": "(node: any) {\n    if (!options.shouldProcessNode(node)) return;\n    const target = resolveTargetNode(sourceCode, node);\n    helperReportMissing(context, sourceCode, node, target);\n  }\n\n  return {\n    TSMethodSignature",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/helpers/require-story-visitors.ts",
+        "start": 146,
+        "end": 153,
+        "startLoc": {
+          "line": 146,
+          "column": 24,
+          "position": 614
+        },
+        "endLoc": {
+          "line": 153,
+          "column": 18,
+          "position": 681
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/helpers/require-story-visitors.ts",
+        "start": 95,
+        "end": 102,
+        "startLoc": {
+          "line": 95,
+          "column": 30,
+          "position": 378
+        },
+        "endLoc": {
+          "line": 102,
+          "column": 24,
+          "position": 445
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": "\n        (c: any) => typeof c.value === \"string\" && c.value.includes(\"@story\"),\n      )\n    ) {\n      return true;\n    }\n    p",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/helpers/require-story-io.ts",
+        "start": 90,
+        "end": 96,
+        "startLoc": {
+          "line": 90,
+          "column": 12,
+          "position": 532
+        },
+        "endLoc": {
+          "line": 96,
+          "column": 2,
+          "position": 583
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/helpers/require-story-io.ts",
+        "start": 77,
+        "end": 83,
+        "startLoc": {
+          "line": 77,
+          "column": 12,
+          "position": 442
+        },
+        "endLoc": {
+          "line": 83,
+          "column": 6,
+          "position": 493
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 6,
+      "fragment": "\n    if (hasStoryAnnotation(sourceCode, node)) {\n      return;\n    }\n    const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);\n    const name = extractName",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/helpers/require-story-helpers.ts",
+        "start": 339,
+        "end": 344,
+        "startLoc": {
+          "line": 339,
+          "column": 2,
+          "position": 1863
+        },
+        "endLoc": {
+          "line": 344,
+          "column": 12,
+          "position": 1914
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/helpers/require-story-helpers.ts",
+        "start": 288,
+        "end": 293,
+        "startLoc": {
+          "line": 288,
+          "column": 1,
+          "position": 1583
+        },
+        "endLoc": {
+          "line": 293,
+          "column": 13,
+          "position": 1634
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": " {\n  const lines = sourceCode && sourceCode.lines;\n  const startLine =\n    node && node.loc && typeof node.loc.start?.line === \"number\"\n      ? node.loc.start.line\n      : null;\n\n",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/utils/annotation-checker.ts",
+        "start": 57,
+        "end": 64,
+        "startLoc": {
+          "line": 57,
+          "column": 2,
+          "position": 245
+        },
+        "endLoc": {
+          "line": 64,
+          "column": 1,
+          "position": 314
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/helpers/require-story-io.ts",
+        "start": 30,
+        "end": 36,
+        "startLoc": {
+          "line": 30,
+          "column": 8,
+          "position": 66
+        },
+        "endLoc": {
+          "line": 36,
+          "column": 3,
+          "position": 135
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": "\n  while (p) {\n    const pComments =\n      typeof sourceCode?.getCommentsBefore === \"function\"\n        ? sourceCode.getCommentsBefore(p) || []\n        : [];\n\n",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/utils/annotation-checker.ts",
+        "start": 99,
+        "end": 106,
+        "startLoc": {
+          "line": 99,
+          "column": 92,
+          "position": 555
+        },
+        "endLoc": {
+          "line": 106,
+          "column": 1,
+          "position": 606
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/helpers/require-story-io.ts",
+        "start": 65,
+        "end": 71,
+        "startLoc": {
+          "line": 65,
+          "column": 2,
+          "position": 368
+        },
+        "endLoc": {
+          "line": 71,
+          "column": 5,
+          "position": 419
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": "\n  if (\n    typeof sourceCode?.getText !== \"function\" ||\n    !Array.isArray((node && node.range) || [])\n  ) {\n    return false;\n  }\n  const range = node.range;\n\n",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/utils/annotation-checker.ts",
+        "start": 135,
+        "end": 144,
+        "startLoc": {
+          "line": 135,
+          "column": 103,
+          "position": 759
+        },
+        "endLoc": {
+          "line": 144,
+          "column": 1,
+          "position": 827
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/helpers/require-story-io.ts",
+        "start": 112,
+        "end": 120,
+        "startLoc": {
+          "line": 112,
+          "column": 99,
+          "position": 642
+        },
+        "endLoc": {
+          "line": 120,
+          "column": 3,
+          "position": 710
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ") {\n      context.report({\n        node: commentNode,\n        messageId: \"invalidPath\",\n        data: { path: storyPath },\n      });\n      return;\n    }\n  }\n\n  reportExistenceStatus",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 182,
+        "end": 192,
+        "startLoc": {
+          "line": 182,
+          "column": 16,
+          "position": 1015
+        },
+        "endLoc": {
+          "line": 192,
+          "column": 22,
+          "position": 1071
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 166,
+        "end": 176,
+        "startLoc": {
+          "line": 166,
+          "column": 22,
+          "position": 903
+        },
+        "endLoc": {
+          "line": 176,
+          "column": 3,
+          "position": 959
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": ": string;\n  commentNode: any;\n  context: any;\n  cwd: string;\n  storyDirs: string[];\n  allowAbsolute: boolean;\n  requireExt: boolean;\n}): void {\n  const {\n    storyPath",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 208,
+        "end": 217,
+        "startLoc": {
+          "line": 208,
+          "column": 10,
+          "position": 1102
+        },
+        "endLoc": {
+          "line": 217,
+          "column": 10,
+          "position": 1165
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 26,
+        "end": 35,
+        "startLoc": {
+          "line": 26,
+          "column": 5,
+          "position": 84
+        },
+        "endLoc": {
+          "line": 35,
+          "column": 5,
+          "position": 147
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": ") {\n      context.report({\n        node: commentNode,\n        messageId: \"invalidPath\",\n        data: { path: storyPath },\n      });\n      return;\n    }\n    ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 228,
+        "end": 236,
+        "startLoc": {
+          "line": 228,
+          "column": 14,
+          "position": 1224
+        },
+        "endLoc": {
+          "line": 236,
+          "column": 5,
+          "position": 1275
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 166,
+        "end": 174,
+        "startLoc": {
+          "line": 166,
+          "column": 22,
+          "position": 903
+        },
+        "endLoc": {
+          "line": 174,
+          "column": 3,
+          "position": 954
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ") {\n      context.report({\n        node: commentNode,\n        messageId: \"invalidPath\",\n        data: { path: storyPath },\n      });\n      return;\n    }\n  }\n\n  // Extension check",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 243,
+        "end": 253,
+        "startLoc": {
+          "line": 243,
+          "column": 2,
+          "position": 1340
+        },
+        "endLoc": {
+          "line": 253,
+          "column": 19,
+          "position": 1396
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 166,
+        "end": 176,
+        "startLoc": {
+          "line": 166,
+          "column": 22,
+          "position": 903
+        },
+        "endLoc": {
+          "line": 176,
+          "column": 3,
+          "position": 959
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": "\n  commentNode: any;\n  context: any;\n  cwd: string;\n  storyDirs: string[];\n  allowAbsolute: boolean;\n  requireExt: boolean;\n}): void {\n  const { ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 286,
+        "end": 294,
+        "startLoc": {
+          "line": 286,
+          "column": 2,
+          "position": 1509
+        },
+        "endLoc": {
+          "line": 294,
+          "column": 2,
+          "position": 1566
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/valid-story-reference.ts",
+        "start": 26,
+        "end": 35,
+        "startLoc": {
+          "line": 26,
+          "column": 2,
+          "position": 88
+        },
+        "endLoc": {
+          "line": 35,
+          "column": 1,
+          "position": 145
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": ") {\n    context.report({\n      node: comment as any,\n      messageId: \"invalidPath\",\n      data: { storyPath },\n    });\n    return;\n  }\n  if",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/valid-req-reference.ts",
+        "start": 66,
+        "end": 74,
+        "startLoc": {
+          "line": 66,
+          "column": 3,
+          "position": 441
+        },
+        "endLoc": {
+          "line": 74,
+          "column": 3,
+          "position": 494
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/valid-req-reference.ts",
+        "start": 54,
+        "end": 62,
+        "startLoc": {
+          "line": 54,
+          "column": 2,
+          "position": 341
+        },
+        "endLoc": {
+          "line": 62,
+          "column": 6,
+          "position": 394
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": "(\n  context: any,\n  comment: any,\n  rawValue: string,\n): void {\n  const trimmed = rawValue.trim();\n  if (!trimmed) {\n    context.report({\n      node: comment as any,\n      messageId: \"invalidReqFormat\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/rules/valid-annotation-format.ts",
+        "start": 291,
+        "end": 300,
+        "startLoc": {
+          "line": 291,
+          "column": 22,
+          "position": 1299
+        },
+        "endLoc": {
+          "line": 300,
+          "column": 19,
+          "position": 1375
+        }
+      },
+      "secondFile": {
+        "name": "src/rules/valid-annotation-format.ts",
+        "start": 246,
+        "end": 255,
+        "startLoc": {
+          "line": 246,
+          "column": 24,
+          "position": 1029
+        },
+        "endLoc": {
+          "line": 255,
+          "column": 21,
+          "position": 1105
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 16,
+      "fragment": ": [\n    {\n      plugins: {\n        traceability: {},\n      },\n      rules: {\n        \"traceability/require-story-annotation\": \"error\",\n        \"traceability/require-req-annotation\": \"error\",\n        \"traceability/require-branch-annotation\": \"error\",\n        \"traceability/valid-annotation-format\": \"warn\",\n        \"traceability/valid-story-reference\": \"error\",\n        \"traceability/valid-req-reference\": \"error\",\n      },\n    },\n  ],\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/index.ts",
+        "start": 103,
+        "end": 118,
+        "startLoc": {
+          "line": 103,
+          "column": 7,
+          "position": 466
+        },
+        "endLoc": {
+          "line": 118,
+          "column": 2,
+          "position": 551
+        }
+      },
+      "secondFile": {
+        "name": "src/index.ts",
+        "start": 88,
+        "end": 103,
+        "startLoc": {
+          "line": 88,
+          "column": 12,
+          "position": 379
+        },
+        "endLoc": {
+          "line": 103,
+          "column": 3,
+          "position": 464
+        }
+      }
+    }
+  ]
+}

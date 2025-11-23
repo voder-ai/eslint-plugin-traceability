@@ -18,6 +18,28 @@ import {
 const defaultStoryDirs = ["docs/stories", "stories"];
 
 /**
+ * Shared helper to report an invalid story path. Centralizes the
+ * `invalidPath` diagnostic so callers don't repeat the same
+ * `context.report` shape.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-PROJECT-BOUNDARY - Ensure resolved candidate paths remain within the project root
+ * @req REQ-ERROR-CONSISTENCY - Maintain a consistent template for invalid path diagnostics across rules
+ */
+function reportInvalidPath(opts: {
+  storyPath: string;
+  commentNode: any;
+  context: any;
+}): void {
+  const { storyPath, commentNode, context } = opts;
+  context.report({
+    node: commentNode,
+    messageId: "invalidPath",
+    data: { path: storyPath },
+  });
+}
+
+/**
  * Extract the story path from the annotation line and delegate validation.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-ANNOTATION-VALIDATION - Ensure each annotation line is parsed
@@ -136,6 +158,54 @@ function reportExistenceStatus(
 }
 
 /**
+ * Determine whether any candidate or matched path crosses the project
+ * boundary, and report an invalid path if so.
+ *
+ * This centralizes project-boundary invalidation logic used during
+ * existence checks, so the decision of *when* to call the invalid-path
+ * reporter is not duplicated.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @req REQ-PROJECT-BOUNDARY - Ensure resolved candidate paths remain within the project root
+ * @req REQ-CONFIGURABLE-PATHS - Respect configured storyDirectories while enforcing project boundaries
+ */
+function handleProjectBoundaryForExistence(opts: {
+  storyPath: string;
+  commentNode: any;
+  context: any;
+  cwd: string;
+  candidates: string[];
+  existenceResult: ReturnType<typeof normalizeStoryPath>["existence"];
+}): boolean {
+  const { storyPath, commentNode, context, cwd, candidates, existenceResult } =
+    opts;
+
+  if (candidates.length > 0) {
+    const { hasInProjectCandidate, hasOutOfProjectCandidate } =
+      analyzeCandidateBoundaries(candidates, cwd);
+
+    if (hasOutOfProjectCandidate && !hasInProjectCandidate) {
+      reportInvalidPath({ storyPath, commentNode, context });
+      return true;
+    }
+  }
+
+  if (
+    existenceResult &&
+    existenceResult.status === "exists" &&
+    existenceResult.matchedPath
+  ) {
+    const boundary = enforceProjectBoundary(existenceResult.matchedPath, cwd);
+    if (!boundary.isWithinProject) {
+      reportInvalidPath({ storyPath, commentNode, context });
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
  * Report any problems related to the existence or accessibility of the
  * referenced story file. Filesystem and I/O errors are surfaced with a
  * dedicated diagnostic that differentiates them from missing files.
@@ -159,34 +229,18 @@ function reportExistenceProblems(opts: {
   const existenceResult = result.existence;
 
   const candidates = result.candidates || [];
-  if (candidates.length > 0) {
-    const { hasInProjectCandidate, hasOutOfProjectCandidate } =
-      analyzeCandidateBoundaries(candidates, cwd);
 
-    if (hasOutOfProjectCandidate && !hasInProjectCandidate) {
-      context.report({
-        node: commentNode,
-        messageId: "invalidPath",
-        data: { path: storyPath },
-      });
-      return;
-    }
-  }
+  const invalidByBoundary = handleProjectBoundaryForExistence({
+    storyPath,
+    commentNode,
+    context,
+    cwd,
+    candidates,
+    existenceResult,
+  });
 
-  if (
-    existenceResult &&
-    existenceResult.status === "exists" &&
-    existenceResult.matchedPath
-  ) {
-    const boundary = enforceProjectBoundary(existenceResult.matchedPath, cwd);
-    if (!boundary.isWithinProject) {
-      context.report({
-        node: commentNode,
-        messageId: "invalidPath",
-        data: { path: storyPath },
-      });
-      return;
-    }
+  if (invalidByBoundary) {
+    return;
   }
 
   reportExistenceStatus(existenceResult, storyPath, commentNode, context);
@@ -226,11 +280,7 @@ function processStoryPath(opts: {
   // Absolute path check
   if (path.isAbsolute(storyPath)) {
     if (!allowAbsolute) {
-      context.report({
-        node: commentNode,
-        messageId: "invalidPath",
-        data: { path: storyPath },
-      });
+      reportInvalidPath({ storyPath, commentNode, context });
       return;
     }
     // When absolute paths are allowed, we still enforce extension and
@@ -241,11 +291,7 @@ function processStoryPath(opts: {
   if (containsPathTraversal(storyPath)) {
     const full = path.resolve(cwd, path.normalize(storyPath));
     if (!full.startsWith(cwd + path.sep)) {
-      context.report({
-        node: commentNode,
-        messageId: "invalidPath",
-        data: { path: storyPath },
-      });
+      reportInvalidPath({ storyPath, commentNode, context });
       return;
     }
   }

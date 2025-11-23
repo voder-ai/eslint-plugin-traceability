@@ -19,28 +19,48 @@ export const LOOKBACK_LINES = 4;
 export const FALLBACK_WINDOW = 800;
 
 /**
- * Inspect a fixed number of physical source lines before the node for @story text
+ * Shared predicate to determine if a given comment node contains an @story marker.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Extract line-based detection into helper
+ * @req REQ-ANNOTATION-REQUIRED - Centralize @story detection logic for comment value inspection
  */
-export function linesBeforeHasStory(
-  sourceCode: any,
-  node: any,
-  lookback = LOOKBACK_LINES,
-): boolean {
+function commentContainsStory(comment: any): boolean {
+  return typeof comment?.value === "string" && comment.value.includes("@story");
+}
+
+/**
+ * Safely extract the physical source lines array from sourceCode for scanning.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Centralize guards for safe access to source lines
+ */
+function getSourceLines(sourceCode: any): string[] | null {
   const lines = sourceCode && sourceCode.lines;
-  const startLine =
-    node && node.loc && typeof node.loc.start?.line === "number"
-      ? node.loc.start.line
-      : null;
-  // Guard against missing or non-array source lines or an invalid start line before scanning.
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-REQUIRED - Fail gracefully when source lines or locations are unavailable
-  if (!Array.isArray(lines) || typeof startLine !== "number") {
-    return false;
+  return Array.isArray(lines) ? lines : null;
+}
+
+/**
+ * Safely resolve the starting line number of a node for use in lookback scans.
+ * Returns null when the node does not provide a valid numeric start line.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Centralize guards for safe access to node location metadata
+ */
+function getNodeStartLine(node: any): number | null {
+  if (!node || !node.loc) {
+    return null;
   }
-  const from = Math.max(0, startLine - 1 - lookback);
-  const to = Math.max(0, startLine - 1);
+  const line = node.loc.start?.line;
+  return typeof line === "number" ? line : null;
+}
+
+/**
+ * Generic helper to scan a range of physical source lines for the presence of an @story marker.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Reuse line scanning logic for story annotations across helpers
+ */
+function scanLinesForMarker(
+  lines: string[],
+  from: number,
+  to: number,
+): boolean {
   // Walk each physical line in the configured lookback window to search for an inline @story marker.
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQUIRED - Scan preceding lines for existing story annotations
@@ -54,6 +74,29 @@ export function linesBeforeHasStory(
     }
   }
   return false;
+}
+
+/**
+ * Inspect a fixed number of physical source lines before the node for @story text
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Extract line-based detection into helper
+ */
+export function linesBeforeHasStory(
+  sourceCode: any,
+  node: any,
+  lookback = LOOKBACK_LINES,
+): boolean {
+  const lines = getSourceLines(sourceCode);
+  const startLine = getNodeStartLine(node);
+  // Guard against missing or non-array source lines or an invalid start line before scanning.
+  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+  // @req REQ-ANNOTATION-REQUIRED - Fail gracefully when source lines or locations are unavailable
+  if (!lines || typeof startLine !== "number") {
+    return false;
+  }
+  const from = Math.max(0, startLine - 1 - lookback);
+  const to = Math.max(0, startLine - 1);
+  return scanLinesForMarker(lines, from, to);
 }
 
 /**
@@ -75,7 +118,7 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
          * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
          * @req REQ-ANNOTATION-REQUIRED - Detect @story in parent comments via value inspection
          */
-        (c: any) => typeof c.value === "string" && c.value.includes("@story"),
+        (c: any) => commentContainsStory(c),
       )
     ) {
       return true;
@@ -88,7 +131,7 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
          * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
          * @req REQ-ANNOTATION-REQUIRED - Detect @story in parent leadingComments via value inspection
          */
-        (c: any) => typeof c.value === "string" && c.value.includes("@story"),
+        (c: any) => commentContainsStory(c),
       )
     ) {
       return true;

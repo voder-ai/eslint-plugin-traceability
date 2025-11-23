@@ -18,11 +18,11 @@
 
 # User Story Map with Releases
 
-| **Release 0.1 (Core Validation)** (Planned) | **Setup Plugin**        | **Write Code**                 | **Validate Annotations**        | **Fix Issues**            | **Maintain Quality**        |
-| ------------------------------------------- | ----------------------- | ------------------------------ | ------------------------------- | ------------------------- | --------------------------- |
-| **Plugin Foundation**                       | 001.0-DEV-PLUGIN-SETUP  | 003.0-DEV-FUNCTION-ANNOTATIONS | 005.0-DEV-ANNOTATION-VALIDATION | 007.0-DEV-ERROR-REPORTING | 009.0-DEV-MAINTENANCE-TOOLS |
-| **Basic Rules**                             | 002.0-DEV-ESLINT-CONFIG | 004.0-DEV-BRANCH-ANNOTATIONS   | 006.0-DEV-FILE-VALIDATION       | 008.0-DEV-AUTO-FIX        | 010.0-DEV-DEEP-VALIDATION   |
-|                                             | -                       | -                              | -                               | -                         | -                           |
+| **Release 0.1 (Core Validation)** (Planned) | **Setup Plugin**                | **Write Code**                 | **Validate Annotations**        | **Fix Issues**            | **Maintain Quality**        |
+| ------------------------------------------- | ------------------------------- | ------------------------------ | ------------------------------- | ------------------------- | --------------------------- |
+| **Plugin Foundation**                       | 001.0-DEV-PLUGIN-SETUP          | 003.0-DEV-FUNCTION-ANNOTATIONS | 005.0-DEV-ANNOTATION-VALIDATION | 007.0-DEV-ERROR-REPORTING | 009.0-DEV-MAINTENANCE-TOOLS |
+| **Basic Rules**                             | 002.0-DEV-ESLINT-CONFIG         | 004.0-DEV-BRANCH-ANNOTATIONS   | 006.0-DEV-FILE-VALIDATION       | 008.0-DEV-AUTO-FIX        | 010.0-DEV-DEEP-VALIDATION   |
+| **Enhanced Configuration**                  | 010.1-DEV-CONFIGURABLE-PATTERNS | -                              | -                               | -                         | -                           |
 
 | **Release 0.2 (Enhanced Features)** (Future) | **Setup Plugin**            | **Write Code**               | **Validate Annotations**     | **Fix Issues**              | **Maintain Quality**      |
 | -------------------------------------------- | --------------------------- | ---------------------------- | ---------------------------- | --------------------------- | ------------------------- |
@@ -48,8 +48,9 @@
 - **Developer Support**: 007.0-DEV-ERROR-REPORTING (clear error messages), 008.0-DEV-AUTO-FIX (simple auto-fixes)
 - **Ongoing Maintenance**: 009.0-DEV-MAINTENANCE-TOOLS (update helpers)
 - **Deep Validation**: 010.0-DEV-DEEP-VALIDATION (requirement content validation)
+- **Enhanced Configuration**: 010.1-DEV-CONFIGURABLE-PATTERNS (custom format patterns)
 
-**Total**: 10 stories covering complete basic traceability enforcement workflow
+**Total**: 11 stories covering complete basic traceability enforcement workflow with configuration flexibility
 
 ### Release 0.2: Enhanced Features (Future)
 
