@@ -456,6 +456,99 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
           },
         ],
       },
+      {
+        name: "[REQ-PATTERN-CONFIG] nested story.pattern takes precedence over flat storyPathPattern and its example",
+        code: `// @story not-matching.mdx`,
+        options: [
+          {
+            story: {
+              pattern: "^stories\\/nested-only\\.story\\.mdx$",
+              example: "stories/nested-only.story.mdx",
+            },
+            storyPathPattern:
+              "^docs\\/stories\\/should-not-apply\\.story\\.mdx$",
+            storyPathExample: "docs/stories/should-not-apply.story.mdx",
+          },
+        ],
+        errors: [
+          {
+            messageId: "invalidStoryFormat",
+            data: {
+              details:
+                'Invalid story path "not-matching.mdx" for @story annotation. Expected a path like "stories/nested-only.story.mdx".',
+            },
+          },
+        ],
+      },
+      {
+        name: "[REQ-PATTERN-CONFIG] nested req.pattern takes precedence over flat requirementIdPattern and its example",
+        code: `// @req DOES-NOT-MATCH`,
+        options: [
+          {
+            req: {
+              pattern: "^REQ-[0-9]{4}$",
+              example: "REQ-0001",
+            },
+            requirementIdPattern: "^[A-Z]+-[0-9]+$",
+            requirementIdExample: "PROJECT-123",
+          },
+        ],
+        errors: [
+          {
+            messageId: "invalidReqFormat",
+            data: {
+              details:
+                'Invalid requirement ID "DOES-NOT-MATCH" for @req annotation. Expected an identifier like "REQ-0001" (uppercase letters, numbers, and dashes only).',
+            },
+          },
+        ],
+      },
+      {
+        name: "[REQ-EXAMPLE-MESSAGES] nested story example text overrides flat storyPathExample in error messages",
+        code: `// @story invalid/path.txt`,
+        options: [
+          {
+            story: {
+              pattern: "^stories\\/special\\/.+\\.story\\.mdx$",
+              example: "stories/special/example.story.mdx",
+            },
+            storyPathPattern: "^stories\\/ignored\\/.+\\.story\\.mdx$",
+            storyPathExample: "stories/ignored/example.story.mdx",
+          },
+        ],
+        errors: [
+          {
+            messageId: "invalidStoryFormat",
+            data: {
+              details:
+                'Invalid story path "invalid/path.txt" for @story annotation. Expected a path like "stories/special/example.story.mdx".',
+            },
+          },
+        ],
+      },
+      {
+        name: "[REQ-EXAMPLE-MESSAGES] nested req example text overrides flat requirementIdExample in error messages",
+        code: `// @req bad-id`,
+        options: [
+          {
+            req: {
+              pattern: "^REQ-[A-Z]+-[0-9]{3}$",
+              example: "REQ-FOO-001",
+            },
+            requirementIdPattern: "^[A-Z]+-[0-9]+$",
+            requirementIdExample: "PROJECT-123",
+          },
+        ],
+        errors: [
+          {
+            messageId: "invalidReqFormat",
+            data: {
+              details:
+                'Invalid requirement ID "bad-id" for @req annotation. Expected an identifier like "REQ-FOO-001" (uppercase letters, numbers, and dashes only).',
+            },
+          },
+        ],
+      },
     ],
   });
 });
