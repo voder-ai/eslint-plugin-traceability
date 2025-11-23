@@ -5,6 +5,7 @@
  */
 import { RuleTester } from "eslint";
 import { checkReqAnnotation } from "../../src/utils/annotation-checker";
+import { tsRuleTesterLanguageOptions } from "./ts-language-options";
 
 const ruleTester = new RuleTester();
 
@@ -41,18 +42,12 @@ describe("annotation-checker helper", () => {
       {
         name: "[REQ-TYPESCRIPT-SUPPORT] valid TSDeclareFunction with @req",
         code: `/** @req REQ-TEST */\ndeclare function foo(): void;`,
-        languageOptions: {
-          parser: require("@typescript-eslint/parser") as any,
-          parserOptions: { ecmaVersion: 2022, sourceType: "module" },
-        },
+        languageOptions: tsRuleTesterLanguageOptions,
       },
       {
         name: "[REQ-TYPESCRIPT-SUPPORT] valid TSMethodSignature with @req",
         code: `interface I { /** @req REQ-TEST */ method(): void; }`,
-        languageOptions: {
-          parser: require("@typescript-eslint/parser") as any,
-          parserOptions: { ecmaVersion: 2022, sourceType: "module" },
-        },
+        languageOptions: tsRuleTesterLanguageOptions,
       },
     ],
     invalid: [
@@ -61,20 +56,14 @@ describe("annotation-checker helper", () => {
         code: `declare function foo(): void;`,
         output: `/** @req <REQ-ID> */\ndeclare function foo(): void;`,
         errors: [{ messageId: "missingReq" }],
-        languageOptions: {
-          parser: require("@typescript-eslint/parser") as any,
-          parserOptions: { ecmaVersion: 2022, sourceType: "module" },
-        },
+        languageOptions: tsRuleTesterLanguageOptions,
       },
       {
         name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
         code: `interface I { method(): void; }`,
         output: `interface I { /** @req <REQ-ID> */\nmethod(): void; }`,
         errors: [{ messageId: "missingReq" }],
-        languageOptions: {
-          parser: require("@typescript-eslint/parser") as any,
-          parserOptions: { ecmaVersion: 2022, sourceType: "module" },
-        },
+        languageOptions: tsRuleTesterLanguageOptions,
       },
     ],
   });

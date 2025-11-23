@@ -1,18 +1,18 @@
 ## NOW
 
-- [ ] Review the existing linting and static analysis configuration to identify specific, security-relevant rules that can be safely enabled or tightened to catch risky patterns without overwhelming the current codebase.
+- [ ] Analyze the most duplicated test file related to annotation checking and design a small shared helper or fixture abstraction that will let you remove obvious copy‑pasted test code while keeping the tests’ behavior and readability intact.
 
 ## NEXT
 
-- [ ] Enable a small, well-justified set of additional security-focused lint rules and update the configuration accordingly, then address any reported issues in the code so the project continues to pass all checks.
-- [ ] Inspect the most complex or largest source module related to traceability or maintenance logic and design a small, behavior-preserving refactor that simplifies its structure or splits responsibilities without changing public behavior.
-- [ ] Implement the planned refactor in that module, keeping changes narrowly scoped and ensuring the code remains clear, traceable, and easy to test.
-- [ ] Use the existing duplication reports to pinpoint one or two of the most duplicated test or helper patterns and plan a small extraction into shared utilities to reduce copy-paste while preserving test readability.
-- [ ] Apply the selected duplication reduction by introducing shared helpers or fixtures, updating the affected tests to use them, and confirming that behavior and coverage remain unchanged.
+- [ ] Refactor the selected annotation-checker test file to use the new shared helper or fixture, ensuring all existing scenarios are still covered and the tests remain easy to understand.
+- [ ] Apply the same shared helper or a closely related one to at least one or two other highly duplicated rule test files so that their repeated patterns are consolidated without changing tested behavior.
+- [ ] Review one large, complex production module that underpins traceability or maintenance logic and sketch a minimal, behavior-preserving restructuring that extracts cohesive helper functions or submodules to reduce size and clarify responsibilities.
+- [ ] Implement the planned restructuring in that production module, updating traceability annotations as needed and confirming that public behavior and existing test coverage remain unchanged.
+- [ ] Re-evaluate duplication and file-size metrics after these changes to confirm that the worst hotspots have improved and that the overall code-quality posture has moved closer to the desired threshold.
 
 ## LATER
 
-- [ ] Introduce a dedicated static application security analysis workflow that integrates with the existing pipeline to scan the TypeScript codebase for deeper security issues beyond what linting can detect.
-- [ ] Progressively expand the set of security-oriented lint rules as the codebase adapts, periodically reviewing rule impact to ensure a good balance between safety and developer ergonomics.
-- [ ] Continue iteratively decomposing remaining large or complex files into smaller, focused modules so that future changes are easier and less error-prone, especially in maintenance and rule helper code.
-- [ ] Refine and automate reporting from duplication and security tools so that maintainers can quickly see trends and hotspots over time without manually inspecting raw reports.
+- [ ] Systematically apply similar duplication-reduction techniques to the remaining high-duplication test files, introducing additional shared test utilities where they clearly improve maintainability.
+- [ ] Incrementally decompose the other large production files identified in the assessment into smaller, focused modules or helpers, using behavior-preserving refactors and keeping each step small and well-covered by tests.
+- [ ] Refine the duplication monitoring setup to emphasize separate thresholds for production and test code, using the reports to guard against regressions now that the biggest hotspots have been addressed.
+- [ ] Periodically revisit the ESLint configuration and code-quality ratcheting ADR to see if further tightening of limits (such as function length or complexity) is appropriate once the structure of the codebase is cleaner.
