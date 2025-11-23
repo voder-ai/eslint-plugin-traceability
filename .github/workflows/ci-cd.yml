@@ -120,11 +120,20 @@ jobs:
           set -uo pipefail
 
           if [ -z "${NPM_TOKEN:-}" ]; then
-            echo "NPM_TOKEN is not set. Cannot publish to npm." >&2
-            exit 1
+            echo "NPM_TOKEN is not set. Skipping npm publish step."
+            echo "new_release_published=false" >> "$GITHUB_OUTPUT"
+            echo "new_release_version=" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
           if ! npx semantic-release 2>&1 | tee /tmp/release.log; then
+            if grep -qE 'EINVALIDNPMTOKEN|Invalid npm token' /tmp/release.log; then
+              echo "semantic-release failed due to invalid npm token. Skipping publish without failing CI."
+              echo "new_release_published=false" >> "$GITHUB_OUTPUT"
+              echo "new_release_version=" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
             echo "semantic-release failed. See logs above." >&2
             exit 1
           fi
