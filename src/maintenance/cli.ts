@@ -10,6 +10,21 @@ const EXIT_OK = 0;
 const EXIT_STALE = 1;
 const EXIT_USAGE = 2;
 
+interface ParsedCliInput {
+  command: string | undefined;
+  args: string[];
+}
+
+/**
+ * Extract the subcommand and its arguments from a raw argv array.
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Centralize parsing of CLI command and arguments
+ */
+function parseCliInput(rawArgv: string[]): ParsedCliInput {
+  const [, , command, ...rest] = rawArgv;
+  return { command, args: rest };
+}
+
 /**
  * Maintenance CLI entry point.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
@@ -21,8 +36,7 @@ const EXIT_USAGE = 2;
  * @req REQ-MAINT-SAFE - Provide clear exit codes and avoid unsafe defaults
  */
 export function runMaintenanceCli(rawArgv: string[]): number {
-  const argv = [...rawArgv];
-  const [, , command, ...rest] = argv;
+  const { command, args } = parseCliInput(rawArgv);
 
   if (!command || command === "-h" || command === "--help") {
     printHelp();
@@ -32,13 +46,13 @@ export function runMaintenanceCli(rawArgv: string[]): number {
   try {
     switch (command) {
       case "detect":
-        return handleDetect(rest);
+        return handleDetect(args);
       case "verify":
-        return handleVerify(rest);
+        return handleVerify(args);
       case "report":
-        return handleReport(rest);
+        return handleReport(args);
       case "update":
-        return handleUpdate(rest);
+        return handleUpdate(args);
       default:
         console.error(`Unknown command: ${command}`);
         printHelp();
