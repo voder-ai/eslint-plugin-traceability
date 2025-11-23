@@ -78,12 +78,21 @@ Description: Validates that all traceability annotations (`@story`, `@req`) foll
 
 Options:
 
-This rule accepts an optional configuration object:
+This rule accepts an optional configuration object. The primary configuration shape is **nested**:
 
-- `storyPathPattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that all `@story` values must match. If provided, the rule validates each `@story` against this pattern in addition to its built‑in structural checks. Defaults to a pattern equivalent to `^docs/stories/.*\.story\.md$`, aligning with the standard `docs/stories/<name>.story.md` convention.
-- `storyPathExample` (string, optional) – A short example path shown in error messages when `storyPathPattern` is configured. Defaults to `"docs/stories/001.0-EXAMPLE.story.md"`. This value is used **only** for guidance and does not affect validation.
-- `requirementIdPattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that all `@req` values must match. If provided, the rule validates each `@req` identifier against this pattern. Defaults to a pattern equivalent to `^REQ-[A-Z0-9_-]+$`, matching IDs such as `REQ-USER-AUTH` or `REQ-1234`.
-- `requirementIdExample` (string, optional) – A short example requirement ID shown in error messages when `requirementIdPattern` is configured. Defaults to `"REQ-USER-AUTH"`. This is purely informational and does not participate in matching.
+- `story` (object, optional) – Configuration for `@story` values.
+  - `pattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that all `@story` values must match. If provided, the rule validates each `@story` against this pattern in addition to its built‑in structural checks. Defaults to the value returned by `getDefaultStoryPattern()`, which is equivalent to `^docs/stories/.*\.story\.md$`, aligning with the standard `docs/stories/<name>.story.md` convention.
+  - `example` (string, optional) – A short example `@story` path shown in error messages when `story.pattern` is configured. Defaults to the value returned by `getDefaultStoryExample()`, `"docs/stories/001.0-EXAMPLE.story.md"`. This value is used **only** for guidance and does not affect validation.
+- `req` (object, optional) – Configuration for `@req` values.
+  - `pattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that all `@req` values must match. If provided, the rule validates each `@req` identifier against this pattern. Defaults to the value returned by `getDefaultReqPattern()`, which is equivalent to `^REQ-[A-Z0-9_-]+$`, matching IDs such as `REQ-USER-AUTH` or `REQ-1234`.
+  - `example` (string, optional) – A short example requirement ID shown in error messages when `req.pattern` is configured. Defaults to the value returned by `getDefaultReqExample()`, `"REQ-USER-AUTH"`. This is purely informational and does not participate in matching.
+
+For backward compatibility, the rule also supports **flat shorthand** fields that map directly to the nested properties:
+
+- `storyPathPattern` (string, optional) – Shorthand for `story.pattern`. If `story.pattern` is provided, it takes precedence over `storyPathPattern`.
+- `storyPathExample` (string, optional) – Shorthand for `story.example`. If `story.example` is provided, it takes precedence over `storyPathExample`.
+- `requirementIdPattern` (string, optional) – Shorthand for `req.pattern`. If `req.pattern` is provided, it takes precedence over `requirementIdPattern`.
+- `requirementIdExample` (string, optional) – Shorthand for `req.example`. If `req.example` is provided, it takes precedence over `requirementIdExample`.
 
 Behavior notes:
 
@@ -472,3 +481,4 @@ In CI:
 
 ```bash
 npm run traceability:verify
+```

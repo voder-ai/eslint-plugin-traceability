@@ -4,6 +4,7 @@ import {
   resolveOptions,
   type ResolvedAnnotationOptions,
   getRuleSchema,
+  getOptionErrors,
 } from "./helpers/valid-annotation-options";
 
 /**
@@ -290,6 +291,8 @@ function reportInvalidStoryFormatWithFix(
  * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ * @req REQ-REGEX-VALIDATION - Validate configurable story regex patterns and fall back safely
+ * @req REQ-BACKWARD-COMP - Preserve behavior when invalid regex config is supplied
  */
 function validateStoryAnnotation(
   context: any,
@@ -336,6 +339,8 @@ function validateStoryAnnotation(
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-REQ-FORMAT - Validate @req identifiers follow expected patterns
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
+ * @req REQ-REGEX-VALIDATION - Validate configurable requirement regex patterns and fall back safely
+ * @req REQ-BACKWARD-COMP - Preserve behavior when invalid regex config is supplied
  */
 function validateReqAnnotation(
   context: any,
@@ -477,6 +482,13 @@ export default {
        * @req REQ-ERROR-CONSISTENCY - Use shared "Invalid annotation format: {{details}}." message pattern across rules
        */
       invalidReqFormat: "Invalid annotation format: {{details}}.",
+      /**
+       * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+       * @req REQ-REGEX-VALIDATION - Surface configuration errors for invalid regex patterns
+       * @req REQ-BACKWARD-COMP - Preserve behavior by falling back to default patterns on error
+       */
+      invalidRuleConfiguration:
+        "Invalid configuration for valid-annotation-format: {{details}}",
     },
     schema: getRuleSchema(),
     /**
@@ -487,30 +499,50 @@ export default {
      * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
      * @req REQ-AUTOFIX-SAFE
      * @req REQ-AUTOFIX-PRESERVE
+     * @req REQ-REGEX-VALIDATION - Ensure regex configuration does not affect fix safety
+     * @req REQ-BACKWARD-COMP - Maintain previous auto-fix behavior under invalid configs
      */
     fixable: "code",
   },
   /**
    * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
    * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+   * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
    * @req REQ-SYNTAX-VALIDATION - Ensure rule create function validates annotations syntax
    * @req REQ-FORMAT-SPECIFICATION - Implement formatting checks per specification
    * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+   * @req REQ-REGEX-VALIDATION - Derive validation regexes from shared options helper
+   * @req REQ-BACKWARD-COMP - Fall back to default patterns and continue validation on config errors
    */
   create(context: any) {
     const sourceCode = context.getSourceCode();
     const options = resolveOptions(context.options || []);
+    const optionErrors = getOptionErrors();
+
     return {
       /**
        * Program-level handler that inspects all comments for @story and @req tags
        *
        * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
        * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+       * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
        * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
        * @req REQ-REQ-FORMAT - Validate @req identifiers follow expected patterns
        * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+       * @req REQ-REGEX-VALIDATION - Surface regex configuration errors without blocking validation
+       * @req REQ-BACKWARD-COMP - Continue validating comments using default patterns on error
        */
-      Program() {
+      Program(node: any) {
+        if (optionErrors && optionErrors.length > 0) {
+          optionErrors.forEach((details: string) => {
+            context.report({
+              node,
+              messageId: "invalidRuleConfiguration",
+              data: { details },
+            });
+          });
+        }
+
         const comments = sourceCode.getAllComments() || [];
         comments.forEach((comment: any) => {
           processComment(context, comment, options);

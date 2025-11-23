@@ -103,6 +103,42 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
           },
         ],
       },
+      {
+        name: "[REQ-CONFIGURABLE-PATTERNS-STORY-FLAT] flat storyPathPattern accepts alternate extension when nested config not provided",
+        code: `// @story stories/feature-010.1-CUSTOM.story.mdx`,
+        options: [
+          {
+            storyPathPattern: "^stories\\/[^\\s]+\\.story\\.mdx$",
+            storyPathExample: "stories/example-010.1-CUSTOM.story.mdx",
+          },
+        ],
+      },
+      {
+        name: "[REQ-CONFIGURABLE-PATTERNS-REQ-FLAT] flat requirementIdPattern accepts PROJECT-123 style IDs when nested config not provided",
+        code: `// @req PROJECT-123`,
+        options: [
+          {
+            requirementIdPattern: "^[A-Z]+-[0-9]+$",
+            requirementIdExample: "PROJECT-123",
+          },
+        ],
+      },
+      {
+        name: "[REQ-CONFIGURABLE-PATTERNS-BOTH-FLAT] flat patterns accept alternative story and req shapes when nested config not provided",
+        code: `/**
+ * @story stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.mdx
+ * @req STORY-10
+ */`,
+        options: [
+          {
+            storyPathPattern: "^stories\\/[^\\s]+\\.story\\.mdx$",
+            storyPathExample:
+              "stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.mdx",
+            requirementIdPattern: "^[A-Z]+-[0-9]+$",
+            requirementIdExample: "STORY-10",
+          },
+        ],
+      },
     ],
     invalid: [
       {
@@ -316,6 +352,14 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
         output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
         errors: [
           {
+            // Configuration error should also be reported
+            messageId: "invalidRuleConfiguration",
+            data: {
+              details:
+                'Invalid regular expression for option "story.pattern": "[unclosed"',
+            },
+          },
+          {
             messageId: "invalidStoryFormat",
             data: {
               // Because we fall back, we still use the default example text
@@ -338,9 +382,74 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
         ],
         errors: [
           {
+            // Configuration error should also be reported
+            messageId: "invalidRuleConfiguration",
+            data: {
+              details:
+                'Invalid regular expression for option "req.pattern": "(unclosed"',
+            },
+          },
+          {
             messageId: "invalidReqFormat",
             data: {
               // Because we fall back, we still use the default example text
+              details:
+                'Invalid requirement ID "invalid-format" for @req annotation. Expected an identifier like "REQ-EXAMPLE" (uppercase letters, numbers, and dashes only).',
+            },
+          },
+        ],
+      },
+      {
+        name: "[REQ-CONFIGURABLE-PATTERNS-FALLBACK-FLAT] invalid flat storyPathPattern falls back to default and reports config error",
+        code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
+        options: [
+          {
+            // invalid regex should be caught by the rule and ignored
+            storyPathPattern: "[unclosed",
+          },
+        ],
+        output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+        errors: [
+          {
+            // Configuration error should also be reported
+            messageId: "invalidRuleConfiguration",
+            data: {
+              details:
+                'Invalid regular expression for option "storyPathPattern": "[unclosed"',
+            },
+          },
+          {
+            // Because we fall back, we still use the default example text
+            messageId: "invalidStoryFormat",
+            data: {
+              details:
+                'Invalid story path "docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+            },
+          },
+        ],
+      },
+      {
+        name: "[REQ-CONFIGURABLE-PATTERNS-FALLBACK-FLAT] invalid flat requirementIdPattern falls back to default and reports config error",
+        code: `// @req invalid-format`,
+        options: [
+          {
+            // invalid regex should be caught by the rule and ignored
+            requirementIdPattern: "(unclosed",
+          },
+        ],
+        errors: [
+          {
+            // Configuration error should also be reported
+            messageId: "invalidRuleConfiguration",
+            data: {
+              details:
+                'Invalid regular expression for option "requirementIdPattern": "(unclosed"',
+            },
+          },
+          {
+            // Because we fall back, we still use the default example text
+            messageId: "invalidReqFormat",
+            data: {
               details:
                 'Invalid requirement ID "invalid-format" for @req annotation. Expected an identifier like "REQ-EXAMPLE" (uppercase letters, numbers, and dashes only).',
             },
