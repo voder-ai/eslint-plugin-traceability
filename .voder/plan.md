@@ -1,16 +1,15 @@
 ## NOW
 
-- [ ] Refactor the main plugin entry module to remove duplicated configuration blocks for the recommended and strict presets by introducing shared configuration helpers, ensuring the exported API and rule severities remain exactly the same while reducing internal duplication and keeping all existing traceability annotations accurate.
+- [ ] Ensure the npm publishing credentials and continuous delivery configuration are corrected so that the release job on the main branch can authenticate to the npm registry and successfully publish new versions using the existing semantic-release setup.
 
 ## NEXT
 
-- [ ] Analyze the helper module that handles story IO for annotation requirements and extract the repeated comment-scanning and detection logic into well-named shared functions, replacing duplicated loops and conditionals without changing how the rules behave or how errors are reported.
-- [ ] Refactor the story-reference validation rule module by identifying repeated path-validation and error-reporting patterns and extracting them into small, reusable helpers, so that the rule’s behavior, options, and messages stay identical while the implementation becomes smaller and less duplicated.
-- [ ] Review the updated duplication analysis for production source files to confirm that duplication in the targeted modules has dropped below the previously identified high levels, and adjust any remaining small hotspots with additional micro-refactors that do not alter observable behavior.
-- [ ] Once duplication in the most problematic modules is reduced, examine the largest remaining production files and, where appropriate, split them into smaller focused modules (for example, separating path resolution, existence checks, and error reporting), preserving public APIs and traceability comments while improving readability and maintainability.
+- [ ] Review and, if necessary, adjust the CI workflow’s release step so that any semantic-release publishing failure causes the overall job to fail rather than being treated as a successful pipeline run.
+- [ ] Validate that the semantic-release configuration, including plugins, package metadata, and registry settings, correctly matches the intended npm package and repository so that a successful run produces the expected release artifacts and versioning.
+- [ ] Trigger and inspect a fresh main-branch CI run after the credential and workflow adjustments to confirm that, when a new release is warranted, semantic-release completes publishing and the post-deployment smoke tests run and pass, and that when no release is needed the workflow cleanly skips publishing without errors.
 
 ## LATER
 
-- [ ] Revisit the project’s duplication thresholds for production code and, if the refactors have successfully reduced duplication, incrementally tighten those thresholds so that future duplication of the same kind is caught earlier.
-- [ ] Optionally address high duplication in test files by introducing shared test helpers and data builders, focusing on improving maintainability while keeping test behavior and coverage stable.
-- [ ] After code quality has been raised to or above the target threshold, perform a fresh functionality assessment against the documented stories and requirements to confirm feature completeness and identify any remaining behavior gaps.
+- [ ] Document the end-to-end continuous deployment behavior for this project, including how semantic-release is wired into the main-branch workflow and what conditions cause a new release to be published.
+- [ ] Refine the CI configuration to address any remaining deprecation warnings from transitive tooling (such as the Markdown processor) used during release so that future runs are free of deprecation noise.
+- [ ] Revisit related version-control hygiene items, such as ensuring Husky hooks are reliably installed for all contributors and that the documented development workflow matches the enforced CI/CD pipeline and release process.
