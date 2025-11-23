@@ -5,8 +5,9 @@
  */
 export const tsRuleTesterLanguageOptions = {
   parser: require("@typescript-eslint/parser") as any,
-  parserOptions: { ecmaVersion: 2022, sourceType: "module" },
-};
+  // eslint-disable-next-line no-magic-numbers -- ECMAScript version constant
+  parserOptions: { ecmaVersion: 2022 as const, sourceType: "module" as const },
+} as const;
 
 /**
  * Attach shared TypeScript RuleTester language options to a test case definition.
@@ -15,11 +16,11 @@ export const tsRuleTesterLanguageOptions = {
  * @param testCase A RuleTester valid/invalid test case object
  * @returns The same test case with TypeScript language options applied
  */
-export function withTsLanguageOptions<T extends { languageOptions?: unknown }>(
+export function withTsLanguageOptions<T extends Record<string, unknown>>(
   testCase: T
-): T {
+): T & { languageOptions: typeof tsRuleTesterLanguageOptions } {
   return {
-    languageOptions: tsRuleTesterLanguageOptions,
     ...testCase,
-  };
+    languageOptions: tsRuleTesterLanguageOptions,
+  } as T & { languageOptions: typeof tsRuleTesterLanguageOptions };
 }

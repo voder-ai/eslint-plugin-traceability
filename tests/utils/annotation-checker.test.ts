@@ -10,28 +10,17 @@ import { tsRuleTesterLanguageOptions } from "./ts-language-options";
 
 const ruleTester = new RuleTester();
 
-type RuleTesterTestCase = {
-  name: string;
-  code: string;
-  output?: string;
-  errors?: { messageId: string }[];
-};
-
-type TsRuleTesterTestCase = RuleTesterTestCase & {
-  languageOptions: typeof tsRuleTesterLanguageOptions;
-};
-
-const withTsAnnotationCheckerOptions = <T extends RuleTesterTestCase>(
+const withTsAnnotationCheckerOptions = <T extends Record<string, any>>(
   test: T,
-): TsRuleTesterTestCase => ({
+): T & { languageOptions: typeof tsRuleTesterLanguageOptions } => ({
   ...test,
   languageOptions: tsRuleTesterLanguageOptions,
 });
 
 type AnnotationCheckerTestConfig = {
   rule: any;
-  valid: RuleTesterTestCase[];
-  invalid: RuleTesterTestCase[];
+  valid: Array<{ name: string; code: string; [key: string]: any }>;
+  invalid: Array<{ name: string; code: string; errors: any[]; [key: string]: any }>;
 };
 
 /**
@@ -49,8 +38,8 @@ export function runAnnotationCheckerTests(
   const { rule, valid, invalid } = config;
 
   ruleTester.run(ruleName, rule, {
-    valid: valid.map(withTsAnnotationCheckerOptions),
-    invalid: invalid.map(withTsAnnotationCheckerOptions),
+    valid: valid.map(withTsAnnotationCheckerOptions) as any,
+    invalid: invalid.map(withTsAnnotationCheckerOptions) as any,
   });
 }
 
