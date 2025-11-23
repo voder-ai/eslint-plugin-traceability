@@ -1,15 +1,17 @@
 ## NOW
 
-- [ ] Review and refine the release step in the continuous integration workflow so that, when valid npm credentials are present, any semantic-release failure correctly fails the job while successful runs reliably publish new versions and set the outputs needed for post-deployment smoke tests.
+- [ ] Review the maintenance tools story and the existing maintenance utilities and tests to map each documented requirement and acceptance criterion to current behavior, producing a clear list of functional gaps that must be closed for the maintenance tools to fully satisfy the story.
 
 ## NEXT
 
-- [ ] Confirm that the continuous delivery workflow’s logic for deciding when to run the release step (branch filters, event conditions, and Node version matrix) exactly matches the intended semantic-release configuration and publishing strategy.
-- [ ] Verify that the post-deployment smoke test job is correctly wired to the release step outputs so it only runs when a new version is published and accurately validates the freshly released package.
-- [ ] Once a maintainer has updated the npm publishing credentials in the CI environment, observe a new main-branch workflow execution to ensure that a commit requiring a release results in a successful publish and passing smoke tests, while a commit that does not require a release cleanly skips publishing without errors.
+- [ ] Design a minimal, safe command-line or workflow interface around the existing maintenance utilities that lets users run the key maintenance operations in a way that matches the story’s user experience requirements, and specify the data each command reports back.
+- [ ] Enhance the maintenance reporting behavior so it provides clear, human-readable information about which annotations are stale or changed (and where), aligned with the story’s reporting and safety requirements, and add tests that capture this expected output.
+- [ ] Refine the maintenance error-handling behavior for edge cases such as permission-denied paths or invalid inputs so it is explicitly defined and, where appropriate, graceful, and update or add tests to assert the chosen behavior for each scenario.
+- [ ] Update or create user-facing documentation that explains how to use the maintenance tools (both programmatic APIs and any new CLI/workflow entrypoints), including examples and cautions about safety and reversibility, ensuring it is consistent with the implemented behavior and the story’s acceptance criteria.
+- [ ] Re-run the full story against the updated implementation and tests to verify that all acceptance criteria for the maintenance tools are now met and that the functionality assessment for this story can be considered passing.
 
 ## LATER
 
-- [ ] Document the end-to-end continuous deployment behavior for this project, including how semantic-release is integrated into the main-branch workflow, what conditions trigger a new release, and how failures are surfaced.
-- [ ] Address any remaining deprecation warnings or minor issues in the release toolchain (such as warnings from transitive Markdown tooling) to keep future CI/CD runs clean and forward-compatible.
-- [ ] Periodically re-evaluate the interplay between local hooks and CI (for example, Husky pre-push checks versus the GitHub Actions workflow) to ensure contributors experience the same quality and release gates locally as in the shared pipeline.
+- [ ] Consider adding optional automation, such as file-watching or integration with existing project scripts or hooks, to run maintenance operations when story files are moved or renamed if the story explicitly calls for it and it can be implemented without overcomplicating the workflow.
+- [ ] Refine and, if helpful, generalize the maintenance reporting format so it can be consumed by other tools (for example, machine-readable JSON alongside human-readable output) while keeping the primary user experience simple.
+- [ ] Look for opportunities to further simplify or refactor the maintenance code and tests once all functionality is complete, ensuring they remain easy to read, maintain, and extend without changing external behavior.

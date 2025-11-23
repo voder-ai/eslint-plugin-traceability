@@ -12,6 +12,9 @@
   "directories": {
     "doc": "docs"
   },
+  "bin": {
+    "traceability-maint": "lib/src/maintenance/cli.js"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepare": "husky install",

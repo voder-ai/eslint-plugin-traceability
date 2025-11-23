@@ -7,6 +7,18 @@
 import type { Rule } from "eslint";
 
 /**
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINTENANCE-API-EXPORT - Expose maintenance utilities alongside core plugin exports
+ */
+import {
+  detectStaleAnnotations,
+  updateAnnotationReferences,
+  batchUpdateAnnotations,
+  verifyAnnotations,
+  generateMaintenanceReport,
+} from "./maintenance";
+
+/**
  * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
  * @req REQ-RULE-LIST - Enumerate supported rule file names for plugin discovery
  */
@@ -121,5 +133,17 @@ const configs = {
   strict: [createTraceabilityFlatConfig()],
 };
 
-export { rules, configs };
-export default { rules, configs };
+/**
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINTENANCE-API-EXPORT - Expose maintenance utilities alongside core plugin exports
+ */
+const maintenance = {
+  detectStaleAnnotations,
+  updateAnnotationReferences,
+  batchUpdateAnnotations,
+  verifyAnnotations,
+  generateMaintenanceReport,
+};
+
+export { rules, configs, maintenance };
+export default { rules, configs, maintenance };
