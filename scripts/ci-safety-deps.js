@@ -9,13 +9,9 @@ const path = require("path");
 
 // Use the locally installed dry-aged-deps via npx with --no-install so we rely on the devDependency for reproducible checks.
 // Attempt to run dry-aged-deps; if missing, run a best-effort npm ls --json
-let res = spawnSync(
-  "npx",
-  ["--no-install", "dry-aged-deps", "--format=json"],
-  {
-    encoding: "utf8",
-  },
-);
+let res = spawnSync("npx", ["--no-install", "dry-aged-deps", "--format=json"], {
+  encoding: "utf8",
+});
 if (res.status !== 0 || !res.stdout) {
   // Fallback: produce an empty stable report
   res = { stdout: JSON.stringify({ packages: [] }) };

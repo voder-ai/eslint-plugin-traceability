@@ -2,7 +2,8 @@
 status: "accepted"
 date: 2025-11-23
 decision-makers: [Development Team]
-consulted: [ESLint Documentation, eslint-plugin-security, Node.js Security Guidance]
+consulted:
+  [ESLint Documentation, eslint-plugin-security, Node.js Security Guidance]
 informed: [All Contributors]
 ---
 

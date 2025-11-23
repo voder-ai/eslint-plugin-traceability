@@ -92,7 +92,6 @@ Key steps (in order):
      - `@semantic-release/github` (creates GitHub Releases)
 
    Behavior:
-
    - On each successful push to `main`, semantic-release:
      - Analyzes commits since the last tag using **Conventional Commits** (see `docs/conventional-commits-guide.md`).
      - Decides whether the release is `major`, `minor`, `patch`, or **no release**.
@@ -108,7 +107,6 @@ Key steps (in order):
      - Any other semantic-release error fails the job.
 
 8. **Post-deployment smoke test**
-
    - Runs only when semantic-release reports that a new release was published:
 
    ```yaml

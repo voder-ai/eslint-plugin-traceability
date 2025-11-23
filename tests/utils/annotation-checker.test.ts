@@ -36,18 +36,49 @@ const rule: any = {
   },
 };
 
+type RuleTesterTestCase = {
+  name: string;
+  code: string;
+  output?: string;
+  errors?: { messageId: string }[];
+};
+
+function runTsAnnotationCheckerTests(
+  ruleName: string,
+  ruleToRun: any,
+  description: string,
+  testCases: {
+    valid: RuleTesterTestCase[];
+    invalid: RuleTesterTestCase[];
+  },
+) {
+  const withTsOptions = <T extends RuleTesterTestCase>(test: T): T & {
+    languageOptions: typeof tsRuleTesterLanguageOptions;
+  } => ({
+    ...test,
+    languageOptions: tsRuleTesterLanguageOptions,
+  });
+
+  ruleTester.run(
+    ruleName,
+    ruleToRun,
+    {
+      valid: testCases.valid.map(withTsOptions),
+      invalid: testCases.invalid.map(withTsOptions),
+    },
+  );
+}
+
 describe("annotation-checker helper", () => {
-  ruleTester.run("annotation-checker", rule, {
+  runTsAnnotationCheckerTests("annotation-checker", rule, "TS annotation checker", {
     valid: [
       {
         name: "[REQ-TYPESCRIPT-SUPPORT] valid TSDeclareFunction with @req",
         code: `/** @req REQ-TEST */\ndeclare function foo(): void;`,
-        languageOptions: tsRuleTesterLanguageOptions,
       },
       {
         name: "[REQ-TYPESCRIPT-SUPPORT] valid TSMethodSignature with @req",
         code: `interface I { /** @req REQ-TEST */ method(): void; }`,
-        languageOptions: tsRuleTesterLanguageOptions,
       },
     ],
     invalid: [
@@ -56,15 +87,13 @@ describe("annotation-checker helper", () => {
         code: `declare function foo(): void;`,
         output: `/** @req <REQ-ID> */\ndeclare function foo(): void;`,
         errors: [{ messageId: "missingReq" }],
-        languageOptions: tsRuleTesterLanguageOptions,
       },
       {
         name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
         code: `interface I { method(): void; }`,
         output: `interface I { /** @req <REQ-ID> */\nmethod(): void; }`,
         errors: [{ messageId: "missingReq" }],
-        languageOptions: tsRuleTesterLanguageOptions,
       },
     ],
   });
-});
+})

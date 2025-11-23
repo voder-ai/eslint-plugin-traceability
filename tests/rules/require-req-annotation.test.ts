@@ -7,7 +7,7 @@
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-req-annotation";
-import { tsRuleTesterLanguageOptions } from "../utils/ts-language-options";
+import { withTsLanguageOptions } from "../utils/ts-language-options";
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -26,16 +26,14 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         name: "[REQ-ANNOTATION-REQUIRED] valid with @story and @req annotations",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-EXAMPLE\n */\nfunction bar() {}`,
       },
-      {
+      withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT] valid with @req annotation on TSDeclareFunction",
         code: `/**\n * @req REQ-EXAMPLE\n */\ndeclare function foo(): void;`,
-        languageOptions: tsRuleTesterLanguageOptions,
-      },
-      {
+      }),
+      withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT] valid with @req annotation on TSMethodSignature",
         code: `interface I {\n  /**\n   * @req REQ-EXAMPLE\n   */\n  method(): void;\n}`,
-        languageOptions: tsRuleTesterLanguageOptions,
-      },
+      }),
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] valid FunctionExpression with @req annotation",
         code: `const fn = /**\n * @req REQ-EXAMPLE\n */\nfunction() {};`,
@@ -44,16 +42,14 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] valid MethodDefinition with @req annotation",
         code: `class C {\n  /**\n   * @req REQ-EXAMPLE\n   */\n  m() {}\n}`,
       },
-      {
+      withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] valid TS FunctionExpression in variable declarator with @req",
         code: `const fn = /**\n * @req REQ-EXAMPLE\n */\nfunction () {};`,
-        languageOptions: tsRuleTesterLanguageOptions,
-      },
-      {
+      }),
+      withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] valid exported TS FunctionExpression in variable declarator with @req",
         code: `export const fn = /**\n * @req REQ-EXAMPLE\n */\nfunction () {};`,
-        languageOptions: tsRuleTesterLanguageOptions,
-      },
+      }),
       {
         name: "[REQ-CONFIGURABLE-SCOPE][Story 003.0] FunctionExpression ignored when scope only includes FunctionDeclaration",
         code: `const fn = function () {};`,
@@ -111,7 +107,7 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
           },
         ],
       },
-      {
+      withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction",
         code: `declare function baz(): void;`,
         errors: [
@@ -120,9 +116,8 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
             data: { name: "baz", functionName: "baz" },
           },
         ],
-        languageOptions: tsRuleTesterLanguageOptions,
-      },
-      {
+      }),
+      withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
         code: `interface I { method(): void; }`,
         errors: [
@@ -131,8 +126,7 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
             data: { name: "method", functionName: "method" },
           },
         ],
-        languageOptions: tsRuleTesterLanguageOptions,
-      },
+      }),
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on FunctionExpression assigned to variable",
         code: `const fn = function () {};`,
@@ -173,7 +167,7 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
           },
         ],
       },
-      {
+      withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on TS FunctionExpression in variable declarator",
         code: `const fn = function () {};`,
         errors: [
@@ -182,9 +176,8 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
             data: { name: "fn", functionName: "fn" },
           },
         ],
-        languageOptions: tsRuleTesterLanguageOptions,
-      },
-      {
+      }),
+      withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on exported TS FunctionExpression in variable declarator",
         code: `export const fn = function () {};`,
         errors: [
@@ -193,8 +186,7 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
             data: { name: "fn", functionName: "fn" },
           },
         ],
-        languageOptions: tsRuleTesterLanguageOptions,
-      },
+      }),
       {
         name: "[REQ-CONFIGURABLE-SCOPE][Story 003.0] FunctionDeclaration still reported when scope only includes FunctionDeclaration",
         code: `function scoped() {}`,
