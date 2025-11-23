@@ -43,6 +43,17 @@ type RuleTesterTestCase = {
   errors?: { messageId: string }[];
 };
 
+type TsRuleTesterTestCase = RuleTesterTestCase & {
+  languageOptions: typeof tsRuleTesterLanguageOptions;
+};
+
+const withTsAnnotationCheckerOptions = <T extends RuleTesterTestCase>(
+  test: T,
+): TsRuleTesterTestCase => ({
+  ...test,
+  languageOptions: tsRuleTesterLanguageOptions,
+});
+
 function runTsAnnotationCheckerTests(
   ruleName: string,
   ruleToRun: any,
@@ -52,48 +63,42 @@ function runTsAnnotationCheckerTests(
     invalid: RuleTesterTestCase[];
   },
 ) {
-  const withTsOptions = <T extends RuleTesterTestCase>(test: T): T & {
-    languageOptions: typeof tsRuleTesterLanguageOptions;
-  } => ({
-    ...test,
-    languageOptions: tsRuleTesterLanguageOptions,
+  ruleTester.run(ruleName, ruleToRun, {
+    valid: testCases.valid.map(withTsAnnotationCheckerOptions),
+    invalid: testCases.invalid.map(withTsAnnotationCheckerOptions),
   });
-
-  ruleTester.run(
-    ruleName,
-    ruleToRun,
-    {
-      valid: testCases.valid.map(withTsOptions),
-      invalid: testCases.invalid.map(withTsOptions),
-    },
-  );
 }
 
 describe("annotation-checker helper", () => {
-  runTsAnnotationCheckerTests("annotation-checker", rule, "TS annotation checker", {
-    valid: [
-      {
-        name: "[REQ-TYPESCRIPT-SUPPORT] valid TSDeclareFunction with @req",
-        code: `/** @req REQ-TEST */\ndeclare function foo(): void;`,
-      },
-      {
-        name: "[REQ-TYPESCRIPT-SUPPORT] valid TSMethodSignature with @req",
-        code: `interface I { /** @req REQ-TEST */ method(): void; }`,
-      },
-    ],
-    invalid: [
-      {
-        name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction",
-        code: `declare function foo(): void;`,
-        output: `/** @req <REQ-ID> */\ndeclare function foo(): void;`,
-        errors: [{ messageId: "missingReq" }],
-      },
-      {
-        name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
-        code: `interface I { method(): void; }`,
-        output: `interface I { /** @req <REQ-ID> */\nmethod(): void; }`,
-        errors: [{ messageId: "missingReq" }],
-      },
-    ],
-  });
-})
+  runTsAnnotationCheckerTests(
+    "annotation-checker",
+    rule,
+    "TS annotation checker",
+    {
+      valid: [
+        {
+          name: "[REQ-TYPESCRIPT-SUPPORT] valid TSDeclareFunction with @req",
+          code: `/** @req REQ-TEST */\ndeclare function foo(): void;`,
+        },
+        {
+          name: "[REQ-TYPESCRIPT-SUPPORT] valid TSMethodSignature with @req",
+          code: `interface I { /** @req REQ-TEST */ method(): void; }`,
+        },
+      ],
+      invalid: [
+        {
+          name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction",
+          code: `declare function foo(): void;`,
+          output: `/** @req <REQ-ID> */\ndeclare function foo(): void;`,
+          errors: [{ messageId: "missingReq" }],
+        },
+        {
+          name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
+          code: `interface I { method(): void; }`,
+          output: `interface I { /** @req <REQ-ID> */\nmethod(): void; }`,
+          errors: [{ messageId: "missingReq" }],
+        },
+      ],
+    },
+  );
+});

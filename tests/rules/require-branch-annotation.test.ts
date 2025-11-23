@@ -14,8 +14,11 @@ const ruleTester = new RuleTester({
   languageOptions: { parserOptions: { ecmaVersion: 2020 } },
 } as any);
 
+const runRule = (tests: Parameters<typeof ruleTester.run>[2]) =>
+  ruleTester.run("require-branch-annotation", rule, tests);
+
 describe("Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
-  ruleTester.run("require-branch-annotation", rule, {
+  runRule({
     valid: [
       {
         name: "[REQ-BRANCH-DETECTION] valid fallback scanning comment detection",
@@ -275,7 +278,7 @@ for (let i = 0; i < 3; i++) {}`,
     ],
   });
 
-  ruleTester.run("require-branch-annotation", rule, {
+  runRule({
     valid: [],
     invalid: [
       {

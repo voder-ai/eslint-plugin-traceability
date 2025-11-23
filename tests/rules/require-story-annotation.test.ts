@@ -13,6 +13,19 @@ const ruleTester = new RuleTester({
   },
 } as any);
 
+const withTsRuleTesterOptions = (testCase: any) =>
+  withTsLanguageOptions({
+    ...testCase,
+    languageOptions: {
+      ...(testCase.languageOptions ?? {}),
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: "module",
+        ...(testCase.languageOptions?.parserOptions ?? {}),
+      },
+    },
+  });
+
 describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", () => {
   ruleTester.run("require-story-annotation", rule, {
     valid: [
@@ -34,16 +47,16 @@ function foo() {}`,
         code: `// @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
 const arrowFn = () => {};`,
       },
-      withTsLanguageOptions({
+      withTsRuleTesterOptions({
         name: "[REQ-ANNOTATION-REQUIRED] valid on class method with annotation",
         code: `class A {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
       }),
-      withTsLanguageOptions({
+      withTsRuleTesterOptions({
         name: "[REQ-FUNCTION-DETECTION] valid with annotation on TS declare function",
         code: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 declare function tsDecl(): void;`,
       }),
-      withTsLanguageOptions({
+      withTsRuleTesterOptions({
         name: "[REQ-FUNCTION-DETECTION] valid with annotation on TS method signature",
         code: `interface C {
   /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
@@ -88,7 +101,7 @@ declare function tsDecl(): void;`,
           },
         ],
       },
-      withTsLanguageOptions({
+      withTsRuleTesterOptions({
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on class method",
         code: `class C {\n  method() {}\n}`,
         output: `class C {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
@@ -105,7 +118,7 @@ declare function tsDecl(): void;`,
           },
         ],
       }),
-      withTsLanguageOptions({
+      withTsRuleTesterOptions({
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS declare function",
         code: `declare function tsDecl(): void;`,
         output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ndeclare function tsDecl(): void;`,
@@ -121,7 +134,7 @@ declare function tsDecl(): void;`,
           },
         ],
       }),
-      withTsLanguageOptions({
+      withTsRuleTesterOptions({
         name: "[REQ-ANNOTATION-REQUIRED] missing @story on TS method signature",
         code: `interface D {\n  method(): void;\n}`,
         output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ninterface D {\n  method(): void;\n}`,
