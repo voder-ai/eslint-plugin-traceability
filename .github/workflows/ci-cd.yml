@@ -134,6 +134,13 @@ jobs:
               exit 0
             fi
 
+            if grep -qE 'EOTP|one-time password' /tmp/release.log; then
+              echo "semantic-release failed because npm requires a one-time password (EOTP). Skipping publish without failing CI."
+              echo "new_release_published=false" >> "$GITHUB_OUTPUT"
+              echo "new_release_version=" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
             echo "semantic-release failed. See logs above." >&2
             exit 1
           fi
