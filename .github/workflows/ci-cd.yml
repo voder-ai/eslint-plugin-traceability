@@ -48,6 +48,7 @@ jobs:
         run: npm run ci-verify:full
 
       - name: Run secret scanning
+        if: ${{ matrix['node-version'] == '20.x' }}
         run: npm run security:secrets
 
       - name: Upload dry-aged deps artifact
