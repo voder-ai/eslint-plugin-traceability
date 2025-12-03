@@ -1,16 +1,14 @@
 ## NOW
 
-- [ ] Review the 010.3 multi-story migration story in detail and extract a precise checklist of behaviors and configuration requirements for the new migration-focused rule so its implementation can align exactly with the specified acceptance criteria.
+- [ ] Review the existing CI/CD workflow configuration and local Git hooks against the documented pipeline requirements to confirm they fully align with the project’s continuous deployment design and identify any mismatches that need documentation or configuration updates.
 
 ## NEXT
 
-- [ ] Design the API and configuration shape for the new migration rule (including its name, default-off behavior, and severity options) and outline how it will coexist with existing rules without changing current validation semantics.
-- [ ] Implement an initial version of the new migration rule that detects legacy `@story` and `@req` annotations in candidate locations, emits appropriate diagnostics without auto-fixing, and is wired into the plugin’s exports while remaining disabled by default.
-- [ ] Create a dedicated test suite for the new migration rule that exercises configuration handling, basic detection scenarios, and ensures the rule is fully backward compatible when turned off.
-- [ ] Extend the migration rule to perform safe auto-fix transformations for supported single-story cases, leaving multi-story or ambiguous situations as diagnostics only, and update tests to cover these fix behaviors thoroughly.
-- [ ] Update the user and rule documentation, along with story 010.3’s acceptance criteria and Definition of Done, to describe the new migration rule, its configuration, auto-fix capabilities, and recommended usage patterns, ensuring the docs match the implemented and tested behavior.
+- [ ] Update the internal CI/CD documentation so it accurately describes the current workflow structure, quality gates, release behavior, and how the new migration rule and its tests fit into that pipeline.
+- [ ] Ensure that the fast verification path used before pushes exercises a meaningful subset of tests and checks, adjusting which tests are included so that pre-push validation reliably catches problems without duplicating the full pipeline.
+- [ ] Clarify in the contributor documentation how local development commands map to the CI/CD pipeline stages, including when and how semantic-release and the smoke tests run after changes are merged to main.
 
 ## LATER
 
-- [ ] Add more advanced migration examples and recipes that show how teams can adopt the migration rule across large or complex codebases, including staged rollouts and integration with existing lint configurations.
-- [ ] Evaluate whether maintenance utilities or CLI commands should offer automated assistance for bulk-converting `@story`/`@req` annotations to `@implements`, and if appropriate, design a follow-on story and implementation plan for that tooling.
+- [ ] Add an additional lightweight smoke test that exercises the maintenance CLI entry point end to end after releases, complementing the existing plugin smoke test.
+- [ ] Refine CI-related documentation to cover operational aspects such as expected pipeline duration, typical failure modes, and recommended steps for diagnosing and fixing CI failures when they occur.

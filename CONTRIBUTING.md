@@ -52,7 +52,29 @@ Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`
 
 ## Coding Style and Quality Checks
 
-We enforce code style and quality using ESLint, Prettier, TypeScript, and other tools. Please run the following commands before submitting your PR:
+We enforce code style and quality using ESLint, Prettier, TypeScript, Jest, and other tools. For day-to-day development, you can use the faster, focused test subset:
+
+```bash
+# Fast pre-flight: rules + maintenance Jest tests
+npm run ci-verify:fast
+```
+
+Before submitting your PR or pushing (the pre-push hook runs this automatically), run the full local gate:
+
+```bash
+# Full CI-equivalent verification
+npm run ci-verify:full
+```
+
+Under the hood, `ci-verify:fast` runs Jest with:
+
+```bash
+jest --testPathPattern 'tests/(rules|maintenance)'
+```
+
+This executes a meaningful subset of the suite (rule tests plus maintenance tests), making it suitable as a quick pre-flight signal before running the full gate.
+
+For reference, the full gate performs:
 
 ```bash
 # Build the project and generate types
@@ -64,7 +86,7 @@ npm run type-check
 # Lint code
 npm run lint
 
-# Run tests
+# Run tests (including coverage and additional suites)
 npm test
 
 # Check formatting (no changes)
@@ -88,7 +110,7 @@ Note on pre-push hook: the repository's pre-push hook now runs a full CI-equival
 npm run ci-verify:full
 ```
 
-`ci-verify:full` is the comprehensive local gate intended to mirror CI quality checks: it runs a clean build, type-checking, linting, `format:check`, duplication analysis, traceability checks, the full Jest test suite with coverage, dependency and security audits, and related safeguards. `ci-verify:fast` still exists as an optional, manual fast check for quick feedback (for example, before committing or during TDD loops), but it is not wired into the pre-push hook. Continuous Integration still runs some CI-only steps that are not part of `ci-verify:full` (such as certain smoke or integration tests, and release automation). For the detailed rationale behind using a full-parity local pre-push hook alongside CI, see [docs/decisions/adr-pre-push-parity.md](docs/decisions/adr-pre-push-parity.md).
+`ci-verify:full` is the comprehensive local gate intended to mirror CI quality checks: it runs a clean build, type-checking, linting, `format:check`, duplication analysis, traceability checks, the full Jest test suite with coverage, dependency and security audits, and related safeguards. `ci-verify:fast` executes a focused subset of Jest tests (using `--testPathPattern 'tests/(rules|maintenance)'`) to quickly validate rule behavior and maintenance invariants; it is optimized for quick feedback during development and as a pre-flight before invoking the full gate. Continuous Integration still runs some CI-only steps that are not part of `ci-verify:full` (such as certain smoke or integration tests, and release automation). For details of the pipeline, see [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md), and for the rationale behind the pre-push parity gate, see [docs/decisions/adr-pre-push-parity.md](docs/decisions/adr-pre-push-parity.md).
 
 Ensure there are no errors or warnings in the output.
 
@@ -108,9 +130,6 @@ Ensure there are no errors or warnings in the output.
    npm test
    ```
 
-```
-
 3. Make your changes, and verify that tests and linting continue to pass.
 
 Thank you for helping improve `eslint-plugin-traceability`!
-```
