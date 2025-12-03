@@ -5,9 +5,13 @@ Optional migration rule that recommends converting legacy `@story` + `@req` anno
 @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md  
 @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage
 @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns and mixed usage that cannot be auto-fixed yet
-@req REQ-BACKWARD-COMPAT-VALIDATION - Ensure legacy @story/@req annotations remain valid when the rule is disabled
+@req REQ-AUTO-FIX - Provide safe auto-fix support for simple single-story @story + @req blocks
+@req REQ-SINGLE-STORY-FIX - Automatically convert single-story @story/@req blocks to @implements
+@req REQ-PRESERVE-FORMAT - Preserve surrounding comment structure and non-traceability tags during auto-fix
+@req REQ-VALID-OUTPUT - Ensure auto-fixed output always passes existing validation rules
+@req REQ-BACKWARDS-COMPAT-VALIDATION - Ensure legacy @story/@req annotations remain valid when the rule is disabled
 
-> Note: In the current release this rule is focused on **detection and recommendations only**. Auto-fix support for rewriting to `@implements` will be added in a future iteration.
+> Note: Auto-fix is intentionally conservative and only applies to simple, clearly single-story legacy blocks. More complex patterns (multi-story, mixed `@implements`, or unusual formatting) are detected but **not** auto-fixed and will still require manual migration.
 
 ## Rule Details
 
@@ -16,7 +20,7 @@ This rule is designed as an **opt-in migration aid** for teams that want to grad
 When enabled, it scans block/JSDoc comments and:
 
 - Detects legacy blocks that contain both `@story` and `@req` but **no** `@implements` lines
-- Emits a `preferImplements` recommendation diagnostic for those blocks
+- Emits a `preferImplements` recommendation diagnostic for those blocks (and auto-fixes eligible ones to `@implements` when run with `--fix`)
 - Detects mixed usage where a single comment combines `@story`/`@req` and `@implements`
 - Detects multiple distinct `@story` paths in the same block (likely multi-story integration)
 
@@ -67,7 +71,9 @@ When the rule encounters a block/JSDoc comment that contains **both** `@story` a
 - **Text:**
   > Consider using @implements instead of @story + @req for clearer traceability. Run ESLint with --fix to auto-convert.
 
-Example (will trigger `preferImplements`):
+For simple single-story blocks, running ESLint with `--fix` will automatically rewrite the comment to use `@implements` while preserving the rest of the comment content.
+
+Example (will trigger `preferImplements` and is auto-fixable):
 
 ```js
 /**
@@ -78,7 +84,7 @@ Example (will trigger `preferImplements`):
 export function calculateAgeInDays(publishDate) {}
 ```
 
-In a future iteration, this rule will provide an auto-fix that rewrites the block to:
+Auto-fix output:
 
 ```js
 /**
@@ -87,6 +93,16 @@ In a future iteration, this rule will provide an auto-fix that rewrites the bloc
  */
 export function calculateAgeInDays(publishDate) {}
 ```
+
+### Auto-fix limitations
+
+Auto-fix is deliberately limited to straightforward cases. It will **not** rewrite:
+
+- Comments with multiple distinct `@story` annotations (multi-story integration blocks)
+- Comments that already contain any `@implements` annotations (mixed legacy/modern usage)
+- Comments where `@story` or `@req` lines are unusually formatted or split across lines in ways that make the intent ambiguous
+
+In these cases the rule still reports diagnostics, but leaves the comment unchanged so you can migrate it manually.
 
 ### Mixed `@story` / `@req` / `@implements` usage
 
@@ -165,7 +181,7 @@ function alreadyMigrated() {}
  * @req REQ-ANNOTATION-REQUIRED
  */
 function legacy() {}
-// -> preferImplements (recommend migrating to @implements)
+// -> preferImplements (eligible blocks will be auto-fixed to @implements when running with --fix)
 ```
 
 ### Reported: mixed legacy and `@implements`
