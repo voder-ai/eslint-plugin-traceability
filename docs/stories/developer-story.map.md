@@ -18,11 +18,11 @@
 
 # User Story Map with Releases
 
-| **Release 0.1 (Core Validation)** (Planned) | **Setup Plugin**                | **Write Code**                 | **Validate Annotations**        | **Fix Issues**            | **Maintain Quality**        |
-| ------------------------------------------- | ------------------------------- | ------------------------------ | ------------------------------- | ------------------------- | --------------------------- |
-| **Plugin Foundation**                       | 001.0-DEV-PLUGIN-SETUP          | 003.0-DEV-FUNCTION-ANNOTATIONS | 005.0-DEV-ANNOTATION-VALIDATION | 007.0-DEV-ERROR-REPORTING | 009.0-DEV-MAINTENANCE-TOOLS |
-| **Basic Rules**                             | 002.0-DEV-ESLINT-CONFIG         | 004.0-DEV-BRANCH-ANNOTATIONS   | 006.0-DEV-FILE-VALIDATION       | 008.0-DEV-AUTO-FIX        | 010.0-DEV-DEEP-VALIDATION   |
-| **Enhanced Configuration**                  | 010.1-DEV-CONFIGURABLE-PATTERNS | -                              | -                               | -                         | -                           |
+| **Release 0.1 (Core Validation)** (Planned) | **Setup Plugin**                | **Write Code**                 | **Validate Annotations**        | **Fix Issues**                   | **Maintain Quality**        |
+| ------------------------------------------- | ------------------------------- | ------------------------------ | ------------------------------- | -------------------------------- | --------------------------- |
+| **Plugin Foundation**                       | 001.0-DEV-PLUGIN-SETUP          | 003.0-DEV-FUNCTION-ANNOTATIONS | 005.0-DEV-ANNOTATION-VALIDATION | 007.0-DEV-ERROR-REPORTING        | 009.0-DEV-MAINTENANCE-TOOLS |
+| **Basic Rules**                             | 002.0-DEV-ESLINT-CONFIG         | 004.0-DEV-BRANCH-ANNOTATIONS   | 006.0-DEV-FILE-VALIDATION       | 008.0-DEV-AUTO-FIX               | 010.0-DEV-DEEP-VALIDATION   |
+| **Enhanced Configuration**                  | 010.1-DEV-CONFIGURABLE-PATTERNS | 010.2-DEV-MULTI-STORY-SUPPORT  | -                               | 010.3-DEV-MIGRATE-TO-IMPLEMENTS  | -                           |
 
 | **Release 0.2 (Enhanced Features)** (Future) | **Setup Plugin**            | **Write Code**               | **Validate Annotations**     | **Fix Issues**              | **Maintain Quality**      |
 | -------------------------------------------- | --------------------------- | ---------------------------- | ---------------------------- | --------------------------- | ------------------------- |
@@ -48,9 +48,9 @@
 - **Developer Support**: 007.0-DEV-ERROR-REPORTING (clear error messages), 008.0-DEV-AUTO-FIX (simple auto-fixes)
 - **Ongoing Maintenance**: 009.0-DEV-MAINTENANCE-TOOLS (update helpers)
 - **Deep Validation**: 010.0-DEV-DEEP-VALIDATION (requirement content validation)
-- **Enhanced Configuration**: 010.1-DEV-CONFIGURABLE-PATTERNS (custom format patterns)
+- **Enhanced Configuration**: 010.1-DEV-CONFIGURABLE-PATTERNS (custom format patterns), 010.2-DEV-MULTI-STORY-SUPPORT (@implements annotation for multi-story requirements), 010.3-DEV-MIGRATE-TO-IMPLEMENTS (deprecate legacy format with auto-fix migration)
 
-**Total**: 11 stories covering complete basic traceability enforcement workflow with configuration flexibility
+**Total**: 13 stories covering complete basic traceability enforcement workflow with configuration flexibility and migration tooling
 
 ### Release 0.2: Enhanced Features (Future)
 
@@ -85,6 +85,7 @@
 - What types of functions should require @story annotations (all functions, only exported functions, only functions above certain complexity)?
 - Which code branches need traceability annotations (if/else, try/catch, switch cases, loops)?
 - How should the plugin handle generated code or third-party code that can't have annotations?
+- How should integration functions reference requirements from multiple stories while maintaining clear traceability?
 
 **Validation Logic:**
 
