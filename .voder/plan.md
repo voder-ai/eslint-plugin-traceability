@@ -1,14 +1,16 @@
 ## NOW
 
-- [ ] Review the existing CI/CD workflow configuration and local Git hooks against the documented pipeline requirements to confirm they fully align with the project’s continuous deployment design and identify any mismatches that need documentation or configuration updates.
+- [ ] Define and integrate a clear, project-standard way to invoke the dependency maturity tool from the project configuration so that contributors and automation can run it consistently and its behavior is documented.
 
 ## NEXT
 
-- [ ] Update the internal CI/CD documentation so it accurately describes the current workflow structure, quality gates, release behavior, and how the new migration rule and its tests fit into that pipeline.
-- [ ] Ensure that the fast verification path used before pushes exercises a meaningful subset of tests and checks, adjusting which tests are included so that pre-push validation reliably catches problems without duplicating the full pipeline.
-- [ ] Clarify in the contributor documentation how local development commands map to the CI/CD pipeline stages, including when and how semantic-release and the smoke tests run after changes are merged to main.
+- [ ] Review the dependency maturity tool’s output format and current results to understand which direct and transitive dependencies, if any, have safe mature upgrade candidates according to the project’s policy.
+- [ ] Apply any safe, policy-compliant dependency updates identified by the maturity tool, focusing first on resolving or reducing known dev-only vulnerabilities without impacting runtime behavior.
+- [ ] Revisit the existing security incident and known-error documentation to align it with the current dependency state, updating the rationale if vulnerabilities have been remediated or if the maturity tool still reports no safe upgrade path.
+- [ ] Summarize the updated dependency health status in the development documentation, including how and when the maturity tool should be used by contributors to keep dependencies within the required health threshold.
 
 ## LATER
 
-- [ ] Add an additional lightweight smoke test that exercises the maintenance CLI entry point end to end after releases, complementing the existing plugin smoke test.
-- [ ] Refine CI-related documentation to cover operational aspects such as expected pipeline duration, typical failure modes, and recommended steps for diagnosing and fixing CI failures when they occur.
+- [ ] Once dependency health meets the required threshold, perform the deferred functionality assessment to validate feature completeness against the documented stories and requirements.
+- [ ] Refine the long-term dependency maintenance strategy in an ADR, clarifying how the maturity tool, audits, and overrides should be used together for future upgrades.
+- [ ] Extend contributor guidance with a short checklist for dependency changes, covering when to run the maturity tool, how to interpret its output, and how to update dependency-related documentation and incident records.
