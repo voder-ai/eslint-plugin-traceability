@@ -17,14 +17,14 @@ Branches missing annotations: 47
 
 ## Branches missing @story/@req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:27 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:43 - TryStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:44 - SwitchStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:40 - TryStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:41 - SwitchStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:42 - CaseClause - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:45 - CaseClause - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:48 - CaseClause - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:51 - CaseClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:54 - CaseClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:69 - CatchClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:115 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:66 - CatchClause - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:110 - IfStatement - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:59 - CatchClause - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:102 - IfStatement - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:129 - TryStatement - missing: @story, @req
