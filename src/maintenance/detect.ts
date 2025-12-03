@@ -11,6 +11,8 @@ import type { ProjectBoundaryCheckResult } from "../utils/storyReferenceUtils";
  * Detect stale annotation references that point to moved or deleted story files
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-DETECT - Detect stale annotation references
+ * @param codebasePath Path to the codebase root, treated as a workspace root and resolved against process.cwd().
+ * @returns A de-duplicated array of stale @story paths (as strings) whose resolved targets no longer exist on disk.
  */
 export function detectStaleAnnotations(codebasePath: string): string[] {
   const cwd = process.cwd();

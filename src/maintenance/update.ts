@@ -52,6 +52,10 @@ function processFileForAnnotationUpdates(
  * Update annotation references when story files are moved or renamed
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-UPDATE - Update annotation references
+ * @param codebasePath Absolute or workspace-root path whose files will be updated in-place.
+ * @param oldPath The original @story path to search for in annotation comments.
+ * @param newPath The replacement @story path that will replace occurrences of oldPath.
+ * @returns The number of @story annotations that were updated across the codebase.
  */
 export function updateAnnotationReferences(
   codebasePath: string,
