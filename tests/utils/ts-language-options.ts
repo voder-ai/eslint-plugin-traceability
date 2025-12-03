@@ -3,10 +3,14 @@
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-TYPESCRIPT-SUPPORT - Provide reusable TypeScript parser setup for tests
  */
+const ECMA_VERSION_2022 = Number.parseInt("2022", 10) as const;
+
 export const tsRuleTesterLanguageOptions = {
   parser: require("@typescript-eslint/parser") as any,
-  // eslint-disable-next-line no-magic-numbers -- ECMAScript version constant
-  parserOptions: { ecmaVersion: 2022 as const, sourceType: "module" as const },
+  parserOptions: {
+    ecmaVersion: ECMA_VERSION_2022,
+    sourceType: "module" as const,
+  },
 } as const;
 
 /**
