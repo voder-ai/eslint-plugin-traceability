@@ -96,3 +96,9 @@ Given these constraints, the project treats this as a **known error** in dev-onl
 - When a safe, dry-aged-compatible upgrade path is available, migrate to a newer semantic-release/npm toolchain and retire this known error record by adding a **Resolved** section documenting the change.
 
 Created autonomously by voder.ai
+
+## Relationship to User-Facing Guarantees
+
+This known error is limited to dev-only release tooling and does not change the security guarantees described in the README and user documentation. The vulnerable `glob` and `brace-expansion` instances are only executed inside GitHub Actions during semantic-release; they are never run when users install or run `eslint-plugin-traceability` or `traceability-maint`.
+
+The combination of `npm audit --omit=dev --audit-level=high` and `dry-aged-deps` checks is what allows the project to assert that published versions do not ship with known high-severity vulnerabilities in their **production** dependency tree. Because the affected code is confined to CI release automation and excluded from the published runtime dependencies, the security posture promised to end users remains intact.

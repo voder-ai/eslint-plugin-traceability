@@ -150,6 +150,16 @@ npm run format:check
 
 If you have custom documentation or examples that reference old rule names or file paths, update them to match the new conventions introduced in v1.x.
 
+## Security and Dependency Notes
+
+Upgrading to 1.x keeps the same security posture described in the README: production dependencies are regularly audited with:
+
+```bash
+npm audit --omit=dev --audit-level=high
+```
+
+and dependency updates are managed via `dry-aged-deps` to avoid unreviewed or risky upgrades. The new maintenance CLI, `traceability-maint`, uses the same runtime dependency set as the core plugin and therefore inherits these same security guarantees.
+
 ---
 
 If you encounter any issues during migration, please file an issue at https://github.com/voder-ai/eslint-plugin-traceability/issues.

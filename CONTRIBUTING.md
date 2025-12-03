@@ -132,4 +132,8 @@ Ensure there are no errors or warnings in the output.
 
 3. Make your changes, and verify that tests and linting continue to pass.
 
+## Local Security and Dependency Checks
+
+`npm run ci-verify:full` also runs the key security and dependency checks used in CI: `npm audit --omit=dev --audit-level=high`, `npm run safety:deps` (dry-aged-deps), and `npm run audit:dev-high`, alongside the build, tests, and linting. These are the same checks that enforce the security and dependency guarantees documented in the README. You generally do not need to run `dry-aged-deps` or audit commands directly; rely on `ci-verify:full` (and optionally `ci-verify:fast` while iterating) unless you are explicitly working on dependency or security-related changes.
+
 Thank you for helping improve `eslint-plugin-traceability`!

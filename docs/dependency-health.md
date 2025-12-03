@@ -82,34 +82,11 @@ As of the latest review:
   - `docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`
   - `docs/decisions/adr-accept-dev-dep-risk-glob.md`
 
+These combined checks are what allow us to state in the README, in plain language, that published versions of this project do not contain any *known* high-severity vulnerabilities in their **production dependency tree** at release time.
+
 Because `dry-aged-deps` currently identifies **no safe upgrade path** that would resolve these bundled dev-only vulnerabilities while satisfying our maturity thresholds, we:
 
 - Keep the existing semantic-release/npm toolchain in place.
 - Rely on compensating controls (CI isolation, strict production audits, and overrides) as documented in the known error record and security incident procedures.
 
-## Contributor Workflow for Dependency Changes
-
-When proposing dependency updates:
-
-1. **Run dry-aged-deps locally**
-   - `npm run deps:maturity -- --format=json --check`
-   - Inspect the JSON output for:
-     - `summary.safeUpdates` and `packages` entries relevant to your proposed changes.
-
-2. **Prefer tool-recommended versions**
-   - Only propose updates that `dry-aged-deps` marks as safe.
-   - Avoid jumping to the latest version if it does not meet the age or security thresholds.
-
-3. **Update documentation when needed**
-   - If you add or remove manual `overrides` entries in `package.json`, update:
-     - `docs/security-incidents/dependency-override-rationale.md`
-     - Any relevant incident or known-error files under `docs/security-incidents/`.
-
-4. **Run full verification before pushing**
-   - `npm run ci-verify:full`
-   - Ensure audits, tests, linting, and traceability checks all pass.
-
-5. **Record significant health changes**
-   - For notable dependency health shifts (e.g., resolving a known error or introducing new accepted-risk overrides), add or update a review document under `docs/security-incidents/` (for example, `YYYY-MM-DD-dependency-health-review.md`).
-
-By following this workflow, contributors keep dependency updates aligned with the projects maturity and security policy while preserving a clear audit trail in documentation and CI artifacts.
+This document is primarily aimed at maintainers and advanced users who want to understand **how** those README guarantees are enforced behind the scenes, including the specific tools, thresholds, and review processes that back up the user-facing claims.

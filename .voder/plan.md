@@ -1,18 +1,16 @@
 ## NOW
 
-- [ ] Refactor the most highly duplicated test suite into clearer shared helpers or parameterized tests so that it keeps the same behavior while significantly reducing internal copy‑paste duplication.
+- [ ] Enhance the main user-facing documentation to clearly explain the project’s security and dependency posture, including how mature dependency updates are managed and how the documented dev-only tooling risks are controlled and do not impact end users.
 
 ## NEXT
 
-- [ ] Apply the same style of duplication‑reducing refactor to the next one or two most duplicated test files, extracting common setup and assertion patterns into reusable helpers while ensuring all existing scenarios remain covered.
-- [ ] Review the shared test utilities to smooth out any remaining type or lint edge cases so they use consistent patterns and no longer require ad‑hoc workarounds.
-- [ ] Update the main user-facing documentation files to replace plain-text or backticked file references with proper Markdown links so that all referenced guides are easily navigable.
-- [ ] Adjust the packaging configuration and documentation references so that every user-facing link in the README and user docs either points to a file that is included in the published package or to a stable canonical URL that will work for npm consumers.
-- [ ] Verify that code-level traceability annotations remain accurate after the refactors by checking functions and key branches in the updated tests and utilities and adding or fixing annotations where they are missing or incomplete.
+- [ ] Review and refine the internal development documentation about dependency health and security incidents so that it accurately reflects the current dry-aged-deps configuration, audit scripts, and the accepted dev-only semantic-release/npm risk.
+- [ ] Improve inline API documentation for the public maintenance functions by adding or tightening parameter and return descriptions so that code-level docs match the existing user-facing API reference.
+- [ ] Adjust user documentation to separate core usage guidance from advanced traceability concepts, ensuring that essential instructions do not rely on development stories while still linking to them as optional background material.
+- [ ] Clarify in contributor-focused documentation how local checks relate to the CI pipeline’s security and dependency gates, so that contributors understand how their changes are validated before release.
 
 ## LATER
 
-- [ ] Continue reducing duplication in remaining test files and any newly identified hotspots in production code, keeping an eye on jscpd reports to drive small, focused refactors.
-- [ ] Revisit ESLint complexity, max-lines, and related thresholds once duplication and structure are improved, tightening them only where they clearly support maintainability without causing churn.
-- [ ] Expand defensive-path and edge-case tests for the deeper validation rules (such as complex @implements combinations and strict path-boundary behavior) to further strengthen code quality and confidence.
-- [ ] Audit the entire codebase for traceability consistency, ensuring every named function and significant conditional branch includes a properly formatted story/requirement annotation, and add or update ADRs to document the improved testing and documentation structure.
+- [ ] Revisit dependency versions when new safe, mature releases become available and update overrides and documentation to reflect any changes to the risk profile.
+- [ ] Extend security incident records if new advisories affect the tooling stack, maintaining a clear history of decisions and compensating controls.
+- [ ] Once documentation, dependencies, and security are confirmed above the target thresholds, perform and document a dedicated functionality assessment that maps implemented behavior to the user stories and requirements.

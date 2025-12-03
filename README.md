@@ -180,6 +180,16 @@ npm test
 
 These tests verify end-to-end behavior of the plugin via the ESLint CLI.
 
+## Security and Dependency Health
+
+Production dependencies for the published plugin are continuously audited in CI and via the pre-push hook using `npm audit --omit=dev --audit-level=high`, ensuring that released versions do not ship with known high‑severity vulnerabilities.
+
+The project also uses `dry-aged-deps` (via `npm run deps:maturity` and `npm run safety:deps`) to favor mature, safer dependency updates: new versions must typically be at least 7 days old and have no known vulnerabilities before being adopted.
+
+There is a known, documented risk in the semantic‑release/npm release toolchain related to bundled `npm`/`glob`/`brace-expansion`. This affects only the GitHub Actions release job (a dev-only environment) and does not impact the published plugin artifacts or any end‑user projects consuming `eslint-plugin-traceability`.
+
+For optional, in‑depth background, see the dependency health overview in [docs/dependency-health.md](docs/dependency-health.md) and the detailed incident note in [docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md](docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md). These documents are informational only and not required to use the plugin.
+
 ## Documentation Links
 
 - ESLint v9 Setup Guide: [user-docs/eslint-9-setup-guide.md](user-docs/eslint-9-setup-guide.md)

@@ -228,7 +228,7 @@ export default [js.configs.recommended, traceability.configs.strict];
 
 ## Maintenance API and CLI
 
-The plugin exposes a small maintenance API and a companion CLI, `traceability-maint`, for bulk operations on `@story` annotations. As of v1.0.5 these tools are intentionally minimal and focused on stale **story** references only; requirement-level maintenance and more advanced filtering are planned but **not yet implemented**.
+The plugin exposes a small maintenance API and a companion CLI, `traceability-maint`, for bulk operations on `@story` annotations. As of v1.0.5 these tools are intentionally minimal and focused on stale **story** references only; requirement-level maintenance and more advanced filtering are planned but **not yet implemented**. All maintenance functions operate only on the local filesystem under the provided root directory; they do not make any network calls or interact with external services.
 
 ### Programmatic Maintenance API
 
@@ -363,6 +363,8 @@ Exit codes:
 - `0` – Success (no stale annotations for detection/verification commands, or command completed successfully).
 - `1` – Stale or invalid annotations detected.
 - `2` – Usage or configuration error (e.g., unknown command, missing required flags).
+
+The CLI follows the same security posture as the rest of the plugin: it does not perform network requests, does not invoke the shell with dynamically constructed input, and limits its effects to the local filesystem under the configured root. Its runtime dependencies are covered by the same `npm audit --omit=dev --audit-level=high` and `dry-aged-deps` checks described in the project README.
 
 #### Commands
 

@@ -475,6 +475,10 @@ Include in the plugin README:
 
 ---
 
+### Security and Dependency Tooling
+
+Plugin development in this repo is protected by the same security and dependency checks described in the main README. `npm run ci-verify:full` runs `npm audit --omit=dev --audit-level=high`, `npm run safety:deps`, and `npm run audit:dev-high`. These commands are executed both locally via Husky pre-push hooks and in CI, so contributors working on rules or plugin internals automatically benefit from the same security and dependency guarantees promised to end users.
+
 ## Related Resources
 
 - [ESLint Plugin Development Guide](https://eslint.org/docs/latest/extend/plugins)
