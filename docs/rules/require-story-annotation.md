@@ -2,6 +2,8 @@
 
 Enforces the presence of `@story` annotations on function declarations to ensure traceability from code to user stories.
 
+When using multi-story `@implements` annotations (see docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md), this rule also treats a well-formed `@implements story-path REQ-ID...` line immediately associated with the function as satisfying the story-annotation requirement (REQ-REQUIRE-ACCEPTS-IMPLEMENTS). In other words, either a direct `@story` tag or an `@implements` tag can prove story coverage for this rule; deeper validation of the story path and requirement IDs is still handled by `traceability/valid-story-reference` and `traceability/valid-req-reference`.
+
 @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md  
 @req REQ-ANNOTATION-REQUIRED - Require `@story` annotation on functions
 
@@ -114,6 +116,15 @@ module.exports = {
 function initAuth() {
   // authentication logic
 }
+```
+
+#### Additional Correct
+
+```js
+/**
+ * @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ */
+function multiStoryImpl() {}
 ```
 
 #### Incorrect

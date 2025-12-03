@@ -63,6 +63,7 @@ Implementation compliance will be confirmed through:
 - Error messages clearly indicate which story was checked for each requirement
 - Tests cover single-story, multi-story, and mixed annotation patterns
 - Documentation includes migration guide and examples
+- `traceability/require-story-annotation` and `traceability/require-req-annotation` accept a well-formed `@implements` annotation as satisfying story and requirement presence checks (REQ-REQUIRE-ACCEPTS-IMPLEMENTS), so developers are not forced to duplicate `@story`/`@req` alongside `@implements`.
 
 ## Pros and Cons of the Options
 

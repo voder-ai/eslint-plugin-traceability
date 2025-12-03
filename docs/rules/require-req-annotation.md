@@ -2,6 +2,8 @@
 
 Enforces the presence of `@req` annotations on functions and methods to ensure each implementation maps to a specific requirement ID.
 
+When migrating to multi-story `@implements` annotations (see docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md), this rule also treats a well-formed `@implements story-path REQ-ID...` line adjacent to the function as satisfying the requirement-annotation requirement (REQ-REQUIRE-ACCEPTS-IMPLEMENTS). Either an explicit `@req` tag or a multi-story `@implements` tag can be used to prove requirement coverage for this rule; deep validation that the requirement IDs exist in the referenced story file remains the responsibility of `traceability/valid-req-reference`.
+
 @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
 @req REQ-ANNOTATION-REQUIRED - Require `@req` annotation on functions
 
@@ -120,6 +122,17 @@ class AuthService {
   initAuth() {
     // authentication logic
   }
+}
+```
+
+A function that uses only a well-formed `@implements` line is also accepted:
+
+```js
+/**
+ * @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ */
+function initAuth() {
+  // authentication logic
 }
 ```
 
