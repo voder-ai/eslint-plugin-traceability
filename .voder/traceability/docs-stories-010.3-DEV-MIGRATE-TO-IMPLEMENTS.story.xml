@@ -2,10 +2,24 @@
 <traceability>
   <specification>docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-12-03T10:46:03.106Z</last_validated>
+  <last_validated>2025-12-03T12:55:50.403Z</last_validated>
   <last_modified>2025-12-03T10:01:13.821Z</last_modified>
-  <evidence>1) No implementation or parsing of @implements in source rules:
-- Directory src/rules contains only:
+  <evidence>1) Story file exists but only as specification:
+- docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md is present and contains detailed requirements for a new rule (e.g., `prefer-implements-annotation`), auto-fix migration behavior, configuration examples, and expected messages.
+- All acceptance criteria checkboxes in the story remain in the markdown only; there is no code or tests explicitly linked to this story.
+
+2) No migration/recommendation rule implemented in the plugin:
+- src/index.ts defines the list of rule names:
+  const RULE_NAMES = [
+    "require-story-annotation",
+    "require-req-annotation",
+    "require-branch-annotation",
+    "valid-annotation-format",
+    "valid-story-reference",
+    "valid-req-reference",
+  ] as const;
+- There is no rule name related to migration or preference for @implements (e.g., no "prefer-implements-annotation").
+- src/rules directory contents:
   - helpers/
   - require-branch-annotation.ts
   - require-req-annotation.ts
@@ -13,33 +27,70 @@
   - valid-annotation-format.ts
   - valid-req-reference.ts
   - valid-story-reference.ts
-- Global search: `grep -R "@implements" .` shows no matches in src/ or tests/. All matches are in node_modules or documentation (docs/decisions and docs/stories) rather than plugin code.
-- src/rules/valid-annotation-format.ts only looks for @story and @req tags (via /@story\b/ and /@req\b/); there is no handling of @implements lines or converting between formats.
-- src/rules/valid-req-reference.ts and src/rules/valid-story-reference.ts similarly only recognize @story and @req in comments and do not support or mention @implements.
+  None of these files implement a rule whose sole responsibility is to recommend @implements or perform migration from @story/@req.
 
-2) No migration rule like `traceability/prefer-implements-annotation` exists:
-- `find src/rules -name '*implements*'` → no rule files related to implements or migration.
-- search in eslint.config.js for `prefer-implements-annotation` → no matches.
-- search in src/index.ts for `implements` → no matches, so no rule with that name is exported or configured.
+3) Existing @implements support is validation-only, not migration:
+- src/rules/helpers/valid-implements-utils.ts contains helpers for parsing and validating @implements annotations, all tagged to story 010.2-DEV-MULTI-STORY-SUPPORT:
+  - MIN_IMPLEMENTS_TOKENS
+  - reportMissingImplementsValue
+  - reportMissingImplementsReqIds
+  - reportInvalidImplementsStoryPath
+  - reportInvalidImplementsReqId
+  - validateImplementsAnnotationHelper
+  These functions validate @implements but do not transform @story/@req annotations or emit migration recommendations.
+- src/rules/valid-annotation-format.ts includes logic such as:
+  - Detection of @implements in comments and validation via validateImplementsAnnotation.
+  - processCommentLine(...) that distinguishes @story, @req, and @implements.
+  - No code that:
+    * Detects the pattern of a single @story with multiple @reqs and replaces them with a single @implements line.
+    * Emits messages like "Consider using @implements instead of @story + @req..." or "Multiple @story annotations detected. Manually convert..." as described in the story.
 
-3) No tests for @implements migration or the new recommendation rule:
-- tests/rules contains tests such as require-story-annotation.test.ts, require-req-annotation.test.ts, valid-annotation-format.test.ts, valid-req-reference.test.ts, etc., but no file names or contents referring to @implements or 010.3.
-- `find tests -name '*implements*'` → 0 files.
-- There are no tests referencing the story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md, nor any tests asserting auto-fix behavior from @story/@req to @implements.
+4) No configurable enforcement or rule-level configuration for migration:
+- TRACEABILITY_RULE_SEVERITIES in src/index.ts only defines severities for:
+  - traceability/require-story-annotation
+  - traceability/require-req-annotation
+  - traceability/require-branch-annotation
+  - traceability/valid-annotation-format
+  - traceability/valid-story-reference
+  - traceability/valid-req-reference
+- There is no key for traceability/prefer-implements-annotation or any other rule controlling recommendation severity (off/warn/error) for @implements migration.
+- Search for "prefer-implements-annotation" in docs/custom-rules-development-guide.md returns no matches, so there is no documented opt-in configuration for such a rule.
 
-4) Story and ADR describe planned behavior only:
-- docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md specifies:
-  - A new ESLint rule `prefer-implements-annotation` that is disabled by default.
-  - Optional warnings when @story + @req is used.
-  - An ESLint auto-fix that transforms a single @story with multiple @req into one @implements line, preserving JSDoc ordering.
-  - Configuration examples in eslint.config.js using "traceability/prefer-implements-annotation": "off" | "warn" | "error".
-  - Specific message IDs: preferImplements, cannotAutoFix, multiStoryDetected.
-- None of these rule names, config keys, or message IDs appear in src/ or tests/.
-- docs/decisions/010-implements-annotation-for-multi-story-requirements.proposed.md is marked as a proposed ADR, indicating design but not completed implementation.
+5) No tests for this story or for @story/@req → @implements migration behavior:
+- find_files pattern "*010.3-DEV-MIGRATE-TO-IMPLEMENTS*" under tests/ → 0 matches.
+- search_file_content for "010.3-DEV-MIGRATE-TO-IMPLEMENTS" in several test files (e.g., tests/rules/auto-fix-behavior-008.test.ts, error-reporting.test.ts, require-story-annotation.test.ts, valid-annotation-format.test.ts, valid-story-reference.test.ts, require-req-annotation.test.ts) → no matches.
+- tests/rules/auto-fix-behavior-008.test.ts explicitly targets story 008.0-DEV-AUTO-FIX and verifies:
+  - Auto-adding missing @story annotations.
+  - Fixing simple @story path format issues.
+  It does not cover migrating @story/@req to @implements.
+- There are no tests exercising:
+  - Auto-fix that removes @story/@req and inserts @implements.
+  - Multi-story detection with cannot-auto-fix warnings.
+  - Configuration severity levels off/warn/error for a migration rule.
 
-5) Tests do not demonstrate the required behavior:
-- Running `npm test -- --verbose` executes Jest but prints no test output indicating any rule or tests related to @implements, migration, or Story 010.3.
+6) No documentation of a migration rule beyond the story itself:
+- docs/custom-rules-development-guide.md does not mention a "prefer-implements-annotation" rule or show configuration snippets like:
+  { "traceability/prefer-implements-annotation": "warn" }
+- The only place where such examples and messages appear is inside docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md, indicating they are planned but not actually integrated into user-facing documentation.
 
-From this evidence, the codebase currently only supports the legacy @story + @req model, with no migration rule, no auto-fix conversion to @implements, no configurable severity for such a rule, and no tests or docs wired into the runtime configuration.</evidence>
-  <notes>The story 010.3-DEV-MIGRATE-TO-IMPLEMENTS requires a new optional ESLint rule (e.g., traceability/prefer-implements-annotation) that recommends migrating from @story/@req annotations to @implements, provides an auto-fix to perform that conversion for single-story cases, detects multi-story/ambiguous patterns, preserves JSDoc ordering, allows configurable severity (off/warn/error, default off), and ensures both formats remain valid when the recommendation is disabled. The current implementation has no such rule, no parsing or handling of @implements in the existing rules, no configuration entries for the migration rule, and no tests or fixtures covering the described auto-fix or warnings. All evidence of @implements and migration exists only in documentation and a proposed ADR. Therefore, none of the acceptance criteria for this story are met and the status is FAILED.</notes>
+7) Test execution shows only existing suites, with no evidence of new migration-related tests:
+- Running tests: npm test -- --runInBand --verbose
+  Output:
+    > eslint-plugin-traceability@1.0.5 test
+    > jest --ci --bail --runInBand --verbose
+  No additional output or suite names indicate a rule or tests specifically for @implements migration or story 010.3.</evidence>
+  <notes>The story 010.3-DEV-MIGRATE-TO-IMPLEMENTS describes a new optional ESLint rule (e.g., traceability/prefer-implements-annotation) that should:
+- Emit configurable warnings or errors when @story + @req annotations are used (default: off).
+- Provide an auto-fix that converts a single @story with one or more @req lines into a single @implements line, preserving JSDoc structure and relative ordering.
+- Detect multi-story or mismatched @req patterns and warn without auto-fixing.
+- Allow configuration of severity (off/warn/error) and remain fully backward compatible when disabled.
+- Be covered by tests and documented as a migration guide with configuration examples.
+
+In the current repository state:
+- Only validation support for @implements (story 010.2) exists; there is no dedicated migration/recommendation rule.
+- No auto-fix logic converts @story/@req to @implements.
+- No configurable severity or configuration keys for such a rule exist.
+- No tests or documentation concretely implement or validate the behavior specified in story 010.3.
+
+Because multiple core acceptance criteria are not satisfied (optional warning, auto-fix support, single-story conversion, multi-story detection, configurable enforcement, documentation, and associated tests), this story is not implemented. The correct assessment status is FAILED.</notes>
 </traceability>

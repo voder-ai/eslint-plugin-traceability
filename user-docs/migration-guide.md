@@ -45,6 +45,97 @@ Review and update your existing annotations accordingly:
 + /** @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md */
 ```
 
+### 3.1 Multi-story `@implements` annotations
+
+Starting in v1.x, `eslint-plugin-traceability` supports an additional annotation form for integration code that implements requirements from multiple stories:
+
+```js
+/**
+ * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-IMPLEMENTS-VALIDATE
+ */
+function integrate() {}
+```
+
+You **do not** need to change existing, single-story annotations that already use `@story` and `@req`. Migration to `@implements` is only recommended when a function or module genuinely implements requirements from more than one story file.
+
+#### When to keep `@story` + `@req`
+
+Keep your current annotations if:
+
+- Each function is tied to a single story file.
+- All relevant requirements live in that story file.
+- You do not need to distinguish which story a particular requirement ID comes from.
+
+Example (no migration required):
+
+```js
+/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ */
+export function initAuth() {
+  // ...
+}
+```
+
+#### When to introduce `@implements`
+
+Adopt `@implements` for **multi-story integration** code, especially when:
+
+- The function combines behavior governed by **multiple** stories.
+- Requirement IDs are reused across stories (for example, `REQ-SHARED-ID` appears in more than one story file).
+- You want deep validation (via `valid-req-reference`) to know **which story file** each requirement came from.
+
+Before (single-story annotations trying to describe multi-story behavior):
+
+```js
+/**
+ * Apply age and security filters to rows.
+ * @story docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md
+ * @req REQ-AGE-THRESHOLD
+ * @req REQ-OUTPUT
+ */
+export async function applyFilters(rows, options) {
+  // combined behavior
+}
+```
+
+After (multi-story `@implements`), aligned with Story 010.2:
+
+```js
+/**
+ * Apply age and security filters to rows.
+ * @story docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md
+ * @req REQ-AGE-THRESHOLD
+ * @req REQ-OUTPUT
+ *
+ * @implements docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md REQ-AGE-THRESHOLD REQ-OUTPUT
+ * @implements docs/stories/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md REQ-AUDIT-CHECK REQ-SAFE-ONLY
+ */
+export async function applyFilters(rows, options) {
+  // combined behavior
+}
+```
+
+In the "after" example:
+
+- `valid-annotation-format` ensures the `@implements` lines use a valid story path and requirement ID format.
+- `valid-req-reference` validates that each requirement listed after `@implements` exists in the corresponding story file.
+
+#### Mixed usage during migration
+
+You can introduce `@implements` gradually without breaking existing code:
+
+1. Leave existing `@story` and `@req` annotations in place.
+2. Add `@implements` lines that group requirements by story file.
+3. Run ESLint with `traceability/valid-annotation-format` and `traceability/valid-req-reference` enabled to confirm everything passes.
+4. Optionally, once you are comfortable, standardize on using `@implements` for multi-story integration functions while keeping `@story` + `@req` for simple, single-story code.
+
+For detailed semantics and edge cases (path validation, scoped requirement IDs, and multi-story fixtures), see:
+
+- Rule docs: `docs/rules/valid-annotation-format.md`, `docs/rules/valid-req-reference.md`
+- Story: `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`
+
 ## 4. Test and Validate
 
 Run your test suite to confirm everything passes:

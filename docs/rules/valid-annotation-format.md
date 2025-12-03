@@ -314,3 +314,105 @@ function flatConfigured() {}
  * @req REQ-EXAMPLE
  */
 function badExample() {}
+```
+
+## Migration to `@implements`
+
+The `@implements` annotation is designed to make multi-story integration functions easier to annotate and validate without breaking existing projects. You do **not** need to migrate existing single-story code that already uses `@story` and `@req` correctly, but you can opt in to `@implements` where it adds clarity.
+
+### When you can stay with `@story` + `@req`
+
+Keep using only `@story` + `@req` when:
+
+- A function or class is tied to a **single** story file.
+- All of its requirements live in that same story file.
+- You are happy to treat that story as the single source of truth for that code path.
+
+Example (no migration required):
+
+```js
+/**
+ * Calculate age in days since publish date.
+ * @story docs/stories/002.0-DEV-FETCH-AVAILABLE-VERSIONS.story.md
+ * @req REQ-AGE-CALC
+ */
+export function calculateAgeInDays(publishDate) {
+  // ...
+}
+```
+
+### When to adopt `@implements`
+
+Use `@implements` when:
+
+- A function or class **implements requirements from multiple stories**.
+- Requirements with the **same ID** are reused in more than one story.
+- You want each requirement to be explicitly associated with the story file it comes from.
+
+With only `@story` + `@req`, multi-story integration code either:
+
+- Cannot be expressed cleanly at all, or
+- Leads to confusing or incorrect deep-validation results when checked by `valid-req-reference`.
+
+`@implements` solves this by letting you list, on a single line, the story file followed by all requirement IDs from that story that the code implements.
+
+### Before: single-story annotations only
+
+A typical "before" example for integration code might try to overload a single story, or avoid deep validation entirely:
+
+```js
+/**
+ * Apply age and security filters to rows.
+ * @story docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md
+ * @req REQ-AGE-THRESHOLD
+ * @req REQ-OUTPUT
+ *
+ * // Implicitly also implements security checks from another story,
+ * // but there is no clear or validated link here.
+ */
+export async function applyFilters(rows, options) {
+  // combined behavior
+}
+```
+
+This passes format validation but does **not** clearly show that some behavior comes from a second story, and deep requirement validation cannot reliably tell which story each requirement belongs to.
+
+### After: multi-story `@implements`
+
+With `@implements`, you keep `@story` + `@req` for the primary story (if you want), and add explicit, multi-story mappings:
+
+```js
+/**
+ * Apply age and security filters to rows.
+ * @story docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md
+ * @req REQ-AGE-THRESHOLD
+ * @req REQ-OUTPUT
+ *
+ * @implements docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md REQ-AGE-THRESHOLD REQ-OUTPUT
+ * @implements docs/stories/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md REQ-AUDIT-CHECK REQ-SAFE-ONLY
+ */
+export async function applyFilters(rows, options) {
+  // combined behavior
+}
+```
+
+In this form:
+
+- `valid-annotation-format` checks that each `@implements` line uses a valid story path and requirement ID format.
+- `valid-req-reference` (see its rule documentation) performs deep validation that every requirement ID listed after `@implements` actually exists in the referenced story file.
+
+### Mixed usage during migration
+
+You can introduce `@implements` **incrementally**:
+
+1. Start from working code that already uses `@story` + `@req`.
+2. Add `@implements` lines that group requirements by story file, without removing the original annotations.
+3. Run ESLint with `traceability/valid-annotation-format` and `traceability/valid-req-reference` enabled to confirm there are no new violations.
+4. Optionally, once your team is comfortable, standardize on always using `@implements` for multi-story integration functions.
+
+Both annotation styles are fully supported:
+
+- Single-story code can continue to use only `@story` + `@req`.
+- Multi-story integration code should prefer `@implements` to get precise, per-story validation.
+
+For more details on how `@implements` participates in deep requirement checking, including multi-story scenarios and requirement ID scoping, see the `valid-req-reference` rule documentation and Story `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`.

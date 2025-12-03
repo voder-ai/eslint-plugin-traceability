@@ -101,6 +101,19 @@ Behavior notes:
 - When options are omitted, the rule behaves exactly as in earlier versions, relying on its built‑in defaults and path‑suffix normalization logic only.
 - The pattern checks are additional validation; they do not change the existing auto‑fix behavior, which remains limited to safe `@story` suffix normalization described above.
 
+#### Migration and mixed usage
+
+The `valid-annotation-format` rule is intentionally **backward compatible** with existing code that only uses `@story` and `@req`. You can:
+
+- Continue using `@story` + `@req` for single-story functions and modules.
+- Introduce `@implements` incrementally for integration code that implements requirements from multiple stories.
+- Mix both styles in the same comment block when needed; the rule validates the format of each annotation independently.
+
+Deep requirement checking for both `@req` and `@implements` is handled by `traceability/valid-req-reference`. For step-by-step guidance on when and how to migrate, see:
+
+- **Migration guide:** `user-docs/migration-guide.md` (section **3.1 Multi-story `@implements` annotations**)
+- **Rule docs:** `docs/rules/valid-annotation-format.md`, `docs/rules/valid-req-reference.md`
+
 Default Severity: `error`
 Example:
 
@@ -482,4 +495,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```
