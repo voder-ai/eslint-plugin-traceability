@@ -82,6 +82,7 @@ Introduces a new annotation tag that combines story reference with requirement I
 - Bad, because migration effort for existing codebases (though optional)
 
 **Example usage:**
+
 ```javascript
 /**
  * Apply age and security filters to rows.
@@ -92,6 +93,7 @@ export async function applyFilters(rows, options) {
 ```
 
 **Legacy format (still supported):**
+
 ```javascript
 /**
  * @story docs/stories/003.0-DEV-EXAMPLE.story.md
@@ -154,12 +156,14 @@ Create integration story files that duplicate requirements.
 This decision addresses the limitation discovered when fixing systematic linting suppression in dry-aged-deps, where 80% of files had `eslint-disable traceability/*` due to multi-story integration functions.
 
 The `@implements` annotation name was chosen because:
+
 - It's semantically accurate - code implements requirements
 - It's familiar from interface implementation in many languages
 - It clearly conveys purpose without abbreviation
 - It differentiates from `@story` (context) vs implementation scope
 
 **Migration strategy:**
+
 1. Plugin supports both `@story`+`@req` and `@implements` simultaneously
 2. Existing code continues working without changes
 3. New code can use either format based on preference
@@ -167,6 +171,7 @@ The `@implements` annotation name was chosen because:
 5. Single-story code can optionally migrate for consistency
 
 **Validation behavior:**
+
 - `@implements story-path REQ-1 REQ-2`: Validate REQ-1 and REQ-2 exist in story-path
 - `@story path` + `@req REQ-1`: Validate REQ-1 exists in path (legacy)
 - Mixed: Both formats can coexist, validated independently
@@ -174,5 +179,6 @@ The `@implements` annotation name was chosen because:
 This decision should be implemented in eslint-plugin-traceability story 011.0-DEV-MULTI-STORY-SUPPORT or similar.
 
 Related resources:
+
 - eslint-plugin-traceability story 010.0-DEV-DEEP-VALIDATION (requirement validation)
 - eslint-plugin-traceability story 003.0-DEV-FUNCTION-ANNOTATIONS (current @req validation)

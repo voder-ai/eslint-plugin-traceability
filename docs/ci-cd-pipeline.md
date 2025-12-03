@@ -164,11 +164,11 @@ To keep local development aligned with CI:
 
 Local verification commands:
 
-- `npm run ci-verify:full`  
+- `npm run ci-verify:full`
   - Runs the same broad, end-to-end quality gate used in CI (build, type-check, linting, duplication checks, full Jest test suite with coverage, audits, and formatting checks).
   - This is the closest approximation to the CI pipeline and is what the pre-push hook enforces.
 
-- `npm run ci-verify:fast`  
+- `npm run ci-verify:fast`
   - Runs a **narrower, targeted subset** of checks focused on the rule and maintenance test suites.
   - Uses Jest with:
 
@@ -177,6 +177,7 @@ Local verification commands:
     ```
 
     to execute only tests whose paths match `tests/rules` or `tests/maintenance`.
+
   - Intended as an **optional, faster pre-flight** command that contributors run manually to iterate quickly on rule changes and core maintenance behavior.
   - Does **not** replace `ci-verify:full` and is **not** used by hooks or CI; it exists purely for faster local feedback.
 

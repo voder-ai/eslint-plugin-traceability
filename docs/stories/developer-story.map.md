@@ -18,11 +18,11 @@
 
 # User Story Map with Releases
 
-| **Release 0.1 (Core Validation)** (Planned) | **Setup Plugin**                | **Write Code**                 | **Validate Annotations**        | **Fix Issues**                   | **Maintain Quality**        |
-| ------------------------------------------- | ------------------------------- | ------------------------------ | ------------------------------- | -------------------------------- | --------------------------- |
-| **Plugin Foundation**                       | 001.0-DEV-PLUGIN-SETUP          | 003.0-DEV-FUNCTION-ANNOTATIONS | 005.0-DEV-ANNOTATION-VALIDATION | 007.0-DEV-ERROR-REPORTING        | 009.0-DEV-MAINTENANCE-TOOLS |
-| **Basic Rules**                             | 002.0-DEV-ESLINT-CONFIG         | 004.0-DEV-BRANCH-ANNOTATIONS   | 006.0-DEV-FILE-VALIDATION       | 008.0-DEV-AUTO-FIX               | 010.0-DEV-DEEP-VALIDATION   |
-| **Enhanced Configuration**                  | 010.1-DEV-CONFIGURABLE-PATTERNS | 010.2-DEV-MULTI-STORY-SUPPORT  | -                               | 010.3-DEV-MIGRATE-TO-IMPLEMENTS  | -                           |
+| **Release 0.1 (Core Validation)** (Planned) | **Setup Plugin**                | **Write Code**                 | **Validate Annotations**        | **Fix Issues**                  | **Maintain Quality**        |
+| ------------------------------------------- | ------------------------------- | ------------------------------ | ------------------------------- | ------------------------------- | --------------------------- |
+| **Plugin Foundation**                       | 001.0-DEV-PLUGIN-SETUP          | 003.0-DEV-FUNCTION-ANNOTATIONS | 005.0-DEV-ANNOTATION-VALIDATION | 007.0-DEV-ERROR-REPORTING       | 009.0-DEV-MAINTENANCE-TOOLS |
+| **Basic Rules**                             | 002.0-DEV-ESLINT-CONFIG         | 004.0-DEV-BRANCH-ANNOTATIONS   | 006.0-DEV-FILE-VALIDATION       | 008.0-DEV-AUTO-FIX              | 010.0-DEV-DEEP-VALIDATION   |
+| **Enhanced Configuration**                  | 010.1-DEV-CONFIGURABLE-PATTERNS | 010.2-DEV-MULTI-STORY-SUPPORT  | -                               | 010.3-DEV-MIGRATE-TO-IMPLEMENTS | -                           |
 
 | **Release 0.2 (Enhanced Features)** (Future) | **Setup Plugin**            | **Write Code**               | **Validate Annotations**     | **Fix Issues**              | **Maintain Quality**      |
 | -------------------------------------------- | --------------------------- | ---------------------------- | ---------------------------- | --------------------------- | ------------------------- |

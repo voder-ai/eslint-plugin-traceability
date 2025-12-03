@@ -242,7 +242,9 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       expect(code).toBe(0);
       expect(logSpy).toHaveBeenCalled();
       const allMessages = logSpy.mock.calls.flat().join("\n");
-      expect(allMessages).toMatch(/Usage: traceability-maint/i);
+      expect(allMessages).toContain(
+        "traceability-maint - Traceability annotation maintenance tools",
+      );
       expect(errorSpy).not.toHaveBeenCalled();
     } finally {
       logSpy.mockRestore();

@@ -35,10 +35,7 @@ This example shows the recommended starting point using the plugin's recommended
 import js from "@eslint/js";
 import traceability from "eslint-plugin-traceability";
 
-export default [
-  js.configs.recommended,
-  traceability.configs.recommended,
-];
+export default [js.configs.recommended, traceability.configs.recommended];
 ```
 
 ### Available Rules
