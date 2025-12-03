@@ -70,7 +70,8 @@ export default [
 
 ```js
 /**
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ *   // Point this to your own project's story/requirements file, not to this plugin's internal docs.
  * @req REQ-ANNOTATION-REQUIRED
  */
 function initAuth() {
@@ -182,13 +183,49 @@ These tests verify end-to-end behavior of the plugin via the ESLint CLI.
 
 ## Security and Dependency Health
 
-Production dependencies for the published plugin are continuously audited in CI and via the pre-push hook using `npm audit --omit=dev --audit-level=high`, ensuring that released versions do not ship with known high‑severity vulnerabilities.
+### What end users can expect from production dependencies
 
-The project also uses `dry-aged-deps` (via `npm run deps:maturity` and `npm run safety:deps`) to favor mature, safer dependency updates: new versions must typically be at least 7 days old and have no known vulnerabilities before being adopted.
+- The published `eslint-plugin-traceability` package is intended to ship **only with production dependencies that have no known high‑severity vulnerabilities** at release time.
+- As part of CI and the local pre‑push hook, we run:
+  - `npm audit --omit=dev --audit-level=high` – this checks only the **runtime (prod) dependency graph** and fails if any high‑severity issues are reported.
+- This means:
+  - Known high‑severity issues in production dependencies are blocked before a version is released.
+  - Dev‑only tooling and CI infrastructure are kept separate from what you install via `npm install eslint-plugin-traceability`.
 
-There is a known, documented risk in the semantic‑release/npm release toolchain related to bundled `npm`/`glob`/`brace-expansion`. This affects only the GitHub Actions release job (a dev-only environment) and does not impact the published plugin artifacts or any end‑user projects consuming `eslint-plugin-traceability`.
+### How `dry-aged-deps` and `npm audit` work together
 
-For optional, in‑depth background, see the dependency health overview in [docs/dependency-health.md](docs/dependency-health.md) and the detailed incident note in [docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md](docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md). These documents are informational only and not required to use the plugin.
+- **Maturity checks via `dry-aged-deps`**
+  - We use `dry-aged-deps` (via `npm run deps:maturity` and `npm run safety:deps`) to enforce basic “maturity” constraints on dependency updates.
+  - Current policy for adopting new versions:
+    - **Minimum age:** new versions are typically required to be **at least 7 days old**, reducing the chance of adopting a just‑released, unvetted version.
+    - **No known vulnerabilities:** versions with known vulnerabilities are rejected.
+- **Security scan via `npm audit`**
+  - `npm audit --omit=dev --audit-level=high` is run on the **production dependency tree** to catch known high‑severity issues before release.
+- **Combined effect**
+  - `dry-aged-deps` controls **which versions** we are willing to upgrade to (age + no‑known‑vulns).
+  - `npm audit` validates that the **current, locked set of production dependencies** is free from known high‑severity vulnerabilities.
+  - Together, they provide a conservative, security‑focused process for dependency updates that directly affect end users.
+
+### Scope of the semantic‑release/npm tooling risk
+
+- There is a known, documented risk in the semantic‑release/npm release toolchain related to bundled `npm`/`glob`/`brace-expansion`.
+- This risk:
+  - Applies only to the **GitHub Actions release workflow and related dev‑only tooling**.
+  - Does **not** modify or run inside consumers’ projects.
+  - Does **not** affect the built plugin artifacts published to npm.
+- In other words:
+  - The issue is confined to the CI environment that prepares and publishes releases.
+  - It **cannot impact** the runtime behavior or dependency graph of the `eslint-plugin-traceability` package you install or use in your own projects.
+
+### Optional deeper background
+
+For readers who want more context on the dependency and security model (not required to use the plugin):
+
+- Dependency health overview: [docs/dependency-health.md](docs/dependency-health.md)
+- Detailed incident note about the semantic‑release/npm toolchain risk:  
+  [docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md](docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md)
+
+These documents are informational and describe internal processes and known toolchain limitations; they do not change the guarantees described above for end users.
 
 ## Documentation Links
 

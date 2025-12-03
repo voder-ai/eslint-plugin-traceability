@@ -5,6 +5,8 @@ Last updated: 2025-11-19
 Version: 1.0.5
 Supported runtime: Node.js >=18.18.0, ESLint ^9.0.0
 
+Security and dependency hygiene for the published package are enforced by the same CI scripts described in the project README (including `npm audit --omit=dev --audit-level=high` and `dry-aged-deps` checks) to prevent known-vulnerable or stale runtime dependencies from being shipped; additional internal review and maintenance practices exist but are out of scope for normal usage of this plugin.
+
 ## Rules
 
 Each rule enforces traceability conventions in your code. Below is a summary of each rule exposed by this plugin.

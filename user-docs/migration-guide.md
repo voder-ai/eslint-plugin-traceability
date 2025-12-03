@@ -152,13 +152,7 @@ If you have custom documentation or examples that reference old rule names or fi
 
 ## Security and Dependency Notes
 
-Upgrading to 1.x keeps the same security posture described in the README: production dependencies are regularly audited with:
-
-```bash
-npm audit --omit=dev --audit-level=high
-```
-
-and dependency updates are managed via `dry-aged-deps` to avoid unreviewed or risky upgrades. The new maintenance CLI, `traceability-maint`, uses the same runtime dependency set as the core plugin and therefore inherits these same security guarantees.
+Production dependency guarantees are enforced by CI scripts that run `npm audit --omit=dev --audit-level=high` and manage version changes via `dry-aged-deps`, with additional details on thresholds, review policies, and incident handling defined in the project's internal security and dependency health documentation.
 
 ---
 
