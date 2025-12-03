@@ -33,20 +33,18 @@ export function handleDetect(normalized: NormalizedCliArgs): number {
     // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
     // @req REQ-MAINT-REPORT - JSON-friendly output for tooling integration
     console.log(JSON.stringify({ root, stale }));
+  } else if (stale.length === 0) {
+    console.log("No stale @story annotations found.");
   } else {
-    if (stale.length === 0) {
-      console.log("No stale @story annotations found.");
-    } else {
-      stale.forEach((story) => {
-        console.log(story);
-      });
-      console.log(
-        `Found ${stale.length} stale @story annotation${
-          stale.length === 1 ? "" : "s"
-        }.
+    stale.forEach((story) => {
+      console.log(story);
+    });
+    console.log(
+      `Found ${stale.length} stale @story annotation${
+        stale.length === 1 ? "" : "s"
+      }.
 Run 'traceability-maint report' for a structured summary.`,
-      );
-    }
+    );
   }
 
   return stale.length === 0 ? EXIT_OK : EXIT_STALE;
@@ -85,12 +83,12 @@ export function handleReport(normalized: NormalizedCliArgs): number {
   const root = flags.root;
   const format = flags.format ?? "text";
 
-  const report = generateMaintenanceReport(root);
+  try {
+    const report = generateMaintenanceReport(root);
 
-  if (format === "json") {
-    console.log(JSON.stringify({ root, report }));
-  } else {
-    if (!report) {
+    if (format === "json") {
+      console.log(JSON.stringify({ root, report }));
+    } else if (!report) {
       console.log("No stale @story annotations found. Nothing to report.");
     } else {
       console.log(`# Traceability Maintenance Report for ${root}`);
@@ -98,9 +96,17 @@ export function handleReport(normalized: NormalizedCliArgs): number {
       console.log("Stale story references:");
       console.log(report);
     }
-  }
 
-  return EXIT_OK;
+    return EXIT_OK;
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Unknown error while generating report";
+    console.error(`Invalid format: ${format}. Expected 'text' or 'json'.`);
+    console.error(`traceability-maint failed: ${message}`);
+    return EXIT_USAGE;
+  }
 }
 
 /**

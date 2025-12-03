@@ -33,12 +33,9 @@ export function runMaintenanceCli(rawArgv: string[]): number {
     return EXIT_OK;
   }
 
-  // Reconstruct NormalizedCliArgs so handlers see only the arguments after the subcommand,
-  // propagating the subcommand-specific args unchanged.
-  const normalized: NormalizedCliArgs = {
-    ...initialNormalized,
-    subcommand: command,
-  };
+  // Re-use the normalized arguments object for handlers so that they
+  // receive the subcommand name and its raw argument vector unchanged.
+  const normalized: NormalizedCliArgs = initialNormalized;
 
   try {
     switch (command) {
@@ -71,8 +68,6 @@ export function runMaintenanceCli(rawArgv: string[]): number {
      * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
      * @req REQ-MAINT-SAFE - Catch unexpected errors and surface concise diagnostics without crashing
      */
-    // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-    // @req REQ-MAINT-SAFE - Catch unexpected errors and emit concise diagnostics
     const message =
       error instanceof Error
         ? error.message
