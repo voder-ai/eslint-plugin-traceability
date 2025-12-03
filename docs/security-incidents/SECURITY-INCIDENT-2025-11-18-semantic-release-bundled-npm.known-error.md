@@ -24,7 +24,7 @@ These vulnerable packages are *only* present inside the npm binary bundled withi
 
 As of 2025-12-03:
 
-- `npx dry-aged-deps --format=json` reports no safe, dry-aged upgrade candidates for `@semantic-release/npm` within the current semantic-release v21.x toolchain used by this project.
+- `npm run deps:maturity -- --format=json` reports no safe, dry-aged upgrade candidates for `@semantic-release/npm` within the current semantic-release v21.x toolchain used by this project.
 - Upgrading to the latest `semantic-release@25.x` and `@semantic-release/npm@13.1.2` would require a coordinated major toolchain migration and may still embed a bundled `npm` implementation; the security characteristics of that new bundle have not yet been fully evaluated.
 
 Given these constraints, the project treats this as a **known error** in dev-only tooling and applies compensating controls instead of attempting a premature upgrade.
@@ -92,7 +92,7 @@ Given these constraints, the project treats this as a **known error** in dev-onl
 
 **Planned Follow-ups:**
 
-- Periodically re-run `npx dry-aged-deps --format=json --check` when updating dev dependencies to identify a safe, vulnerability-free version of `@semantic-release/npm` or an alternative release mechanism.
+- Periodically re-run `npm run deps:maturity -- --format=json --check` when updating dev dependencies to identify a safe, vulnerability-free version of `@semantic-release/npm` or an alternative release mechanism.
 - When a safe, dry-aged-compatible upgrade path is available, migrate to a newer semantic-release/npm toolchain and retire this known error record by adding a **Resolved** section documenting the change.
 
 Created autonomously by voder.ai
