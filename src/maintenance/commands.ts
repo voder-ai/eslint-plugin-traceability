@@ -25,7 +25,12 @@ export const EXIT_USAGE = 2;
  * @req REQ-MAINT-SAFE - Return specific exit codes for stale vs clean states
  */
 export function handleDetect(args: string[]): number {
-  const flags = parseFlags(args);
+  const flags = parseFlags(args, [
+    "node",
+    "traceability-maint",
+    "detect",
+    ...args,
+  ]);
   const root = flags.root;
   const stale = detectStaleAnnotations(root);
 
@@ -59,7 +64,12 @@ Run 'traceability-maint report' for a structured summary.`,
  * @req REQ-MAINT-SAFE - Return distinct exit codes for verification failures
  */
 export function handleVerify(args: string[]): number {
-  const flags = parseFlags(args);
+  const flags = parseFlags(args, [
+    "node",
+    "traceability-maint",
+    "verify",
+    ...args,
+  ]);
   const root = flags.root;
   const valid = verifyAnnotations(root);
 
@@ -81,7 +91,12 @@ export function handleVerify(args: string[]): number {
  * @req REQ-MAINT-SAFE - Support machine-readable formats for safe automation
  */
 export function handleReport(args: string[]): number {
-  const flags = parseFlags(args);
+  const flags = parseFlags(args, [
+    "node",
+    "traceability-maint",
+    "report",
+    ...args,
+  ]);
   const root = flags.root;
   const format = flags.format ?? "text";
 
@@ -110,7 +125,12 @@ export function handleReport(args: string[]): number {
  * @req REQ-MAINT-SAFE - Provide dry-run mode and explicit parameter checks
  */
 export function handleUpdate(args: string[]): number {
-  const flags = parseFlags(args);
+  const flags = parseFlags(args, [
+    "node",
+    "traceability-maint",
+    "update",
+    ...args,
+  ]);
   const root = flags.root;
 
   if (!flags.from || !flags.to) {

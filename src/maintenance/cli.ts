@@ -8,21 +8,7 @@ import {
   handleReport,
   handleUpdate,
 } from "./commands";
-
-interface ParsedCliInput {
-  command: string | undefined;
-  args: string[];
-}
-
-/**
- * Extract the subcommand and its arguments from a raw argv array.
- * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Centralize parsing of CLI command and arguments
- */
-function parseCliInput(rawArgv: string[]): ParsedCliInput {
-  const [, , command, ...rest] = rawArgv;
-  return { command, args: rest };
-}
+import { parseCliInput } from "./flags";
 
 /**
  * Maintenance CLI entry point.
@@ -35,12 +21,16 @@ function parseCliInput(rawArgv: string[]): ParsedCliInput {
  * @req REQ-MAINT-SAFE - Provide clear exit codes and avoid unsafe defaults
  */
 export function runMaintenanceCli(rawArgv: string[]): number {
-  const { command, args } = parseCliInput(rawArgv);
+  const parsed = parseCliInput(rawArgv);
+  const { subcommand: command } = parsed;
 
   if (!command || command === "-h" || command === "--help") {
     printHelp();
     return EXIT_OK;
   }
+
+  const cmdIndex = parsed.argv.indexOf(command as string);
+  const args = cmdIndex >= 0 ? parsed.argv.slice(cmdIndex + 1) : [];
 
   try {
     switch (command) {

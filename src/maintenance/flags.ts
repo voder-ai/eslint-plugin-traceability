@@ -6,6 +6,60 @@
  */
 import path from "path";
 
+/**
+ * Parsed representation of raw CLI input (argv) for the maintenance tools.
+ *
+ * Separates Node/V8 internals from the actual subcommand and its arguments.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+export interface ParsedCliInput {
+  /**
+   * The raw argv as passed to the Node.js process (e.g., process.argv).
+   */
+  readonly argv: string[];
+
+  /**
+   * The Node.js executable path (argv[0]).
+   */
+  readonly node: string;
+
+  /**
+   * The executed script path (argv[1]).
+   */
+  readonly script: string;
+
+  /**
+   * The maintenance subcommand being invoked (first argument after script).
+   */
+  readonly subcommand: string | undefined;
+
+  /**
+   * Remaining arguments after the subcommand, to be interpreted as flags
+   * or positional arguments for that subcommand.
+   */
+  readonly args: string[];
+}
+
+/**
+ * Parse raw Node.js argv into a structured CLI input for the maintenance tools.
+ *
+ * This performs only minimal, predictable splitting to support higher-level
+ * flag parsing in a safe and testable way.
+ *
+ * @param argv - Raw argv array, usually process.argv.
+ * @returns ParsedCliInput with node, script, subcommand, and remaining args.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+export function parseCliInput(argv: string[]): ParsedCliInput {
+  const [node = "", script = "", ...rest] = argv;
+  const [subcommand, ...args] = rest;
+  return { argv, node, script, subcommand, args };
+}
+
 export interface ParsedFlags {
   root: string;
   json: boolean;
@@ -81,8 +135,9 @@ function applyFlag(flags: ParsedFlags, args: string[], index: number): number {
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
  */
-export function parseFlags(args: string[]): ParsedFlags {
+export function parseFlags(_args: string[], rawArgv: string[]): ParsedFlags {
   const flags: ParsedFlags = createDefaultFlags();
+  const { args } = parseCliInput(rawArgv);
 
   for (let i = 0; i < args.length; i += 1) {
     i = applyFlag(flags, args, i);
