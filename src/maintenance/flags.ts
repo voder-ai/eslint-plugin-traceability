@@ -60,6 +60,46 @@ export function parseCliInput(argv: string[]): ParsedCliInput {
   return { argv, node, script, subcommand, args };
 }
 
+/**
+ * Normalized view of CLI arguments relevant to a maintenance subcommand.
+ *
+ * This strips away Node/V8 internals and script paths, exposing only the
+ * subcommand name and its raw arguments for further flag parsing.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+export interface NormalizedCliArgs {
+  /**
+   * The maintenance subcommand being invoked (first argument after script).
+   */
+  readonly subcommand: string | undefined;
+
+  /**
+   * Remaining arguments after the subcommand, to be interpreted as flags
+   * or positional arguments for that subcommand.
+   */
+  readonly args: string[];
+}
+
+/**
+ * Normalize raw argv into a subcommand-centric view for flag parsing.
+ *
+ * Uses parseCliInput to safely separate Node/V8 internals from the
+ * subcommand and its arguments, then exposes only the pieces relevant
+ * to subcommand-specific flag parsing.
+ *
+ * @param rawArgv - Raw argv array, usually process.argv.
+ * @returns NormalizedCliArgs with subcommand and remaining args.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+export function normalizeCliArgs(rawArgv: string[]): NormalizedCliArgs {
+  const { subcommand, args } = parseCliInput(rawArgv);
+  return { subcommand, args };
+}
+
 export interface ParsedFlags {
   root: string;
   json: boolean;
@@ -132,12 +172,18 @@ function applyFlag(flags: ParsedFlags, args: string[], index: number): number {
 /**
  * Basic flag parser for maintenance CLI subcommands.
  *
+ * Consumes already-normalized CLI arguments (subcommand and its raw args)
+ * and produces a ParsedFlags structure with minimal, predictable behavior.
+ *
+ * @param normalized - Normalized CLI arguments for a maintenance subcommand.
+ * @returns ParsedFlags with defaults applied and any recognized flags set.
+ *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
  */
-export function parseFlags(_args: string[], rawArgv: string[]): ParsedFlags {
+export function parseFlags(normalized: NormalizedCliArgs): ParsedFlags {
   const flags: ParsedFlags = createDefaultFlags();
-  const { args } = parseCliInput(rawArgv);
+  const { args } = normalized;
 
   for (let i = 0; i < args.length; i += 1) {
     i = applyFlag(flags, args, i);

@@ -9,14 +9,11 @@ import { enforceProjectBoundary } from "../../utils/storyReferenceUtils";
  * @req REQ-SECURITY-VALIDATION - Prevent path traversal and absolute path usage
  */
 
-export interface ReportInvalidPathArgs {
+export interface _ReportInvalidPathArgs {
   storyPath: string;
   commentNode: any;
   context: any;
 }
-
-// eslint-disable-next-line no-unused-vars -- Parameter name used only in type position for documentation and IDE hints
-export type ReportInvalidPathFn = (args: ReportInvalidPathArgs) => void;
 
 export interface HandleBoundaryOptions {
   storyPath: string;
@@ -28,7 +25,7 @@ export interface HandleBoundaryOptions {
     status: "exists" | "missing" | "fs-error" | null;
     matchedPath?: string | null;
   } | null;
-  reportInvalidPath: ReportInvalidPathFn;
+  reportInvalidPath: (_args: _ReportInvalidPathArgs) => void;
 }
 
 export interface SecurityValidationOptions {
@@ -37,7 +34,7 @@ export interface SecurityValidationOptions {
   context: any;
   cwd: string;
   allowAbsolute: boolean;
-  reportInvalidPath: ReportInvalidPathFn;
+  reportInvalidPath: (_args: _ReportInvalidPathArgs) => void;
 }
 
 /**

@@ -8,7 +8,7 @@ import {
   handleReport,
   handleUpdate,
 } from "./commands";
-import { parseCliInput } from "./flags";
+import { normalizeCliArgs, NormalizedCliArgs } from "./flags";
 
 /**
  * Maintenance CLI entry point.
@@ -21,27 +21,31 @@ import { parseCliInput } from "./flags";
  * @req REQ-MAINT-SAFE - Provide clear exit codes and avoid unsafe defaults
  */
 export function runMaintenanceCli(rawArgv: string[]): number {
-  const parsed = parseCliInput(rawArgv);
-  const { subcommand: command } = parsed;
+  const initialNormalized: NormalizedCliArgs = normalizeCliArgs(rawArgv);
+  const { subcommand: command } = initialNormalized;
 
   if (!command || command === "-h" || command === "--help") {
     printHelp();
     return EXIT_OK;
   }
 
-  const cmdIndex = parsed.argv.indexOf(command as string);
-  const args = cmdIndex >= 0 ? parsed.argv.slice(cmdIndex + 1) : [];
+  // Reconstruct NormalizedCliArgs so handlers see only the arguments after the subcommand,
+  // propagating the subcommand-specific args unchanged.
+  const normalized: NormalizedCliArgs = {
+    ...initialNormalized,
+    subcommand: command,
+  };
 
   try {
     switch (command) {
       case "detect":
-        return handleDetect(args);
+        return handleDetect(normalized);
       case "verify":
-        return handleVerify(args);
+        return handleVerify(normalized);
       case "report":
-        return handleReport(args);
+        return handleReport(normalized);
       case "update": {
-        const result = handleUpdate(args);
+        const result = handleUpdate(normalized);
         if (result === EXIT_USAGE) {
           printHelp();
         }
