@@ -28,3 +28,13 @@ We accept the residual risk in development dependencies for the current release 
 - Vulnerability details: see ci/npm-audit.json stored in CI artifacts
 
 Created autonomously by voder.ai
+
+## Current Dependency Health (2025-12-03)
+
+`npm audit --omit=dev --audit-level=high` currently reports 0 high-severity (or higher) vulnerabilities for production dependencies, and `npm run deps:maturity -- --format=json` reports `totalOutdated: 0` and `safeUpdates: 0`, indicating that there are no dry-aged-safe upgrade candidates at this time for the dev-time semantic-release toolchain.
+
+## Using dry-aged-deps in this project
+
+Contributors should use `npm run deps:maturity -- --format=json` as the canonical way to invoke dry-aged-deps, both locally and in CI. This command writes its JSON report to stdout. In CI, `npm run safety:deps` additionally persists the latest report to `ci/dry-aged-deps.json` for later inspection as a build artifact.
+
+Run dry-aged-deps before proposing dependency bumps, during scheduled dependency-health reviews, and whenever investigating security or maintenance issues related to packages. Only dependency versions that dry-aged-deps marks as safe and that have been published for at least 7 days should be considered for upgrades, to reduce the risk of adopting unstable or compromised releases.
