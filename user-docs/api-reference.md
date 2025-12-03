@@ -1,8 +1,8 @@
 # API Reference
 
 Created autonomously by [voder.ai](https://voder.ai).
-Last updated: 2025-11-19
-Version: 1.0.5
+Applies to eslint-plugin-traceability 1.x releases. For the current published version and detailed changelog, see GitHub Releases: <https://github.com/voder-ai/eslint-plugin-traceability/releases>.
+
 Supported runtime: Node.js >=18.18.0, ESLint ^9.0.0
 
 Security and dependency hygiene for the published package are enforced by the same CI scripts described in the project README (including `npm audit --omit=dev --audit-level=high` and `dry-aged-deps` checks) to prevent known-vulnerable or stale runtime dependencies from being shipped; additional internal review and maintenance practices exist but are out of scope for normal usage of this plugin.
@@ -230,7 +230,7 @@ export default [js.configs.recommended, traceability.configs.strict];
 
 ## Maintenance API and CLI
 
-The plugin exposes a small maintenance API and a companion CLI, `traceability-maint`, for bulk operations on `@story` annotations. As of v1.0.5 these tools are intentionally minimal and focused on stale **story** references only; requirement-level maintenance and more advanced filtering are planned but **not yet implemented**. All maintenance functions operate only on the local filesystem under the provided root directory; they do not make any network calls or interact with external services.
+The plugin exposes a small maintenance API and a companion CLI, `traceability-maint`, for bulk operations on `@story` annotations. These tools are intentionally minimal and focused on stale **story** references only; requirement-level maintenance and more advanced filtering are planned but **not yet implemented**. All maintenance functions operate only on the local filesystem under the provided root directory; they do not make any network calls or interact with external services.
 
 ### Programmatic Maintenance API
 
@@ -342,7 +342,7 @@ Generates a simple, text-only report of stale `@story` annotations.
 
 The `traceability-maint` CLI wraps the maintenance API for use in scripts and CI. It is typically available via `npx traceability-maint` or as an npm script.
 
-The CLI currently focuses on stale `@story` annotations only. It does **not** build or consume a separate index file, and it does not yet support requirement-level maintenance.
+These tools are intentionally minimal and focused on stale **story** references only; requirement-level maintenance and more advanced filtering are planned but **not yet implemented**. The CLI currently focuses on stale `@story` annotations only. It does **not** build or consume a separate index file, and it does not yet support requirement-level maintenance.
 
 #### General usage
 

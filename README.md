@@ -54,7 +54,7 @@ For development and contribution guidelines, see the [ESLint Plugin Development 
 
 ## Quick Start
 
-1. Create a flat ESLint config file ([`eslint.config.js`](eslint.config.js)):
+1. Create a flat ESLint config file (`eslint.config.js`):
 
 ```javascript
 // eslint.config.js
@@ -139,7 +139,7 @@ You can validate the plugin by running ESLint CLI with the plugin on a sample fi
 npx eslint --no-eslintrc --config eslint.config.js sample.js --rule 'traceability/require-story-annotation:error'
 ```
 
-This command runs ESLint with the plugin, pointing at [`eslint.config.js`](eslint.config.js) flat config.
+This command runs ESLint with the plugin, pointing at `eslint.config.js` flat config.
 
 Replace `sample.js` with your JavaScript or TypeScript file.
 
@@ -161,11 +161,11 @@ npm run format:check
 npm run duplication
 ```
 
-Coverage reports will be generated in the [`coverage/`](coverage) directory.
+Coverage reports will be generated in the `coverage/` directory.
 
 ## CLI Integration
 
-Integration tests for the ESLint CLI plugin are included in the Jest test suite under [`tests/integration/cli-integration.test.ts`](tests/integration/cli-integration.test.ts).
+Integration tests for the ESLint CLI plugin are included in the Jest test suite under `tests/integration/cli-integration.test.ts`.
 
 To run only the CLI integration tests:
 
@@ -242,3 +242,4 @@ These documents are informational and describe internal processes and known tool
 - Issue tracker: <https://github.com/voder-ai/eslint-plugin-traceability/issues>
 - Configuration Presets: [docs/config-presets.md](docs/config-presets.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
+- Versioning and Releases: This project uses semantic-release for automated versioning. The authoritative list of published versions and release notes is on GitHub Releases: <https://github.com/voder-ai/eslint-plugin-traceability/releases>

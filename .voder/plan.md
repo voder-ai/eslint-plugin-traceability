@@ -1,16 +1,16 @@
 ## NOW
 
-- [ ] Enhance the main user-facing documentation to clearly explain the project’s security and dependency posture, including how mature dependency updates are managed and how the documented dev-only tooling risks are controlled and do not impact end users.
+- [ ] Update all user-facing documentation to remove or generalize stale hard-coded version and date labels so they no longer conflict with the semantic-release strategy, and instead clearly direct users to GitHub Releases as the authoritative source for current versions and change history.
 
 ## NEXT
 
-- [ ] Review and refine the internal development documentation about dependency health and security incidents so that it accurately reflects the current dry-aged-deps configuration, audit scripts, and the accepted dev-only semantic-release/npm risk.
-- [ ] Improve inline API documentation for the public maintenance functions by adding or tightening parameter and return descriptions so that code-level docs match the existing user-facing API reference.
-- [ ] Adjust user documentation to separate core usage guidance from advanced traceability concepts, ensuring that essential instructions do not rely on development stories while still linking to them as optional background material.
-- [ ] Clarify in contributor-focused documentation how local checks relate to the CI pipeline’s security and dependency gates, so that contributors understand how their changes are validated before release.
+- [ ] Review the README and user documentation to ensure every mention of versioning and releases consistently explains that semantic-release controls versions and that GitHub Releases, not package.json, is the authoritative changelog for end users.
+- [ ] Revisit all user-facing security and dependency sections to confirm they describe only production dependency guarantees and clearly state that any documented semantic-release/npm risks are restricted to dev-only CI tooling and cannot impact consumers of the published plugin.
+- [ ] Refine internal dependency-health and security incident records so they explicitly reference the latest dry-aged-deps output and clearly explain why specific dev-only vulnerabilities remain accepted residual risks given the current absence of safe mature updates.
+- [ ] Ensure contributor and maintainer documentation clearly instructs how and when to run the dependency maturity and audit scripts, and how to interpret their outputs when considering dependency updates or security incident documentation.
 
 ## LATER
 
-- [ ] Revisit dependency versions when new safe, mature releases become available and update overrides and documentation to reflect any changes to the risk profile.
-- [ ] Extend security incident records if new advisories affect the tooling stack, maintaining a clear history of decisions and compensating controls.
-- [ ] Once documentation, dependencies, and security are confirmed above the target thresholds, perform and document a dedicated functionality assessment that maps implemented behavior to the user stories and requirements.
+- [ ] When dry-aged-deps identifies new safe mature versions for the semantic-release/npm toolchain or other devDependencies, update those dependencies, refresh overrides, and revise documentation and incident records to reflect the improved risk profile.
+- [ ] After documentation and dependency management meet their target thresholds, perform a focused functionality assessment that maps implemented behavior and tests to the documented stories and requirements, and summarize any remaining functional gaps.
+- [ ] Periodically refine the documentation structure so that new security incidents, ADRs, and dependency-health reviews can be linked from user-facing guarantees without overwhelming typical users with implementation details.

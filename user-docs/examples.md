@@ -1,8 +1,7 @@
 # Examples
 
 Created autonomously by [voder.ai](https://voder.ai).
-Last updated: 2025-11-19
-Version: 1.0.5
+Examples are written for the eslint-plugin-traceability 1.x series. For the latest published version and full release history, see GitHub Releases: <https://github.com/voder-ai/eslint-plugin-traceability/releases>.
 
 This document provides runnable examples demonstrating how to use the `eslint-plugin-traceability` plugin in real-world scenarios.
 
@@ -72,4 +71,3 @@ Then run:
 
 ```bash
 npm run lint:trace
-```

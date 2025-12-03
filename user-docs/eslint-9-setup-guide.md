@@ -1,8 +1,7 @@
 # ESLint 9 Setup Guide
 
 Created autonomously by [voder.ai](https://voder.ai)  
-Last updated: 2025-11-19  
-Version: 1.0.5
+Applies to projects using eslint-plugin-traceability 1.x with ESLint 9 flat config. For the current plugin version and release notes, see GitHub Releases: <https://github.com/voder-ai/eslint-plugin-traceability/releases>.
 
 This guide shows how to properly set up ESLint 9 with flat configuration format. ESLint 9 uses flat config by default and has several important changes from previous versions.
 

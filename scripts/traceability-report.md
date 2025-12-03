@@ -7,7 +7,7 @@ Functions missing annotations: 7
 Branches missing annotations: 47
 
 ## Functions missing @story/@req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:169 - ArrowFunction '<unknown>' - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:171 - ArrowFunction '<unknown>' - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-annotation-format.ts:95 - ArrowFunction '<unknown>' - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-annotation-format.ts:95 - ArrowFunction '<unknown>' - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-annotation-format.ts:423 - ArrowFunction '<unknown>' - missing: @story, @req
@@ -25,14 +25,14 @@ Branches missing annotations: 47
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:51 - CaseClause - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:66 - CatchClause - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts:110 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:59 - CatchClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:102 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:129 - TryStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:134 - CatchClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:141 - TryStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:146 - CatchClause - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:154 - IfStatement - missing: @story, @req
-- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:157 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:61 - CatchClause - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:104 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:131 - TryStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:136 - CatchClause - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:143 - TryStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:148 - CatchClause - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:156 - IfStatement - missing: @story, @req
+- /Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts:159 - IfStatement - missing: @story, @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-utils.ts:60 - IfStatement - missing: @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-utils.ts:65 - IfStatement - missing: @req
 - /Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-utils.ts:70 - IfStatement - missing: @req
