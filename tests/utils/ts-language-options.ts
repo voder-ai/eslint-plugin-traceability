@@ -4,16 +4,15 @@
  * @req REQ-TYPESCRIPT-SUPPORT - Provide reusable TypeScript parser setup for tests
  */
 
-const TS_ECMA_VERSION = Number("2022") as const;
-const ECMA_VERSION_2022 = TS_ECMA_VERSION;
+const tsEcmaVersion = 2022;
 
-export const tsRuleTesterLanguageOptions = {
+export const tsRuleTesterLanguageOptions: any = {
   parser: require("@typescript-eslint/parser") as any,
   parserOptions: {
-    ecmaVersion: ECMA_VERSION_2022,
-    sourceType: "module" as const,
+    ecmaVersion: tsEcmaVersion,
+    sourceType: "module",
   },
-} as const;
+};
 
 /**
  * Attach shared TypeScript RuleTester language options to a test case definition.
