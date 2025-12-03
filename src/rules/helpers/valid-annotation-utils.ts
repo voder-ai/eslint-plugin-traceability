@@ -56,22 +56,27 @@ export function collapseAnnotationValue(value: string): string {
  * @req REQ-AUTOFIX-PRESERVE - Preserve surrounding formatting when normalizing story path suffixes
  */
 export function getFixedStoryPath(original: string): string | null {
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-SAFE - Skip auto-fix entirely for paths containing directory traversal segments ("..").
   if (original.includes("..")) {
     return null;
   }
 
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-FORMAT - Do not modify paths that already end with ".story.md" since they are already in the correct format.
   if (/\.story\.md$/.test(original)) {
     return null;
   }
 
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE - Append the missing ".md" extension when the path already ends with ".story", preserving the existing base path.
   if (/\.story$/.test(original)) {
     return `${original}.md`;
   }
 
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE - Upgrade plain ".md" paths to ".story.md" while preserving the rest of the path unchanged.
   if (/\.md$/.test(original)) {
     return original.replace(/\.md$/, ".story.md");
   }
 
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE REQ-AUTOFIX-SAFE - For paths with no extension, conservatively append ".story.md" to create a canonical story file path.
   return `${original}.story.md`;
 }
 

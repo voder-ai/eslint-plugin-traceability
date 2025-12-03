@@ -32,6 +32,8 @@ export function detectStaleAnnotations(codebasePath: string): string[] {
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-DETECT - Iterate over all files in the isolated workspace root
   const files = getAllFiles(workspaceRoot);
+  // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+  // @req REQ-MAINT-DETECT - Loop over each workspace file to inspect its @story annotations
   for (const file of files) {
     processFileForStaleAnnotations(file, workspaceRoot, cwd, stale);
   }

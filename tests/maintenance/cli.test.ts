@@ -229,4 +229,54 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       fs.rmSync(dir, { recursive: true, force: true });
     }
   });
+
+  it("[REQ-MAINT-SAFE] prints help and exits 0 when no subcommand is provided", () => {
+    const dir = withTempDir();
+    process.chdir(dir);
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    const code = runMaintenanceCli(["node", "traceability-maint"]);
+
+    try {
+      expect(code).toBe(0);
+      expect(logSpy).toHaveBeenCalled();
+      const allMessages = logSpy.mock.calls.flat().join("\n");
+      expect(allMessages).toMatch(/Usage: traceability-maint/i);
+      expect(errorSpy).not.toHaveBeenCalled();
+    } finally {
+      logSpy.mockRestore();
+      errorSpy.mockRestore();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("[REQ-MAINT-SAFE] detect catches filesystem permission errors and exits 2 with prefixed error message", () => {
+    const dir = withTempDir();
+    process.chdir(dir);
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+
+    const statSpy = jest.spyOn(fs, "statSync").mockImplementation(() => {
+      const err: NodeJS.ErrnoException = new Error(
+        "EACCES simulated",
+      ) as NodeJS.ErrnoException;
+      err.code = "EACCES";
+      throw err;
+    });
+
+    const code = runMaintenanceCli(["node", "traceability-maint", "detect"]);
+
+    try {
+      expect(code).toBe(2);
+      expect(errorSpy).toHaveBeenCalled();
+      const message = String(errorSpy.mock.calls[0][0]);
+      expect(message).toContain("traceability-maint failed:");
+    } finally {
+      statSpy.mockRestore();
+      errorSpy.mockRestore();
+      logSpy.mockRestore();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
 });

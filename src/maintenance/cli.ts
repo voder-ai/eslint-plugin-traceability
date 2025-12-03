@@ -25,6 +25,10 @@ export function runMaintenanceCli(rawArgv: string[]): number {
   const { subcommand: command } = initialNormalized;
 
   if (!command || command === "-h" || command === "--help") {
+    /**
+     * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+     * @req REQ-MAINT-SAFE - Handle help requests safely and provide discoverable usage output
+     */
     printHelp();
     return EXIT_OK;
   }
@@ -39,24 +43,34 @@ export function runMaintenanceCli(rawArgv: string[]): number {
   try {
     switch (command) {
       case "detect":
+        // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md @req REQ-MAINT-DETECT - Dispatch to detection handler
         return handleDetect(normalized);
       case "verify":
+        // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md @req REQ-MAINT-VERIFY - Dispatch to verification handler
         return handleVerify(normalized);
       case "report":
+        // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md @req REQ-MAINT-REPORT - Dispatch to reporting handler
         return handleReport(normalized);
       case "update": {
+        // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md @req REQ-MAINT-UPDATE - Dispatch to update handler
         const result = handleUpdate(normalized);
+        // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md @req REQ-MAINT-SAFE - Print help on usage errors from update
         if (result === EXIT_USAGE) {
           printHelp();
         }
         return result;
       }
       default:
+        // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md @req REQ-MAINT-SAFE - Handle unknown commands safely with diagnostics
         console.error(`Unknown command: ${command}`);
         printHelp();
         return EXIT_USAGE;
     }
   } catch (error: unknown) {
+    /**
+     * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+     * @req REQ-MAINT-SAFE - Catch unexpected errors and surface concise diagnostics without crashing
+     */
     // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
     // @req REQ-MAINT-SAFE - Catch unexpected errors and emit concise diagnostics
     const message =
