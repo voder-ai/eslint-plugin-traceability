@@ -137,6 +137,14 @@ function normalizeUserOptions(
   return first as AnnotationRuleOptions;
 }
 
+interface ResolvePatternArgs {
+  nestedPattern: string | undefined;
+  nestedFieldName: string;
+  flatPattern: string | undefined;
+  flatFieldName: string;
+  defaultPattern: RegExp;
+}
+
 /**
  * Resolve a user-configured regex pattern, handling both nested and flat
  * configuration shapes and accumulating validation errors.
@@ -146,14 +154,13 @@ function normalizeUserOptions(
  * @req REQ-REGEX-VALIDATION
  * @req REQ-BACKWARD-COMPAT
  */
-// eslint-disable-next-line max-params -- Small, centralized helper; keeping parameters explicit is clearer than introducing an options object here.
-function resolvePattern(
-  nestedPattern: string | undefined,
-  nestedFieldName: string,
-  flatPattern: string | undefined,
-  flatFieldName: string,
-  defaultPattern: RegExp,
-): RegExp {
+function resolvePattern({
+  nestedPattern,
+  nestedFieldName,
+  flatPattern,
+  flatFieldName,
+  defaultPattern,
+}: ResolvePatternArgs): RegExp {
   const effective =
     typeof nestedPattern === "string"
       ? { value: nestedPattern, field: nestedFieldName }
@@ -218,21 +225,21 @@ export function resolveOptions(
   const nestedReqExample = user?.req?.example;
   const flatReqExample = user?.requirementIdExample;
 
-  const storyPattern = resolvePattern(
-    nestedStoryPattern,
-    "story.pattern",
-    flatStoryPattern,
-    "storyPathPattern",
-    getDefaultStoryPattern(),
-  );
+  const storyPattern = resolvePattern({
+    nestedPattern: nestedStoryPattern,
+    nestedFieldName: "story.pattern",
+    flatPattern: flatStoryPattern,
+    flatFieldName: "storyPathPattern",
+    defaultPattern: getDefaultStoryPattern(),
+  });
 
-  const reqPattern = resolvePattern(
-    nestedReqPattern,
-    "req.pattern",
-    flatReqPattern,
-    "requirementIdPattern",
-    getDefaultReqPattern(),
-  );
+  const reqPattern = resolvePattern({
+    nestedPattern: nestedReqPattern,
+    nestedFieldName: "req.pattern",
+    flatPattern: flatReqPattern,
+    flatFieldName: "requirementIdPattern",
+    defaultPattern: getDefaultReqPattern(),
+  });
 
   const storyExample = resolveExample(
     nestedStoryExample,

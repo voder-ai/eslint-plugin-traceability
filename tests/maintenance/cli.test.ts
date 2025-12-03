@@ -155,6 +155,33 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
+  it("[REQ-MAINT-SAFE] report exits 2 and prints error on invalid --format value", () => {
+    const dir = withTempDir();
+    process.chdir(dir);
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+
+    const code = runMaintenanceCli([
+      "node",
+      "traceability-maint",
+      "report",
+      "--format",
+      "yaml",
+    ]);
+
+    try {
+      expect(code).toBe(2);
+      expect(errorSpy).toHaveBeenCalledTimes(1);
+      const message = String(errorSpy.mock.calls[0][0]);
+      expect(message).toContain("Invalid format: yaml");
+      expect(message).toContain("Expected 'text' or 'json'");
+    } finally {
+      errorSpy.mockRestore();
+      logSpy.mockRestore();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("[REQ-MAINT-DETECT] detect supports --json output", () => {
     const dir = withTempDir();
     process.chdir(dir);
@@ -174,6 +201,29 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       const payload = JSON.parse(String(logSpy.mock.calls[0][0]));
       expect(Array.isArray(payload.stale)).toBe(true);
       expect(payload.stale).toContain("stale.story.md");
+    } finally {
+      logSpy.mockRestore();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("[REQ-MAINT-DETECT] detect with non-existent --root exits 0 and reports no stale annotations", () => {
+    const dir = withTempDir();
+    process.chdir(dir);
+    const missingRoot = path.join(dir, "missing-root");
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+
+    const code = runMaintenanceCli([
+      "node",
+      "traceability-maint",
+      "detect",
+      "--root",
+      missingRoot,
+    ]);
+
+    try {
+      expect(code).toBe(0);
+      expect(logSpy).toHaveBeenCalledWith("No stale @story annotations found.");
     } finally {
       logSpy.mockRestore();
       fs.rmSync(dir, { recursive: true, force: true });
