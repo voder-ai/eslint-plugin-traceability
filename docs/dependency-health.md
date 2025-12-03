@@ -65,7 +65,9 @@ Interpretation:
 
 When `dry-aged-deps` finds no qualifying candidates, `summary.totalOutdated` and `summary.safeUpdates` will both be `0`, and `packages` will be an empty array.
 
-## Current Status (2025-12-03)
+## Current Status (2025-12-03, verified)
+
+- `dry-aged-deps` executed successfully via `npm run deps:maturity -- --format=json --check`; no safe updates are available (`totalOutdated: 0`, `safeUpdates: 0`).
 
 As of the latest review:
 

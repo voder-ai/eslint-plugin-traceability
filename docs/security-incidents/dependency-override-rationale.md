@@ -48,3 +48,10 @@ This document provides the rationale for each manual dependency override specifi
 ## Relationship to Dev-Dependencies Audit
 
 The overrides for `glob`, `tar`, `http-cache-semantics`, `ip`, `semver`, and `socks` correspond directly to the accepted-risk items captured in the dev-dependencies audit snapshot (`dev-deps-high.json`). The CI helper script `ci-safety-deps.js` runs `dry-aged-deps` (or a stable fallback when `dry-aged-deps` is unavailable) to generate machine-readable vulnerability reports. These reports, together with `dev-deps-high.json`, are used whenever we reassess and either renew, tighten, or remove these accepted-risk overrides.
+
+## Alignment with dry-aged-deps
+
+- The current manual overrides are layered on top of the `dry-aged-deps` maturity rules: `dry-aged-deps` still runs in CI and informs us of any newer, sufficiently “aged” versions, while overrides define explicit, reviewed exceptions.
+- Overrides are only added after `dry-aged-deps` output and security advisories have been reviewed, and they are periodically revalidated against fresh `dry-aged-deps` runs to ensure we are not blocking safe, tool-recommended upgrades.
+- As of 2025-12-03, a fresh `npm run deps:maturity -- --format=json --check` run reported `totalOutdated: 0` and `safeUpdates: 0`, confirming that `dry-aged-deps` does not currently recommend newer versions for any of the overridden packages.
+- When future `dry-aged-deps` runs begin to report non-zero `safeUpdates` for these packages, we will reassess each override, prefer tool-aligned upgrades where feasible, and remove or narrow overrides once upgraded versions are validated.
