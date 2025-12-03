@@ -1,16 +1,16 @@
 ## NOW
 
-- [ ] Add a clear migration section to the documentation for annotation format that explains how to move from legacy `@story` and `@req` annotations to the new multi-story `@implements` style, including concrete before-and-after code examples and guidance on mixed usage.
+- [ ] Review the 010.3 multi-story migration story in detail and extract a precise checklist of behaviors and configuration requirements for the new migration-focused rule so its implementation can align exactly with the specified acceptance criteria.
 
 ## NEXT
 
-- [ ] Extend the deep validation rule documentation to describe how `@implements` participates in requirement checking compared to `@story` and `@req`, and include migration-oriented examples that show converting existing deep-validation setups to use `@implements` where appropriate.
-- [ ] Update the user-facing API or migration guide documentation to include a short, task-focused subsection on when to adopt `@implements`, how to phase it in across a codebase, and how it coexists with existing annotations.
-- [ ] Revise the 010.2 multi-story support story file to mark the documentation-related acceptance criteria as satisfied and ensure the narrative clearly points to the new migration guidance locations.
-- [ ] Review the updated documentation against the existing tests and implementation to verify that all descriptions and examples accurately reflect the actual behavior of `@implements`, mixed usage, and requirement scoping.
+- [ ] Design the API and configuration shape for the new migration rule (including its name, default-off behavior, and severity options) and outline how it will coexist with existing rules without changing current validation semantics.
+- [ ] Implement an initial version of the new migration rule that detects legacy `@story` and `@req` annotations in candidate locations, emits appropriate diagnostics without auto-fixing, and is wired into the plugin’s exports while remaining disabled by default.
+- [ ] Create a dedicated test suite for the new migration rule that exercises configuration handling, basic detection scenarios, and ensures the rule is fully backward compatible when turned off.
+- [ ] Extend the migration rule to perform safe auto-fix transformations for supported single-story cases, leaving multi-story or ambiguous situations as diagnostics only, and update tests to cover these fix behaviors thoroughly.
+- [ ] Update the user and rule documentation, along with story 010.3’s acceptance criteria and Definition of Done, to describe the new migration rule, its configuration, auto-fix capabilities, and recommended usage patterns, ensuring the docs match the implemented and tested behavior.
 
 ## LATER
 
-- [ ] Add additional, more advanced examples that cover large real-world migration scenarios (such as multi-repo or monorepo story files) leveraging `@implements` for shared requirements.
-- [ ] Introduce a concise troubleshooting section for `@implements` in the docs that maps common user errors and rule messages to suggested fixes, reinforcing the migration guidance.
-- [ ] Evaluate whether any future tooling (such as maintenance utilities) should offer automated assistance for converting `@story`/`@req` pairs into `@implements` blocks, and, if so, document that as an optional migration aid.
+- [ ] Add more advanced migration examples and recipes that show how teams can adopt the migration rule across large or complex codebases, including staged rollouts and integration with existing lint configurations.
+- [ ] Evaluate whether maintenance utilities or CLI commands should offer automated assistance for bulk-converting `@story`/`@req` annotations to `@implements`, and if appropriate, design a follow-on story and implementation plan for that tooling.

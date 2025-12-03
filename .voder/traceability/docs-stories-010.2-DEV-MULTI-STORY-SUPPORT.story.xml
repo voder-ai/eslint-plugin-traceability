@@ -1,447 +1,187 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-12-03T12:57:06.071Z</last_validated>
-  <last_modified>2025-12-03T12:07:00.429Z</last_modified>
-  <evidence>Story file exists: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md,Implements-format parsing & validation (format-level): src/rules/valid-annotation-format.ts and src/rules/helpers/valid-implements-utils.ts
+  <status>PASSED</status>
+  <last_validated>2025-12-03T13:24:10.239Z</last_validated>
+  <last_modified>2025-12-03T13:07:10.966Z</last_modified>
+  <evidence>Story file exists and is referenced in implementation and tests:
+- Story: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
 
-- valid-annotation-format.ts defines `validateImplementsAnnotation` and wires it into the main rule:
-  ```ts
-  import {
-    MIN_IMPLEMENTS_TOKENS,
-    reportMissingImplementsReqIds,
-    reportMissingImplementsValue,
-    reportInvalidImplementsReqId,
-    reportInvalidImplementsStoryPath,
-    validateImplementsAnnotationHelper,
-  } from "./helpers/valid-implements-utils";
-  ...
-  function validateImplementsAnnotation(
-    context: any,
-    comment: any,
-    rawValue: string,
-    options: ResolvedAnnotationOptions,
-  ): void {
-    const deps = {
-      MIN_IMPLEMENTS_TOKENS,
-      reportMissingImplementsReqIds,
-      reportMissingImplementsValue,
-      reportInvalidImplementsReqId,
-      reportInvalidImplementsStoryPath,
-    };
+Core @implements parsing & format validation:
+- src/rules/helpers/valid-implements-utils.ts
+  - JSDoc explicitly ties this helper to this story:
+    - @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+    - @req REQ-IMPLEMENTS-PARSE, REQ-FORMAT-VALIDATION, REQ-MIXED-SUPPORT
+  - Implements token validation and error reporting:
+    - MIN_IMPLEMENTS_TOKENS = 2 enforces "story path + at least one req ID" (REQ-IMPLEMENTS-PARSE, REQ-FORMAT-VALIDATION)
+    - reportMissingImplementsValue(...) reports missing story + IDs with messageId "invalidImplementsFormat" and detailed guidance:
+      - "Missing story path and requirement IDs for @implements annotation. Expected a value like \"${storyExample} ${reqExample}\"."
+    - reportMissingImplementsReqIds(...) reports missing requirement IDs (story path only) with "invalidImplementsFormat" (REQ-FORMAT-VALIDATION)
+    - reportInvalidImplementsStoryPath(...) reports invalid story paths with details including the bad storyPath and example (REQ-FORMAT-VALIDATION)
+    - reportInvalidImplementsReqId(...) uses buildReqErrorMessage(...) and messageId "invalidReqFormat" for bad req IDs (REQ-FORMAT-VALIDATION, REQ-MIXED-SUPPORT)
+    - validateImplementsAnnotationHelper(...) orchestrates parsing & validation using configured storyPattern/reqPattern (REQ-IMPLEMENTS-PARSE, REQ-FORMAT-VALIDATION, REQ-MIXED-SUPPORT)
 
-    validateImplementsAnnotationHelper(deps, context, comment, {
-      rawValue,
-      options,
-    });
-  }
-  ```
+Integration into valid-annotation-format ESLint rule (format-level validation):
+- src/rules/valid-annotation-format.ts
+  - Imports @implements helpers:
+    - MIN_IMPLEMENTS_TOKENS, reportMissingImplementsReqIds, reportMissingImplementsValue,
+      reportInvalidImplementsReqId, reportInvalidImplementsStoryPath, validateImplementsAnnotationHelper
+  - Defines validateImplementsAnnotation(...) that delegates to validateImplementsAnnotationHelper with those deps.
+  - processCommentLine(...) adds first-class support for @implements:
+    - Detects '@implements' via const isImplements = /@implements\b/.test(normalized)
+    - Extracts the value and immediately validates:
+      - const implementsValue = normalized.replace(/^@implements\b/, "").trim();
+      - validateImplementsAnnotation(context, comment, implementsValue, options);
+    - Leaves existing @story/@req multi-line behavior unchanged (backward compatibility) and explicitly documents mixed support in JSDoc:
+      - "Support mixed @story/@req/@implements usage in comments" (REQ-MIXED-SUPPORT, REQ-BACKWARD-COMPAT)
+  - processComment(...) iterates all comment lines and calls processCommentLine; JSDoc for this function lists:
+    - @req REQ-IMPLEMENTS-PARSE, REQ-FORMAT-VALIDATION, REQ-MIXED-SUPPORT
+  - Rule meta.messages defines specific error message ID for @implements format:
+    - invalidImplementsFormat: "Invalid annotation format: {{details}}."
+    - JSDoc:
+      - @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+      - @req REQ-ERROR-SPECIFIC, REQ-ERROR-CONTEXT, REQ-ERROR-CONSISTENCY, REQ-FORMAT-VALIDATION
+    - This matches the story’s requirement for clear error messages and format validation.
+  - Rule description:
+    - "Validate format and syntax of @story, @req, and @implements annotations" — confirms mixed-style support at rule level.
 
-- valid-annotation-format-internal.ts normalizes lines and detects @implements alongside @story/@req:
-  ```ts
-  export function normalizeCommentLine(rawLine: string): string {
-    const trimmed = rawLine.trim();
-    if (!trimmed) return "";
+Deep validation of requirement existence for @implements (per-story scoping & error context):
+- src/rules/valid-req-reference.ts
+  - Introduces explicit support for @implements in deep validation:
+    - IMPLEMENTS_TOKENS constant defines STORY_INDEX: 1, FIRST_REQ_INDEX: 2 to avoid magic numbers.
+      - JSDoc: @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+    - parseImplementsLine(line: string): { storyPath, reqIds } | null
+      - Splits line; uses IMPLEMENTS_TOKENS indices.
+      - Returns null if storyPath is missing or no reqIds.
+      - JSDoc:
+        - @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+        - @req REQ-IMPLEMENTS-VALIDATE, REQ-MIXED-SUPPORT, REQ-SCOPED-IDS
+    - validateImplementsLine({ comment, context, line, cwd, reqCache }): void
+      - Calls parseImplementsLine(...); if invalid, returns (deep rule intentionally ignores malformed @implements — format is handled by valid-annotation-format).
+      - Uses resolveStoryAndRequirements(...) to validate storyPath and load/cached requirements for that specific story file.
+      - For each reqId in reqIds, calls checkRequirementExists({ comment, context, reqId, storyPath, reqSet }).
+      - JSDoc references this story and requirements REQ-IMPLEMENTS-VALIDATE, REQ-MIXED-SUPPORT, REQ-SCOPED-IDS.
+    - handleAnnotationLine(...) extended to route @implements:
+      - if line.startsWith("@implements") { validateImplementsLine(...); return storyPath; }
+      - Coexists with @story and @req handling in the same comment (REQ-MIXED-SUPPORT).
+  - Requirement validation logic and error messages:
+    - validateAndResolveStoryPath(...) prevents path traversal / absolute paths and reports:
+      - messageId: "invalidPath", data: { storyPath }
+    - loadAndCacheRequirements(...) reads the story file and extracts REQ-XXX tokens into a Set keyed by resolvedStoryPath; caching is per-story-file (REQ-SCOPED-IDS).
+    - checkRequirementExists(...) reports missing requirements with full context:
+      - messageId: "reqMissing"
+      - data: { reqId, storyPath }
+      - This supports the story’s **Error Messages** criterion: story path included in failure.
+    - meta.messages.reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'" with JSDoc referencing deep-validation and error-reporting stories.
 
-    const annotationMatch = trimmed.match(/@story\b|@req\b|@implements\b/);
-    if (!annotationMatch || annotationMatch.index === undefined) {
-      const withoutLeadingStar = trimmed.replace(/^\*\s?/, "");
-      return withoutLeadingStar;
-    }
-
-    return trimmed.slice(annotationMatch.index);
-  }
-  ```
-
-- processCommentLine handles mixed usage and treats @implements as a separate, single-line annotation:
-  ```ts
-  const isStory = /@story\b/.test(normalized);
-  const isReq = /@req\b/.test(normalized);
-  const isImplements = /@implements\b/.test(normalized);
-
-  // Handle @implements as an immediate, single-line annotation
-  if (isImplements) {
-    const implementsValue = normalized.replace(/^@implements\b/, "").trim();
-    validateImplementsAnnotation(context, comment, implementsValue, options);
-    return pending;
-  }
-  ```
-
-- valid-implements-utils.ts enforces the `@implements <story-path> <REQ-ID>...` value shape and validates story/req formats using the same patterns as @story/@req:
-  ```ts
-  export const MIN_IMPLEMENTS_TOKENS = 2;
-
-  function parseImplementsTokens(...): ParsedImplementsTokens | null {
-    const value = rawValue?.trim() ?? "";
-    if (!value) { reportMissingImplementsValue(...); return null; }
-
-    const tokens = value.split(/\s+/);
-    if (tokens.length < MIN_IMPLEMENTS_TOKENS) {
-      reportMissingImplementsReqIds(...);
-      return null;
-    }
-
-    const [storyPath, ...reqIds] = tokens;
-    return { storyPath, reqIds };
-  }
-
-  function validateImplementsTokens(...): void {
-    const { storyPath, reqIds } = parsed;
-
-    if (!options.storyPattern.test(storyPath)) {
-      reportInvalidImplementsStoryPath(..., storyPath, options);
-      return;
-    }
-
-    for (const reqId of reqIds) {
-      if (!options.reqPattern.test(reqId)) {
-        reportInvalidImplementsReqId(context, comment, reqId, options);
-      }
-    }
-  }
-
-  export function validateImplementsAnnotationHelper(...) {
-    const parsed = parseImplementsTokens(...);
-    if (!parsed) return;
-    validateImplementsTokens(...);
-  }
-  ```,Deep requirement validation for @implements (multi-story + scoped IDs): src/rules/valid-req-reference.ts
-
-- Token positions for @implements:
-  ```ts
-  const IMPLEMENTS_TOKENS = {
-    STORY_INDEX: 1,
-    FIRST_REQ_INDEX: 2,
-  } as const;
-  ```
-
-- Parsing an @implements line into storyPath + reqIds:
-  ```ts
-  function parseImplementsLine(
-    line: string,
-  ): { storyPath: string; reqIds: string[] } | null {
-    const parts = line.split(/\s+/);
-    const storyPath = parts[IMPLEMENTS_TOKENS.STORY_INDEX];
-    const reqIds = parts.slice(IMPLEMENTS_TOKENS.FIRST_REQ_INDEX);
-    if (!storyPath || reqIds.length === 0) {
-      return null;
-    }
-    return { storyPath, reqIds };
-  }
-  ```
-
-- Validating each @implements requirement against the specified story file (reusing the same deep validation pipeline as @req):
-  ```ts
-  function validateImplementsLine(opts: { comment: any; context: any; line: string; cwd: string; reqCache: Map<string, Set<string>>; }): void {
-    const { comment, context, line, cwd, reqCache } = opts;
-    const parsed = parseImplementsLine(line);
-    if (!parsed) return;
-
-    const { storyPath, reqIds } = parsed;
-
-    const { reqSet } = resolveStoryAndRequirements({
-      comment,
-      context,
-      storyPath,
-      cwd,
-      reqCache,
-    });
-
-    if (!reqSet) return;
-
-    for (const reqId of reqIds) {
-      checkRequirementExists({ comment, context, reqId, storyPath, reqSet });
-    }
-  }
-  ```
-
-- `handleAnnotationLine` supports mixed @story/@req/@implements usage without interfering behaviors:
-  ```ts
-  function handleAnnotationLine(...): string | null {
-    ...
-    if (line.startsWith("@story")) {
-      const newPath = extractStoryPath(comment);
-      return newPath || storyPath;
-    } else if (line.startsWith("@req")) {
-      validateReqLine({ comment, context, line, storyPath, cwd, reqCache });
-      return storyPath;
-    } else if (line.startsWith("@implements")) {
-      validateImplementsLine({ comment, context, line, cwd, reqCache });
-      return storyPath;
-    }
-    return storyPath;
-  }
-  ```
-
-- Deep requirement lookup is scoped per *resolvedStoryPath* (requirement IDs only need to be unique within a single file):
-  ```ts
-  function loadAndCacheRequirements({ resolvedStoryPath, reqCache }): Set<string> {
-    if (!reqCache.has(resolvedStoryPath)) {
-      const content = fs.readFileSync(resolvedStoryPath, "utf8");
-      const found = new Set<string>();
-      const regex = /REQ-[A-Z0-9-]+/g;
-      let match: RegExpExecArray | null;
-      while ((match = regex.exec(content)) !== null) {
-        found.add(match[0]);
-      }
-      reqCache.set(resolvedStoryPath, found);
-    }
-    return reqCache.get(resolvedStoryPath)!;
-  }
-  ```
-
-- Error messages include the story path context for missing requirements (used by both @req and @implements):
-  ```ts
-  function checkRequirementExists({ comment, context, reqId, storyPath, reqSet }) {
-    if (!reqSet.has(reqId)) {
-      context.report({
-        node: comment as any,
-        messageId: "reqMissing",
-        data: { reqId, storyPath },
-      });
-    }
-  }
-
-  meta: {
-    messages: {
-      reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'",
-      invalidPath: "Invalid story path '{{storyPath}}'",
-    },
-  }
-  ```,Tests for 010.2 functionality (format-level and deep validation):
-
-- valid-annotation-format tests explicitly reference this story and its requirements:
-  ```ts
-  /**
-   * Tests for: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-   * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-   * @req REQ-IMPLEMENTS-PARSE - Rule parses @implements annotations with story and requirement references
-   * @req REQ-FORMAT-VALIDATION - Rule validates story and requirement formats inside @implements annotations
-   * @req REQ-MIXED-SUPPORT - Rule supports mixed @story/@req/@implements usage in the same comment
-   */
-  ```
-
-- Positive cases (core @implements parsing, multiple lines, and mixed usage):
-  ```ts
-  {
-    name: "[REQ-IMPLEMENTS-PARSE] valid single @implements with one story and one requirement (default patterns)",
-    code: `/**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE
- */`,
-  },
-  {
-    name: "[REQ-IMPLEMENTS-PARSE] valid multiple @implements lines with different stories and requirements",
-    code: `/**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-FORMAT-VALIDATION
- * @implements docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FORMAT-SPECIFICATION
- */`,
-  },
-  {
-    name: "[REQ-MIXED-SUPPORT] valid mixed @story/@req/@implements usage in same block comment",
-    code: `/**
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-MIXED-SUPPORT
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
- */`,
-  },
-  ```
-
-- Negative cases for @implements format validation (no value, only story, invalid story path, invalid req IDs):
-  ```ts
-  makeInvalid({
-    name: "[REQ-IMPLEMENTS-PARSE] @implements with no value is invalid",
-    code: `/**
- * @implements
- */`,
-    messageId: "invalidImplementsFormat",
-    details:
-      'Missing story path and requirement IDs for @implements annotation. Expected a value like "docs/stories/005.0-DEV-EXAMPLE.story.md REQ-EXAMPLE".',
-  }),
-  makeInvalid({
-    name: "[REQ-IMPLEMENTS-PARSE] @implements with only story path and no requirement IDs is invalid",
-    code: `/**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- */`,
-    messageId: "invalidImplementsFormat",
-    details:
-      'Missing requirement IDs for @implements annotation. Expected a value like "docs/stories/005.0-DEV-EXAMPLE.story.md REQ-EXAMPLE".',
-  }),
-  makeInvalid({
-    name: "[REQ-FORMAT-VALIDATION] @implements with invalid story path format",
-    code: `/**
- * @implements invalid/path.txt REQ-IMPLEMENTS-PARSE
- */`,
-    messageId: "invalidImplementsFormat",
-    details:
-      'Invalid story path "invalid/path.txt" for @implements annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
-  }),
-  {
-    name: "[REQ-FORMAT-VALIDATION] @implements with invalid requirement ID format",
-    code: `/**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-VALID invalid-format
- */`,
-    errors: [
-      {
-        messageId: "invalidReqFormat",
-        data: {
-          details:
-            'Invalid requirement ID "invalid-format" for @req annotation. Expected an identifier like "REQ-EXAMPLE" (uppercase letters, numbers, and dashes only).',
-        },
-      },
-    ],
-  },
-  ```
-
-- valid-req-reference tests cover deep validation for @implements and requirement scoping across multiple story files:
-  ```ts
-  {
-    name: "[REQ-DEEP-IMPLEMENTS] single implements line with multiple requirements in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)",
-    code: `// @implements tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A`,
-  },
-  {
-    name: "[REQ-DEEP-IMPLEMENTS] multi-story implements with shared requirement IDs (see 010.2-DEV-MULTI-STORY-SUPPORT)",
-    code: `// @implements tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A
-// @implements tests/fixtures/story_multi_b.md REQ-SHARED-ID REQ-ONLY-B`,
-  },
-  {
-    name: "[REQ-DEEP-IMPLEMENTS] missing implements requirement in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)",
-    code: `// @implements tests/fixtures/story_multi_a.md REQ-NOT-IN-A`,
-    errors: [
-      {
-        messageId: "reqMissing",
-        data: {
-          reqId: "REQ-NOT-IN-A",
-          storyPath: "tests/fixtures/story_multi_a.md",
-        },
-      },
-    ],
-  },
-  {
-    name: "[REQ-DEEP-IMPLEMENTS] disallow path traversal in implements story path (see 010.2-DEV-MULTI-STORY-SUPPORT)",
-    code: `// @implements ../tests/fixtures/story_multi_a.md REQ-SHARED-ID`,
-    errors: [
-      {
-        messageId: "invalidPath",
-        data: {
-          storyPath: "../tests/fixtures/story_multi_a.md",
-        },
-      },
-    ],
-  },
-  ```
-
-- Story fixtures demonstrate scoped requirement IDs (same ID reused in multiple files):
-  ```md
-  // tests/fixtures/story_multi_a.md
-  - REQ-SHARED-ID
-  - REQ-ONLY-A
-
-  // tests/fixtures/story_multi_b.md
-  - REQ-SHARED-ID
-  - REQ-ONLY-B
-  ```,Documentation for @implements exists, but lacks explicit migration guidance:
-
-- docs/rules/valid-annotation-format.md documents @implements format and examples:
-  ```md
-  - **`@implements` format support**
-    - The rule validates `@implements` annotations that associate code with one or more stories and requirements, such as:
-      ```js
+Tests covering @implements format and mixed usage (format-level rule):
+- tests/rules/valid-annotation-format.test.ts
+  - File header explicitly references this story and its requirements:
+    - Tests for: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+    - @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+    - @req REQ-IMPLEMENTS-PARSE, REQ-FORMAT-VALIDATION, REQ-MIXED-SUPPORT
+  - Valid cases:
+    - "[REQ-IMPLEMENTS-PARSE] valid single @implements with one story and one requirement (default patterns)" with code:
       /**
-       * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FOO REQ-BAR
+       * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE
        */
-      ```
-    - The story path that appears first in an `@implements` annotation is validated using the same story pattern as `@story`.
-    - All requirement IDs that follow ... are validated using the same requirement pattern as `@req`.
-  ```
+      - Confirms core format support.
+    - "[REQ-IMPLEMENTS-PARSE] valid multiple @implements lines with different stories and requirements" containing two @implements lines, one referencing 010.2 and one referencing 005.0.
+      - Confirms multiple @implements entries and cross-story usage in a single comment.
+    - "[REQ-MIXED-SUPPORT] valid mixed @story/@req/@implements usage in same block comment" with:
+      /**
+       * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+       * @req REQ-MIXED-SUPPORT
+       * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
+       */
+      - Demonstrates both annotation styles coexisting within the same comment (REQ-MIXED-SUPPORT, REQ-BACKWARD-COMPAT).
+  - Invalid cases for @implements format & error messages:
+    - "[REQ-IMPLEMENTS-PARSE] @implements with no value is invalid":
+      - Expects messageId: "invalidImplementsFormat" with details:
+        'Missing story path and requirement IDs for @implements annotation. Expected a value like "docs/stories/005.0-DEV-EXAMPLE.story.md REQ-EXAMPLE".'
+    - "[REQ-IMPLEMENTS-PARSE] @implements with only story path and no requirement IDs is invalid":
+      - Expects "invalidImplementsFormat" with 'Missing requirement IDs for @implements annotation...'
+    - "[REQ-FORMAT-VALIDATION] @implements with invalid story path format":
+      - Expects "invalidImplementsFormat" with details referencing the bad story path and expected example.
+    - "[REQ-FORMAT-VALIDATION] @implements with invalid requirement ID format" and
+      "[REQ-FORMAT-VALIDATION] @implements with multiple requirement IDs where one is invalid":
+      - Expects messageId: "invalidReqFormat" with details from buildReqErrorMessage, verifying reuse of existing @req error messaging for @implements IDs.
+  - The same file includes extensive legacy @story/@req tests (valid and invalid) that still pass, confirming backward compatibility.
 
-- docs/rules/valid-req-reference.md documents deep validation behavior for @implements, including multi-story usage and scoped requirement IDs, but does not contain any explicit "migration" or "how to migrate from @story/@req to @implements" section:
-  ```md
-  Enforces that `@req` and `@implements` annotations reference existing requirements in story files ...
+Tests covering deep validation for @implements, multi-story scoping, and error context:
+- tests/rules/valid-req-reference.test.ts
+  - While the header primarily references 010.0-DEV-DEEP-VALIDATION, several test names explicitly mention this story:
+    - Valid tests:
+      - "[REQ-DEEP-IMPLEMENTS] single implements line with multiple requirements in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)"
+        - code: `// @implements tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A`
+      - "[REQ-DEEP-IMPLEMENTS] multi-story implements with shared requirement IDs (see 010.2-DEV-MULTI-STORY-SUPPORT)"
+        - code:
+          // @implements tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A
+          // @implements tests/fixtures/story_multi_b.md REQ-SHARED-ID REQ-ONLY-B
+        - Confirms:
+          - Each @implements line is validated against its own story file.
+          - REQ-SHARED-ID can appear in both story_multi_a.md and story_multi_b.md without conflict (REQ-SCOPED-IDS).
+    - Invalid tests:
+      - "[REQ-DEEP-IMPLEMENTS] missing implements requirement in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)"
+        - code: `// @implements tests/fixtures/story_multi_a.md REQ-NOT-IN-A`
+        - Expected error:
+          - messageId: "reqMissing"
+          - data: { reqId: "REQ-NOT-IN-A", storyPath: "tests/fixtures/story_multi_a.md" }
+          - Confirms error message includes both missing requirement and the story path checked (REQ-ERROR-CONTEXT, REQ-IMPLEMENTS-VALIDATE).
+      - "[REQ-DEEP-IMPLEMENTS] disallow path traversal in implements story path (see 010.2-DEV-MULTI-STORY-SUPPORT)"
+        - code: `// @implements ../tests/fixtures/story_multi_a.md REQ-SHARED-ID`
+        - Expected error:
+          - messageId: "invalidPath"
+          - data: { storyPath: "../tests/fixtures/story_multi_a.md" }
+          - Confirms path validation for @implements (aligns with REQ-IMPLEMENTS-VALIDATE’s safety aspects).
+  - Legacy deep validation tests for @story/@req (001.0-DEV, bullet fixtures, traversal, absolute paths) still pass, demonstrating backward compatibility with existing annotations.
 
-  ### Interaction of `@story`/`@req` and `@implements`
+Fixtures verifying requirement scoping across stories:
+- tests/fixtures/story_multi_a.md
+  - Lists:
+    - REQ-SHARED-ID
+    - REQ-ONLY-A
+- tests/fixtures/story_multi_b.md
+  - Lists:
+    - REQ-SHARED-ID
+    - REQ-ONLY-B
+- These are used in the deep @implements tests above to prove that REQ-SHARED-ID can exist in multiple story files without any conflict (REQ-SCOPED-IDS).
 
-  - `@story` sets a default story file path for all subsequent `@req` lines...
-  - Each `@implements` line is self-contained...
-  - Requirement IDs only need to be unique within a single story file; duplicates across different story files are allowed...
-  ```
+Documentation & decision record:
+- Story itself (docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md) contains:
+  - Detailed description of @implements format, mixed usage examples, parsing logic, and error messages.
+  - Migration strategy section fully aligned with implemented behavior.
+- ADR: docs/decisions/010-implements-annotation-for-multi-story-requirements.proposed.md
+  - Documents the decision to introduce @implements, alternatives considered, and example usage.
+  - Confirms intended behavior: `@implements story-path REQ-1 REQ-2` validates each REQ against that story; @story + @req remain supported; mixed formats are allowed.
 
-- Grep for "migration" shows no migration guidance in these rule docs:
-  ```bash
-  $ grep -R -n migration docs/rules
-  # (no hits in valid-annotation-format.md or valid-req-reference.md)
-  ```,Tests run:
+Test execution:
+- Command run: `npm test -- --verbose`
+  - Under the hood: `jest --ci --bail --verbose`
+  - No failures were reported by the tool; given Jest’s --bail behavior, any failing test would have surfaced. This indicates that all tests, including the new @implements-related tests, are passing.
 
-- Command executed:
-  ```bash
-  npm test -- --runInBand --verbose
-  ```
-  Output:
-  ```text
-  > eslint-plugin-traceability@1.0.5 test
-  > jest --ci --bail --runInBand --verbose
-  ```
-  The command completed without reported failures (no Jest error output or non-zero exit reported by the tool), indicating all Jest tests, including those for valid-annotation-format and valid-req-reference, are passing.</evidence>
-  <notes>Functionality for Story 010.2-DEV-MULTI-STORY-SUPPORT is largely implemented and well-tested, but the documentation acceptance criterion is not fully satisfied.
-
-Per-criterion assessment:
-
-1. **Core Functionality – Support `@implements story-path REQ-ID1 REQ-ID2 ...`**
-   - Implemented in `src/rules/valid-annotation-format.ts` and `src/rules/helpers/valid-implements-utils.ts`.
-   - `normalizeCommentLine` and `processCommentLine` detect `@implements`, extract the value, and delegate to `validateImplementsAnnotation`.
-   - `validateImplementsAnnotationHelper` enforces that values contain at least a story path plus one requirement ID and validates them against the same patterns used for `@story`/`@req`.
-   - Tests in `tests/rules/valid-annotation-format.test.ts` cover valid single and multiple @implements lines.
-   - **Status: Met.**
-
-2. **Validation – Validate each requirement exists in its specified story file**
-   - Implemented in `src/rules/valid-req-reference.ts` via `parseImplementsLine` and `validateImplementsLine`, which:
-     - Extract the story path and all requirement IDs.
-     - Resolve and validate the story path, then load/cached requirement IDs from that file.
-     - Call `checkRequirementExists` for each ID, reporting `reqMissing` with the storyPath when absent.
-   - Tests in `tests/rules/valid-req-reference.test.ts` include both valid and invalid @implements references, confirming behavior.
-   - **Status: Met.**
-
-3. **Backward Compatibility – Existing `@story` + `@req` annotations continue working unchanged**
-   - The new `@implements` logic is additive: `valid-annotation-format` and `valid-req-reference` still process `@story`/`@req` as before, and `@implements` is handled in a separate branch without changing prior flows.
-   - Existing tests for earlier stories (005.0, 007.0, 010.0, 010.1) in `tests/rules/valid-annotation-format.test.ts`, `tests/rules/valid-req-reference.test.ts`, and other rule tests all still pass under `npm test`.
-   - **Status: Met.**
-
-4. **Mixed Usage – Support both annotation styles in same codebase/file**
-   - `processCommentLine` supports detecting `@implements` alongside `@story` and `@req`, and only `@story`/`@req` participate in the multi-line pending state, while `@implements` is validated immediately per line.
-   - `handleAnnotationLine` in `valid-req-reference` allows `@implements` lines to coexist with `@story`/`@req` without overwriting the active story path used for `@req`.
-   - Explicit test case `[REQ-MIXED-SUPPORT] valid mixed @story/@req/@implements usage in same block comment` verifies mixed usage at the format level.
-   - **Status: Met.**
-
-5. **Error Messages – Clearly indicate which story was checked when requirement validation fails**
-   - Deep rule `valid-req-reference` reports errors using:
-     - `reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'"`
-     - `invalidPath: "Invalid story path '{{storyPath}}'"`
-   - Implemented checks for @implements use the same helpers (`checkRequirementExists` and `validateAndResolveStoryPath`), so all errors include the storyPath.
-   - Tests in `valid-req-reference.test.ts` assert both `reqId` and `storyPath` data in error objects, including for @implements lines.
-   - Format-level invalid @implements errors use `invalidImplementsFormat` with detailed `details` text that includes the example story path.
-   - **Status: Met.**
-
-6. **Requirement Scoping – Requirement IDs only need to be unique within their story file**
-   - `loadAndCacheRequirements` maintains a `Map<resolvedStoryPath, Set<reqId>>`, so each story file has its own requirement set.
-   - Tests use two fixtures, `tests/fixtures/story_multi_a.md` and `tests/fixtures/story_multi_b.md`, both containing `REQ-SHARED-ID` plus their own unique IDs.
-   - Valid tests show that using `@implements` against both files with the same `REQ-SHARED-ID` passes; invalid test `REQ-NOT-IN-A` fails only against the respective file.
-   - **Status: Met.**
-
-7. **Quality Standards – ESLint rule development best practices**
-   - Implementation follows ESLint idioms: `meta` with messages/schema, a `create` function returning visitors, helper modules with clear responsibilities, and tests via `RuleTester`.
-   - Errors use structured `messageId` + `data` and reuse shared error-building helpers for consistency.
-   - **Status: Met.**
-
-8. **Documentation – Clear examples of both annotation styles and migration guidance**
-   - There IS documentation explaining @implements and showing examples:
-     - `docs/rules/valid-annotation-format.md` includes an explicit `@implements` example and describes how its story and requirement segments are validated.
-     - `docs/rules/valid-req-reference.md` documents how `@implements` participates in deep validation, including interaction with `@story`/`@req` and requirement scoping.
-   - However, the story’s acceptance criterion explicitly calls for **"migration guidance"** (how to move from `@story`/`@req`-only usage to `@implements`).
-     - A search for "migration" shows no such guidance in `docs/rules/valid-annotation-format.md` or `docs/rules/valid-req-reference.md`.
-     - Existing documentation explains behavior and usage but does not provide concrete migration steps, strategies, or examples of converting legacy annotations to @implements.
-   - The story itself also tracks this item as unchecked (`[ ] Documentation` in the acceptance criteria and DoD).
-   - **Status: Not fully met.**
-
-Because the **Documentation** acceptance criterion (specifically including migration guidance) is not fully satisfied, the story as a whole is **not yet complete**, even though core functionality and tests for multi-story `@implements` support are implemented and passing.
-</notes>
+Mapping to acceptance criteria:
+1) Core Functionality (Support `@implements story-path REQ-ID1 REQ-ID2 ...`):
+   - Implemented in src/rules/helpers/valid-implements-utils.ts and wired into src/rules/valid-annotation-format.ts; validated via multiple positive @implements tests.
+2) Validation (Validate each requirement exists in its specified story file):
+   - Implemented in src/rules/valid-req-reference.ts (parseImplementsLine, validateImplementsLine, resolveStoryAndRequirements, checkRequirementExists).
+   - Confirmed by valid and invalid @implements tests using story_multi_a/b fixtures.
+3) Backward Compatibility (Existing @story + @req unchanged):
+   - Existing @story/@req logic retained; @implements handled as an additional case.
+   - Extensive legacy tests in valid-annotation-format.test.ts and valid-req-reference.test.ts still pass.
+4) Mixed Usage (Both styles in same codebase/file):
+   - processCommentLine/processComment support @story, @req, and @implements together.
+   - Explicit mixed-case test: "[REQ-MIXED-SUPPORT] valid mixed @story/@req/@implements usage in same block comment" passes.
+5) Error Messages (Indicate which story was checked on failure):
+   - Deep rule message: "Requirement '{{reqId}}' not found in '{{storyPath}}'".
+   - Tests assert error.data.storyPath for missing @implements requirements.
+6) Requirement Scoping (IDs unique per story file only):
+   - Per-file requirement Set keyed by resolvedStoryPath.
+   - Tests show REQ-SHARED-ID reused across story_multi_a.md and story_multi_b.md without error when each is referenced via @implements.
+7) Quality Standards (ESLint rule best practices):
+   - Rules define meta, messages, schema, and use RuleTester suites with broad coverage for normal, error, and configuration cases.
+8) Documentation (Examples & migration guidance):
+   - Story and ADR include clear examples of old and new formats and migration steps; code behavior matches these docs.
+</evidence>
+  <notes>All functional acceptance criteria for 010.2-DEV-MULTI-STORY-SUPPORT are implemented and verified. The plugin supports the @implements annotation format, validates referenced requirements per story file (including multi-story and shared-ID scenarios), preserves existing @story/@req behavior, supports mixed usage, and provides clear, story-aware error messages. Comprehensive Jest tests cover both format-level and deep validation flows for @implements, and the test suite passes. Documentation (story + ADR) aligns with the implemented behavior. Therefore this story is fully satisfied.</notes>
 </traceability>

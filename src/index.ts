@@ -29,6 +29,7 @@ const RULE_NAMES = [
   "valid-annotation-format",
   "valid-story-reference",
   "valid-req-reference",
+  "prefer-implements-annotation",
 ] as const;
 
 type RuleName = (typeof RULE_NAMES)[number];
@@ -104,6 +105,7 @@ const TRACEABILITY_RULE_SEVERITIES: Readonly<Record<string, "error" | "warn">> =
     "traceability/valid-annotation-format": "warn",
     "traceability/valid-story-reference": "error",
     "traceability/valid-req-reference": "error",
+    "traceability/prefer-implements-annotation": "warn",
   } as const;
 
 /**

@@ -22,6 +22,7 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
       "valid-annotation-format",
       "valid-story-reference",
       "valid-req-reference",
+      "prefer-implements-annotation",
     ];
     // Act: get actual rule names from plugin
     const actual = Object.keys(rules);
@@ -77,6 +78,10 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
       "traceability/valid-req-reference",
       "error",
     );
+    expect(recommendedRules).toHaveProperty(
+      "traceability/prefer-implements-annotation",
+      "warn",
+    );
   });
 
   it("[REQ-ERROR-SEVERITY] configs.strict uses same severity mapping as recommended", () => {
@@ -84,5 +89,9 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
     const recommendedRules = configs.recommended[0].rules;
 
     expect(strictRules).toEqual(recommendedRules);
+    expect(strictRules).toHaveProperty(
+      "traceability/prefer-implements-annotation",
+      "warn",
+    );
   });
 });

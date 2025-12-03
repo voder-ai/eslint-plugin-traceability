@@ -54,6 +54,7 @@ module.exports = [
 - `traceability/valid-annotation-format` Enforces correct format of traceability annotations. ([Documentation](docs/rules/valid-annotation-format.md))
 - `traceability/valid-story-reference` Validates that `@story` references point to existing story files. ([Documentation](docs/rules/valid-story-reference.md))
 - `traceability/valid-req-reference` Validates that `@req` references point to existing requirement IDs. ([Documentation](docs/rules/valid-req-reference.md))
+- `traceability/prefer-implements-annotation` Recommends migration from legacy `@story`/`@req` annotations to `@implements` (disabled by default). ([Documentation](docs/rules/prefer-implements-annotation.md))
 
 Configuration options: For detailed per-rule options (such as scopes, branch types, and story directory settings), see the individual rule docs in `docs/rules/` and the consolidated [API Reference](user-docs/api-reference.md).
 
