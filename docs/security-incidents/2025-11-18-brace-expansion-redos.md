@@ -40,3 +40,6 @@ Continuous `npm audit` checks in CI and pre-push hooks will detect if this vulne
 
 **Status Update (2025-11-23):**
 As of 2025-11-23, there is still no mature, dry-aged safe upgrade path available according to dry-aged-deps for the bundled npm dependency chain containing brace-expansion. The vulnerability continues to be tracked, and the risk remains accepted as a dev-only residual risk with no production impact.
+
+**Status Update (2025-12-03):**
+This incident is now covered by `SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`. Please refer to that document for the current status, mitigation details, and compensating controls.

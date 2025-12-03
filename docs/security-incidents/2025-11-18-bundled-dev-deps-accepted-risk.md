@@ -1,9 +1,16 @@
-# Security Incident: Bundled Dev Dependencies Accepted as Residual Risk
+# Security Incident (Historical): Bundled Dev Dependencies Accepted as Residual Risk
 
 **Date**: 2025-11-18  
 **Severity**: High (glob), Low (brace-expansion)  
-**Status**: Accepted as residual risk  
+**Status**: Superseded by known error record (historical context only)  
 **Affected Package**: @semantic-release/npm@10.0.6 (bundled dependencies)
+
+## Superseded Notice
+
+This incident document has been superseded by the known error record:  
+**[SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md](SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md)**
+
+It is retained only for historical background and should not be used as the current source of truth for status or mitigation details.
 
 ## Summary
 

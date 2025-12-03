@@ -39,3 +39,7 @@ Continuous `npm audit` checks in CI and pre-push hooks will detect if this vulne
 
 **Status (2025-11-23):**
 As of 2025-11-23, dry-aged-deps reports no mature, dry-aged safe upgrade path for the affected glob dependency bundled via @semantic-release/npm. The risk remains accepted for dev-only tooling, with continued monitoring for an upstream fix.
+
+## Status Update
+
+This incident is now covered by `SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`. Refer to that document for the current status, compensating controls, and ongoing mitigation tracking.
