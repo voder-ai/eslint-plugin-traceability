@@ -41,7 +41,7 @@ This command is part of `npm run ci-verify:full` and is executed automatically i
 
 Dev-only vulnerabilities are tracked separately and **do not** block CI by themselves, but they must be documented and reviewed:
 
-- `npm run audit:dev-high`  runs a dev-only audit using `npm audit --include=dev --audit-level=high --json`, normalizes the result to always exit with code `0` (never failing CI directly), and writes the JSON output to `ci/npm-audit-dev-high.json` for targeted inspection of high-severity dev-only vulnerabilities.
+- `npm run audit:dev-high`  runs a dev-only audit using `npm audit --include=dev --audit-level=high --json`, normalizes the result to always exit with code `0` (never failing CI directly), and writes the JSON output to `ci/npm-audit.json` for targeted inspection of high-severity dev-only vulnerabilities.
 - `npm run audit:ci`  runs `npm audit --json` and writes `ci/npm-audit.json` for CI artifacts.
 - `npm run safety:deps`  runs `dry-aged-deps` and writes `ci/dry-aged-deps.json`.
 
