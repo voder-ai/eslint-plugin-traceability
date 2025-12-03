@@ -99,6 +99,54 @@ function initPlugin() {}
 function initPlugin() {}
 ```
 
+### Migration and multi-story usage
+
+The `valid-req-reference` rule is fully backward compatible with projects that only use `@story` and `@req`. You can keep your existing deep-validation configuration and gradually adopt `@implements` where it adds clarity.
+
+#### Before: deep validation with a single story
+
+In many codebases, deep requirement validation starts with a single story per function:
+
+```js
+// @story docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md
+// @req REQ-AGE-THRESHOLD
+// @req REQ-OUTPUT
+export async function applyFilters(rows, options) {
+  // combined behavior
+}
+```
+
+`valid-req-reference` resolves the story file, parses its requirement IDs, and verifies that both `REQ-AGE-THRESHOLD` and `REQ-OUTPUT` exist in that file.
+
+#### After: multi-story deep validation with `@implements`
+
+When the same function genuinely implements requirements from multiple stories, prefer `@implements` to make that relationship explicit:
+
+```js
+/**
+ * Apply age and security filters to rows.
+ * @story docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md
+ * @req REQ-AGE-THRESHOLD
+ * @req REQ-OUTPUT
+ *
+ * @implements docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md REQ-AGE-THRESHOLD REQ-OUTPUT
+ * @implements docs/stories/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md REQ-AUDIT-CHECK REQ-SAFE-ONLY
+ */
+export async function applyFilters(rows, options) {
+  // combined behavior
+}
+```
+
+In this form:
+
+- Each `@implements` line is self-contained: it specifies the story file and the list of requirements implemented from that story.
+- `valid-req-reference` validates every requirement ID listed after `@implements` against the corresponding story file, using the same parsing and caching logic as for `@req`.
+- Requirement IDs only need to be unique within a single story file; you can safely reuse IDs like `REQ-SHARED-ID` in multiple stories and reference each one via its own `@implements` line.
+
+You can mix `@story`/`@req` and `@implements` in the same file during migration. Start from working `@story`/`@req` annotations, add `@implements` lines for multi-story integration functions, and run ESLint with both `traceability/valid-annotation-format` and `traceability/valid-req-reference` enabled to confirm there are no new violations.
+
+For more background and examples, see Story `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`.
+
 For more details, see the stories:
 
 - docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
