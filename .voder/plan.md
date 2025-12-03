@@ -1,16 +1,17 @@
 ## NOW
 
-- [x] Define and integrate a clear, project-standard way to invoke the dependency maturity tool from the project configuration so that contributors and automation can run it consistently and its behavior is documented.
+- [ ] Perform a focused functionality review that compares the implemented rules, maintenance CLI behaviors, and tests against the documented stories and requirements, and capture any gaps or mismatches in a concise summary document.
 
 ## NEXT
 
-- [x] Review the dependency maturity tool’s output format and current results to understand which direct and transitive dependencies, if any, have safe mature upgrade candidates according to the project’s policy.
-- [x] Apply any safe, policy-compliant dependency updates identified by the maturity tool, focusing first on resolving or reducing known dev-only vulnerabilities without impacting runtime behavior.
-- [ ] Revisit the existing security incident and known-error documentation to align it with the current dependency state, updating the rationale if vulnerabilities have been remediated or if the maturity tool still reports no safe upgrade path.
-- [ ] Summarize the updated dependency health status in the development documentation, including how and when the maturity tool should be used by contributors to keep dependencies within the required health threshold.
+- [ ] Identify which user stories and requirements are covered by existing automated tests by mapping test files and describe blocks to their referenced story IDs and requirement tags.
+- [ ] Review core implementation modules for the plugin rules and maintenance CLI to ensure each documented requirement has a clear, traceable implementation path, noting any requirements that appear only in documentation but not in code.
+- [ ] Highlight any features or edge cases that are specified in the stories but not fully exercised by tests, and outline what additional tests would be needed to close those coverage gaps.
+- [ ] Summarize overall functionality coverage and any discovered discrepancies in development documentation so that future work on missing or inconsistent behavior is clearly guided.
 
 ## LATER
 
-- [ ] Once dependency health meets the required threshold, perform the deferred functionality assessment to validate feature completeness against the documented stories and requirements.
-- [ ] Refine the long-term dependency maintenance strategy in an ADR, clarifying how the maturity tool, audits, and overrides should be used together for future upgrades.
-- [ ] Extend contributor guidance with a short checklist for dependency changes, covering when to run the maturity tool, how to interpret its output, and how to update dependency-related documentation and incident records.
+- [ ] Implement any missing functionality or behavioral refinements identified by the functionality assessment so that all documented requirements are actually met in code.
+- [ ] Add or extend automated tests to cover any untested or under-tested requirements, keeping traceability annotations aligned with the relevant stories.
+- [ ] Create or update an architecture decision record that captures the finalized dependency maintenance and functionality-validation strategy, including how maturity checks and requirement coverage assessments are expected to work together.
+- [ ] Refine contributor documentation with a short, actionable checklist that explains how to validate functionality against stories and how to incorporate dependency-health checks when making feature changes.
