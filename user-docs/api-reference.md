@@ -11,7 +11,7 @@ Each rule enforces traceability conventions in your code. Below is a summary of 
 
 In addition to the core `@story` and `@req` annotations, the plugin also understands `@implements` for code that fulfills requirements from multiple stories—for example:
 `@implements docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`.
-For a detailed explanation of `@implements` behavior and validation, see `user-docs/migration-guide.md` (section **3.1 Multi-story @implements annotations**) and the rule docs at `docs/rules/valid-annotation-format.md` and `docs/rules/valid-req-reference.md`.
+For a detailed explanation of `@implements` behavior and validation, see [`user-docs/migration-guide.md`](../user-docs/migration-guide.md) (section **3.1 Multi-story @implements annotations**) and the rule docs at [`docs/rules/valid-annotation-format.md`](../docs/rules/valid-annotation-format.md) and [`docs/rules/valid-req-reference.md`](../docs/rules/valid-req-reference.md).
 
 ### traceability/require-story-annotation
 
@@ -115,8 +115,8 @@ The `valid-annotation-format` rule is intentionally **backward compatible** with
 
 Deep requirement checking for both `@req` and `@implements` is handled by `traceability/valid-req-reference`. For step-by-step guidance on when and how to migrate, see:
 
-- **Migration guide:** `user-docs/migration-guide.md` (section **3.1 Multi-story `@implements` annotations**)
-- **Rule docs:** `docs/rules/valid-annotation-format.md`, `docs/rules/valid-req-reference.md`
+- **Migration guide:** [`user-docs/migration-guide.md`](../user-docs/migration-guide.md) (section **3.1 Multi-story `@implements` annotations**)
+- **Rule docs:** [`docs/rules/valid-annotation-format.md`](../docs/rules/valid-annotation-format.md), [`docs/rules/valid-req-reference.md`](../docs/rules/valid-req-reference.md)
 
 Default Severity: `error`
 Example:
@@ -500,4 +500,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```

@@ -133,8 +133,8 @@ You can introduce `@implements` gradually without breaking existing code:
 
 For detailed semantics and edge cases (path validation, scoped requirement IDs, and multi-story fixtures), see:
 
-- Rule docs: `docs/rules/valid-annotation-format.md`, `docs/rules/valid-req-reference.md`
-- Story: `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`
+- Rule docs: [`docs/rules/valid-annotation-format.md`](../docs/rules/valid-annotation-format.md), [`docs/rules/valid-req-reference.md`](../docs/rules/valid-req-reference.md)
+- Story: [`docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`](../docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md)
 
 ## 4. Test and Validate
 

@@ -34,7 +34,7 @@ The following entries were maintained manually before the adoption of semantic-r
 
 **Added**
 - CLI integration script (`cli-integration.js`) for end-to-end ESLint CLI tests.
-- Migration guide in `user-docs/migration-guide.md`.
+- Migration guide in [`user-docs/migration-guide.md`](user-docs/migration-guide.md).
 
 ### [1.0.2] - 2025-11-17
 
@@ -45,8 +45,8 @@ The following entries were maintained manually before the adoption of semantic-r
 ### [1.0.1] - 2025-11-17
 
 **Added**
-- Detailed API documentation in `user-docs/api-reference.md`
-- New usage examples in `user-docs/examples.md`
+- Detailed API documentation in [`user-docs/api-reference.md`](user-docs/api-reference.md)
+- New usage examples in [`user-docs/examples.md`](user-docs/examples.md)
 
 **Changed**
 - Updated `README.md` with advanced usage instructions and migration guide

@@ -15,7 +15,7 @@ Prerequisites: Node.js >=18.18.0 and ESLint v9+.
 2. Using Yarn  
    yarn add --dev eslint-plugin-traceability
 
-For detailed setup with ESLint v9, see user-docs/eslint-9-setup-guide.md.
+For detailed setup with ESLint v9, see the [ESLint v9 Setup Guide](user-docs/eslint-9-setup-guide.md).
 
 ## Usage
 
@@ -26,7 +26,7 @@ Additional ESLint v9 configuration guidance:
 - For detailed configuration examples, see [Common Configuration Patterns](user-docs/eslint-9-setup-guide.md#common-configuration-patterns) in the ESLint 9 Setup Guide.
 - For troubleshooting ESLint flat-config errors, see [Troubleshooting ESLint Configuration](user-docs/eslint-9-setup-guide.md#troubleshooting-eslint-configuration).
 
-Example eslint.config.js (ESLint v9 flat config):
+Example `eslint.config.js` (ESLint v9 flat config):
 
 This example shows the recommended starting point using the plugin's recommended preset alongside ESLint's recommended config:
 
@@ -48,13 +48,13 @@ export default [js.configs.recommended, traceability.configs.recommended];
 - `traceability/valid-req-reference` Validates that `@req` references point to existing requirement IDs. ([Documentation](docs/rules/valid-req-reference.md))
 - `traceability/prefer-implements-annotation` Recommends migration from legacy `@story`/`@req` annotations to `@implements` (disabled by default). ([Documentation](docs/rules/prefer-implements-annotation.md))
 
-Configuration options: For detailed per-rule options (such as scopes, branch types, and story directory settings), see the individual rule docs in `docs/rules/` and the consolidated [API Reference](user-docs/api-reference.md).
+Configuration options: For detailed per-rule options (such as scopes, branch types, and story directory settings), see the individual rule docs in [`docs/rules/`](docs/rules) and the consolidated [API Reference](user-docs/api-reference.md).
 
-For development and contribution guidelines, see docs/eslint-plugin-development-guide.md.
+For development and contribution guidelines, see the [ESLint Plugin Development Guide](docs/eslint-plugin-development-guide.md).
 
 ## Quick Start
 
-1. Create a flat ESLint config file (`eslint.config.js`):
+1. Create a flat ESLint config file ([`eslint.config.js`](eslint.config.js)):
 
 ```javascript
 // eslint.config.js
@@ -138,7 +138,7 @@ You can validate the plugin by running ESLint CLI with the plugin on a sample fi
 npx eslint --no-eslintrc --config eslint.config.js sample.js --rule 'traceability/require-story-annotation:error'
 ```
 
-This command runs ESLint with the plugin, pointing at `eslint.config.js` flat config.
+This command runs ESLint with the plugin, pointing at [`eslint.config.js`](eslint.config.js) flat config.
 
 Replace `sample.js` with your JavaScript or TypeScript file.
 
@@ -160,11 +160,11 @@ npm run format:check
 npm run duplication
 ```
 
-Coverage reports will be generated in the `coverage/` directory.
+Coverage reports will be generated in the [`coverage/`](coverage) directory.
 
 ## CLI Integration
 
-Integration tests for the ESLint CLI plugin are included in the Jest test suite under `tests/integration/cli-integration.test.ts`.
+Integration tests for the ESLint CLI plugin are included in the Jest test suite under [`tests/integration/cli-integration.test.ts`](tests/integration/cli-integration.test.ts).
 
 To run only the CLI integration tests:
 
@@ -182,16 +182,16 @@ These tests verify end-to-end behavior of the plugin via the ESLint CLI.
 
 ## Documentation Links
 
-- ESLint v9 Setup Guide: user-docs/eslint-9-setup-guide.md
-- Plugin Development Guide: docs/eslint-plugin-development-guide.md
-- API Reference: user-docs/api-reference.md
-- Examples: user-docs/examples.md
-- Migration Guide: user-docs/migration-guide.md
-- Full README: https://github.com/voder-ai/eslint-plugin-traceability#readme
-- Rule: require-story-annotation: docs/rules/require-story-annotation.md
-- Rule: require-req-annotation: docs/rules/require-req-annotation.md
-- Rule: require-branch-annotation: docs/rules/require-branch-annotation.md
-- Contribution guide: https://github.com/voder-ai/eslint-plugin-traceability/blob/main/CONTRIBUTING.md
-- Issue tracker: https://github.com/voder-ai/eslint-plugin-traceability/issues
-- Configuration Presets: docs/config-presets.md
-- Changelog: CHANGELOG.md
+- ESLint v9 Setup Guide: [user-docs/eslint-9-setup-guide.md](user-docs/eslint-9-setup-guide.md)
+- Plugin Development Guide: [docs/eslint-plugin-development-guide.md](docs/eslint-plugin-development-guide.md)
+- API Reference: [user-docs/api-reference.md](user-docs/api-reference.md)
+- Examples: [user-docs/examples.md](user-docs/examples.md)
+- Migration Guide: [user-docs/migration-guide.md](user-docs/migration-guide.md)
+- Full README: <https://github.com/voder-ai/eslint-plugin-traceability#readme>
+- Rule: require-story-annotation: [docs/rules/require-story-annotation.md](docs/rules/require-story-annotation.md)
+- Rule: require-req-annotation: [docs/rules/require-req-annotation.md](docs/rules/require-req-annotation.md)
+- Rule: require-branch-annotation: [docs/rules/require-branch-annotation.md](docs/rules/require-branch-annotation.md)
+- Contribution guide: <https://github.com/voder-ai/eslint-plugin-traceability/blob/main/CONTRIBUTING.md>
+- Issue tracker: <https://github.com/voder-ai/eslint-plugin-traceability/issues>
+- Configuration Presets: [docs/config-presets.md](docs/config-presets.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)

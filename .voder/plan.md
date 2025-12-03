@@ -1,17 +1,18 @@
 ## NOW
 
-- [ ] Start implementing the first small CLI refactor by extracting the maintenance CLI flag parsing and normalization logic into a dedicated flags module, updating the existing CLI entry point to delegate to this module without changing any external behavior or public APIs.
+- [ ] Refactor the most highly duplicated test suite into clearer shared helpers or parameterized tests so that it keeps the same behavior while significantly reducing internal copy‑paste duplication.
 
 ## NEXT
 
-- [ ] Extract the maintenance CLI subcommand handler functions into a separate commands module so that the main CLI entry point is reduced to wiring parsed arguments to these handlers while preserving existing behavior and exit codes.
-- [ ] Refine the helper code currently using targeted ESLint suppressions so that the same behavior is achieved without needing those suppressions, for example by adjusting function signatures or introducing small configuration objects.
-- [ ] Add focused tests that exercise defensive and error-handling paths in the maintenance CLI and supporting helpers, such as invalid flag combinations, non-existent roots, and filesystem access failures, to ensure these paths are explicitly covered without altering behavior.
-- [ ] Review the updated CLI and helper structure to confirm it still aligns with the documented stories and ADRs, and lightly adjust internal documentation where necessary to reflect the new module boundaries.
+- [ ] Apply the same style of duplication‑reducing refactor to the next one or two most duplicated test files, extracting common setup and assertion patterns into reusable helpers while ensuring all existing scenarios remain covered.
+- [ ] Review the shared test utilities to smooth out any remaining type or lint edge cases so they use consistent patterns and no longer require ad‑hoc workarounds.
+- [ ] Update the main user-facing documentation files to replace plain-text or backticked file references with proper Markdown links so that all referenced guides are easily navigable.
+- [ ] Adjust the packaging configuration and documentation references so that every user-facing link in the README and user docs either points to a file that is included in the published package or to a stable canonical URL that will work for npm consumers.
+- [ ] Verify that code-level traceability annotations remain accurate after the refactors by checking functions and key branches in the updated tests and utilities and adding or fixing annotations where they are missing or incomplete.
 
 ## LATER
 
-- [ ] Carry out the remaining low-risk refactors identified in the code-quality refactor opportunities document, such as further narrowing responsibilities in helper modules and introducing small wrapper utilities around annotation-detection logic.
-- [ ] Introduce additional defensive-path tests around the deep validation rules (e.g., complex @implements combinations and path-boundary checks) to provide even stronger coverage of failure modes.
-- [ ] Re-evaluate Cyclomatic complexity or max-lines thresholds after refactors to see whether they can be modestly tightened without impacting maintainability, and update the lint configuration only if it is clearly beneficial.
-- [ ] Update or add a concise architecture decision record that captures the final structure of the maintenance CLI, the rationale for removing eslint suppressions, and the approach to defensive-path testing so that future contributors understand the design choices.
+- [ ] Continue reducing duplication in remaining test files and any newly identified hotspots in production code, keeping an eye on jscpd reports to drive small, focused refactors.
+- [ ] Revisit ESLint complexity, max-lines, and related thresholds once duplication and structure are improved, tightening them only where they clearly support maintainability without causing churn.
+- [ ] Expand defensive-path and edge-case tests for the deeper validation rules (such as complex @implements combinations and strict path-boundary behavior) to further strengthen code quality and confidence.
+- [ ] Audit the entire codebase for traceability consistency, ensuring every named function and significant conditional branch includes a properly formatted story/requirement annotation, and add or update ADRs to document the improved testing and documentation structure.
