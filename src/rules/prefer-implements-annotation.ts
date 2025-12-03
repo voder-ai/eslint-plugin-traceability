@@ -1,3 +1,27 @@
+/**
+ * ESLint rule implementation for preferring the consolidated `@implements`
+ * annotation over legacy combinations of `@story` and `@req` within JSDoc
+ * block comments. This module provides:
+ *
+ * - Detection of legacy `@story` + `@req` patterns.
+ * - Identification of multi-story comment blocks that are not safely
+ *   auto-fixable.
+ * - A conservative auto-fix that rewrites simple, single-story patterns into
+ *   a single `@implements` annotation while preserving formatting.
+ *
+ * The rule is intended as an **optional migration aid** to help projects
+ * gradually move to the newer `@implements` format without breaking existing
+ * traceability links.
+ *
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+ * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage
+ * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
+ * @req REQ-SINGLE-STORY-FIX - Restrict auto-fix to single-story, single-path cases
+ * @req REQ-PRESERVE-FORMAT - Preserve original JSDoc indentation and prefix formatting
+ * @req REQ-VALID-OUTPUT - Avoid emitting auto-fixes for complex or ambiguous patterns
+ * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy @story/@req annotations valid when the rule is disabled
+ * @req REQ-AUTO-FIX - Provide safe, opt-in auto-fix for simple legacy patterns
+ */
 import type { Rule } from "eslint";
 import { normalizeCommentLine } from "./helpers/valid-annotation-format-internal";
 
@@ -10,11 +34,175 @@ const MULTI_STORY_THRESHOLD = 1;
 // @req REQ-MULTI-STORY-DETECT
 const MIN_STORY_TOKENS = 2;
 
+// Minimum number of tokens required for a valid @req annotation line, aligned with story tokens.
+const MIN_REQ_TOKENS = MIN_STORY_TOKENS;
+
+// Length of the opening "/*" portion of a block comment prefix.
+const COMMENT_PREFIX_LENGTH = 2;
+
 interface CommentAnalysis {
   hasStory: boolean;
   hasReq: boolean;
   hasImplements: boolean;
   storyPaths: Set<string>;
+}
+
+function collectStoryAndReqMetadata(comment: any): {
+  storyLineIndices: number[];
+  reqLineIndices: number[];
+  reqIds: string[];
+  storyPath: string | null;
+} {
+  const rawValue: string = comment.value || "";
+  const rawLines: string[] = rawValue.split(/\r?\n/);
+
+  const storyLineIndices: number[] = [];
+  const reqLineIndices: number[] = [];
+  const reqIds: string[] = [];
+  let storyPath: string | null = null;
+
+  rawLines.forEach((rawLine, index) => {
+    const normalized = normalizeCommentLine(rawLine);
+    if (!normalized) return;
+
+    if (/^@implements\b/.test(normalized)) {
+      // Mixed @implements usage should have been filtered out earlier
+      return;
+    }
+
+    if (/^@story\b/.test(normalized)) {
+      const parts = normalized.split(/\s+/);
+      if (parts.length === MIN_STORY_TOKENS) {
+        storyLineIndices.push(index);
+        storyPath = parts[1];
+      } else {
+        storyPath = null;
+      }
+      return;
+    }
+
+    if (/^@req\b/.test(normalized)) {
+      const parts = normalized.split(/\s+/);
+      if (parts.length === MIN_REQ_TOKENS) {
+        reqLineIndices.push(index);
+        reqIds.push(parts[1]);
+      } else {
+        // Complex @req form; bail out entirely.
+        storyPath = null;
+      }
+    }
+  });
+
+  return { storyLineIndices, reqLineIndices, reqIds, storyPath };
+}
+
+function applyImplementsReplacement(
+  context: Rule.RuleContext,
+  comment: any,
+  details: {
+    storyIdx: number;
+    allIndicesToRemove: Set<number>;
+    storyPath: string;
+    reqIds: string[];
+  },
+): Rule.ReportFixer {
+  const { storyIdx, allIndicesToRemove, storyPath, reqIds } = details;
+
+  const rawValue: string = comment.value || "";
+  const rawLines: string[] = rawValue.split(/\r?\n/);
+
+  const implAnnotation = `@implements ${storyPath} ${reqIds.join(" ")}`;
+
+  // Determine the leading prefix (indentation and `*`) from the original @story line
+  const storyRawLine = rawLines[storyIdx];
+  const prefixMatch = storyRawLine.match(/^(\s*\*?\s*)/);
+  const linePrefix = prefixMatch ? prefixMatch[1] : "";
+
+  const implementsLine = `${linePrefix}${implAnnotation}`;
+
+  const fixedLines: string[] = [];
+  rawLines.forEach((line, index) => {
+    if (index === storyIdx) {
+      fixedLines.push(implementsLine);
+      return;
+    }
+    if (allIndicesToRemove.has(index)) {
+      return;
+    }
+    fixedLines.push(line);
+  });
+
+  const fixedValue = fixedLines.join("\n");
+  const sourceCode = context.getSourceCode();
+
+  return (fixer) =>
+    fixer.replaceTextRange(
+      [comment.range[0], comment.range[1]],
+      sourceCode.text.slice(
+        comment.range[0],
+        comment.range[0] + COMMENT_PREFIX_LENGTH,
+      ) +
+        fixedValue +
+        "*/",
+    );
+}
+
+/**
+ * Build an ESLint auto-fix for simple single-story `@story` + `@req` JSDoc
+ * blocks, converting them to a single `@implements` annotation while
+ * preserving the original comment formatting.
+ *
+ * The fixer is intentionally conservative and only activates when:
+ * - There is exactly one distinct `@story` path.
+ * - Exactly one `@story` line is present.
+ * - At least one `@req` line is present.
+ * - Each `@req` line has the simple form `@req <REQ-ID>` (no extra tokens).
+ *
+ * When applicable, the fix:
+ * - Removes the original `@story` and `@req` lines.
+ * - Inserts a single `@implements` line in their place, preserving the
+ *   original leading comment prefix (indentation and `*` markers).
+ *
+ * More complex patterns remain diagnostics-only with no fix to avoid
+ * producing invalid or ambiguous output.
+ *
+ * @implements docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+ * @req REQ-AUTO-FIX - Provide safe, opt-in auto-fix for simple legacy patterns
+ * @req REQ-SINGLE-STORY-FIX - Restrict auto-fix to single-story, single-path cases
+ * @req REQ-PRESERVE-FORMAT - Preserve original JSDoc indentation and prefix formatting
+ * @req REQ-VALID-OUTPUT - Avoid emitting auto-fixes for complex or ambiguous patterns
+ */
+function buildImplementsAutoFix(
+  context: Rule.RuleContext,
+  comment: any,
+  storyPaths: Set<string>,
+): Rule.ReportFixer | null {
+  if (storyPaths.size !== 1) return null;
+
+  const { storyLineIndices, reqLineIndices, reqIds, storyPath } =
+    collectStoryAndReqMetadata(comment);
+
+  if (
+    storyPaths.size !== 1 ||
+    storyLineIndices.length !== 1 ||
+    reqLineIndices.length < 1 ||
+    storyPath === null
+  ) {
+    return null;
+  }
+
+  const storyIdx = storyLineIndices[0];
+  const allIndicesToRemove = new Set<number>([
+    ...storyLineIndices,
+    ...reqLineIndices,
+  ]);
+
+  return applyImplementsReplacement(context, comment, {
+    storyIdx,
+    allIndicesToRemove,
+    storyPath,
+    reqIds,
+  });
 }
 
 function analyzeComment(comment: any): CommentAnalysis {
@@ -84,9 +272,12 @@ function processComment(comment: any, context: Rule.RuleContext): void {
     return;
   }
 
+  const fix = buildImplementsAutoFix(context, comment, storyPaths);
+
   context.report({
     node: comment as any,
     messageId: "preferImplements",
+    fix: fix ?? undefined,
   });
 }
 
