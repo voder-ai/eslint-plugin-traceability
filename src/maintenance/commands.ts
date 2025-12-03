@@ -83,30 +83,20 @@ export function handleReport(normalized: NormalizedCliArgs): number {
   const root = flags.root;
   const format = flags.format ?? "text";
 
-  try {
-    const report = generateMaintenanceReport(root);
+  const report = generateMaintenanceReport(root);
 
-    if (format === "json") {
-      console.log(JSON.stringify({ root, report }));
-    } else if (!report) {
-      console.log("No stale @story annotations found. Nothing to report.");
-    } else {
-      console.log(`# Traceability Maintenance Report for ${root}`);
-      console.log("");
-      console.log("Stale story references:");
-      console.log(report);
-    }
-
-    return EXIT_OK;
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Unknown error while generating report";
-    console.error(`Invalid format: ${format}. Expected 'text' or 'json'.`);
-    console.error(`traceability-maint failed: ${message}`);
-    return EXIT_USAGE;
+  if (format === "json") {
+    console.log(JSON.stringify({ root, report }));
+  } else if (!report) {
+    console.log("No stale @story annotations found. Nothing to report.");
+  } else {
+    console.log(`# Traceability Maintenance Report for ${root}`);
+    console.log("");
+    console.log("Stale story references:");
+    console.log(report);
   }
+
+  return EXIT_OK;
 }
 
 /**
