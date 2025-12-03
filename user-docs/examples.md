@@ -71,3 +71,4 @@ Then run:
 
 ```bash
 npm run lint:trace
+```

@@ -7,6 +7,9 @@
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-TYPESCRIPT-SUPPORT - Verify TypeScript declarations are checked via shared annotation checker helper
+ *
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Verify @implements is accepted as satisfying requirement annotations
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-req-annotation";
@@ -72,6 +75,10 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         code: `/**\n * @req REQ-EXAMPLE\n */\nfunction foo() {}`,
       },
       {
+        name: "[REQ-REQUIRE-ACCEPTS-IMPLEMENTS] valid with only @implements annotation",
+        code: `/**\n * @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction implOnly() {}`,
+      },
+      {
         name: "[REQ-ANNOTATION-REQUIRED] valid with @story and @req annotations",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-EXAMPLE\n */\nfunction bar() {}`,
       },
@@ -129,7 +136,7 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
     ],
     invalid: [
       {
-        name: "[REQ-ANNOTATION-REQUIRED] missing @req on function without JSDoc",
+        name: "[REQ-ANNOTATION-REQUIRED][REQ-REQUIRE-ACCEPTS-IMPLEMENTS] missing @req on function without JSDoc remains invalid under multi-story support",
         code: `function baz() {}`,
         errors: [
           {

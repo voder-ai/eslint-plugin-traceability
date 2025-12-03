@@ -1,403 +1,443 @@
 # Implementation Progress Assessment
 
-**Generated:** 2025-12-03T22:33:37.538Z
+**Generated:** 2025-12-03T23:14:45.287Z
 
 ![Progress Chart](./progress-chart.png)
 
 Projection: flat (no recent upward trend)
 
-## IMPLEMENTATION STATUS: INCOMPLETE (90% ± 18% COMPLETE)
+## IMPLEMENTATION STATUS: INCOMPLETE (94% ± 18% COMPLETE)
 
 ## OVERALL ASSESSMENT
-Overall support quality is strong, but the project is not yet ready for a functionality/completeness verdict because two foundational areas (documentation and dependencies) are below their stricter required thresholds. Code quality, testing, execution, security, and version control are all excellent: the TypeScript codebase is clean and well-structured, tests are comprehensive with strong traceability, CI/CD is robust with semantic-release and strict gates, and security practices for production dependencies are well-defined and enforced. Documentation is broadly accurate and extensive, but a few links and version references still need tightening so user-facing materials cleanly and portably reflect the current behavior and guarantees. Dependency management is generally solid, with no problematic runtime dependencies and clear dry-aged-deps and audit processes, but there is residual uncertainty around the maturity of some devDependencies due to environment limitations and accepted dev-only risks. Because documentation and dependencies have not yet met their elevated thresholds, the functionality assessment remains intentionally skipped; the immediate focus must be on lifting these two support areas over their required bars before reassessing feature completeness.
+Overall health of the eslint-plugin-traceability project is very strong across code quality, testing, execution, documentation, dependencies, security, and version control, all of which meet or exceed their required thresholds. The only area below its target is FUNCTIONALITY (85%), where a subset of multi-story support requirements (notably around story 010.2-DEV-MULTI-STORY-SUPPORT) remain only partially implemented despite the surrounding rules, maintenance CLI, and validation features being robust. Closing this remaining functional gap—by aligning implementation and tests fully to the outstanding story requirements—will move the overall status from INCOMPLETE to COMPLETE under the specified thresholds.
 
 ## NEXT PRIORITY
-Focus exclusively on raising documentation and dependency management to their required thresholds by resolving remaining README/user-doc link and version issues and fully validating devDependency maturity and accepted risks before performing any new functionality work.
+Fully implement and verify the remaining multi-story support requirements (especially story 010.2) so that behavior, tests, and documentation are all aligned and FUNCTIONALITY reaches at least 90%.
 
 
 
 ## CODE_QUALITY ASSESSMENT (96% ± 18% COMPLETE)
-- Code quality is excellent: strict linting, formatting, type-checking, duplication checks, and CI/CD integration are all in place and passing. Complexity and size limits are set tighter than defaults, with no evidence of suppressed quality rules in production code. Remaining issues are minor and mostly confined to duplicated test code and potential further tightening of thresholds over time.
+- Code quality is excellent: linting, formatting, type-checking, and duplication checks are all configured, automated, and passing. Complexity, file size, and other maintainability rules are stricter than defaults. There are no broad suppressions of quality tools, production code is clean, and CI/CD enforces a robust quality gate. Remaining improvements are minor refinements rather than structural issues.
 - Linting configuration and results:
-- - ESLint v9 flat config (eslint.config.js) using @eslint/js recommended rules plus project-specific rules.
-- - Lint command: `npm run lint` → runs `eslint --config eslint.config.js "src/**/*.{js,ts}" "tests/**/*.{js,ts}" --max-warnings=0` and completes with no output (no errors, no warnings).
-- - ESLint ignores build and external artifacts: lib/**, node_modules/**, coverage/**, .voder/**, docs/**, *.md, etc, focusing on source and tests.
-- - No broad ESLint suppressions in the codebase: `grep -R "eslint-disable"` only finds references in scripts/report-eslint-suppressions.js (a helper to *discourage* suppressions), not in source or tests.
+- - ESLint is configured via a flat config (eslint.config.js) using @eslint/js and @typescript-eslint/parser and explicitly loading the local plugin (rules + maintenance API).
+- - Lint command: `npm run lint` → `eslint --config eslint.config.js "src/**/*.{js,ts}" "tests/**/*.{js,ts}" --max-warnings=0` (no warnings allowed).
+- - Lint run in this assessment completed successfully, confirming all existing code passes the configured rules.
+- - Tests get a tailored ESLint override: complexity, max-lines, magic-numbers, and max-params are disabled for test files only, which is an intentional and reasonable relaxation limited to tests.
 - 
 - Formatting configuration and results:
-- - Prettier is configured via .prettierrc and used through scripts:
--   - `npm run format` → `prettier --write .`
--   - `npm run format:check` → `prettier --check "src/**/*.ts" "tests/**/*.ts"`.
-- - `npm run format:check` passes: “All matched files use Prettier code style!”
-- - Pre-commit hook (.husky/pre-commit) runs `npx lint-staged`, which in turn formats and lints staged src/tests files with Prettier and ESLint, ensuring style is enforced on every commit.
+- - Prettier is configured via .prettierrc and used through `npm run format` / `npm run format:check`.
+- - `npm run format:check` checks `src/**/*.ts` and `tests/**/*.ts` and passed cleanly in this run.
+- - .prettierignore is present, and formatting is enforced on staged files via lint-staged in the pre-commit hook.
 - 
-- Type checking configuration and results:
-- - TypeScript config (tsconfig.json):
--   - `strict: true`, `esModuleInterop: true`, `forceConsistentCasingInFileNames: true`, `skipLibCheck: true`.
--   - `include: ["src", "tests"]` – both production and tests are type-checked.
--   - Declarations emitted on build (`declaration: true`, `outDir: lib`).
-- - Type-check command: `npm run type-check` → `tsc --noEmit -p tsconfig.json` passes with no errors.
-- - No evidence (from sampling and grep attempts) of `@ts-nocheck` or broad TypeScript suppression in src; any such usage would be isolated rather than systematic.
+- Type-checking configuration and results:
+- - TypeScript config (tsconfig.json) includes both `src` and `tests`, uses `strict: true`, `esModuleInterop`, and appropriate Node/Jest/ESLint types.
+- - Type-check command: `npm run type-check` → `tsc --noEmit -p tsconfig.json`; this completed successfully, so all TypeScript code type-checks under strict mode.
+- - No `@ts-nocheck`, `@ts-ignore`, or `@ts-expect-error` usages were found in `src`, `tests`, or `scripts` (grep returned no matches), indicating type issues are actually fixed rather than suppressed.
 - 
-- Code complexity, size, and maintainability rules:
-- - ESLint config enforces strong maintainability constraints on production code:
--   - `complexity: ["error", { max: 18 }]` for both TS and JS (stricter than ESLint default 20).
--   - `max-lines-per-function: ["error", { max: 55, skipBlankLines: true, skipComments: true }]`.
--   - `max-lines: ["error", { max: 300, skipBlankLines: true, skipComments: true }]`.
--   - `no-magic-numbers: ["error", { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true }]`.
--   - `max-params: ["error", { max: 4 }]`.
-- - These rules apply to `**/*.ts` and `**/*.js` (production and shared helpers); tests have a separate override:
--   - For `**/*.test.{js,ts,tsx}` and `**/__tests__/**/*.{js,ts,tsx}`: complexity, max-lines, max-lines-per-function, no-magic-numbers, and max-params are explicitly turned off, which is reasonable to keep tests readable without over-policing.
-- - Because `npm run lint` passes with these rules enabled, all production functions and files are:
--   - Below complexity 18.
--   - Below 55 non-blank, non-comment lines per function.
--   - Below 300 non-blank, non-comment lines per file.
-- - Example of maintainable, well-structured code (src/index.ts):
--   - Dynamic rule loading via RULE_NAMES with clear error handling and fallback rule modules.
--   - A small `createTraceabilityFlatConfig` function providing recommended/strict configs.
--   - Maintenance utilities exported cleanly via a dedicated `maintenance` object.
+- Complexity, size limits, and maintainability rules:
+- - ESLint enforces cyclomatic complexity with `complexity: ["error", { max: 18 }]` for both JS and TS in src, which is stricter than the ESLint default (20) and therefore better than the target.
+- - Function length is constrained with `max-lines-per-function: ["error", { max: 55, skipBlankLines: true, skipComments: true }]` for src code; file length is constrained with `max-lines: ["error", { max: 300, ... }]`.
+- - No overrides disable these rules for production code; only tests have them turned off, as expected.
+- - Representative file sizes are modest (e.g., src/index.ts: 151 lines; src/maintenance/cli.ts: 112 lines; src/rules/helpers/require-story-core.ts: 159 lines; src/rules/helpers/valid-story-reference-helpers.ts: 153 lines), all comfortably under the 300-line threshold.
+- - Since ESLint passes with these thresholds, there are no functions or files currently violating the configured complexity or size limits.
 - 
-- Code duplication (DRY) analysis:
-- - Duplication is measured with jscpd via `npm run duplication` → `jscpd src tests --reporters console --threshold 3 --ignore tests/utils/**`.
-- - Command output:
--   - Overall (TypeScript): 66 files, 10,252 lines, 60,792 tokens, 14 clones.
--   - Duplicated lines: 119 (1.16%).
--   - Duplicated tokens: 1,351 (2.22%).
--   - Threshold is 3%, so the project is well below its own (already strict) limit.
-- - Reported clones are almost entirely in test files (as shown in the jscpd listing):
--   - tests/rules/valid-story-reference.test.ts (internal repeated patterns).
--   - tests/rules/require-story-io*.test.ts, require-story-helpers.test.ts, require-story-core*.test.ts.
--   - tests/maintenance/cli.test.ts (multiple repeated scenarios).
--   - tests/utils/require-story-core-test-helpers.ts.
-- - No clones in src/ are reported in the summary; production code duplication is very low.
-- - Given the low overall duplication percentage, and concentration in test code, there is no significant DRY violation that would materially hurt maintainability.
+- Duplication analysis (DRY):
+- - jscpd is wired via `npm run duplication` with a strict project-wide threshold of 3% and `--ignore tests/utils/**`.
+- - The run during this assessment shows 14 clones in TypeScript files with only 1.16% of lines and 2.22% of tokens duplicated overall (70 files, 10,273 lines).
+- - Clones are confined mainly to tests (e.g., tests/rules/*.test.ts and tests/maintenance/cli.test.ts) and a helper in tests/utils; there is no evidence of heavy duplication in production src files.
+- - Under the scoring rules, there are no files with 20%+ duplication, so no DRY penalties apply.
+- 
+- Production code purity and test separation:
+- - Grep for `jest`, `mocha`, and `vitest` in `src` returned no occurrences, confirming there are no test-framework imports or mocks in production code.
+- - All Jest tests live under `tests`, and Jest is configured separately (jest.config.js). Production src code is focused on the ESLint plugin and maintenance CLI without test-only logic.
+- 
+- Code clarity, naming, and design:
+- - Functions and modules have focused responsibilities and descriptive names, e.g., `handleDetect`, `handleVerify`, `handleReport`, `handleUpdate` (maintenance CLI) and utilities like `buildStoryCandidates`, `getStoryExistence`, `performSecurityValidations`.
+- - JSDoc is used extensively with story/requirement annotations and meaningful descriptions, focusing on intent and behavior rather than implementation details (e.g., clarifying error-handling and caching behavior in storyReferenceUtils).
+- - Parameters are constrained by `max-params: ["error", { max: 4 }]` in src, and ESLint passes, implying no long parameter lists.
+- - `no-magic-numbers` is enforced with sensible exceptions (0, 1, array indexes); since lint passes, magic numbers are either avoided or justified.
+- - No evidence of god objects: modules are small, functions are short due to strict length rules, and responsibilities are partitioned across helpers and utilities.
+- - Nesting depth is not explicitly restricted by a dedicated rule, but the combination of complexity, max-lines-per-function, and clear structure keeps nesting shallow in inspected files.
+- 
+- Error handling patterns:
+- - The plugin loader in src/index.ts wraps dynamic rule loading in try/catch, logs a clear error message including rule name and error message, and supplies a fallback rule that reports an ESLint error instead of crashing.
+- - The maintenance CLI (src/maintenance/cli.ts) uses structured error handling: specific exit codes (EXIT_OK, EXIT_USAGE, EXIT_STALE) and a catch-all handler that emits a concise diagnostic and returns a non-zero code instead of throwing.
+- - Filesystem operations in storyReferenceUtils are consistently wrapped in try/catch, with errors represented as `fs-error` statuses and cached; callers never see thrown IO errors, and there is a clear separation between “missing” vs “fs-error” states.
+- - No silent failures were observed: errors are logged or converted into structured status objects.
+- 
+- Quality tool configuration and workflow integration:
+- - package.json scripts provide canonical entry points: `build`, `type-check`, `lint`, `format`, `format:check`, `duplication`, `check:traceability`, `audit:ci`, `safety:deps`, `security:secrets`, etc.
+- - Quality tools run directly on source code; there are no `prelint`, `preformat`, or similar scripts that force a build before linting/formatting. `build` and `type-check` are separate commands.
+- - CI pipeline (.github/workflows/ci-cd.yml) defines a single unified workflow `quality-and-deploy` that, on push to main, runs `npm run ci-verify:full` (build, type-check, lint, duplication, tests with coverage, formatting check, audits, etc.) and then executes semantic-release in the same job for automated publishing, followed by a smoke test of the published package.
+- - This satisfies the continuous deployment guideline: every commit to main that passes quality checks is eligible for automatic release without manual gating, depending only on token configuration.
+- - A secondary `dependency-health` job runs only on schedule, focused on audits; it does not fragment the main quality/publish pipeline.
+- 
+- Local git hooks and developer workflow:
+- - Husky is configured with:
+  - pre-commit: `npx lint-staged`, which runs Prettier and ESLint with `--fix` on staged src/tests files, giving fast feedback and auto-fixing formatting.
+  - pre-push: runs `npm run ci-verify:full`, explicitly documented as the local parity for full CI gating; this enforces build, type-check, lint, duplication, tests, audits, and format:check before pushing.
+- - This hook setup aligns with the guidance: fast checks on pre-commit and comprehensive checks on pre-push.
 - 
 - Disabled quality checks and suppressions:
-- - ESLint rule disabling is localized and intentional:
--   - Tests block: complexity, max-lines-per-function, max-lines, no-magic-numbers, and max-params are disabled only for test files.
-- - No `/* eslint-disable */` or file-wide disables found in src/ or tests/; only mentions of "eslint-disable" are in scripts/report-eslint-suppressions.js, which actually encourages avoiding broad suppressions and suggests remediation.
-- - TypeScript suppressions (`@ts-nocheck`, `@ts-ignore`, `@ts-expect-error`) did not appear in sampled files; grep-based scans did not surface them, though command-exit semantics mean we cannot categorically prove absence. There is no evidence of systematic use.
-- - No files in src/ or tests/ are excluded wholesale from linting, type-checking, or duplication analysis beyond generated/build artifacts and documentation.
+- - A targeted search found no `/* eslint-disable */`, `eslint-disable-next-line`, or related suppressions in src or tests. The only occurrences of `eslint-disable` are in a reporting script (scripts/report-eslint-suppressions.js), which is itself a quality tool.
+- - No `@ts-nocheck` or `@ts-ignore` usages were found in src/tests/scripts.
+- - ESLint rule relaxations are limited to test-file overrides declared centrally in the config and not via inline suppressions in production code.
 - 
-- Production code purity (no test logic in src):
-- - Source tree structure:
--   - src/index.ts – plugin entry point and exported configuration.
--   - src/maintenance/* – CLI and supporting utilities for traceability maintenance.
--   - src/rules/* – rule helpers and implementation logic.
--   - src/utils/* – shared utilities (e.g., storyReferenceUtils).
-- - Test tree structure:
--   - tests/maintenance/*, tests/rules/*, tests/integration/*, tests/utils/*, etc.
-- - A grep for `jest` in src/ returned no matches (command exits non-zero when no matches, but there is no output, which is consistent with absence).
-- - No imports of jest, test, or mock frameworks appear in sampled src/ files; production code only uses Node.js, ESLint, and internal helpers.
+- AI slop and temporary files:
+- - No generic AI-style comments, placeholder implementations, or meaningless abstractions were detected in the inspected files; code is specific to the domain (traceability annotations, ESLint plugin behavior, path validation).
+- - No temporary patch/diff/backup files (`*.patch`, `*.diff`, `*.rej`, `*.bak`, `*.tmp`, `*~`) were found in the repository.
+- - Scripts in the scripts/ directory (debug, audits, suppression reporting, traceability check) are purposeful tooling and not stray, unused generators.
 - 
-- Naming, structure, and clarity:
-- - File and function names are descriptive and consistent with the domain:
--   - `runMaintenanceCli`, `handleDetect`, `handleVerify`, `handleReport`, `handleUpdate` in src/maintenance/cli.ts and src/maintenance/commands.ts.
--   - `analyzeCandidateBoundaries`, `handleProjectBoundaryForExistence`, `performSecurityValidations` in src/rules/helpers/valid-story-reference-helpers.ts.
-- - Functions tend to be focused on a single responsibility (e.g., `handleUpdate` only orchestrates flags, dry-run behavior, and calls into `updateAnnotationReferences`).
-- - Error handling is explicit and contextual:
--   - CLI: clear exit codes EXIT_OK, EXIT_STALE, EXIT_USAGE and well-structured error messages.
--   - Rule loading: on failure to require a rule module, a warning rule is installed that reports a clear error to the user with the rule name and error message.
-- - Traceability annotations (@story, @req, @implements) are present throughout the code, giving a clear indication of why each piece of logic exists.
-- 
-- Build/tooling configuration and hooks:
-- - package.json scripts cover all core quality tools:
--   - `build`: `tsc -p tsconfig.json`.
--   - `lint`, `format`, `format:check`, `type-check` (see above).
--   - `duplication`: jscpd with strict threshold 3%.
--   - `check:traceability`: `node scripts/traceability-check.js`.
--   - `lint-plugin-check` and `lint-plugin-guard` ensure the plugin can be loaded in both src and lib forms.
--   - `ci-verify` and `ci-verify:full` orchestrate full quality gates (type-check, lint, format:check, duplication, traceability checks, tests with coverage, security audits, and build).
-- - Husky hooks:
--   - pre-commit: runs `npx lint-staged` which applies Prettier and ESLint to staged src/tests files (fast, sub-10s checks).
--   - pre-push: runs `npm run ci-verify:full`, a comprehensive but acceptable gate matching the CI pipeline (build, test, lint, type-check, format, duplication, security, traceability).
-- - No anti-patterns like `prelint`: "npm run build" or preformat hooks that require builds; lint/format operate directly on source files.
-- 
-- CI/CD and quality gate integration:
-- - .github/workflows/ci-cd.yml defines a single unified “CI/CD Pipeline” workflow:
--   - Triggers: on push to main (and PRs), plus a scheduled job for dependency health.
--   - Uses `npm ci` then runs `npm run ci-verify:full` (the same command used in pre-push).
--   - After quality gates pass, runs semantic-release within the same job to publish new versions automatically (no manual tags or approvals).
--   - Optionally runs smoke tests against the published package via scripts/smoke-test.sh.
-- - Recent GitHub Actions runs show the last 10 CI/CD Pipeline runs on main succeeding, indicating that the configured quality gates are stable and passing.
-- 
-- AI slop and temporary/placeholder files:
-- - scripts/validate-scripts-nonempty.js explicitly checks the scripts/ directory for empty or placeholder files and fails CI if found, which is the opposite of AI slop.
-- - Directory scans found no *.tmp, *.patch, *.diff, *.rej, *.bak, or backup (~) files under version control.
-- - No empty or near-empty implementation files were observed; every sampled file contains purposeful logic with traceability annotations.
-- - Comments are specific to the implementation (e.g., describing project-boundary checks, dry-run semantics) rather than generic boilerplate.
-- - jscpd includes markdown and JSON in its scan with 0% duplication there, indicating documentation isn’t copy-paste boilerplate either.
+- Traceability and documentation alignment (indirect quality signal):
+- - Nearly every function and significant logic block in inspected files includes `@story` and `@req` annotations pointing to story markdown files under docs/stories and to specific requirements. This is consistently applied and helps keep code intent clear.
+- - This also indicates strong internal discipline around documentation and requirement linkage, which tends to correlate strongly with maintainable code.
 
 **Next Steps:**
-- Refactor duplicated test patterns where practical: focus on high-clone test files like tests/maintenance/cli.test.ts and tests/rules/valid-story-reference.test.ts by extracting shared helpers or parameterized test utilities, even though current duplication levels (≈1.16% of TS lines) are acceptable.
-- Experiment with slightly tighter complexity and function-length thresholds in ESLint for production code (e.g., temporarily run `eslint src --rule 'complexity: ["error", { max: 15 }]'` locally) to identify the few most complex functions and see if they can be simplified without hurting clarity.
-- Perform a targeted audit for TypeScript suppressions: run a plain-text search for `@ts-ignore`, `@ts-expect-error`, and `@ts-nocheck` and, for any occurrences you find, add justification comments and create small refactors or type definitions to remove them where feasible.
-- Review the largest production files (e.g., under src/rules/helpers and src/maintenance) for opportunities to further split responsibilities into smaller modules or functions, using the existing 300-line/55-line limits as a guide rather than a hard ceiling.
-- Document the jscpd results in a short internal note (or extend docs/code-quality-refactor-opportunities-*.md) so contributors know which files currently have known duplication and what refactoring patterns (e.g., shared fixtures, test data builders) should be used to keep duplication low over time.
+- Keep the current ESLint limits (complexity 18, max-lines-per-function 55, max-lines 300) and ensure new code continues to pass without introducing suppressions. If you reach a point where no violations are close to the thresholds, you can consider tightening further (e.g., complexity 15, function length 50) but only if it doesn’t create friction.
+- Monitor jscpd output over time: current duplication is very low and mostly in tests. If any production file starts appearing frequently in the clone list, refactor those specific blocks into shared helpers before duplication grows beyond ~10–15% per file.
+- Avoid introducing global disables like `@ts-nocheck` or `/* eslint-disable */`. If you ever need to suppress a rule, prefer narrow, inline disables with a comment referencing the relevant ADR or issue, and follow up with refactoring to remove them.
+- Periodically review the pre-push `ci-verify:full` runtime; if it ever becomes too slow for developers, consider a staged approach (fast subset on pre-push, full suite on demand and in CI) while keeping CI itself comprehensive.
+- In eslint.config.js, you already handle the absence of a built plugin gracefully for local dev and strictly in CI. Maintain this pattern if you add new tooling: quality checks should never silently skip in CI; they should either run fully or fail loudly.
+- When adding new modules or rules, ensure they inherit the same quality standards: include traceability annotations, keep functions under the existing size/complexity limits, and avoid adding new duplication instead of reusing helpers.
 
-## TESTING ASSESSMENT (97% ± 19% COMPLETE)
-- Testing is mature and rigorous: Jest is properly configured, all 34 suites (256 tests) pass, coverage thresholds are enforced and met, tests are traceable to stories/requirements, and they use temp directories and cleanup correctly. Only minor refinements around global state cleanup and a few test patterns are worth considering.
-- Established framework & configuration: The project uses Jest with ts-jest as the test framework. `package.json` defines `"test": "jest --ci --bail"` and `jest.config.js` configures `preset: "ts-jest"`, `testMatch: ["<rootDir>/tests/**/*.test.ts"]`, `testEnvironment: "node"`, and V8 coverage collection. This is a modern, mainstream setup.
-- Non-interactive test execution: `npm test` runs `jest --ci --bail` (no watch mode, no prompts), fully complying with the non-interactive requirement. Additional CI scripts (`ci-verify`, `ci-verify:full`, `ci-verify:fast`) also use Jest with `--ci` or explicit patterns, never watch mode.
-- All tests currently pass: A full run of `npm test` completed successfully. `.voder-test-output.json` reports `numFailedTestSuites: 0`, `numFailedTests: 0`, `numPassedTestSuites: 34`, `numPassedTests: 256`, and `success: true`, confirming 100% pass rate across the entire suite.
-- Coverage thresholds enforced & satisfied: `jest.config.js` sets global coverage thresholds of `branches: 80`, `functions: 90`, `lines: 90`, `statements: 90`. A `jest --coverage` run (via `npm run test -- --coverage ...`) completes successfully; if thresholds were not met Jest would exit non‑zero. This indicates high coverage over the implemented plugin, rules, CLI, and maintenance tools.
-- Tests focus on implemented behavior: The suite is strongly behavior-driven around the ESLint plugin’s rules and maintenance CLI. Examples:
-  - `tests/rules/require-req-annotation.test.ts` verifies when `traceability/require-req-annotation` reports or ignores missing `@req` annotations, including TypeScript support, config options like `scope` and `exportPriority`, and various function shapes.
-  - `tests/rules/require-branch-annotation.test.ts` exercises `require-branch-annotation` across all supported branch node types (if, loops, switch, try/catch/finally), both valid and invalid cases, plus configuration validation for `branchTypes`.
-  - `tests/integration/cli-integration.test.ts` runs the real ESLint CLI via `spawnSync` to ensure the plugin wires correctly into ESLint and enforces rules via `--rule traceability/...` flags.
-- Error handling & edge cases are thoroughly tested: Many tests explicitly exercise error paths and edge cases, not just happy paths:
-  - `tests/rules/valid-story-reference.test.ts` has a dedicated "Error Handling" section that tests `storyExists` behavior when `fs.existsSync`/`fs.statSync` throw `EACCES` or `EIO`, verifying it returns `false` and that the rule reports a `fileAccessError` diagnostic instead of crashing.
-  - `tests/rules/valid-annotation-format.test.ts` covers missing/invalid story paths, invalid requirement IDs, malformed multi-line annotations, invalid regex configuration, and fallback behavior when user-provided regexes are broken.
-  - `tests/maintenance/cli.test.ts` includes scenarios such as invalid `--format` values, permission errors in `detect`, missing `--from/--to` for `update`, and `--dry-run` safety.
-  - `tests/maintenance/detect-isolated.test.ts` simulates permission issues (via `chmodSync` and via `fs.statSync`/`fs.existsSync` spying) and verifies that malicious `@story` paths (traversal, absolute paths, invalid extensions) are never checked outside the workspace.
-- Test isolation & filesystem cleanliness: Tests that write files or directories consistently use OS temp locations and clean up:
-  - Maintenance tests (`tests/maintenance/*.test.ts`) use `fs.mkdtempSync(path.join(os.tmpdir(), ...))` to create unique temp dirs, operate within them, and remove them in `finally` blocks via `fs.rmSync(tmpDir, { recursive: true, force: true })`.
-  - `tests/maintenance/cli.test.ts` uses a `withTempDir()` helper that creates dirs under `os.tmpdir()` and ensures `process.chdir` is restored in `afterAll`. Each test cleans its temp directory in a `finally` block.
-  - `tests/maintenance/detect.test.ts`, `detect-isolated.test.ts`, `update-isolated.test.ts`, `report.test.ts`, and `batch.test.ts` all follow the pattern: create temp dirs/files under `os.tmpdir()`, then delete them in `finally` blocks.
-  - Grepping for `writeFileSync` shows all writes go to temp directories or paths derived from `os.tmpdir()` or per-test temp roots; there are no writes into the repo’s source (`src`, `docs`, `tests`) or config files, satisfying the rule that tests must not modify repository contents.
-- Test independence and cleanup of global state: Tests generally manage global state carefully:
-  - `tests/maintenance/cli.test.ts` saves `originalCwd` in `beforeAll` and restores it in `afterAll`, despite multiple tests calling `process.chdir(dir)` to temp dirs.
-  - `tests/rules/valid-story-reference.test.ts` uses `afterEach` to remove any temp directories it creates and calls `__resetStoryExistenceCacheForTests()` plus `jest.restoreAllMocks()` to clear cached file existence state and mocks between tests.
-  - File-system permissions temporarily changed in `tests/maintenance/detect-isolated.test.ts` are restored in `finally` blocks with guarded `chmodSync` and `rmSync` calls, ensuring follow-on tests are not affected.
-  These patterns support order-independent, repeatable test execution.
-- Non-interference with repository files: While many tests refer to project story files (e.g. `docs/stories/001.0-DEV-PLUGIN-SETUP.story.md`) to validate rules like `valid-story-reference` and `valid-req-reference`, they only read or simulate those paths (often via mocks) and do not write to them. All real writes go to temp-located paths, and any absolute paths used for negative tests (e.g. `/etc/passwd.story.md`, `/outside-project/...`) are only referenced in memory or via mocked FS calls.
-- Strong GIVEN–WHEN–THEN structure & descriptive naming: Most Jest tests follow an Arrange–Act–Assert style and have descriptive names that read as behavior specs:
-  - `"[REQ-MAINT-DETECT] detect supports --json output"` sets up a file with `@story stale.story.md`, runs `runMaintenanceCli([... "detect", "--json"])`, and asserts exit code and parsed JSON payload.
-  - `"[REQ-BRANCH-DETECTION] missing annotations on if-statement"` in `require-branch-annotation.test.ts` clearly describes what is missing and what behavior is expected (auto-fix output and multiple diagnostics).
-  - Integration tests name the story and requirement in both `describe` and `it` titles, e.g. `"[REQ-PLUGIN-STRUCTURE] $name"`, making failures immediately traceable to requirements.
-- Test names & files match functionality: Test files are named by what they test (e.g. `require-story-annotation.test.ts`, `valid-annotation-format.test.ts`, `cli-integration.test.ts`, `maintenance/cli.test.ts`), and their contents match those names (they test the corresponding rule or CLI). Files mentioning "branch" (e.g. `require-branch-annotation.test.ts`, `branch-annotation-helpers.test.ts`) are legitimately testing branch-related functionality, not coverage terminology, so they do not trigger the naming penalty.
-- Traceability is first-class in tests: Test files consistently include JSDoc headers with `@story` and `@req` tags that map back to specific stories and requirements:
-  - `tests/integration/cli-integration.test.ts` header: `@story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md` and `@req REQ-PLUGIN-STRUCTURE`.
-  - `tests/rules/auto-fix-behavior-008.test.ts` references `docs/stories/008.0-DEV-AUTO-FIX.story.md` with distinct REQ tags for missing-annotation auto-fix and format auto-fix.
-  - `tests/rules/valid-annotation-format.test.ts` spans several stories (`005.0-DEV-ANNOTATION-VALIDATION`, `007.0-DEV-ERROR-REPORTING`, `010.1-DEV-CONFIGURABLE-PATTERNS`, `010.2-DEV-MULTI-STORY-SUPPORT`) and enumerates their requirement IDs.
-  - Jest output in `.voder-test-output.json` includes ancestor titles with story names and REQ IDs, demonstrating that tests are organized around requirements and stories, enabling robust requirements-to-tests traceability.
-- Appropriate use of test helpers & builders: Reusable test helpers improve clarity and reduce duplication:
-  - `tests/rules/valid-annotation-format.test.ts` uses `makeInvalid` and `makeInvalidStory` to build consistent invalid cases with shared expectations for error `messageId` and `details` fields.
-  - `tests/utils/annotation-checker.test.ts` contains shared logic for validating annotation behavior on TypeScript nodes; `require-req-annotation.test.ts` calls `runAnnotationCheckerTests` with rule and case definitions, avoiding duplicated TS-specific boilerplate.
-  - `tests/utils/ts-language-options.ts` (inferred from `withTsLanguageOptions` import) centralizes parser configuration for TypeScript cases.
-  These helpers add a small amount of logic to tests, but they make individual test cases simpler and more declarative.
-- Behavior-over-implementation focus: The majority of tests interact with the public ESLint rule interfaces (via `RuleTester`) and the exposed CLI (`traceability-maint` functions and the ESLint CLI), not with private internals. Even when helper functions are imported (e.g. `runRuleOnCode` in `valid-story-reference.test.ts`), they’re treated as behavioral units: tests assert observable diagnostics (messageIds, data payloads), not internal implementation details like specific function calls or intermediate state.
-- Deterministic & reasonably fast tests: Tests use in-memory operations, synchronous FS, and small temp directories. External processes are limited to ESLint via `spawnSync`, which is deterministic and operates entirely on provided input strings. FS-related edge-case tests either mock FS (`jest.spyOn(fs, ...)`) or carefully clean up any real filesystem changes (temp dirs, permission changes) in finally blocks. There is no use of timers, random inputs, or network calls, and individual assertion durations in `.voder-test-output.json` are on the order of 0–20 ms.
-- Minor areas for improvement:
-  - `tests/cli-error-handling.test.ts` sets `process.env.NODE_PATH` in `beforeAll` but never restores it; while this hasn’t caused failures, restoring it in `afterAll` would further reduce cross-test coupling.
-  - A few tests (e.g., in `valid-story-reference.test.ts`) contain modest in-test logic (e.g., filtering diagnostic arrays) and manual diagnostic collection via a custom `runRuleOnCode` harness. This is acceptable but should be kept as simple as possible to maintain test readability.
-  - Permission-based tests in `tests/maintenance/detect-isolated.test.ts` use real `chmodSync` on temp directories. They are guarded and cleaned up, but relying more on mocked `fs.statSync`/`fs.existsSync`—as other tests already do—would make them less OS/filesystem-dependent and reduce theoretical flakiness risk.
+## TESTING ASSESSMENT (94% ± 19% COMPLETE)
+- The project has a mature, well‑structured Jest test suite with very high coverage, strong story-based traceability, good isolation via OS temp directories, and non-interactive, repeatable execution. Tests comprehensively cover implemented functionality (rules, plugin export, CLI, maintenance tools), including many error and edge cases. Only minor opportunities remain around simplifying some complex tests and reviewing a few OS-specific behaviors.
+- Established testing framework & configuration: Tests use Jest with ts-jest as configured in jest.config.js (coverageProvider=v8, preset='ts-jest', testEnvironment='node', testMatch=tests/**/*.test.ts). This is a standard, well-supported stack and matches the TypeScript codebase.
+- Non-interactive test command: The default npm test script runs `jest --ci --bail`, and we executed `npm test -- --coverage --runInBand --reporters=default --colors=false`, which completed normally with no indication of watch or interactive modes.
+- All tests currently pass: Running `npm test` both with and without coverage completed successfully; Jest printed a coverage summary with no failing tests or unmet coverage thresholds, indicating a 100% pass rate for the suite.
+- Coverage level and thresholds: Jest coverage summary shows overall coverage of ~96.83% statements, 82.78% branches, and 100% functions, with detailed coverage by file. Jest’s configured global coverageThreshold (branches 80, functions/lines/statements 90) is met or exceeded, so coverage is not only high but also enforced.
+- Test isolation & temp directory usage: Tests that touch the filesystem use OS temp directories and explicit cleanup. For example, tests/maintenance/cli.test.ts uses `fs.mkdtempSync(path.join(os.tmpdir(), 'maint-cli-'))` per scenario, changes cwd into that temp directory, and always calls `fs.rmSync(dir, { recursive: true, force: true })` in try/finally blocks. Similar patterns exist in detect.test.ts, detect-isolated.test.ts, batch.test.ts, and report.test.ts. No tests write into repository directories; all writes are under mkdtemp-created paths.
+- No repository file modifications by tests: File writes (e.g., writeFileSync) are confined to temp directories under os.tmpdir (validated by reading tests/maintenance/*.test.ts and searching for writeFileSync usage). Integration tests that spawn ESLint (`tests/integration/cli-integration.test.ts`) operate purely via stdin and the existing config file; they don’t create or modify repo files.
+- Error handling and edge cases well tested: Many tests explicitly cover error paths and edge conditions. Examples include: invalid and path-traversal story/req paths in valid-req-reference.test.ts; ESLint CLI exit codes and behavior in cli-integration.test.ts; invalid CLI flags and missing arguments for the maintenance CLI in maintenance/cli.test.ts; permission-denied scenarios in detect-isolated.test.ts using chmod to force read errors.
+- Behavior-focused rule tests: Rule tests (e.g., require-story-annotation.test.ts, valid-req-reference.test.ts, valid-story-reference.test.ts, auto-fix-behavior-008.test.ts) are written using ESLint’s RuleTester and assert observable behavior: which code is considered valid/invalid, what error messages/data are produced, and what auto-fix output looks like. They don’t over-couple to implementation details of the rules beyond public metadata and messages.
+- CLI and integration coverage: In addition to unit-style rule tests, there is an integration test suite for the ESLint CLI (tests/integration/cli-integration.test.ts) that spawns the real eslint CLI with this plugin and configuration, verifies exit codes for multiple code snippets and rules, and thus validates the plugin’s real-world behavior in ESLint.
+- Maintenance tool coverage: The maintenance subsystem (batch updates, detect/report/update CLI, verification) has targeted tests in tests/maintenance/*.test.ts. These cover: detection of stale annotations, maintenance report generation, various CLI subcommands and flags (detect, verify, report, update, --json, --dry-run, invalid --format, missing required flags), and ensure safe behavior via exit codes and non-destructive dry runs.
+- Test quality & structure (AAA/Given-When-Then): Most tests follow a clear Arrange-Act-Assert structure even when not explicitly commented. For example, in maintenance/cli.test.ts each test: (1) sets up a fresh temp directory and files, (2) calls `runMaintenanceCli(...)`, and (3) asserts on exit codes, console output, and file contents. RuleTester cases describe behavior in the `name` field and then define the corresponding code and expectations.
+- Descriptive test names & file naming: Test file names align with the functionality under test (e.g., require-story-annotation.test.ts, valid-req-reference.test.ts, cli-integration.test.ts, maintenance/cli.test.ts, plugin-setup.test.ts). Individual test names describe behaviors like "should return empty array when no stale annotations" or "[REQ-MAINT-SAFE] dry-run does not modify files and exits 0", which clearly communicate intent.
+- Traceability annotations in tests (critical requirement met): A grep for `@story` across tests/*.test.ts found no missing annotations; each test file inspected begins with a JSDoc header including `@story` pointing to a specific story file under docs/stories and one or more `@req` lines. Describe blocks reference the associated story (e.g., `"Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)"`), and test names frequently embed requirement IDs (e.g., `[REQ-MAINT-DETECT]`, `[REQ-PLUGIN-STRUCTURE]`). This gives strong requirements-to-tests traceability.
+- Test data builders / helpers: There are reusable helpers and test utilities, such as `ts-language-options` and `runAnnotationCheckerTests` in tests/utils/annotation-checker.test.ts, which act as test data/execution builders for RuleTester configurations. They encapsulate shared TypeScript language options and testing patterns, improving consistency and reducing duplication across tests.
+- Use of test doubles: Tests use Jest spies appropriately (e.g., `jest.spyOn(console, 'log')` / `console.error` in maintenance/cli.test.ts and detect-isolated.test.ts) to assert on side effects without polluting test output, and they reliably restore spies in finally blocks. Filesystem behavior is sometimes observed via spies on `fs.existsSync` (detect-isolated.test.ts), again with proper restoration.
+- Determinism and performance indications: The suite relies on local filesystem operations, child_process.spawnSync for ESLint integration, and pure in-process rule logic. There are no uses of timers, randomness, or network calls, which reduces flakiness risk. The successful `npm test --coverage` run completed within the tool time limit, indicating the suite runs in a reasonable time for CI and local use.
+- Test framework adherence and config correctness: Jest is correctly configured to collect coverage from src/**/* and ignore lib/ (compiled output) and node_modules. Module extensions, transform for TypeScript, and coverage reporters (text, lcov, clover, json-summary) are all standard. The project scripts also integrate tests into broader quality commands (`ci-verify`, `ci-verify:full`, etc.), showing tests are part of the normal pipeline.
+- Minor complexity/logic in tests: A small number of tests include moderate logic (e.g., building synthetic AST nodes and manually invoking ESLint listeners in error-reporting.test.ts, iterating over captured paths in detect-isolated.test.ts). These are justified by the need to probe deeper error semantics and security constraints, but they slightly reduce superficial test simplicity compared to pure AAA assertions.
+- Potential OS-specific behavior to monitor: The permission-denial scenario in detect-isolated.test.ts uses chmod to simulate a "permission denied" error. On POSIX systems this is appropriate and deterministic; on non-POSIX platforms (e.g., Windows) permission semantics may differ. There is no evidence of current flakiness, but this is one of the few tests whose behavior is environment-sensitive.
 
 **Next Steps:**
-- Add explicit restoration of environment mutations in `tests/cli-error-handling.test.ts` (e.g., save and restore `process.env.NODE_PATH` in `beforeAll`/`afterAll`) to strengthen test isolation against future changes.
-- Consider refactoring the permission-error test in `tests/maintenance/detect-isolated.test.ts` to rely solely on mocked `fs.statSync`/`fs.existsSync` rather than real `chmodSync`, aligning it with your other FS error-handling tests and reducing OS-specific behavior.
-- Keep using and extending existing test helpers (e.g., `makeInvalid`, `runAnnotationCheckerTests`, `withTsLanguageOptions`) when adding new tests, to maintain the current high level of readability and consistency without introducing complex logic into individual test bodies.
-- When introducing new features or rules, continue the current practice of: (a) creating a story in `docs/stories/`, (b) adding `@story`/`@req` annotations to new tests, and (c) wiring tests through `RuleTester` or CLI helpers instead of testing internals directly—this will preserve the strong traceability and behavior-focused testing already in place.
+- Keep the existing Jest + ts-jest infrastructure and coverage thresholds as the standard; ensure any new code added to src comes with corresponding tests that maintain or improve the current coverage and story-based traceability level.
+- For the few more complex tests (e.g., synthetic AST construction in error-reporting.test.ts, `existsSync` spying and path filtering in detect-isolated.test.ts), consider adding small helper functions or inline comments explicitly marking Arrange/Act/Assert sections to make intent even clearer for future maintainers.
+- Review the permission-denied test in tests/maintenance/detect-isolated.test.ts on non-POSIX environments (like Windows) to confirm it behaves reliably there; if necessary, add platform guards or adjust the simulation to avoid environment-specific flakiness while still verifying error handling.
+- Continue using OS temp directories with mkdtemp and explicit rmSync cleanups for any future tests that touch the filesystem; follow the existing pattern of per-test or per-suite temp directories and try/finally cleanup to preserve isolation and prevent repository modifications.
+- When adding new features or rules, mirror the current test patterns: create a dedicated *.test.ts file with a `@story` header pointing to the new story, use descriptive describe/it names with requirement IDs, and exercise both the happy path and key error/edge cases (including CLI behavior if applicable).
 
-## EXECUTION ASSESSMENT (94% ± 18% COMPLETE)
-- The project’s execution quality is very strong. The TypeScript build, type-checking, linting, Jest test suite, duplication/traceability checks, secret scanning, and a full npm-pack smoke test all run successfully locally. The core library and the maintenance CLI behave correctly at runtime, with robust input validation, error handling, and sensible performance safeguards. Only minor potential improvements remain around extended performance testing and additional end-to-end coverage for the installed CLI binary.
-- Build process and artifacts:
-- - `npm run build` succeeds using `tsc -p tsconfig.json`, confirming the TypeScript source compiles cleanly to the `lib` output used by `main: "lib/src/index.js"` and the CLI entry `lib/src/maintenance/cli.js`.
-- - `npm run type-check` (`tsc --noEmit`) passes, so the codebase is type-sound without relying on emit side effects.
-- - The existence of a working packed tarball and successful `require('eslint-plugin-traceability')` in the smoke test confirms that build artifacts in `lib` are valid and aligned with `package.json` exports.
-- 
-- Local test and verification commands:
-- - `npm test` runs `jest --ci --bail` and completes without errors, exercising the plugin, maintenance tools, and configuration under the configured `jest.config.js` (ts-jest, Node test env, coverage thresholds).
-- - `npm run lint` runs ESLint with the project’s `eslint.config.js` over `src` and `tests` and passes with `--max-warnings=0`, confirming no runtime-lint issues are present in the executable code.
-- - `npm run ci-verify:fast` passes and chains multiple runtime-relevant checks:
-  • `npm run type-check`
-  • `npm run check:traceability` (node `scripts/traceability-check.js`) – completes and writes `scripts/traceability-report.md`.
-  • `npm run duplication` (jscpd over `src` and `tests`) – reports 14 clones but does not exceed the configured `--threshold 3`, so it exits successfully.
-  • Jest subset: `jest --ci --bail --passWithNoTests --testPathPatterns 'tests/(rules|maintenance)'` – integration tests for the rules and maintenance CLI all pass.
-- - `npm run security:secrets` (`secretlint "**/*" --no-color`) completes with no reported findings, indicating no detected secrets in the codebase.
-- 
-- End-to-end runtime verification (library and CLI):
-- - `npm run smoke-test` executes `scripts/smoke-test.sh`, which performs a realistic end-to-end flow:
-  • `npm pack` the current project (creating `eslint-plugin-traceability-1.0.5.tgz`).
-  • Creates a temporary directory and initializes a fresh `npm` project.
-  • Installs the packed tarball via `npm install ... --no-audit --no-fund`.
-  • Runs a Node script that `require`s `eslint-plugin-traceability` and asserts that `pkg.rules` exists; on success it logs `Package loaded successfully`.
-  • Writes an `eslint.config.js` that loads the plugin via CommonJS and runs `npx eslint --print-config eslint.config.js` as a smoke check.
-  • The script logs `✅ Smoke test passed! Plugin loads successfully.` before cleaning up.
-  This verifies that the built package can be installed in a clean environment, required by Node, and integrated into ESLint without runtime errors.
-- - Direct execution of the built CLI: `node lib/src/maintenance/cli.js --help` produces the expected usage text for `traceability-maint`, listing commands (`detect`, `verify`, `report`, `update`) and options (`--root`, `--json`, `--format`, `--from`, `--to`, `--dry-run`, `-h/--help`). This confirms the shebang entry and CLI runtime wiring are correct in the compiled output.
-- 
-- Application runtime behavior – maintenance CLI:
-- - The source entry `src/maintenance/cli.ts` defines `runMaintenanceCli(rawArgv: string[]): number` and dispatches to `handleDetect`, `handleVerify`, `handleReport`, and `handleUpdate` after normalizing flags via `normalizeCliArgs`. It explicitly handles:
-  • No subcommand or `-h/--help`: prints help and returns `EXIT_OK` (0).
-  • Known commands: calls handlers and returns their exit codes.
-  • Unknown commands: logs `Unknown command: ...`, prints help, and returns `EXIT_USAGE`.
-  • Unexpected errors: catches `unknown`, extracts a message, logs `traceability-maint failed: ...`, and returns `EXIT_USAGE` instead of crashing.
-- - Jest tests in `tests/maintenance/cli.test.ts` exercise the CLI logic as a pure function by invoking `runMaintenanceCli([...])` under a variety of runtime scenarios using real filesystem interactions in temporary directories:
-  • `[REQ-MAINT-DETECT]` – `detect` with an empty workspace exits 0 and logs `No stale @story annotations found.`.
-  • `[REQ-MAINT-VERIFY]` – `verify` on valid annotations (with a matching `.story.md` file) exits 0 and logs once.
-  • `[REQ-MAINT-REPORT]` – `report` on a missing story file exits 0 but prints a human-readable report including `Traceability Maintenance Report` and the missing story path.
-  • `[REQ-MAINT-UPDATE]` – `update --from old.path.md --to new.path.md` rewrites the file content and exits 0, verifying the file actually changed on disk.
-  • `[REQ-MAINT-SAFE]` – `update` without `--from/--to` exits 2, prints an error to stderr and help text to stdout, validating input-argument enforcement.
-  • `[REQ-MAINT-SAFE]` – `--dry-run` prevents any modifications while still exiting 0, ensuring safe preview behavior.
-  • `[REQ-MAINT-SAFE]` – `report --format yaml` exits 2 and logs a message indicating `Invalid format: yaml` and the accepted values, confirming input validation and explicit error messaging.
-  • `[REQ-MAINT-DETECT]` – `detect --json` returns exit code 1, prints a single JSON payload, and that payload includes an array of stale stories including `stale.story.md`.
-  • `[REQ-MAINT-DETECT]` – `detect --root <nonexistent>` exits 0 and logs `No stale @story annotations found.`, confirming non-existent roots are treated as empty but not as errors.
-  • `[REQ-MAINT-SAFE]` – no subcommand: prints help, exits 0, and does not print to stderr.
-  • `[REQ-MAINT-SAFE]` – simulated `EACCES` error from `fs.statSync` during `detect`: CLI catches the error, exits 2, prints an error prefixed with `traceability-maint failed:`, and does not crash.
-  These tests show robust runtime behavior, correct exit codes, safe defaults, and good input validation.
-- 
-- Application runtime behavior – core library and utilities:
-- - `src/index.ts` dynamically loads rule modules listed in `RULE_NAMES` via `require("./rules/${name}")` and supports ES module default exports by using `mod.default ?? mod`. In case of a load failure, it catches the error, logs a clear message (`[eslint-plugin-traceability] Failed to load rule "...": ...`), and installs a fallback rule module that reports an ESLint problem at `Program` level. This ensures plugin consumers see explicit errors rather than silent failures or crashes during rule loading.
-- - The plugin exports `rules`, `configs` (recommended and strict via `createTraceabilityFlatConfig()`), and a `maintenance` namespace aggregating the maintenance APIs (`detectStaleAnnotations`, `updateAnnotationReferences`, `batchUpdateAnnotations`, `verifyAnnotations`, `generateMaintenanceReport`). This structure is validated by the smoke test and by integration tests under `tests/plugin-*.test.ts` (not fully quoted here but exercised via `npm test`).
-- - `src/utils/storyReferenceUtils.ts` implements runtime path validation and caching:
-  • `enforceProjectBoundary(candidate, cwd)` uses `path.resolve` and prefix checks to ensure story files stay within the project boundary, preventing path traversal outside the workspace.
-  • A `Map`-backed `fileExistStatusCache` caches `StoryPathCheckResult` per absolute path, avoiding repeated filesystem checks in hot paths (good performance and avoids N+1-style fs calls).
-  • `checkSingleCandidate` wraps `fs.existsSync` and `fs.statSync` in `try/catch`. It classifies results as `"exists"`, `"missing"`, or `"fs-error"`, ensuring that filesystem errors (EACCES, ENOENT) never propagate as thrown exceptions.
-  • `getStoryExistence` aggregates across candidates, returning the first `exists` result, or a representative `fs-error`, or `missing` if none exist; this provides richer diagnostics and consistent behavior.
-  • `storyExists` offers a boolean facade on top of `getStoryExistence`, keeping callers simple but leveraging the robust underlying behavior.
-  This demonstrates solid runtime error handling and a deliberate caching strategy.
-- - `src/maintenance/detect.ts`’s `detectStaleAnnotations(codebasePath)` implements runtime scanning of workspaces:
-  • Resolves `workspaceRoot` from `process.cwd()` and `codebasePath` and returns an empty array if the root is missing or not a directory, instead of throwing.
-  • Uses `getAllFiles(workspaceRoot)` to gather files and iterates them, reading each file with `fs.readFileSync` guarded by `try/catch` to ignore unreadable files rather than failing the whole run.
-  • Scans file contents with a regex for `@story` annotations; each match is passed to `handleStoryMatch`.
-  • `handleStoryMatch` first calls `isUnsafeStoryPath(storyPath)` (from `storyReferenceUtils`) to skip traversal/absolute/invalid-extension paths *before* any filesystem or boundary checks, preventing dangerous paths from being touched.
-  • It computes `storyProjectCandidate` and `storyCodebaseCandidate` and uses `enforceProjectBoundary` twice to produce in-project candidates, gracefully handling throws by defaulting to `isWithinProject: false`.
-  • Only in-project candidates are checked for existence via `fs.existsSync`; if none exist, the story path is added to the `stale` set.
-  The flow is defensive, dropping unsafe inputs early, respecting project boundaries, and avoiding crashes on IO errors.
-- - `src/maintenance/utils.ts` provides `getAllFiles(dir)` using a recursive `traverseDirectory` that:
-  • Early-exits with an empty list if `dir` does not exist or is not a directory (input validation avoids runtime throw).
-  • Uses `fs.readdirSync` and `fs.statSync` to traverse; directories recurse, non-file entries are skipped, and only regular files are collected.
-  There is some looped `fs.statSync` usage, but it is inherent to directory traversal and not an N+1 DB-type anti-pattern; it is appropriate for a maintenance tool and is used synchronously in command-line contexts.
-- 
-- Input validation and error visibility (no silent failures):
-- - CLI argument handling in `runMaintenanceCli` and the associated command/flag modules ensures:
-  • Missing mandatory options (e.g., `update` without `--from`/`--to`) result in non-zero exit codes and explicit error messages, as asserts in tests confirm.
-  • Invalid enum-like values (`--format yaml`) are rejected with clear diagnostic text including the expected values (‘text’ or ‘json’), and exit code 2.
-  • Help requests and no-subcommand scenarios are treated as successful (exit 0) and emit usage information without polluting stderr.
-  • Unexpected errors are caught centrally and surfaced with a prefixed error message; tests explicitly confirm that permission errors from `fs.statSync` result in a message starting with `traceability-maint failed:` instead of a stack trace crash.
-- - Plugin rule loading logs a structured error and installs a fallback reporting rule whenever a rule module fails to load, ensuring consumers see a visible ESLint diagnostic rather than silent misconfiguration.
-- - Filesystem helpers never throw at runtime for expected error conditions (missing files, permission issues); they return status objects, and callers decide how to surface them, preventing silent failures while keeping the process resilient.
-- 
-- Performance and resource management:
-- - There are no database calls or external network requests, so traditional N+1 query issues are not applicable. The main potentially expensive operations are filesystem traversals and existence checks, which are handled carefully:
-  • `fileExistStatusCache` in `storyReferenceUtils` ensures repeated checks for the same file path do not cause redundant disk IO, notably improving performance in large codebases scanned repeatedly.
-  • Directory traversal in `getAllFiles` is linear in the number of filesystem entries, with a single `fs.statSync` per entry; this is expected and acceptable for CLI maintenance tools.
-  • `detectStaleAnnotations` uses a `Set<string>` for deduplication of stale stories, avoiding redundant processing.
-  • Functions operate synchronously but are invoked in CLI/test contexts where blocking behavior is acceptable and predictable.
-- - Memory management is straightforward:
-  • No long-lived event listeners or global subscriptions are created.
-  • CLI processes exit immediately after performing their work, naturally releasing resources.
-  • Tests using temporary directories ensure they clean up with `fs.rmSync(..., { recursive: true, force: true })` in `finally` blocks, even when assertions fail.
-- 
-- End-to-end workflows and realistic usage coverage:
-- - For the **ESLint plugin** use case, the smoke test shows a realistic workflow: pack → install into a fresh npm project → `require` the plugin → integrate with ESLint flat config → run `eslint --print-config`. This strongly indicates that typical end-user usage (install plugin, configure ESLint, run lint) will work correctly.
-- - For the **maintenance CLI**, Jest tests simulate realistic directory structures and file content with actual on-disk files (via `fs.writeFileSync` in temp dirs) and then call `runMaintenanceCli` with combinations of subcommands and flags. This approximates E2E-like behavior for CLI flows (albeit without invoking the installed bin directly) and verifies exit codes, stdio messages, and file mutations.
-- - The combination of unit-like tests for utilities, integration-like tests for maintenance workflows, and the smoke test for the installed package provides multi-layered confidence in runtime behavior under normal conditions.
+## EXECUTION ASSESSMENT (95% ± 19% COMPLETE)
+- The project’s execution quality is excellent. The build, tests, linting, type-checking, duplication checks, traceability checks, and a realistic smoke test all run successfully locally. Core runtime behaviors for both the ESLint plugin and the maintenance CLI are well covered by automated tests, with clear error handling and input validation. Remaining gaps are minor and relate mainly to performance characterization and security/audit remediation rather than functional execution.
+- Build process validated: `npm install` completes successfully and `npm run build` (`tsc -p tsconfig.json`) runs without errors, producing the TypeScript build. Type-checking also passes independently via `npm run type-check` (`tsc --noEmit`).
+- `npm test` runs Jest in CI mode (`jest --ci --bail`) and completes without failures, indicating that the implemented rules, plugin setup, and CLI logic behave correctly under their test coverage.
+- Static quality gates run cleanly: `npm run lint` (ESLint with `--max-warnings=0`) passes; `npm run format:check` (Prettier) reports all matched files correctly formatted; `npm run check:traceability` completes and generates a traceability report; `npm run duplication` (jscpd) reports 14 clones but stays below the configured duplication threshold and exits successfully.
+- Aggregated fast CI-like verification works locally: `npm run ci-verify:fast` chains type-checking, traceability checking, duplication analysis, and a focused Jest subset (`tests/(rules|maintenance)`) and completes without error, demonstrating that a realistic local CI pipeline passes.
+- Library/runtime smoke test is robust: `npm run smoke-test` executes `scripts/smoke-test.sh`, which packs the library (via `npm pack`), creates an isolated temporary project, runs `npm init -y`, installs the packed tarball, `require`s `eslint-plugin-traceability`, verifies `rules` exist, writes an `eslint.config.js` using the plugin, and runs `npx eslint --print-config`. The smoke test passes, confirming the built package can be installed and configured in a clean environment.
+- Maintenance CLI runtime behavior is thoroughly exercised: `tests/maintenance/cli.test.ts` uses `runMaintenanceCli` directly to validate behavior for `detect`, `verify`, `report`, and `update` subcommands, including normal operation, dry runs, missing required flags, invalid `--format`, JSON output, non-existent `--root`, and simulated filesystem permission errors. Exit codes (0, 1, 2) and console output/error messages are asserted explicitly, confirming input validation and non-silent failure behavior.
+- Plugin error handling is validated at runtime: `tests/plugin-setup-error.test.ts` mocks a rule module to throw during require, then requires `../src/index`. The test asserts that `console.error` is called with the expected diagnostic message and that a placeholder rule is installed whose `create` function reports an error via `context.report`. This confirms that rule load failures surface clearly at runtime instead of failing silently.
+- Core plugin runtime wiring is straightforward and resilient: `src/index.ts` dynamically loads rules from `./rules/<name>` inside a try/catch for each rule, logs failures with informative messages, and installs a fallback problem rule. It also exposes `configs` (recommended/strict) created from a single `createTraceabilityFlatConfig` and a `maintenance` object with helper functions. There is no evidence of long-running processes or unmanaged resources here.
+- CLI entrypoint behavior is correct and defensive: `src/maintenance/cli.ts` parses arguments via `normalizeCliArgs`, routes to subcommand handlers (`handleDetect`, `handleVerify`, etc.), prints usage help when requested or when usage errors occur, and wraps the handler dispatch in a try/catch that logs a prefixed error and returns `EXIT_USAGE` on unexpected exceptions. Tests confirm this path, showing that errors are not swallowed silently.
+- No web server or long-lived API is involved; the project is a library plus short-lived CLI. Resource management patterns are appropriate for this domain: CLI tests ensure temporary directories are cleaned up, and the smoke test script uses `mktemp -d` with a `trap` to remove the workdir and produced tarball, indicating attention to process and filesystem cleanup.
+- N+1 queries and heavy resource usage are not applicable (no database or networked persistence in the core runtime). The plugin and CLI operate on local files via standard Node APIs and synchronous file system calls; while not explicitly optimized for very large codebases, there is no evidence of pathological patterns (like unbounded growth of in-memory collections or open handles) in the exercised paths.
+- Input validation and error messaging are well covered by tests: CLI tests assert specific error messages for invalid `--format` values and missing `--from`/`--to` flags, and plugin error tests assert clear console diagnostics when rules fail to load. This indicates runtime input validation is happening and that users receive actionable feedback.
+- There are 3 vulnerabilities reported by `npm install` (1 low, 2 high) via npm’s audit mechanism, but they do not currently block install, build, or runtime execution. They are a security/maintenance concern rather than an immediate execution failure, and should be addressed but do not undermine the local runtime behavior validation.
+- The Node.js engine requirement is clearly declared as `>=18.18.0` in `package.json`; all successful local commands (build, tests, smoke-test) demonstrate that the project behaves correctly within a modern Node environment and that required runtime dependencies (notably ESLint 9 as a peer) are satisfied in the development setup.
 
 **Next Steps:**
-- Add or extend tests that execute the installed `traceability-maint` binary end-to-end (e.g., via `npx traceability-maint ...` within the temporary project created in `scripts/smoke-test.sh`), to complement the current function-level `runMaintenanceCli` tests with a full CLI invocation path.
-- Consider adding a small performance/regression test (or benchmark script) for running `detectStaleAnnotations` and related utilities over a large synthetic workspace to validate behavior and performance characteristics on very large repositories.
-- Optionally expand `npm run ci-verify` (or add a dedicated script) that runs `npm test` with coverage and a subset of maintenance CLI flows against the built `lib` output, ensuring that both source and compiled artifacts share equivalent runtime behavior.
-- Document in developer-facing docs any environment assumptions discovered during local execution (e.g., Node.js >= 18.18.0 as specified in `engines`) and recommend commands like `npm run build`, `npm test`, `npm run ci-verify:fast`, and `npm run smoke-test` as the canonical local execution/validation steps.
+- Run the full `npm run ci-verify:full` pipeline locally at least once to confirm that extended checks (full test coverage, actionlint, security/audit steps, lint-plugin checks) also pass in your current environment, not just the fast subset and core scripts exercised here.
+- Resolve the 3 vulnerabilities reported by `npm install` by running `npm audit` and applying targeted dependency updates or overrides, verifying after each change that `npm run build`, `npm test`, `npm run lint`, and `npm run smoke-test` still pass.
+- Add or maintain occasional performance-focused tests or benchmarks (e.g., running the plugin and maintenance CLI on a large fixture codebase) to characterize execution time and memory usage, ensuring the plugin remains responsive on big projects even though no current performance regression is evident.
+- Extend smoke testing to the published npm version (using `./scripts/smoke-test.sh <version>` after a release) as part of release validation, to guarantee that the exact version users get from the registry installs and runs correctly in a fresh environment.
+- Consider adding an automated test (or extending existing ones) that invokes the `traceability-maint` CLI via its installed `bin` entrypoint (instead of only via `runMaintenanceCli`) inside a spawned process, to validate end-to-end behavior including argument parsing and exit codes at the OS level.
 
-## DOCUMENTATION ASSESSMENT (84% ± 18% COMPLETE)
-- Documentation is extensive, accurate, and strongly aligned with implemented functionality, including good user guides, API docs, and rule references. The main gaps are a few broken (or non-portable) links in the published README and some now-stale hard-coded version numbers in user docs.
-- README attribution requirement is satisfied: README.md includes an explicit 'Attribution' section with 'Created autonomously by voder.ai' linking to https://voder.ai.
-- User-facing documentation is well organized: root README.md (install, usage, CLI, security posture, test commands), CHANGELOG.md, user-docs/ (API reference, ESLint 9 setup guide, examples, migration guide), and docs/rules/*.md for each rule. The separation between end‑user docs (README, user-docs, CHANGELOG) and dev docs (docs/) is clear and consistent.
-- Feature descriptions in README and user-docs match actual implementation: the listed ESLint rules all have corresponding rule modules in src/rules and detailed docs in docs/rules; the maintenance API functions described in user-docs/api-reference.md (detectStaleAnnotations, updateAnnotationReferences, batchUpdateAnnotations, verifyAnnotations, generateMaintenanceReport) are exported from src/maintenance/index.ts with behavior consistent with their descriptions (e.g., detectStaleAnnotations returns a de‑duplicated list of stale @story paths, safely bounded to the workspace).
-- Maintenance CLI documentation in README and user-docs/api-reference.md (commands detect/verify/report/update, exit codes 0/1/2, options like --root/--json/--format/--from/--to/--dry-run) aligns with the CLI entry point implementation in src/maintenance/cli.ts and its supporting modules and tests in tests/maintenance/*.test.ts.
-- Rule-level documentation is precise and in sync with code: for example, docs/rules/require-story-annotation.md describes scope/exportPriority options and default behavior; src/rules/require-story-annotation.ts implements those options, sets fixable:"code", and provides the auto-fix behavior described. docs/rules/valid-annotation-format.md documents @implements handling, configurable patterns, and detailed error messages; src/rules/valid-annotation-format.* helpers and tests (not all inspected but present) correspond to these behaviors.
-- ESLint 9 setup and usage documentation is comprehensive: user-docs/eslint-9-setup-guide.md covers flat config fundamentals, TypeScript integration, test file globals, monorepo patterns, and includes a 'Working Example' that matches the project’s own tooling (eslint@^9.39.1, @typescript-eslint/parser/utils). README.md correctly links to this guide and to specific sections via anchors, and those anchors exist.
-- API documentation quality is high: user-docs/api-reference.md documents each public rule, the configuration presets (recommended/strict), and the maintenance API and CLI, including parameters, return types, behavior notes, and example usage. This aligns with TypeScript signatures in the src/maintenance/* files and with how the plugin is exposed via src/index.ts.
-- Usage examples are practical and runnable: README.md and user-docs/examples.md show concrete eslint.config.js configurations with traceability.configs.recommended/strict, CLI invocations with npx eslint, and npm script snippets. Maintenance CLI examples (npx traceability-maint detect/verify/report/update) match the implemented CLI and are suitable for copy‑paste use in real projects.
-- Versioning and changelog strategy is correctly documented for a semantic-release project: .releaserc.json and semantic-release devDependencies are present; git describe reports v1.7.1 while package.json remains at 1.0.5; CHANGELOG.md clearly states that current/future releases are documented on GitHub Releases and links there. The README does not rely on a specific package version number, which aligns with semantic-release best practice.
-- However, some user-facing docs hard‑code a stale version string: user-docs/api-reference.md, user-docs/eslint-9-setup-guide.md, user-docs/examples.md, and user-docs/migration-guide.md all state 'Version: 1.0.5' and 'Last updated: 2025-11-19', while the latest git tag is v1.7.1. These version labels are now outdated; while functionality descriptions still appear accurate, this reduces perceived currency and could confuse users about which plugin version the docs apply to.
-- All documentation links to other documentation use proper Markdown syntax, and the targeted files exist in the repository. For example, README.md links to docs/rules/*.md, docs/config-presets.md, docs/dependency-health.md, docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md, and user-docs/*.md—all of which are present and, per package.json 'files', will be published with the npm package.
-- High-penalty link issue: README.md makes several code/file references into Markdown links that point to files not included in the npm 'files' whitelist, which will produce broken links in the published package README: [`eslint.config.js`](eslint.config.js) is referenced in two places, [`coverage/`](coverage) is linked as a directory, and [`tests/integration/cli-integration.test.ts`](tests/integration/cli-integration.test.ts) is linked in the 'CLI Integration' section. eslint.config.js, coverage/, and tests/ are not listed in package.json.files, so these links will 404 on npmjs.com. Per the documented standard, these should be non-linked code references using backticks only.
-- Code vs documentation references are mostly handled correctly elsewhere: documentation files under docs/ and user-docs/ are linked (e.g. [Examples](user-docs/examples.md)), while path examples in rule docs and API reference that are part of annotations (e.g. '@story docs/stories/...') are rightly treated as code content, not documentation links.
-- License consistency is fully correct: package.json specifies "license": "MIT" using a valid SPDX identifier; the root LICENSE file contains the standard MIT license text and credits 'voder.ai'; there are no additional package.json files with conflicting or missing license fields.
-- Code traceability annotations are present and consistent in the implementation, matching the project’s own traceability rules: sampled named functions in src/index.ts and src/maintenance/*.ts, as well as rule modules like src/rules/require-story-annotation.ts, include JSDoc blocks with @story and @req (and in some places multi-story annotations) following the documented format. Branch-level comments (e.g., in maintenance/detect.ts) also include @story/@req tags. The presence of the check:traceability script in package.json and its inclusion in ci-verify scripts indicates this is enforced project-wide.
-- Public APIs are documented and typed: TypeScript source files include clear function signatures (e.g., detectStaleAnnotations(rootDir: string): string[], runMaintenanceCli(rawArgv: string[]): number), and user-docs/api-reference.md explains these parameters and return values in user-facing language. Tests such as tests/integration/cli-integration.test.ts serve as executable usage examples and are explicitly referenced from README.md, enhancing traceability between docs and behavior.
-- Decision documentation relevant to users (e.g., semantic-release use and GitHub Releases as the source of truth for changelog) is reflected in user-facing docs: CHANGELOG.md documents the shift to automated releases, and README’s 'Security and Dependency Health' section describes the dependency/audit policies a user can rely on when adopting the plugin.
-
-**Next Steps:**
-- Fix README links that point to non-published project files by converting them to plain code references (backticks) instead of Markdown links, or by adding those paths to package.json.files if you explicitly want them published. Specifically, change [`eslint.config.js`](eslint.config.js) (both occurrences), [`coverage/`](coverage), and [`tests/integration/cli-integration.test.ts`](tests/integration/cli-integration.test.ts) to non-linked code references, or ensure those files/directories are shipped with the npm package.
-- Update or remove hard-coded 'Version: 1.0.5' and 'Last updated: 2025-11-19' lines in user-docs/api-reference.md, user-docs/eslint-9-setup-guide.md, user-docs/examples.md, and user-docs/migration-guide.md so they cannot drift from the true semantic-release version. Either (a) restate them in more timeless terms (e.g., 'Applies to 1.x releases') or (b) document that the authoritative version information lives in GitHub Releases and omit explicit version numbers from these docs.
-- Add a brief 'Versioning and Releases' subsection to README.md that explicitly mentions semantic-release and points users to GitHub Releases as the authoritative changelog (this is already in CHANGELOG.md; echoing it in README would make the strategy more visible to new users).
-- Do a quick pass over README.md and user-docs/ to ensure every documentation *file* reference is a Markdown link and every pure code/filename reference (such as local config files or test files) uses backticks only, following the documented distinction between documentation links and code references.
-- Optionally, in user-docs/api-reference.md and rule docs, add a short 'Applies to' note (e.g., 'Behavior as of 1.x') rather than specific minor/patch numbers so that small internal changes made by semantic-release do not render the docs apparently outdated.
-
-## DEPENDENCIES ASSESSMENT (82% ± 17% COMPLETE)
-- Dependencies are generally well-managed: clean install, no deprecations reported, lockfile is committed, and there are no runtime dependencies beyond the eslint peer. However, the dry-aged-deps tool could not be executed in this environment, so we cannot definitively confirm that all devDependencies are on the latest safe mature versions.
-- Project uses npm with a single package.json at the repo root; package-lock.json exists and is tracked in git (verified via `git ls-files package-lock.json`).
-- Runtime dependency model is very lean: `npm ls --omit=dev` shows no installed production dependencies, only a peerDependency on `eslint@^9.0.0`, which is satisfied by devDependency `eslint@9.39.1`.
-- `npm install --ignore-scripts` completed successfully with no `npm WARN deprecated` messages, indicating no currently-installed packages are flagged as deprecated by npm.
-- `npm audit --omit=dev` reports 0 vulnerabilities for the production dependency tree; the remaining 3 vulnerabilities reported by `npm install` are in the dev dependency tree only.
-- `npm ls` shows a coherent dev dependency tree: eslint 9.x is aligned with @eslint/js 9.x and @typescript-eslint/* 8.x, TypeScript is 5.9.x, Jest 30.x is present along with ts-jest 29.x, and tooling such as prettier, husky, semantic-release, secretlint, jscpd, and lint-staged are installed without version conflicts.
-- Security-focused `overrides` are configured in package.json (e.g., forcing safe versions of `glob`, `http-cache-semantics`, `ip`, `semver`, `socks`, `tar`), demonstrating active management of vulnerable transitive dependencies.
-- The project defines a dedicated script `deps:maturity` that runs `dry-aged-deps`, aligning with the required safe-mature-version dependency policy.
-- Attempts to run `npx dry-aged-deps` directly and via `npm run deps:maturity` both failed in this assessment environment (stderr was not available), so we do not have the tool’s report of outdated packages; this prevents confirming that all dependencies are at the latest safe mature versions.
-- `npm ls dry-aged-deps` confirms `dry-aged-deps@2.3.1` is correctly installed as a devDependency, so the failure is likely environmental (e.g., network restriction) rather than a missing package.
-- `npm audit` (full, including dev) failed in this environment with no usable stderr; however, given the successful `npm audit --omit=dev` and the presence of security overrides, there is no evidence of unaddressed production security issues.
-- Package management quality is good: there is a single, canonical package.json, a committed lockfile, clear npm scripts for CI (`ci-verify`, `ci-verify:full`, `ci-verify:fast`), and additional scripts for dependency safety (`safety:deps`, `audit:ci`, `audit:dev-high`) that indicate dependencies are part of the regular quality gates.
-- No evidence of duplicate or circular dependencies was shown by `npm ls`; the tree appears straightforward and limited to a focused set of dev tools.
-- Because `dry-aged-deps` could not be executed, the top-tier (90%+) "no outdated packages" success criterion cannot be verified, even though there are no visible deprecations or compatibility issues.
-
-**Next Steps:**
-- Investigate and fix the failure to run `dry-aged-deps` (both `npx dry-aged-deps` and `npm run deps:maturity`) in your normal development/CI environment, ensuring the command produces its standard report there; the issue in this assessment environment is likely external (e.g., network or tooling constraints), but it must run successfully in your pipeline.
-- Once `dry-aged-deps` runs successfully in your environment, apply any safe mature upgrades it recommends, strictly limiting upgrades to the versions it outputs; do not manually choose versions, even for security fixes, outside of what `dry-aged-deps` marks as safe.
-- After applying any dependency updates, run the full quality gate (`npm run ci-verify:full` or your main CI script) to confirm compatibility: build, tests, lint, type-check, format check, duplication check, and security scripts (`audit:ci`, `safety:deps`) should all pass.
-- Re-run `npm install` (without `--ignore-scripts`) in your own environment and confirm that it still completes without any `npm WARN deprecated` messages after upgrades; if any deprecations appear, use `dry-aged-deps`-approved versions to move off the deprecated packages.
-- Monitor `npm audit --omit=dev` and your existing `audit:ci` / `audit:dev-high` scripts locally or in CI after fixing `dry-aged-deps`; if new issues appear but `dry-aged-deps` shows no safe updates, document them and keep the overrides and tooling aligned until safe mature fixes become available in later runs.
-
-## SECURITY ASSESSMENT (92% ± 18% COMPLETE)
-- Overall security posture is strong: production dependencies are free of moderate+ vulnerabilities, dependency updates are governed by dry-aged-deps, CI/CD enforces security checks and isolated release tooling, secrets handling is correct, and there is thorough documentation of a remaining dev-only glob/npm vulnerability with compensating controls. The only meaningful residual risk is the accepted high-severity dev-dependency issue in the semantic-release/npm toolchain, which is well-documented and constrained to CI.
-- Dependency health – production: `npm audit --omit=dev --audit-level=moderate` reports 0 vulnerabilities, and `npm run ci-verify:full` (used in CI and pre-push) includes `npm audit --omit=dev --audit-level=high` as an enforced gate. This matches the documented guarantee in README that the published plugin’s production dependency tree ships without known high‑severity issues.
-- Dependency health – dev & dry-aged-deps: `npm run deps:maturity -- --format=json --check` (dry-aged-deps) returns `totalOutdated: 0` and `safeUpdates: 0`, confirming there are currently no dry-aged-safe upgrade candidates for any dependencies (prod or dev). This is recorded in `docs/security-incidents/2025-12-03-dependency-health-review.md` and used as the basis for not upgrading the semantic-release/npm toolchain yet.
-- Documented dev-only high vulnerabilities (semantic-release/npm): High-severity dev-only vulnerabilities in `glob` and `npm` (GHSA-5j98-mcp5-4vw2) and low-severity `brace-expansion` ReDoS (GHSA-v6h2-p8h4-qcjw) are confined to the npm binary bundled inside `@semantic-release/npm@10.0.6`. They are fully documented as a known error in `docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`, with clear scope (CI-only, dev tooling), impact analysis, and compensating controls. `docs/security-incidents/dev-deps-high.json` shows these are the only high-severity dev-dependency issues, and they match the documented incident.
-- Residual-risk handling and policy alignment: The known-error incident and ADR `docs/decisions/adr-accept-dev-dep-risk-glob.md` implement the policy requirement to either remediate or apply strong controls when no safe patch is available. Controls include: (a) strict separation between dev tooling and published runtime dependencies, (b) CI-only execution of the vulnerable npm/glob code, (c) no use of the `glob` CLI `-c/--cmd` injection vector, (d) tight GitHub Actions job permissions, and (e) continuous audit artifact generation (`ci/npm-audit.json`, `ci/dry-aged-deps.json`) without blocking builds. Combined with dry-aged-deps reporting no safe mature upgrade candidates, this satisfies the project’s security policy for accepted residual risk.
-- Security scanning automation: The project uses multiple automated security tools wired into npm scripts and CI: `npm run audit:ci` (`scripts/ci-audit.js`) captures full `npm audit --json` output into `ci/npm-audit.json`; `npm run audit:dev-high` (`scripts/generate-dev-deps-audit.js`) focuses on high-severity dev-only vulnerabilities, always writing JSON and exiting 0; `npm run safety:deps` (`scripts/ci-safety-deps.js`) runs `npm run deps:maturity` and persists the JSON to `ci/dry-aged-deps.json`. These run in CI (`ci-cd.yml`) and in the `ci-verify:full` pre-push gate, ensuring both production and dev dependency issues are visible and, for production, enforced as hard failure conditions.
-- Secrets management – .env and repository scanning: A local `.env` file exists but is empty (0 bytes), is correctly listed in `.gitignore`, is not tracked (`git ls-files .env` returns nothing), and has no history (`git log --all --full-history -- .env` returns nothing). `.env.example` exists with only commented, non-secret example variables. Secret scanning via Secretlint is configured in `.secretlintrc.json` (ignoring `node_modules`, `lib`, `coverage`, `ci`, `.git`, etc.) and invoked through `npm run security:secrets`, which CI runs on Node 20.x. A repository-wide grep for common credential tokens in `src` and `tests` shows only benign occurrences (e.g., the word “Token” in rule descriptions), and there is no evidence of hardcoded API keys, passwords, or tokens in source.
-- CI/CD pipeline and release security: `.github/workflows/ci-cd.yml` defines a unified CI/CD pipeline that runs on pushes to `main`, pull requests, and a nightly schedule. For pushes to `main`, the `quality-and-deploy` job runs `npm ci`, then `npm run ci-verify:full` (build, typecheck, lint, duplication, tests with coverage, format check, audit:ci, audit:dev-high, safety:deps, and `npm audit --omit=dev --audit-level=high`). Only after all checks pass on Node 20.x does it run `npx semantic-release` with an `NPM_TOKEN` and GitHub token, and then smoke-test the published package using `scripts/smoke-test.sh`. This provides a single, automatic, tag-free continuous deployment workflow aligned with the stated policy—no manual gates or separate release workflows.
-- Git hooks and local/CI parity: Husky hooks in `.husky/pre-commit` and `.husky/pre-push` enforce local checks: pre-commit runs `npx lint-staged` (format + eslint fixes), and pre-push runs `npm run ci-verify:full`, mirroring CI checks. This significantly reduces the chance of unvetted or insecure changes (including dependency changes) being pushed and helps ensure that the CI security gates are already passing locally.
-- Configuration and code security: The project is a library (no HTTP server, database, or templating), so typical SQL injection and XSS vectors do not apply. The only uses of `child_process` (in `scripts/*`) are for internal tooling (ESLint debugging, audits, git file listing, dry-aged-deps) and are not exposed to untrusted input; arguments are either static or derived from trusted config, and `shell:true` is not used. There is no use of `eval` or similar dynamic code execution in the main `src` tree, and the ESLint rules themselves operate on ASTs provided by ESLint without executing user code.
+## DOCUMENTATION ASSESSMENT (97% ± 18% COMPLETE)
+- Documentation for eslint-plugin-traceability is exceptionally strong and largely exceeds the stated requirements: the README is accurate and current, user-docs are comprehensive and aligned with the implemented code, links and publishing configuration are correct, licenses are consistent, and code-level traceability annotations are pervasive and well-formed. Only very minor refinements are worth considering.
+- README attribution and scope are correct and user-focused:
+  - Root README.md clearly targets end users, covers installation (npm/yarn), minimum Node (>=18.18.0) and ESLint (v9+) versions, usage, available rules, maintenance CLI, testing commands, and security posture.
+  - It contains a dedicated "Attribution" section with the exact required text and link: `Created autonomously by [voder.ai](https://voder.ai).` This satisfies the mandatory attribution requirement.
+  - Examples use proper inline code formatting for filenames and commands (e.g., `eslint.config.js`, `npm test`, `npx eslint`) rather than markdown links, matching the code-vs-doc reference rule.
+- User-facing documentation set is rich and well-organized:
+  - `user-docs/` contains focused, user-facing guides: `api-reference.md`, `eslint-9-setup-guide.md`, `examples.md`, and `migration-guide.md`, each explicitly scoped to plugin users (not internal developers).
+  - `user-docs/api-reference.md` documents all public rules and the maintenance API and CLI in detail: parameter names, types, return values, behavior, exit codes, and limitations (e.g., maintenance tools currently handle story references only). These descriptions match the actual TypeScript implementations in `src/maintenance/*.ts` and the published API surface (e.g., re-exports from `src/maintenance/index.ts` and the `bin` entry for `traceability-maint`).
+  - `user-docs/eslint-9-setup-guide.md` gives concrete, runnable ESLint 9 flat-config examples that align with the plugin’s peer dependency (`eslint` ^9.0.0) and recommended usage shown in the README.
+  - `user-docs/examples.md` provides runnable configuration and CLI examples that match the real-world usage of the plugin.
+  - `user-docs/migration-guide.md` clearly distinguishes what is new in 1.x, how strict `.story.md` enforcement works, and how to adopt `@implements` incrementally, and explicitly labels unimplemented or planned aspects (e.g., future deep maintenance features) so users are not misled.
+- Link formatting and integrity are excellent, both in GitHub and in the published npm package:
+  - All documentation references in README.md use proper markdown links, for example:
+    - `[ESLint v9 Setup Guide](user-docs/eslint-9-setup-guide.md)`
+    - Rule docs links such as `[Documentation](docs/rules/require-story-annotation.md)`
+    - API and examples: `[API Reference](user-docs/api-reference.md)`, `[Examples](user-docs/examples.md)`
+    - Security/incident docs: `[docs/dependency-health.md](docs/dependency-health.md)`, `[docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md](docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md)`.
+  - Every linked local markdown file from README.md and user-docs exists in the repository (verified via directory listings and targeted reads for `docs/rules/*.md`, `docs/eslint-plugin-development-guide.md`, `docs/config-presets.md`, `user-docs/*.md`, and security incident docs).
+  - `package.json` `files` includes `"docs"`, `"user-docs"`, `"README.md"`, `"CHANGELOG.md"`, and `"LICENSE"`, so all documentation paths linked from README.md and user-docs are included in the published npm package. This satisfies the requirement that any linked documentation be published with the artifact.
+  - Code references are correctly formatted as inline code (not links) — for example `eslint.config.js`, `cli-integration.test.ts`, and `npx traceability-maint` — so there is no confusion between published documentation and internal files.
+- Requirements & feature docs match the implemented functionality:
+  - README’s “Available Rules” list exactly matches the implemented rule modules in `src/rules/`: `require-story-annotation`, `require-req-annotation`, `require-branch-annotation`, `valid-annotation-format`, `valid-story-reference`, `valid-req-reference`, and `prefer-implements-annotation`.
+  - Each rule’s user-facing behavior and options in `user-docs/api-reference.md` and `docs/rules/*.md` align with the TypeScript implementations:
+    - `traceability/require-story-annotation` is described as auto-fixable for missing `@story` annotations and scoped by `scope` and `exportPriority`; the implementation (`src/rules/require-story-annotation.ts`) has `fixable: "code"`, `DEFAULT_SCOPE`, `EXPORT_PRIORITY_VALUES`, and builds visitors that perform exactly that behavior.
+    - `traceability/valid-annotation-format` documentation explains its nested options (`story.pattern`, `req.pattern` plus shorthand properties) and constrained auto-fix behavior (only safe `@story` suffix normalization). The implementation in `src/rules/valid-annotation-format.ts` and helpers in `src/rules/helpers/valid-annotation-utils.ts` implement those exact semantics (e.g., `getFixedStoryPath`, controlled handling of `.story.md` / `.md` suffixes, and no aggressive path rewriting).
+    - `traceability/valid-story-reference` docs state that it validates existence of `.story.md` files under configurable `storyDirectories`, forbids traversal/unsafe paths, and provides tailored error messages; `src/rules/valid-story-reference.ts` uses `normalizeStoryPath`, `performSecurityValidations`, and `handleProjectBoundaryForExistence` to enforce exactly these checks with messages `fileMissing`, `invalidExtension`, `invalidPath`, and `fileAccessError` matching the documented semantics.
+  - The maintenance API and CLI documentation in `user-docs/api-reference.md` and the README’s “Maintenance CLI” section match the implemented exports:
+    - `src/maintenance/index.ts` exports `detectStaleAnnotations`, `updateAnnotationReferences`, `batchUpdateAnnotations`, `verifyAnnotations`, and `generateMaintenanceReport` as described.
+    - `src/maintenance/cli.ts` implements `traceability-maint` with subcommands `detect`, `verify`, `report`, `update`, options like `--root`, `--json`, `--format`, `--from`, `--to`, `--dry-run`, and the exit codes `0` and `1`/`2` exactly as specified in the docs.
+  - CLI integration docs (`docs/cli-integration.md` and README’s “CLI Integration” section) describe the integration tests in `tests/integration/cli-integration.test.ts`, which exist and are runnable via `npm test -- tests/integration/cli-integration.test.ts` as shown.
+- Versioning and changelog strategy are correctly documented for a semantic-release project:
+  - `.releaserc.json` and `devDependencies` include `semantic-release` and related plugins, confirming semantic-release is used for automated versioning.
+  - `CHANGELOG.md` clearly states that releases are managed by semantic-release and directs users to GitHub Releases as the authoritative changelog. The manually maintained entries are explicitly scoped to a "Historical Changelog (Prior to Automated Releases)", which is accurate and honest about their legacy nature.
+  - README’s "Versioning and Releases" section explicitly says: “This project uses semantic-release for automated versioning. The authoritative list of published versions and release notes is on GitHub Releases: <https://github.com/voder-ai/eslint-plugin-traceability/releases>.”
+  - Several user-docs (e.g., `user-docs/api-reference.md`, `eslint-9-setup-guide.md`, `examples.md`, `migration-guide.md`) deliberately speak in terms of “1.x” and then tell users to consult GitHub Releases for the current version, which avoids staleness and matches best practice for semantic-release projects.
+  - Although `package.json` has `"version": "1.0.5"`, neither README nor user-docs rely on that field as a source of truth, which is correct for semantic-release.
+- License declarations are consistent and standards-compliant:
+  - There is a single `package.json` with `"license": "MIT"`, which is a valid SPDX identifier.
+  - A root `LICENSE` file exists with the standard MIT license text and a copyright line (`Copyright (c) 2025 voder.ai`) consistent with the package.
+  - No other packages or sub-packages exist, so there are no conflicting license fields or multiple LICENSE files to reconcile. This fully satisfies the project-wide license consistency requirement.
+- Code-level documentation and traceability annotations are extensive and well-structured:
+  - Public and user-relevant APIs (plugin export in `src/index.ts`, maintenance API, and rule modules in `src/rules/*.ts`) have detailed JSDoc comments that clearly describe purpose, parameters, and behavior, and—crucially—include traceability annotations linking to specific stories in `docs/stories/*.story.md` and requirement IDs (e.g., `@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md`, `@req REQ-ANNOTATION-REQUIRED`).
+  - Branch-level logic frequently includes inline traceability—for example, in `src/rules/valid-annotation-format.ts` and `src/maintenance/detect.ts`, conditional branches and helpers are annotated with `@story`/`@req` comments describing exactly which requirement they implement.
+  - Functions that implement newer multi-story behavior use `@implements` where appropriate (and legacy `@story`/`@req` elsewhere), and the documentation in `user-docs/migration-guide.md` and `user-docs/api-reference.md` explains this clearly. The annotation formats in code (`@implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-...`) match the documented preferred patterns.
+  - Spot checks across `src/index.ts`, `src/maintenance/*.ts`, `src/rules/require-story-annotation.ts`, `src/rules/require-req-annotation.ts`, `src/rules/valid-annotation-format.ts`, and `src/rules/valid-story-reference.ts` show consistent, parseable annotation formats with no placeholder content like `@story ???` or `@implements ??? UNKNOWN`.
+  - Arrow functions are used without annotations primarily for local callbacks and `Array#forEach` function arguments, which is explicitly allowed; named top-level functions and significant logic blocks consistently contain traceability comments.
+- Minor or nuanced observations (non-blocking, but worth awareness):
+  - `CHANGELOG.md` references a historical `cli-integration.js` script in older (pre-semantic-release) entries. That script does not exist in the current tree, but those references are clearly scoped to historical versions and do not misrepresent the current implementation or recommended workflow (which uses Jest tests in `tests/integration/cli-integration.test.ts`).
+  - The `docs/eslint-plugin-development-guide.md` file (developer-focused) contains generic plugin templates that do not exactly mirror the current `src/index.ts` structure, but this file is clearly labeled for development and is not a user-facing usage guide; it does not create confusion for end users.
+  - The main README references some development-oriented docs (e.g., "ESLint Plugin Development Guide" in `docs/eslint-plugin-development-guide.md`) as additional resources for contributors. This is acceptable but means those docs effectively become discoverable to interested users; they are still clearly framed as development material.
 
 **Next Steps:**
-- Keep the semantic-release/npm dev-dependency risk constrained exactly as currently documented: ensure CI workflows do not introduce any new use of the `glob` CLI `-c/--cmd` options or pass untrusted input into the semantic-release/npm toolchain, and keep the release job limited to GitHub-hosted runners with minimal permissions as in `.github/workflows/ci-cd.yml`.
-- When you next touch dependencies, re-run `npm run deps:maturity -- --format=json --check` and, if `dry-aged-deps` starts reporting safe upgrade candidates for the semantic-release toolchain that remove the bundled npm/glob/brace-expansion issues, apply those upgrades immediately and then update `SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md` to mark the incident resolved.
-- Continue using `npm run ci-verify:full` (locally and in CI) without loosening `npm audit --omit=dev --audit-level=high` or removing `audit:dev-high` / `safety:deps` from the pipeline, so that any newly introduced production or dev dependency vulnerabilities are caught and either remediated or formally documented before publishing.
-- If you ever introduce disputed vulnerabilities (documented with `*.disputed.md` in `docs/security-incidents/`), add one of the supported audit-filtering tools (`better-npm-audit`, `audit-ci`, or `npm-audit-resolver`) and configure it to ignore only those disputed advisories with references back to the incident files, to keep audit noise low while maintaining strict enforcement for real issues.
+- Consider explicitly noting in the historical section of `CHANGELOG.md` that references to `cli-integration.js` describe a previous implementation and that the current recommended CLI integration approach uses the Jest integration test file `tests/integration/cli-integration.test.ts`. This would eliminate any possible ambiguity for users browsing legacy entries.
+- Review developer-facing docs in `docs/` that are linked from the README (such as `docs/eslint-plugin-development-guide.md`) and ensure they are clearly labeled as contributor/development guides at the top, to reinforce the distinction between user documentation and internal implementation guidance.
+- Optionally add a short, explicit index in `user-docs/api-reference.md` that cross-links back to each corresponding rule documentation file in `docs/rules/` (e.g., a "See also" line under each rule summary). While not strictly necessary, this would further improve discoverability for users browsing the API reference.
+- Perform an occasional automated scan (e.g., via a simple script) to confirm that all markdown links in README.md, `user-docs/`, and `CHANGELOG.md` resolve to existing files and that those paths remain present in the npm `files` list after future refactors. This will guard against accidental broken links as the project evolves.
+- Maintain the existing pattern of documenting any new public API surface (new rules, new maintenance commands, or new configuration options) simultaneously in `user-docs/api-reference.md`, the README where relevant, and the rule-specific docs in `docs/rules/`, preserving the current high level of alignment between implementation and user-facing documentation.
 
-## VERSION_CONTROL ASSESSMENT (98% ± 18% COMPLETE)
-- Version control and CI/CD for this repository are exceptionally well-implemented: clean trunk-based workflow on main, modern GitHub Actions with automated semantic-release publishing, comprehensive quality gates, and strong pre-commit/pre-push hook parity with CI. Only very minor potential refinements remain.
-- CI/CD workflow configuration is centralized in a single `.github/workflows/ci-cd.yml` file, with one primary `Quality and Deploy` job that runs all quality gates and release automation, plus a scheduled `dependency-health` job for periodic audits.
-- The workflow triggers on `push` to `main`, `pull_request` targeting `main`, and a nightly `schedule`, ensuring continuous integration on trunk and extra safety for PRs and dependency health checks.
-- All GitHub Actions used are current, non-deprecated versions: `actions/checkout@v4`, `actions/setup-node@v4`, and `actions/upload-artifact@v4`; recent workflow logs show no deprecation or syntax warnings.
-- Quality gates in CI are comprehensive and run via `npm run ci-verify:full`, which includes: build (`tsc`), type-check, ESLint (with `--max-warnings=0`), Prettier format checks, duplication detection (`jscpd`), traceability checks, full Jest test suite with coverage, multiple npm/dependency audits, and additional plugin-specific lint checks.
-- Security scanning is integrated into CI: `npm run security:secrets` (Secretlint) runs in the Node 20.x matrix, and dependency-/security-focused scripts (`audit:ci`, `safety:deps`, `audit:dev-high`) run inside `ci-verify:full`.
-- Continuous deployment is fully automated using `semantic-release` (configured via `.releaserc.json` and devDependencies): on `push` to `main` (Node 20.x matrix, after successful quality gates), the workflow runs semantic-release to analyze commits, bump version, create tags/releases, and publish to npm with no manual steps.
-- The release job includes robust error handling for `NPM_TOKEN` issues and OTP requirements, treating them as non-fatal for CI while clearly logging and skipping publish when credentials are invalid or 2FA is required.
-- Post-deployment verification is implemented: when a new release is published, the workflow runs `scripts/smoke-test.sh` against the newly released version to validate the published package.
-- Recent GitHub Actions history (last 10 runs) shows consistent green builds for `CI/CD Pipeline (main)`, indicating stable, healthy pipelines over time.
-- Repository working directory is effectively clean for assessment purposes: `git status` shows only modified files under `.voder/`, which are explicitly exempted from version-control cleanliness checks.
-- All local commits are pushed: `git status -sb` reports `## main...origin/main` with no `ahead`/`behind` markers, and the latest commit (`f1b4fd4`) matches the latest successful CI run on `main`.
-- Current branch is `main`, and recent commit history shows direct conventional commits (e.g., `docs: ...`, `refactor: ...`, `chore: ...`) without merge commits, consistent with trunk-based development.
-- `.gitignore` is well-structured: it excludes dependencies (`node_modules`), common caches, coverage, build outputs (`lib/`, `build/`, `dist/`), CI artifacts (`ci/`, `jscpd-report/`), and editor junk, while correctly *not* ignoring `.voder/`.
-- The `.voder/` directory and its contents are tracked in git (`git ls-files` shows `.voder/...` paths), satisfying the requirement that assessment artifacts be versioned even though their live changes are ignored for validation.
-- `git ls-files` confirms that no built artifacts or compiled outputs such as `lib/**/*.js`, `lib/**/*.d.ts`, `dist/`, `build/`, or `out/` directories are tracked in the repository; only TypeScript source (`src/**/*.ts`) and tests are versioned, with builds generated on demand.
-- Husky v9 is used with the modern `.husky/` directory layout and a `"prepare": "husky install"` script in `package.json`, ensuring hooks are auto-installed on dependency install without deprecated Husky configuration.
-- A pre-commit hook is configured in `.husky/pre-commit` to run `npx lint-staged`, and `lint-staged` is configured in `package.json` to run `prettier --write` and `eslint --fix` on staged `src` and `tests` files, providing fast, auto-fixing formatting and linting on each commit.
-- A pre-push hook is configured in `.husky/pre-push` to run `npm run ci-verify:full`, enforcing a comprehensive local gate that mirrors the CI quality checks (build, type-check, lint, formatting, tests with coverage, duplication, traceability, and audits) before allowing pushes.
-- ADR `docs/decisions/adr-pre-push-parity.md` explicitly documents the policy that pre-push checks must run the full CI-equivalent sequence (`ci-verify:full`), and the implemented `.husky/pre-push` hook matches this decision, ensuring strong hook/CI parity.
-- Semantic-release logs from the latest successful workflow show correct behavior: it finds the latest tag (`v1.7.1`), analyzes 31 commits since last release, and correctly decides that no new release is warranted given only docs/refactor/chore/test commits.
-- .nvm or node engine constraints are defined via `"engines": { "node": ">=18.18.0" }` and the CI matrix runs against Node 18.x and 20.x, aligning runtime expectations between local and CI environments.
-- Commit messages closely follow Conventional Commits (e.g., `docs: ...`, `refactor: ...`, `chore: ...`), aiding automated release tooling and keeping history readable; there is no evidence of sensitive data in commit messages.
-- User and developer documentation related to CI/CD and quality gates (e.g., `docs/ci-cd-pipeline.md`, `docs/dependency-health.md`, ADRs about semantic-release and GitHub Actions) are present and consistent with the implemented workflows, improving maintainability and onboarding.
+## DEPENDENCIES ASSESSMENT (95% ± 18% COMPLETE)
+- Dependencies are very well managed: dry-aged-deps reports no safe updates, the lockfile is tracked in git, installs are clean with no deprecation warnings, and the dependency tree shows no incompatibilities. Only minor issues remain around npm audit vulnerabilities that currently have no safe mature upgrades and a non-working deps:maturity script.
+- Dependency currency (dry-aged-deps): Running `npx dry-aged-deps --format=json` returned `packages: []` and `summary.totalOutdated: 0`, indicating there are no outdated dependencies with safe (>=7 days old) upgrade targets. By project policy this is the optimal state for dependency currency.
+- Install & deprecation status: `npm install` completed successfully with `up to date, audited 1098 packages` and did NOT emit any `npm WARN deprecated` lines, so there are no deprecated direct dependencies in use and the dependency tree installs cleanly.
+- Security findings context: `npm install` reported `3 vulnerabilities (1 low, 2 high)` and suggested `npm audit fix`, but `npm audit --json` failed in this environment, so precise details are unavailable. Per the dry-aged-deps policy, these audit findings do not block the assessment while no safe mature updates are available; several known vulnerable transitive packages are already overridden in package.json (`glob`, `http-cache-semantics`, `ip`, `semver`, `socks`, `tar`).
+- Package management files: `package.json` is present and well-structured (scripts for build/test/lint/type-check/format and dependency safety checks). `package-lock.json` exists and `git ls-files package-lock.json` confirms it is committed to git, ensuring reproducible installs in CI and for consumers.
+- Dependency structure & usage: The project defines only `devDependencies` (tooling like TypeScript, ESLint, Jest, Prettier, husky, dry-aged-deps, jscpd, secretlint, semantic-release) and a `peerDependency` on `eslint@^9.0.0`. There is no `dependencies` section, which is appropriate for an ESLint plugin that relies on ESLint as a peer and otherwise uses Node built-ins. All listed devDependencies are actively used by scripts or tooling; there is no obvious dead top-level dependency.
+- Compatibility & tree health: `npm ls --all` runs successfully, showing a large but consistent tree with no hard errors or version conflicts. Some packages appear as `overridden` due to the explicit `overrides` in package.json, which is intentional for security/stability. Several `UNMET OPTIONAL DEPENDENCY` entries (e.g., various platform-specific `@unrs/resolver-binding-*`, `node-notifier`, `ts-node`, `esbuild-register`, `babel-plugin-macros`, `jiti`) are optional/peer add-ons for Jest and related tooling and are not required for this project’s functionality, so they do not indicate an actual dependency problem.
+- Tooling alignment: Core tooling versions are modern and compatible (e.g., `eslint@9.39.1` with `@eslint/js@9.39.1` and `@typescript-eslint/*@8.46.4`, `typescript@5.9.3`, `jest@30.2.0`, `prettier@3.6.2`, `husky@9.1.7`, `semantic-release@21.1.2`, `dry-aged-deps@2.3.1`), and the `engines` field requires `node >=18.18.0`, matching current tool expectations.
+- Scripts & safety checks: There are explicit scripts for dependency safety and auditing (`deps:maturity` → dry-aged-deps, `audit:ci`, `audit:dev-high`, `safety:deps`), integrated into CI scripts (`ci-verify`, `ci-verify:full`, `ci-verify:fast`). However, `npm run deps:maturity` failed in this environment (no stderr captured), while `npx dry-aged-deps --format=json` works, suggesting a minor issue with how the script resolves or is invoked rather than with the dependency set itself.
+- Release & lockfile discipline: The presence of `.releaserc.json` and semantic-release devDependencies indicates automated versioning/publishing, with the lockfile tracked. This combination supports stable, repeatable dependency resolution across CI and releases, which is good dependency management practice.
+- No evidence of circular or pathological dependencies: The npm tree output is large but normal for a modern JS tooling stack; there are no signs of circular dependencies impacting runtime (this is a library/tooling repo with no runtime server), and npm did not report tree integrity errors.
 
 **Next Steps:**
-- Optionally extend local security checks by adding a developer-facing script (e.g., `npm run security:secrets:local`) that runs Secretlint on a narrower scope (such as recently changed files) for faster feedback, while keeping the full-repo `npm run security:secrets` as a CI-only step.
-- Periodically validate that `ci-verify:full` remains aligned with the CI workflow when adding or adjusting checks (build, test, lint, audits) so that the `.husky/pre-push` hook continues to mirror the core CI quality gates without divergence.
-- Keep an eye on GitHub Actions and Husky release notes to update to newer major versions promptly and avoid future deprecation warnings, especially for `actions/*` and `semantic-release` plugins used in `ci-cd.yml`.
+- Investigate and fix the failing `npm run deps:maturity` script so it reliably invokes the same working behavior as `npx dry-aged-deps --format=json` (for example, by adding `--format=json` in the script or correcting any path/permission issues), ensuring CI can rely on the standardized script.
+- Re-run `npm audit --json` in an environment where it succeeds to identify the 3 reported vulnerabilities, and cross-check each against dry-aged-deps output; if and only if dry-aged-deps later exposes safe mature upgrades for the affected packages, apply those via the standard dependency update process.
+- Review the existing `overrides` in package.json (`glob`, `http-cache-semantics`, `ip`, `semver`, `socks`, `tar`) against current dry-aged-deps and npm audit data to confirm they still point at patched, mature versions, updating them only when dry-aged-deps surfaces newer safe candidates.
+- Periodically (as part of the existing CI scripts) continue to run `npm install`, `npm ls`, and `npx dry-aged-deps --format=json` to ensure that installations remain deprecation-free, the dependency tree stays healthy, and new safe upgrade opportunities are automatically detected and applied during future assessments.
 
-## FUNCTIONALITY ASSESSMENT (undefined% ± 95% COMPLETE)
-- Functionality assessment skipped - fix 2 deficient support area(s) first
-- Support areas must meet thresholds before assessing feature completion
-- Deficient areas: DOCUMENTATION (84%), DEPENDENCIES (82%)
-- Principle: "Improvement of daily work is higher priority than daily work" - fix foundation before building features
+## SECURITY ASSESSMENT (94% ± 18% COMPLETE)
+- Security posture is strong and actively managed: production dependencies are free of known high-severity vulnerabilities, dev-only issues in the semantic-release toolchain are explicitly documented and constrained, secrets handling is correct, CI enforces multiple security checks (audit, dry-aged-deps, secretlint), and file/path handling code includes deliberate security controls. No unaccepted moderate-or-higher vulnerabilities were found.
+- Dependency security – production: `npm audit --omit=dev --audit-level=high` reports 0 vulnerabilities, and `npm run ci-verify:full` includes this command, so high-severity issues in the published runtime dependency tree are blocked before CI passes.
+- Dependency security – maturity checks: `npm run deps:maturity -- --format=json --check` (dry-aged-deps) reports `totalOutdated: 0`, meaning there are no current, mature (≥7 days) security-relevant upgrades available for either prod or dev dependencies under the configured thresholds.
+- Documented dev-only vulnerabilities (semantic-release/npm/glob/brace-expansion): High- and low-severity issues bundled inside `@semantic-release/npm@10.0.6` are documented as a known error in `docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`, with clear scope (CI release tooling only), impact analysis, and compensating controls (job-level permissions, isolation on GitHub-hosted runners, no use of vulnerable `glob` CLI flags, no untrusted input). Age > 14 days is mitigated by these strong controls, aligning with the security policy.
+- Historical incident tracking: Supporting incident files (`2025-11-17-glob-cli-incident.md`, `2025-11-18-brace-expansion-redos.md`, `2025-11-18-bundled-dev-deps-accepted-risk.md`, `2025-11-18-tar-race-condition.md`) and `dev-deps-high.json` show that the same dev-only vulnerabilities are known, assessed, and now consolidated under the `.known-error.md` record; no new, undocumented vulnerabilities appear in that report.
+- Resolved vulnerability (tar race condition): `docs/security-incidents/2025-11-18-tar-race-condition.md` documents GHSA-29xp-372q-xqph as resolved, and `package.json` enforces `tar >=6.1.12` via `overrides`, matching the incident’s remediation description.
+- Overrides for risky transitive dependencies: `package.json` uses `overrides` to pin safer versions of `glob`, `http-cache-semantics`, `ip`, `semver`, `socks`, and `tar`, reducing the attack surface of known-problematic packages across the dependency graph (where technically overridable).
+- Dev-dependency audit integration: `scripts/generate-dev-deps-audit.js` runs `npm audit --include=dev --audit-level=high --json`, writing to `ci/npm-audit.json` and always exiting 0. This is wired into `npm run ci-verify:full` as `npm run audit:dev-high`, so high-severity dev-only issues are continuously recorded for review without breaking CI.
+- General audit integration: `scripts/ci-audit.js` runs `npm audit --json` and stores the full report at `ci/npm-audit.json` (invoked via `npm run audit:ci`), ensuring there is always a machine-readable security snapshot from CI runs.
+- dry-aged-deps CI integration: `scripts/ci-safety-deps.js` runs `npm run deps:maturity -- --format=json` and writes `ci/dry-aged-deps.json` (invoked from `npm run safety:deps` and the CI workflow). The CI workflow uploads this as an artifact, providing concrete evidence that no mature, safe upgrade path currently exists for the known dev-only vulnerabilities.
+- No disputed vulnerabilities / no filter needed: `docs/security-incidents/` contains no `*.disputed.md` files, and there is no `.nsprc`, `audit-ci.json`, or `audit-resolve.json`. This is consistent with the policy because there are no disputed vulnerabilities that would require audit filtering.
+- Secrets management – .env: A `.env` file exists but is 0 bytes; `.gitignore` correctly ignores `.env` and other env variants; `git ls-files .env` and `git log --all --full-history -- .env` both return empty, confirming `.env` is not tracked and has never been committed. `.env.example` exists with only commented, non-sensitive placeholders. This matches the approved secret-handling pattern and does not require key rotation.
+- Secrets scanning: `npm run security:secrets` (secretlint with `@secretlint/secretlint-rule-preset-recommend`) runs successfully over `"**/*"` and is included in the GitHub Actions `ci-cd.yml` workflow (for Node 20), providing automated detection for accidentally committed secrets.
+- CI/CD security posture: `.github/workflows/ci-cd.yml` defines a single unified CI/CD pipeline that runs on push to `main`, PRs, and a nightly schedule. It runs `npm ci`, `npm run ci-verify:full` (build, type-check, lint, duplication, Jest with coverage, traceability checks, format:check, `npm audit --omit=dev --audit-level=high`, dev-audit, safety/deps), and secretlint. Releases are automated via `semantic-release` only when pushing to `main` on Node 20, using `GITHUB_TOKEN` and `NPM_TOKEN` from GitHub Secrets, and followed by a smoke test script that installs and validates the freshly published package.
+- Release toolchain risk containment: The semantic-release step runs only after all quality and security checks pass, only on the `main` branch, and only in matrix node-version `20.x`. The job runs on GitHub-hosted runners with scoped permissions (`contents`, `issues`, `pull-requests`, `id-token`) and does not process untrusted user input, strongly constraining the impact of any vulnerabilities in the bundled npm/glob/brace-expansion.
+- No conflicting dependency bots: There is no `.github/dependabot.yml`/`.yaml`, `renovate.json`, or `.github/renovate.json`, and the CI workflow does not invoke Dependabot or Renovate. dry-aged-deps is the single authoritative mechanism for safe dependency upgrades, as required by the policy.
+- No evidence of hardcoded credentials: Targeted searches in `src/` for typical secret tokens (API keys, tokens, passwords, SECRET, etc.) show only references to logical “tokens” in annotation parsing code, not credentials. Combined with a clean secretlint run, there is strong evidence that no secrets are hardcoded into the source.
+- Safe process spawning: CI helper scripts (`scripts/ci-audit.js`, `scripts/ci-safety-deps.js`, `scripts/generate-dev-deps-audit.js`) use `child_process.spawnSync` with fixed argument arrays (e.g., `"npm", ["audit", ...]`) and do not enable `shell: true`, preventing shell injection via these helpers.
+- Filesystem and path security in runtime utilities: `src/utils/storyReferenceUtils.ts` implements explicit security checks: it rejects absolute paths (`isAbsolutePath`), detects traversal (`containsPathTraversal`), and combines them in `isTraversalUnsafe` and `isUnsafeStoryPath`, also enforcing `.story.md` extensions. `enforceProjectBoundary` ensures resolved paths stay under the project root. These are used by maintenance tools and ESLint rules to prevent path traversal or referencing files outside the project.
+- Safe usage of story paths in maintenance CLI: `src/maintenance/detect.ts` calls `isUnsafeStoryPath` before any filesystem or boundary checks and uses `enforceProjectBoundary` to ensure checked candidates are within the workspace root. When both project and codebase candidates are out-of-project, it skips filesystem checks entirely. This prevents malicious or misconfigured story annotations from causing traversal outside the repo.
+- Safe bulk update logic: `src/maintenance/update.ts` restricts operations to an existing directory (`fs.existsSync` + `isDirectory()`), escapes `oldPath` before building the regex (to avoid regex injection), and performs pure string replacement on `@story` comments. The operation is entirely local to the caller’s filesystem and does not spawn shells or touch network resources.
+- Plugin runtime surface area: The core plugin (`src/index.ts` and rule files) operates within ESLint’s in-process environment, focusing on annotation parsing and file existence checks. It does not open network connections, run external commands, or handle untrusted runtime input beyond what ESLint already sanitizes, significantly limiting traditional web security concerns (e.g., XSS, CSRF, SQL injection).
+- Continuous documentation and procedures: `docs/security-incidents/handling-procedure.md` and the concrete incident records show a repeatable process for detecting, documenting, and managing vulnerabilities, including the use of dry-aged-deps, npm audit, and explicit known-error records for accepted residual risks.
 
 **Next Steps:**
-- DOCUMENTATION: Fix README links that point to non-published project files by converting them to plain code references (backticks) instead of Markdown links, or by adding those paths to package.json.files if you explicitly want them published. Specifically, change [`eslint.config.js`](eslint.config.js) (both occurrences), [`coverage/`](coverage), and [`tests/integration/cli-integration.test.ts`](tests/integration/cli-integration.test.ts) to non-linked code references, or ensure those files/directories are shipped with the npm package.
-- DOCUMENTATION: Update or remove hard-coded 'Version: 1.0.5' and 'Last updated: 2025-11-19' lines in user-docs/api-reference.md, user-docs/eslint-9-setup-guide.md, user-docs/examples.md, and user-docs/migration-guide.md so they cannot drift from the true semantic-release version. Either (a) restate them in more timeless terms (e.g., 'Applies to 1.x releases') or (b) document that the authoritative version information lives in GitHub Releases and omit explicit version numbers from these docs.
-- DEPENDENCIES: Investigate and fix the failure to run `dry-aged-deps` (both `npx dry-aged-deps` and `npm run deps:maturity`) in your normal development/CI environment, ensuring the command produces its standard report there; the issue in this assessment environment is likely external (e.g., network or tooling constraints), but it must run successfully in your pipeline.
-- DEPENDENCIES: Once `dry-aged-deps` runs successfully in your environment, apply any safe mature upgrades it recommends, strictly limiting upgrades to the versions it outputs; do not manually choose versions, even for security fixes, outside of what `dry-aged-deps` marks as safe.
+- Keep the existing known-error record for the `@semantic-release/npm` bundled npm/glob/brace-expansion vulnerabilities up to date by re-running `npm run deps:maturity -- --format=json --check` and `npm run audit:dev-high` whenever dev dependencies are updated, and updating that markdown file immediately if a safe, dry-aged-compatible upgrade path appears and is adopted.
+- If you ever decide to formally dispute a vulnerability rather than accept it as residual risk, add a corresponding `SECURITY-INCIDENT-YYYY-MM-DD-*.disputed.md` file in `docs/security-incidents/` and introduce an audit filtering configuration (e.g., `.nsprc` for better-npm-audit or `audit-ci.json`) wired into `npm run audit:ci` so disputed advisories are suppressed from automated reports.
+- For further hardening of the maintenance CLI, consider adding basic validation on CLI string options (e.g., rejecting obviously invalid `--from`/`--to` values that do not end in `.story.md`) to align user input constraints with the existing `isUnsafeStoryPath` and `hasValidExtension` rules used elsewhere.
+- Optionally extend secret scanning to run locally via a pre-push hook (e.g., invoking `npm run security:secrets` or a narrower pattern) if you want earlier feedback to developers before CI, reusing the already-configured secretlint setup.
+
+## VERSION_CONTROL ASSESSMENT (97% ± 19% COMPLETE)
+- Version control and CI/CD for this project are in excellent health: a single unified GitHub Actions workflow runs comprehensive quality checks on each push to main and automatically releases via semantic-release; hooks enforce local parity with CI; the repo is clean, trunk-based, and free of compiled artifacts. Only minor refinements are possible.
+- CI/CD PIPELINE CONFIGURATION & COMPLETENESS
+- - Single unified workflow: A single workflow file (.github/workflows/ci-cd.yml) defines the "CI/CD Pipeline" with one main job `quality-and-deploy` that runs on push to main, pull_request to main, and a daily schedule, avoiding the anti-pattern of separate build and publish workflows.
+- - Triggers and trunk alignment: The workflow runs on `push` to `main` (and on pull_request/schedule for additional checks), matching trunk-based development while keeping release logic strictly tied to commits on main (on: push: branches: [main]).
+- - Quality gates in CI: The `quality-and-deploy` job runs `npm run ci-verify:full` on Node 18.x and 20.x (matrix); `ci-verify:full` chains: `check:traceability`, `safety:deps`, `audit:ci`, `build`, `type-check`, `lint-plugin-check`, `lint -- --max-warnings=0`, `duplication`, `test -- --coverage`, `format:check`, `npm audit --omit=dev --audit-level=high`, and `audit:dev-high` (package.json). This provides comprehensive build, test, lint, type-checking, duplication detection, formatting verification, and multiple security/dependency audits.
+- - Additional security checks: On Node 20.x the workflow also runs `npm run security:secrets` (secretlint) for secret scanning, and there is a separate `dependency-health` job (on schedule only) that runs `npm run audit:dev-high` for periodic dependency health audits.
+- - Actions versions and deprecations: The workflow uses `actions/checkout@v4`, `actions/setup-node@v4`, and `actions/upload-artifact@v4` exclusively (ci-cd.yml search for `uses:`). These are current, non-deprecated versions. A search for "deprecated" in ci-cd.yml and inspection of the latest workflow logs show no deprecation warnings for GitHub Actions or syntax.
+- - Workflow stability: The last 10 GitHub Actions runs for the CI/CD Pipeline on `main` all completed successfully (get_github_pipeline_status), indicating a stable, healthy pipeline.
+- 
+- CONTINUOUS DEPLOYMENT & PUBLISHING
+- - Automated semantic-release: The workflow includes a `Release with semantic-release` step that runs only when `github.event_name == 'push'`, `github.ref == 'refs/heads/main'`, and `matrix['node-version'] == '20.x'` and previous steps succeeded. It executes `npx semantic-release` with `GITHUB_TOKEN` and `NPM_TOKEN` (ci-cd.yml).
+- - Semantic-release configuration: `.releaserc.json` configures semantic-release for the `main` branch with plugins for commit analysis, changelog generation, npm publishing (`@semantic-release/npm` with `npmPublish: true`), and GitHub releases. This confirms fully automated versioning and publishing with no manual tag creation or workflow dispatch required.
+- - Handling of token/OTP issues: The semantic-release step contains explicit handling for invalid npm tokens (EINVALIDNPMTOKEN) and OTP requirements (EOTP); in these cases it logs the issue and exits successfully while setting outputs to indicate no release was published. This prevents CI failures due to registry auth while keeping release automation intact when credentials are valid.
+- - Post-deployment verification: A `Smoke test published package` step runs `scripts/smoke-test.sh` against the just-published version when `steps.semantic-release.outputs.new_release_published == 'true'`, providing automated post-publish verification of the npm package.
+- - No manual gates or tag-based releases: There is no `workflow_dispatch`, no `on: push: tags:`, and no manual approval steps; releases are driven purely by commits to main and semantic-release’s automated decision logic, satisfying the continuous deployment requirement.
+- 
+- REPOSITORY STATUS & STRUCTURE
+- - Working directory cleanliness: `git status -sb` shows `## main...origin/main` with only `.voder/history.md` and `.voder/last-action.md` modified. Per assessment rules, .voder changes are ignored for cleanliness, so the working tree is effectively clean for project files.
+- - All commits pushed: `git status -sb` shows no `ahead` or `behind` markers on `main...origin/main`, indicating that all local commits are pushed and the branch is in sync with origin.
+- - Current branch and trunk-based flow: `git log --graph --decorate --oneline -n 10` shows `HEAD -> main, origin/main, origin/HEAD` with a straight-line history and no merge commits. Recent commits are small, focused, and use Conventional Commit types (docs, refactor, chore), consistent with trunk-based development and direct commits to main.
+- - .gitignore and build artifacts: `.gitignore` explicitly ignores `lib/`, `build/`, `dist/`, `node_modules/`, coverage, CI artifacts (e.g., `ci/`, `jscpd-report/`), and other generated content. `git ls-files` output contains no `lib/`, `dist/`, `build/`, or `out/` directories or compiled JS/TS declaration files, satisfying the requirement that built artifacts are not tracked.
+- - Library publishing vs repo contents: `package.json` exposes `main: "lib/src/index.js"` and `types: "lib/src/index.d.ts"` and lists `lib` in the published `files` array, but there is no `lib/` directory in version control (git ls-files). This confirms that build outputs are generated for publishing but not committed.
+- - .voder tracking policy: `.gitignore` does NOT include `.voder/` (verified by reading .gitignore), and `git ls-files` shows multiple `.voder/...` files and traceability XMLs under `.voder/traceability/` are tracked. This satisfies the critical requirement that `.voder/` be versioned and not ignored.
+- 
+- PRE-COMMIT & PRE-PUSH HOOKS (LOCAL QUALITY GATES)
+- - Hook installation: `package.json` has a `prepare` script set to `husky install`, and a `.husky/` directory is present with `pre-commit` and `pre-push` scripts. Husky is declared as a devDependency (`"husky": "^9.1.7"`), indicating a modern v8+ style setup (no deprecated `.huskyrc` style).
+- - Pre-commit hook content: `.husky/pre-commit` runs `npx lint-staged`. `package.json` defines lint-staged configuration so that for `src/**/*.{js,jsx,ts,tsx,json,md}` and `tests/**/*.{js,jsx,ts,tsx,json,md}`, it runs `prettier --write` and `eslint --fix`. This fulfills the pre-commit requirements: fast, file-scoped checks; automatic formatting; and linting on staged files. It does not run slow build or test steps at commit time.
+- - Pre-push hook content: `.husky/pre-push` runs `npm run ci-verify:full && echo "Pre-push full CI-equivalent checks completed"` with `set -e`. This command matches exactly the `Run full CI verification` step used in the GitHub Actions workflow (`npm run ci-verify:full`), satisfying the critical hook/pipeline parity requirement.
+- - Pre-push checks coverage: Because `ci-verify:full` encompasses build, full test suite with coverage, strict linting, type-checking, duplication analysis, traceability checks, formatting verification, and multiple dependency and security audits, pre-push hooks enforce the same comprehensive quality gates as CI before code is shared.
+- - CI disabling of hooks: The CI job sets `env: HUSKY: 0`, ensuring Husky hooks do not re-run inside CI (avoiding double-execution and keeping CI pipelines deterministic).
+- 
+- CI/CD ACTIONS VERSIONS & DEPRECATION STATUS
+- - Current actions: The workflow exclusively uses `actions/checkout@v4`, `actions/setup-node@v4`, and `actions/upload-artifact@v4`, all of which are the current major versions and explicitly recommended by GitHub as of the knowledge cutoff. There are no references to deprecated versions such as `actions/checkout@v2` or `actions/setup-node@v2`.
+- - No CodeQL or deprecated actions: There are no CodeQL actions or other security-scanning actions that might carry deprecation warnings. All scanning is done via npm-based tools (npm audit, custom scripts, secretlint).
+- - Logs free of deprecation warnings: The latest run’s logs (ID 19911495435) show successful completion of all steps, including release and artifact uploads, with no visible warnings mentioning deprecation of actions or syntax in the last 100 lines and no errors or warnings reported by `get_github_run_details`.
+- 
+- RELEASE STRATEGY & VERSIONING
+- - Semantic-release strategy: `.releaserc.json` and devDependencies (`semantic-release`, `@semantic-release/changelog`, `@semantic-release/npm`, `@semantic-release/github`, etc.) confirm that semantic-release is used for automated versioning and publishing. ADRs in docs (e.g., docs/decisions/006-semantic-release-for-automated-publishing.accepted.md, docs/decisions/007-github-releases-over-changelog.accepted.md) further document this strategy.
+- - package.json version semantics: `package.json` lists `"version": "1.0.5"`, which is expected to be stale under semantic-release and is not used as the source of truth; actual versioning is derived from Git tags and releases created by semantic-release. This is appropriate for a semantic-release-managed project.
+- - CHANGELOG and releases: `CHANGELOG.md` is present and listed in the semantic-release config; semantic-release updates it automatically as part of release, consistent with automated release management.
+- 
+- REPOSITORY HEALTH & COMMIT HISTORY
+- - No generated build artifacts tracked: `git ls-files` shows application source (`src/**/*.ts`), tests (`tests/**/*.ts` and .test.ts files), scripts, docs, and .voder artifacts, but no compiled JS/TS outputs from TypeScript (no `lib/**/*.js` or `lib/**/*.d.ts`, no `dist/`, `build/`, or `out/` directories). Build outputs are thus kept out of version control per best practice.
+- - Appropriate ignore rules for CI artifacts: `.gitignore` ignores `ci/` and `jscpd-report/` so that CI outputs do not accidentally get committed. A dedicated script `scripts/check-no-tracked-ci-artifacts.js` is present to enforce this policy, and `git ls-files` confirms there is no tracked `ci/` directory.
+- - Commit message quality: Recent commits use precise Conventional Commit types (`docs:`, `refactor:`, `chore:`), with descriptive messages focused on specific changes (e.g., docs alignment, refactoring TS typing, sharing RuleTester options). This indicates disciplined version control usage and clear history.
+- - No evidence of sensitive data: There is no sign in tracked files or recent logs of secrets or credentials being committed; secrets (GITHUB_TOKEN, NPM_TOKEN) are referenced only via `secrets.*` in the workflow.
+- 
+- MINOR OBSERVATIONS / TRADE-OFFS
+- - The workflow also runs on `pull_request` to main and on a daily schedule. While the assessment guidelines emphasize push-to-main triggers for releases, here pull_request runs are used only for quality checks (release step is gated on `github.event_name == 'push'` and `github.ref == 'refs/heads/main'`), and the scheduled job is used purely for dependency health. Neither introduces manual gates or tag-based releases.
+- - Pre-push checks are comprehensive and may be relatively heavy, but they match the CI pipeline exactly and remain acceptable as long as they execute within reasonable time bounds for contributors.
+
+**Next Steps:**
+- Keep actions versions up to date by periodically checking for new major releases of `actions/checkout`, `actions/setup-node`, and `actions/upload-artifact`, and updating .github/workflows/ci-cd.yml accordingly to preempt future deprecation warnings.
+- Optionally add a CI step (or incorporate into an existing script) to run `npx actionlint` against .github/workflows/ci-cd.yml, using the existing `actionlint` devDependency, to automatically catch any future workflow syntax or best-practice issues.
+- Monitor pre-push execution time on typical contributor machines; if `npm run ci-verify:full` ever becomes noticeably slow, consider factoring out a slightly lighter `ci-verify:prepush` script (still including build, tests, lint, and type-check) while reserving the heaviest audits for CI or scheduled runs, ensuring the change is reflected both in .husky/pre-push and the CI workflow for continued parity.
+
+## FUNCTIONALITY ASSESSMENT (85% ± 95% COMPLETE)
+- 2 of 13 stories incomplete. Earliest failed: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+- Total stories assessed: 13 (0 non-spec files excluded)
+- Stories passed: 11
+- Stories failed: 2
+- Earliest incomplete story: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+- Failure reason: Most of the story 010.2-DEV-MULTI-STORY-SUPPORT is implemented: the plugin understands the @implements format, validates its syntax and content, supports mixed @story/@req/@implements usage, and performs deep requirement validation per story file with correct scoping and contextual error messages. These behaviors are well-covered by src/rules/valid-annotation-format.ts, src/rules/helpers/valid-implements-utils.ts, src/rules/valid-req-reference.ts, and their associated tests and fixtures.
+
+However, the specific requirement REQ-REQUIRE-ACCEPTS-IMPLEMENTS is not implemented. The require-story-annotation and require-req-annotation rules still only recognize @story and @req respectively and never treat @implements as satisfying their "annotation required" checks. Searches show no references to REQ-REQUIRE-ACCEPTS-IMPLEMENTS outside the story file, no logic checking for "@implements" in these rules or their helpers, and no tests that assert a function annotated only with @implements passes these rules. This directly violates the acceptance criterion that @implements annotations should allow developers to satisfy traceability without duplicate @story/@req annotations.
+
+Because at least one explicit requirement and acceptance criterion from the story is not met, the story implementation is incomplete, and the assessment status is FAILED.
+
+**Next Steps:**
+- Complete story: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+- Most of the story 010.2-DEV-MULTI-STORY-SUPPORT is implemented: the plugin understands the @implements format, validates its syntax and content, supports mixed @story/@req/@implements usage, and performs deep requirement validation per story file with correct scoping and contextual error messages. These behaviors are well-covered by src/rules/valid-annotation-format.ts, src/rules/helpers/valid-implements-utils.ts, src/rules/valid-req-reference.ts, and their associated tests and fixtures.
+
+However, the specific requirement REQ-REQUIRE-ACCEPTS-IMPLEMENTS is not implemented. The require-story-annotation and require-req-annotation rules still only recognize @story and @req respectively and never treat @implements as satisfying their "annotation required" checks. Searches show no references to REQ-REQUIRE-ACCEPTS-IMPLEMENTS outside the story file, no logic checking for "@implements" in these rules or their helpers, and no tests that assert a function annotated only with @implements passes these rules. This directly violates the acceptance criterion that @implements annotations should allow developers to satisfy traceability without duplicate @story/@req annotations.
+
+Because at least one explicit requirement and acceptance criterion from the story is not met, the story implementation is incomplete, and the assessment status is FAILED.
+- Evidence: Story file presence and traceability:
+- Story exists: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+- Implementation files explicitly reference this story and its requirements:
+  - src/rules/helpers/valid-implements-utils.ts JSDoc:
+    * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+    * @req REQ-IMPLEMENTS-PARSE
+    * @req REQ-FORMAT-VALIDATION
+    * @req REQ-MIXED-SUPPORT
+  - src/rules/valid-annotation-format.ts JSDoc and meta reference the same story and requirements.
+
+Core @implements parsing and format validation (REQ-IMPLEMENTS-PARSE, REQ-FORMAT-VALIDATION, REQ-MIXED-SUPPORT):
+- src/rules/helpers/valid-implements-utils.ts implements dedicated helpers:
+  - MIN_IMPLEMENTS_TOKENS, reportMissingImplementsValue(), reportMissingImplementsReqIds(),
+    reportInvalidImplementsStoryPath(), reportInvalidImplementsReqId(),
+    validateImplementsAnnotationHelper().
+- src/rules/valid-annotation-format.ts:
+  - normalizeCommentLine() (src/rules/helpers/valid-annotation-format-internal.ts) detects @implements alongside @story and @req.
+  - processCommentLine() checks for @implements and calls validateImplementsAnnotation(), which delegates to validateImplementsAnnotationHelper().
+- tests/rules/valid-annotation-format.test.ts contains explicit tests for @implements:
+  - Valid:
+    * "[REQ-IMPLEMENTS-PARSE] valid single @implements with one story and one requirement (default patterns)"
+    * "[REQ-IMPLEMENTS-PARSE] valid multiple @implements lines with different stories and requirements"
+    * "[REQ-MIXED-SUPPORT] valid mixed @story/@req/@implements usage in same block comment"
+  - Invalid:
+    * missing value (no story + no req IDs) → messageId: invalidImplementsFormat
+    * only story path, no req IDs → invalidImplementsFormat
+    * invalid story path → invalidImplementsFormat
+    * invalid requirement IDs → invalidReqFormat
+
+Deep requirement validation for @implements (REQ-IMPLEMENTS-VALIDATE, REQ-SCOPED-IDS, REQ-ERROR-CONTEXT, REQ-MIXED-SUPPORT):
+- src/rules/valid-req-reference.ts:
+  - IMPLEMENTS_TOKENS constant defines story and req index positions in @implements lines.
+  - parseImplementsLine(line): parses "@implements <storyPath> <REQ-ID-1> <REQ-ID-2> ..."; returns null if missing storyPath or reqIds.
+  - validateImplementsLine({ comment, context, line, cwd, reqCache }):
+    * resolves storyPath and loads a Set of requirement IDs via resolveStoryAndRequirements() and loadAndCacheRequirements().
+    * calls checkRequirementExists() for each reqId, which reports:
+      messageId: "reqMissing", data: { reqId, storyPath }.
+  - handleAnnotationLine() dispatches @implements lines to validateImplementsLine(), alongside existing @story and @req handling, enabling mixed usage.
+- tests/fixtures/story_multi_a.md and story_multi_b.md:
+  - story_multi_a.md: REQ-SHARED-ID, REQ-ONLY-A
+  - story_multi_b.md: REQ-SHARED-ID, REQ-ONLY-B
+- tests/rules/valid-req-reference.test.ts:
+  - Valid tests exercising multi-story & scoped IDs:
+    * "[REQ-DEEP-IMPLEMENTS] single implements line with multiple requirements in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)":
+      code: `// @implements tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A`
+    * "[REQ-DEEP-IMPLEMENTS] multi-story implements with shared requirement IDs (see 010.2-DEV-MULTI-STORY-SUPPORT)":
+      two @implements lines for story_multi_a.md and story_multi_b.md, both using REQ-SHARED-ID, demonstrating that IDs are scoped per story file.
+  - Invalid @implements tests:
+    * Missing requirement: `// @implements tests/fixtures/story_multi_a.md REQ-NOT-IN-A` asserts messageId: "reqMissing" with storyPath set to tests/fixtures/story_multi_a.md.
+    * Path traversal in story path: `// @implements ../tests/fixtures/story_multi_a.md REQ-SHARED-ID` asserts messageId: "invalidPath" with storyPath "../tests/fixtures/story_multi_a.md".
+- Error message context (REQ-ERROR-CONTEXT):
+  - valid-req-reference.ts meta.messages.reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'".
+  - Tests assert data.storyPath for both @story and @implements cases, confirming story-path context in errors.
+
+Backward compatibility and mixed usage (REQ-BACKWARD-COMP, REQ-MIXED-SUPPORT):
+- Legacy @story + @req behavior is unchanged:
+  - src/rules/valid-annotation-format.ts still validates @story and @req independently; @implements is added as an extra path, not a replacement.
+  - src/rules/valid-req-reference.ts still supports @story + @req; @implements handling is additive.
+- Mixed usage proven by tests:
+  - tests/rules/valid-annotation-format.test.ts valid test:
+    "[REQ-MIXED-SUPPORT] valid mixed @story/@req/@implements usage in same block comment" — a single comment with all three annotation types passes.
+  - tests/rules/valid-req-reference.test.ts combines @story/@req and multiple @implements lines in the same file.
+
+Documentation and ADR (Documentation acceptance criterion):
+- docs/decisions/010-implements-annotation-for-multi-story-requirements.proposed.md documents the decision to introduce @implements, with examples and behavior matching the story.
+- docs/rules/prefer-implements-annotation.md (found via filename search) and src/rules/prefer-implements-annotation.ts provide an optional migration rule, referencing a follow-on story (010.3) but reinforcing the @implements design.
+
+CRITICAL GAP – REQ-REQUIRE-ACCEPTS-IMPLEMENTS and related acceptance criterion:
+- Story requirement:
+  - REQ-REQUIRE-ACCEPTS-IMPLEMENTS: "Update `require-story-annotation` and `require-req-annotation` rules to accept `@implements` as satisfying story and requirement annotations."
+- Searching for this requirement ID:
+  - Command: grep -Rn REQ-REQUIRE-ACCEPTS-IMPLEMENTS src tests docs
+  - Matches only in docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md; no code or tests reference this ID.
+- require-story-annotation implementation:
+  - src/rules/require-story-annotation.ts and helpers in src/rules/helpers/require-story-*.ts:
+    * All detection logic revolves around finding "@story" text (e.g., jsdocHasStory, commentsBeforeHasStory, leadingCommentsHasStory, linesBeforeHasStory, parentChainHasStory, fallbackTextBeforeHasStory).
+    * There are NO references to "@implements" in these files (confirmed by search_file_content results and manual inspection).
+    * Therefore, a function documented only with @implements would still be treated as missing the required @story annotation.
+  - tests/rules/require-story-annotation.test.ts:
+    * All valid cases use @story (JSDoc or line comments).
+    * No tests show a function with only @implements being accepted by this rule.
+- require-req-annotation implementation:
+  - src/rules/require-req-annotation.ts delegates presence checking to src/utils/annotation-checker.ts and src/utils/reqAnnotationDetection.ts.
+  - src/utils/reqAnnotationDetection.ts:
+    * commentContainsReq(): checks c.value.includes("@req") only.
+    * linesBeforeHasReq(), parentChainHasReq(), fallbackTextBeforeHasReq() search for the substring "@req"; they never inspect or interpret "@implements".
+  - src/utils/annotation-checker.ts:
+    * hasReqAnnotation(...) (called via checkReqAnnotation) combines jsdoc value and nearby comments; it only checks for "@req" (via hasReqAnnotation) and never considers "@implements".
+  - src/rules/require-req-annotation.ts itself contains no references to "@implements".
+  - tests/rules/require-req-annotation.test.ts:
+    * Valid tests cover @req (with/without @story) for various function shapes.
+    * Invalid tests ensure missing @req triggers messageId: "missingReq".
+    * There are NO tests in which @implements alone is accepted in place of @req.
+- Additional confirmation:
+  - Searches:
+    * search_file_content on src/rules/helpers/require-story-helpers.ts, src/rules/helpers/require-story-io.ts, src/rules/require-story-annotation.ts, src/rules/require-req-annotation.ts, src/utils/annotation-checker.ts, tests/rules/require-req-annotation.test.ts for "@implements" all return no matches.
+  - This contradicts the story’s requirement that @implements must be usable as the traceability mechanism to satisfy these "annotation required" rules.
+
+Test execution:
+- Command run via tools: npm test -- --runInBand --verbose
+  - npm invoked jest: "jest --ci --bail --runInBand --verbose".
+  - No failures were reported through the tool interface, implying the existing suite (including @implements-related tests) currently passes.
+  - However, because no tests assert that require-story-annotation or require-req-annotation accept @implements as satisfying their requirements, this missing behavior is not caught by the current tests.

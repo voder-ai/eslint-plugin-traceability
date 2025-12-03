@@ -136,7 +136,7 @@ Ensure there are no errors or warnings in the output.
 
 The `ci-verify:full` script is your local entry point for the same security and dependency checks that matter in CI. It runs, in addition to build/tests/lint:
 
-- `npm audit --omit=dev --audit-level=high`  
+- `npm audit --omit=dev --audit-level=high`
 - `npm run safety:deps` (dry-aged-deps)
 - `npm run audit:dev-high`
 
@@ -147,7 +147,7 @@ These map to CI as follows:
   - `npm run safety:deps` – dry-aged-deps baseline for dependency “staleness” / health
 
 - **Advisory CI checks (do not fail CI, but are still run and recorded):**
-  - `npm run audit:dev-high` – dev-only dependency audit; findings are logged for maintainers but do *not* gate merges
+  - `npm run audit:dev-high` – dev-only dependency audit; findings are logged for maintainers but do _not_ gate merges
 
 Running `npm run ci-verify:full` locally gives you the same security/dependency signal that the main CI job expects for gating, plus the same advisory information. You normally **do not** need to run `npm audit`, `dry-aged-deps`, or the dev audit commands directly.
 
@@ -160,6 +160,6 @@ You only need to run the underlying tools individually (or add extra runs) if yo
 
 - Working specifically on dependency upgrades / cleanups.
 - Investigating or documenting a security or dependency incident.
-- Updating the policies, baselines, or docs that describe how these checks are used. 
+- Updating the policies, baselines, or docs that describe how these checks are used.
 
 Thank you for helping improve `eslint-plugin-traceability`!

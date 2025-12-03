@@ -2,7 +2,7 @@
 
 This document explains how we assess and maintain dependency health in this project, with a focus on the `dry-aged-deps` maturity tool, how it interacts with our CI/CD pipeline, and how its outputs are incorporated into security incident and risk-acceptance records.
 
-This is **internal/development-facing documentation** for maintainers and advanced contributors. The guarantees in the README and other user docs are **plain-language summaries** that are *backed by* the processes described here, not the other way around.
+This is **internal/development-facing documentation** for maintainers and advanced contributors. The guarantees in the README and other user docs are **plain-language summaries** that are _backed by_ the processes described here, not the other way around.
 
 ## Canonical Commands
 
@@ -80,21 +80,19 @@ In this project, the thresholds are currently equivalent for both groups:
 ```json
 {
   "prod": { "minAge": 7, "minSeverity": "none" },
-  "dev":  { "minAge": 7, "minSeverity": "none" }
+  "dev": { "minAge": 7, "minSeverity": "none" }
 }
 ```
 
 Explicitly:
 
 1. **7-day minimum age**
-
    - A candidate version must have been published for **at least 7 days** (`minAge: 7`).
    - This applies to **both**:
      - Production dependencies (`prod`)
      - Development dependencies (`dev`)
 
 2. **"none" minimum severity**
-
    - `minSeverity: "none"` means **any known vulnerability** (even low-severity) disqualifies a version as a "safe" update.
    - For a version to be considered a safe candidate upgrade by `dry-aged-deps`, it must:
      - Be at least 7 days old.
@@ -130,7 +128,7 @@ Maintainership responsibilities:
   - `npm run deps:maturity -- --format=json --check`
   - `npm audit --omit=dev --audit-level=high`
   - Relevant audit scripts
-  to validate the updated state before merging and releasing.
+    to validate the updated state before merging and releasing.
 
 ## How dry-aged-deps, npm audit, and Incident Records Interact
 
@@ -142,7 +140,7 @@ Maintainership responsibilities:
 
 ### Evidence for Production-Side Guarantees
 
-Our user-facing docs (e.g., the README) state that published versions of this project do not contain any *known* high-severity vulnerabilities in their **production dependency tree** at release time.
+Our user-facing docs (e.g., the README) state that published versions of this project do not contain any _known_ high-severity vulnerabilities in their **production dependency tree** at release time.
 
 Internally, this claim is backed by:
 
@@ -207,7 +205,7 @@ Because `dry-aged-deps` currently identifies **no safe upgrade path** (under the
   - `npm run deps:maturity -- --format=json --check`
   - `npm run audit:dev-high`
   - `npm run audit:ci`
-  to see whether a new, safe, mature upgrade path has appeared.
+    to see whether a new, safe, mature upgrade path has appeared.
 
 These processes ensure that:
 

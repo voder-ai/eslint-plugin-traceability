@@ -1,7 +1,9 @@
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @req REQ-ANNOTATION-REQUIRED - Verify require-story-annotation rule enforces @story annotation on functions
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Verify @implements annotation is accepted as satisfying story requirements
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-story-annotation";
@@ -20,6 +22,10 @@ describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)",
       {
         name: "[REQ-ANNOTATION-REQUIRED] valid with JSDoc @story annotation",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction foo() {}`,
+      },
+      {
+        name: "[REQ-REQUIRE-ACCEPTS-IMPLEMENTS] valid with only @implements annotation",
+        code: `/**\n * @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction implOnly() {}`,
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] valid with line comment @story annotation",
@@ -58,7 +64,8 @@ declare function tsDecl(): void;`,
     ],
     invalid: [
       {
-        name: "[REQ-ANNOTATION-REQUIRED] missing @story annotation on function",
+        // Backward compatibility: plain unannotated functions remain invalid under multi-story support
+        name: "[REQ-ANNOTATION-REQUIRED][BACKCOMPAT] missing @story annotation on function with no @implements",
         code: `function bar() {}`,
         output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}`,
         errors: [

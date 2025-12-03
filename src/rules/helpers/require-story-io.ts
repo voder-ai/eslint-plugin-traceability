@@ -20,11 +20,19 @@ export const FALLBACK_WINDOW = 800;
 
 /**
  * Shared predicate to determine if a given comment node contains an @story marker.
+ * Also treats @implements annotations as satisfying story presence checks.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @req REQ-ANNOTATION-REQUIRED - Centralize @story detection logic for comment value inspection
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Treat @implements annotations as satisfying story presence checks
  */
 function commentContainsStory(comment: any): boolean {
-  return typeof comment?.value === "string" && comment.value.includes("@story");
+  if (typeof comment?.value !== "string") {
+    return false;
+  }
+  return (
+    comment.value.includes("@story") || comment.value.includes("@implements")
+  );
 }
 
 /**
@@ -55,21 +63,26 @@ function getNodeStartLine(node: any): number | null {
  * Generic helper to scan a range of physical source lines for the presence of an @story marker.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Reuse line scanning logic for story annotations across helpers
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept @implements annotations as valid markers during line scanning
  */
 function scanLinesForMarker(
   lines: string[],
   from: number,
   to: number,
 ): boolean {
-  // Walk each physical line in the configured lookback window to search for an inline @story marker.
+  // Walk each physical line in the configured lookback window to search for an inline @story or @implements marker.
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQUIRED - Scan preceding lines for existing story annotations
   for (let i = from; i < to; i++) {
     const text = lines[i];
-    // Treat any line containing "@story" as evidence that the function is already annotated.
+    // Treat any line containing "@story" or "@implements" as evidence that the function is already annotated.
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
     // @req REQ-ANNOTATION-REQUIRED - Detect explicit @story markers in raw source text
-    if (typeof text === "string" && text.includes("@story")) {
+    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect explicit @implements markers in raw source text
+    if (
+      typeof text === "string" &&
+      (text.includes("@story") || text.includes("@implements"))
+    ) {
       return true;
     }
   }
@@ -143,8 +156,11 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
 
 /**
  * Fallback: inspect text immediately preceding the node in sourceCode.getText to find @story
+ * Also accepts @implements annotations as satisfying story presence for this rule.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @req REQ-ANNOTATION-REQUIRED - Provide fallback textual inspection when other heuristics fail
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Treat @implements annotations as satisfying story presence in fallback checks
  */
 export function fallbackTextBeforeHasStory(
   sourceCode: any,
@@ -172,10 +188,14 @@ export function fallbackTextBeforeHasStory(
     // @req REQ-ANNOTATION-REQUIRED - Restrict fallback text scanning to a safe, fixed-size window
     const start = Math.max(0, range[0] - FALLBACK_WINDOW);
     const textBefore = sourceCode.getText().slice(start, range[0]);
-    // Detect any @story marker that appears within the bounded fallback window.
+    // Detect any @story or @implements marker that appears within the bounded fallback window.
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
     // @req REQ-ANNOTATION-REQUIRED - Recognize story annotations discovered via fallback text scanning
-    if (typeof textBefore === "string" && textBefore.includes("@story")) {
+    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Recognize @implements annotations discovered via fallback text scanning
+    if (
+      typeof textBefore === "string" &&
+      (textBefore.includes("@story") || textBefore.includes("@implements"))
+    ) {
       return true;
     }
   } catch {

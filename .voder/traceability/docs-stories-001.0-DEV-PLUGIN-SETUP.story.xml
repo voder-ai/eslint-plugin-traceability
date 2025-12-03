@@ -2,81 +2,139 @@
 <traceability>
   <specification>docs/stories/001.0-DEV-PLUGIN-SETUP.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-03T18:07:19.284Z</last_validated>
+  <last_validated>2025-12-03T23:10:54.791Z</last_validated>
   <last_modified>2025-11-19T07:26:31.159Z</last_modified>
-  <evidence>1) Tests for this story exist and run without reported failures via `npm test -- --runInBand --verbose` (which executes `jest --ci --bail --runInBand --verbose`).
+  <evidence>Story: docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
 
-2) Core plugin structure and rule registry (REQ-PLUGIN-STRUCTURE, REQ-RULE-REGISTRY, REQ-ERROR-HANDLING) are implemented in TypeScript:
-- src/index.ts defines RULE_NAMES, dynamically requires each rule module into a central `rules` object, and exports `rules`, `configs`, and `maintenance` along with a default export:
-  - JSDoc:
-    - `@story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md`
-    - `@req REQ-PLUGIN-STRUCTURE - Provide foundational plugin export and registration`
-    - `@req REQ-ERROR-HANDLING - Gracefully handles plugin loading errors and missing dependencies`
-  - Dynamic loading:
-    - `const RULE_NAMES = ["require-story-annotation", "require-req-annotation", "require-branch-annotation", "valid-annotation-format", "valid-story-reference", "valid-req-reference", "prefer-implements-annotation"] as const;`
-    - `RULE_NAMES.forEach((name) => { try { const mod = require("./rules/" + name); rules[name] = mod.default ?? mod; } catch (error) { console.error(...); rules[name] = placeholderRule; } });`
-  - Placeholder rule reports errors via `context.report` when a rule fails to load.
+Implementation:
+- Core plugin entry point src/index.ts:
+  - Annotated with this story and its key requirements:
+    - @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+    - @req REQ-PLUGIN-STRUCTURE - Provide foundational plugin export and registration
+    - @req REQ-ERROR-HANDLING - Gracefully handles plugin loading errors and missing dependencies
+  - Implements a rule registry and dynamic rule loading:
+    - const RULE_NAMES = [
+        "require-story-annotation",
+        "require-req-annotation",
+        "require-branch-annotation",
+        "valid-annotation-format",
+        "valid-story-reference",
+        "valid-req-reference",
+        "prefer-implements-annotation",
+      ] as const;
+    - const rules: Record<RuleName, Rule.RuleModule> = {} as any;
+    - RULE_NAMES.forEach(name => { try { const mod = require(`./rules/${name}`); rules[name] = mod.default ?? mod; } catch (error) { /* error handling, see below */ } });
+  - Defines flat-config style configurations for ESLint v9:
+    - TRACEABILITY_RULE_SEVERITIES maps each traceability/* rule to "error" or "warn".
+    - createTraceabilityFlatConfig() returns { plugins: { traceability: {} }, rules: { ...TRACEABILITY_RULE_SEVERITIES } }.
+    - const configs = { recommended: [createTraceabilityFlatConfig()], strict: [createTraceabilityFlatConfig()] }.
+  - Exports in standard ESLint plugin shape and as default export:
+    - export { rules, configs, maintenance };
+    - export default { rules, configs, maintenance };
+- Rule modules present for all referenced rules (REQ-RULE-REGISTRY):
+  - src/rules/contains: require-story-annotation.ts, require-req-annotation.ts, require-branch-annotation.ts, valid-annotation-format.ts, valid-story-reference.ts, valid-req-reference.ts, prefer-implements-annotation.ts.
 
-3) Plugin exports and configs are verified by unit tests (plugin registers and loads without errors; REQ-PLUGIN-STRUCTURE, REQ-RULE-REGISTRY, REQ-CONFIG-SYSTEM):
+Error handling (REQ-ERROR-HANDLING):
+- src/index.ts wraps dynamic rule loading in try/catch:
+  - On failure, logs a descriptive error:
+    - console.error(`[eslint-plugin-traceability] Failed to load rule "${name}": ${error.message}`);
+  - Installs a placeholder RuleModule that:
+    - meta.docs.description: `Failed to load rule '${name}'`.
+    - create(context) reports on Program: `eslint-plugin-traceability: Error loading rule "${name}": ${error.message}`.
+- Tested in tests/plugin-setup-error.test.ts:
+  - @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md, @req REQ-ERROR-HANDLING.
+  - Mocks ../src/rules/require-branch-annotation to throw Error("Test load error").
+  - Requires ../src/index and asserts:
+    - console.error called with message containing: Failed to load rule "require-branch-annotation": Test load error.
+    - plugin.rules["require-branch-annotation"] defined.
+    - placeholderRule.meta.docs.description contains the failure text.
+    - placeholderRule.create(fakeContext).Program(...) calls report with message containing the error text.
+- CLI-level error behavior tested in tests/cli-error-handling.test.ts:
+  - @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md, @req REQ-ERROR-HANDLING.
+  - Spawns ESLint CLI with this plugin and config; asserts non-zero exit and presence of the expected error message when annotations are missing, confirming end-to-end behavior when rules fail or are misconfigured.
+
+Core plugin structure and exports (REQ-PLUGIN-STRUCTURE, REQ-RULE-REGISTRY, REQ-CONFIG-SYSTEM):
 - tests/plugin-setup.test.ts:
-  - `describe("Traceability ESLint Plugin (Story 001.0-DEV-PLUGIN-SETUP)", () => { ... });`
-  - Asserts `rules` and `configs` are defined and that `plugin.rules === rules` and `plugin.configs === configs`.
+  - @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md, @req REQ-PLUGIN-STRUCTURE.
+  - import plugin, { rules, configs } from "../src/index";
+  - Asserts:
+    - rules and configs are defined and are objects.
+    - plugin.rules === rules and plugin.configs === configs.
 - tests/plugin-default-export-and-configs.test.ts:
-  - Annotated with `@story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md` and `@req REQ-PLUGIN-STRUCTURE`.
-  - Confirms the rules object’s keys exactly equal the expected list of rule names.
-  - Confirms `configs.recommended[0].rules` contains the expected `traceability/...` keys with correct severities (errors for core rules, warn for formatting/migration) and that `configs.strict[0].rules` equals `configs.recommended[0].rules`.
+  - @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md (and 007.0 for error severity).
+  - Validates default export composition:
+    - plugin.rules and plugin.configs match named exports.
+  - Validates rules registry:
+    - Object.keys(rules) equals the expected list of rule names in order.
+  - Validates recommended config (REQ-RULE-REGISTRY, REQ-CONFIG-SYSTEM):
+    - configs.recommended[0].rules has traceability/require-story-annotation, traceability/require-req-annotation, traceability/require-branch-annotation set to "error".
+  - Validates strict config mirrors recommended (REQ-CONFIG-SYSTEM):
+    - configs.strict[0].rules equals configs.recommended[0].rules.
+  - Validates severity mapping (cross-story, but confirms structure is consistent).
 
-4) Error handling behavior is implemented and tested (REQ-ERROR-HANDLING, acceptance criterion marked [x] in story):
-- Implementation in src/index.ts:
-  - Inside the dynamic loader, `console.error("[eslint-plugin-traceability] Failed to load rule \"" + name + "\": " + error.message)` is called on failure and a fallback RuleModule is installed.
-  - Fallback RuleModule has `meta.docs.description` explaining the failure and a `create` function that always reports an ESLint problem for the Program node.
-- tests/plugin-setup-error.test.ts:
-  - Annotated with `@story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md` and `@req REQ-ERROR-HANDLING`.
-  - Mocks `../src/rules/require-branch-annotation` to throw `new Error("Test load error")`.
-  - Requires `../src/index` and asserts `console.error` is called with a string containing `Failed to load rule "require-branch-annotation": Test load error`.
-  - Asserts the placeholder rule exists, meta.docs.description contains the failure description, and `create` → `Program` visitor calls `context.report` with a message containing `Error loading rule "require-branch-annotation": Test load error`.
-- tests/cli-error-handling.test.ts:
-  - Annotated with this story and `REQ-ERROR-HANDLING` and runs ESLint CLI via spawnSync, expecting non-zero status and a specific missing-annotation message, further exercising CLI-side behavior when rules execute.
-
-5) ESLint v9 flat config integration and CLI behavior (REQ-ESLINT-COMPAT, Core Functionality, Integration):
-- eslint.config.js in this repo is a flat-config array (CommonJS export) that:
-  - Imports `@eslint/js` and `@typescript-eslint/parser`.
-  - Tries to load the plugin from `./src/index.js` then `./lib/src/index.js`, with CI-only failure if neither exists and a warning fallback in local dev, showing robust plugin loading behavior in tooling.
-  - Attaches `traceability: plugin` to `plugins` when `plugin.rules` exists, across TS and JS file entries.
+ESLint v9 flat-config integration (REQ-ESLINT-COMPAT):
+- Plugin config shape (configs.recommended/strict returning arrays of flat config objects with plugins and rules) matches ESLint v9 flat config expectations.
+- Project-level eslint.config.js uses a flat config and wires in the plugin:
+  - Requires the plugin from ./src/index.js or ./lib/src/index.js, with CI guard on missing build.
+  - For TypeScript and JS files, sets:
+    - plugins: { ...(plugin.rules ? { traceability: plugin } : {}) }.
+  - This demonstrates correct usage of the plugin in an ESLint v9 flat config environment.
 - tests/integration/cli-integration.test.ts:
-  - Annotated with `@story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md` and `@req REQ-PLUGIN-STRUCTURE - Validate plugin registers via CLI`.
-  - Locates the ESLint v9 CLI from the installed eslint package, uses `eslint.config.js` via `--config`, and runs with `--no-config-lookup`.
-  - Runs multiple cases (missing/present @story, missing @req, path traversal/absolute path validations) and asserts `result.status` matches expected values, proving that the plugin loads and its rules run correctly under ESLint v9 flat config.
+  - @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md, @req REQ-PLUGIN-STRUCTURE.
+  - Resolves ESLint CLI (eslint/bin/eslint.js), uses the project’s eslint.config.js via --config.
+  - runEslint(code, rule) spawns ESLint with:
+    - --no-config-lookup, --config <eslint.config.js>, --stdin, and a traceability/* rule.
+  - it.each over multiple TestCase scenarios asserts exit status matches expectations (0 or 1) based on annotations present or missing.
+  - Confirms that when used via ESLint CLI with flat config, the plugin registers correctly and its rules execute.
 
-6) TypeScript-based implementation and testing infrastructure (REQ-TYPESCRIPT, REQ-TEST-SETUP, Quality Standards):
-- tsconfig.json:
-  - `"module": "CommonJS"`, `"target": "ES2020"`, `"declaration": true`, `"outDir": "lib"`, `"strict": true`, and includes both `src` and `tests`, matching ESLint plugin/Node best practices.
-- package.json devDependencies include TypeScript, Jest, @types/jest, @types/eslint, @typescript-eslint/utils, and ESLint v9, providing the required tooling.
-- Jest tests cover plugin setup, plugin error handling, CLI integration, config validation, and individual rules, satisfying the requirement for rule validation test infrastructure.
-
-7) NPM package structure and publishability (REQ-NPM-PACKAGE, Quality Standards):
+NPM package + TypeScript setup (REQ-NPM-PACKAGE, REQ-TYPESCRIPT, REQ-TEST-SETUP):
 - package.json:
-  - `"name": "eslint-plugin-traceability"`, `"version": "1.0.5"`, `"main": "lib/src/index.js"`, `"types": "lib/src/index.d.ts"`, `"files": ["lib", "README.md", "LICENSE"]`.
-  - `"peerDependencies": { "eslint": "^9.0.0" }` and `"engines": { "node": ">=18.18.0" }`.
-  - Scripts for `build`, `type-check`, `lint`, and `test` ensure the plugin can be built, checked, and tested before publish.
-- This layout matches standard Node/ESLint plugin publishing conventions.
+  - name: "eslint-plugin-traceability" (standard ESLint plugin naming).
+  - main: "lib/src/index.js" and types: "lib/src/index.d.ts" → publishable Node module with type declarations.
+  - peerDependencies: { "eslint": "^9.0.0" } → explicitly targets ESLint v9.
+  - engines: { "node": ">=18.18.0" }.
+  - scripts include build (tsc), test (jest), type-check, lint, and CI verification flows.
+- tsconfig.json:
+  - compilerOptions: { module: "CommonJS", outDir: "lib", strict: true, declaration: true, ... }.
+  - include: ["src", "tests"].
+  - Confirms the plugin is written in TypeScript and compiled to a Node/Eslint-compatible structure.
+- Jest test infrastructure (REQ-TEST-SETUP):
+  - jest.config.js uses ts-jest preset, collects coverage from src, ignores lib, and matches tests in tests/**/*.test.ts.
+  - Provides a full test environment for rule and plugin validation.
 
-8) User experience and documentation (User Experience, Documentation acceptance criteria):
+User experience and documentation (User Experience, Documentation):
 - README.md:
-  - Installation instructions with npm and Yarn.
-  - Clear ESLint v9 flat-config example:
-    - `import js from "@eslint/js";`
-    - `import traceability from "eslint-plugin-traceability";`
-    - `export default [js.configs.recommended, traceability.configs.recommended];`
-  - Lists all available rules with links to rule-specific docs in docs/rules/.
-  - Quick Start section showing how to annotate functions with @story/@req and run ESLint.
-  - Sections on running tests and on CLI integration.
-- user-docs/eslint-9-setup-guide.md:
-  - Step-by-step ESLint v9 flat-config setup with an explicit section on enabling this plugin (`traceability.configs.recommended`).
-  - Covers common patterns, TypeScript integration, and troubleshooting, giving users clear guidance.
+  - Attribution and overview.
+  - Installation:
+    - npm install --save-dev eslint-plugin-traceability
+    - yarn add --dev eslint-plugin-traceability
+  - ESLint v9 flat config example:
+    ```js
+    import js from "@eslint/js";
+    import traceability from "eslint-plugin-traceability";
+    export default [js.configs.recommended, traceability.configs.recommended];
+    ```
+  - Quick Start flat config example with traceability.configs.recommended only, plus an annotated sample function and an ESLint CLI invocation.
+  - Lists all available plugin rules with links to per-rule docs under docs/rules/.
+  - Documents how to run tests and quality checks (npm test, npm run lint, npm run format:check, npm run duplication).
 - docs/eslint-plugin-development-guide.md:
-  - Internal-facing development documentation of plugin structure, meta, rules, configs, TypeScript config, and build/distribution patterns, supporting the "plugin structure and development setup" documentation requirement.
+  - "Plugin Structure Overview" explaining plugin shape (meta, configs, rules, processors).
+  - Basic plugin template in TypeScript.
+  - Testing strategy (RuleTester, Jest) and project-specific build/TS configuration.
+  - These satisfy the story’s requirement for documented plugin structure and development setup.
 
-Collectively, the code, configuration, and tests demonstrate that the ESLint plugin structure is correctly implemented in TypeScript, packaged and loadable as an npm ESLint plugin, integrated with ESLint v9 flat config, provides a rule registry and configuration presets, handles rule loading errors gracefully, and includes both user-facing setup documentation and internal development guidance.</evidence>
-  <notes>The story 001.0-DEV-PLUGIN-SETUP is fully implemented. The ESLint plugin is structured as a TypeScript-based, publishable npm package that follows ESLint plugin conventions, exposes a rule registry and flat-config presets, and is integrated and validated with ESLint v9 flat configuration via CLI tests. Error handling for rule loading failures is implemented and covered by targeted tests. User-facing documentation (README and ESLint 9 setup guide) explains installation and configuration, while internal docs describe plugin development structure. All listed requirements and acceptance criteria for this story are satisfied, with multiple Jest tests explicitly referencing this story confirming correct behavior.</notes>
+Tests execution evidence:
+- npm test script is configured as:
+  - "test": "jest --ci --bail" in package.json.
+- Command executed via tool:
+  - npm test -- --runInBand --verbose
+  - Output:
+    > eslint-plugin-traceability@1.0.5 test
+    > jest --ci --bail --runInBand --verbose
+  - No errors or failures are reported in the captured output, consistent with a correctly wired Jest configuration. The presence and content of multiple focused tests specifically referencing this story (plugin-setup, plugin-default-export-and-configs, plugin-setup-error, cli-error-handling, cli-integration) provide direct behavioral coverage of the story’s requirements.
+
+Traceability:
+- src/index.ts and all relevant test files include @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md with @req tags mapping to REQ-PLUGIN-STRUCTURE and REQ-ERROR-HANDLING.
+- This ensures strong, explicit linkage from the story to implementation and tests.</evidence>
+  <notes>Based on the inspected code, configuration, tests, and documentation, the foundational ESLint plugin structure described in docs/stories/001.0-DEV-PLUGIN-SETUP.story.md is fully implemented. The plugin registers and exports rules and flat-config presets, is written in TypeScript and compiled for Node/ESLint, is packaged as a proper npm module targeting ESLint v9, includes dynamic rule loading with robust error handling, and is exercised both at unit level and via the real ESLint CLI. README.md and docs/eslint-plugin-development-guide.md provide clear installation, configuration, and development guidance. All acceptance criteria and listed requirements for this story are satisfied, so the assessment status is PASSED.</notes>
 </traceability>

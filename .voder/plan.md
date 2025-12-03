@@ -1,16 +1,16 @@
 ## NOW
 
-- [ ] Update all user-facing documentation to remove or generalize stale hard-coded version and date labels so they no longer conflict with the semantic-release strategy, and instead clearly direct users to GitHub Releases as the authoritative source for current versions and change history.
+- [ ] Review the existing implementation and tests for the rules that require story and requirement annotations so you can design how they should recognize `@implements` annotations as satisfying those requirements without breaking current `@story` and `@req` behavior.
 
 ## NEXT
 
-- [ ] Review the README and user documentation to ensure every mention of versioning and releases consistently explains that semantic-release controls versions and that GitHub Releases, not package.json, is the authoritative changelog for end users.
-- [ ] Revisit all user-facing security and dependency sections to confirm they describe only production dependency guarantees and clearly state that any documented semantic-release/npm risks are restricted to dev-only CI tooling and cannot impact consumers of the published plugin.
-- [ ] Refine internal dependency-health and security incident records so they explicitly reference the latest dry-aged-deps output and clearly explain why specific dev-only vulnerabilities remain accepted residual risks given the current absence of safe mature updates.
-- [ ] Ensure contributor and maintainer documentation clearly instructs how and when to run the dependency maturity and audit scripts, and how to interpret their outputs when considering dependency updates or security incident documentation.
+- [ ] Update the annotation detection utilities and the require-story-annotation rule so that functions documented only with appropriate `@implements` lines are treated as having the necessary story coverage and no longer reported as missing `@story` annotations.
+- [ ] Update the requirement detection utilities and the require-req-annotation rule so that suitable `@implements` lines are treated as satisfying the requirement-annotation check and do not trigger missing `@req` errors.
+- [ ] Extend the rule test suites to include cases where `@implements` is used with and without legacy `@story` and `@req` annotations, verifying that the new behavior matches the multi-story support requirements in the 010.2 story and that existing scenarios remain unchanged.
+- [ ] Align the 010.2 multi-story support story, relevant rule documentation, and any related ADRs to explicitly state that `@implements` satisfies the require-story-annotation and require-req-annotation rules, ensuring traceability annotations in code and tests reference the fulfilled requirement.
+- [ ] Run a focused functionality review of all multi-story support behavior, using the updated tests and stories, to confirm that the remaining multi-story requirements are fully implemented and no new gaps have been introduced.
 
 ## LATER
 
-- [ ] When dry-aged-deps identifies new safe mature versions for the semantic-release/npm toolchain or other devDependencies, update those dependencies, refresh overrides, and revise documentation and incident records to reflect the improved risk profile.
-- [ ] After documentation and dependency management meet their target thresholds, perform a focused functionality assessment that maps implemented behavior and tests to the documented stories and requirements, and summarize any remaining functional gaps.
-- [ ] Periodically refine the documentation structure so that new security incidents, ADRs, and dependency-health reviews can be linked from user-facing guarantees without overwhelming typical users with implementation details.
+- [ ] Identify and implement any additional usability enhancements around `@implements` (such as clearer diagnostics when `@implements` is malformed but present) while keeping behavior backwards compatible.
+- [ ] Consider further refactoring of shared annotation-detection logic so that future extensions to traceability annotations can be added in one place and reused consistently across all related rules and maintenance tools.
