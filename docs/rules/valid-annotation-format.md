@@ -1,9 +1,10 @@
 # valid-annotation-format
 
-Validates that `@story` and `@req` annotations follow the correct format and syntax rules to ensure traceability annotations are parseable and standardized.
+Validates that `@story`, `@req`, and `@implements` annotations follow the correct format and syntax rules to ensure traceability annotations are parseable and standardized.
 
 @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
 @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+@story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
 @req REQ-FORMAT-SPECIFICATION - Define clear format rules for @story and @req annotations
 @req REQ-SYNTAX-VALIDATION - Validate annotation syntax matches specification
 @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
@@ -11,7 +12,7 @@ Validates that `@story` and `@req` annotations follow the correct format and syn
 
 ## Rule Details
 
-This rule scans all comments in the source code and validates any lines that contain `@story` or `@req` annotations. It is designed to be flexible in how it discovers annotations while still enforcing a strict, machine-parseable format.
+This rule scans all comments in the source code and validates any lines that contain `@story`, `@req`, or `@implements` annotations. It is designed to be flexible in how it discovers annotations while still enforcing a strict, machine-parseable format.
 
 Key behaviors:
 
@@ -33,10 +34,21 @@ Key behaviors:
     which will be normalized and validated as
     `@story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`.
 
+- **`@implements` format support**
+  - The rule validates `@implements` annotations that associate code with one or more stories and requirements, such as:
+    ```js
+    /**
+     * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FOO REQ-BAR
+     */
+    ```
+  - The story path that appears first in an `@implements` annotation is validated using the same story pattern as `@story`.
+  - All requirement IDs that follow in the same `@implements` annotation are validated using the same requirement pattern as `@req`.
+  - This ensures that multi-story / multi-requirement traceability annotations share the same standardized, machine-parseable formats as standalone `@story` and `@req` annotations.
+
 - **Validated patterns (configurable)**
   - The rule validates:
-    - **Story identifiers**: the value that follows `@story`
-    - **Requirement identifiers**: the value that follows `@req`
+    - **Story identifiers**: the value that follows `@story` (and the story path segment of `@implements`)
+    - **Requirement identifiers**: the value that follows `@req` (and each requirement ID segment of `@implements`)
   - Both patterns are configurable via rule options so that teams can align validation with their own conventions while still keeping annotations machine-parseable.
 
 ## Options
@@ -302,4 +314,3 @@ function flatConfigured() {}
  * @req REQ-EXAMPLE
  */
 function badExample() {}
-```

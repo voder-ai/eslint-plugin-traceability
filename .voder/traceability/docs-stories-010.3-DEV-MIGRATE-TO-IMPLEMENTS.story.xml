@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-12-03T10:46:03.106Z</last_validated>
+  <last_modified>2025-12-03T10:01:13.821Z</last_modified>
+  <evidence>1) No implementation or parsing of @implements in source rules:
+- Directory src/rules contains only:
+  - helpers/
+  - require-branch-annotation.ts
+  - require-req-annotation.ts
+  - require-story-annotation.ts
+  - valid-annotation-format.ts
+  - valid-req-reference.ts
+  - valid-story-reference.ts
+- Global search: `grep -R "@implements" .` shows no matches in src/ or tests/. All matches are in node_modules or documentation (docs/decisions and docs/stories) rather than plugin code.
+- src/rules/valid-annotation-format.ts only looks for @story and @req tags (via /@story\b/ and /@req\b/); there is no handling of @implements lines or converting between formats.
+- src/rules/valid-req-reference.ts and src/rules/valid-story-reference.ts similarly only recognize @story and @req in comments and do not support or mention @implements.
+
+2) No migration rule like `traceability/prefer-implements-annotation` exists:
+- `find src/rules -name '*implements*'` → no rule files related to implements or migration.
+- search in eslint.config.js for `prefer-implements-annotation` → no matches.
+- search in src/index.ts for `implements` → no matches, so no rule with that name is exported or configured.
+
+3) No tests for @implements migration or the new recommendation rule:
+- tests/rules contains tests such as require-story-annotation.test.ts, require-req-annotation.test.ts, valid-annotation-format.test.ts, valid-req-reference.test.ts, etc., but no file names or contents referring to @implements or 010.3.
+- `find tests -name '*implements*'` → 0 files.
+- There are no tests referencing the story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md, nor any tests asserting auto-fix behavior from @story/@req to @implements.
+
+4) Story and ADR describe planned behavior only:
+- docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md specifies:
+  - A new ESLint rule `prefer-implements-annotation` that is disabled by default.
+  - Optional warnings when @story + @req is used.
+  - An ESLint auto-fix that transforms a single @story with multiple @req into one @implements line, preserving JSDoc ordering.
+  - Configuration examples in eslint.config.js using "traceability/prefer-implements-annotation": "off" | "warn" | "error".
+  - Specific message IDs: preferImplements, cannotAutoFix, multiStoryDetected.
+- None of these rule names, config keys, or message IDs appear in src/ or tests/.
+- docs/decisions/010-implements-annotation-for-multi-story-requirements.proposed.md is marked as a proposed ADR, indicating design but not completed implementation.
+
+5) Tests do not demonstrate the required behavior:
+- Running `npm test -- --verbose` executes Jest but prints no test output indicating any rule or tests related to @implements, migration, or Story 010.3.
+
+From this evidence, the codebase currently only supports the legacy @story + @req model, with no migration rule, no auto-fix conversion to @implements, no configurable severity for such a rule, and no tests or docs wired into the runtime configuration.</evidence>
+  <notes>The story 010.3-DEV-MIGRATE-TO-IMPLEMENTS requires a new optional ESLint rule (e.g., traceability/prefer-implements-annotation) that recommends migrating from @story/@req annotations to @implements, provides an auto-fix to perform that conversion for single-story cases, detects multi-story/ambiguous patterns, preserves JSDoc ordering, allows configurable severity (off/warn/error, default off), and ensures both formats remain valid when the recommendation is disabled. The current implementation has no such rule, no parsing or handling of @implements in the existing rules, no configuration entries for the migration rule, and no tests or fixtures covering the described auto-fix or warnings. All evidence of @implements and migration exists only in documentation and a proposed ADR. Therefore, none of the acceptance criteria for this story are met and the status is FAILED.</notes>
+</traceability>

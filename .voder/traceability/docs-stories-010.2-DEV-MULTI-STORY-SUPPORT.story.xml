@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-12-03T10:44:55.387Z</last_validated>
+  <last_modified>2025-12-03T09:51:10.805Z</last_modified>
+  <evidence>1) Story file is a concrete spec with unchecked acceptance criteria:
+- docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+  - All acceptance-criteria checkboxes are written as `- [ ]`, none are marked complete.
+
+2) No implementation of `@implements` support in the ESLint rules:
+- src/rules/valid-annotation-format.ts
+  - File header describes: "Rule to validate @story and @req annotation format and syntax." Only these tags are mentioned.
+  - normalizeCommentLine() looks for `@story` and `@req` only:
+    - `const annotationMatch = trimmed.match(/@story\b|@req\b/);`
+  - processCommentLine() detects only `@story` and `@req`:
+    - `const isStory = /@story\b/.test(normalized);`
+    - `const isReq = /@req\b/.test(normalized);`
+  - There is no logic referring to `@implements` anywhere in this file.
+
+- src/rules/valid-req-reference.ts
+  - Entire rule is built around `@story` and `@req`:
+    - extractStoryPath(): scans comment lines for ones starting with "@story" and returns the second token as the story path.
+    - extractReqIdFromLine(): extracts a requirement ID from lines starting with "@req" by splitting and returning `parts[1]`.
+    - handleAnnotationLine():
+      - if line starts with "@story", it updates the storyPath using extractStoryPath().
+      - else if line starts with "@req", it calls validateReqLine().
+      - there is no branch for `@implements`.
+    - All downstream validation (validateReqLine, resolveStoryAndRequirements, loadAndCacheRequirements, checkRequirementExists) assumes the legacy `@story` + `@req` model.
+  - No parsing, validation, or branching for `@implements` lines is present.
+
+3) Global search confirms no project-level `@implements` handling in src/ or tests/:
+- Command: `grep -Rni @implements .`
+  - Matches are only found in:
+    - node_modules (e.g. various libraries using `@implements` in their own JSDoc),
+    - docs/decisions/010-implements-annotation-for-multi-story-requirements.proposed.md,
+    - docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md,
+    - docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md.
+  - There are no matches in src/ or tests/ that indicate any custom parsing or rule logic for `@implements`.
+
+4) ADR indicates the feature is still only proposed:
+- docs/decisions/010-implements-annotation-for-multi-story-requirements.proposed.md
+  - Front matter: `status: "proposed"` (not accepted/implemented).
+  - The document describes desired `@implements` behavior, but nothing in src/ reflects this implementation.
+
+5) No tests reference this story or its specific requirements:
+- Command: `grep -Rni "010.2-DEV-MULTI-STORY-SUPPORT" tests`
+  - Fails with no matches (no tests tagged to this story).
+- Command: `grep -Rni "REQ-IMPLEMENTS-PARSE" src tests docs`
+  - Returns no matches; none of the story’s requirement IDs appear in code or tests.
+- Existing rule tests (e.g. tests/rules/valid-req-reference.test.ts) only cover legacy behavior:
+  - Header comments reference:
+    - `docs/stories/010.0-DEV-DEEP-VALIDATION.story.md`
+    - `docs/stories/007.0-DEV-ERROR-REPORTING.story.md`
+  - Test cases all use code snippets with:
+    - `// @story ...`
+    - `// @req ...`
+  - There are no test cases showing `@implements story-path REQ-...` usage, no multi-story examples, and no mixed `@story` / `@implements` patterns.
+
+6) Error messages currently include story context, but only for legacy style:
+- src/rules/valid-req-reference.ts defines:
+  - `reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'"`
+  - `invalidPath: "Invalid story path '{{storyPath}}'"`
+- These messages match the desired error format in the story, but they are only used when validating `@req` linked to a single `@story`; there is no equivalent path for `@implements`-based validation.
+
+7) No `@implements`-oriented examples or migration documentation integrated into user-facing or rule-level docs:
+- While the story and the proposed ADR contain example code snippets and migration discussion, there is no corresponding implementation in src/, no tests, and no references in the plugin’s runtime configuration.</evidence>
+  <notes>The file docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md is a concrete implementation story, not a general planning document, so it is in scope for assessment. The story defines support for a new `@implements story-path REQ-ID1 REQ-ID2 ...` annotation, validation of those requirements against their specified stories, mixed usage with existing `@story` + `@req` annotations, and updated error messages and documentation.
+
+Current implementation only supports the legacy `@story` + `@req` model. The rules valid-annotation-format and valid-req-reference do not recognize or parse `@implements`. All parsing and validation paths assume a single story path derived from `@story` and requirement IDs from `@req` lines. Global search shows no `@implements` support in src/ or tests/. Tests for valid-req-reference exercise only the legacy behavior and are tagged to earlier stories (010.0, 007.0), not to 010.2. The ADR for this feature remains in the "proposed" state, and no tests or documentation updates tied to `@implements` are present in the runtime code.
+
+Therefore, the acceptance criteria for story 010.2-DEV-MULTI-STORY-SUPPORT are not met: there is no core `@implements` parsing, no multi-story validation, no mixed-usage support, no tests covering these behaviors, and no evidence of completed migration guidance in the implemented code. This story is currently FAILED.</notes>
+</traceability>

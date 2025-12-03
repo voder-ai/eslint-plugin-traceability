@@ -1,18 +1,16 @@
 ## NOW
 
-- [ ] Analyze the most duplicated test file related to annotation checking and design a small shared helper or fixture abstraction that will let you remove obvious copy‑pasted test code while keeping the tests’ behavior and readability intact.
+- [ ] Review the multi-story support specification and existing annotation rules to design how the new @implements annotation should be represented and coexist with existing @story and @req annotations without breaking current behavior.
 
 ## NEXT
 
-- [ ] Refactor the selected annotation-checker test file to use the new shared helper or fixture, ensuring all existing scenarios are still covered and the tests remain easy to understand.
-- [ ] Apply the same shared helper or a closely related one to at least one or two other highly duplicated rule test files so that their repeated patterns are consolidated without changing tested behavior.
-- [ ] Review one large, complex production module that underpins traceability or maintenance logic and sketch a minimal, behavior-preserving restructuring that extracts cohesive helper functions or submodules to reduce size and clarify responsibilities.
-- [ ] Implement the planned restructuring in that production module, updating traceability annotations as needed and confirming that public behavior and existing test coverage remain unchanged.
-- [ ] Re-evaluate duplication and file-size metrics after these changes to confirm that the worst hotspots have improved and that the overall code-quality posture has moved closer to the desired threshold.
+- [ ] Extend the annotation-format validation rule so it recognizes @implements lines, enforces their expected structure, and preserves all existing @story and @req behaviors.
+- [ ] Update the deep requirement-reference validation rule to parse @implements annotations into a richer internal model and validate all referenced stories and requirement IDs according to the multi-story support requirements.
+- [ ] Add focused tests that cover valid and invalid @implements usage, including mixed @story/@req and @implements scenarios, ensuring each acceptance criterion in the multi-story support story is exercised.
+- [ ] Align user-facing and rule documentation to describe the new @implements annotation, its interaction with legacy annotations, and any precedence or migration rules, then mark the multi-story support story’s acceptance criteria as completed.
 
 ## LATER
 
-- [ ] Systematically apply similar duplication-reduction techniques to the remaining high-duplication test files, introducing additional shared test utilities where they clearly improve maintainability.
-- [ ] Incrementally decompose the other large production files identified in the assessment into smaller, focused modules or helpers, using behavior-preserving refactors and keeping each step small and well-covered by tests.
-- [ ] Refine the duplication monitoring setup to emphasize separate thresholds for production and test code, using the reports to guard against regressions now that the biggest hotspots have been addressed.
-- [ ] Periodically revisit the ESLint configuration and code-quality ratcheting ADR to see if further tightening of limits (such as function length or complexity) is appropriate once the structure of the codebase is cleaner.
+- [ ] Implement and document a migration path and linting guidance for moving existing codebases from pure @story/@req usage to @implements-centric annotations as described in the follow-up migration story.
+- [ ] Look for opportunities to refactor shared annotation parsing logic into a common utility used by both format and reference-validation rules, now that multi-story support is implemented.
+- [ ] Expand example configurations and usage guides to include practical multi-story scenarios that demonstrate @implements in real-world codebases.
