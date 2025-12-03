@@ -160,6 +160,7 @@ To keep local development aligned with CI:
 - **Pre-push** (`.husky/pre-push`):
   - Runs `npm run ci-verify:full`.
   - This mirrors the CI quality gate so that most issues are caught before code reaches GitHub.
+  - Secret scanning (`npm run security:secrets`) currently runs only in CI on the Node 20.x matrix entry and is not part of the pre-push hook, but it uses the same configuration so results stay consistent between local and CI.
 
 Local verification commands:
 

@@ -5,8 +5,9 @@
  * @story docs/stories/012.0-DEV-CI-AUDIT-INTEGRATION.story.md
  * @story Generate a machine-readable npm audit report focused on development dependencies for CI.
  * @req REQ-CI-DEV-AUDIT
- * @req Run `npm audit --omit=prod --audit-level=high --json`, capture UTF-8 output, write to ci/npm-audit.json,
- *      ensure output directory exists, and always exit with code 0 (do not block CI).
+ * @req Run `npm audit --include=dev --audit-level=high --json`, capturing UTF-8 output focused on development
+ *      dependencies, write to ci/npm-audit.json, ensure output directory exists, and always exit with code 0
+ *      (do not block CI).
  */
 const { spawnSync } = require("child_process");
 const fs = require("fs");
@@ -16,7 +17,7 @@ const path = require("path");
 // Do not use shell: true
 const result = spawnSync(
   "npm",
-  ["audit", "--omit=prod", "--audit-level=high", "--json"],
+  ["audit", "--include=dev", "--audit-level=high", "--json"],
   {
     encoding: "utf8",
   },

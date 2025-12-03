@@ -9,6 +9,10 @@ Supported runtime: Node.js >=18.18.0, ESLint ^9.0.0
 
 Each rule enforces traceability conventions in your code. Below is a summary of each rule exposed by this plugin.
 
+In addition to the core `@story` and `@req` annotations, the plugin also understands `@implements` for code that fulfills requirements from multiple stories—for example:
+`@implements docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`.
+For a detailed explanation of `@implements` behavior and validation, see `user-docs/migration-guide.md` (section **3.1 Multi-story @implements annotations**) and the rule docs at `docs/rules/valid-annotation-format.md` and `docs/rules/valid-req-reference.md`.
+
 ### traceability/require-story-annotation
 
 Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When run with `--fix`, the rule inserts a single-line placeholder JSDoc `@story` annotation above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. This template is currently fixed but structured for future configurability, and fixes are strictly limited to adding this placeholder annotation without altering the function body or changing any runtime behavior. Selective enabling of different auto-fix behaviors (such as applying fixes only to certain scopes or node types) is planned for a future version.
@@ -192,6 +196,7 @@ The plugin provides two built-in presets for easy configuration:
 
 Enables the core traceability rules with severities tuned for common usage (most at `error`, with
 `traceability/valid-annotation-format` at `warn` to reduce noise):
+This `warn` level for `traceability/valid-annotation-format` is intentional to keep early adoption noise low, but you can safely raise it to `error` in projects that want strict enforcement of annotation formatting.
 
 - `traceability/require-story-annotation`: `error`
 - `traceability/require-req-annotation`: `error`

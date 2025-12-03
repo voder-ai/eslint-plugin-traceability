@@ -28,21 +28,16 @@ Additional ESLint v9 configuration guidance:
 
 Example eslint.config.js (ESLint v9 flat config):
 
+This example shows the recommended starting point using the plugin's recommended preset alongside ESLint's recommended config:
+
 ```js
 // eslint.config.js
-module.exports = [
-  {
-    env: {
-      es2021: true,
-      node: true,
-    },
-    plugins: { traceability: {} },
-    rules: {
-      "traceability/require-story-annotation": "error",
-      "traceability/require-req-annotation": "error",
-      "traceability/require-branch-annotation": "error",
-    },
-  },
+import js from "@eslint/js";
+import traceability from "eslint-plugin-traceability";
+
+export default [
+  js.configs.recommended,
+  traceability.configs.recommended,
 ];
 ```
 
