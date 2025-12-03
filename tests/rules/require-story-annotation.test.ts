@@ -5,12 +5,13 @@
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-story-annotation";
-import { withTsLanguageOptions } from "../utils/ts-language-options";
+import {
+  tsRuleTesterLanguageOptions,
+  withTsLanguageOptions,
+} from "../utils/ts-language-options";
 
 const ruleTester = new RuleTester({
-  languageOptions: {
-    parserOptions: { ecmaVersion: 2020, sourceType: "module" },
-  },
+  languageOptions: tsRuleTesterLanguageOptions,
 } as any);
 
 describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", () => {
