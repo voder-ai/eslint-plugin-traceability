@@ -22,7 +22,7 @@ The `@implements` annotation was released less than 24 hours ago and has no know
 
 ## Considered Options
 
-1. Rename to `@supports` 
+1. Rename to `@supports`
 2. Rename to `@traces`
 3. Rename to `@addresses`
 4. Keep `@implements` and document workaround (remove `// @ts-check`)
@@ -46,6 +46,7 @@ Chosen option: "Rename to `@supports`", because it accurately reflects the contr
 ### Confirmation
 
 The implementation will be confirmed by:
+
 1. All existing tests passing with `@supports` replacing `@implements`
 2. Manual verification that `@supports` works in JavaScript files with `// @ts-check`
 3. TypeScript validator no longer raises errors on the annotation
@@ -59,6 +60,7 @@ The implementation will be confirmed by:
 Annotation format: `@supports <story-path> <REQ-ID> [<REQ-ID> ...]`
 
 Example:
+
 ```javascript
 /**
  * Apply filters combining age and security checks.
@@ -107,6 +109,7 @@ Annotation format: `@addresses <story-path> <REQ-ID> [<REQ-ID> ...]`
 ### Add @supports and deprecate @implements
 
 Multi-version deprecation path:
+
 - v2.0.0: Add `@supports`, deprecate `@implements` with warnings
 - v2.1.0: `@implements` warnings become errors
 - v3.0.0: Remove `@implements` entirely
@@ -121,6 +124,7 @@ Multi-version deprecation path:
 ## More Information
 
 **Implementation Plan:**
+
 1. Update ADR 010 to reference this decision
 2. Create/update story 010.2 to use `@supports` terminology
 3. Global replace in plugin source code:
@@ -134,6 +138,7 @@ Multi-version deprecation path:
 8. Update dry-aged-deps to use `@supports` once new version published
 
 **Related Decisions:**
+
 - ADR 010: Multi-story requirement support (original decision to add the annotation)
 - Story 010.2: Multi-story requirements implementation
 

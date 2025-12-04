@@ -23,6 +23,19 @@ const ruleTester = new RuleTester({
 } as any);
 
 /**
+ * Build a standard missingReq error object for a given function name.
+ *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Standardize missingReq error shape in tests
+ */
+function missingReq(functionName: string) {
+  return {
+    messageId: "missingReq" as const,
+    data: { name: functionName, functionName },
+  };
+}
+
+/**
  * @trace Story 003.0-DEV-FUNCTION-ANNOTATIONS / REQ-TYPESCRIPT-SUPPORT
  * Exercise the require-req-annotation rule's behavior on TSDeclareFunction and
  * TSMethodSignature via the shared runAnnotationCheckerTests helper.
@@ -47,22 +60,12 @@ runAnnotationCheckerTests("require-req-annotation", {
     {
       name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction",
       code: `declare function baz(): void;`,
-      errors: [
-        {
-          messageId: "missingReq",
-          data: { name: "baz", functionName: "baz" },
-        },
-      ],
+      errors: [missingReq("baz")],
     },
     {
       name: "[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature",
       code: `interface I { method(): void; }`,
-      errors: [
-        {
-          messageId: "missingReq",
-          data: { name: "method", functionName: "method" },
-        },
-      ],
+      errors: [missingReq("method")],
     },
   ],
 });
@@ -138,159 +141,84 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
       {
         name: "[REQ-ANNOTATION-REQUIRED][REQ-REQUIRE-ACCEPTS-IMPLEMENTS] missing @req on function without JSDoc remains invalid under multi-story support",
         code: `function baz() {}`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "baz", functionName: "baz" },
-          },
-        ],
+        errors: [missingReq("baz")],
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] missing @req on function with only @story annotation",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction qux() {}`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "qux", functionName: "qux" },
-          },
-        ],
+        errors: [missingReq("qux")],
       },
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on FunctionExpression assigned to variable",
         code: `const fn = function () {};`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "fn", functionName: "fn" },
-          },
-        ],
+        errors: [missingReq("fn")],
       },
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on anonymous FunctionExpression (no variable name)",
         code: `(function () {})();`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "(anonymous)", functionName: "(anonymous)" },
-          },
-        ],
+        errors: [missingReq("(anonymous)")],
       },
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on MethodDefinition in class",
         code: `class C {\n  m() {}\n}`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "m", functionName: "m" },
-          },
-        ],
+        errors: [missingReq("m")],
       },
       {
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on MethodDefinition in object literal",
         code: `const o = { m() {} };`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "m", functionName: "m" },
-          },
-        ],
+        errors: [missingReq("m")],
       },
       withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on TS FunctionExpression in variable declarator",
         code: `const fn = function () {};`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "fn", functionName: "fn" },
-          },
-        ],
+        errors: [missingReq("fn")],
       }),
       withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on exported TS FunctionExpression in variable declarator",
         code: `export const fn = function () {};`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "fn", functionName: "fn" },
-          },
-        ],
+        errors: [missingReq("fn")],
       }),
       {
         name: "[REQ-CONFIGURABLE-SCOPE][Story 003.0] FunctionDeclaration still reported when scope only includes FunctionDeclaration",
         code: `function scoped() {}`,
         options: [{ scope: ["FunctionDeclaration"] }],
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "scoped", functionName: "scoped" },
-          },
-        ],
+        errors: [missingReq("scoped")],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] exported function reported when exportPriority is 'exported'",
         code: `export function exportedFn() {}`,
         options: [{ exportPriority: "exported" }],
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "exportedFn", functionName: "exportedFn" },
-          },
-        ],
+        errors: [missingReq("exportedFn")],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] non-exported function reported when exportPriority is 'non-exported'",
         code: `function nonExported() {}`,
         options: [{ exportPriority: "non-exported" }],
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "nonExported", functionName: "nonExported" },
-          },
-        ],
+        errors: [missingReq("nonExported")],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] exported method reported when exportPriority is 'exported'",
         code: `export class C {\n  m() {}\n}`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "m", functionName: "m" },
-          },
-        ],
+        errors: [missingReq("m")],
         options: [{ exportPriority: "exported" }],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] non-exported method reported when exportPriority is 'non-exported'",
         code: `class C {\n  m() {}\n}`,
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "m", functionName: "m" },
-          },
-        ],
+        errors: [missingReq("m")],
         options: [{ exportPriority: "non-exported" }],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] exported FunctionExpression reported when exportPriority is 'exported'",
         code: `export const fn = function () {};`,
         options: [{ exportPriority: "exported" }],
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "fn", functionName: "fn" },
-          },
-        ],
+        errors: [missingReq("fn")],
       },
       {
         name: "[REQ-EXPORT-PRIORITY][Story 003.0] non-exported FunctionExpression reported when exportPriority is 'non-exported'",
         code: `const fn = function () {};`,
         options: [{ exportPriority: "non-exported" }],
-        errors: [
-          {
-            messageId: "missingReq",
-            data: { name: "fn", functionName: "fn" },
-          },
-        ],
+        errors: [missingReq("fn")],
       },
     ],
   });

@@ -1,15 +1,16 @@
 ## NOW
 
-- [ ] Create a single, concise security overview document that summarizes all security tooling, gates, and guarantees in one place so an automated or human assessor can understand the project’s security posture without needing to read the entire codebase or multiple scattered documents.
+- [ ] Analyze the most highly duplicated test file and refactor it to use shared helpers or data builders so that repeated RuleTester setups and case definitions are centralized, reducing duplication without changing test behavior.
 
 ## NEXT
 
-- [ ] Update existing security-related documentation to reference the new security overview explicitly, so that SECURITY.md, dependency health docs, and CI/CD docs all point assessors to this single high-level entry point.
-- [ ] Cross-check the security overview against package configuration and CI workflow definitions to ensure every described tool, script, and gate name matches the actual implementation and there are no stale or contradictory statements.
-- [ ] Review the secret-scanning and dependency-audit scripts mentioned in the security overview to confirm that their current behavior (gating versus advisory) is fully and accurately reflected in the overview and related docs.
+- [ ] Apply the same refactoring approach to the remaining test files that have very high duplication, extracting common configuration, fixtures, and assertion patterns into reusable test utilities while ensuring existing behaviors remain covered.
+- [ ] Review the project’s traceability report and add or refine story and requirement annotations on any remaining unannotated functions and control-flow branches so that implementation traceability is effectively complete for existing features.
+- [ ] Revisit the existing lint-rule suppression for the function that exceeds the parameter limit and either refactor the code to remove the need for the suppression or update its rationale to clearly document why it remains the preferred design.
+- [ ] Once duplication and traceability improvements are in place, re-run the project’s duplication and traceability checks to confirm that overall code-quality indicators have improved enough to allow a full functionality assessment.
 
 ## LATER
 
-- [ ] Once the security overview has been validated and a full SECURITY assessment can succeed, revisit the functionality coverage documentation and add a similarly concise functionality overview that points to key stories, rules, and tests without requiring large-context scans.
-- [ ] Periodically refine the security overview and related ADRs when security tooling or policies evolve, keeping the high-level description stable while adjusting details as implementation changes.
-- [ ] Evaluate whether any internal security or dependency-health scripts could be simplified or consolidated further to reduce cognitive and assessment overhead while preserving the same guarantees.
+- [ ] Consider tightening selected linting thresholds (such as maximum complexity or function length) in small increments, guided by current violation hotspots, to further reinforce maintainable design without causing widespread breakage.
+- [ ] Enhance internal developer documentation to describe the shared testing helpers, traceability expectations, and how to extend them when adding new rules or maintenance features so future work naturally preserves high code quality.
+- [ ] Evaluate whether the traceability check should be made stricter (for example, failing when coverage drops below an agreed threshold) once the current gaps are closed and the team is comfortable with the process.

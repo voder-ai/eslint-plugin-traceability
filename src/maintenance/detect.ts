@@ -59,6 +59,8 @@ function processFileForStaleAnnotations(
   try {
     content = fs.readFileSync(file, "utf8");
   } catch {
+    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
     return;
   }
 
@@ -102,6 +104,7 @@ function handleStoryMatch(
 
   // If both candidates are out-of-project, do not mark as stale and skip FS checks
   if (inProjectCandidates.length === 0) {
+    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     return;
   }
 
@@ -134,6 +137,7 @@ function getInProjectCandidates(
       workspaceRoot,
     );
   } catch {
+    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     projectBoundary = {
       isWithinProject: false,
       candidate: storyProjectCandidate,
@@ -146,6 +150,7 @@ function getInProjectCandidates(
       workspaceRoot,
     );
   } catch {
+    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     codebaseBoundary = {
       isWithinProject: false,
       candidate: storyCodebaseCandidate,
@@ -168,5 +173,8 @@ function getInProjectCandidates(
  * @req REQ-MAINT-DETECT - Check on-disk existence of in-project candidates
  */
 function anyInProjectCandidateExists(inProjectCandidates: string[]): boolean {
-  return inProjectCandidates.some((p) => fs.existsSync(p));
+  return inProjectCandidates.some((p) => {
+    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    return fs.existsSync(p);
+  });
 }

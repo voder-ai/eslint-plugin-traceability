@@ -37,6 +37,7 @@ export const STORY_EXAMPLE_PATH = "docs/stories/005.0-DEV-EXAMPLE.story.md";
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
 export function collapseAnnotationValue(value: string): string {
+  // @implements docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT
   return value.replace(/\s+/g, "");
 }
 
@@ -58,25 +59,30 @@ export function collapseAnnotationValue(value: string): string {
 export function getFixedStoryPath(original: string): string | null {
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-SAFE - Skip auto-fix entirely for paths containing directory traversal segments ("..").
   if (original.includes("..")) {
+    // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE
     return null;
   }
 
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-FORMAT - Do not modify paths that already end with ".story.md" since they are already in the correct format.
   if (/\.story\.md$/.test(original)) {
+    // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
     return null;
   }
 
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE - Append the missing ".md" extension when the path already ends with ".story", preserving the existing base path.
   if (/\.story$/.test(original)) {
+    // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE
     return `${original}.md`;
   }
 
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE - Upgrade plain ".md" paths to ".story.md" while preserving the rest of the path unchanged.
   if (/\.md$/.test(original)) {
+    // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE
     return original.replace(/\.md$/, ".story.md");
   }
 
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md | REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE REQ-AUTOFIX-SAFE - For paths with no extension, conservatively append ".story.md" to create a canonical story file path.
+  // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE REQ-AUTOFIX-SAFE
   return `${original}.story.md`;
 }
 

@@ -26,8 +26,8 @@ Key security-related npm scripts:
     - Local development: `.husky/pre-push` hook.
   - Runs (in order):
     1. `npm run check:traceability` (not a security tool, but enforces internal traceability policy).
-    2. `npm run safety:deps` (dependency maturity and health; *advisory*  see below).
-    3. `npm run audit:ci` (full `npm audit --json`; *advisory*).
+    2. `npm run safety:deps` (dependency maturity and health; _advisory_  see below).
+    3. `npm run audit:ci` (full `npm audit --json`; _advisory_).
     4. `npm run build` (TypeScript compile).
     5. `npm run type-check` (no-emit type check).
     6. `npm run lint-plugin-check`.
@@ -36,7 +36,7 @@ Key security-related npm scripts:
     9. `npm run test -- --coverage`.
     10. `npm run format:check`.
     11. **`npm audit --omit=dev --audit-level=high`** (**gating** production security audit).
-    12. `npm run audit:dev-high` (dev-only audit; *advisory*).
+    12. `npm run audit:dev-high` (dev-only audit; _advisory_).
 
 - **`npm run safety:deps`**
   - Implementation: `node scripts/ci-safety-deps.js`.
@@ -148,14 +148,14 @@ Developers are encouraged to use `npm run ci-verify:full` as the canonical local
 
 The table below summarizes which commands are **gating** (can fail CI/pre-push) and which are **advisory** (never fail CI/pre-push, but produce artifacts and logs for review).
 
-| Area                          | Command / Script                                       | Where used                         | Behavior               |
-|------------------------------|--------------------------------------------------------|------------------------------------|------------------------|
-| Production dependency audit  | `npm audit --omit=dev --audit-level=high`             | `ci-verify:full`, CI + pre-push    | **Gating** (must pass) |
-| Dev-only audit (high sev)    | `npm run audit:dev-high` (`scripts/generate-dev-deps-audit.js`) | `ci-verify:full`, CI, nightly job  | Advisory (always 0)    |
-| Full audit snapshot          | `npm run audit:ci` (`scripts/ci-audit.js`)            | `ci-verify:full`, CI               | Advisory (always 0)    |
-| Dependency maturity / health | `npm run safety:deps` (`scripts/ci-safety-deps.js`)   | `ci-verify:full`, CI               | Advisory (always 0)    |
-| Secret scanning              | `npm run security:secrets` (secretlint)               | CI (Node 20.x), pre-push           | **Gating** (must pass) |
-| Traceability policy          | `npm run check:traceability` (`scripts/traceability-check.js`) | `ci-verify:full`, CI + pre-push    | Gating (must pass)     |
+| Area                         | Command / Script                                                | Where used                        | Behavior               |
+| ---------------------------- | --------------------------------------------------------------- | --------------------------------- | ---------------------- |
+| Production dependency audit  | `npm audit --omit=dev --audit-level=high`                       | `ci-verify:full`, CI + pre-push   | **Gating** (must pass) |
+| Dev-only audit (high sev)    | `npm run audit:dev-high` (`scripts/generate-dev-deps-audit.js`) | `ci-verify:full`, CI, nightly job | Advisory (always 0)    |
+| Full audit snapshot          | `npm run audit:ci` (`scripts/ci-audit.js`)                      | `ci-verify:full`, CI              | Advisory (always 0)    |
+| Dependency maturity / health | `npm run safety:deps` (`scripts/ci-safety-deps.js`)             | `ci-verify:full`, CI              | Advisory (always 0)    |
+| Secret scanning              | `npm run security:secrets` (secretlint)                         | CI (Node 20.x), pre-push          | **Gating** (must pass) |
+| Traceability policy          | `npm run check:traceability` (`scripts/traceability-check.js`)  | `ci-verify:full`, CI + pre-push   | Gating (must pass)     |
 
 > Note: While `check:traceability` is primarily about requirements traceability rather than security, failures in this command do block CI and pre-push because traceability is part of the projects overall quality bar.
 

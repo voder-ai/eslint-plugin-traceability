@@ -524,3 +524,4 @@ In CI:
 
 ```bash
 npm run traceability:verify
+```
