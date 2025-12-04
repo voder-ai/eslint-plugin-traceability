@@ -91,4 +91,4 @@ describe("annotation-checker helper", () => {
       },
     ],
   });
-});
+})
