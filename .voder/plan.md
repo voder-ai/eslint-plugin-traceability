@@ -1,15 +1,16 @@
 ## NOW
 
-- [ ] Create or refine a root-level security policy document that clearly describes the dev-only semantic-release/npm toolchain risk, the existing compensating controls and CI isolation around it, and the intended upgrade path once a safe version becomes available, so that this aspect of the project’s security posture is explicit and centralized.
+- [ ] Ensure the security policy document is included wherever the README is distributed by updating the project’s packaging configuration so that the SECURITY file linked from the README is actually shipped with the published package.
 
 ## NEXT
 
-- [ ] Review the continuous integration workflow configuration to verify exactly how and where the semantic-release job runs, and adjust its structure or permissions if needed to further isolate it from untrusted inputs while preserving automated releases.
-- [ ] Align the existing security incident and dependency health documents with the new centralized security policy so they consistently describe the same controls, assumptions, and future remediation plan for the semantic-release/npm toolchain.
-- [ ] Introduce a lightweight guard or precondition around the semantic-release invocation that enforces the intended safe usage context and prevents accidental invocation in unsupported or less-isolated environments.
+- [ ] Apply the identified safe, mature updates to the development-only release tooling dependencies so that the versions of the semantic-release toolchain match the latest approved versions from the dependency maturity analysis.
+- [ ] Refresh the dependency lockfile to reflect the updated development tooling versions and ensure that installs remain deterministic across environments.
+- [ ] Review all user-facing documentation for references to the security policy and other shipped documentation files to confirm that every linked file will be present in the published package layout.
+- [ ] Confirm that the dependency health and security incident documents remain accurate after the tooling upgrades, updating any version-specific notes or rationales if the upgraded toolchain changes the risk profile.
 
 ## LATER
 
-- [ ] When a dry-aged-deps–approved safe upgrade path for the semantic-release/npm toolchain becomes available, update the relevant dependencies and then convert the current known-error documentation into a resolved-incident record describing the remediation.
-- [ ] Extend the security review to other dev-only tooling to detect any similar bundled or embedded high-risk dependencies, and add documentation plus compensating controls where necessary.
-- [ ] After the SECURITY area comfortably exceeds its threshold, revisit the functionality assessment to identify and close any remaining story-level feature gaps using the strengthened security foundation.
+- [ ] Re-run the implementation assessment’s dependency maturity and security review steps at a later date to verify that there are no new safe updates pending and that all vulnerabilities remain confined to documented, accepted-risk areas.
+- [ ] Once documentation and dependency management clearly exceed their thresholds, revisit the functionality assessment to identify any remaining story-level feature gaps and plan targeted work to close them.
+- [ ] Consider adding a lightweight automated check that validates that all Markdown links in user-facing documentation point only to files that are actually included in the published package, to prevent future documentation distribution gaps.
