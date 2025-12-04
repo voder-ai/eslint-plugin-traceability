@@ -8,6 +8,8 @@ informed: [Plugin Users, Project Contributors]
 
 # Introduce @implements Annotation for Multi-Story Requirements
 
+> Status: Superseded in naming only. The `@implements` tag described in this ADR has been renamed to `@supports` as decided in ADR 011. The design, behavior, and rationale remain historically relevant; references to `@implements` here should be read as `@supports` in the current implementation.
+
 ## Context and Problem Statement
 
 The current traceability annotation system uses `@story` to reference a story file and `@req` to reference requirement IDs within that story. This works well for functions that implement a single story, but breaks down for integration functions that combine functionality from multiple stories. For example, `apply-filters.js` calls both `filterByAge()` (from story 003) and `filterBySecurity()` (from story 004), needing to reference requirements from both stories.
