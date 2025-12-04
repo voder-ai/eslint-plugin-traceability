@@ -189,6 +189,52 @@ function example() {
 }
 ```
 
+### traceability/require-test-traceability
+
+Description: Enforces traceability conventions in test files by requiring:
+
+- A file-level `@supports` annotation indicating which story and requirement(s) the test file exercises.
+- Story references in top-level `describe` blocks.
+- Requirement identifiers in `it`/`test` names using a `[REQ-XXX]` prefix.
+
+The rule is designed to complement the function-level rules (such as `require-story-annotation` and `require-req-annotation`) by ensuring that tests explicitly declare which requirements and stories they validate. It is enabled in both the `recommended` and `strict` presets alongside the other core rules.
+
+Options:
+
+The rule accepts an optional configuration object:
+
+- `testFilePatterns` (string[], optional) – Glob-style patterns (relative to the project root) used to identify test files. Only files matching at least one pattern are checked by this rule. Defaults to `["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"]`.
+- `requireDescribeStory` (boolean, optional) – When `true` (default), requires that each top-level `describe` block include a story reference somewhere in its description text (for example, a path such as `docs/stories/010.0-PAYMENTS.story.md` or a shorter project-specific alias that your team uses consistently).
+- `requireTestReqPrefix` (boolean, optional) – When `true` (default), requires each `it`/`test` block name to begin with a requirement identifier in square brackets, such as `[REQ-PAYMENTS-REFUND]`. The exact `REQ-` pattern is shared with the `valid-annotation-format` rule’s requirement ID checks.
+- `describePattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that the `describe` description text must match when `requireDescribeStory` is enabled. This lets you enforce a project-specific format such as requiring a canonical story path or a `STORY-` style identifier in the `describe` string. If omitted, a built-in default that loosely matches a typical story path (similar to `docs/stories/<name>.story.md`) is used.
+
+Behavior notes:
+
+- The rule only analyzes files whose paths match `testFilePatterns`.
+- File-level `@supports` annotations are typically placed in a JSDoc block at the top of the file; the rule checks that at least one `@supports` tag is present and that it includes a story/requirement reference (for example, `@supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`).
+- Top-level `describe` calls (such as `describe("payments refunds docs/stories/010.0-PAYMENTS.story.md", ...)`) are inspected when `requireDescribeStory` is `true`. Their first argument must be a string literal that satisfies `describePattern`.
+- Test cases declared via `it(...)` or `test(...)` must use a string literal name beginning with a requirement prefix like `[REQ-PAYMENTS-REFUND]` when `requireTestReqPrefix` is `true`.
+
+Default Severity: `error`
+
+Example:
+
+```javascript
+/**
+ * @supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND
+ */
+
+describe("Refunds flow docs/stories/010.0-PAYMENTS.story.md", () => {
+  it("[REQ-PAYMENTS-REFUND] issues refund on successful request", () => {
+    // ...
+  });
+
+  test("[REQ-PAYMENTS-REFUND-EDGE] handles partial refunds", () => {
+    // ...
+  });
+});
+```
+
 ## Configuration Presets
 
 The plugin provides two built-in presets for easy configuration:
@@ -208,6 +254,7 @@ Core rules enabled by the `recommended` preset:
 - `traceability/valid-annotation-format`: `warn`
 - `traceability/valid-story-reference`: `error`
 - `traceability/valid-req-reference`: `error`
+- `traceability/require-test-traceability`: `error`
 
 Usage:
 
@@ -521,4 +568,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```

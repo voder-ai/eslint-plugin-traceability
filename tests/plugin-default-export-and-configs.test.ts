@@ -23,6 +23,7 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
       "valid-story-reference",
       "valid-req-reference",
       "prefer-implements-annotation",
+      "require-test-traceability",
     ];
     // Act: get actual rule names from plugin
     const actual = Object.keys(rules);
@@ -76,6 +77,10 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
     );
     expect(recommendedRules).toHaveProperty(
       "traceability/valid-req-reference",
+      "error",
+    );
+    expect(recommendedRules).toHaveProperty(
+      "traceability/require-test-traceability",
       "error",
     );
   });

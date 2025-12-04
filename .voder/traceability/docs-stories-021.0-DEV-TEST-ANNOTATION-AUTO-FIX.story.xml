@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-12-04T23:01:36.167Z</last_validated>
+  <last_modified>2025-12-04T21:56:14.211Z</last_modified>
+  <evidence>Assessment error: 400 Invalid prompt: your prompt was flagged as potentially violating our usage policy. Please try again with a different prompt: https://platform.openai.com/docs/guides/reasoning#advice-on-prompting</evidence>
+  <notes>Technical error during assessment</notes>
+</traceability>

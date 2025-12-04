@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-12-04T23:02:13.595Z</last_validated>
+  <last_modified>2025-12-04T21:56:14.194Z</last_modified>
+  <evidence>1) Story file presence:
+- docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md exists and defines new requirements:
+  REQ-TEST-FILE-SUPPORTS, REQ-TEST-DESCRIBE-STORY, REQ-TEST-IT-REQ-PREFIX, REQ-TEST-SUPPORTS-VALID, REQ-TEST-PATTERN-DETECT, REQ-TEST-FRAMEWORK-COMPAT, REQ-TEST-NESTED-DESCRIBE, REQ-TEST-ERROR-CONTEXT.
+
+2) Plugin rule set does not include a test-traceability rule:
+- src/index.ts defines:
+  const RULE_NAMES = [
+    "require-story-annotation",
+    "require-req-annotation",
+    "require-branch-annotation",
+    "valid-annotation-format",
+    "valid-story-reference",
+    "valid-req-reference",
+    "prefer-implements-annotation",
+  ] as const;
+- No rule named "require-test-traceability" or similar appears.
+- Corresponding files in src/rules/ are only:
+  helpers/, prefer-implements-annotation.ts, require-branch-annotation.ts, require-req-annotation.ts, require-story-annotation.ts, valid-annotation-format.ts, valid-req-reference.ts, valid-story-reference.ts.
+
+3) No implementation of test-specific validation behavior:
+- Searches show no references in src/ to REQ-TEST-FILE-SUPPORTS or other REQ-TEST-* IDs.
+- Existing rules (e.g., src/rules/valid-annotation-format.ts, src/rules/valid-req-reference.ts, src/rules/valid-story-reference.ts) work on comment annotations (@story, @req, @supports), file paths, and requirement IDs, but do not inspect test framework calls.
+- There is no code that traverses the AST looking for describe(), it(), test(), or context() calls, no logic to check describe strings for "Story XXX.X-...", and no checks that test names begin with a "[REQ-... ]" prefix.
+
+4) No tests tied to this story or its rule:
+- find_files("*020.0-DEV-TEST-ANNOTATION-VALIDATION*", "tests") returns no files.
+- No test file header references docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md.
+- Jest test output (npm test -- --runInBand --verbose) shows suites only for existing stories/rules such as:
+  - Plugin setup (Story 001.0-DEV-PLUGIN-SETUP)
+  - ESLint config (Story 002.0-DEV-ESLINT-CONFIG)
+  - Function/branch annotation rules (Story 003.0 / 004.0)
+  - Annotation/req/story validation (005.0, 006.0, 010.0, 010.2, 010.3)
+  - Maintenance tools (Story 009.0-DEV-MAINTENANCE-TOOLS)
+  There is no suite for a rule like "require-test-traceability" or for Story 020.0.
+
+5) No configuration or docs for the described rule:
+- src/index.ts configs only map severities for the existing rules:
+  "traceability/require-story-annotation", "traceability/require-req-annotation", "traceability/require-branch-annotation", "traceability/valid-annotation-format", "traceability/valid-story-reference", "traceability/valid-req-reference".
+- No config key for a test-specific rule (e.g., "traceability/require-test-traceability").
+- No references found to configuration options mentioned in the story (testFilePatterns, requireDescribeStory, requireTestReqPrefix, describePattern).
+
+6) No linkage of REQ-TEST-* IDs to implementation or tests:
+- REQ-TEST-FILE-SUPPORTS and other REQ-TEST-* identifiers appear only inside the story file; they are not used in code comments or test names.</evidence>
+  <notes>The story 020.0-DEV-TEST-ANNOTATION-VALIDATION requires a new ESLint rule (require-test-traceability) that (a) detects test files, (b) enforces file-level @supports annotations, (c) enforces story references in describe() blocks, (d) enforces [REQ-XXX] prefixes in it()/test() names, (e) supports multiple test frameworks, (f) integrates with existing annotation and deep-validation infrastructure, and (g) is fully tested, documented, and wired into recommended configs. In the current codebase there is no such rule implemented, no AST logic for describe/it/test/context, no references to the REQ-TEST-* requirements outside the story, no tests or documentation for this behavior, and the plugin configs do not expose a test-specific rule. Therefore multiple acceptance criteria (file-level annotations, describe block references, test name prefixes, framework support, integration, error messages, documentation, and DoD items) are not met. The implementation of this story is missing, so the assessment status is FAILED.</notes>
+</traceability>
