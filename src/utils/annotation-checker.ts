@@ -84,13 +84,15 @@ function getFixTargetNode(node: any) {
  * Returned function is a proper named function so no inline arrow is used.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation
+ * @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING
  */
 function createMissingReqFix(node: any) {
   const target = getFixTargetNode(node);
   /**
    * Fixer used to insert a default @req annotation before the chosen target node.
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation
+   * @req REQ-ANNOTATION-AUTOFIX - Implement autofix insertion for missing @req
+   * @req REQ-ANNOTATION-REPORTING - Support actionable fix in reported problem
    */
   return function missingReqFix(fixer: any) {
     return fixer.insertTextBefore(target, "/** @req <REQ-ID> */\n");

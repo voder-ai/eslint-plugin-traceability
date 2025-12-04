@@ -69,6 +69,8 @@ function createStoryFix(
   const commentText = sourceCode.getText(comment);
   const search = "@story";
   const tagIndex = commentText.indexOf(search);
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+  // @req REQ-AUTOFIX-SAFE - Skip auto-fix when @story tag cannot be reliably located
   if (tagIndex === TAG_NOT_FOUND_INDEX) {
     return null;
   }
@@ -76,6 +78,8 @@ function createStoryFix(
   const afterTagIndex = tagIndex + search.length;
   const rest = commentText.slice(afterTagIndex);
   const valueMatch = rest.match(/[^\S\r\n]*([^\r\n*]+)/);
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+  // @req REQ-AUTOFIX-SAFE - Abort auto-fix when story value range cannot be safely determined
   if (!valueMatch || valueMatch.index === undefined) {
     return null;
   }
@@ -121,6 +125,8 @@ function reportInvalidStoryFormatWithFix(
   fixed: string,
 ): void {
   const fixFactory = createStoryFix(context, comment, fixed);
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+  // @req REQ-AUTOFIX-SAFE - Fall back to reporting without fix when safe fix cannot be created
   if (!fixFactory) {
     reportInvalidStoryFormat(
       context,
@@ -166,6 +172,8 @@ function validateStoryAnnotation(
   options: ResolvedAnnotationOptions,
 ): void {
   const trimmed = rawValue.trim();
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @req REQ-PATH-FORMAT - Treat missing @story value as a specific validation error
   if (!trimmed) {
     context.report({
       node: comment as any,
@@ -178,10 +186,14 @@ function validateStoryAnnotation(
   const collapsed = collapseAnnotationValue(trimmed);
   const pathPattern = options.storyPattern;
 
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @req REQ-PATH-FORMAT - Accept @story value when it matches configured storyPattern
   if (pathPattern.test(collapsed)) {
     return;
   }
 
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @req REQ-PATH-FORMAT - Reject @story values containing internal whitespace as invalid
   if (/\s/.test(trimmed)) {
     reportInvalidStoryFormat(context, comment, collapsed, options);
     return;
@@ -189,6 +201,8 @@ function validateStoryAnnotation(
 
   const fixed = getFixedStoryPath(collapsed);
 
+  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
+  // @req REQ-AUTOFIX-FORMAT - Apply suffix-only auto-fix when it yields a pattern-compliant path
   if (fixed && pathPattern.test(fixed)) {
     reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed);
     return;
@@ -216,6 +230,8 @@ function validateReqAnnotation(
   options: ResolvedAnnotationOptions,
 ): void {
   const trimmed = rawValue.trim();
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @req REQ-REQ-FORMAT - Treat missing @req value as a specific validation error
   if (!trimmed) {
     context.report({
       node: comment as any,
@@ -228,6 +244,8 @@ function validateReqAnnotation(
   const collapsed = collapseAnnotationValue(trimmed);
   const reqPattern = options.reqPattern;
 
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @req REQ-REQ-FORMAT - Flag @req identifiers that do not match the configured pattern
   if (!reqPattern.test(collapsed)) {
     context.report({
       node: comment as any,
@@ -292,16 +310,16 @@ function finalizePendingAnnotation(
   options: ResolvedAnnotationOptions,
   pending: PendingAnnotation | null,
 ): PendingAnnotation | null {
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @req REQ-MULTILINE-SUPPORT - Do nothing when there is no pending multi-line annotation to finalize
   if (!pending) {
     return null;
   }
 
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-  // @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-  // @req REQ-SYNTAX-VALIDATION - Dispatch validation based on annotation type
-  // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
-  // @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+  // @req REQ-SYNTAX-VALIDATION - Dispatch to @story or @req validator based on pending annotation type
+  // @req REQ-AUTOFIX-FORMAT - Route to story validator which may apply safe auto-fixes
+  // @req REQ-MIXED-SUPPORT - Ensure @story and @req annotations are handled independently
   if (pending.type === "story") {
     validateStoryAnnotation(context, comment, pending.value, options);
   } else {
@@ -337,6 +355,8 @@ function processCommentLine({
   comment: any;
   options: ResolvedAnnotationOptions;
 }): PendingAnnotation | null {
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+  // @req REQ-FLEXIBLE-PARSING - Ignore empty normalized lines without affecting pending state
   if (!normalized) {
     return pending;
   }
@@ -346,6 +366,8 @@ function processCommentLine({
   const isImplements = /@implements\b/.test(normalized);
 
   // Handle @implements as an immediate, single-line annotation
+  // @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+  // @req REQ-IMPLEMENTS-PARSE - Immediately validate @implements without starting multi-line state
   if (isImplements) {
     const implementsValue = normalized.replace(/^@implements\b/, "").trim();
     validateImplementsAnnotation(context, comment, implementsValue, options);
@@ -371,11 +393,13 @@ function processCommentLine({
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
   // @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-  // @req REQ-MULTILINE-SUPPORT - Treat subsequent lines as continuation for pending annotation
-  // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
-  // @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+  // @req REQ-MULTILINE-SUPPORT - Extend value of existing pending annotation across lines
+  // @req REQ-AUTOFIX-FORMAT - Maintain complete logical value for downstream validation and fixes
+  // @req REQ-MIXED-SUPPORT - Leave non-annotation lines untouched when no pending state exists
   if (pending) {
     const continuation = normalized.trim();
+    // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+    // @req REQ-MULTILINE-SUPPORT - Skip blank continuation lines without altering pending annotation
     if (!continuation) {
       return pending;
     }
@@ -524,6 +548,8 @@ export default {
        * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
        */
       Program(node: any) {
+        // @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+        // @req REQ-REGEX-VALIDATION - Report any configuration errors discovered while resolving options
         if (optionErrors && optionErrors.length > 0) {
           optionErrors.forEach((details: string) => {
             context.report({
