@@ -52,3 +52,4 @@ This procedure applies to all security-related issues discovered in both product
 
 - [Security Incident Template](SECURITY-INCIDENT-TEMPLATE.md)  
 - [Dependency Override Rationale](dependency-override-rationale.md)
+- `docs/security-overview.md` as the consolidated reference for how security tooling and gates are wired into CI and local workflows.

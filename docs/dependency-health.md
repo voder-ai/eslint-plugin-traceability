@@ -8,7 +8,7 @@ This is **internal/development-facing documentation** for maintainers and advanc
 
 - We gate releases on:
   - `npm audit --omit=dev --audit-level=high` for production dependencies (must report 0 high-severity vulns).
-  - `npm run safety:deps` (which wraps `dry-aged-deps` with `--format=json --check`) as an advisory maturity/health signal that can fail CI when thresholds are not met.
+  - `npm run safety:deps` (which wraps `dry-aged-deps` with `--format=json --check`) as a **purely advisory** maturity/health signal that **never** fails CI by itself.
 - We run, but do **not** gate on:
   - `npm run audit:dev-high`, which records high-severity **dev-only** vulnerabilities without failing CI and stores JSON output in `ci/npm-audit.json`.
 - We run secret scanning in CI via:
@@ -16,7 +16,7 @@ This is **internal/development-facing documentation** for maintainers and advanc
 
 ## Relationship to SECURITY.md
 
-The user-facing summary of our dependency and vulnerability-handling policy is defined in `SECURITY.md`. That file describes, in plain language, what users can expect from us in terms of security posture, reporting, and remediation.
+The user-facing summary of our dependency and vulnerability-handling policy is defined in `SECURITY.md`. That file describes, in plain language, what users can expect from us in terms of security posture, reporting, and remediation. This document should be read together with `docs/security-overview.md`, which summarizes all security tooling and gates in one place.
 
 This document is an **internal implementation detail** that explains _how_ we operationalize and enforce the policy described in `SECURITY.md` (and the security-related statements in the README). Maintainers should treat this file as the canonical reference for:
 

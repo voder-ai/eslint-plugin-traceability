@@ -4,6 +4,8 @@ This document describes how security is handled for `eslint-plugin-traceability`
 
 > This file is **user-facing** documentation. Internal implementation details and deeper discussion live in the project’s internal documentation and decision records.
 
+For a consolidated implementation overview of security tooling and checks (maintainer and automated-assessor focused), see `docs/security-overview.md`.
+
 ## Reporting a Vulnerability
 
 If you believe you have found a security vulnerability in this project:

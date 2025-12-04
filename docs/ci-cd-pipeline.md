@@ -66,6 +66,7 @@ Key steps (in order):
      - `npm run format:check`
      - `npm audit --omit=dev --audit-level=high`
      - `npm run audit:dev-high`
+   - For a consolidated description of all security-related tooling and gates (including how these audit steps fit into the overall model), see `docs/security-overview.md`.
 
 5. **Secret scanning**
    - Only on Node `20.x` matrix entry: `npm run security:secrets` using secretlint.
@@ -139,7 +140,7 @@ Runs only on the nightly `schedule` event.
 - Runs `npm run audit:dev-high` to generate a JSON report of high-severity dev-only vulnerabilities.
 - Does **not** publish or run semantic-release.
 
-This job is intentionally isolated from the main `quality-and-deploy` path and has no effect on releases.
+This job is intentionally isolated from the main `quality-and-deploy` path and has no effect on releases. For an overview of how this scheduled dependency health check fits into the broader security posture, maintainers should refer to `docs/security-overview.md` as the single consolidated reference.
 
 ## Continuous Deployment Behavior
 

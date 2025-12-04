@@ -1,17 +1,15 @@
 ## NOW
 
-- [ ] Review and revise the development workflow documentation so that it clearly defines trunk-based development on the main branch as the standard practice, replacing or updating any guidance that currently promotes a feature-branch or PR-centric workflow as the default.
+- [ ] Create a single, concise security overview document that summarizes all security tooling, gates, and guarantees in one place so an automated or human assessor can understand the project’s security posture without needing to read the entire codebase or multiple scattered documents.
 
 ## NEXT
 
-- [ ] Update the version control and CI/CD documentation to ensure that all described workflows, branch usage, and quality gates are consistent with a trunk-based model and the current automated pipeline behavior.
-- [ ] Align local pre-push checks with CI by ensuring that secret scanning is included in the same composite verification script used by both environments, so that security-related checks are part of the standard pre-push gate.
-- [ ] Review the security policy and supporting internal security/dependency health documentation to confirm they accurately describe the current tooling (secret scanning, audits, maturity checks) and how they integrate into the automated workflow.
-- [ ] Summarize the project’s security tooling and guarantees in a concise, central section that can be easily consumed by automated assessments and human reviewers, reducing the chance of security evaluations failing due to fragmented context.
+- [ ] Update existing security-related documentation to reference the new security overview explicitly, so that SECURITY.md, dependency health docs, and CI/CD docs all point assessors to this single high-level entry point.
+- [ ] Cross-check the security overview against package configuration and CI workflow definitions to ensure every described tool, script, and gate name matches the actual implementation and there are no stale or contradictory statements.
+- [ ] Review the secret-scanning and dependency-audit scripts mentioned in the security overview to confirm that their current behavior (gating versus advisory) is fully and accurately reflected in the overview and related docs.
 
 ## LATER
 
-- [ ] Revisit the functionality coverage documentation once security and version-control practices are fully aligned with the specified standards, and update coverage status to reflect any new tests or checks added as part of the improvements.
-- [ ] Periodically refine version-control and security-related ADRs to keep them in sync with evolving tooling or policy changes, ensuring the documented decisions remain accurate and discoverable.
-- [ ] Evaluate whether additional lightweight, automated security checks (such as periodic dependency health snapshots or extended secret scans) would provide meaningful benefit without overburdening the trunk-based workflow.
-- [ ] Consider adding brief contributor-facing guidance that explains how external pull requests fit into the trunk-based model while preserving the core expectation that main remains the single integration branch.
+- [ ] Once the security overview has been validated and a full SECURITY assessment can succeed, revisit the functionality coverage documentation and add a similarly concise functionality overview that points to key stories, rules, and tests without requiring large-context scans.
+- [ ] Periodically refine the security overview and related ADRs when security tooling or policies evolve, keeping the high-level description stable while adjusting details as implementation changes.
+- [ ] Evaluate whether any internal security or dependency-health scripts could be simplified or consolidated further to reduce cognitive and assessment overhead while preserving the same guarantees.
