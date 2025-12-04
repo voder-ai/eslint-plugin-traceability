@@ -26,6 +26,7 @@
 
 | **Release 1.9 (Test Traceability)** (Planned) | **Setup Plugin** | **Write Code** | **Validate Annotations**             | **Fix Issues**                     | **Maintain Quality** |
 | --------------------------------------------- | ---------------- | -------------- | ------------------------------------ | ---------------------------------- | -------------------- |
+| **Parser Improvements**                       | -                | -              | 022.0-DEV-JSDOC-COEXISTENCE          | -                                  | -                    |
 | **Test Annotations**                          | -                | -              | 020.0-DEV-TEST-ANNOTATION-VALIDATION | 021.0-DEV-TEST-ANNOTATION-AUTO-FIX | -                    |
 
 | **Release 2.0 (Enhanced Features)** (Future) | **Setup Plugin**            | **Write Code**                        | **Validate Annotations**     | **Fix Issues**              | **Maintain Quality**      |
@@ -62,14 +63,15 @@
 
 **Goal**: Extend traceability validation to test files, ensuring tests are properly linked to requirements through annotations and naming conventions.
 **Success Metric**: Test files maintain clear traceability to requirements, and test output provides immediate visibility into which requirements are being tested.
-**Scope**: Test file validation rules and auto-fix capabilities for test-specific annotation patterns.
+**Scope**: Test file validation rules and auto-fix capabilities for test-specific annotation patterns, plus parser improvements to handle JSDoc tag coexistence.
 
 **Stories by Category:**
 
+- **Parser Improvements**: 022.0-DEV-JSDOC-COEXISTENCE (fix parser to handle traceability annotations mixed with other JSDoc tags)
 - **Test Validation**: 020.0-DEV-TEST-ANNOTATION-VALIDATION (validate test file annotations and naming)
 - **Test Auto-Fix**: 021.0-DEV-TEST-ANNOTATION-AUTO-FIX (auto-fix test annotation violations)
 
-**Total**: 2 stories covering test traceability enforcement
+**Total**: 3 stories covering parser improvements and test traceability enforcement
 
 **Test Annotation Pattern** (existing convention being enforced):
 
