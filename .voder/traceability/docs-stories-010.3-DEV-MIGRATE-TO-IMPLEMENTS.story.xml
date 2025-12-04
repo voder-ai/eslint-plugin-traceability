@@ -2,213 +2,118 @@
 <traceability>
   <specification>docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-12-04T03:46:22.984Z</last_validated>
+  <last_validated>2025-12-04T04:36:34.065Z</last_validated>
   <last_modified>2025-12-03T19:51:00.631Z</last_modified>
-  <evidence>Key implementation files and tests:
+  <evidence>Key implementation artifacts for this story:
 
-1) Rule implementation: src/rules/prefer-implements-annotation.ts
-- New ESLint rule `prefer-implements-annotation` exists and is traced to this story:
-  /**
-   * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
-   * @req REQ-OPTIONAL-WARNING
-   * @req REQ-MULTI-STORY-DETECT
-   * @req REQ-SINGLE-STORY-FIX
-   * @req REQ-PRESERVE-FORMAT
-   * @req REQ-VALID-OUTPUT
-   * @req REQ-BACKWARD-COMP-VALIDATION
-   * @req REQ-AUTO-FIX
-   */
-- Detection of legacy @story + @req and optional warning:
-  - analyzeComment/processComment:
-    ```ts
-    const { hasStory, hasReq, hasImplements, storyPaths } = analyzeComment(comment);
-    if (!hasStory || !hasReq) { return; }
-    if (hasImplements) {
-      context.report({ messageId: "cannotAutoFix", data: { reason: "comment mixes @story/@req with existing @implements annotations" } });
-      return;
-    }
-    if (hasMultipleStories(storyPaths)) {
-      context.report({ messageId: "multiStoryDetected" });
-      return;
-    }
-    const fix = buildImplementsAutoFix(context, comment, storyPaths);
-    context.report({ messageId: "preferImplements", fix: fix ?? undefined });
-    ```
-- Auto-fix implementation (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX, REQ-PRESERVE-FORMAT, REQ-VALID-OUTPUT):
-  - collectStoryAndReqMetadata enforces simple forms:
-    ```ts
-    if (/^@story\b/.test(normalized)) {
-      const parts = normalized.split(/\s+/);
-      if (parts.length === MIN_STORY_TOKENS) { storyLineIndices.push(index); storyPath = parts[1]; } else { storyPath = null; }
-    }
-    if (/^@req\b/.test(normalized)) {
-      const parts = normalized.split(/\s+/);
-      if (parts.length === MIN_REQ_TOKENS) { reqLineIndices.push(index); reqIds.push(parts[1]); } else { storyPath = null; }
-    }
-    ```
-  - buildImplementsAutoFix restricts to single-story, at least one @req, and simple tokens:
-    ```ts
-    if (storyPaths.size !== 1) return null;
-    const { storyLineIndices, reqLineIndices, reqIds, storyPath } = collectStoryAndReqMetadata(comment);
-    if (storyPaths.size !== 1 || storyLineIndices.length !== 1 || reqLineIndices.length < 1 || storyPath === null) {
-      return null;
-    }
-    ```
-  - applyImplementsReplacement preserves formatting and relative position:
-    ```ts
-    const implAnnotation = `@implements ${storyPath} ${reqIds.join(" ")}`;
-    const storyRawLine = rawLines[storyIdx];
-    const prefixMatch = storyRawLine.match(/^(\s*\*?\s*)/);
-    const linePrefix = prefixMatch ? prefixMatch[1] : "";
-    const implementsLine = `${linePrefix}${implAnnotation}`;
-    rawLines.forEach((line, index) => {
-      if (index === storyIdx) { fixedLines.push(implementsLine); return; }
-      if (allIndicesToRemove.has(index)) { return; }
-      fixedLines.push(line);
-    });
-    ```
-- Multi-story detection and mixed patterns (REQ-MULTI-STORY-DETECT):
-  ```ts
-  const MULTI_STORY_THRESHOLD = 1;
-  function hasMultipleStories(storyPaths: Set<string>): boolean { return storyPaths.size > MULTI_STORY_THRESHOLD; }
-  if (hasImplements) {
-    context.report({ messageId: "cannotAutoFix", data: { reason: "comment mixes @story/@req with existing @implements annotations" } });
-    return;
-  }
-  if (hasMultipleStories(storyPaths)) {
-    context.report({ messageId: "multiStoryDetected" });
-    return;
-  }
-  ```
-- Rule metadata and messages:
-  ```ts
-  meta: {
-    type: "suggestion",
-    docs: { description: "Recommend using @implements...", recommended: false },
-    fixable: "code",
-    messages: {
-      preferImplements: "Consider using @implements instead of @story + @req...",
-      cannotAutoFix: "Cannot auto-fix: {{reason}}. Manual migration to @implements required.",
-      multiStoryDetected: "Multiple @story annotations detected in the same comment block. Manually convert to separate @implements lines.",
-    },
-    schema: [],
-  }
-  ```
-- Backward-compat behavior for non-eligible comments:
-  - processComment returns early when either @story or @req is missing:
-    `if (!hasStory || !hasReq) { return; }` → comments with only @story, only @req, or only @implements are untouched by this rule.
+1) Rule implementation exists and matches the story intent
+- File: src/rules/prefer-implements-annotation.ts
+  - Header explicitly ties to this story:
+    - `@story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md`
+    - `@req REQ-OPTIONAL-WARNING`, `REQ-MULTI-STORY-DETECT`, `REQ-SINGLE-STORY-FIX`, `REQ-PRESERVE-FORMAT`, `REQ-VALID-OUTPUT`, `REQ-BACKWARD-COMP-VALIDATION`, `REQ-AUTO-FIX`.
+  - Optional warning behavior:
+    - `analyzeComment` + `processComment` detect comments that contain both `@story` and `@req`.
+    - If `@implements` is also present, reports `messageId: "cannotAutoFix"` with reason "comment mixes @story/@req with existing @implements annotations".
+    - If multiple distinct story paths found (via `hasMultipleStories`), reports `messageId: "multiStoryDetected"`.
+    - Otherwise reports `messageId: "preferImplements"`.
+  - Auto-fix implementation:
+    - `collectStoryAndReqMetadata(comment)` parses the block, collects:
+      - `storyLineIndices`, `reqLineIndices`, `reqIds`, `storyPath`.
+      - Only accepts simple forms: `@story <path>` and `@req <REQ-ID>`; more complex lines cause it to bail (storyPath set to null or no indices), preventing unsafe fixes.
+    - `buildImplementsAutoFix(context, comment, storyPaths)`:
+      - Requires `storyPaths.size === 1`, exactly one `@story` line, at least one `@req`, and non-null `storyPath`.
+      - Creates a `Rule.ReportFixer` via `applyImplementsReplacement`.
+    - `applyImplementsReplacement`:
+      - Builds line: `@implements ${storyPath} ${reqIds.join(" ")}`.
+      - Derives prefix (indentation and `*`) from original @story line: `const prefixMatch = storyRawLine.match(/^(\s*\*?\s*)/)`.
+      - Replaces the @story line with the @implements line, removes all @req lines, and joins the rest unchanged.
+      - Uses `fixer.replaceTextRange` to replace the original block from `comment.range[0]` up to before the closing `*/`, preserving the `/*` prefix and adding `"*/"` at the end.
+    - This satisfies:
+      - Single story conversion (one @implements line with multiple REQ IDs).
+      - Preservation of comment structure and order of non-removed lines.
+      - Conservative behavior for complex patterns (no fix if ambiguous), which supports REQ-VALID-OUTPUT.
+  - Rule meta:
+    - `meta.type: "suggestion"` (recommendation rule).
+    - `meta.fixable: "code"` (auto-fix enabled).
+    - Messages exactly match the story’s examples:
+      - `preferImplements`: "Consider using @implements instead of @story + @req for clearer traceability. Run ESLint with --fix to auto-convert."
+      - `cannotAutoFix`: "Cannot auto-fix: {{reason}}. Manual migration to @implements required."
+      - `multiStoryDetected`: "Multiple @story annotations detected in the same comment block. Manually convert to separate @implements lines."
 
-2) Rule exposure and default severity: src/index.ts
-- Rule is included in RULE_NAMES and exported:
-  ```ts
-  const RULE_NAMES = [
-    "require-story-annotation",
-    ...,
-    "prefer-implements-annotation",
-  ] as const;
-  ```
-- Default severities used in plugin configs:
-  ```ts
-  const TRACEABILITY_RULE_SEVERITIES: Readonly<Record<string, "error" | "warn">> = {
-    "traceability/require-story-annotation": "error",
-    ...,
-    "traceability/prefer-implements-annotation": "warn",
-  } as const;
-  const configs = {
-    recommended: [createTraceabilityFlatConfig()],
-    strict: [createTraceabilityFlatConfig()],
-  };
-  ```
-- This means that when consumers use `traceability.configs.recommended` or `.strict`, `traceability/prefer-implements-annotation` is enabled at level "warn" by default.
+2) Tests specifically for this story
+- File: tests/rules/prefer-implements-annotation.test.ts
+  - Header:
+    - `* Tests for: docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md`
+    - `* @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md`
+    - `* @req REQ-OPTIONAL-WARNING ...`
+    - `* @req REQ-MULTI-STORY-DETECT ...`
+    - `* @req REQ-CONFIG-SEVERITY ...`
+  - Uses `RuleTester` to validate behavior.
+  - Valid cases (backward compatibility):
+    - Comment with only `@story` → valid.
+    - Comment with only `@req` → valid.
+    - Comment with only `@implements` → valid.
+    - These directly exercise REQ-BACKWARD-COMP-VALIDATION.
+  - Invalid cases:
+    - Single-story `@story + @req` triggers `preferImplements` and auto-fixes to one `@implements` line:
+      - `output` is exactly `@implements <story> REQ-ANNOTATION-REQUIRED`.
+    - Single `@story` with multiple `@req` auto-fixes to `@implements <story> REQ-ONE REQ-TWO REQ-THREE`.
+    - Mixed `@story`/`@req` with `@implements` triggers `cannotAutoFix` with the expected reason string.
+    - Multiple `@story` paths triggers `multiStoryDetected`.
+    - Complex `@req` / complex `@story` cases still report `preferImplements` but have no `output`, so no fix is applied.
+    - Together these cover REQ-OPTIONAL-WARNING, REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX, REQ-MULTI-STORY-DETECT, REQ-PRESERVE-FORMAT (via snapshot-like output), and REQ-VALID-OUTPUT.
 
-3) Tests: tests/rules/prefer-implements-annotation.test.ts
-- File is explicitly tied to the story:
-  ```ts
-  /**
-   * Tests for: docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
-   * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
-   * @req REQ-OPTIONAL-WARNING
-   * @req REQ-MULTI-STORY-DETECT
-   * @req REQ-CONFIG-SEVERITY
-   */
-  ```
-- Valid cases confirming backward compatibility:
-  - Only @story → no error.
-  - Only @req → no error.
-  - Only @implements → no error.
-- Invalid cases verify:
-  - Warning + auto-fix for single-story @story + @req:
-    ```ts
-    {
-      name: "[REQ-OPTIONAL-WARNING] single-story @story + @req block triggers preferImplements message",
-      code: `/**\n * @story ...\n * @req REQ-ANNOTATION-REQUIRED\n */\nfunction legacy() {}`,
-      output: `/**\n * @implements ... REQ-ANNOTATION-REQUIRED\n */\nfunction legacy() {}`,
-      errors: [{ messageId: "preferImplements" }],
-    }
-    ```
-  - Auto-fix combining multiple @req into single @implements (REQ-SINGLE-STORY-FIX):
-    ```ts
-    {
-      name: "single @story with multiple @req lines auto-fixes to single @implements line containing all REQ IDs",
-      code: `/**\n * @story ...\n * @req REQ-ONE\n * @req REQ-TWO\n * @req REQ-THREE\n */\nfunction autoFixMultiReq() {}`,
-      output: `/**\n * @implements ... REQ-ONE REQ-TWO REQ-THREE\n */\nfunction autoFixMultiReq() {}`,
-      errors: [{ messageId: "preferImplements" }],
-    }
-    ```
-  - Multi-story detection and mixed @implements:
-    - Mixed @story/@req + @implements → `messageId: "cannotAutoFix"` with specific reason.
-    - Multiple @story paths → `messageId: "multiStoryDetected"`.
-  - Complex @req or @story content → diagnostic only (preferImplements), no auto-fix.
+3) Plugin wiring and default severity configuration
+- File: src/index.ts
+  - `RULE_NAMES` includes "prefer-implements-annotation", so it is part of the exported rules:
+    - `const RULE_NAMES = [ ..., "prefer-implements-annotation", ] as const;`
+  - TRACEABILITY_RULE_SEVERITIES:
+    - `"traceability/prefer-implements-annotation": "warn"` is defined along with other rules.
+  - `configs.recommended` and `configs.strict` are both built from `createTraceabilityFlatConfig()`, which uses `TRACEABILITY_RULE_SEVERITIES`.
+  - Thus, by default, in the plugin’s recommended and strict configs, this rule is enabled with severity `"warn"`.
+- File: tests/plugin-default-export-and-configs.test.ts
+  - Asserts rule registration:
+    - Expected rule names include "prefer-implements-annotation".
+    - Confirms that `Object.keys(rules)` matches the list including this rule.
+  - Asserts default severity mapping:
+    - Checks that `configs.recommended[0].rules` has property `"traceability/prefer-implements-annotation"` with value `"warn"`.
+    - Confirms `configs.strict` equals `configs.recommended` and also contains the same mapping.
+  - This is concrete evidence that the plugin’s default exported configuration **does not** leave the rule off; it is on as `warn`.
 
-4) Validation of @implements output:
-- valid-annotation-format tests (tests/rules/valid-annotation-format.test.ts) confirm the shape produced by auto-fix is valid:
-  ```ts
-  name: "[REQ-IMPLEMENTS-PARSE] valid single @implements with one story and one requirement (default patterns)",
-  code: `/**\n * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE\n */`,
-  ```
-- Auto-fix in prefer-implements-annotation produces `@implements <story-path> <REQ-IDs...>`, matching this validated format.
+4) Documentation for this rule/story
+- File: docs/rules/prefer-implements-annotation.md
+  - Header ties to this story and its REQs.
+  - States this is an "Optional migration rule".
+  - Shows configuration examples:
+    - Demonstrates how to set the rule to "off", "warn", or "error" in user ESLint config.
+  - Provides before/after auto-fix examples that match the story’s examples (single-story and multi-REQ).
 
-5) Documentation / migration guide: docs/rules/prefer-implements-annotation.md
-- Linked to this story and requirements:
-  ```md
-  @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
-  @req REQ-OPTIONAL-WARNING
-  @req REQ-MULTI-STORY-DETECT
-  @req REQ-AUTO-FIX
-  @req REQ-SINGLE-STORY-FIX
-  @req REQ-PRESERVE-FORMAT
-  @req REQ-VALID-OUTPUT
-  @req REQ-BACKWARDS-COMPAT-VALIDATION
-  ```
-- Describes behavior, auto-fix examples, and configuration options that match the story’s intent (warn/cannotAutoFix/multiStoryDetected messages; examples of @story/@req → @implements transformation).
-- Crucially, the config example claims:
-  ```js
-  // Default: off (no recommendations)
-  "traceability/prefer-implements-annotation": "off",
-  ```
-  and text: "Default: off (no recommendations) – rule is disabled; no additional diagnostics".
-- This directly conflicts with src/index.ts, where recommended/strict configs enable the rule at "warn" by default.
+5) Test execution outcome (this environment)
+- Targeted test run for this story’s test file:
+  - Command executed:
+    - `npm test -- --runInBand --verbose --testPathPattern tests/rules/prefer-implements-annotation.test.ts`
+  - Tool-reported result:
+    - `Command: npm test -- --runInBand --verbose --testPathPattern tests/rules/prefer-implements-annotation.test.ts (exit code: 1)`
+    - Output only shows the Jest invocation:
+      - `> eslint-plugin-traceability@1.0.5 test`
+      - `> jest --ci --bail --runInBand --verbose --testPathPattern tests/rules/prefer-implements-annotation.test.ts`
+  - The non-zero exit code (1) indicates that Jest reported a failure when running this test file, so the tests for this story are not passing in this assessment run.
 
-6) Story requirements that are not correctly met:
-- Story acceptance: "Configurable Enforcement: Allow configuration of recommendation level (off, warn, error) - default off to maintain backward compatibility".
-- Implementation notes: "Rule is **disabled by default** to maintain backward compatibility".
-- Actual behavior: plugin’s shipped configs set `traceability/prefer-implements-annotation` to "warn" by default, not "off".
-- Edge case described in story implementation notes: "@req without matching @story (warn, cannot auto-fix)" is not implemented; current code ignores such comments (`if (!hasStory || !hasReq) { return; }`).</evidence>
-  <notes>Most of the story’s functional goals are implemented:
-- There is a dedicated ESLint rule (`prefer-implements-annotation`) that detects legacy `@story` + `@req` usage and emits recommendations.
-- The rule includes a conservative auto-fix that converts a single @story with one or more simple @req lines into a single @implements line, preserving formatting and order.
-- Multi-story and mixed @story/@req/@implements patterns are detected and reported without auto-fix.
-- @implements output conforms to the existing validation logic, and tests exercise the main behaviors.
-- A migration guide (docs/rules/prefer-implements-annotation.md) documents the rule, auto-fix behavior, and configuration.
+6) Mismatch with the story’s default configuration requirement
+- Story acceptance / requirements:
+  - Acceptance criterion: "Configurable Enforcement: Allow configuration of recommendation level (off, warn, error) - default off to maintain backward compatibility".
+  - Implementation notes: "Rule is **disabled by default** to maintain backward compatibility".
+- Actual implementation:
+  - Plugin’s own "recommended" and "strict" configs (src/index.ts + tests/plugin-default-export-and-configs.test.ts) set `"traceability/prefer-implements-annotation": "warn"` by default.
+  - This means that when a user uses the plugin’s recommended config, the rule is *enabled as a warning* by default, not off.
+  - Users can override it to "off" manually, but the provided default contradicts the story’s requirement that the rule be disabled by default for backward compatibility.</evidence>
+  <notes>Most of the functional aspects of Story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md have been implemented: there is a dedicated ESLint rule that detects legacy @story + @req usage, emits recommendation diagnostics, performs a conservative auto-fix that converts single-story @story/@req blocks (including multi-REQ cases) into a single @implements line while preserving formatting, and detects multi-story and mixed-annotation patterns that cannot be auto-fixed. There are clear, story-linked unit tests and accompanying documentation for the rule.
 
-However, at least two important aspects of the specification are not satisfied:
-1) Default severity / backward compatibility (REQ-CONFIG-SEVERITY and Definition of Done "Rule disabled by default"):
-   - The story and docs clearly state the rule must be disabled by default (severity "off") to avoid changing behavior for existing users.
-   - In the actual plugin exports, `traceability/prefer-implements-annotation` is included in TRACEABILITY_RULE_SEVERITIES with value "warn", and that mapping is used for both `configs.recommended` and `configs.strict`.
-   - This means that any consumer using the plugin’s recommended config will have the migration rule enabled by default, contradicting the specification.
-2) Edge-case behavior for `@req` without `@story`:
-   - The implementation notes specify that `@req` without a matching `@story` should be detected and warned as a non-auto-fixable case.
-   - The current implementation simply ignores comments where either @story or @req is missing (`if (!hasStory || !hasReq) { return; }`), so this specific pattern does not produce the intended warning.
+However, two critical issues prevent this story from being fully satisfied:
 
-Because the published default configuration does not honor the required default-off behavior, and at least one described edge case is not handled as specified, the story is not fully implemented. Status: FAILED.</notes>
+1) **Default severity/enablement does not match the spec.** The story explicitly requires that the recommendation rule be disabled by default (default off) to maintain backward compatibility. In contrast, the plugin’s exported `recommended` and `strict` configs configure `traceability/prefer-implements-annotation` as `"warn"` by default, and tests assert that behavior. This directly violates the REQ-CONFIG-SEVERITY requirement and the acceptance criterion about default behavior.
+
+2) **Tests for this rule are failing in the observed run.** Running Jest targeted at `tests/rules/prefer-implements-annotation.test.ts` via the standard `npm test` script exits with code 1, indicating that at least one assertion or test in this suite fails. The story’s Definition of Done requires that tests for auto-fix transformations, edge cases, and configuration be written **and passing**; this condition is not met in the current environment.
+
+Because of these discrepancies—especially the incorrect default configuration and the failing test run—the implementation does not fully meet all acceptance criteria and the Definition of Done for this story. Therefore, the assessment status is FAILED.</notes>
 </traceability>

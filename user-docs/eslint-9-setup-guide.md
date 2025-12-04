@@ -28,6 +28,9 @@ npm install --save-dev eslint@^9.39.1
 # Recommended configurations
 npm install --save-dev @eslint/js@^9.39.1
 
+# Traceability plugin
+npm install --save-dev eslint-plugin-traceability@^1.0.0
+
 # For TypeScript projects
 npm install --save-dev @typescript-eslint/parser@^8.0.0
 npm install --save-dev @typescript-eslint/utils@^8.0.0
@@ -67,13 +70,48 @@ export default [
 
 ### 4. Enable Traceability Plugin
 
-To integrate the traceability plugin, update your `eslint.config.js` to include its recommended configuration:
+To integrate the traceability plugin with its **recommended** preset, update your `eslint.config.js`:
 
 ```javascript
 import js from "@eslint/js";
 import traceability from "eslint-plugin-traceability";
 
-export default [js.configs.recommended, traceability.configs.recommended];
+export default [
+  js.configs.recommended,
+  {
+    plugins: {
+      traceability,
+    },
+  },
+  ...traceability.configs.recommended,
+];
+```
+
+To use the **strict** preset instead:
+
+```javascript
+import js from "@eslint/js";
+import traceability from "eslint-plugin-traceability";
+
+export default [
+  js.configs.recommended,
+  {
+    plugins: {
+      traceability,
+    },
+  },
+  ...traceability.configs.strict,
+];
+```
+
+Note: The `traceability.configs.recommended` and `traceability.configs.strict` presets define rule severities only. They expect the plugin to be registered in a preceding flat-config object via:
+
+```javascript
+{
+  plugins: {
+    traceability,
+  },
+}
 ```
 
 ## Configuration File Format
@@ -137,9 +175,16 @@ Both forms are supported by ESLint 9 as long as the file extension and `package.
 ```javascript
 // eslint.config.js
 import js from "@eslint/js";
+import traceability from "eslint-plugin-traceability";
 
 export default [
   js.configs.recommended,
+  {
+    plugins: {
+      traceability,
+    },
+  },
+  ...traceability.configs.recommended,
   {
     files: ["**/*.js", "**/*.mjs"],
     languageOptions: {
@@ -163,9 +208,16 @@ export default [
 // eslint.config.js
 import js from "@eslint/js";
 import typescriptParser from "@typescript-eslint/parser";
+import traceability from "eslint-plugin-traceability";
 
 export default [
   js.configs.recommended,
+  {
+    plugins: {
+      traceability,
+    },
+  },
+  ...traceability.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -197,9 +249,16 @@ export default [
 // eslint.config.js
 import js from "@eslint/js";
 import typescriptParser from "@typescript-eslint/parser";
+import traceability from "eslint-plugin-traceability";
 
 export default [
   js.configs.recommended,
+  {
+    plugins: {
+      traceability,
+    },
+  },
+  ...traceability.configs.recommended,
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
@@ -282,9 +341,16 @@ export default [
 // eslint.config.js
 import js from "@eslint/js";
 import typescriptParser from "@typescript-eslint/parser";
+import traceability from "eslint-plugin-traceability";
 
 export default [
   js.configs.recommended,
+  {
+    plugins: {
+      traceability,
+    },
+  },
+  ...traceability.configs.recommended,
   {
     // Lint all packages in a monorepo/workspace
     files: ["packages/*/src/**/*.{js,ts,tsx}"],
@@ -479,9 +545,16 @@ Solution: Use combined file patterns or separate override blocks, and import the
 // eslint.config.js
 import js from "@eslint/js";
 import typescriptParser from "@typescript-eslint/parser";
+import traceability from "eslint-plugin-traceability";
 
 export default [
   js.configs.recommended,
+  {
+    plugins: {
+      traceability,
+    },
+  },
+  ...traceability.configs.recommended,
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
@@ -512,6 +585,7 @@ Here's a complete working configuration for a TypeScript ESLint plugin project:
 // eslint.config.js
 import js from "@eslint/js";
 import typescriptParser from "@typescript-eslint/parser";
+import traceability from "eslint-plugin-traceability";
 
 // Conditional plugin loading (for plugin development)
 let plugin;
@@ -524,6 +598,15 @@ try {
 
 export default [
   js.configs.recommended,
+  {
+    // Register the traceability plugin for subsequent presets/rules
+    plugins: {
+      traceability,
+      ...(plugin.rules ? { traceabilityDev: plugin } : {}),
+    },
+  },
+  // Apply the recommended preset for the published plugin
+  ...traceability.configs.recommended,
   {
     // Node.js config files (CommonJS)
     files: ["*.config.js", "*.config.mjs", "jest.config.js"],
@@ -554,7 +637,7 @@ export default [
       },
     },
     plugins: {
-      ...(plugin.rules ? { traceability: plugin } : {}),
+      ...(plugin.rules ? { traceabilityDev: plugin } : {}),
     },
     rules: {
       "@typescript-eslint/no-unused-vars": "error",
@@ -568,7 +651,7 @@ export default [
       sourceType: "module",
     },
     plugins: {
-      ...(plugin.rules ? { traceability: plugin } : {}),
+      ...(plugin.rules ? { traceabilityDev: plugin } : {}),
     },
   },
   {
@@ -621,6 +704,7 @@ export default [
     "@typescript-eslint/parser": "^8.46.4",
     "@typescript-eslint/utils": "^8.46.4",
     "eslint": "^9.39.1",
+    "eslint-plugin-traceability": "^1.0.0",
     "typescript": "^5.9.3"
   }
 }
@@ -635,5 +719,4 @@ export default [
 5. **Use file patterns** instead of CLI `--ext` flags
 6. **Structure as array of objects**, each targeting specific file types
 7. **Use `ignores`** instead of `.eslintignore` files
-
-This setup provides a solid foundation for ESLint 9 that works reliably across different project types and environments.
+8. **Register plugins explicitly** in flat config before spreading their presets

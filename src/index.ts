@@ -91,6 +91,14 @@ RULE_NAMES.forEach(
   },
 );
 
+const plugin: {
+  rules: typeof rules;
+  configs?: unknown;
+  maintenance?: unknown;
+} = {
+  rules,
+};
+
 /**
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-ERROR-SEVERITY - Map rule types to appropriate ESLint severity levels (errors vs warnings)
@@ -112,12 +120,11 @@ const TRACEABILITY_RULE_SEVERITIES: Readonly<Record<string, "error" | "warn">> =
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-PLUGIN-STRUCTURE - Provide foundational plugin export and registration
  * @req REQ-ERROR-SEVERITY - Map rule types to appropriate ESLint severity levels (errors vs warnings)
+ * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
+ * @req REQ-CONFIG-PRESETS - Provide flat-config presets that self-register the plugin and core rules
  */
 function createTraceabilityFlatConfig() {
   return {
-    plugins: {
-      traceability: {},
-    },
     rules: {
       ...TRACEABILITY_RULE_SEVERITIES,
     },
@@ -135,6 +142,8 @@ const configs = {
   strict: [createTraceabilityFlatConfig()],
 };
 
+plugin.configs = configs;
+
 /**
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINTENANCE-API-EXPORT - Expose maintenance utilities alongside core plugin exports
@@ -147,5 +156,7 @@ const maintenance = {
   generateMaintenanceReport,
 };
 
+plugin.maintenance = maintenance;
+
 export { rules, configs, maintenance };
-export default { rules, configs, maintenance };
+export default plugin;
