@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Identify the most heavily duplicated rule test suite and refactor it to use shared test helpers or data builders so that repeated RuleTester setup and case definitions are centralized while keeping existing behavior and coverage intact.
+- [ ] Revise the Husky configuration so that it uses the current recommended setup without relying on the deprecated install command, while preserving the existing pre-commit and pre-push hook behavior.
 
 ## NEXT
 
-- [ ] Apply the same shared helper pattern to other closely related rule test files that currently duplicate large blocks of RuleTester configuration and test cases, further reducing structural duplication without changing test behavior.
-- [ ] Introduce small, focused utility modules for repeated CLI and maintenance tests (for example, common temp-project setup or command invocation patterns) and update the corresponding tests to use these utilities instead of inlining similar code.
-- [ ] Review the remaining test suite for any obvious copy‑and‑paste clusters and opportunistically refactor them into reusable helpers or fixtures, stopping short of over‑abstraction so the tests stay readable and easy to extend.
+- [ ] Review dependency-related scripts and configuration to confirm that the updated Husky setup no longer produces deprecation warnings during installation and that all hooks still run as expected.
+- [ ] Re-examine dependency health, including security audits and maturity checks, to ensure no new issues were introduced by the Husky changes and that the overall dependency status meets or exceeds the required quality threshold.
+- [ ] Update any developer documentation or architecture decision records that describe the Husky and git-hook strategy so they accurately reflect the modernized setup and its rationale.
+- [ ] Once dependency health is confirmed, perform a fresh functionality assessment of the implemented stories and features, using the existing tests and coverage reports as evidence, to establish overall project completeness.
 
 ## LATER
 
-- [ ] Reassess overall duplication and complexity metrics for tests and production code to confirm the code-quality score comfortably exceeds the target threshold and to identify any remaining hotspots worth a future refactor.
-- [ ] Document the preferred patterns for DRY, story‑traceable tests in the internal development docs so new tests follow the refactored structure and do not reintroduce heavy duplication.
-- [ ] Once duplication and structure are in a good state, consider whether it is appropriate to very slightly tighten selected lint rules (such as maximum function length or complexity) to lock in the improved code quality without making the codebase harder to work with.
+- [ ] Periodically reassess dependency versions with the maturity checker and security audits, applying safe upgrades when they become available while maintaining the established Husky and hook configuration.
+- [ ] Consider adding concise developer guidance on how to work with the git hooks and what to do if local Husky execution fails, so contributors can quickly diagnose environment-specific issues without weakening dependency safeguards.

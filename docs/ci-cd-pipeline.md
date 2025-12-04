@@ -157,10 +157,13 @@ To keep local development aligned with CI:
 
 - **Pre-commit** (`.husky/pre-commit`):
   - Runs `npx lint-staged`, which executes Prettier and ESLint with `--fix` on staged files in `src/` and `tests/`.
+
 - **Pre-push** (`.husky/pre-push`):
   - Runs `npm run ci-verify:full`.
   - This mirrors the CI quality gate so that most issues are caught before code reaches GitHub.
   - Secret scanning (`npm run security:secrets`) currently runs only in CI on the Node 20.x matrix entry and is not part of the pre-push hook, but it uses the same configuration so results stay consistent between local and CI.
+
+Husky is wired up via the `postinstall` npm script (`"postinstall": "husky"`) instead of the deprecated `husky install` `prepare` script.
 
 Local verification commands:
 

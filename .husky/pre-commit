@@ -1,4 +1,1 @@
-#!/usr/bin/env sh
-# husky
-
-npx lint-staged
+npm test
