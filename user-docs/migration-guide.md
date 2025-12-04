@@ -130,10 +130,7 @@ You can introduce `@implements` gradually without breaking existing code:
 3. Run ESLint with `traceability/valid-annotation-format` and `traceability/valid-req-reference` enabled to confirm everything passes.
 4. Optionally, once you are comfortable, standardize on using `@implements` for multi-story integration functions while keeping `@story` + `@req` for simple, single-story code.
 
-For detailed semantics and edge cases (path validation, scoped requirement IDs, and multi-story fixtures), see:
-
-- Rule docs: [`docs/rules/valid-annotation-format.md`](../docs/rules/valid-annotation-format.md), [`docs/rules/valid-req-reference.md`](../docs/rules/valid-req-reference.md)
-- Story: [`docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`](../docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md)
+For detailed semantics and edge cases (path validation, scoped requirement IDs, and multi-story fixtures), see the valid-annotation-format and valid-req-reference rule documentation and the multi-story support story in the project documentation.
 
 ## 4. Test and Validate
 

@@ -2,7 +2,7 @@
 
 This document describes how security is handled for `eslint-plugin-traceability`, including how to report vulnerabilities, what guarantees apply to production dependencies, and how we manage known risks in our dev-only release tooling.
 
-> This file is **user-facing** documentation. Internal implementation details and deeper discussion live under `docs/` and are linked where relevant.
+> This file is **user-facing** documentation. Internal implementation details and deeper discussion live in the project’s internal documentation and decision records.
 
 ## Reporting a Vulnerability
 
@@ -41,9 +41,7 @@ In other words:
 - The published npm package is intended to ship **without known high‑severity vulnerabilities in its production dependencies** at the moment it is released.
 - Dev-only tooling and CI infrastructure are kept separate from what you install via `npm install eslint-plugin-traceability`.
 
-For more detail on how these checks are wired into CI, see:
-
-- [Dependency Health and dry-aged-deps Usage](docs/dependency-health.md)
+For more detail on how these checks are wired into CI, see the internal dependency health and security documentation for this project.
 
 ## Dependency Maturity and `dry-aged-deps`
 
@@ -61,9 +59,7 @@ Current high-level policy:
 
 When `dry-aged-deps` reports that there are **no safe upgrades available** under these thresholds, we may temporarily accept residual risk in dev-only tooling while keeping production dependencies clean and fully audited.
 
-For maintainers, the full process is described in:
-
-- [docs/dependency-health.md](docs/dependency-health.md)
+For maintainers, the full process is described in the project’s internal dependency health and security guidelines.
 
 ## Dev-Only Release Tooling Risk (semantic-release / npm / glob / brace-expansion)
 
@@ -90,10 +86,7 @@ Under our `dry-aged-deps` policy (7‑day minimum age, no known vulnerabilities)
 - There is currently **no recommended, dry‑aged‑safe upgrade path** for the semantic-release/npm toolchain that would fully eliminate these bundled vulnerabilities.
 - We therefore treat this as a **known error in dev-only tooling** rather than a production risk.
 
-This acceptance is documented in detail in:
-
-- [docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md](docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md)
-- [docs/decisions/adr-accept-dev-dep-risk-glob.md](docs/decisions/adr-accept-dev-dep-risk-glob.md)
+This acceptance is documented in detail in the project’s internal security incident records and architectural decision records.
 
 ### Compensating Controls
 

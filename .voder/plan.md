@@ -1,16 +1,15 @@
 ## NOW
 
-- [ ] Ensure the security policy document is included wherever the README is distributed by updating the project’s packaging configuration so that the SECURITY file linked from the README is actually shipped with the published package.
+- [ ] Revise the project’s packaging configuration so that only user-facing documentation and runtime artifacts are included in the published package, explicitly excluding the internal docs directory while keeping all files currently linked from the README and user guides available in the installed package layout.
 
 ## NEXT
 
-- [ ] Apply the identified safe, mature updates to the development-only release tooling dependencies so that the versions of the semantic-release toolchain match the latest approved versions from the dependency maturity analysis.
-- [ ] Refresh the dependency lockfile to reflect the updated development tooling versions and ensure that installs remain deterministic across environments.
-- [ ] Review all user-facing documentation for references to the security policy and other shipped documentation files to confirm that every linked file will be present in the published package layout.
-- [ ] Confirm that the dependency health and security incident documents remain accurate after the tooling upgrades, updating any version-specific notes or rationales if the upgraded toolchain changes the risk profile.
+- [ ] Update the README, SECURITY policy, and user-facing guides to remove or reroute any links that currently point into the internal docs directory, replacing them with links to equivalent content in the user documentation area or with non-linked explanatory text where appropriate.
+- [ ] Systematically review all user-facing Markdown files (the README, security policy, changelog, and user documentation) to confirm that every remaining link targets a file that is actually included in the published package and does not reference internal-only paths.
+- [ ] Once the documentation structure and published content boundaries are clean, revisit the documentation assessment to ensure it now meets the higher threshold required for functionality evaluation and note any remaining minor gaps, if any.
 
 ## LATER
 
-- [ ] Re-run the implementation assessment’s dependency maturity and security review steps at a later date to verify that there are no new safe updates pending and that all vulnerabilities remain confined to documented, accepted-risk areas.
-- [ ] Once documentation and dependency management clearly exceed their thresholds, revisit the functionality assessment to identify any remaining story-level feature gaps and plan targeted work to close them.
-- [ ] Consider adding a lightweight automated check that validates that all Markdown links in user-facing documentation point only to files that are actually included in the published package, to prevent future documentation distribution gaps.
+- [ ] Document the separation between user-facing documentation and internal project documentation in a short maintainer guide so future contributors understand which files are safe to link from user docs and which must remain internal-only.
+- [ ] Optionally design an internal checklist or guideline for release preparation that includes verifying the published package’s file list and link integrity for user-facing documentation, helping prevent future regressions in documentation structure.
+- [ ] After documentation and packaging boundaries are stable and above threshold, rerun or re-evaluate the functionality assessment to identify any remaining story-level feature gaps and plan targeted implementation work to close them.

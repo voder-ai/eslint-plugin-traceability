@@ -48,17 +48,17 @@ export default [
 
 ### Available Rules
 
-- `traceability/require-story-annotation` Enforces presence of `@story` annotations. ([Documentation](docs/rules/require-story-annotation.md))
-- `traceability/require-req-annotation` Enforces presence of `@req` annotations. ([Documentation](docs/rules/require-req-annotation.md))
-- `traceability/require-branch-annotation` Enforces presence of branch annotations. ([Documentation](docs/rules/require-branch-annotation.md))
-- `traceability/valid-annotation-format` Enforces correct format of traceability annotations. ([Documentation](docs/rules/valid-annotation-format.md))
-- `traceability/valid-story-reference` Validates that `@story` references point to existing story files. ([Documentation](docs/rules/valid-story-reference.md))
-- `traceability/valid-req-reference` Validates that `@req` references point to existing requirement IDs. ([Documentation](docs/rules/valid-req-reference.md))
-- `traceability/prefer-implements-annotation` Recommends migration from legacy `@story`/`@req` annotations to `@implements` (disabled by default). ([Documentation](docs/rules/prefer-implements-annotation.md))
+- `traceability/require-story-annotation` Enforces presence of `@story` annotations. (See the rule documentation in the plugin's user guide.)
+- `traceability/require-req-annotation` Enforces presence of `@req` annotations. (See the rule documentation in the plugin's user guide.)
+- `traceability/require-branch-annotation` Enforces presence of branch annotations. (See the rule documentation in the plugin's user guide.)
+- `traceability/valid-annotation-format` Enforces correct format of traceability annotations. (See the rule documentation in the plugin's user guide.)
+- `traceability/valid-story-reference` Validates that `@story` references point to existing story files. (See the rule documentation in the plugin's user guide.)
+- `traceability/valid-req-reference` Validates that `@req` references point to existing requirement IDs. (See the rule documentation in the plugin's user guide.)
+- `traceability/prefer-implements-annotation` Recommends migration from legacy `@story`/`@req` annotations to `@implements` (disabled by default). (See the rule documentation in the plugin's user guide.)
 
-Configuration options: For detailed per-rule options (such as scopes, branch types, and story directory settings), see the individual rule docs in [`docs/rules/`](docs/rules) and the consolidated [API Reference](user-docs/api-reference.md).
+Configuration options: For detailed per-rule options (such as scopes, branch types, and story directory settings), see the individual rule docs in the plugin's user guide and the consolidated [API Reference](user-docs/api-reference.md).
 
-For development and contribution guidelines, see the [ESLint Plugin Development Guide](docs/eslint-plugin-development-guide.md).
+For development and contribution guidelines, see the contribution guide in the repository.
 
 ## Quick Start
 
@@ -231,29 +231,14 @@ For the canonical, user-facing security policy (including how to report vulnerab
   - The issue is confined to the CI environment that prepares and publishes releases.
   - It **cannot impact** the runtime behavior or dependency graph of the `eslint-plugin-traceability` package you install or use in your own projects.
 
-### Optional deeper background
-
-For readers who want more context on the dependency and security model (not required to use the plugin):
-
-- Dependency health overview: [docs/dependency-health.md](docs/dependency-health.md)
-- Detailed incident note about the semantic‑release/npm toolchain risk:  
-  [docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md](docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md)
-
-These documents are informational and describe internal processes and known toolchain limitations; they do not change the guarantees described above for end users.
-
 ## Documentation Links
 
 - ESLint v9 Setup Guide: [user-docs/eslint-9-setup-guide.md](user-docs/eslint-9-setup-guide.md)
-- Plugin Development Guide: [docs/eslint-plugin-development-guide.md](docs/eslint-plugin-development-guide.md)
 - API Reference: [user-docs/api-reference.md](user-docs/api-reference.md)
 - Examples: [user-docs/examples.md](user-docs/examples.md)
 - Migration Guide: [user-docs/migration-guide.md](user-docs/migration-guide.md)
 - Full README: <https://github.com/voder-ai/eslint-plugin-traceability#readme>
-- Rule: require-story-annotation: [docs/rules/require-story-annotation.md](docs/rules/require-story-annotation.md)
-- Rule: require-req-annotation: [docs/rules/require-req-annotation.md](docs/rules/require-req-annotation.md)
-- Rule: require-branch-annotation: [docs/rules/require-branch-annotation.md](docs/rules/require-branch-annotation.md)
 - Contribution guide: <https://github.com/voder-ai/eslint-plugin-traceability/blob/main/CONTRIBUTING.md>
 - Issue tracker: <https://github.com/voder-ai/eslint-plugin-traceability/issues>
-- Configuration Presets: [docs/config-presets.md](docs/config-presets.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Versioning and Releases: This project uses semantic-release for automated versioning. The authoritative list of published versions and release notes is on GitHub Releases: <https://github.com/voder-ai/eslint-plugin-traceability/releases>
