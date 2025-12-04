@@ -6,16 +6,9 @@
  */
 import { RuleTester } from "eslint";
 import { checkReqAnnotation } from "../../src/utils/annotation-checker";
-import { tsRuleTesterLanguageOptions } from "./ts-language-options";
+import { withTsLanguageOptions } from "./ts-language-options";
 
 const ruleTester = new RuleTester();
-
-const withTsAnnotationCheckerOptions = <T extends Record<string, any>>(
-  test: T,
-): T & { languageOptions: typeof tsRuleTesterLanguageOptions } => ({
-  ...test,
-  languageOptions: tsRuleTesterLanguageOptions,
-});
 
 type AnnotationCheckerTestConfig = {
   rule: any;
@@ -38,8 +31,8 @@ export function runAnnotationCheckerTests(
   const { rule, valid, invalid } = config;
 
   ruleTester.run(ruleName, rule, {
-    valid: valid.map(withTsAnnotationCheckerOptions) as any,
-    invalid: invalid.map(withTsAnnotationCheckerOptions) as any,
+    valid: valid.map(withTsLanguageOptions) as any,
+    invalid: invalid.map(withTsLanguageOptions) as any,
   });
 }
 

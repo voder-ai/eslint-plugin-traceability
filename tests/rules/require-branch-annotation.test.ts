@@ -14,6 +14,12 @@ const ruleTester = new RuleTester({
   languageOptions: { parserOptions: { ecmaVersion: 2020 } },
 } as any);
 
+const makeMissingAnnotationErrors = (...missing: Array<"@story" | "@req">) =>
+  missing.map((item) => ({
+    messageId: "missingAnnotation" as const,
+    data: { missing: item },
+  }));
+
 const runRule = (tests: Parameters<typeof ruleTester.run>[2]) =>
   ruleTester.run("require-branch-annotation", rule, tests);
 
@@ -143,10 +149,7 @@ if (condition) {}`,
         code: `if (condition) {}`,
         output: `// @story <story-file>.story.md
 if (condition) {}`,
-        errors: [
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-          { messageId: "missingAnnotation", data: { missing: "@req" } },
-        ],
+        errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
         name: "[REQ-BRANCH-DETECTION] missing @req on for loop when only story present",
@@ -155,7 +158,7 @@ for (let i = 0; i < 5; i++) {}`,
         output: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
 // @req <REQ-ID>
 for (let i = 0; i < 5; i++) {}`,
-        errors: [{ messageId: "missingAnnotation", data: { missing: "@req" } }],
+        errors: makeMissingAnnotationErrors("@req"),
       },
       {
         name: "[REQ-BRANCH-DETECTION] missing @story on while loop when only req present",
@@ -164,9 +167,7 @@ while (true) {}`,
         output: `// @req REQ-BRANCH-DETECTION
 // @story <story-file>.story.md
 while (true) {}`,
-        errors: [
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-        ],
+        errors: makeMissingAnnotationErrors("@story"),
       },
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on switch-case",
@@ -179,10 +180,7 @@ while (true) {}`,
   case 'a':
     break;
 }`,
-        errors: [
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-          { messageId: "missingAnnotation", data: { missing: "@req" } },
-        ],
+        errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on do-while loop",
@@ -193,10 +191,7 @@ while (true) {}`,
 do {
   action();
 } while (condition);`,
-        errors: [
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-          { messageId: "missingAnnotation", data: { missing: "@req" } },
-        ],
+        errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on for-of loop",
@@ -207,10 +202,7 @@ do {
 for (const item of items) {
   process(item);
 }`,
-        errors: [
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-          { messageId: "missingAnnotation", data: { missing: "@req" } },
-        ],
+        errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on for-in loop",
@@ -221,10 +213,7 @@ for (const item of items) {
 for (const key in object) {
   console.log(key);
 }`,
-        errors: [
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-          { messageId: "missingAnnotation", data: { missing: "@req" } },
-        ],
+        errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on try-catch blocks",
@@ -240,10 +229,8 @@ try {
   handleError(error);
 }`,
         errors: [
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-          { messageId: "missingAnnotation", data: { missing: "@req" } },
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-          { messageId: "missingAnnotation", data: { missing: "@req" } },
+          ...makeMissingAnnotationErrors("@story", "@req"),
+          ...makeMissingAnnotationErrors("@story", "@req"),
         ],
       },
       {
@@ -259,10 +246,7 @@ try {
   case 'a':
     break;
 }`,
-        errors: [
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-          { messageId: "missingAnnotation", data: { missing: "@req" } },
-        ],
+        errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
         name: "[REQ-CONFIGURABLE-SCOPE] missing annotations on configured branch type ForStatement",
@@ -270,10 +254,7 @@ try {
         options: [{ branchTypes: ["ForStatement"] }],
         output: `// @story <story-file>.story.md
 for (let i = 0; i < 3; i++) {}`,
-        errors: [
-          { messageId: "missingAnnotation", data: { missing: "@story" } },
-          { messageId: "missingAnnotation", data: { missing: "@req" } },
-        ],
+        errors: makeMissingAnnotationErrors("@story", "@req"),
       },
     ],
   });
