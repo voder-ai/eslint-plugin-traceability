@@ -74,7 +74,7 @@ For teams that want to gradually migrate from `@story` + `@req` to `@implements`
   ```
 
 - When enabled, it offers **conservative auto-fixes** that rewrite eligible `@story` + `@req` combinations into equivalent `@implements` lines, without attempting risky or ambiguous transformations.
-- Detailed behavior, limitations, and examples are documented in `docs/rules/prefer-implements-annotation.md`.
+- Detailed behavior, limitations, and examples are documented in the project’s internal rule documentation, which is primarily intended for maintainers; most users can rely on this guide and the API reference for day-to-day usage.
 
 #### When to keep `@story` + `@req`
 

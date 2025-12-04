@@ -136,8 +136,8 @@ npx traceability-maint report --root . --format json
 # Update references when a story file is renamed
 npx traceability-maint update \
   --root . \
-  --from "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md" \
-  --to "docs/stories/003.0-DEV-FN-ANNOTATIONS.story.md"
+  --from "stories/feature-authentication.story.md" \
+  --to "stories/feature-auth-v2.story.md"
 ```
 
 For a full description of options and JSON payloads, see the [Maintenance API and CLI](user-docs/api-reference.md#maintenance-api-and-cli) section in the API Reference.
@@ -195,7 +195,7 @@ These tests verify end-to-end behavior of the plugin via the ESLint CLI.
 
 ## Security and Dependency Health
 
-For the canonical, user-facing security policy (including how to report vulnerabilities), see [SECURITY.md](SECURITY.md). The additional files under `docs/` referenced below provide deeper background and implementation details for interested readers.
+For the canonical, user-facing security policy (including how to report vulnerabilities), see [SECURITY.md](SECURITY.md). Internal implementation details and deeper discussion live in the project’s internal documentation and decision records, which are intended for maintainers rather than end users.
 
 ### What end users can expect from production dependencies
 

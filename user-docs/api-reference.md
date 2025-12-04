@@ -13,9 +13,9 @@ Each rule enforces traceability conventions in your code. Below is a summary of 
 
 In addition to the core `@story` and `@req` annotations, the plugin also understands `@implements` for code that fulfills requirements from multiple stories—for example:
 `@implements docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`.
-For a detailed explanation of `@implements` behavior and validation, see [Migration Guide](migration-guide.md) (section **3.1 Multi-story @implements annotations**) and the corresponding `valid-annotation-format` and `valid-req-reference` rule documentation in the plugin's internal docs.
+For a detailed explanation of `@implements` behavior and validation, see [Migration Guide](migration-guide.md) (section **3.1 Multi-story @implements annotations**). Additional background on multi-story semantics is available in the project’s internal rule documentation, which is intended for maintainers rather than end users.
 
-The `prefer-implements-annotation` rule is an **opt-in migration helper** that is disabled by default and **not** part of any built-in preset. It can be enabled and given a severity like `"warn"` or `"error"` using normal ESLint rule configuration when you want to gradually encourage multi-story `@implements` usage. For rule details and migration guidance, see `docs/rules/prefer-implements-annotation.md`.
+The `prefer-implements-annotation` rule is an **opt-in migration helper** that is disabled by default and **not** part of any built-in preset. It can be enabled and given a severity like `"warn"` or `"error"` using normal ESLint rule configuration when you want to gradually encourage multi-story `@implements` usage. Detailed behavior and migration guidance are documented in the project’s internal rule documentation, which is targeted at maintainers; typical end users can rely on the high-level guidance in this API reference and the [Migration Guide](migration-guide.md).
 
 ### traceability/require-story-annotation
 
@@ -524,4 +524,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```

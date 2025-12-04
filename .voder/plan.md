@@ -1,16 +1,15 @@
 ## NOW
 
-- [ ] Confirm that the current pre-commit and pre-push git hook behaviors match the intended pattern where pre-commit only runs fast, automatic formatting and linting on staged files and pre-push runs the full CI-equivalent quality gate.
+- [ ] Review all user-facing documentation files (the main README, changelog, security policy, and user-docs directory) to check that they follow the required structure, include the correct attribution, and do not reference internal development documentation paths.
 
 ## NEXT
 
-- [ ] Review the lint-staged configuration to ensure it formats and lints all relevant staged source and test files so that the pre-commit hook clearly satisfies the requirement for automatic formatting plus linting.
-- [ ] Verify that the comprehensive quality gate invoked by the pre-push hook still aligns with the checks performed in the main CI workflow, ensuring local pushes and CI enforce the same standards.
-- [ ] Update any developer documentation or architecture decision records that describe git hooks and Husky usage so they clearly explain the division of responsibilities between the fast pre-commit checks and the full pre-push checks.
-- [ ] Reassess the version control practices against the VERSION_CONTROL assessment criteria and confirm that, with the verified hook configuration, this area now meets or exceeds the required quality threshold and no longer blocks functionality assessment.
+- [ ] Identify and fix any issues found in the user-facing documentation, such as missing attribution, broken links, or references to internal development docs, so that it is self-contained and accurate for end users.
+- [ ] Review the internal development documentation under the docs directory to ensure it is consistent with the current implementation and clearly separated from user-facing material.
+- [ ] Update or add any missing internal documentation that is necessary to explain the current behavior, architecture decisions, or feature coverage so that the documentation set is complete for both users and developers.
 
 ## LATER
 
-- [ ] Consider whether adding a lightweight, fast type-check to the pre-commit hook is feasible without slowing commits excessively, and adjust the configuration if it remains within acceptable performance limits.
-- [ ] Enhance contributor documentation with practical guidance on how to respond to pre-commit or pre-push hook failures so developers can quickly fix issues while preserving the strength of the quality gates.
-- [ ] Periodically revisit git hook and CI/CD configurations as tools and requirements evolve, ensuring that the balance between fast feedback on commit and comprehensive checks on push remains appropriate.
+- [ ] Create a concise documentation overview that maps user-facing guides to the underlying stories and ADRs for easier traceability.
+- [ ] Refine examples and usage scenarios in the user-facing docs to better illustrate common configurations and maintenance workflows.
+- [ ] Periodically re-audit documentation for alignment with new features or changes to the release and CI/CD processes so future assessments continue to pass.

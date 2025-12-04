@@ -41,7 +41,7 @@ In other words:
 - The published npm package is intended to ship **without known high‑severity vulnerabilities in its production dependencies** at the moment it is released.
 - Dev-only tooling and CI infrastructure are kept separate from what you install via `npm install eslint-plugin-traceability`.
 
-For more detail on how these checks are wired into CI, see the internal dependency health and security documentation for this project.
+For more detail on how these checks are wired into CI, maintainers can refer to the project’s internal dependency health and security documentation; this level of detail is not required for normal end users of the plugin.
 
 ## Dependency Maturity and `dry-aged-deps`
 
@@ -59,7 +59,7 @@ Current high-level policy:
 
 When `dry-aged-deps` reports that there are **no safe upgrades available** under these thresholds, we may temporarily accept residual risk in dev-only tooling while keeping production dependencies clean and fully audited.
 
-For maintainers, the full process is described in the project’s internal dependency health and security guidelines.
+For maintainers, the full process is described in the project’s internal dependency health and security guidelines; end users typically do not need to consult those documents.
 
 ## Dev-Only Release Tooling Risk (semantic-release / npm / glob / brace-expansion)
 
