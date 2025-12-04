@@ -244,3 +244,7 @@ User-facing docs are aligned with these constraints:
 - If the post-deployment smoke test fails, the job fails even though a package may have been published; this indicates an urgent regression in the published artifact.
 
 In all of these cases, the failing run is visible in the `CI/CD Pipeline` workflow on GitHub. Since `main` is the single integration branch in our trunk-based model, maintainers should fix the underlying issue before pushing further changes to `main`.
+
+## CODE_QUALITY Slices
+
+Automated `CODE_QUALITY` assessments should respect the slice configuration in `.voder-code-quality-slices.json`. Instead of loading the entire repository at once, tools should analyze the codebase slice by slice as defined there. The highest-priority slice is `rules-and-helpers`, and assessments should focus on that slice first before considering lower-priority slices.

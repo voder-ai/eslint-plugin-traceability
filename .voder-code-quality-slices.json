@@ -1,0 +1,54 @@
+{
+  "$schema": "https://voder.ai/schemas/code-quality-slices-v1.json",
+  "slices": [
+    {
+      "id": "rules-and-helpers",
+      "description": "Core ESLint rules, shared utilities, and their tests.",
+      "priority": 1,
+      "paths": [
+        "src/rules",
+        "src/utils",
+        "tests/rules",
+        "tests/utils"
+      ]
+    },
+    {
+      "id": "maintenance-and-cli",
+      "description": "Maintenance API and traceability-maint CLI plus related tests and fixtures.",
+      "priority": 2,
+      "paths": [
+        "src/maintenance",
+        "tests/maintenance",
+        "tests/integration",
+        "tests/fixtures/stale",
+        "tests/fixtures/update",
+        "tests/fixtures/valid-annotations"
+      ]
+    },
+    {
+      "id": "plugin-and-config",
+      "description": "Plugin entrypoint, flat-config presets, and configuration tests.",
+      "priority": 3,
+      "paths": [
+        "src/index.ts",
+        "eslint.config.js",
+        "jest.config.js",
+        "tsconfig.json",
+        "tests/config",
+        "tests/plugin-setup.test.ts",
+        "tests/plugin-default-export-and-configs.test.ts",
+        "tests/plugin-setup-error.test.ts",
+        "tests/cli-error-handling.test.ts"
+      ]
+    },
+    {
+      "id": "tooling-and-ci",
+      "description": "Build scripts and CI/CD workflow definitions.",
+      "priority": 4,
+      "paths": [
+        "scripts",
+        ".github/workflows"
+      ]
+    }
+  ]
+}
