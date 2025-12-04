@@ -1,16 +1,15 @@
 ## NOW
 
-- [ ] Review the existing implementation and tests for the rules that require story and requirement annotations so you can design how they should recognize `@implements` annotations as satisfying those requirements without breaking current `@story` and `@req` behavior.
+- [ ] Review the current dependency inventory and dependency-health reports to identify all devDependencies that are flagged as safe to upgrade under the existing maturity policy, with special attention to the remaining lint-staged update mentioned in the assessment.
 
 ## NEXT
 
-- [ ] Update the annotation detection utilities and the require-story-annotation rule so that functions documented only with appropriate `@implements` lines are treated as having the necessary story coverage and no longer reported as missing `@story` annotations.
-- [ ] Update the requirement detection utilities and the require-req-annotation rule so that suitable `@implements` lines are treated as satisfying the requirement-annotation check and do not trigger missing `@req` errors.
-- [ ] Extend the rule test suites to include cases where `@implements` is used with and without legacy `@story` and `@req` annotations, verifying that the new behavior matches the multi-story support requirements in the 010.2 story and that existing scenarios remain unchanged.
-- [ ] Align the 010.2 multi-story support story, relevant rule documentation, and any related ADRs to explicitly state that `@implements` satisfies the require-story-annotation and require-req-annotation rules, ensuring traceability annotations in code and tests reference the fulfilled requirement.
-- [ ] Run a focused functionality review of all multi-story support behavior, using the updated tests and stories, to confirm that the remaining multi-story requirements are fully implemented and no new gaps have been introduced.
+- [ ] Update the project’s dependency definitions so that all currently safe, policy-approved devDependency upgrades (including the identified lint-staged version bump) are applied consistently in both the manifest and lockfile.
+- [ ] Verify that the updated dependencies do not introduce new deprecation warnings, security vulnerabilities, or policy violations by re-running the existing dependency-health and audit checks and interpreting their reports.
+- [ ] Adjust the internal dependency-health documentation to accurately describe the new dependency state, including any changes in safe-upgrade candidates, known issues, or accepted-risk records.
+- [ ] Confirm that, with the new dependency state and documentation, the project’s dependency quality meets or exceeds the required threshold so that a full functionality assessment can proceed on a solid foundation.
 
 ## LATER
 
-- [ ] Identify and implement any additional usability enhancements around `@implements` (such as clearer diagnostics when `@implements` is malformed but present) while keeping behavior backwards compatible.
-- [ ] Consider further refactoring of shared annotation-detection logic so that future extensions to traceability annotations can be added in one place and reused consistently across all related rules and maintenance tools.
+- [ ] Evaluate whether any additional tightening of dependency governance (such as refining maturity thresholds or expanding overrides for historically risky transitive packages) would further strengthen the dependency posture without hindering safe updates.
+- [ ] Consider enhancing contributor guidance so developers clearly understand how dependency maturity and safety checks influence when and how they should propose dependency upgrades.

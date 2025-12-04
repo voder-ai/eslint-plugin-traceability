@@ -80,7 +80,7 @@
     "husky": "^9.1.7",
     "jest": "^30.2.0",
     "jscpd": "^4.0.5",
-    "lint-staged": "^16.2.6",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
     "semantic-release": "^21.1.2",
     "ts-jest": "^29.4.5",
