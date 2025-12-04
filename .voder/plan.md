@@ -1,15 +1,13 @@
 ## NOW
 
-- [ ] Revise the project’s packaging configuration so that only user-facing documentation and runtime artifacts are included in the published package, explicitly excluding the internal docs directory while keeping all files currently linked from the README and user guides available in the installed package layout.
+- [ ] Review the user-facing documentation for the maintenance API and update any incorrect import examples so they show a working way to access the maintenance functions from the published plugin (for example via the plugin’s default export), ensuring the documented usage matches the actual package exports.
 
 ## NEXT
 
-- [ ] Update the README, SECURITY policy, and user-facing guides to remove or reroute any links that currently point into the internal docs directory, replacing them with links to equivalent content in the user documentation area or with non-linked explanatory text where appropriate.
-- [ ] Systematically review all user-facing Markdown files (the README, security policy, changelog, and user documentation) to confirm that every remaining link targets a file that is actually included in the published package and does not reference internal-only paths.
-- [ ] Once the documentation structure and published content boundaries are clean, revisit the documentation assessment to ensure it now meets the higher threshold required for functionality evaluation and note any remaining minor gaps, if any.
+- [ ] Update cross-references between user-facing documentation files so that any mention of another user doc (such as the migration guide) is expressed as a proper Markdown link to the correct file included in the published package.
+- [ ] Re-scan all user-facing Markdown files (README, security policy, changelog, and user-docs) to confirm that every link either points to a file that ships in the npm package or to an external URL, and that no links reference internal-only paths.
 
 ## LATER
 
-- [ ] Document the separation between user-facing documentation and internal project documentation in a short maintainer guide so future contributors understand which files are safe to link from user docs and which must remain internal-only.
-- [ ] Optionally design an internal checklist or guideline for release preparation that includes verifying the published package’s file list and link integrity for user-facing documentation, helping prevent future regressions in documentation structure.
-- [ ] After documentation and packaging boundaries are stable and above threshold, rerun or re-evaluate the functionality assessment to identify any remaining story-level feature gaps and plan targeted implementation work to close them.
+- [ ] Enhance the maintainer-facing documentation to clearly describe the contract for user-facing docs, including where and how to reference maintenance APIs and other guides, so future contributors keep documentation and exports aligned.
+- [ ] Optionally add a short section in the user-facing API reference that summarizes the overall structure of the plugin’s exports (rules, configs, maintenance) to make it easier for users to discover the correct programmatic entry points.

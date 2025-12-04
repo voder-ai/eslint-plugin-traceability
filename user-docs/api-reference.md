@@ -13,7 +13,7 @@ Each rule enforces traceability conventions in your code. Below is a summary of 
 
 In addition to the core `@story` and `@req` annotations, the plugin also understands `@implements` for code that fulfills requirements from multiple stories—for example:
 `@implements docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`.
-For a detailed explanation of `@implements` behavior and validation, see `user-docs/migration-guide.md` (section **3.1 Multi-story @implements annotations**) and the corresponding `valid-annotation-format` and `valid-req-reference` rule documentation in the plugin's internal docs.
+For a detailed explanation of `@implements` behavior and validation, see [Migration Guide](migration-guide.md) (section **3.1 Multi-story @implements annotations**) and the corresponding `valid-annotation-format` and `valid-req-reference` rule documentation in the plugin's internal docs.
 
 ### traceability/require-story-annotation
 
@@ -117,7 +117,7 @@ The `valid-annotation-format` rule is intentionally **backward compatible** with
 
 Deep requirement checking for both `@req` and `@implements` is handled by the `valid-req-reference` rule in the plugin's internal docs. For step-by-step guidance on when and how to migrate, see:
 
-- **Migration guide:** `user-docs/migration-guide.md` (section **3.1 Multi-story `@implements` annotations**)
+- **Migration guide:** [Migration Guide](migration-guide.md) (section **3.1 Multi-story `@implements` annotations**)
 - **Rule docs:** The `valid-annotation-format` and `valid-req-reference` rule documentation in the plugin's internal docs.
 
 Default Severity: `error`
@@ -234,16 +234,30 @@ The plugin exposes a small maintenance API and a companion CLI, `traceability-ma
 
 ### Programmatic Maintenance API
 
-All functions are exported from the plugin’s maintenance module:
+The maintenance functions are available via the plugin’s `maintenance` export. You can either import the named `maintenance` export directly and destructure the functions you need, or import the default plugin export and access the same functions from `traceability.maintenance`:
 
 ```ts
-import {
+// Option 1: Named `maintenance` export
+import { maintenance } from "eslint-plugin-traceability";
+
+const {
   detectStaleAnnotations,
   updateAnnotationReferences,
   batchUpdateAnnotations,
   verifyAnnotations,
   generateMaintenanceReport,
-} from "eslint-plugin-traceability/maintenance";
+} = maintenance;
+
+// Option 2: Default plugin export
+import traceability from "eslint-plugin-traceability";
+
+const {
+  detectStaleAnnotations: detectStaleAnnotations2,
+  updateAnnotationReferences: updateAnnotationReferences2,
+  batchUpdateAnnotations: batchUpdateAnnotations2,
+  verifyAnnotations: verifyAnnotations2,
+  generateMaintenanceReport: generateMaintenanceReport2,
+} = traceability.maintenance;
 ```
 
 The current maintenance API operates on a **single workspace root** and scans all files beneath that directory. It does not yet accept include/exclude globs or explicit story/requirement lists.
