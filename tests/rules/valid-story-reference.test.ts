@@ -15,6 +15,7 @@ import {
   __resetStoryExistenceCacheForTests,
 } from "../../src/utils/storyReferenceUtils";
 import * as path from "path";
+import { mockFsForExistingFile } from "../utils/fsTestHelpers";
 
 const ruleTester = new RuleTester({
   languageOptions: { parserOptions: { ecmaVersion: 2020 } },
@@ -213,20 +214,7 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
       "docs/stories/001.0-DEV-PLUGIN-SETUP.story.md",
     );
 
-    jest.spyOn(fs, "existsSync").mockImplementation((...args: any[]) => {
-      const p = args[0] as string;
-      return p === storyPath;
-    });
-
-    jest.spyOn(fs, "statSync").mockImplementation((...args: any[]) => {
-      const p = args[0] as string;
-      if (p === storyPath) {
-        return {
-          isFile: () => true,
-        };
-      }
-      throw Object.assign(new Error("ENOENT"), { code: "ENOENT" });
-    });
+    mockFsForExistingFile(fs, storyPath);
 
     const diagnostics = runRuleOnCode(
       `// @story 001.0-DEV-PLUGIN-SETUP.story.md`,
@@ -285,22 +273,7 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
     const outsideDir = pathModule.resolve(pathModule.sep, "tmp", "outside");
     const outsideFile = pathModule.join(outsideDir, "external-story.story.md");
 
-    jest.spyOn(fs, "existsSync").mockImplementation((...args: any[]) => {
-      const p = args[0] as string;
-      return p === outsideFile;
-    });
-
-    jest.spyOn(fs, "statSync").mockImplementation((...args: any[]) => {
-      const p = args[0] as string;
-      if (p === outsideFile) {
-        return {
-          isFile: () => true,
-        };
-      }
-      const err: NodeJS.ErrnoException = new Error("ENOENT");
-      err.code = "ENOENT";
-      throw err;
-    });
+    mockFsForExistingFile(fs, outsideFile);
 
     const diagnostics = runRuleOnCode(
       `// @story ${outsideFile}\n// @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md`,
@@ -333,22 +306,7 @@ describe("Valid Story Reference Rule Configuration and Boundaries (Story 006.0-D
       "docs/stories/developer-story.map.md",
     );
 
-    jest.spyOn(fs, "existsSync").mockImplementation((...args: any[]) => {
-      const p = args[0] as string;
-      return p === storyPath;
-    });
-
-    jest.spyOn(fs, "statSync").mockImplementation((...args: any[]) => {
-      const p = args[0] as string;
-      if (p === storyPath) {
-        return {
-          isFile: () => true,
-        };
-      }
-      const err: NodeJS.ErrnoException = new Error("ENOENT");
-      err.code = "ENOENT";
-      throw err;
-    });
+    mockFsForExistingFile(fs, storyPath);
 
     const diagnostics = runRuleOnCode(
       `// @story docs/stories/developer-story.map.md\n// @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md`,

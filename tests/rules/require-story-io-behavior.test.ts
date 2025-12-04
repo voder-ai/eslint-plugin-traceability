@@ -8,6 +8,7 @@ import {
   parentChainHasStory,
   fallbackTextBeforeHasStory,
 } from "../../src/rules/helpers/require-story-io";
+import { runFallbackTextBeforeHasStoryDetectsStoryTest } from "../utils/ioTestHelpers";
 
 describe("Require Story IO helpers - additional behavior (Story 003.0)", () => {
   test("parentChainHasStory returns false when sourceCode.getCommentsBefore is not a function", () => {
@@ -47,12 +48,9 @@ describe("Require Story IO helpers - additional behavior (Story 003.0)", () => {
   });
 
   test("fallbackTextBeforeHasStory detects @story in text before node.range", () => {
-    const story = "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
-    const pre = `/* ${story} */\n`;
-    const rest = "function y() {}";
-    const full = pre + rest;
-    const fakeSource: any = { getText: () => full };
-    const node: any = { range: [full.indexOf("function"), full.length] };
-    expect(fallbackTextBeforeHasStory(fakeSource, node)).toBe(true);
+    runFallbackTextBeforeHasStoryDetectsStoryTest(
+      "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md",
+      fallbackTextBeforeHasStory,
+    );
   });
 });
