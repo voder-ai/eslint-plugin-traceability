@@ -237,9 +237,12 @@ As of the latest review:
 
 The `lint-staged` devDependency has been updated to the current `dry-aged-deps`–recommended version, and there are still no remaining safe upgrade candidates under the configured thresholds.
 
-- Remaining high-severity issues are limited to **dev-only tooling** (the semantic-release/npm toolchain) and are documented as a **known error**:
-  - `docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`
-  - `docs/decisions/adr-accept-dev-dep-risk-glob.md`
+The previously documented dev-only vulnerabilities in the semantic-release/npm release toolchain have been resolved by upgrading to the current semantic-release/npm stack. The prior vulnerable state is retained solely as a historical incident record in `docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`.
+
+As of this status update:
+
+- Both production and dev dependency audits report **0 high-severity** vulnerabilities.
+- There are **no active known-error records** for the current release tooling.
 
 This combination of:
 

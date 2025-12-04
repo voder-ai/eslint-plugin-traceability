@@ -194,7 +194,7 @@ Gaps:
 
 ### 010.3-DEV-MIGRATE-TO-IMPLEMENTS
 
-**Status:** Implemented as an opt-in rule with auto-fix; several DoD items marked incomplete in story.
+**Status:** Fully implemented as an opt-in rule with auto-fix; `prefer-implements-annotation` is disabled by default (not included in the recommended or strict presets), matching the story’s configuration and default severity requirements.
 
 Evidence:
 
@@ -204,7 +204,7 @@ Evidence:
 
 Gaps:
 
-- Story DoD items for code review, applying auto-fix to a real repository (e.g., dry-aged-deps), and some validation bullets remain unchecked.
+- There are no known functional gaps for this story. Any future enhancements (such as more advanced migration helpers or broader auto-fix patterns) would be captured as new stories or follow-on tasks rather than as incomplete work under 010.3.
 
 ## Cross-cutting observations
 

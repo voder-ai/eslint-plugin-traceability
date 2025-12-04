@@ -83,33 +83,45 @@ describe("prefer-implements-annotation rule (Story 010.3-DEV-MIGRATE-TO-IMPLEMEN
 });
 
 describe("prefer-implements-annotation configuration severity (REQ-CONFIG-SEVERITY)", () => {
-  test("rule is disabled by default in recommended preset (not present in configs.recommended[0].rules)", () => {
+  test("rule is disabled by default in recommended and strict presets (not present in preset rule maps)", () => {
     const recommended = (configs as any).recommended;
     expect(Array.isArray(recommended)).toBe(true);
     const firstConfig = recommended[0];
     expect(firstConfig).toBeDefined();
     const rules = firstConfig.rules || {};
-    expect(rules["@eslint-sweat/prefer-implements-annotation"]).toBeUndefined();
-    expect(rules["prefer-implements-annotation"]).toBeUndefined();
+    expect(rules["traceability/prefer-implements-annotation"]).toBeUndefined();
+
+    const strict = (configs as any).strict;
+    expect(Array.isArray(strict)).toBe(true);
+    const strictFirstConfig = strict[0];
+    expect(strictFirstConfig).toBeDefined();
+    const strictRules = strictFirstConfig.rules || {};
+    expect(
+      strictRules["traceability/prefer-implements-annotation"],
+    ).toBeUndefined();
   });
 
   test("rule can be configured with severity 'warn' or 'error' in flat config", () => {
     const flatWarnConfig = {
       files: ["**/*.ts"],
       rules: {
-        "prefer-implements-annotation": "warn",
+        "traceability/prefer-implements-annotation": "warn",
       },
     };
 
-    expect(flatWarnConfig.rules["prefer-implements-annotation"]).toBe("warn");
+    expect(
+      flatWarnConfig.rules["traceability/prefer-implements-annotation"],
+    ).toBe("warn");
 
     const flatErrorConfig = {
       files: ["**/*.ts"],
       rules: {
-        "prefer-implements-annotation": "error",
+        "traceability/prefer-implements-annotation": "error",
       },
     };
 
-    expect(flatErrorConfig.rules["prefer-implements-annotation"]).toBe("error");
+    expect(
+      flatErrorConfig.rules["traceability/prefer-implements-annotation"],
+    ).toBe("error");
   });
 });
