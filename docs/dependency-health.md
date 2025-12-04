@@ -215,7 +215,7 @@ These processes ensure that:
   - Regular, automated `npm audit` runs.
   - Documented incident handling and risk acceptance when no compliant upgrade path exists.
 
-## Current Status (2025-12-03, verified)
+## Current Status (2025-12-04, verified)
 
 As of the latest review:
 
@@ -224,6 +224,9 @@ As of the latest review:
   - `safeUpdates: 0`
   - `packages: []`
 - `npm audit --omit=dev --audit-level=high` reports **0 high-severity** vulnerabilities for production dependencies.
+
+The `lint-staged` devDependency has been updated to the current `dry-aged-deps`–recommended version, and there are still no remaining safe upgrade candidates under the configured thresholds.
+
 - Remaining high-severity issues are limited to **dev-only tooling** (the semantic-release/npm toolchain) and are documented as a **known error**:
   - `docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`
   - `docs/decisions/adr-accept-dev-dep-risk-glob.md`
