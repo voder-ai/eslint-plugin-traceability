@@ -1,15 +1,16 @@
 ## NOW
 
-- [ ] Revise the Husky configuration so that it uses the current recommended setup without relying on the deprecated install command, while preserving the existing pre-commit and pre-push hook behavior.
+- [ ] Confirm that the current pre-commit and pre-push git hook behaviors match the intended pattern where pre-commit only runs fast, automatic formatting and linting on staged files and pre-push runs the full CI-equivalent quality gate.
 
 ## NEXT
 
-- [ ] Review dependency-related scripts and configuration to confirm that the updated Husky setup no longer produces deprecation warnings during installation and that all hooks still run as expected.
-- [ ] Re-examine dependency health, including security audits and maturity checks, to ensure no new issues were introduced by the Husky changes and that the overall dependency status meets or exceeds the required quality threshold.
-- [ ] Update any developer documentation or architecture decision records that describe the Husky and git-hook strategy so they accurately reflect the modernized setup and its rationale.
-- [ ] Once dependency health is confirmed, perform a fresh functionality assessment of the implemented stories and features, using the existing tests and coverage reports as evidence, to establish overall project completeness.
+- [ ] Review the lint-staged configuration to ensure it formats and lints all relevant staged source and test files so that the pre-commit hook clearly satisfies the requirement for automatic formatting plus linting.
+- [ ] Verify that the comprehensive quality gate invoked by the pre-push hook still aligns with the checks performed in the main CI workflow, ensuring local pushes and CI enforce the same standards.
+- [ ] Update any developer documentation or architecture decision records that describe git hooks and Husky usage so they clearly explain the division of responsibilities between the fast pre-commit checks and the full pre-push checks.
+- [ ] Reassess the version control practices against the VERSION_CONTROL assessment criteria and confirm that, with the verified hook configuration, this area now meets or exceeds the required quality threshold and no longer blocks functionality assessment.
 
 ## LATER
 
-- [ ] Periodically reassess dependency versions with the maturity checker and security audits, applying safe upgrades when they become available while maintaining the established Husky and hook configuration.
-- [ ] Consider adding concise developer guidance on how to work with the git hooks and what to do if local Husky execution fails, so contributors can quickly diagnose environment-specific issues without weakening dependency safeguards.
+- [ ] Consider whether adding a lightweight, fast type-check to the pre-commit hook is feasible without slowing commits excessively, and adjust the configuration if it remains within acceptable performance limits.
+- [ ] Enhance contributor documentation with practical guidance on how to respond to pre-commit or pre-push hook failures so developers can quickly fix issues while preserving the strength of the quality gates.
+- [ ] Periodically revisit git hook and CI/CD configurations as tools and requirements evolve, ensuring that the balance between fast feedback on commit and comprehensive checks on push remains appropriate.

@@ -1,1 +1,12 @@
-npm test
+#!/bin/sh
+# /**
+#  * @file .husky/pre-commit
+#  * @description Fast pre-commit hook: run lint-staged to auto-format and lint staged files.
+#  *              Keeps checks under ~10 seconds by limiting work to changed files only.
+#  */
+set -e
+
+# Run Prettier and ESLint on staged files via lint-staged.
+# This satisfies the requirement that pre-commit performs automatic formatting
+# plus at least one of linting or type-checking on staged content.
+npx lint-staged

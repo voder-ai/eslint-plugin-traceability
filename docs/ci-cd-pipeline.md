@@ -156,7 +156,7 @@ There is no separate “publish only” workflow and no manual tagging step requ
 To keep local development aligned with CI:
 
 - **Pre-commit** (`.husky/pre-commit`):
-  - Runs `npx lint-staged`, which executes Prettier and ESLint with `--fix` on staged files in `src/` and `tests/`.
+  - Runs `npx lint-staged`, which executes Prettier and ESLint with `--fix` on staged files in `src/` and `tests/` so that formatting and basic linting are enforced before every commit.
 
 - **Pre-push** (`.husky/pre-push`):
   - Runs `npm run ci-verify:full`.
