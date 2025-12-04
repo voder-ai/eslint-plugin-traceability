@@ -63,67 +63,66 @@ For maintainers, the full process is described in the project’s internal depen
 
 ## Dev-Only Release Tooling Risk (semantic-release / npm / glob / brace-expansion)
 
-There is a known, documented risk in the **dev-only release toolchain** used by this project. It does **not** affect the runtime behavior of the published ESLint plugin or CLI, but it is relevant to how releases are built in CI.
+This section documents a **historical** dev-only risk in an older semantic-release/npm toolchain that has since been fully resolved by upgrading the release toolchain to a vulnerability-free stack.
 
-### What is affected?
+### What was affected?
 
-- The dev dependency `@semantic-release/npm@10.0.6` bundles `npm@9.5.0`, which in turn includes vulnerable versions of `glob` and `brace-expansion`.
-- The relevant advisories are:
+During the incident period, the **older** dev dependency stack had the following characteristics:
+
+- The dev dependency `@semantic-release/npm@10.0.6` bundled `npm@9.5.0`, which in turn included vulnerable versions of `glob` and `brace-expansion`.
+- The relevant advisories were:
   - `glob` CLI command injection: [GHSA-5j98-mcp5-4vw2](https://github.com/advisories/GHSA-5j98-mcp5-4vw2)
   - `brace-expansion` ReDoS: [GHSA-v6h2-p8h4-qcjw](https://github.com/advisories/GHSA-v6h2-p8h4-qcjw)
-- These vulnerable packages exist **only inside the npm binary bundled within `@semantic-release/npm`** and are used solely during automated publishing from CI.
+- These vulnerable packages existed **only inside the npm binary bundled within `@semantic-release/npm`** and were used solely during automated publishing from CI.
+
+The current release toolchain no longer relies on this vulnerable bundled npm stack, and these specific advisories are no longer present in our dev dependencies.
 
 ### What is _not_ affected?
 
-- The published `eslint-plugin-traceability` package has **no runtime dependencies** on this bundled npm or its `glob`/`brace-expansion` copies.
+Throughout the incident period, and continuing after the upgrade:
+
+- The published `eslint-plugin-traceability` package has **no runtime dependencies** on any bundled npm or its `glob`/`brace-expansion` copies.
 - End-user projects that install and run `eslint-plugin-traceability` or `traceability-maint` **do not execute** this bundled tooling.
-- `npm audit --omit=dev --audit-level=high` continues to report **0 high‑severity vulnerabilities** for the production dependency tree at release time.
+- `npm audit --omit=dev --audit-level=high` has continued to report **0 high‑severity vulnerabilities** for the production dependency tree at release time.
 
-### Why is this risk currently accepted?
+These guarantees remain in effect with the updated, vulnerability-free toolchain.
 
-Under our `dry-aged-deps` policy (7‑day minimum age, no known vulnerabilities):
+### Historical Risk Acceptance
 
-- There is currently **no recommended, dry‑aged‑safe upgrade path** for the semantic-release/npm toolchain that would fully eliminate these bundled vulnerabilities.
-- We therefore treat this as a **known error in dev-only tooling** rather than a production risk.
+While the older `@semantic-release/npm@10.0.6` stack was in use and no safe, `dry-aged-deps`–approved upgrade path existed, this dev-only risk was **explicitly accepted** as a known error under the `dry-aged-deps` policy. It is **no longer** an active known error following the toolchain upgrade.
 
-This acceptance is documented in detail in the project’s internal security incident records and architectural decision records.
+The full historical record and resolution details are documented in:
+
+- `docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`
 
 ### Compensating Controls
 
-To keep this dev-only risk tightly contained, we apply several compensating controls:
+While the older toolchain was in place, we applied several compensating controls to tightly contain the dev-only risk. The same general isolation and audit practices continue to apply to the updated, vulnerability-free release toolchain:
 
 1. **Environment Isolation**
-   - The vulnerable tooling is used **only** in the GitHub Actions CI workflow (`.github/workflows/ci-cd.yml`).
-   - It runs in a single, controlled job that executes on pushes to the `main` branch, not for pull requests.
-   - The job runs on GitHub-hosted runners and does not have access to internal infrastructure.
+   - The vulnerable tooling was used **only** in the GitHub Actions CI workflow (`.github/workflows/ci-cd.yml`).
+   - It ran in a single, controlled job that executed on pushes to the `main` branch, not for pull requests.
+   - The job ran on GitHub-hosted runners and did not have access to internal infrastructure.
 
 2. **Least-Privilege Permissions for Release**
-   - Workflow-level permissions default to `contents: read`.
-   - Elevated permissions (`contents: write`, `issues: write`, `pull-requests: write`, `id-token: write`) are scoped to the release job/step that runs semantic-release and are not used for general CI tasks.
+   - Workflow-level permissions defaulted to `contents: read`.
+   - Elevated permissions (`contents: write`, `issues: write`, `pull-requests: write`, `id-token: write`) were scoped to the release job/step that ran semantic-release and were not used for general CI tasks.
 
 3. **Strict Input Handling**
-   - The CI configuration and project scripts **never invoke the `glob` CLI** with the dangerous `-c/--cmd` flags.
-   - The semantic-release/npm toolchain does **not** receive untrusted user input for glob patterns or environment variables.
-   - Release jobs operate only on the repository contents of this project plus standard CI-provided environment variables.
+   - The CI configuration and project scripts **never invoked the `glob` CLI** with the dangerous `-c/--cmd` flags.
+   - The semantic-release/npm toolchain did **not** receive untrusted user input for glob patterns or environment variables.
+   - Release jobs operated only on the repository contents of this project plus standard CI-provided environment variables.
 
 4. **Audit and Monitoring**
-   - Dev-only vulnerabilities are tracked via `npm run audit:dev-high`, which writes a machine-readable report to `ci/npm-audit.json` for each CI run.
-   - `dry-aged-deps` reports (`ci/dry-aged-deps.json`) are stored as CI artifacts to document when no safe upgrade path exists under the configured thresholds.
-   - A nightly `dependency-health` workflow re-runs dev-dependency audits to keep this risk under continuous review.
+   - Dev-only vulnerabilities were tracked via `npm run audit:dev-high`, which wrote a machine-readable report to `ci/npm-audit.json` for each CI run.
+   - `dry-aged-deps` reports (`ci/dry-aged-deps.json`) were stored as CI artifacts to document when no safe upgrade path existed under the configured thresholds.
+   - A nightly `dependency-health` workflow re-ran dev-dependency audits to keep this type of risk under continuous review.
 
 5. **Guarded semantic-release Invocation (CI-Only)**
-   - semantic-release is invoked **only from CI**, and guarded to ensure it runs under the intended safe context (GitHub Actions, push to `main`, CI environment).
-   - Local developers are not expected to run semantic-release directly; publishing is handled automatically by CI after all quality and security checks pass.
+   - semantic-release was invoked **only from CI**, and guarded to ensure it ran under the intended safe context (GitHub Actions, push to `main`, CI environment).
+   - Local developers were not expected to run semantic-release directly; publishing was handled automatically by CI after all quality and security checks passed.
 
-### Upgrade Plan
-
-We intend to migrate away from the affected semantic-release/npm toolchain as soon as a safe, dry‑aged‑deps–approved upgrade path is available:
-
-1. Continue monitoring `dry-aged-deps` output for `@semantic-release/npm`, `semantic-release`, and related packages.
-2. When a newer, vulnerability-free version remains stable for at least 7 days and passes our audit checks, update the dev dependencies accordingly.
-3. After migration, convert the existing known-error record into a resolved incident that documents the fix and new baseline.
-
-Until then, the risk remains **limited to CI release automation** and does not change the guarantees we provide for production dependencies or end-user environments.
+With the upgraded release toolchain, these controls continue to constrain dev-only tooling and help ensure that vulnerabilities in CI infrastructure do not impact the security properties of the published package.
 
 ---
 
