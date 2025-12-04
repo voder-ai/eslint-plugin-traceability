@@ -93,7 +93,7 @@ While the older `@semantic-release/npm@10.0.6` stack was in use and no safe, `dr
 
 The full historical record and resolution details are documented in:
 
-- `docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`
+- A detailed historical incident report in this repository’s internal security incident documentation (maintainer-facing only)
 
 ### Compensating Controls
 

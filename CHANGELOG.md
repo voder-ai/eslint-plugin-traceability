@@ -68,8 +68,8 @@ The following entries were maintained manually before the adoption of semantic-r
   - `valid-annotation-format`
   - `valid-story-reference`
   - `valid-req-reference`
-- Documentation for all rules under `docs/rules`.
-- Configuration presets in `docs/config-presets.md`.
+- Developer documentation for all rules in this repository.
+- Developer documentation for configuration presets in this repository.
 - Example usage in `README.md`.
 - Pre-commit and pre-push hooks with formatting, linting, and tests.
 - Comprehensive tests covering core validation rules.
