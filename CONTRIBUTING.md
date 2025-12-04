@@ -56,7 +56,7 @@ Even in this case, `main` in the upstream repository remains the **single integr
 
 We follow [Conventional Commits](https://www.conventionalcommits.org/) format to enable automated semantic versioning and changelog generation.
 
-For detailed guidelines and examples, see [docs/conventional-commits-guide.md](docs/conventional-commits-guide.md).
+For detailed guidelines and examples, see the Conventional Commits specification at https://www.conventionalcommits.org/ and the brief summary in this section; maintainer-focused, project-specific guidance lives in the internal documentation for this repository.
 
 Commit messages should be structured as:
 
@@ -137,7 +137,7 @@ Note on pre-push hook: the repository's pre-push hook now runs a full CI-equival
 npm run ci-verify:full
 ```
 
-`ci-verify:full` is the comprehensive local gate intended to mirror CI quality checks: it runs a clean build, type-checking, linting, `format:check`, duplication analysis, traceability checks, the full Jest test suite with coverage, dependency and security audits, and related safeguards. `ci-verify:fast` executes a focused subset of Jest tests (using `--testPathPattern 'tests/(rules|maintenance)'`) to quickly validate rule behavior and maintenance invariants; it is optimized for quick feedback during development and as a pre-flight before invoking the full gate. Continuous Integration still runs some CI-only steps that are not part of `ci-verify:full` (such as certain smoke or integration tests, and release automation). For details of the pipeline, see [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md), and for the rationale behind the pre-push parity gate, see [docs/decisions/adr-pre-push-parity.md](docs/decisions/adr-pre-push-parity.md).
+`ci-verify:full` is the comprehensive local gate intended to mirror CI quality checks: it runs a clean build, type-checking, linting, `format:check`, duplication analysis, traceability checks, the full Jest test suite with coverage, dependency and security audits, and related safeguards. `ci-verify:fast` executes a focused subset of Jest tests (using `--testPathPattern 'tests/(rules|maintenance)'`) to quickly validate rule behavior and maintenance invariants; it is optimized for quick feedback during development and as a pre-flight before invoking the full gate. Continuous Integration still runs some CI-only steps that are not part of `ci-verify:full` (such as certain smoke or integration tests, and release automation). Maintainers can consult the project's internal CI/CD pipeline and decision records for a deeper rationale behind these choices; this level of detail is not required for typical contributors.
 
 Ensure there are no errors or warnings in the output.
 

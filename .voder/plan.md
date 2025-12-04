@@ -1,16 +1,17 @@
 ## NOW
 
-- [ ] Analyze the most highly duplicated test file and refactor it to use shared helpers or data builders so that repeated RuleTester setups and case definitions are centralized, reducing duplication without changing test behavior.
+- [ ] Review all user-facing documentation files to locate any remaining references to internal development docs under the docs/ directory and determine exactly which passages still violate the requirement that end-user materials be fully self-contained.
 
 ## NEXT
 
-- [ ] Apply the same refactoring approach to the remaining test files that have very high duplication, extracting common configuration, fixtures, and assertion patterns into reusable test utilities while ensuring existing behaviors remain covered.
-- [ ] Review the project’s traceability report and add or refine story and requirement annotations on any remaining unannotated functions and control-flow branches so that implementation traceability is effectively complete for existing features.
-- [ ] Revisit the existing lint-rule suppression for the function that exceeds the parameter limit and either refactor the code to remove the need for the suppression or update its rationale to clearly document why it remains the preferred design.
-- [ ] Once duplication and traceability improvements are in place, re-run the project’s duplication and traceability checks to confirm that overall code-quality indicators have improved enough to allow a full functionality assessment.
+- [ ] Rewrite the affected sections of SECURITY.md so that all information needed by end users is contained within user-facing files, removing or rephrasing any remaining mentions of internal security overview documents under docs/ while keeping maintainer guidance accurate.
+- [ ] Update CONTRIBUTING.md so that any references to internal guides, CI/CD details, or ADRs in docs/ are either summarized inline for contributors or changed to clearly labeled external links that are not required reading for typical end users of the package.
+- [ ] Adjust any passages in the user-docs directory that still refer to internal story or decision files (such as docs/stories/*.story.md or docs/decisions/*.md) so they describe the relevant behavior directly, using examples where necessary, without directing users to internal project documentation.
+- [ ] After updating the documentation, verify that the set of files shipped with the package (README, SECURITY, CHANGELOG, and user-docs) forms a coherent, self-contained user-facing documentation bundle that does not rely on any unshipped internal docs for understanding or correct usage.
+- [ ] Once the documentation is clearly separated and self-contained, confirm that this resolves the previously identified documentation deficiencies so that a full functionality assessment can be carried out based solely on the updated user-facing materials.
 
 ## LATER
 
-- [ ] Consider tightening selected linting thresholds (such as maximum complexity or function length) in small increments, guided by current violation hotspots, to further reinforce maintainable design without causing widespread breakage.
-- [ ] Enhance internal developer documentation to describe the shared testing helpers, traceability expectations, and how to extend them when adding new rules or maintenance features so future work naturally preserves high code quality.
-- [ ] Evaluate whether the traceability check should be made stricter (for example, failing when coverage drops below an agreed threshold) once the current gaps are closed and the team is comfortable with the process.
+- [ ] Create or update an internal maintainer-focused overview document under docs/ that clearly explains the separation between user-facing and internal documentation, including guidelines for future changes to avoid reintroducing references from user docs into docs/.
+- [ ] Add a short index or table of contents to the user-docs suite that clearly points end users to the appropriate document for setup, API reference, migration, and examples, without mentioning internal development documentation.
+- [ ] Revisit the older quality-focused plan around test duplication and traceability enhancements once documentation is fully compliant, prioritizing any remaining technical debt surfaced by duplication reports or traceability summaries.

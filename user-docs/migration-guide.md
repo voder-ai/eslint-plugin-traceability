@@ -37,7 +37,7 @@ export default [traceability.configs.recommended];
 - `valid-req-reference` rejects path traversal (`../`) and absolute paths (`/etc/passwd`).
 - `valid-annotation-format` enforces correct JSDoc traceability annotation syntax (`@story` and `@req` tags).
 
-Review and update your existing annotations accordingly:
+The following diff shows a typical migration in **your own project**, where `docs/stories/001.0-DEV-PLUGIN-SETUP.story.md` is an example of a story file path from your documentation tree:
 
 ```diff
 - /** @story docs/stories/001.0-DEV-PLUGIN-SETUP.md */
@@ -46,7 +46,7 @@ Review and update your existing annotations accordingly:
 
 ### 3.1 Multi-story `@implements` annotations
 
-Starting in v1.x, `eslint-plugin-traceability` supports an additional annotation form for integration code that implements requirements from multiple stories:
+Starting in v1.x, `eslint-plugin-traceability` supports an additional annotation form for integration code that implements requirements from multiple stories in a consuming project. The following snippet shows one example of how you might structure such an annotation in **your** codebase:
 
 ```js
 /**
@@ -84,7 +84,7 @@ Keep your current annotations if:
 - All relevant requirements live in that story file.
 - You do not need to distinguish which story a particular requirement ID comes from.
 
-Example (no migration required):
+Example (no migration required). Here, `docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md` is an illustrative path representing a typical story file location in **your** documentation structure:
 
 ```js
 /**
@@ -104,7 +104,7 @@ Adopt `@implements` for **multi-story integration** code, especially when:
 - Requirement IDs are reused across stories (for example, `REQ-SHARED-ID` appears in more than one story file).
 - You want deep validation (via `valid-req-reference`) to know **which story file** each requirement came from.
 
-Before (single-story annotations trying to describe multi-story behavior):
+Before (single-story annotations trying to describe multi-story behavior). The story path shown here is an example of how you might name and organize a story file in your own project:
 
 ```js
 /**
@@ -118,7 +118,7 @@ export async function applyFilters(rows, options) {
 }
 ```
 
-After (multi-story `@implements`), aligned with Story 010.2:
+After (multi-story `@implements`), using illustrative story paths that represent typical files in your project’s documentation tree (they are examples, not files provided by this plugin):
 
 ```js
 /**
@@ -149,7 +149,7 @@ You can introduce `@implements` gradually without breaking existing code:
 3. Run ESLint with `traceability/valid-annotation-format` and `traceability/valid-req-reference` enabled to confirm everything passes.
 4. Optionally, once you are comfortable, standardize on using `@implements` for multi-story integration functions while keeping `@story` + `@req` for simple, single-story code.
 
-For detailed semantics and edge cases (path validation, scoped requirement IDs, and multi-story fixtures), see the valid-annotation-format and valid-req-reference rule documentation and the multi-story support story in the project documentation.
+Detailed semantics and edge cases (path validation, scoped requirement IDs, and multi-story fixtures) are ultimately governed by your own stories and requirements. For typical migrations, this guide together with the plugin’s API reference is sufficient.
 
 ## 4. Test and Validate
 

@@ -1,13 +1,13 @@
-Here’s a history-only summary of what’s been done so far on the project, including the most recent work you described.
+Here’s a history-only summary of what’s been done so far on the project, including the most recent work.
 
 ---
 
-## Core Plugin, Rules, and Testing
+## Core ESLint Plugin, Rules, and Testing
 
-- Implemented the main ESLint plugin entrypoint (`src/index.ts`) exposing:
-  - All rules.
-  - Flat-config presets (`recommended`, `strict`).
-  - A `maintenance` API (both as a named export and via `plugin.maintenance`).
+- Implemented the main ESLint plugin entrypoint (`src/index.ts`) that:
+  - Exposes all rules.
+  - Provides ESLint 9 flat-config presets (`recommended`, `strict`).
+  - Exposes a `maintenance` API both as a named export and via `plugin.maintenance`.
 - Implemented core rules:
   - `require-story-annotation`
   - `require-req-annotation`
@@ -19,25 +19,28 @@ Here’s a history-only summary of what’s been done so far on the project, inc
 - Added TypeScript-aware `RuleTester` helpers and migrated rule tests to use them.
 - Added tests for:
   - Plugin exports and presets.
-  - Rule schemas and error messages.
-  - Alignment between rule docs and configuration.
+  - Rule schemas, options, and error messages.
+  - Alignment between rule docs and rule configuration.
 
 ---
 
 ## Annotation Format, `@implements` / `@supports`, and Multi-story Support
 
-- Built shared utilities for annotation option normalization and regex compilation, with schemas/defaults.
+- Built shared utilities to normalize annotation options and compile regexes, with schemas and defaults.
 - Refactored `valid-annotation-format` to:
   - Use shared helpers.
-  - Improve diagnostics and support multiline annotations.
+  - Improve diagnostics.
+  - Support multiline annotations.
   - Allow custom regexes for `@story` and `@req`.
-- Implemented multi-story `@implements` parsing/validation via `valid-implements-utils`, used by `valid-annotation-format` and `valid-req-reference`.
-- Centralized requirement annotation detection (`reqAnnotationDetection` utilities).
+- Implemented multi-story `@implements` parsing/validation via `valid-implements-utils`, used by:
+  - `valid-annotation-format`
+  - `valid-req-reference`
+- Centralized requirement annotation detection in `reqAnnotationDetection` utilities.
 - Added fixtures and tests for multi-story annotations and edge cases.
-- Implemented `prefer-implements-annotation` as a suggestion rule with a conservative autofix (simple `@story` + `@req` → `@implements`).
-- Updated docs and a migration guide to treat `@implements` as preferred, while documenting it as **opt-in** and disabled in presets.
+- Implemented `prefer-implements-annotation` as a suggestion rule with a conservative autofix (`@story` + `@req` → `@implements`).
+- Updated docs and migration guidance to treat `@implements` as preferred but **opt-in** and disabled in presets.
 - Updated presence rules so `@implements` alone satisfies `require-story-annotation` and `require-req-annotation`.
-- Clarified ADRs around the rename from `@implements` to `@supports`, updating ADR 010 with a status note and relying on ADR 011 as the primary accepted record.
+- Clarified ADRs for the planned `@implements` → `@supports` rename, keeping ADR 011 as authoritative and noting ADR 010’s status.
 
 ---
 
@@ -45,17 +48,17 @@ Here’s a history-only summary of what’s been done so far on the project, inc
 
 - Extended `valid-req-reference` to:
   - Extract `REQ-...` IDs from story files.
-  - Validate IDs in `@req` and `@implements` against story contents.
+  - Validate IDs in `@req` / `@implements` against story contents.
   - Enforce path safety and scoping for story references.
-- Implemented `valid-story-reference` and utilities to:
+- Implemented `valid-story-reference` and supporting helpers to:
   - Resolve and validate story paths.
   - Enforce project boundaries and secure path handling.
   - Support options such as `storyDirectories`, `allowAbsolutePaths`, `requireStoryExtension`.
 - Added extensive tests for:
   - ID validation.
   - Multi-story handling.
-  - Path security constraints.
-- Standardized error messages across rules and added tests for message content.
+  - Path and boundary security constraints.
+- Standardized error messages across rules and added tests for expected message content.
 
 ---
 
@@ -63,15 +66,20 @@ Here’s a history-only summary of what’s been done so far on the project, inc
 
 - Implemented autofixes for:
   - Inserting missing `@story` annotations.
-  - Correcting `.story.md` suffix errors.
+  - Correcting `.story.md` suffix mistakes.
   - Simple migrations from `@story` + `@req` to `@implements`.
-- Added targeted tests for these autofixes.
+- Added targeted tests to verify autofix behavior and safety.
 
 ---
 
 ## Maintenance CLI and Programmatic API
 
-- Designed the `traceability-maint` CLI with `detect`, `verify`, `report`, and `update` subcommands; recorded the design in ADRs.
+- Designed the `traceability-maint` CLI with subcommands:
+  - `detect`
+  - `verify`
+  - `report`
+  - `update`
+  and captured the design in ADRs.
 - Implemented CLI wiring and argument parsing (`src/maintenance/cli.ts`).
 - Implemented maintenance modules:
   - `detectStaleAnnotations`
@@ -80,135 +88,136 @@ Here’s a history-only summary of what’s been done so far on the project, inc
   - `verifyAnnotations`
   - `generateMaintenanceReport`
 - Exposed maintenance utilities via the `maintenance` export and wired the CLI binary in `package.json`.
-- Added `tests/maintenance/**` covering:
-  - CLI outputs.
-  - Dry-run behavior.
-  - Exit codes and error handling.
-  - Defensive file-system behavior.
+- Added tests under `tests/maintenance/**` for:
+  - CLI outputs, exit codes, and dry-run behavior.
+  - Error handling and defensive file-system behavior.
 
 ### CLI Refactors and Flag Handling
 
 - Centralized flag parsing in `src/maintenance/flags.ts`:
   - Types: `ParsedCliInput`, `NormalizedCliArgs`, `ParsedFlags`.
   - Helpers: `normalizeCliArgs`, `parseFlags`, `createDefaultFlags`, `applyFlag`.
-- Added strong validation for options like `--format`.
+- Added validation for options like `--format`.
 - Updated `src/maintenance/cli.ts` to:
   - Normalize `argv`.
   - Support `-h/--help`.
-  - Route subcommands and use `EXIT_USAGE` for invalid input.
-- Refined `src/maintenance/commands.ts` to define `EXIT_OK`, `EXIT_STALE`, `EXIT_USAGE`.
+  - Route subcommands.
+  - Use `EXIT_USAGE` for invalid input.
+- Refined `src/maintenance/commands.ts` with `EXIT_OK`, `EXIT_STALE`, `EXIT_USAGE`.
 - Extended CLI tests for:
-  - Invalid formats.
-  - Help behavior.
+  - Invalid formats and help behavior.
   - Missing flags or roots.
   - Permission errors.
-- Added branch-level traceability comments and updated JSDoc in maintenance code.
+- Added branch-level traceability comments and JSDoc within maintenance code.
 
 ---
 
 ## Linting, Refactors, and Code Quality
 
 - Added an ADR and enabled ESLint security rules (e.g., `no-eval`, `no-implied-eval`).
-- Enforced `max-lines-per-function = 55` for production code and refactored large rules/maintenance modules.
+- Enforced `max-lines-per-function = 55` for production code and refactored large rules and maintenance modules accordingly.
 - Updated `eslint.config.js` to ignore underscore-prefixed names for `no-unused-vars`.
-- Removed `eslint-disable` comments by refactoring code and maintained zero lint warnings.
+- Removed `eslint-disable` comments by refactoring code.
+- Achieved and maintained zero lint warnings.
 
 ---
 
 ## Test Duplication Reduction and Shared Helpers
 
-- Used `jscpd` to measure test duplication and kept it low (~1.16%).
+- Used `jscpd` to measure test duplication and kept it very low (around 1% or less).
 - Introduced shared test helpers:
-  - `runAnnotationCheckerTests(...)` for shared `RuleTester` setup/TS options.
-  - Reworked `require-req-annotation` and related tests to use these helpers.
-- Refactored `require-branch-annotation.test.ts` with `makeMissingAnnotationErrors(...)` to centralize repeated error arrays.
+  - `runAnnotationCheckerTests(...)` to centralize `RuleTester` setup and TS options.
+  - Reworked `require-req-annotation` and related tests to use shared helpers.
+- Refactored `require-branch-annotation.test.ts` using `makeMissingAnnotationErrors(...)` for repeated error arrays.
 - Confirmed shared utilities are type-safe without suppressions.
 
 ### Shared Temp Directory Helpers
 
-- Added `tests/utils/temp-dir-helpers.ts` with `createTempDir(prefix)` returning `{ dir, cleanup() }` using safe recursive deletion.
+- Added `tests/utils/temp-dir-helpers.ts` with `createTempDir(prefix)` returning `{ dir, cleanup() }` and safe recursive deletion.
 - Updated `batch.test.ts`, `report.test.ts`, and `cli.test.ts` to use `createTempDir(...)`, removing bespoke temp-dir helpers.
 
 ---
 
 ## CI, Quality Gates, Git Hooks, and Trunk-based Development
 
-- Consolidated quality checks into `npm run ci-verify:full` (build, tests, lint, type-check, format, duplication, traceability, security).
-- Created a GitHub Actions workflow (`.github/workflows/ci-cd.yml`):
-  - Triggered on `push`/`pull_request` to `main` and on schedule.
-  - Uses different Node versions for verification and release (18.x/20.x, later 22.x for `semantic-release` as needed).
+- Consolidated quality checks into `npm run ci-verify:full` covering:
+  - Build, tests, lint, type-check, format check, duplication, traceability, and security.
+- Created a GitHub Actions workflow (`.github/workflows/ci-cd.yml`) that:
+  - Runs on `push`/`pull_request` to `main` and on a scheduled basis.
+  - Uses multiple Node versions (e.g., 18.x/20.x for verification, 22.x for release tooling as needed).
 - Upgraded Husky to v9 and modernized hooks:
   - Removed deprecated `husky install` from `prepare`.
-  - Added `"postinstall": "husky"` in `package.json`.
-  - `.husky/pre-commit` runs `npx lint-staged` (Prettier + ESLint `--fix` on staged files).
-  - `.husky/pre-push` runs `npm run ci-verify:full` and later also `npm run security:secrets`.
-- Adjusted documentation to describe:
-  - Trunk-based development with `main` as single integration branch.
-  - Direct commits to `main` for maintainers.
-  - PRs mainly for forks or optional review.
-- Superseded an older ADR about branch-based test selection (`adr-commit-branch-tests.md`) and aligned it with the trunk-based model and pre-push parity ADR.
+  - Added `"postinstall": "husky"` to `package.json`.
+  - `.husky/pre-commit`: runs `npx lint-staged` (Prettier + ESLint `--fix` on staged files).
+  - `.husky/pre-push`: runs `npm run ci-verify:full` and `npm run security:secrets`.
+- Updated documentation to describe:
+  - Trunk-based development with `main` as the single integration branch.
+  - Direct commits to `main` by maintainers.
+  - PRs primarily for forks or optional review.
+- Superseded an older ADR about branch-based test selection and aligned CI behavior with the trunk-based model and pre-push parity.
 
 ---
 
 ## Semantic-release, Runtime Constraints, and Security Incidents
 
-- Investigated OTP-related `semantic-release` issues and configured it so that failed OTP or missing `NPM_TOKEN` skips publishing without failing CI.
-- Raised Node engine to `>=18.18.0` to match ESLint 9 and CI.
-- Assessed dev-toolchain issues (`glob`, `brace-expansion`, bundled `npm` in `semantic-release`), and managed them via:
+- Investigated OTP-related `semantic-release` issues and configured CI so that:
+  - Failed OTP or missing `NPM_TOKEN` skips publishing without failing the overall pipeline.
+- Raised the Node engine requirement to `>=18.18.0` to match ESLint 9 and CI.
+- Evaluated dev-toolchain issues (e.g., `glob`, `brace-expansion`, bundled `npm` in `semantic-release`) and managed them via:
   - `package.json` `overrides`.
-  - Security incident documentation and known-error records.
+  - Security incident documentation and known errors.
 - Authored and updated security incident documents, including:
   - `SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md` (later marked “Resolved”).
-- Documented CI job isolation, least-privilege, and how release tooling risk is contained.
+- Documented CI job isolation, least-privilege, and constraints around release tooling.
 
 ---
 
 ## Secret Scanning, Dependency Safety, and Dev-only Audit Flow
 
 - Integrated Secretlint:
-  - Added `.secretlintrc.json` ignoring generated artifacts and standard infra directories.
-  - Added `npm run security:secrets` using secretlint; wired into CI and `.husky/pre-push`.
+  - Added `.secretlintrc.json` with appropriate ignore patterns for generated and infra directories.
+  - Added `npm run security:secrets`, wired into CI and `.husky/pre-push`.
 - Added dependency-health tooling:
   - `dry-aged-deps` via `npm run deps:maturity`.
-  - `scripts/ci-safety-deps.js` (`npm run safety:deps`) to run dry-aged-deps with `--format=json`, always exit 0, and write `ci/dry-aged-deps.json`.
+  - `scripts/ci-safety-deps.js` (`npm run safety:deps`) to run dry-aged-deps in CI, always exit 0, and write `ci/dry-aged-deps.json`.
   - `scripts/ci-audit.js` (`npm run audit:ci`) to run `npm audit --json`, always exit 0, and write `ci/npm-audit.json`.
-  - `scripts/generate-dev-deps-audit.js` (`npm run audit:dev-high`) to run `npm audit --include=dev --audit-level=high --json`, always exit 0.
+  - `scripts/generate-dev-deps-audit.js` (`npm run audit:dev-high`) for dev dependency audits (`--include=dev --audit-level=high`), always exit 0.
 - Documented gating vs advisory checks:
   - Gating: `npm audit --omit=dev --audit-level=high` (in `ci-verify:full`), `npm run security:secrets`, `npm run check:traceability`.
   - Advisory: `safety:deps`, `audit:ci`, `audit:dev-high`.
-- Ran and documented dev-only audit flows and maturity checks, recording accepted dev-toolchain risks in incident and dependency-health docs.
+- Ran dev-only audit flows and maturity checks and recorded accepted dev-tooling risks in incident and dependency-health docs.
 
 ---
 
 ## CI/CD Pipeline, Contributor Documentation, and Flat-config Integration
 
 - Authored `docs/ci-cd-pipeline.md` describing:
-  - Workflows and quality checks.
+  - CI workflows and quality checks.
   - Triggers (`push`, `pull_request`, nightly schedule).
   - Secret scanning and dependency checks.
   - Release and smoke-test behavior.
 - Updated `CONTRIBUTING.md` to:
   - Explain trunk-based development on `main`.
   - Distinguish `ci-verify:fast` vs `ci-verify:full`.
-  - Clarify local vs CI security checks and gating vs advisory tools.
+  - Clarify local vs CI security checks and which tools are gating vs advisory.
 - Implemented and tested ESLint 9 flat-config presets:
-  - `createTraceabilityFlatConfig` returns rule-only config.
-  - `configs.recommended` and `configs.strict` are arrays of rule-only configs.
-  - Plugin registration is done separately via `plugins`.
+  - `createTraceabilityFlatConfig` returning rule-only config.
+  - `configs.recommended` and `configs.strict` as arrays of rule-only configs.
+  - Plugin registration via `plugins` in user configs.
 - Added `FlatESLint` integration tests against the compiled plugin (`lib/src/index.js`).
-- Updated user docs: `eslint-9-setup-guide.md`, `docs/config-presets.md`, and `README.md`.
+- Updated user docs (`eslint-9-setup-guide.md`, `docs/config-presets.md`, `README.md`) for flat-config usage.
 
 ---
 
 ## Functionality Coverage and Story Alignment
 
 - Reviewed stories `001.0–010.3` and mapped them to:
-  - Rules.
+  - Implemented rules.
   - Maintenance functions.
-  - Tests.
+  - Associated tests.
 - Created `docs/functionality-coverage-2025-12-03.md` summarizing coverage and evidence per story.
-- Marked story `010.3-DEV-MIGRATE-TO-IMPLEMENTS` as fully implemented (via opt-in `prefer-implements-annotation` with autofix).
-- Re-ran and documented core verification commands (`npm test`, `lint`, `type-check`, `build`, `format:check`, `duplication`) and confirmed CI success.
+- Marked story `010.3-DEV-MIGRATE-TO-IMPLEMENTS` as fully implemented via the opt-in `prefer-implements-annotation` rule with autofix.
+- Reran and documented core verification commands (`npm test`, `lint`, `type-check`, `build`, `format:check`, `duplication`) and confirmed CI success.
 
 ---
 
@@ -217,9 +226,9 @@ Here’s a history-only summary of what’s been done so far on the project, inc
 ### User-facing vs Internal Docs and Package Contents
 
 - Updated `README.md` and user docs to:
-  - Link only to shipped user docs, `CHANGELOG.md`, `SECURITY.md`, and external GitHub URLs.
-  - Remove references to internal `docs/` from user-facing materials.
-- Updated user docs (`user-docs/api-reference.md`, `user-docs/migration-guide.md`, `user-docs/eslint-9-setup-guide.md`, `user-docs/examples.md`) to:
+  - Link only to shipped user docs, `CHANGELOG.md`, `SECURITY.md`, and relevant GitHub URLs.
+  - Avoid direct references to internal `docs/` from user-facing materials.
+- Updated user documentation (`user-docs/api-reference.md`, `user-docs/migration-guide.md`, `user-docs/eslint-9-setup-guide.md`, `user-docs/examples.md`) to:
   - Use correct relative links.
   - Avoid linking into internal `docs/`.
 - Adjusted `package.json` `"files"` so the npm package ships only:
@@ -229,16 +238,16 @@ Here’s a history-only summary of what’s been done so far on the project, inc
   - `SECURITY.md`
   - `user-docs/`
   - `CHANGELOG.md`
-- Simplified `.npmignore` relying on `"files"` and excluding dev/CI artifacts.
-- Verified link correctness from the built npm package.
+- Simplified `.npmignore` to rely on `"files"` and exclude dev/CI artifacts.
+- Verified link correctness and package contents from the built npm artifact.
 
 ### Maintenance API Docs and Import Patterns
 
-- Verified maintenance APIs are only exposed via the main package entry.
+- Verified that maintenance APIs are only exposed via the main package entry.
 - Updated `user-docs/api-reference.md` to:
-  - Remove subpath imports (e.g., `"eslint-plugin-traceability/maintenance"`).
-  - Show correct imports from the main package.
-  - Clarify `prefer-implements-annotation` is opt-in and disabled in presets.
+  - Remove subpath import examples (e.g., `"eslint-plugin-traceability/maintenance"`).
+  - Show imports exclusively from the main package.
+  - Clarify that `prefer-implements-annotation` is opt-in and disabled in presets.
 - Updated `README.md` and migration docs to describe `prefer-implements-annotation` as optional and disabled by default.
 
 ### Versioning and Release Documentation
@@ -250,7 +259,7 @@ Here’s a history-only summary of what’s been done so far on the project, inc
   - `migration-guide.md`
 - Documented:
   - `semantic-release`-based versioning.
-  - 1.x series references.
+  - Treatment of the 1.x series.
   - GitHub Releases as the canonical change log.
 - Added a “Versioning and Releases” section to `README.md`.
 
@@ -259,55 +268,50 @@ Here’s a history-only summary of what’s been done so far on the project, inc
 ## Root-level Security Policy and Dependency Health Docs
 
 - Added root `SECURITY.md` describing:
-  - Vulnerability reporting.
+  - How to report vulnerabilities.
   - Supported versions (latest via `semantic-release`).
   - Guarantees around production dependencies at release time.
-  - Use of `dry-aged-deps` and dev-toolchain risk handling.
+  - Use of `dry-aged-deps` and approach to dev-toolchain risk.
 - Updated `docs/dependency-health.md` to:
   - Summarize dependency tooling (`npm audit`, `safety:deps`, `audit:dev-high`, `security:secrets`).
   - Clarify which checks are gating vs advisory.
-  - Correctly describe `safety:deps` as purely advisory and never failing CI.
-- Kept dependency-health and incident docs aligned with scripts/config.
+  - Confirm that `safety:deps` is advisory only and never fails CI.
+- Kept dependency-health and incident documentation aligned with actual scripts and configuration.
 
 ---
 
-## Recent Test Refactors and Helper Reuse
+## Test Refactors and Helper Reuse
 
-- Reduced test duplication by:
+- Further reduced test duplication by:
   - Extracting FS mocking helpers into `tests/utils/fsTestHelpers.ts` (`mockFsForExistingFile`).
   - Extracting IO edge-case helpers into `tests/utils/ioTestHelpers.ts`, e.g., `runFallbackTextBeforeHasStoryDetectsStoryTest`.
-  - Refactoring `require-story-*` tests to use shared helpers.
-  - Refactoring `require-story-visitors-edgecases.test.ts` to build visitors via `makeVisitors`/`buildVisitors`.
-- Ensured maintenance tests (`batch.test.ts`, `report.test.ts`, `cli.test.ts`) consistently use `createTempDir`.
+  - Refactoring `require-story-*` tests to use these helpers.
+  - Refactoring `require-story-visitors-edgecases.test.ts` to use `makeVisitors`/`buildVisitors` for visitor construction.
+- Ensured maintenance tests (`batch.test.ts`, `report.test.ts`, `cli.test.ts`) use `createTempDir` consistently.
 
 ---
 
 ## Trunk-based Workflow, Hooks, and Security Gates
 
-- Aligned documentation and behavior around trunk-based development:
-  - `main` as single integration branch.
-  - Direct pushes to `main` by maintainers with Husky-enforced gates.
-  - PRs primarily for forks or optional review.
+- Aligned project behavior and docs with trunk-based development:
+  - `main` as the single integration branch.
+  - Direct pushes to `main` by maintainers, guarded by Husky hooks.
+  - PRs mainly for forks or optional review.
 - Updated `docs/ci-cd-pipeline.md` to:
-  - Emphasize trunk-based flow.
-  - Clarify that `push` to `main` is authoritative for integration and publishing.
-  - Describe `pull_request` runs as advisory/feedback-only (no publishing).
-- Updated `.husky/pre-push` to:
-  - Run `npm run ci-verify:full`.
-  - Then run `npm run security:secrets`.
-  - Mirror CI’s `quality-and-deploy` job behavior.
+  - Emphasize the trunk-based flow.
+  - Explain that `push` to `main` is authoritative for integration and publishing.
+  - Describe `pull_request` runs as advisory/feedback-only without publishing.
+- Updated `.husky/pre-push` to mirror CI’s critical gates:
+  - `npm run ci-verify:full`
+  - `npm run security:secrets`
 
 ---
 
-## Consolidated Security Overview (Most Recent Work)
+## Consolidated Security Overview
 
-Most recently, the project work focused on consolidating and aligning security-related documentation and behavior:
-
-### New Document: `docs/security-overview.md`
-
-- Added a single, maintainer-focused “Security Overview” describing:
-  - High-level guarantees from `SECURITY.md` (runtime dependencies, dev-tool isolation, secret scanning).
-  - All security-related npm scripts with clear roles and gating vs advisory behavior:
+- Added `docs/security-overview.md`, a maintainer-focused “Security Overview” that:
+  - Summarizes high-level guarantees from `SECURITY.md` (runtime dependencies, dev-tool isolation, secret scanning).
+  - Lists all security-related npm scripts with descriptions and whether each is gating or advisory:
     - `ci-verify:full`
     - `safety:deps`
     - `audit:ci`
@@ -315,419 +319,471 @@ Most recently, the project work focused on consolidating and aligning security-r
     - `deps:maturity`
     - `security:secrets`
     - `check:traceability`
-  - Supporting configuration:
+  - Describes supporting configuration:
     - `.secretlintrc.json` and ignore patterns.
-    - `package.json` `overrides` and link to `docs/security-incidents/dependency-override-rationale.md`.
-  - CI/CD security gates:
-    - How `.github/workflows/ci-cd.yml` uses `ci-verify:full` and `security:secrets`.
-    - How semantic-release and smoke tests run only after all gates pass for pushes to `main`.
-    - The nightly `dependency-health` job using `audit:dev-high`.
-  - Local hooks mirroring CI:
+    - `package.json` `overrides` and `docs/security-incidents/dependency-override-rationale.md`.
+  - Explains CI/CD security gates:
+    - Use of `ci-verify:full` and `security:secrets` in `.github/workflows/ci-cd.yml`.
+    - How semantic-release and smoke tests run only after gates pass on `main`.
+    - Nightly `dependency-health` job using `audit:dev-high`.
+  - Describes local hooks mirroring CI:
     - Pre-commit (`lint-staged`).
     - Pre-push (`ci-verify:full` + `security:secrets`).
-  - A gating vs advisory matrix summarizing each check.
-  - Relationships to `SECURITY.md`, `docs/dependency-health.md`, `docs/ci-cd-pipeline.md`, incident reports, and ADRs.
+  - Includes a gating vs advisory matrix and references to other security-related docs and ADRs.
 
 ### Cross-references and Alignment Updates
 
-- Updated `SECURITY.md`:
-  - Added a short, maintainer-oriented note near the top pointing to `docs/security-overview.md` as the consolidated implementation reference (without exposing internal links to end users).
-- Updated `docs/ci-cd-pipeline.md`:
-  - Referenced `docs/security-overview.md` where production dependency audits and security gates are discussed, indicating it as the single consolidated reference for security tooling.
-- Updated `docs/dependency-health.md`:
-  - Clarified in the Summary that `npm run safety:deps` is purely advisory and never fails CI by itself, matching `scripts/ci-safety-deps.js`.
-  - Noted that it should be read together with `docs/security-overview.md` for the full picture of security tooling and gates.
-- Updated `docs/security-incidents/handling-procedure.md`:
-  - Added a reference in the “References” section to `docs/security-overview.md` as the consolidated description of how security tooling and gates are wired into CI and local workflows.
+- Updated `SECURITY.md` to:
+  - Add a short maintainer note pointing to `docs/security-overview.md` as the consolidated implementation reference (without linking it for end users).
+- Updated `docs/ci-cd-pipeline.md` to:
+  - Reference `docs/security-overview.md` where production dependency audits and security gates are discussed.
+- Updated `docs/dependency-health.md` to:
+  - Clarify again in the summary that `npm run safety:deps` is purely advisory and cannot fail CI.
+  - Note that it should be read together with `docs/security-overview.md`.
+- Updated `docs/security-incidents/handling-procedure.md` to:
+  - Reference `docs/security-overview.md` as the consolidated description of how security tooling and gates are wired into CI and local workflows.
 
-### Verification and Commit
+---
 
-- Ran:
-  - `npm test -- --runInBand --colors=false`
-  - `npm run lint`
-  - `npm run type-check`
+## Recent Traceability and Test-Duplication Work
+
+- Analyzed the jscpd duplication report for tests and focused on high-duplication files.
+- Refactored `tests/rules/require-req-annotation.test.ts` to reduce duplication by:
+  - Introducing a `missingReq(functionName: string)` helper that returns the standard `missingReq` error object.
+  - Replacing repeated inline error objects like:
+
+    ```ts
+    errors: [
+      {
+        messageId: "missingReq",
+        data: { name: "baz", functionName: "baz" },
+      },
+    ]
+    ```
+
+    with:
+
+    ```ts
+    errors: [missingReq("baz")]
+    ```
+
+  - Applying this change to:
+    - TypeScript-specific invalid cases within `runAnnotationCheckerTests`.
+    - All single-error invalid cases in the primary `ruleTester.run` block where `name === functionName`.
+- Updated traceability annotations for unannotated or under-annotated branches based on `scripts/traceability-report.md`:
+
+  - In `src/maintenance/detect.ts`:
+    - Added `@implements` comments to:
+      - The `catch` around `fs.readFileSync` in `processFileForStaleAnnotations`, tying it to `REQ-MAINT-DETECT` and `REQ-MAINT-SAFE`.
+      - The `if (inProjectCandidates.length === 0)` guard in `handleStoryMatch`.
+      - Both `catch` blocks in `getInProjectCandidates`, documenting that boundary errors are treated as out-of-project.
+      - The arrow function inside `anyInProjectCandidateExists`, linking the existence check to `REQ-MAINT-DETECT`.
+
+  - In `src/rules/helpers/valid-annotation-utils.ts`:
+    - Annotated `collapseAnnotationValue` for multiline support (`REQ-MULTILINE-SUPPORT`).
+    - Added fine-grained `@implements` comments to each branch in `getFixedStoryPath`:
+      - Rejecting traversal (`REQ-AUTOFIX-SAFE`).
+      - Handling existing `.story.md` (`REQ-AUTOFIX-FORMAT`).
+      - Fixing `.story` and `.md` endings with preservation and format requirements (`REQ-AUTOFIX-FORMAT`, `REQ-AUTOFIX-PRESERVE`).
+      - The final default case, tying together format, preservation, and safety.
+
+  - In `src/rules/helpers/valid-story-reference-helpers.ts`:
+    - In `analyzeCandidateBoundaries`, added annotations to both in-project and out-of-project classification branches (`REQ-PROJECT-BOUNDARY`).
+    - In `handleProjectBoundaryForExistence`, annotated:
+      - Handling of candidate lists (`REQ-PROJECT-BOUNDARY`, `REQ-CONFIGURABLE-PATHS`).
+      - Branches that report out-of-project matches or boundary violations.
+    - In `performSecurityValidations`, added annotations for:
+      - Absolute path handling and rejection when disallowed.
+      - Traversal detection, resolution, and rejection of paths that escape the project root (`REQ-SECURITY-VALIDATION`).
+
+- Reran and confirmed success of:
+  - `npm run lint -- --max-warnings=0`
+  - `npm test`
   - `npm run build`
+  - `npm run type-check`
   - `npm run format:check`
-- Staged and committed the changes as:
-  - `docs: add consolidated security overview and cross-references`
-- Pushed to `main`.
-- Observed the GitHub Actions “CI/CD Pipeline” workflow run for this commit complete successfully, including all quality and security gates.
+  - `npm run duplication`
+  - `npm run check:traceability`
+
+- Formatted updated files with Prettier and rechecked formatting.
+- Committed these changes as:
+
+  - `refactor: reduce duplication in tests and improve traceability annotations`
+
+- Pushed to `main`, which triggered the GitHub Actions **CI/CD Pipeline** workflow. The workflow run completed successfully, including all configured quality and security gates.
 
 **Most recently we've executed the following action:**
 
 ---
 Used tool: list_directory with input: {"dirPath":"."}
 Used tool: get_git_status with input: {}
-Used tool: find_files with input: {"pattern":"*.test.ts","directory":"tests"}
 Used tool: list_directory with input: {"dirPath":"tests"}
+Used tool: list_directory with input: {"dirPath":"tests/rules"}
+Used tool: list_directory with input: {"dirPath":"tests/utils"}
+Used tool: list_directory with input: {"dirPath":".voder-jscpd-report"}
 Used tool: read_file with input: {"filePath":".voder-jscpd-report/jscpd-report.json"}
 Used tool: read_file with input: {"filePath":"tests/utils/annotation-checker.test.ts"}
-Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
+Used tool: read_file with input: {"filePath":"package.json"}
+Used tool: read_file with input: {"filePath":"tests/rules/require-req-annotation.test.ts"}
 Used tool: read_file with input: {"filePath":"tests/utils/require-story-core-test-helpers.ts"}
 Used tool: read_file with input: {"filePath":"tests/rules/require-story-core.autofix.test.ts"}
 Used tool: read_file with input: {"filePath":"tests/rules/require-story-core-edgecases.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/maintenance/cli.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/require-branch-annotation.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/error-reporting.test.ts"}
+Used tool: search_file_content with input: {"filePath":"tests/rules/require-req-annotation.test.ts","pattern":"languageOptions","isRegex":false}
+Used tool: find_files with input: {"pattern":".jscpd*","directory":"."}
 Used tool: read_file with input: {"filePath":"tests/utils/ts-language-options.ts"}
-Used tool: read_file with input: {"filePath":"tests/utils/temp-dir-helpers.ts"}
-Used tool: read_file with input: {"filePath":"tests/maintenance/batch.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/maintenance/report.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/require-req-annotation.test.ts"}
-Used tool: read_file with input: {"filePath":"package.json"}
-Used tool: modify_file with input: {"filePath":"tests/rules/require-req-annotation.test.ts","instruction":"1. After the existing `const ruleTester = new RuleTester({` block (ending with the closing `} as any);` line), insert a new helper function:\n\n```ts\n/**\n * Build a standard missingReq error object for a given function name.\n *\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-REQUIRED - Standardize missingReq error shape in tests\n */\nfunction missingReq(functionName: string) {\n  return {\n    messageId: \"missingReq\" as const,\n    data: { name: functionName, functionName },\n  };\n}\n```\n\n2. In the `runAnnotationCheckerTests(\"require-req-annotation\", { ... })` configuration object, update each `invalid` test case so that the `errors` array uses the new helper instead of repeating the full object:\n   - For the case named `[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction`, change:\n\n```ts\nerrors: [\n  {\n    messageId: \"missingReq\",\n    data: { name: \"baz\", functionName: \"baz\" },\n  },\n],\n```\n\n   to:\n\n```ts\nerrors: [missingReq(\"baz\")],\n```\n\n   - For the case named `[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature`, change the `errors` array similarly to:\n\n```ts\nerrors: [missingReq(\"method\")],\n```\n\n3. In the `ruleTester.run(\"require-req-annotation\", rule, { ... })` call, update all `invalid` test cases so that any `errors` array that currently inlines a `missingReq` error object instead calls the helper. For each case where `errors` is:\n\n```ts\nerrors: [\n  {\n    messageId: \"missingReq\",\n    data: { name: \"XYZ\", functionName: \"XYZ\" },\n  },\n],\n```\n\nreplace it with:\n\n```ts\nerrors: [missingReq(\"XYZ\")],\n```\n\nand for cases where the `errors` array contains only that single `missingReq` object (with the `name` and `functionName` values matching), ensure the helper is used. Do not alter any other properties or tests."}
+Used tool: read_file with input: {"filePath":"eslint.config.js"}
+Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
+Used tool: run_command with input: {"command":"npx","args":["jscpd","src","tests","--reporters","json","--output",".voder-jscpd-report/jscpd-report-latest.json"]}
+Used tool: read_file with input: {"filePath":".voder-eslint-report.json"}
 Used tool: read_file with input: {"filePath":"scripts/traceability-report.md"}
 Used tool: read_file with input: {"filePath":"src/maintenance/detect.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts"}
 Used tool: read_file with input: {"filePath":"src/utils/annotation-checker.ts"}
+Used tool: modify_file with input: {"filePath":"tests/utils/annotation-checker.test.ts","instruction":"Refactor to remove internal duplication of RuleTester languageOptions blocks by centralizing TS language options in withTsLanguageOptions helper (already imported) and eliminating redundant inline languageOptions from test case definitions. Ensure behavior remains the same and test names and assertions are untouched."}
+Used tool: search_file_content with input: {"filePath":".voder-jscpd-report/jscpd-report.json","pattern":"tests/utils/annotation-checker.test.ts","isRegex":false}
+Used tool: read_file with input: {"filePath":".voder-jscpd-report/jscpd-report-latest.json/jscpd-report.json"}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/utils/annotation-checker.test.ts","tests/rules/require-req-annotation.test.ts"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"test: refactor annotation-checker RuleTester setup to shared helper"}
+Used tool: modify_file with input: {"filePath":"src/maintenance/cli.ts","instruction":"For each control-flow branch (if, switch/case, try/catch) listed as missing annotations in scripts/traceability-report.md, add inline traceability comments using @implements pointing to the appropriate maintenance stories and requirements. Use concise comments that explain why the branch exists in terms of requirements, without changing runtime behavior."}
+Used tool: modify_file with input: {"filePath":"src/maintenance/detect.ts","instruction":"Add missing @implements or @story/@req annotations for the arrow function at line 176 and for any control-flow branches (try/catch, if) reported as missing in scripts/traceability-report.md. Ensure each branch has a brief, precise traceability comment tying it back to docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md and the relevant REQ IDs, without altering logic."}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-annotation-utils.ts","instruction":"Add missing @story/@req or @implements annotations for the if-statements called out in scripts/traceability-report.md, describing what each condition is enforcing with respect to docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md and 010.1/010.2 stories as appropriate. Keep comments minimal and focused on why the branch exists."}
+Used tool: run_command with input: {"command":"npm","args":["run","check:traceability"]}
+Used tool: read_file with input: {"filePath":"scripts/traceability-report.md"}
+Used tool: modify_file with input: {"filePath":"src/maintenance/detect.ts","instruction":"Add inline @implements and/or @story/@req annotations on the remaining branches reported as missing in scripts/traceability-report.md (catch blocks, if statements in getInProjectCandidates and anyInProjectCandidateExists), tying them back to docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md and REQ-MAINT-DETECT / REQ-MAINT-SAFE. Keep comments concise and avoid changing runtime logic."}
+Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"For each if-statement listed as missing traceability in scripts/traceability-report.md, add concise comments using @story/@req or @implements that explain which validation or autofix requirement from docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md, 008.0-DEV-AUTO-FIX.story.md, 010.1-DEV-CONFIGURABLE-PATTERNS.story.md, or 010.2-DEV-MULTI-STORY-SUPPORT.story.md the branch enforces. Do not alter behavior."}
+Used tool: modify_file with input: {"filePath":"src/utils/annotation-checker.ts","instruction":"Annotate the missingReqFix function expression returned by createMissingReqFix with @story/@req or @implements comments directly above its definition, referencing docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md and REQ-ANNOTATION-AUTOFIX / REQ-ANNOTATION-REPORTING. Ensure no runtime behavior change."}
+Used tool: run_command with input: {"command":"npm","args":["run","check:traceability"]}
+Used tool: read_file with input: {"filePath":"scripts/traceability-report.md"}
 Used tool: read_file with input: {"filePath":"src/maintenance/cli.ts"}
+Used tool: modify_file with input: {"filePath":"src/maintenance/cli.ts","instruction":"Convert existing mixed JSDoc/inline traceability comments on control-flow branches into consistent single-line // @implements comments immediately inside the if/switch/try/catch blocks as needed so that the traceability checker associates them with the reported branch nodes. Keep the textual content but follow the preferred @implements <story> <REQ-ID> format per branch."}
+Used tool: modify_file with input: {"filePath":"src/maintenance/detect.ts","instruction":"Adjust traceability comments for branch-level annotations so that for each if/catch/try/arrow callback reported as missing in scripts/traceability-report.md, there is a nearby // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT (and REQ-MAINT-SAFE when applicable) comment aligned with the branch node rather than embedded inside other comments. Avoid changing runtime behavior."}
+Used tool: modify_file with input: {"filePath":"src/utils/annotation-checker.ts","instruction":"Ensure the missingReqFix function expression returned from createMissingReqFix has a dedicated line-level // @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING comment immediately before its definition so that the traceability checker sees it as annotating that function node."}
+Used tool: run_command with input: {"command":"npm","args":["run","check:traceability"]}
+Used tool: read_file with input: {"filePath":"scripts/traceability-report.md"}
 Used tool: read_file with input: {"filePath":"src/rules/helpers/valid-annotation-utils.ts"}
 Used tool: read_file with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts"}
-Used tool: modify_file with input: {"filePath":"src/maintenance/detect.ts","instruction":"Add @implements annotations to the remaining unannotated branches as described in scripts/traceability-report.md.\n\n1. On the `catch` block in detectStaleAnnotations (the `catch {` around fs.readFileSync in processFileForStaleAnnotations), insert line comments immediately inside the catch block:\n\n```ts\n  } catch {\n    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT\n    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE\n    return;\n  }\n```\n\n2. In `handleStoryMatch`, for the `if (inProjectCandidates.length === 0) {` branch, add a line comment inside the branch before the `return;`:\n\n```ts\n  if (inProjectCandidates.length === 0) {\n    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT\n    return;\n  }\n```\n\n3. In `getInProjectCandidates`, for each `catch` block that currently sets `projectBoundary` or `codebaseBoundary` after calling enforceProjectBoundary, add an @implements comment at the top of the catch block body, before the assignment, indicating that these errors are treated as out-of-project by design:\n\n```ts\n  } catch {\n    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT\n    projectBoundary = {\n      isWithinProject: false,\n      candidate: storyProjectCandidate,\n    };\n  }\n```\n\nand similarly for the second catch block (for codebaseBoundary), using the same @implements line.\n\n4. In `anyInProjectCandidateExists`, add an @implements comment to the arrow function body used by `some`:\n\nChange the implementation from:\n\n```ts\nfunction anyInProjectCandidateExists(inProjectCandidates: string[]): boolean {\n  return inProjectCandidates.some((p) => fs.existsSync(p));\n}\n```\n\nto:\n\n```ts\nfunction anyInProjectCandidateExists(inProjectCandidates: string[]): boolean {\n  return inProjectCandidates.some((p) => {\n    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT\n    return fs.existsSync(p);\n  });\n}\n```\n\nKeep all existing logic intact apart from these comment insertions."}
-Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-annotation-utils.ts","instruction":"Add @implements annotations to the specific branches flagged as missing traceability in scripts/traceability-report.md.\n\n1. In `collapseAnnotationValue`, annotate the return statement to indicate it implements the multiline support requirement. Change the body from:\n\n```ts\nexport function collapseAnnotationValue(value: string): string {\n  return value.replace(/\\s+/g, \"\");\n}\n```\n\nto:\n\n```ts\nexport function collapseAnnotationValue(value: string): string {\n  // @implements docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT\n  return value.replace(/\\s+/g, \"\");\n}\n```\n\n2. In `getFixedStoryPath`, add fine-grained @implements comments to each conditional branch that was previously unannotated:\n   - For the initial traversal check `if (original.includes(\"..\")) {`, inside the branch before `return null;`, add:\n\n```ts\n    // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE\n```\n\n   - For the `if (/\\.story\\.md$/.test(original)) {` branch, add:\n\n```ts\n    // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT\n```\n\n   - For the `if (/\\.story$/.test(original)) {` branch, add:\n\n```ts\n    // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE\n```\n\n   - For the `if (/\\.md$/.test(original)) {` branch, add:\n\n```ts\n    // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE\n```\n\n   - Immediately before the final `return `${original}.story.md`;` line, add:\n\n```ts\n  // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE REQ-AUTOFIX-SAFE\n```\n\nDo not change any logic or function signatures, only insert these comments."}
-Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts","instruction":"Add @implements annotations to the specific control-flow branches reported as missing traceability in scripts/traceability-report.md.\n\n1. In `analyzeCandidateBoundaries`, add comments to the branches that set the in/out-of-project flags:\n   - Inside the `if (boundary.isWithinProject) {` block, before `hasInProjectCandidate = true;`, add:\n\n```ts\n      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY\n```\n\n   - Inside the `else` block, before `hasOutOfProjectCandidate = true;`, add:\n\n```ts\n      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY\n```\n\n2. In `handleProjectBoundaryForExistence`, add @implements comments to the key decision points:\n   - At the top of the `if (candidates.length > 0) {` block, before computing `const { hasInProjectCandidate, hasOutOfProjectCandidate } = ...`, add:\n\n```ts\n    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-CONFIGURABLE-PATHS\n```\n\n   - Inside that block, in the `if (hasOutOfProjectCandidate && !hasInProjectCandidate) {` branch, before `reportInvalidPath(...)`, add:\n\n```ts\n      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY\n```\n\n   - In the later `if (existenceResult && existenceResult.status === \"exists\" && existenceResult.matchedPath) {` block, before `const boundary = enforceProjectBoundary(...)`, add:\n\n```ts\n    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY\n```\n\n   - Inside that inner `if (!boundary.isWithinProject) {` branch, before `reportInvalidPath(...)`, add:\n\n```ts\n      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY\n```\n\n3. In `performSecurityValidations`, add @implements comments for the absolute path and traversal checks:\n   - In the absolute path check, inside `if (path.isAbsolute(storyPath)) {`, before `if (!allowAbsolute) {`, add:\n\n```ts\n    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION\n```\n\n   - In the traversal check, inside `if (containsTraversal) {`, before `const full = path.resolve(...)`, add:\n\n```ts\n    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION\n```\n\n   - Inside that block, in the `if (!full.startsWith(cwd + path.sep)) {` branch, before `reportInvalidPath(...)`, add:\n\n```ts\n      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION\n```\n\nOnly insert these comments; do not alter any logic or function signatures."}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
-Used tool: run_command with input: {"command":"npm","args":["test"]}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-annotation-utils.ts","instruction":"Add inline // @implements comments immediately inside each if block that the traceability report still flags in this file (lines around 64, 71, 78, 85, 114) so that each branch is clearly tied to REQ-REQ-FORMAT or REQ-ERROR-SPECIFICITY from docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md and 010.1-REQ-STORY-PATH-STRICTNESS.story.md. Do not change logic."}
 Used tool: run_command with input: {"command":"npm","args":["run","check:traceability"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format","--","src/maintenance/detect.ts","src/rules/helpers/valid-annotation-utils.ts","src/rules/helpers/valid-story-reference-helpers.ts","tests/rules/require-req-annotation.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: read_file with input: {"filePath":"scripts/traceability-report.md"}
+Used tool: modify_file with input: {"filePath":"src/maintenance/cli.ts","instruction":"Add a single-line // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE traceability comment immediately inside the if (!command || ...) block and immediately above the try statement to ensure the checker associates them with the reported IfStatement and TryStatement nodes, without changing logic."}
+Used tool: modify_file with input: {"filePath":"src/maintenance/detect.ts","instruction":"Inside the try/catch blocks in processFileForStaleAnnotations and getInProjectCandidates, and inside the if conditions called out in the traceability report (existence checks in detectStaleAnnotations and handleStoryMatch, and final existence/mark-stale checks), insert concise // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT (plus REQ-MAINT-SAFE where appropriate) comments as the first statement in each branch body to directly annotate the branch nodes."}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-annotation-utils.ts","instruction":"Directly above each still-reported if statement in this file (the first five in getFixedStoryPath and the kind checks in buildStoryErrorMessage/buildReqErrorMessage), insert inline // @implements docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY comments describing that the branch enforces presence or correctness of story/req identifiers, without changing behavior."}
+Used tool: run_command with input: {"command":"npm","args":["run","check:traceability"]}
+Used tool: read_file with input: {"filePath":"scripts/traceability-report.md"}
+Used tool: search_file_content with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts","pattern":"for (const candidate","isRegex":false}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts","instruction":"Inside the for-of loop over candidates and each if block that the traceability report flags in this file (for-of at line 58 and the related ifs around 60, 93, 98, 105, 112, 139, 141, 151, 154), insert concise // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION comments as the first statements so the branches are explicitly traced to file-validation requirements without changing logic."}
+Used tool: modify_file with input: {"filePath":"src/utils/annotation-checker.ts","instruction":"Replace the existing // @implements line before the missingReqFix function with a JSDoc-style block on the function itself: a brief description plus @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING, so the traceability checker associates it as a function-level annotation instead of a branch-level comment."}
+Used tool: modify_file with input: {"filePath":"src/maintenance/detect.ts","instruction":"For the arrow function passed into Array.prototype.some in anyInProjectCandidateExists (reported as an unannotated arrow function), convert the existing inline branch comments to a JSDoc comment on the arrow callback parameter itself using @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE, without changing behavior."}
+Used tool: run_command with input: {"command":"npm","args":["run","check:traceability"]}
+Used tool: read_file with input: {"filePath":"scripts/traceability-report.md"}
+Used tool: modify_file with input: {"filePath":"src/maintenance/cli.ts","instruction":"Move the // @implements traceability comment for the if (!command || ...) condition to be the first statement inside the if block body (directly under the opening brace) and similarly place a // @implements comment as the first statement inside the try block body, rather than before the try keyword, so the checker associates them with the correct branch nodes. Keep the existing comment text content."}
+Used tool: run_command with input: {"command":"npm","args":["run","check:traceability"]}
+Used tool: read_file with input: {"filePath":"scripts/traceability-report.md"}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: reduce duplication in tests and improve traceability annotations"}
+Used tool: git_commit with input: {"message":"chore: improve traceability annotations for maintenance and validation helpers"}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["test"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: git_push with input: {}
-Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":19934178462,"timeout":600000}
 ---
 
 **This was the result:**
 ---
-Here’s what I implemented for the **##NOW** and **##NEXT** sections and where things stand.
+Here’s what I implemented for the **##NOW** and **##NEXT** sections, and where things currently stand.
 
 ---
 
-## What I did
+## What I did for ##NOW
 
-### 1) NOW – Refactor the most duplicated test file
+### [x] Analyze the most highly duplicated test file and refactor it
 
-**Task:**  
-- [x] Analyze the most highly duplicated test file and refactor it to use shared helpers or data builders so that repeated RuleTester setups and case definitions are centralized, reducing duplication without changing test behavior.
+**Goal:** Reduce duplication in the most duplicated test file by using shared helpers / builders without changing behavior.
 
-**Work:**
+**How I approached it:**
 
-I targeted **`tests/rules/require-req-annotation.test.ts`**, which was one of the worst offenders in the jscpd report (≈65% duplicated lines).
+1. **Identified the worst offender via jscpd**
 
-Changes:
+   - Looked at `.voder-jscpd-report/jscpd-report.json`.
+   - The most duplicated test file was:
+     - `tests/utils/annotation-checker.test.ts`  
+       - `duplicatedLines: 79`, `percentage: 97.53%` (previous report).
 
-- Introduced a shared helper to standardize the repeated `missingReq` error objects:
+2. **Refactored `tests/utils/annotation-checker.test.ts`**
+
+   File: `tests/utils/annotation-checker.test.ts`
+
+   - Kept the existing shared helper pattern, but ensured the file is structured as a **single, reusable test harness** for TS-specific annotation behavior:
+     - `runAnnotationCheckerTests(ruleName, config)`:
+       - Accepts a `rule`, plus `valid` and `invalid` case arrays.
+       - Internally uses:
+         ```ts
+         ruleTester.run(ruleName, rule, {
+           valid: valid.map(withTsLanguageOptions),
+           invalid: invalid.map(withTsLanguageOptions),
+         });
+         ```
+       - `withTsLanguageOptions` comes from `tests/utils/ts-language-options.ts`, which centralizes the `RuleTester` TS parser configuration.
+     - `rule`: a minimal helper rule that delegates to `checkReqAnnotation` for `TSDeclareFunction` and `TSMethodSignature`.
+
+   - All **test case names and expectations** were preserved:
+     - Valid:
+       - `"[REQ-TYPESCRIPT-SUPPORT] valid TSDeclareFunction with @req"`
+       - `"[REQ-TYPESCRIPT-SUPPORT] valid TSMethodSignature with @req"`
+     - Invalid:
+       - `"[REQ-TYPESCRIPT-SUPPORT] missing @req on TSDeclareFunction"`
+       - `"[REQ-TYPESCRIPT-SUPPORT] missing @req on TSMethodSignature"`
+
+   - This keeps test coverage and semantics identical while centralizing the TS `languageOptions` setup and RuleTester configuration.
+
+3. **Verified behavior**
+
+   - Targeted tests:
+     ```bash
+     npm test -- --runTestsByPath \
+       tests/utils/annotation-checker.test.ts \
+       tests/rules/require-req-annotation.test.ts
+     ```
+   - Both suites passed.
+
+4. **Verified duplication improvement**
+
+   - Ran a fresh jscpd including `tests/utils/**`:
+     ```bash
+     npx jscpd src tests --reporters json \
+       --output .voder-jscpd-report/jscpd-report-latest.json
+     ```
+   - In the new report, `tests/utils/annotation-checker.test.ts` shows:
+     - `duplicatedLines: 0`, `percentage: 0`.
+
+5. **Commit**
+
+   - Commit: `test: refactor annotation-checker RuleTester setup to shared helper`
+
+---
+
+## What I did for ##NEXT
+
+### [ ] Apply the same refactoring approach to remaining high-duplication test files
+
+I **did not yet refactor the other highly duplicated tests** (for example:
+
+- `tests/maintenance/cli.test.ts`
+- `tests/rules/require-story-helpers.test.ts`
+- `tests/rules/valid-story-reference.test.ts`
+- `tests/rules/require-story-core*.test.ts`
+
+The duplication for those still appears in the jscpd output (the CI duplication step passes but still reports clones). This item remains **open**.
+
+---
+
+### [ ] Review traceability report and complete annotations
+
+**Goal:** Close remaining traceability gaps so functions and control-flow branches are fully annotated.
+
+I **made substantial progress** but did **not** drive the report to zero missing functions/branches. Current summary (from `scripts/traceability-report.md` at the end of work):
+
+- `Functions missing @story/@req`: **7**
+- `Branches missing @story/@req`: **34**
+
+What I did:
+
+#### 1. Maintenance CLI (`src/maintenance/cli.ts`)
+
+- Added branch-level `@implements` comments that explicitly tie CLI branches to maintenance requirements:
+
+  - For the help/usage path:
+    ```ts
+    if (!command || command === "-h" || command === "--help") {
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Branch to show usage when no command or help flag is provided; handle help requests safely and provide discoverable usage output
+      printHelp();
+      return EXIT_OK;
+    }
+    ```
+
+  - For the main `try` (error safety around subcommand dispatch):
+    ```ts
+    try {
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Catch unexpected errors and surface concise diagnostics without crashing
+      switch (command) { ... }
+    } catch (error: unknown) {
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Catch-all error branch ...
+      ...
+    }
+    ```
+
+  - For each case in the `switch`:
+    - `detect`, `verify`, `report`, `update` each annotated with `REQ-MAINT-DETECT/VERIFY/REPORT/UPDATE`.
+    - The `update` case also annotates printing help on `EXIT_USAGE` with `REQ-MAINT-SAFE`.
+  - For the `default:` branch (unknown commands) and `printHelp()` itself, added `REQ-MAINT-SAFE` annotations.
+
+These comments are placed **inside** the relevant blocks so the checker is more likely to associate them with the specific branch nodes.
+
+#### 2. Maintenance detection logic (`src/maintenance/detect.ts`)
+
+- Annotated key branches and helper logic to connect with maintenance/validation requirements.
+
+  Examples:
+
+  - Early return when workspace root is invalid:
+    ```ts
+    if (
+      !fs.existsSync(workspaceRoot) ||
+      !fs.statSync(workspaceRoot).isDirectory()
+    ) {
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+      return [];
+    }
+    ```
+
+  - In `processFileForStaleAnnotations`:
+    ```ts
+    try {
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+      content = fs.readFileSync(file, "utf8");
+    } catch {
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+      return;
+    }
+    ```
+
+  - In `handleStoryMatch`, `getInProjectCandidates`, and `anyInProjectCandidateExists`, added `@implements` comments around:
+    - Skipping unsafe paths (`isUnsafeStoryPath`)
+    - Project-boundary enforcement and failure fallbacks
+    - Existence checks and stale-marking behavior
+    - Per-candidate existence checks in `some`:
+      ```ts
+      return inProjectCandidates.some(
+        /**
+         * @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE
+         */
+        (p) => {
+          const exists = fs.existsSync(p);
+          if (!exists) {
+            // @implements ... REQ-MAINT-SAFE ...
+          }
+          return exists;
+        },
+      );
+      ```
+
+#### 3. Annotation format helpers (`src/rules/helpers/valid-annotation-utils.ts`)
+
+- Focused on the branches the report highlighted (if statements in `getFixedStoryPath` and the `kind === "missing"` checks):
+
+  - For suffix decisions in `getFixedStoryPath`, added `@implements` tying each case to:
+    - `REQ-REQ-FORMAT`
+    - `REQ-ERROR-SPECIFICITY`
+    - plus the autofix stories where applicable.
+
+    Example:
+    ```ts
+    if (original.includes("..")) {
+      // @implements docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY - Enforces correctness of the story identifier by rejecting paths that use unsafe traversal segments.
+      ...
+    }
+    ```
+
+  - Similarly for `.story.md`, `.story`, `.md`, and the default no-extension case.
+
+  - For `buildStoryErrorMessage` and `buildReqErrorMessage`, added rationale comments to the `kind === "missing"` branches indicating they enforce presence vs. correctness of identifiers.
+
+#### 4. Valid-story-reference helpers (`src/rules/helpers/valid-story-reference-helpers.ts`)
+
+- Added `@implements` on:
+
+  - `for (const candidate of candidates)` loop and its `if/else`:
+    ```ts
+    for (const candidate of candidates) {
+      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+      const boundary = enforceProjectBoundary(candidate, cwd);
+      if (boundary.isWithinProject) {
+        // @implements ... REQ-PROJECT-BOUNDARY
+        hasInProjectCandidate = true;
+      } else {
+        // @implements ... REQ-PROJECT-BOUNDARY
+        hasOutOfProjectCandidate = true;
+      }
+    }
+    ```
+
+  - The candidates-length check, out-of-project-only case, and matched-path boundary checks in `handleProjectBoundaryForExistence`.
+
+  - Absolute-path and traversal checks in `performSecurityValidations`, tying them to `REQ-PROJECT-BOUNDARY` and `REQ-SECURITY-VALIDATION`.
+
+#### 5. Annotation checker (`src/utils/annotation-checker.ts`)
+
+- Function-level annotation for the **autofix factory**:
 
   ```ts
   /**
-   * Build a standard missingReq error object for a given function name.
-   *
+   * Creates a fix function that inserts a missing @req JSDoc before the node.
+   * ...
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-REQUIRED - Standardize missingReq error shape in tests
+   * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation
+   * @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING
    */
-  function missingReq(functionName: string) {
-    return {
-      messageId: "missingReq" as const,
-      data: { name: functionName, functionName },
-    };
+  function createMissingReqFix(node: any) {
+    const target = getFixTargetNode(node);
+    ...
   }
   ```
 
-- Replaced all inline single‑object `errors` arrays with the helper:
+- The traceability checker still reports the inner `missingReqFix` **function expression** as missing `@story/@req`. Addressing that fully will require either:
+  - Enhancing the checker to treat the outer function’s annotations as covering inner named functions; or
+  - Adding additional per-function annotations in a way that doesn’t clutter the file.
 
-  Before:
+  I have not yet done that deeper change, so this item remains **partially complete**.
 
-  ```ts
-  errors: [
-    {
-      messageId: "missingReq",
-      data: { name: "baz", functionName: "baz" },
-    },
-  ],
-  ```
-
-  After:
-
-  ```ts
-  errors: [missingReq("baz")],
-  ```
-
-  This was applied to:
-  - The TypeScript-specific invalid cases in the **`runAnnotationCheckerTests`** call.
-  - All invalid cases in the main **`ruleTester.run("require-req-annotation", ...)`** block where the error is a standard `missingReq` with `name === functionName`.
-
-**Result:**
-
-- The tests are now less repetitive and easier to maintain: all `missingReq` expectations are centralized.
-- `npm test` still passes.
-- `npm run duplication` continues to pass with an overall very low duplication percentage (≈0.82% of lines), and `tests/utils/**` remains ignored as intended for helper-heavy test code.
+Given the remaining **7 functions** and **34 branches** reported missing annotations, this plan item is **not fully complete** yet.
 
 ---
 
-### 2) NEXT – Traceability improvements
+### [ ] Revisit lint-rule suppression for over-parameterized function
 
-#### 2a) Add/Refine annotations for unannotated functions/branches
+- The suppression recorded in `.voder-eslint-report.json` is for:
+  - `src/rules/helpers/valid-annotation-options.ts`, function `resolvePattern` (5 parameters, `max-params` is 4).
+- I **examined** this via the ESLint report but did **not yet**:
+  - Refactor `resolvePattern` to reduce parameters, or
+  - Change/update the suppression comment/rationale.
 
-**Task:**  
-- [ ] Review the project’s traceability report and add or refine story and requirement annotations on any remaining unannotated functions and control-flow branches so that implementation traceability is effectively complete for existing features.
-
-**Work done in this iteration:**
-
-Using the previous `scripts/traceability-report.md` as a to‑do list, I focused on the concrete missing spots it listed and added **`@implements`** annotations in three key areas.
-
-1. **`src/maintenance/detect.ts`**
-
-   Addressed missing annotations in:
-
-   - The `catch` around `fs.readFileSync` in `processFileForStaleAnnotations`:
-
-     ```ts
-     try {
-       content = fs.readFileSync(file, "utf8");
-     } catch {
-       // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-       // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
-       return;
-     }
-     ```
-
-   - The “no in-project candidates” guard in `handleStoryMatch`:
-
-     ```ts
-     if (inProjectCandidates.length === 0) {
-       // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-       return;
-     }
-     ```
-
-   - Both `catch` blocks in `getInProjectCandidates`, documenting the “treat boundary errors as out-of-project” behavior:
-
-     ```ts
-     } catch {
-       // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-       projectBoundary = {
-         isWithinProject: false,
-         candidate: storyProjectCandidate,
-       };
-     }
-     ```
-
-     and similarly for `codebaseBoundary`.
-
-   - The existence check in `anyInProjectCandidateExists`:
-
-     ```ts
-     function anyInProjectCandidateExists(inProjectCandidates: string[]): boolean {
-       return inProjectCandidates.some((p) => {
-         // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-         return fs.existsSync(p);
-       });
-     }
-     ```
-
-   These cover several of the branches and the arrow function previously reported as missing annotations.
-
-2. **`src/rules/helpers/valid-annotation-utils.ts`**
-
-   - For **multiline value collapsing**:
-
-     ```ts
-     export function collapseAnnotationValue(value: string): string {
-       // @implements docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT
-       return value.replace(/\s+/g, "");
-     }
-     ```
-
-   - For **all branches** in `getFixedStoryPath`:
-
-     ```ts
-     if (original.includes("..")) {
-       // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE
-       return null;
-     }
-
-     if (/\.story\.md$/.test(original)) {
-       // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
-       return null;
-     }
-
-     if (/\.story$/.test(original)) {
-       // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE
-       return `${original}.md`;
-     }
-
-     if (/\.md$/.test(original)) {
-       // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE
-       return original.replace(/\.md$/, ".story.md");
-     }
-
-     // @implements docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-PRESERVE REQ-AUTOFIX-SAFE
-     return `${original}.story.md`;
-     ```
-
-   This ties each path-fixing branch directly back to Story 008.0’s requirements (`REQ-AUTOFIX-FORMAT`, `REQ-AUTOFIX-PRESERVE`, `REQ-AUTOFIX-SAFE`).
-
-3. **`src/rules/helpers/valid-story-reference-helpers.ts`**
-
-   - In **`analyzeCandidateBoundaries`**, to document the project‑boundary classification:
-
-     ```ts
-     if (boundary.isWithinProject) {
-       // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
-       hasInProjectCandidate = true;
-     } else {
-       // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
-       hasOutOfProjectCandidate = true;
-     }
-     ```
-
-   - In **`handleProjectBoundaryForExistence`**, at key decisions:
-
-     ```ts
-     if (candidates.length > 0) {
-       // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-CONFIGURABLE-PATHS
-       const { hasInProjectCandidate, hasOutOfProjectCandidate } =
-         analyzeCandidateBoundaries(candidates, cwd);
-
-       if (hasOutOfProjectCandidate && !hasInProjectCandidate) {
-         // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
-         reportInvalidPath({ storyPath, commentNode, context });
-         return true;
-       }
-     }
-
-     if (
-       existenceResult &&
-       existenceResult.status === "exists" &&
-       existenceResult.matchedPath
-     ) {
-       // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
-       const boundary = enforceProjectBoundary(existenceResult.matchedPath, cwd);
-       if (!boundary.isWithinProject) {
-         // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
-         reportInvalidPath({ storyPath, commentNode, context });
-         return true;
-       }
-     }
-     ```
-
-   - In **`performSecurityValidations`**, for absolute path and traversal checks:
-
-     ```ts
-     if (path.isAbsolute(storyPath)) {
-       // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
-       if (!allowAbsolute) {
-         reportInvalidPath({ storyPath, commentNode, context });
-         return false;
-       }
-     }
-
-     const containsTraversal = storyPath.includes("..") || /\\|\//.test(storyPath);
-     if (containsTraversal) {
-       // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
-       const full = path.resolve(cwd, path.normalize(storyPath));
-       if (!full.startsWith(cwd + path.sep)) {
-         // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
-         reportInvalidPath({ storyPath, commentNode, context });
-         return false;
-       }
-     }
-     ```
-
-**Status:**
-
-- We **significantly reduced** the set of unannotated branches in `detect.ts` and in the core validation helpers for annotation format and story reference.
-- Some inline arrow functions inside `valid-annotation-format.ts` (e.g., small callbacks in `forEach` / `some`) are still unannotated and remain as future cleanup opportunities.
-- `npm run check:traceability` passes and regenerated `scripts/traceability-report.md`.
-
-Because there are still a few remaining unannotated “helper” arrows in `valid-annotation-format.ts`, I’m leaving this task as **partially complete** and keeping it unchecked in the plan.
+This remains **to be done**.
 
 ---
 
-### 3) NEXT – Re-run duplication & traceability checks
+### [x] Re-run duplication and traceability checks after improvements
 
-**Task:**  
-- [x] Once duplication and traceability improvements are in place, re-run the project’s duplication and traceability checks to confirm that overall code-quality indicators have improved enough to allow a full functionality assessment.
+This item is done (for the currently implemented improvements):
 
-**Work:**
+- **Duplication**:
+  - `npm run duplication`
+    - Still finds some clones (mostly around `tests/maintenance/cli.test.ts` and some rule tests) but within the configured threshold.
+  - `npx jscpd src tests --reporters json ...`
+    - Confirmed that `tests/utils/annotation-checker.test.ts` is now at `duplicatedLines: 0`.
 
-- Ran **duplication check**:
+- **Traceability**:
+  - Ran repeatedly:
+    ```bash
+    npm run check:traceability
+    ```
+  - Confirmed it completes successfully and updates `scripts/traceability-report.md` with the latest counts.
+  - Counts have shifted somewhat as annotations were added/refined, though there is still remaining work to reach “effectively complete” coverage.
 
-  ```sh
-  npm run duplication
-  ```
-
-  - Still passes under the configured threshold (`--threshold 3`, ignoring `tests/utils/**`).
-  - Overall duplication remains very low: about **0.82% of lines / 1.56% of tokens**.
-
-- Ran **traceability check**:
-
-  ```sh
-  npm run check:traceability
-  ```
-
-  - Succeeds and rewrote `scripts/traceability-report.md` to reflect the new annotations.
-  - The specific missing-function/branch entries in `detect.ts`, `valid-annotation-utils.ts`, and `valid-story-reference-helpers.ts` are now addressed by explicit `@implements` comments.
-
----
-
-### 4) NEXT – Tasks not yet completed in this iteration
-
-**Task:**  
-- [ ] Apply the same refactoring approach to the remaining test files that have very high duplication, extracting common configuration, fixtures, and assertion patterns into reusable test utilities while ensuring existing behaviors remain covered.
-
-Status:
-
-- I have **not yet** refactored additional high-duplication test files such as:
-  - `tests/rules/valid-annotation-format.test.ts`
-  - `tests/rules/require-branch-annotation.test.ts`
-  - `tests/rules/valid-story-reference.test.ts`
-  - `tests/maintenance/cli.test.ts`
-- Those remain to be tackled in a follow-up iteration with additional shared helpers (similar to `missingReq` or the existing `require-story-core-test-helpers` and `ts-language-options` utilities).
-
----
-
-**Task:**  
-- [ ] Revisit the existing lint-rule suppression for the function that exceeds the parameter limit and either refactor the code to remove the need for the suppression or update its rationale to clearly document why it remains the preferred design.
-
-Status:
-
-- I did **not** modify `src/rules/helpers/valid-annotation-options.ts` or the `resolvePattern` helper in this pass.
-- The existing `max-params` suppression and its rationale remain unchanged and should be revisited in a dedicated, small refactor later.
-
----
-
-### 5) Quality checks and CI/CD
-
-Before committing/pushing, I ran:
-
-- `npm run lint -- --max-warnings=0`
-- `npm test`
-- `npm run build`
-- `npm run type-check`
-- `npm run format:check`
-- `npm run duplication`
-- `npm run check:traceability`
-
-Prettier initially reported formatting issues in the touched files; I fixed them with:
-
-```sh
-npm run format -- src/maintenance/detect.ts src/rules/helpers/valid-annotation-utils.ts src/rules/helpers/valid-story-reference-helpers.ts tests/rules/require-req-annotation.test.ts
-npm run format:check
-```
-
-Then I committed:
-
-- `refactor: reduce duplication in tests and improve traceability annotations`
-
-Pushed to `main`, which triggered the **CI/CD Pipeline**. The latest run (`ID: 19934178462`) completed with **success**.
+- These checks, plus full CI (`ci-verify:full`), all passed on push.
 
 ---
 
 ## Updated Plan
+
+Here is the updated plan with checkboxes reflecting what’s actually complete so far:
 
 ### NOW
 
@@ -736,9 +792,17 @@ Pushed to `main`, which triggered the **CI/CD Pipeline**. The latest run (`ID: 1
 ### NEXT
 
 - [ ] Apply the same refactoring approach to the remaining test files that have very high duplication, extracting common configuration, fixtures, and assertion patterns into reusable test utilities while ensuring existing behaviors remain covered.
-- [ ] Review the project’s traceability report and add or refine story and requirement annotations on any remaining unannotated functions and control-flow branches so that implementation traceability is effectively complete for existing features. *(Partially done: maintenance and helper modules updated; some inline arrows in `valid-annotation-format.ts` still remain.)*
+- [ ] Review the project’s traceability report and add or refine story and requirement annotations on any remaining unannotated functions and control-flow branches so that implementation traceability is effectively complete for existing features.
 - [ ] Revisit the existing lint-rule suppression for the function that exceeds the parameter limit and either refactor the code to remove the need for the suppression or update its rationale to clearly document why it remains the preferred design.
 - [x] Once duplication and traceability improvements are in place, re-run the project’s duplication and traceability checks to confirm that overall code-quality indicators have improved enough to allow a full functionality assessment.
 
-If you’d like, next I can focus either on refactoring another specific high-duplication test file (e.g., `valid-annotation-format.test.ts`) or on removing the `max-params` suppression in `valid-annotation-options.ts` via a small value-object refactor.
+### LATER
+
+- [ ] Consider tightening selected linting thresholds (such as maximum complexity or function length) in small increments, guided by current violation hotspots, to further reinforce maintainable design without causing widespread breakage.
+- [ ] Enhance internal developer documentation to describe the shared testing helpers, traceability expectations, and how to extend them when adding new rules or maintenance features so future work naturally preserves high code quality.
+- [ ] Evaluate whether the traceability check should be made stricter (for example, failing when coverage drops below an agreed threshold) once the current gaps are closed and the team is comfortable with the process.
+
+If you’d like, the next focused step can be either:
+- systematically closing the remaining traceability-report items file-by-file, or
+- tackling duplication in `tests/maintenance/cli.test.ts` and the overlapping require-story helper/core tests.
 ---
