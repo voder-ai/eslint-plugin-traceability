@@ -82,7 +82,17 @@ jobs:
           name: jest-artifacts-${{ matrix['node-version'] }}
           path: ci/
 
+      # semantic-release is intentionally run ONLY in CI on pushes to main.
+      # Local developers should NOT run semantic-release directly; it is meant
+      # to be invoked by this workflow so that versioning, changelog, and
+      # publishing are centralized and reproducible.
       - name: Release with semantic-release
+        # Guard rails to ensure semantic-release only runs:
+        #   - in CI (this workflow),
+        #   - on push events,
+        #   - on the main branch,
+        #   - and on the Node 20.x matrix job.
+        # Do not bypass these conditions or invoke semantic-release manually.
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix['node-version'] == '20.x' && success() }}
         id: semantic-release
         run: |
@@ -135,6 +145,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      # This smoke test is tied to the CI-managed release flow above.
+      # It should remain an automated verification step and not be used
+      # as a local/manual release mechanism.
       - name: Smoke test published package
         if: steps.semantic-release.outputs.new_release_published == 'true'
         run: |

@@ -4,6 +4,16 @@ This document explains how we assess and maintain dependency health in this proj
 
 This is **internal/development-facing documentation** for maintainers and advanced contributors. The guarantees in the README and other user docs are **plain-language summaries** that are _backed by_ the processes described here, not the other way around.
 
+## Relationship to SECURITY.md
+
+The user-facing summary of our dependency and vulnerability-handling policy is defined in `SECURITY.md`. That file describes, in plain language, what users can expect from us in terms of security posture, reporting, and remediation.
+
+This document is an **internal implementation detail** that explains _how_ we operationalize and enforce the policy described in `SECURITY.md` (and the security-related statements in the README). Maintainers should treat this file as the canonical reference for:
+
+- How we run and interpret `dry-aged-deps` and npm audit.
+- How we record and justify accepted risks.
+- How these processes support and substantiate the commitments made in `SECURITY.md`.
+
 ## Canonical Commands
 
 Contributors and automation **must** use the following npm scripts when working with dependency health.

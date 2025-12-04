@@ -1,16 +1,15 @@
 ## NOW
 
-- [ ] Review the existing ESLint flat-config presets exported by the plugin and compare them with the documented usage in the ESLint 9 setup and config-presets documentation to pinpoint exactly how they must change so that external users can rely on the presets alone to register the plugin and its rules correctly.
+- [ ] Create or refine a root-level security policy document that clearly describes the dev-only semantic-release/npm toolchain risk, the existing compensating controls and CI isolation around it, and the intended upgrade path once a safe version becomes available, so that this aspect of the project’s security posture is explicit and centralized.
 
 ## NEXT
 
-- [ ] Adjust the plugin’s exported configuration presets so that they correctly map the traceability plugin object in the flat-config plugins field while preserving the existing recommended and strict rule severity mappings.
-- [ ] Introduce or extend integration tests that use the exported presets in a representative ESLint 9 flat configuration and verify that the expected traceability rules are actually enforced when linting sample code.
-- [ ] Update the 002.0 ESLint configuration story and any related documentation sections to reflect the corrected preset behavior and explicitly demonstrate a working configuration pattern that relies on these presets.
-- [ ] Re-evaluate Story 002.0-DEV-ESLINT-CONFIG against its acceptance criteria using the new implementation and tests to confirm that it can now be marked as fully implemented and passing.
+- [ ] Review the continuous integration workflow configuration to verify exactly how and where the semantic-release job runs, and adjust its structure or permissions if needed to further isolate it from untrusted inputs while preserving automated releases.
+- [ ] Align the existing security incident and dependency health documents with the new centralized security policy so they consistently describe the same controls, assumptions, and future remediation plan for the semantic-release/npm toolchain.
+- [ ] Introduce a lightweight guard or precondition around the semantic-release invocation that enforces the intended safe usage context and prevents accidental invocation in unsupported or less-isolated environments.
 
 ## LATER
 
-- [ ] Identify the other stories currently marked as failed in the functionality assessment and, one by one, perform the same cycle of gap analysis, implementation, and test additions to bring them to passing status.
-- [ ] Look for opportunities to add additional configuration examples or troubleshooting notes to the user documentation to help consumers avoid common ESLint 9 flat-config pitfalls when using the plugin’s presets.
-- [ ] Once all failing stories are addressed, perform a focused review of story-to-code and story-to-test traceability to ensure that every requirement is explicitly covered and validated.
+- [ ] When a dry-aged-deps–approved safe upgrade path for the semantic-release/npm toolchain becomes available, update the relevant dependencies and then convert the current known-error documentation into a resolved-incident record describing the remediation.
+- [ ] Extend the security review to other dev-only tooling to detect any similar bundled or embedded high-risk dependencies, and add documentation plus compensating controls where necessary.
+- [ ] After the SECURITY area comfortably exceeds its threshold, revisit the functionality assessment to identify and close any remaining story-level feature gaps using the strengthened security foundation.

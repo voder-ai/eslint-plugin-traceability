@@ -195,6 +195,8 @@ These tests verify end-to-end behavior of the plugin via the ESLint CLI.
 
 ## Security and Dependency Health
 
+For the canonical, user-facing security policy (including how to report vulnerabilities), see [SECURITY.md](SECURITY.md). The additional files under `docs/` referenced below provide deeper background and implementation details for interested readers.
+
 ### What end users can expect from production dependencies
 
 - The published `eslint-plugin-traceability` package is intended to ship **only with production dependencies that have no known high‑severity vulnerabilities** at release time.

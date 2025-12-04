@@ -15,7 +15,7 @@ The `@semantic-release/npm@10.0.6` dev dependency bundles `npm@9.5.0`, which in 
 - `glob` (10.2.010.4.5) is affected by command injection when the glob CLI is invoked with the `-c/--cmd` flag (`GHSA-5j98-mcp5-4vw2`).
 - `brace-expansion` (1.0.01.1.11 and 2.0.02.0.1) is affected by a Regular Expression Denial of Service (ReDoS) issue (`GHSA-v6h2-p8h4-qcjw`).
 
-These vulnerable packages are *only* present inside the npm binary bundled within `@semantic-release/npm`. They are **not** part of the production dependency tree used by the published `eslint-plugin-traceability` package.
+These vulnerable packages are *only* present inside the npm binary bundled within `@semantic-release/npm`. They are **not** part of the production dependency tree used by the published `eslint-plugin-traceability` package. The handling of this incident, and the distinction between dev-only risks and user-facing guarantees, is governed by the canonical security policy in the root-level `SECURITY.md`. This document provides incident-specific detail and links back to that policy rather than redefining user-facing guarantees.
 
 **Remediation:**
 
@@ -60,10 +60,14 @@ Given these constraints, the project treats this as a **known error** in dev-onl
 
 **Compensating Controls:**
 
-1. **Environment Isolation**
-   - The vulnerable tooling is only executed in the `quality-and-deploy` job of `.github/workflows/ci-cd.yml` on pushes to the `main` branch.
+1. **Security Policy Alignment and Environment Isolation**
+   - The root-level `SECURITY.md` defines the canonical security policy, including the project’s guarantees to end users and how dev-only tooling risks are treated separately from runtime dependencies. This incident is consistent with that policy: vulnerabilities confined to CI release automation do not alter guarantees about the security of the published `eslint-plugin-traceability` package or its production dependency tree.
+   - `SECURITY.md` explicitly differentiates between:
+     - Security guarantees for *published artifacts* (what users install and run).
+     - Managed, documented risk in *development and release tooling* (such as semantic-release and its bundled npm).
+   - In line with `SECURITY.md`, the vulnerable tooling is only executed in the `quality-and-deploy` job of `.github/workflows/ci-cd.yml` on pushes to the `main` branch.
    - Job-level permissions are scoped to the minimum required for releases (`contents`, `issues`, `pull-requests`, `id-token`). No additional permissions are granted.
-   - The job runs on GitHub-hosted runners and does not have access to any internal infrastructure.
+   - The job runs on GitHub-hosted runners and does not have access to any internal infrastructure, preserving the user-facing guarantees documented in `SECURITY.md` by ensuring that any exploit would be constrained to an ephemeral CI environment and would not propagate to published packages.
 
 2. **Dependency and Audit Controls**
    - `npm audit --omit=dev --audit-level=high` is enforced as part of `npm run ci-verify:full` to ensure production dependencies are free of high-severity issues.
@@ -99,6 +103,6 @@ Created autonomously by voder.ai
 
 ## Relationship to User-Facing Guarantees
 
-This known error is limited to dev-only release tooling and does not change the security guarantees described in the README and user documentation. The vulnerable `glob` and `brace-expansion` instances are only executed inside GitHub Actions during semantic-release; they are never run when users install or run `eslint-plugin-traceability` or `traceability-maint`.
+This known error is limited to dev-only release tooling and does not change the security guarantees described in the README, user documentation, or the canonical security policy in `SECURITY.md`. The vulnerable `glob` and `brace-expansion` instances are only executed inside GitHub Actions during semantic-release; they are never run when users install or run `eslint-plugin-traceability` or `traceability-maint`.
 
-The combination of `npm audit --omit=dev --audit-level=high` and `dry-aged-deps` checks is what allows the project to assert that published versions do not ship with known high-severity vulnerabilities in their **production** dependency tree. Because the affected code is confined to CI release automation and excluded from the published runtime dependencies, the security posture promised to end users remains intact.
+The combination of `npm audit --omit=dev --audit-level=high` and `dry-aged-deps` checks is what allows the project to assert that published versions do not ship with known high-severity vulnerabilities in their **production** dependency tree. Because the affected code is confined to CI release automation and excluded from the published runtime dependencies, the security posture promised to end users in `SECURITY.md` remains intact.

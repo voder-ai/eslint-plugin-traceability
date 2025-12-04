@@ -23,6 +23,12 @@ We accept the residual risk in development dependencies for the current release 
   - The residual `glob`/`npm` dev dependency risks are covered by these updated CI scripts, which ensure visibility into advisories, plus strict production `npm audit` gates that must pass before a release
   - Develop a plan to upgrade `@semantic-release/npm` to a version that avoids bundling vulnerable `glob`/`npm` when safe
 
+## Policy Alignment
+
+The canonical, user-facing security and vulnerability-handling policy for this project is defined in `SECURITY.md`. This ADR, along with any incident or internal rationale documents, is an internal record and must remain consistent with the guarantees and expectations described in `SECURITY.md`.
+
+If any future change to this ADR would alter user-visible guarantees, support expectations, or disclosure/handling commitments documented in `SECURITY.md`, that change must be reflected in `SECURITY.md` as part of the same change set and reviewed accordingly.
+
 ## References
 
 - Vulnerability details: see ci/npm-audit.json stored in CI artifacts
