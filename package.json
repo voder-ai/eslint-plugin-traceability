@@ -20,8 +20,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "prepare": "",
-    "postinstall": "husky",
+    "prepare": "husky",
     "type-check": "tsc --noEmit -p tsconfig.json",
     "check:traceability": "node scripts/traceability-check.js",
     "lint-plugin-check": "node scripts/lint-plugin-check.js",
