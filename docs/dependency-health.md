@@ -4,6 +4,16 @@ This document explains how we assess and maintain dependency health in this proj
 
 This is **internal/development-facing documentation** for maintainers and advanced contributors. The guarantees in the README and other user docs are **plain-language summaries** that are _backed by_ the processes described here, not the other way around.
 
+## Summary
+
+- We gate releases on:
+  - `npm audit --omit=dev --audit-level=high` for production dependencies (must report 0 high-severity vulns).
+  - `npm run safety:deps` (which wraps `dry-aged-deps` with `--format=json --check`) as an advisory maturity/health signal that can fail CI when thresholds are not met.
+- We run, but do **not** gate on:
+  - `npm run audit:dev-high`, which records high-severity **dev-only** vulnerabilities without failing CI and stores JSON output in `ci/npm-audit.json`.
+- We run secret scanning in CI via:
+  - `npm run security:secrets`, which invokes `secretlint` to detect accidentally committed secrets and supports the guarantees in `SECURITY.md` around credential handling.
+
 ## Relationship to SECURITY.md
 
 The user-facing summary of our dependency and vulnerability-handling policy is defined in `SECURITY.md`. That file describes, in plain language, what users can expect from us in terms of security posture, reporting, and remediation.

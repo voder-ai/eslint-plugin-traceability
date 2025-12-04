@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-12-04T14:03:44.210Z</last_validated>
+  <last_modified>2025-12-04T12:36:14.645Z</last_modified>
+  <evidence>1) Story file:
+- docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md exists and clearly specifies migration from @story/@req to a new @supports annotation. All examples, acceptance criteria, and messages use @supports (e.g., "After (auto-fixed to @supports)" blocks, configuration comments, and warning text).
+
+2) Implemented rule and tests target @implements, not @supports:
+- Rule implementation: src/rules/prefer-implements-annotation.ts
+  - JSDoc header references a different story path: @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md (this story file does not exist; the real file is ...-MIGRATE-TO-SUPPORTS.story.md).
+  - The rule description and behavior are about preferring the consolidated @implements annotation over @story/@req.
+  - Auto-fix builder constructs @implements, not @supports:
+    - const implAnnotation = `@implements ${storyPath} ${reqIds.join(" ")}`;
+  - No occurrences of "@supports" in this file (search_file_content returned 0 matches).
+- Tests: tests/rules/prefer-implements-annotation.test.ts
+  - Header: "Tests for: docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md" and @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md.
+  - Invalid test cases check auto-fix output with @implements, e.g.:
+    * Input: @story + @req
+      Output: @implements <story> <REQ-ID>
+    * Multiple @req lines => single @implements with all REQ IDs.
+  - Tests validate messages with IDs "preferImplements", "cannotAutoFix", and "multiStoryDetected", all phrased in terms of @implements.
+
+3) Behavior vs. story requirements:
+- Optional warning / REQ-OPTIONAL-WARNING & REQ-CONFIG-SEVERITY:
+  - Implemented for @implements:
+    * Rule meta.type = "suggestion", meta.docs.recommended = false.
+    * Tests in prefer-implements-annotation.test.ts confirm the rule is NOT present in configs.recommended and configs.strict and can be configured as "warn" or "error" in a flat config.
+  - This satisfies configurability, but the warnings recommend migration to @implements instead of the @supports format described in the story.
+- Auto-fix Support / REQ-AUTO-FIX & REQ-SINGLE-STORY-FIX:
+  - Implemented for @implements:
+    * buildImplementsAutoFix(...) collects a single story path and simple @req IDs and returns a fixer that replaces @story/@req with one @implements line.
+    * Tests verify auto-fix for single @req and multiple @req cases, but all use @implements.
+  - No implementation or tests exist for converting to @supports.
+- Multi-story Detection / REQ-MULTI-STORY-DETECT:
+  - Implemented:
+    * analyzeComment and hasMultipleStories(storyPaths) detect more than one story path and report messageId "multiStoryDetected".
+    * Mixed @story/@req + @implements triggers "cannotAutoFix" with an explanatory reason.
+    * These behaviors are covered in prefer-implements-annotation.test.ts.
+- Preserve Order / REQ-PRESERVE-FORMAT:
+  - Implemented for @implements:
+    * applyImplementsReplacement uses the original @story line’s prefix (indentation and optional '*') and reinserts the new @implements line at that same index.
+    * It removes only the original @story/@req lines, preserving the rest of the comment.
+  - This preserves JSDoc structure, but again yields @implements, not @supports.
+- Both Formats Valid / REQ-BACKWARD-COMP-VALIDATION:
+  - Implemented in spirit but not exactly as specified:
+    * When the rule is off (default), it has no effect; legacy @story/@req are validated only by the other rules (valid-annotation-format, valid-story-reference, etc.).
+    * Even when enabled, the rule only reports when both @story and @req are present; tests mark comments with only @story, only @req, or only @implements as valid.
+- Quality Standards / REQ-VALID-OUTPUT:
+  - For the implemented path, auto-fix produces @implements lines that pass annotation-format and deep-validation rules (per Story 010.2), but there is no implementation of an @supports tag or any validation for it.
+
+4) Configuration and documentation:
+- README.md:
+  - Describes `traceability/prefer-implements-annotation` as: "Recommends migration from legacy `@story`/`@req` annotations to `@implements` (opt-in; disabled by default ...)".
+  - No mention of @supports here.
+- user-docs/migration-guide.md:
+  - Section "Optional `prefer-implements-annotation` migration rule" describes migration from @story + @req to @implements.
+  - Example ESLint config uses "traceability/prefer-implements-annotation": "warn".
+  - Text explicitly says: "rewrite eligible `@story` + `@req` combinations into equivalent `@implements` lines".
+  - No occurrences of @supports in this guide (search_file_content found text only for prefer-implements-annotation and @implements).
+
+5) Project-wide checks:
+- find_files with pattern '*supports*' under src/ returned no files.
+- search_file_content for '@supports' in src/rules/prefer-implements-annotation.ts returned no matches.
+- Jest test run (`npm test -- --verbose`) shows the suite "prefer-implements-annotation rule (Story 010.3-DEV-MIGRATE-TO-IMPLEMENTS)" passing, and there are no tests for an @supports annotation or @supports migration behavior anywhere in the test output.</evidence>
+  <notes>The story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md specifies introducing and migrating to a new @supports annotation. The implementation and tests, however, are all built around a migration rule named `prefer-implements-annotation` that converts @story/@req to @implements, with no support for @supports anywhere in the code or tests. The rule and migration guide align with an earlier or alternate design ("MIGRATE-TO-IMPLEMENTS"), not the current story. While many behaviors (optional rule, configurable severity, auto-fix for single-story annotations, multi-story detection, preservation of formatting, and documentation) are present, they are implemented for @implements rather than @supports, and the test/story traceability references the wrong story file name. Therefore, not all acceptance criteria of the @supports-based story are satisfied, and the story is not fully implemented as specified.</notes>
+</traceability>

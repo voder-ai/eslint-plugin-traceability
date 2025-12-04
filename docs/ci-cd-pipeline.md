@@ -2,6 +2,8 @@
 
 This document describes how continuous integration and continuous deployment are implemented for `eslint-plugin-traceability`, and how it relates to our architecture decisions.
 
+We follow a **trunk-based development model** where `main` is the **single integration branch**. Day‑to‑day development work is expected to land directly on `main`, and the CI/CD pipeline is defined around **pushes to `main`** as the authoritative integration and release trigger.
+
 - Related ADRs:
   - `docs/decisions/006-semantic-release-for-automated-publishing.accepted.md`
   - `docs/decisions/007-github-releases-over-changelog.accepted.md`
@@ -9,16 +11,18 @@ This document describes how continuous integration and continuous deployment are
 
 ## Overview
 
-We use a **single unified GitHub Actions workflow** to run all quality checks and, on successful main-branch builds, to automatically publish new versions to npm and create GitHub Releases.
+We use a **single unified GitHub Actions workflow** to run all quality checks and, on successful `main`-branch builds, to automatically publish new versions to npm and create GitHub Releases.
 
 - Workflow file: `.github/workflows/ci-cd.yml`
 - Workflow name: `CI/CD Pipeline`
 - Triggers:
-  - `push` to `main`
-  - `pull_request` targeting `main`
+  - **Authoritative CI/CD trigger:** `push` to `main` (trunk-based integration and deployment)
+  - **Auxiliary feedback trigger:** `pull_request` targeting `main` (for optional review flows and forks)
   - Nightly `schedule` for dependency health checks
 
-There are no tag-based triggers and no manual `workflow_dispatch` jobs for releases. Publishing (when needed) always happens as part of the same workflow run that executes the quality gates.
+There are no tag-based triggers and no manual `workflow_dispatch` jobs for releases. Publishing (when needed) always happens as part of the same workflow run that executes the quality gates, and **only for `push` events on `main`**.
+
+Pull request runs exist to give **early feedback** (for contributors working in forks or when an explicit review flow is desired), but the **source of truth for integration and deployment is always `main`** and its push-based CI runs.
 
 ## Jobs
 
@@ -26,8 +30,8 @@ There are no tag-based triggers and no manual `workflow_dispatch` jobs for relea
 
 Runs on:
 
-- Every `push` to `main`
-- Every `pull_request` targeting `main`
+- Every `push` to `main` (**primary, authoritative CI/CD path**)
+- Every `pull_request` targeting `main` (**feedback-only, no publishing**)
 
 Matrix:
 
@@ -75,7 +79,7 @@ Key steps (in order):
 
 7. **Automated release (semantic-release)**
 
-   Conditional step:
+   This step runs **only** on `push` events to `main` for the Node `20.x` job, which forms the authoritative CI/CD path for trunk-based development:
 
    ```yaml
    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix['node-version'] == '20.x' && success() }}
@@ -135,12 +139,16 @@ Runs only on the nightly `schedule` event.
 - Runs `npm run audit:dev-high` to generate a JSON report of high-severity dev-only vulnerabilities.
 - Does **not** publish or run semantic-release.
 
-This job is intentionally isolated from the main quality-and-deploy path and has no effect on releases.
+This job is intentionally isolated from the main `quality-and-deploy` path and has no effect on releases.
 
 ## Continuous Deployment Behavior
 
-- Every push to `main` triggers the `quality-and-deploy` job on Node 18.x and 20.x.
-- The full quality gate (`ci-verify:full`) must pass on both Node versions.
+- Every push to `main` triggers the `quality-and-deploy` job on Node 18.x and 20.x and is treated as the **single source of truth** for integration and deployment in our trunk-based model.
+- `pull_request` runs targeting `main` use the same `quality-and-deploy` job but function purely as **early feedback** for:
+  - Contributors working from forks.
+  - Maintainers who explicitly choose to use a PR-based review flow.
+  - These PR runs never invoke semantic-release and never publish.
+- The full quality gate (`ci-verify:full`) must pass on both Node versions for a `push` to `main`.
 - If, and only if, the Node 20.x job on `main` succeeds and `NPM_TOKEN` is available, semantic-release is invoked.
 - semantic-release decides whether a new version is required based on commit messages:
   - `feat` → minor version bump
@@ -149,11 +157,21 @@ This job is intentionally isolated from the main quality-and-deploy path and has
   - Other types (`docs`, `chore`, `refactor`, `test`, `ci`, etc.) do **not** trigger a release.
 - When a release is published, the smoke test runs immediately in the same workflow execution.
 
-There is no separate “publish only” workflow and no manual tagging step required to release. The pipeline from commit → quality gates → publish → smoke test is fully automated.
+There is no separate “publish only” workflow and no manual tagging step required to release. The pipeline from commit → quality gates → publish → smoke test is fully automated, and it is always driven by `push` events to the `main` trunk.
 
 ## Local Workflow and Hooks
 
-To keep local development aligned with CI:
+To keep local development aligned with CI and our trunk-based model:
+
+- Day-to-day development is expected to:
+  - Commit directly to `main`.
+  - Push directly to `main`, relying on the `push`-based CI runs as the authoritative integration checks.
+- Pull requests are used:
+  - When explicitly desired for code review.
+  - When contributing from a fork (where direct push to `main` is not possible).
+  - In these cases, PR CI is for feedback only; final integration still happens on `main`.
+
+Local hooks:
 
 - **Pre-commit** (`.husky/pre-commit`):
   - Runs `npx lint-staged`, which executes Prettier and ESLint with `--fix` on staged files in `src/` and `tests/` so that formatting and basic linting are enforced before every commit.
@@ -169,7 +187,7 @@ Local verification commands:
 
 - `npm run ci-verify:full`
   - Runs the same broad, end-to-end quality gate used in CI (build, type-check, linting, duplication checks, full Jest test suite with coverage, audits, and formatting checks).
-  - This is the closest approximation to the CI pipeline and is what the pre-push hook enforces.
+  - This is the closest approximation to the CI pipeline and is what the pre-push hook enforces before pushing to the `main` trunk.
 
 - `npm run ci-verify:fast`
   - Runs a **narrower, targeted subset** of checks focused on the rule and maintenance test suites.
@@ -186,7 +204,7 @@ Local verification commands:
 
 Developers should rely on:
 
-- `npm run ci-verify:full` for a full CI-equivalent check (and what will run on push via Husky).
+- `npm run ci-verify:full` for a full CI-equivalent check (and what will run on push via Husky before integrating to `main`).
 - `npm run ci-verify` or `npm run ci-verify:fast` for quicker, targeted local feedback loops when working on rules or maintenance logic.
 
 ## How Semantic Versioning Is Determined
@@ -198,7 +216,7 @@ semantic-release uses Conventional Commits (see `docs/conventional-commits-guide
 - `feat!` or `fix!` (or any type with `!`) or a `BREAKING CHANGE:` footer → **major** version bump.
 - Other types (`docs`, `style`, `refactor`, `test`, `chore`, `ci`, `build`, `perf`) → no release.
 
-Because releases are determined solely from commit history, it is important that all commits merged to `main` follow the documented Conventional Commits standard.
+Because releases are determined solely from commit history on `main`, it is important that all commits merged or pushed to `main` follow the documented Conventional Commits standard.
 
 ## Supported Runtime and Tooling
 
@@ -224,4 +242,4 @@ User-facing docs are aligned with these constraints:
 - If `NPM_TOKEN` is missing or invalid, or if npm requires an OTP, the workflow succeeds but skips publishing; this is treated as a configuration issue rather than a code failure.
 - If the post-deployment smoke test fails, the job fails even though a package may have been published; this indicates an urgent regression in the published artifact.
 
-In all of these cases, the failing run is visible in the `CI/CD Pipeline` workflow on GitHub, and maintainers should fix the underlying issue before merging further changes to `main`.
+In all of these cases, the failing run is visible in the `CI/CD Pipeline` workflow on GitHub. Since `main` is the single integration branch in our trunk-based model, maintainers should fix the underlying issue before pushing further changes to `main`.

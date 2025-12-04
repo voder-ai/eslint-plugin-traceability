@@ -16,14 +16,41 @@ If you encounter a bug or have a feature request:
 
 ## Pull Request Process
 
-Trunk-based development: work happens directly on the `main` branch.
+This project uses **trunk-based development** with a single integration branch: `main`.
 
-1. Make small, incremental commits directly on the `main` branch in this repository. Avoid long-lived feature branches or forks.
-2. Commit your changes in small, logical increments. Use descriptive commit messages.
-3. Ensure all tests pass and the project builds successfully.
-4. Push your changes to GitHub and open a PR against the `main` branch if you want a review or CI verification.
-5. Reference any related issues in your PR description.
-6. A maintainer will review your changes and may request updates or approve the PR.
+### Core workflow (default)
+
+For maintainers and contributors with direct push access:
+
+1. Do your work in small, incremental commits made **directly on the `main` branch**.
+2. Push changes straight to `main` once they:
+   - Are logically scoped and reviewable,
+   - Pass local checks (see “Coding Style and Quality Checks” below).
+3. Avoid long-lived feature branches; they are **not** part of the normal workflow for this repository.
+
+In other words, the standard contribution flow is: **edit → test → commit to `main` → push**.
+
+### When to use Pull Requests
+
+PRs are a **code review mechanism**, not the default integration path:
+
+- Open a PR **if you explicitly want review or CI verification** before merging, even when you have push access to `main`.
+- Use your PR description to:
+  - Summarize the change,
+  - Reference any related issues,
+  - Call out areas where you’d like specific feedback.
+
+A maintainer will review your changes and may request updates or approve the PR.
+
+### External contributors and forks
+
+External contributors who do not have direct push access will typically:
+
+1. Fork the repository.
+2. Create small, incremental commits in their fork (feature branches in forks are acceptable if helpful to your workflow).
+3. Open a PR from the fork against the `main` branch of this repository.
+
+Even in this case, `main` in the upstream repository remains the **single integration branch**, and changes are merged into `main` as soon as they are ready.
 
 ## Commit Message Conventions
 

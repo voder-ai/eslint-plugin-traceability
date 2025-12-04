@@ -2,156 +2,129 @@
 <traceability>
   <specification>docs/stories/002.0-DEV-ESLINT-CONFIG.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-04T10:31:11.355Z</last_validated>
+  <last_validated>2025-12-04T14:03:32.084Z</last_validated>
   <last_modified>2025-12-04T09:11:11.955Z</last_modified>
-  <evidence>Key implementation and tests for Story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md:
+  <evidence>Story: docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
 
-1) Flat config presets and ESLint v9 integration (REQ-CONFIG-PRESETS, REQ-FLAT-CONFIG, REQ-PROJECT-INTEGRATION):
-- src/index.ts defines flat-config presets as arrays, intended to be spread into consumer flat configs:
-  - createTraceabilityFlatConfig() builds the rules object using TRACEABILITY_RULE_SEVERITIES:
-    """ts
-    /**
-     * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
-     * @req REQ-CONFIG-PRESETS - Provide flat-config presets that self-register the plugin and core rules
-     */
-    function createTraceabilityFlatConfig() {
-      return {
-        rules: {
-          ...TRACEABILITY_RULE_SEVERITIES,
-        },
-      };
-    }
+Key implementation:
+- src/index.ts
+  - Exports `configs` with two flat-config presets:
+    - `const configs = { recommended: [createTraceabilityFlatConfig()], strict: [createTraceabilityFlatConfig()] };`
+    - `createTraceabilityFlatConfig()` returns `{ rules: { "traceability/require-story-annotation": "error", "traceability/require-req-annotation": "error", "traceability/require-branch-annotation": "error", "traceability/valid-annotation-format": "warn", "traceability/valid-story-reference": "error", "traceability/valid-req-reference": "error" } }`.
+  - JSDoc on `createTraceabilityFlatConfig` references this story and REQ-CONFIG-PRESETS:
+    - `@story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md`
+    - `@req REQ-CONFIG-PRESETS - Provide flat-config presets that self-register the plugin and core rules` (comment is slightly stale about self-registration, but the story text says presets are intended to be spread after a `plugins` registration object, which matches usage and tests).
 
-    const configs = {
-      recommended: [createTraceabilityFlatConfig()],
-      strict: [createTraceabilityFlatConfig()],
-    };
-    """
-- tests/config/flat-config-presets-integration.test.ts (annotated with @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md) uses ESLint v9 FlatESLint to verify that both presets work when spread after a plugin registration object:
-  """ts
-  const baseConfig = {
-    plugins: {
-      traceability: traceabilityPlugin,
-    },
-    rules: {},
-  };
+Tests directly tied to this story:
+- tests/config/flat-config-presets-integration.test.ts
+  - Header:
+    - `@story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md`
+    - `@req REQ-CONFIG-PRESETS`, `@req REQ-FLAT-CONFIG`, `@req REQ-PROJECT-INTEGRATION`.
+  - Uses ESLint v9 flat config engine (`FlatESLint` from `eslint/use-at-your-own-risk`).
+  - Registers plugin via a base config, then spreads presets:
+    - `const baseConfig = { plugins: { traceability: traceabilityPlugin }, rules: {} };`
+    - `const config = [baseConfig, ...configs.recommended];`
+    - Lints `"function foo() {}"` and asserts `ruleIds` contains `"traceability/require-story-annotation"`.
+    - Repeats for `configs.strict`.
+  - This verifies:
+    - REQ-CONFIG-PRESETS: recommended & strict presets enable plugin rules when spread after a `plugins` registration object.
+    - REQ-FLAT-CONFIG: presets work correctly with ESLint v9 flat config API.
+    - Integration with existing ESLint configs via documented usage.
 
-  it("[REQ-CONFIG-PRESETS] recommended preset enables traceability rules via documented usage", async () => {
-    const config = [baseConfig, ...configs.recommended];
-    const result = await lintTextWithConfig("function foo() {}", config);
-    const ruleIds = result.messages.map((m) => m.ruleId).sort();
-    expect(ruleIds).toContain("traceability/require-story-annotation");
-  });
-  """
-- tests/plugin-default-export-and-configs.test.ts confirms that:
-  - plugin.configs exposes both presets,
-  - configs.recommended[0].rules and configs.strict[0].rules contain the expected rule IDs and severities (require-* and valid-* rules at "error", valid-annotation-format at "warn"), matching REQ-CONFIG-PRESETS and REQ-FLAT-CONFIG.
-- The Jest run (npm test -- --verbose) shows the suite "Flat config presets integration (Story 002.0-DEV-ESLINT-CONFIG)" with both REQ-CONFIG-PRESETS tests passing.
+- tests/config/require-story-annotation-config.test.ts
+  - Header: `/** @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md */`
+  - Test: `"[REQ-RULE-OPTIONS] require-story-annotation schema defines expected properties"`.
+  - Asserts the rule schema exposes configurable options:
+    - `scope`, `exportPriority`, and `additionalProperties === false`.
+  - Confirms REQ-RULE-OPTIONS and contributes to REQ-CONFIG-VALIDATION (schema-based validation).
 
-2) Rule option schemas and validation (REQ-RULE-OPTIONS, REQ-CUSTOMIZABLE-PATHS, REQ-CONFIG-VALIDATION):
-- src/rules/require-story-annotation.ts defines JSON Schema for its options and explicitly disallows unknown properties:
-  """ts
-  meta: {
-    schema: [
-      {
-        type: "object",
-        properties: {
-          scope: {
-            type: "array",
-            items: { type: "string", enum: DEFAULT_SCOPE },
-            uniqueItems: true,
+- tests/config/eslint-config-validation.test.ts
+  - Header: `/** @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md */`.
+  - Tests:
+    - `"[REQ-RULE-OPTIONS] rule meta.schema defines expected properties"` for `valid-story-reference`:
+      - Asserts `schema.properties` includes `storyDirectories`, `allowAbsolutePaths`, `requireStoryExtension`.
+    - `"[REQ-CONFIG-VALIDATION] schema disallows unknown options"`:
+      - Asserts `schema.additionalProperties === false`.
+  - Confirms customizable paths (REQ-CUSTOMIZABLE-PATHS) and explicit config validation (REQ-CONFIG-VALIDATION) are implemented via JSON Schema, causing ESLint to reject unknown/invalid options with standard ESLint config error messages.
+
+Additional rule-level tests supporting requirements:
+- tests/rules/valid-story-reference.test.ts
+  - Multiple tests tagged with this story’s requirements (e.g. `[REQ-CONFIGURABLE-PATHS]`), verifying:
+    - `storyDirectories` affects path resolution and respects project boundaries.
+    - `allowAbsolutePaths` and `requireStoryExtension` options are honored.
+    - Security & boundary behavior (no path traversal, no external-root stories).
+  - These confirm REQ-CUSTOMIZABLE-PATHS and that configuration options behave correctly.
+
+- tests/utils/branch-annotation-helpers.test.ts and tests/rules/valid-annotation-format.test.ts
+  - Include cases where invalid configuration (e.g. invalid patterns, invalid branchTypes) results in reported configuration errors while continuing to function, indicating graceful handling of bad options and aligning with REQ-CONFIG-VALIDATION and the Error Handling acceptance criterion.
+
+Documentation evidence (User Experience & Integration):
+- README.md
+  - Provides canonical ESLint v9 flat config usage with this plugin and its presets:
+    - Example:
+      ```js
+      import js from "@eslint/js";
+      import traceability from "eslint-plugin-traceability";
+
+      export default [
+        js.configs.recommended,
+        {
+          plugins: {
+            traceability,
           },
-          exportPriority: { type: "string", enum: EXPORT_PRIORITY_VALUES },
         },
-        additionalProperties: false,
-      },
-    ],
-  },
-  """
-- src/rules/valid-story-reference.ts provides configurable story locations and validates options via schema (storyDirectories, allowAbsolutePaths, requireStoryExtension, additionalProperties: false), implementing REQ-CUSTOMIZABLE-PATHS and configuration validation:
-  """ts
-  meta: {
-    schema: [
+        ...traceability.configs.recommended,
+      ];
+      ```
+    - Matches story’s requirement that presets are intended to be spread after a `plugins` registration object.
+  - Quick-start and usage sections show integration into typical projects.
+
+- user-docs/eslint-9-setup-guide.md
+  - Created for ESLint 9 flat config; gives detailed guidance and multiple realistic configurations:
+    - JavaScript-only project using `...traceability.configs.recommended`.
+    - TypeScript projects with `@typescript-eslint/parser` and flat config.
+    - Mixed JS/TS, monorepos/workspaces, and test-file configurations.
+  - Repeatedly shows correct pattern:
+    ```js
+    import js from "@eslint/js";
+    import traceability from "eslint-plugin-traceability";
+
+    export default [
+      js.configs.recommended,
       {
-        type: "object",
-        properties: {
-          storyDirectories: { type: "array", items: { type: "string" } },
-          allowAbsolutePaths: { type: "boolean" },
-          requireStoryExtension: { type: "boolean" },
+        plugins: {
+          traceability,
         },
-        additionalProperties: false,
       },
-    ],
-  },
-  """
-  and the rule uses these options to drive behavior (custom directories, absolute-path handling, extension enforcement).
-- src/rules/helpers/valid-annotation-options.ts centralizes configuration for valid-annotation-format and performs explicit validation of regex and example options, with JSON Schema generation:
-  - AnnotationRuleOptions and ResolvedAnnotationOptions define structured options.
-  - resolveOptions() normalizes raw options and uses resolvePattern() / resolveExample() to validate and fall back to defaults.
-  - resolvePattern() catches RegExp construction errors, accumulates human-readable error messages via buildInvalidRegexError(), and returns a default pattern, providing graceful handling of invalid configuration values.
-  - getRuleSchema() returns a schema that describes nested story/req and flat shorthand options, with additionalProperties: false.
-- tests/config/eslint-config-validation.test.ts (@story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md) asserts that valid-story-reference exposes the expected schema properties and disallows unknown options:
-  """ts
-  it("[REQ-RULE-OPTIONS] rule meta.schema defines expected properties", () => {
-    const schema = ((validStoryReference.meta as any).schema as any)[0];
-    expect(schema.properties).toHaveProperty("storyDirectories");
-    expect(schema.properties).toHaveProperty("allowAbsolutePaths");
-    expect(schema.properties).toHaveProperty("requireStoryExtension");
-  });
+      ...traceability.configs.recommended,
+      // other overrides
+    ];
+    ```
+  - Contains a dedicated "Troubleshooting ESLint Configuration" section covering common flat-config issues, supporting the "Documentation" and "User Experience" acceptance criteria and REQ-PROJECT-INTEGRATION.
 
-  it("[REQ-CONFIG-VALIDATION] schema disallows unknown options", () => {
-    const schema = ((validStoryReference.meta as any).schema as any)[0];
-    expect(schema.additionalProperties).toBe(false);
-  });
-  """
-- tests/config/require-story-annotation-config.test.ts similarly confirms require-story-annotation’s schema and additionalProperties: false.
-- tests/rules/valid-annotation-format.test.ts (from the test output) includes cases:
-  - "[REQ-CONFIGURABLE-PATTERNS-STORY] custom storyPathPattern accepts alternate extension"
-  - "[REQ-CONFIGURABLE-PATTERNS-REQ] custom requirementIdPattern accepts PROJECT-123 style IDs"
-  - "[REQ-CONFIGURABLE-PATTERNS-FALLBACK] invalid storyPathPattern falls back to default behavior"
-  - "[REQ-CONFIGURABLE-PATTERNS-FALLBACK-FLAT] invalid flat storyPathPattern falls back to default and reports config error"
-  showing both support for configurable patterns and graceful handling of invalid pattern options.
+- user-docs/api-reference.md — Configuration Presets section
+  - Documents the semantics of `recommended` and `strict` presets and lists the core rules and severities:
+    - `require-story-annotation`, `require-req-annotation`, `require-branch-annotation`, `valid-annotation-format`, `valid-story-reference`, `valid-req-reference`, with `valid-annotation-format` at `warn` (matching TRACEABILITY_RULE_SEVERITIES in src/index.ts).
+  - Notes that the `prefer-implements-annotation` rule is **not** part of presets and must be enabled manually, as implemented.
+  - There is a minor example inconsistency (showing `export default [js.configs.recommended, traceability.configs.recommended];` instead of spreading the presets), but the primary README and ESLint 9 setup guide both show the correct spread pattern and plugin registration, and the tests reflect the correct usage.
 
-3) Error handling for configuration options (Acceptance: Error Handling):
-- For all rule schemas tied to this story (require-story-annotation, valid-story-reference, valid-annotation-format), JSON Schema with additionalProperties: false ensures that unknown or mis-typed configuration fields are rejected by ESLint with clear error messages.
-- The valid-annotation-options.ts layer adds extra safety for complex string-based regex options, catching invalid regex patterns and emitting specific error messages while falling back to safe defaults instead of throwing. Jest tests explicitly cover fallback behavior and error reporting for invalid pattern configuration (see valid-annotation-format tests with "FALLBACK" in their names).
+Test run:
+- Command executed: `npm test -- --verbose`.
+- Jest output shows the following suites tied to this story all passing:
+  - `ESLint Configuration Rule Options (Story 002.0-DEV-ESLINT-CONFIG)` (tests/config/require-story-annotation-config.test.ts).
+  - `ESLint Configuration Setup (Story 002.0-DEV-ESLINT-CONFIG)` (tests/config/eslint-config-validation.test.ts).
+  - `Flat config presets integration (Story 002.0-DEV-ESLINT-CONFIG)` (tests/config/flat-config-presets-integration.test.ts).
+- Overall result:
+  - Test Suites: 35 passed, 35 total
+  - Tests: 266 passed, 266 total
+  - All configuration-related tests for this story are green.</evidence>
+  <notes>All key acceptance criteria and explicit requirements in docs/stories/002.0-DEV-ESLINT-CONFIG.story.md are implemented and verified by tests and documentation:
+- REQ-CONFIG-PRESETS & REQ-FLAT-CONFIG: `configs.recommended` and `configs.strict` are ESLint v9 flat-config arrays that map rule severities; FlatESLint integration tests confirm they work when spread after a `plugins` registration object, exactly as the story specifies.
+- REQ-CUSTOMIZABLE-PATHS: `valid-story-reference` exposes `storyDirectories`, `allowAbsolutePaths`, and `requireStoryExtension` options; tests exercise these and ensure safe project-boundary handling.
+- REQ-RULE-OPTIONS: Rule schemas for `require-story-annotation` and `valid-story-reference` define expected option properties and set `additionalProperties` to `false`, with tests confirming schema shape.
+- REQ-PROJECT-INTEGRATION: README and the ESLint 9 setup guide provide clear, correct flat-config examples for JS, TS, mixed, and monorepo projects using these presets; the FlatESLint tests show real-world ESLint v9 integration working as intended.
+- REQ-CONFIG-VALIDATION & Error Handling acceptance criterion: Rule meta schemas and additional rule-specific validation (e.g., handling invalid patterns and invalid branchTypes) ensure invalid configuration options are rejected or reported as ESLint config errors rather than causing crashes, which is exercised in the rule tests.
+- Documentation acceptance criteria are met via README, the dedicated ESLint 9 setup guide (with troubleshooting section), and the API reference. The primary configuration examples (README and setup guide) align with the actual implementation and test usage.
 
-4) Documentation and user experience (Acceptance: User Experience, Documentation, REQ-PROJECT-INTEGRATION):
-- README.md provides a prominent ESLint v9 flat-config example that shows how to register the plugin and spread the recommended preset:
-  """md
-  Example `eslint.config.js` (ESLint v9 flat config):
-
-  import js from "@eslint/js";
-  import traceability from "eslint-plugin-traceability";
-
-  export default [
-    js.configs.recommended,
-    {
-      plugins: {
-        traceability,
-      },
-    },
-    ...traceability.configs.recommended,
-  ];
-  """
-- user-docs/eslint-9-setup-guide.md contains detailed flat-config guidance and patterns for:
-  - JavaScript-only projects,
-  - TypeScript projects (showing correct parser usage and tsconfig integration),
-  - Mixed JS/TS projects,
-  - Monorepos/workspaces.
-  All examples demonstrate registering the plugin and spreading traceability.configs.recommended or .strict, directly addressing REQ-PROJECT-INTEGRATION and the “common project types” part of the acceptance criteria.
-- user-docs/examples.md shows concise examples for using recommended/strict presets in real configs.
-- user-docs/migration-guide.md includes a minimal flat-config example for adopting the recommended preset when migrating from 0.x, plus narrative guidance around new rules and behaviors.
-
-5) Test status:
-- Full test run (`npm test -- --verbose`) completes successfully with all configuration-related suites passing, including:
-  - "Flat config presets integration (Story 002.0-DEV-ESLINT-CONFIG)" (REQ-CONFIG-PRESETS, REQ-FLAT-CONFIG, REQ-PROJECT-INTEGRATION),
-  - "ESLint Configuration Setup (Story 002.0-DEV-ESLINT-CONFIG)" (schema and validation for rule options),
-  - "ESLint Configuration Rule Options (Story 002.0-DEV-ESLINT-CONFIG)" (require-story-annotation schema),
-  - plus supporting rule tests validating configurable paths and pattern options. All 35 test suites and 266 tests pass.</evidence>
-  <notes>Story 002.0-DEV-ESLINT-CONFIG is fully implemented and covered by tests. The plugin exposes ESLint v9 flat-config presets (recommended and strict) as arrays intended to be spread after a plugin-registration object, and these presets enable the six core traceability rules with documented severities. Integration with ESLint v9 flat config is verified end-to-end using FlatESLint in tests/config/flat-config-presets-integration.test.ts.
-
-Rule-level configuration options are defined and enforced via JSON Schema for require-story-annotation and valid-story-reference, and valid-annotation-format uses a dedicated options helper that validates regex-based options, accumulates clear error messages, and falls back to safe defaults. This satisfies both the requirement for configurable rule options and the acceptance criterion for graceful error handling of invalid configuration options.
-
-Documentation in README.md and the user-docs suite (eslint-9-setup-guide.md, examples.md, migration-guide.md) provides clear, concrete configuration examples for JavaScript, TypeScript, mixed projects, and monorepos using ESLint v9 flat config and the plugin’s presets. Combined with the passing Jest suites specifically tied to this story, this provides strong evidence that all acceptance criteria—including presets, ESLint v9 best practices, integration, user experience, configuration error handling, and documentation—are met.</notes>
+Given the passing targeted tests, correct export structure in src/index.ts, and comprehensive flat-config documentation, this story’s configuration features are functionally complete and working as specified.</notes>
 </traceability>

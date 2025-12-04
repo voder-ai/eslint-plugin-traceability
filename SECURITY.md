@@ -43,6 +43,8 @@ In other words:
 
 For more detail on how these checks are wired into CI, maintainers can refer to the project’s internal dependency health and security documentation; this level of detail is not required for normal end users of the plugin.
 
+Maintainer-focused CI/CD security summary: release workflows enforce several security checks end-to-end. For production dependencies, `npm audit --omit=dev --audit-level=high` is **release-blocking** and must report no high-severity issues before publishing proceeds. For broader dependency health, `npm run safety:deps` (dry-aged-deps) and `npm run audit:dev-high` (dev-only `npm audit` with stricter thresholds) are **advisory**: they generate machine-readable reports to guide upgrades and risk review but do not, by themselves, block a release. Secret scanning is performed with `npm run security:secrets` (secretlint); this is treated as **release-blocking** in CI/CD so that accidental credential or secret leaks are caught before artifacts are published.
+
 ## Dependency Maturity and `dry-aged-deps`
 
 In addition to `npm audit`, we use [`dry-aged-deps`](https://github.com/voder-ai/dry-aged-deps) to guide dependency upgrades for both production and development dependencies.

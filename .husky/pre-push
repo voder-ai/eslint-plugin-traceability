@@ -12,4 +12,7 @@
 set -e
 # Use consolidated full verification script instead of manual sequence.
 # See docs/decisions/adr-pre-push-parity.md: ci-verify:full is the documented pre-push gate mirroring the full CI quality checks and used to ensure local parity with CI.
-npm run ci-verify:full && echo "Pre-push full CI-equivalent checks completed"
+# This mirrors the CI quality-and-deploy job, which runs ci-verify:full plus npm run security:secrets on the Node 20.x matrix entry.
+npm run ci-verify:full
+npm run security:secrets
+echo "Pre-push full CI-equivalent checks (including secret scan) completed"

@@ -2,7 +2,22 @@
 
 Date: 2025-11-20
 
-Status: Accepted
+Status: Superseded
+
+Superseded by
+
+- This ADR’s feature/branch-based test selection approach has been superseded by:
+  - Trunk-based development on `main`.
+  - The "pre-push parity" ADR (ensuring local pre-push hooks mirror CI).
+- Targeted branch tests described below are no longer used.
+- Current behavior:
+  - CI runs the same quality gates on all pushes to `main`.
+  - Local pre-push hooks mirror the `main` CI quality gates to provide consistent, early feedback.
+- The following content is retained for historical context only and is not current guidance.
+
+---
+
+_Historical content (no longer current)_
 
 Context
 
