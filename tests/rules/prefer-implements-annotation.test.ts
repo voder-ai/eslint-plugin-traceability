@@ -7,6 +7,7 @@
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/prefer-implements-annotation";
+import { configs } from "../../src";
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -78,5 +79,37 @@ describe("prefer-implements-annotation rule (Story 010.3-DEV-MIGRATE-TO-IMPLEMEN
         errors: [{ messageId: "preferImplements" }],
       },
     ],
+  });
+});
+
+describe("prefer-implements-annotation configuration severity (REQ-CONFIG-SEVERITY)", () => {
+  test("rule is disabled by default in recommended preset (not present in configs.recommended[0].rules)", () => {
+    const recommended = (configs as any).recommended;
+    expect(Array.isArray(recommended)).toBe(true);
+    const firstConfig = recommended[0];
+    expect(firstConfig).toBeDefined();
+    const rules = firstConfig.rules || {};
+    expect(rules["@eslint-sweat/prefer-implements-annotation"]).toBeUndefined();
+    expect(rules["prefer-implements-annotation"]).toBeUndefined();
+  });
+
+  test("rule can be configured with severity 'warn' or 'error' in flat config", () => {
+    const flatWarnConfig = {
+      files: ["**/*.ts"],
+      rules: {
+        "prefer-implements-annotation": "warn",
+      },
+    };
+
+    expect(flatWarnConfig.rules["prefer-implements-annotation"]).toBe("warn");
+
+    const flatErrorConfig = {
+      files: ["**/*.ts"],
+      rules: {
+        "prefer-implements-annotation": "error",
+      },
+    };
+
+    expect(flatErrorConfig.rules["prefer-implements-annotation"]).toBe("error");
   });
 });

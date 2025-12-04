@@ -113,7 +113,6 @@ const TRACEABILITY_RULE_SEVERITIES: Readonly<Record<string, "error" | "warn">> =
     "traceability/valid-annotation-format": "warn",
     "traceability/valid-story-reference": "error",
     "traceability/valid-req-reference": "error",
-    "traceability/prefer-implements-annotation": "warn",
   } as const;
 
 /**

@@ -106,3 +106,15 @@ Created autonomously by voder.ai
 This known error is limited to dev-only release tooling and does not change the security guarantees described in the README, user documentation, or the canonical security policy in `SECURITY.md`. The vulnerable `glob` and `brace-expansion` instances are only executed inside GitHub Actions during semantic-release; they are never run when users install or run `eslint-plugin-traceability` or `traceability-maint`.
 
 The combination of `npm audit --omit=dev --audit-level=high` and `dry-aged-deps` checks is what allows the project to assert that published versions do not ship with known high-severity vulnerabilities in their **production** dependency tree. Because the affected code is confined to CI release automation and excluded from the published runtime dependencies, the security posture promised to end users in `SECURITY.md` remains intact.
+
+## Resolution
+
+As of the current release toolchain (`semantic-release@25.x` with `@semantic-release/npm@13.1.2`):
+
+- Fresh runs of `npm audit --omit=dev --audit-level=high` report **0** vulnerabilities.
+- Fresh runs of `npm audit --include=dev --audit-level=high` report **0** vulnerabilities.
+- `dry-aged-deps` reports no outstanding safe updates for the active dependency set.
+
+The previously documented bundled `npm`/`glob`/`brace-expansion` vulnerabilities are no longer present in the active dependency tree for this project’s release tooling. This record is therefore retained as a **historical incident report** rather than an active known error.
+
+No additional user-facing guarantees in `SECURITY.md` are changed by this resolution. The project’s commitments regarding the absence of known high-severity vulnerabilities in published production dependencies, and the separate treatment of dev-only tooling risk, remain exactly as documented in the canonical security policy.

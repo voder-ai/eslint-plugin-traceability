@@ -54,7 +54,7 @@ export default [
 - `traceability/valid-annotation-format` Enforces correct format of traceability annotations. (See the rule documentation in the plugin's user guide.)
 - `traceability/valid-story-reference` Validates that `@story` references point to existing story files. (See the rule documentation in the plugin's user guide.)
 - `traceability/valid-req-reference` Validates that `@req` references point to existing requirement IDs. (See the rule documentation in the plugin's user guide.)
-- `traceability/prefer-implements-annotation` Recommends migration from legacy `@story`/`@req` annotations to `@implements` (disabled by default). (See the rule documentation in the plugin's user guide.)
+- `traceability/prefer-implements-annotation` Recommends migration from legacy `@story`/`@req` annotations to `@implements` (opt-in; disabled by default in the presets and must be explicitly enabled). (See the rule documentation in the plugin's user guide.)
 
 Configuration options: For detailed per-rule options (such as scopes, branch types, and story directory settings), see the individual rule docs in the plugin's user guide and the consolidated [API Reference](user-docs/api-reference.md).
 

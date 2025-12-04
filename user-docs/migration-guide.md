@@ -57,6 +57,25 @@ function integrate() {}
 
 You **do not** need to change existing, single-story annotations that already use `@story` and `@req`. Migration to `@implements` is only recommended when a function or module genuinely implements requirements from more than one story file.
 
+#### Optional `prefer-implements-annotation` migration rule
+
+For teams that want to gradually migrate from `@story` + `@req` to `@implements`, the plugin provides an optional rule: `traceability/prefer-implements-annotation`.
+
+- This rule is **disabled by default** and is **not** included in any built-in presets.
+- You can enable it with any standard ESLint severity (`"off"`, `"warn"`, or `"error"`) in your config, for example:
+
+  ```js
+  // excerpt from eslint.config.js
+  {
+    rules: {
+      "traceability/prefer-implements-annotation": "warn",
+    },
+  }
+  ```
+
+- When enabled, it offers **conservative auto-fixes** that rewrite eligible `@story` + `@req` combinations into equivalent `@implements` lines, without attempting risky or ambiguous transformations.
+- Detailed behavior, limitations, and examples are documented in `docs/rules/prefer-implements-annotation.md`.
+
 #### When to keep `@story` + `@req`
 
 Keep your current annotations if:

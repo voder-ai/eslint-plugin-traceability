@@ -15,6 +15,8 @@ In addition to the core `@story` and `@req` annotations, the plugin also underst
 `@implements docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`.
 For a detailed explanation of `@implements` behavior and validation, see [Migration Guide](migration-guide.md) (section **3.1 Multi-story @implements annotations**) and the corresponding `valid-annotation-format` and `valid-req-reference` rule documentation in the plugin's internal docs.
 
+The `prefer-implements-annotation` rule is an **opt-in migration helper** that is disabled by default and **not** part of any built-in preset. It can be enabled and given a severity like `"warn"` or `"error"` using normal ESLint rule configuration when you want to gradually encourage multi-story `@implements` usage. For rule details and migration guidance, see `docs/rules/prefer-implements-annotation.md`.
+
 ### traceability/require-story-annotation
 
 Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When you adopt multi-story `@implements` annotations as described in `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md` and `REQ-REQUIRE-ACCEPTS-IMPLEMENTS`, this rule also accepts `@implements` as an alternative way to prove story coverage, so either `@story` or at least one `@implements` tag will satisfy the presence check. When run with `--fix`, the rule inserts a single-line placeholder JSDoc `@story` annotation above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. This template is currently fixed but structured for future configurability, and fixes are strictly limited to adding this placeholder annotation without altering the function body or changing any runtime behavior. Selective enabling of different auto-fix behaviors (such as applying fixes only to certain scopes or node types) is planned for a future version.
@@ -196,9 +198,12 @@ The plugin provides two built-in presets for easy configuration:
 
 ### recommended
 
-Enables the core traceability rules with severities tuned for common usage (most at `error`, with
-`traceability/valid-annotation-format` at `warn` to reduce noise):
-This `warn` level for `traceability/valid-annotation-format` is intentional to keep early adoption noise low, but you can safely raise it to `error` in projects that want strict enforcement of annotation formatting.
+Enables the **six core traceability rules** with severities tuned for common usage (most at `error`, with
+`traceability/valid-annotation-format` at `warn` to reduce noise). This `warn` level for `traceability/valid-annotation-format` is intentional to keep early adoption noise low, but you can safely raise it to `error` in projects that want strict enforcement of annotation formatting.
+
+The `prefer-implements-annotation` migration rule is **not included** in this (or any) preset and remains disabled by default. If you want to encourage or enforce multi-story `@implements` annotations, you must enable `traceability/prefer-implements-annotation` explicitly in your ESLint configuration and choose an appropriate severity (for example, `"warn"` during migration or `"error"` once fully adopted).
+
+Core rules enabled by the `recommended` preset:
 
 - `traceability/require-story-annotation`: `error`
 - `traceability/require-req-annotation`: `error`
@@ -218,7 +223,8 @@ export default [js.configs.recommended, traceability.configs.recommended];
 
 ### strict
 
-Currently mirrors the **recommended** preset, reserved for future stricter policies.
+Currently mirrors the **recommended** preset, reserved for future stricter policies. As with the `recommended` preset, the `traceability/prefer-implements-annotation` rule is **not** enabled here by default and must be configured manually if desired.
+
 Usage:
 
 ```javascript
@@ -518,3 +524,4 @@ In CI:
 
 ```bash
 npm run traceability:verify
+```

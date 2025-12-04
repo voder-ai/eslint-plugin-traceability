@@ -50,7 +50,7 @@ In addition to `npm audit`, we use [`dry-aged-deps`](https://github.com/voder-ai
 Current high-level policy:
 
 - **Minimum age:** new versions are generally required to be **at least 7 days old** before adoption.
-- **No known vulnerabilities:** versions with *any* known vulnerability (even low severity) are not considered "safe" upgrade candidates.
+- **No known vulnerabilities:** versions with _any_ known vulnerability (even low severity) are not considered "safe" upgrade candidates.
 
 `dry-aged-deps` is advisory only:
 
@@ -73,7 +73,7 @@ There is a known, documented risk in the **dev-only release toolchain** used by 
   - `brace-expansion` ReDoS: [GHSA-v6h2-p8h4-qcjw](https://github.com/advisories/GHSA-v6h2-p8h4-qcjw)
 - These vulnerable packages exist **only inside the npm binary bundled within `@semantic-release/npm`** and are used solely during automated publishing from CI.
 
-### What is *not* affected?
+### What is _not_ affected?
 
 - The published `eslint-plugin-traceability` package has **no runtime dependencies** on this bundled npm or its `glob`/`brace-expansion` copies.
 - End-user projects that install and run `eslint-plugin-traceability` or `traceability-maint` **do not execute** this bundled tooling.
