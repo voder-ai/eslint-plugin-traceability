@@ -1,18 +1,15 @@
 ## NOW
 
-- [ ] Review the source and test directory structure to decide on a small set of logical code slices (for example, rules, helpers, maintenance CLI, and tests) that can each be assessed for code quality independently without exceeding model context limits.
+- [ ] Clarify in the internal code-quality assessment guide how maintainers and tools should interpret CODE_QUALITY results for the rules-and-helpers slice, including what counts as a passing outcome versus when targeted refactoring is required before re-running the assessment.
 
 ## NEXT
 
-- [ ] Document the chosen code slices in an internal maintainer guide that explains how the project should be analyzed for code quality in separate passes, including which directories belong to each slice and their relative priority.
-- [ ] Introduce a lightweight configuration or metadata file that formally lists the code slices and the paths they cover so automated assessment tools can target one slice at a time instead of the entire repository at once.
-- [ ] Refine the configuration and documentation so that at least one high-priority slice (such as the core rules and helpers) is guaranteed to fit comfortably within assessment context limits and can be used as the minimum viable target for CODE_QUALITY evaluation.
-- [ ] Once the slicing strategy is in place, trigger or request a CODE_QUALITY assessment focused on the highest-priority slice to verify that it now completes successfully without context errors and reaches the required quality threshold.
-- [ ] Iterate on slice boundaries or exclusions if the initial bounded assessment still encounters context issues, tightening the definition until a stable, repeatable CODE_QUALITY run is achievable.
+- [ ] Update the existing architecture decision record about code-quality ratcheting to reference the slice-based approach and describe how ratcheting thresholds should now be applied per slice, starting with the rules-and-helpers slice.
+- [ ] Add a note to the internal functionality-coverage documentation making it explicit that FUNCTIONALITY assessments must wait until CODE_QUALITY has successfully passed for the rules-and-helpers slice, so the dependency between these assessments is clear.
+- [ ] Review the slice configuration file to confirm that no lower-priority slices inadvertently include large or unnecessary paths that could jeopardize context limits when they are assessed later, adjusting boundaries if needed without changing the already-defined rules-and-helpers slice.
 
 ## LATER
 
-- [ ] Expand the bounded CODE_QUALITY approach to cover additional slices (such as maintenance tools and tests) so that the full codebase is eventually assessed in multiple passes without overloading the model context.
-- [ ] Use the feedback from successful CODE_QUALITY runs on the defined slices to prioritize targeted refactors or style improvements in the most critical modules, keeping each change small and well-tested.
-- [ ] Enhance internal development documentation to include guidelines for keeping new code within established slices and for avoiding patterns that make automated code-quality analysis harder or more context-heavy in the future.
-- [ ] Once CODE_QUALITY assessments are consistently successful and comprehensive, enable or request a full FUNCTIONALITY assessment based on the now-stable code-quality foundation.
+- [ ] Once a CODE_QUALITY run on the rules-and-helpers slice has completed successfully, extend the same interpretation and gating rules to the maintenance-and-cli and plugin-and-config slices so their results can inform further improvements.
+- [ ] Use feedback from CODE_QUALITY runs on individual slices to plan small, behavior-preserving refactors that address identified issues in the most critical modules and then re-run slice-based assessments to confirm improvements.
+- [ ] After CODE_QUALITY assessments are consistently passing on all high-priority slices, proceed to request or enable a full FUNCTIONALITY assessment that relies on the now-stable CODE_QUALITY foundation and update documentation to reflect this new baseline.

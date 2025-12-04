@@ -20,6 +20,16 @@ Stories reviewed:
 - 010.2-DEV-MULTI-STORY-SUPPORT
 - 010.3-DEV-MIGRATE-TO-IMPLEMENTS
 
+## Assessment Dependencies
+
+All FUNCTIONALITY assessments in this document assume that CODE_QUALITY for at least the `rules-and-helpers` slice (as defined in `.voder-code-quality-slices.json`) is in a healthy state.
+
+- FUNCTIONALITY assessments must not be treated as authoritative if the latest CODE_QUALITY assessment for the `rules-and-helpers` slice is failing or marked as "not run".
+- For future updates to this document, reviewers should:
+  - Confirm that the most recent CODE_QUALITY run for the `rules-and-helpers` slice completed successfully.
+  - Verify that there are no open Blockers for that slice, using the definitions and criteria in `docs/code-quality-assessment-guide.md`.
+  - Only then adjust or extend the functionality coverage assessment in this file.
+
 ## Story-level implementation summary
 
 ### 001.0-DEV-PLUGIN-SETUP

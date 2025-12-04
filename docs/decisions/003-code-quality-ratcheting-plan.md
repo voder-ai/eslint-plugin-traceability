@@ -12,6 +12,8 @@ informed: [All Contributors]
 
 The project currently enforces maintainability through ESLint `max-lines-per-function` and `max-lines` rules with thresholds set to 200 lines/function and 1000 lines/file. These loose thresholds present technical debt and allow overly large functions and files, which can hinder readability, maintainability, and increase complexity over time.
 
+Ratcheting is applied with particular focus on the `rules-and-helpers` slice as defined in `.voder-code-quality-slices.json` and `docs/code-quality-assessment-slices.md`, since that slice has the greatest impact on overall CODE_QUALITY and plugin correctness.
+
 ## Considered Options
 
 1. Adopt strict industry-standard thresholds immediately (e.g., 100 lines/function, 500 lines/file).
@@ -31,6 +33,12 @@ Automation:
 - Update the ESLint configuration to enforce the new thresholds immediately.
 - Configure the CI pipeline to fail on any new violations of these rules.
 - Document the ratcheting schedule in this ADR and revisit the plan at each milestone.
+
+## Relationship to Slice-based CODE_QUALITY
+
+- For CODE_QUALITY evaluation, ratcheting thresholds are applied and measured primarily on the `rules-and-helpers` slice (as defined in `.voder-code-quality-slices.json` and described in `docs/code-quality-assessment-slices.md`).
+- In CODE_QUALITY assessments, violations of these ratcheted thresholds within the `rules-and-helpers` slice must be treated as **Blockers**, in line with the criteria described in `docs/code-quality-assessment-guide.md`.
+- Other slices (`maintenance-and-cli`, `plugin-and-config`, `tooling-and-ci`) may adopt similar ratcheting rules over time, but the initial and strictest enforcement focus is on the `rules-and-helpers` slice to ensure the core rule logic remains highly maintainable.
 
 ## Consequences
 
