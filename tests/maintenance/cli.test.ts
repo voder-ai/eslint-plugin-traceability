@@ -8,14 +8,9 @@
  * @req REQ-MAINT-SAFE - Clear exit codes and non-destructive dry-run
  */
 import fs from "fs";
-import os from "os";
 import path from "path";
 import { runMaintenanceCli } from "../../src/maintenance/cli";
-
-function withTempDir(): string {
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "maint-cli-"));
-  return tmpDir;
-}
+import { createTempDir } from "../utils/temp-dir-helpers";
 
 describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
   let originalCwd: string;
@@ -29,7 +24,8 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
   });
 
   it("[REQ-MAINT-DETECT] detect exits with code 0 and message when no stale annotations", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
     const code = runMaintenanceCli(["node", "traceability-maint", "detect"]);
@@ -38,12 +34,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       expect(logSpy).toHaveBeenCalledWith("No stale @story annotations found.");
     } finally {
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-VERIFY] verify exits with code 0 when annotations valid", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const tsContent = `/**\n * @story my-story.story.md\n */`;
     fs.writeFileSync(path.join(dir, "file.ts"), tsContent, "utf8");
@@ -60,12 +57,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       expect(logSpy).toHaveBeenCalledTimes(1);
     } finally {
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-REPORT] report prints human-readable summary and exits 0", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const tsContent = `/**\n * @story missing.story.md\n */`;
     fs.writeFileSync(path.join(dir, "file.ts"), tsContent, "utf8");
@@ -79,12 +77,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       expect(allMessages).toContain("missing.story.md");
     } finally {
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-UPDATE] update performs replacements and exits 0", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const tsContent = `/**\n * @story old.path.md\n */`;
     fs.writeFileSync(path.join(dir, "file.ts"), tsContent, "utf8");
@@ -105,12 +104,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       expect(updated).toContain("@story new.path.md");
     } finally {
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-SAFE] update requires --from and --to and exits 2 when missing", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
@@ -124,12 +124,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     } finally {
       errorSpy.mockRestore();
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-SAFE] dry-run does not modify files and exits 0", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const tsContent = `/**\n * @story old.path.md\n */`;
     fs.writeFileSync(path.join(dir, "file.ts"), tsContent, "utf8");
@@ -151,12 +152,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       expect(contentAfter).toBe(tsContent);
     } finally {
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-SAFE] report exits 2 and prints error on invalid --format value", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
@@ -178,12 +180,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     } finally {
       errorSpy.mockRestore();
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-DETECT] detect supports --json output", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const tsContent = `/**\n * @story stale.story.md\n */`;
     fs.writeFileSync(path.join(dir, "file.ts"), tsContent, "utf8");
@@ -203,12 +206,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       expect(payload.stale).toContain("stale.story.md");
     } finally {
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-DETECT] detect with non-existent --root exits 0 and reports no stale annotations", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const missingRoot = path.join(dir, "missing-root");
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
@@ -226,12 +230,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       expect(logSpy).toHaveBeenCalledWith("No stale @story annotations found.");
     } finally {
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-SAFE] prints help and exits 0 when no subcommand is provided", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
@@ -249,12 +254,13 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     } finally {
       logSpy.mockRestore();
       errorSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 
   it("[REQ-MAINT-SAFE] detect catches filesystem permission errors and exits 2 with prefixed error message", () => {
-    const dir = withTempDir();
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
     process.chdir(dir);
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
@@ -278,7 +284,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       statSpy.mockRestore();
       errorSpy.mockRestore();
       logSpy.mockRestore();
-      fs.rmSync(dir, { recursive: true, force: true });
+      temp.cleanup();
     }
   });
 });
