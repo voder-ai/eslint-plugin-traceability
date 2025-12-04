@@ -6,50 +6,50 @@
  */
 import * as fs from "fs";
 import * as path from "path";
-import * as os from "os";
+import { createTempDir } from "../utils/temp-dir-helpers";
 import {
   batchUpdateAnnotations,
   verifyAnnotations,
 } from "../../src/maintenance/batch";
 
 describe("batchUpdateAnnotations (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  let tmpDir: string;
+  let temp: ReturnType<typeof createTempDir>;
 
   beforeAll(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "batch-test-"));
+    temp = createTempDir("batch-test-");
   });
 
   afterAll(() => {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    temp.cleanup();
   });
 
   it("[REQ-MAINT-BATCH] should return 0 when no mappings applied", () => {
-    const count = batchUpdateAnnotations(tmpDir, []);
+    const count = batchUpdateAnnotations(temp.dir, []);
     expect(count).toBe(0);
   });
 });
 
 describe("verifyAnnotations (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  let tmpDir: string;
+  let temp: ReturnType<typeof createTempDir>;
 
   beforeAll(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-test-"));
+    temp = createTempDir("verify-test-");
     const tsContent = `
 /**
  * Tests for: my-story.story.md
  * @story my-story.story.md
  */
 `;
-    fs.writeFileSync(path.join(tmpDir, "test.ts"), tsContent);
-    fs.writeFileSync(path.join(tmpDir, "my-story.story.md"), "# Dummy Story");
+    fs.writeFileSync(path.join(temp.dir, "test.ts"), tsContent);
+    fs.writeFileSync(path.join(temp.dir, "my-story.story.md"), "# Dummy Story");
   });
 
   afterAll(() => {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    temp.cleanup();
   });
 
   it("[REQ-MAINT-VERIFY] should return true when annotations are valid", () => {
-    const valid = verifyAnnotations(tmpDir);
+    const valid = verifyAnnotations(temp.dir);
     expect(valid).toBe(true);
   });
 });
