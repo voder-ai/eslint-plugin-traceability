@@ -12,7 +12,7 @@ import path from "path";
 import type { Rule } from "eslint";
 
 /**
- * Token index configuration for @implements annotations.
+ * Token index configuration for @supports annotations.
  * This clarifies the expected positions of the story path and first requirement ID
  * and avoids hard-coded "magic number" indices in parsing logic.
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
@@ -221,11 +221,11 @@ function validateReqLine(opts: {
 }
 
 /**
- * Parse an @implements annotation line into its story path and requirement IDs.
- * Expects the format: "@implements <storyPath> <REQ-ID-1> <REQ-ID-2> ..."
+ * Parse a @supports annotation line into its story path and requirement IDs.
+ * Expects the format: "@supports <storyPath> <REQ-ID-1> <REQ-ID-2> ..."
  * Invalid formats (missing storyPath or reqIds) are ignored by this deep rule.
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-VALIDATE - Support validation of @implements annotations
+ * @req REQ-IMPLEMENTS-VALIDATE - Support validation of @supports annotations
  * @req REQ-MIXED-SUPPORT - Allow mixed @story/@req/@implements usage in the same comment
  * @req REQ-SCOPED-IDS - Treat requirement IDs as scoped to the referenced story file
  */
@@ -242,12 +242,12 @@ function parseImplementsLine(
 }
 
 /**
- * Validate an @implements annotation line against the referenced story content.
+ * Validate an @supports annotation line against the referenced story content.
  * Performs path validation, file reading, caching, and requirement existence checks
  * for each requirement ID listed on the line.
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-VALIDATE - Validate that all @implements requirement IDs exist
- * @req REQ-MIXED-SUPPORT - Ensure @implements can coexist with @story/@req annotations
+ * @req REQ-IMPLEMENTS-VALIDATE - Validate that all @supports requirement IDs exist
+ * @req REQ-MIXED-SUPPORT - Ensure @supports can coexist with @story/@req annotations
  * @req REQ-SCOPED-IDS - Validate requirement IDs in the scope of their explicit story
  */
 function validateImplementsLine(opts: {
@@ -294,7 +294,7 @@ function validateImplementsLine(opts: {
  * @req REQ-DEEP-PARSE - Parse annotation lines for @story and @req tags
  * @req REQ-DEEP-MATCH - Dispatch @req lines for validation against story requirements
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-VALIDATE - Dispatch @implements lines for validation
+ * @req REQ-IMPLEMENTS-VALIDATE - Dispatch @supports lines for validation
  * @req REQ-MIXED-SUPPORT - Support mixed annotation types without interfering with each other
  */
 function handleAnnotationLine(opts: {
@@ -312,7 +312,7 @@ function handleAnnotationLine(opts: {
   } else if (line.startsWith("@req")) {
     validateReqLine({ comment, context, line, storyPath, cwd, reqCache });
     return storyPath;
-  } else if (line.startsWith("@implements")) {
+  } else if (line.startsWith("@supports")) {
     validateImplementsLine({ comment, context, line, cwd, reqCache });
     return storyPath;
   }

@@ -11,15 +11,15 @@ Security and dependency hygiene for the published package are enforced by the sa
 
 Each rule enforces traceability conventions in your code. Below is a summary of each rule exposed by this plugin.
 
-In addition to the core `@story` and `@req` annotations, the plugin also understands `@implements` for code that fulfills requirements from multiple stories—for example, a consuming project might use a path like
-`@implements docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`
-to indicate that a given function implements a particular requirement from a payments story document within that project’s own `docs/stories` tree. For a detailed explanation of `@implements` behavior and validation, see [Migration Guide](migration-guide.md) (section **3.1 Multi-story @implements annotations**). Additional background on multi-story semantics is available in the project’s internal rule documentation, which is intended for maintainers rather than end users.
+In addition to the core `@story` and `@req` annotations, the plugin also understands `@supports` for code that fulfills requirements from multiple stories—for example, a consuming project might use a path like
+`@supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`
+to indicate that a given function supports a particular requirement from a payments story document within that project’s own `docs/stories` tree. For a detailed explanation of `@supports` behavior and validation, see [Migration Guide](migration-guide.md) (section **3.1 Multi-story @supports annotations**). Additional background on multi-story semantics is available in the project’s internal rule documentation, which is intended for maintainers rather than end users.
 
-The `prefer-implements-annotation` rule is an **opt-in migration helper** that is disabled by default and **not** part of any built-in preset. It can be enabled and given a severity like `"warn"` or `"error"` using normal ESLint rule configuration when you want to gradually encourage multi-story `@implements` usage. Detailed behavior and migration guidance are documented in the project’s internal rule documentation, which is targeted at maintainers; typical end users can rely on the high-level guidance in this API reference and the [Migration Guide](migration-guide.md).
+The `prefer-implements-annotation` rule is an **opt-in migration helper** that is disabled by default and **not** part of any built-in preset. It can be enabled and given a severity like `"warn"` or `"error"` using normal ESLint rule configuration when you want to gradually encourage multi-story `@supports` usage. Detailed behavior and migration guidance are documented in the project’s internal rule documentation, which is targeted at maintainers; typical end users can rely on the high-level guidance in this API reference and the [Migration Guide](migration-guide.md).
 
 ### traceability/require-story-annotation
 
-Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When you adopt multi-story `@implements` annotations, this rule also accepts `@implements` as an alternative way to prove story coverage, so either `@story` or at least one `@implements` tag will satisfy the presence check. When run with `--fix`, the rule inserts a single-line placeholder JSDoc `@story` annotation above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. This template is currently fixed but structured for future configurability, and fixes are strictly limited to adding this placeholder annotation without altering the function body or changing any runtime behavior. Selective enabling of different auto-fix behaviors (such as applying fixes only to certain scopes or node types) is planned for a future version.
+Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When you adopt multi-story `@supports` annotations, this rule also accepts `@supports` as an alternative way to prove story coverage, so either `@story` or at least one `@supports` tag will satisfy the presence check. When run with `--fix`, the rule inserts a single-line placeholder JSDoc `@story` annotation above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. This template is currently fixed but structured for future configurability, and fixes are strictly limited to adding this placeholder annotation without altering the function body or changing any runtime behavior. Selective enabling of different auto-fix behaviors (such as applying fixes only to certain scopes or node types) is planned for a future version.
 
 Options:
 
@@ -41,7 +41,7 @@ function initAuth() {
 
 ### traceability/require-req-annotation
 
-Description: Ensures that function-like constructs consistently declare their linked requirement using an `@req` annotation in JSDoc. The rule targets the same function-like node types as `traceability/require-story-annotation` (standard function declarations, non-arrow function expressions used as callbacks or assignments, class/object methods, TypeScript declare functions, and interface method signatures), and enforces that each of them has at least one `@req` tag in the nearest associated JSDoc comment. When you adopt multi-story `@implements` annotations, this rule also treats `@implements story-path REQ-ID...` tags as satisfying the requirement coverage check, although deep verification of requirement IDs continues to be handled by `traceability/valid-req-reference`. Arrow functions (`ArrowFunctionExpression`) are not currently checked by this rule.
+Description: Ensures that function-like constructs consistently declare their linked requirement using an `@req` annotation in JSDoc. The rule targets the same function-like node types as `traceability/require-story-annotation` (standard function declarations, non-arrow function expressions used as callbacks or assignments, class/object methods, TypeScript declare functions, and interface method signatures), and enforces that each of them has at least one `@req` tag in the nearest associated JSDoc comment. When you adopt multi-story `@supports` annotations, this rule also treats `@supports story-path REQ-ID...` tags as satisfying the requirement coverage check, although deep verification of requirement IDs continues to be handled by `traceability/valid-req-reference`. Arrow functions (`ArrowFunctionExpression`) are not currently checked by this rule.
 
 This rule is typically used alongside `traceability/require-story-annotation` so that each function-level traceability block includes both an `@story` and an `@req` annotation, but it can also be enabled independently if you only want to enforce requirement linkage. Unlike `traceability/require-story-annotation`, this rule does not currently provide an auto-fix mode for inserting placeholder `@req` annotations; it only reports missing or malformed requirement annotations on the configured scopes.
 
@@ -114,10 +114,10 @@ Behavior notes:
 The `valid-annotation-format` rule is intentionally **backward compatible** with existing code that only uses `@story` and `@req`. You can:
 
 - Continue using `@story` + `@req` for single-story functions and modules.
-- Introduce `@implements` incrementally for integration code that implements requirements from multiple stories.
+- Introduce `@supports` incrementally for integration code that implements requirements from multiple stories.
 - Mix both styles in the same comment block when needed; the rule validates the format of each annotation independently.
 
-Deep requirement checking for both `@req` and `@implements` is handled by the `valid-req-reference` rule in the plugin's internal docs. Advanced edge cases and internal semantics are mainly of interest to maintainers; typical end users can rely on the options and examples in this API reference when configuring the rule for their projects.
+Deep requirement checking for both `@req` and `@supports` is handled by the `valid-req-reference` rule in the plugin's internal docs. Advanced edge cases and internal semantics are mainly of interest to maintainers; typical end users can rely on the options and examples in this API reference when configuring the rule for their projects.
 
 Default Severity: `error`
 Example:
@@ -198,7 +198,7 @@ The plugin provides two built-in presets for easy configuration:
 Enables the **six core traceability rules** with severities tuned for common usage (most at `error`, with
 `traceability/valid-annotation-format` at `warn` to reduce noise). This `warn` level for `traceability/valid-annotation-format` is intentional to keep early adoption noise low, but you can safely raise it to `error` in projects that want strict enforcement of annotation formatting.
 
-The `prefer-implements-annotation` migration rule is **not included** in this (or any) preset and remains disabled by default. If you want to encourage or enforce multi-story `@implements` annotations, you must enable `traceability/prefer-implements-annotation` explicitly in your ESLint configuration and choose an appropriate severity (for example, `"warn"` during migration or `"error"` once fully adopted).
+The `prefer-implements-annotation` migration rule is **not included** in this (or any) preset and remains disabled by default. If you want to encourage or enforce multi-story `@supports` annotations, you must enable `traceability/prefer-implements-annotation` explicitly in your ESLint configuration and choose an appropriate severity (for example, `"warn"` during migration or `"error"` once fully adopted).
 
 Core rules enabled by the `recommended` preset:
 
@@ -521,3 +521,4 @@ In CI:
 
 ```bash
 npm run traceability:verify
+```

@@ -1,26 +1,26 @@
 /**
- * Helpers for @implements annotation validation used by valid-annotation-format.
+ * Helpers for @supports annotation validation used by valid-annotation-format.
  *
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-PARSE - Parse @implements annotations without affecting @story/@req
- * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
- * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+ * @req REQ-SUPPORTS-PARSE - Parse @supports annotations without affecting @story/@req
+ * @req REQ-FORMAT-VALIDATION - Validate @supports story path and requirement IDs
+ * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@supports usage in comments
  */
 import type { ResolvedAnnotationOptions } from "./valid-annotation-options";
 import { buildReqErrorMessage } from "./valid-annotation-utils";
 
 /**
- * Minimum number of tokens required for a valid @implements value:
+ * Minimum number of tokens required for a valid @supports value:
  *   - one story path
  *   - at least one requirement ID
  *
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-PARSE
+ * @req REQ-SUPPORTS-PARSE
  */
 export const MIN_IMPLEMENTS_TOKENS = 2;
 
 /**
- * Report a completely missing @implements value (no story path or req IDs).
+ * Report a completely missing @supports value (no story path or req IDs).
  *
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @req REQ-FORMAT-VALIDATION
@@ -35,7 +35,7 @@ export function reportMissingImplementsValue(
     node: comment as any,
     messageId: "invalidImplementsFormat",
     data: {
-      details: `Missing story path and requirement IDs for @implements annotation. Expected a value like "${storyExample} ${reqExample}".`,
+      details: `Missing story path and requirement IDs for @supports annotation. Expected a value like "${storyExample} ${reqExample}".`,
     },
   });
 }
@@ -56,13 +56,13 @@ export function reportMissingImplementsReqIds(
     node: comment as any,
     messageId: "invalidImplementsFormat",
     data: {
-      details: `Missing requirement IDs for @implements annotation. Expected a value like "${storyExample} ${reqExample}".`,
+      details: `Missing requirement IDs for @supports annotation. Expected a value like "${storyExample} ${reqExample}".`,
     },
   });
 }
 
 /**
- * Report an invalid story path inside @implements.
+ * Report an invalid story path inside @supports.
  *
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @req REQ-FORMAT-VALIDATION
@@ -78,13 +78,13 @@ export function reportInvalidImplementsStoryPath(
     node: comment as any,
     messageId: "invalidImplementsFormat",
     data: {
-      details: `Invalid story path "${storyPath}" for @implements annotation. Expected a path like "${storyExample}".`,
+      details: `Invalid story path "${storyPath}" for @supports annotation. Expected a path like "${storyExample}".`,
     },
   });
 }
 
 /**
- * Report an invalid requirement ID token inside @implements.
+ * Report an invalid requirement ID token inside @supports.
  *
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @req REQ-FORMAT-VALIDATION
@@ -119,7 +119,7 @@ type ParsedImplementsTokens = {
 };
 
 /**
- * Prepare and validate the token array for an @implements value.
+ * Prepare and validate the token array for an @supports value.
  *
  * Returns { storyPath, reqIds } when tokens are present and structurally valid,
  * or null when a missing-value condition has been reported.
@@ -186,7 +186,7 @@ function validateImplementsTokens(
 }
 
 /**
- * Validate an @implements annotation value.
+ * Validate an @supports annotation value.
  *
  * This helper encapsulates the logic previously in valid-annotation-format.ts:
  *   - trims the raw value
@@ -197,7 +197,7 @@ function validateImplementsTokens(
  *   - delegates reporting to the provided helpers
  *
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-PARSE
+ * @req REQ-SUPPORTS-PARSE
  * @req REQ-FORMAT-VALIDATION
  * @req REQ-MIXED-SUPPORT
  */

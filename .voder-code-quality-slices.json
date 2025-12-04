@@ -5,12 +5,7 @@
       "id": "rules-and-helpers",
       "description": "Core ESLint rules, shared utilities, and their tests.",
       "priority": 1,
-      "paths": [
-        "src/rules",
-        "src/utils",
-        "tests/rules",
-        "tests/utils"
-      ]
+      "paths": ["src/rules", "src/utils", "tests/rules", "tests/utils"]
     },
     {
       "id": "maintenance-and-cli",
@@ -45,10 +40,7 @@
       "id": "tooling-and-ci",
       "description": "Build scripts and CI/CD workflow definitions.",
       "priority": 4,
-      "paths": [
-        "scripts",
-        ".github/workflows"
-      ]
+      "paths": ["scripts", ".github/workflows"]
     }
   ]
 }

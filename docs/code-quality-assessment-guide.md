@@ -151,7 +151,6 @@ one of three buckets:
 
    These are issues that must be resolved **before FUNCTIONALITY can rely on
    this slice as “healthy”**. Examples:
-
    - Confirmed violations of ratcheted ESLint thresholds that were intended
      to be hard limits under the current plan in
      `docs/decisions/code-quality-ratcheting-plan.md`.
@@ -171,7 +170,6 @@ one of three buckets:
    These are non-blocking issues that should be planned in the **near term**
    (for example, upcoming sprints or refactoring windows) but do **not**
    prevent FUNCTIONALITY from relying on the current implementation. Examples:
-
    - Code that is moderately complex but still within ratcheted thresholds,
      where restructuring would improve maintainability.
    - Helper functions or rule branches that are tested but would benefit
@@ -187,7 +185,6 @@ one of three buckets:
 3. **Informational observations**
 
    These are neutral or low-risk observations that:
-
    - Highlight patterns worth monitoring.
    - Suggest possible future refactorings or documentation improvements.
    - Provide context about trade-offs that are acceptable under the current

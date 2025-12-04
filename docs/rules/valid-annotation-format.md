@@ -1,6 +1,6 @@
 # valid-annotation-format
 
-Validates that `@story`, `@req`, and `@implements` annotations follow the correct format and syntax rules to ensure traceability annotations are parseable and standardized.
+Validates that `@story`, `@req`, and `@supports` annotations follow the correct format and syntax rules to ensure traceability annotations are parseable and standardized.
 
 @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
 @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
@@ -12,7 +12,7 @@ Validates that `@story`, `@req`, and `@implements` annotations follow the correc
 
 ## Rule Details
 
-This rule scans all comments in the source code and validates any lines that contain `@story`, `@req`, or `@implements` annotations. It is designed to be flexible in how it discovers annotations while still enforcing a strict, machine-parseable format.
+This rule scans all comments in the source code and validates any lines that contain `@story`, `@req`, or `@supports` annotations. It is designed to be flexible in how it discovers annotations while still enforcing a strict, machine-parseable format.
 
 Key behaviors:
 
@@ -34,21 +34,21 @@ Key behaviors:
     which will be normalized and validated as
     `@story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`.
 
-- **`@implements` format support**
-  - The rule validates `@implements` annotations that associate code with one or more stories and requirements, such as:
+- **`@supports` format support**
+  - The rule validates `@supports` annotations that associate code with one or more stories and requirements, such as:
     ```js
     /**
-     * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FOO REQ-BAR
+     * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FOO REQ-BAR
      */
     ```
-  - The story path that appears first in an `@implements` annotation is validated using the same story pattern as `@story`.
-  - All requirement IDs that follow in the same `@implements` annotation are validated using the same requirement pattern as `@req`.
+  - The story path that appears first in a `@supports` annotation is validated using the same story pattern as `@story`.
+  - All requirement IDs that follow in the same `@supports` annotation are validated using the same requirement pattern as `@req`.
   - This ensures that multi-story / multi-requirement traceability annotations share the same standardized, machine-parseable formats as standalone `@story` and `@req` annotations.
 
 - **Validated patterns (configurable)**
   - The rule validates:
-    - **Story identifiers**: the value that follows `@story` (and the story path segment of `@implements`)
-    - **Requirement identifiers**: the value that follows `@req` (and each requirement ID segment of `@implements`)
+    - **Story identifiers**: the value that follows `@story` (and the story path segment of `@supports`)
+    - **Requirement identifiers**: the value that follows `@req` (and each requirement ID segment of `@supports`)
   - Both patterns are configurable via rule options so that teams can align validation with their own conventions while still keeping annotations machine-parseable.
 
 ## Options
@@ -316,9 +316,9 @@ function flatConfigured() {}
 function badExample() {}
 ```
 
-## Migration to `@implements`
+## Migration to `@supports`
 
-The `@implements` annotation is designed to make multi-story integration functions easier to annotate and validate without breaking existing projects. You do **not** need to migrate existing single-story code that already uses `@story` and `@req` correctly, but you can opt in to `@implements` where it adds clarity.
+The `@supports` annotation is designed to make multi-story integration functions easier to annotate and validate without breaking existing projects. You do **not** need to migrate existing single-story code that already uses `@story` and `@req` correctly, but you can opt in to `@supports` where it adds clarity.
 
 ### When you can stay with `@story` + `@req`
 
@@ -341,9 +341,9 @@ export function calculateAgeInDays(publishDate) {
 }
 ```
 
-### When to adopt `@implements`
+### When to adopt `@supports`
 
-Use `@implements` when:
+Use `@supports` when:
 
 - A function or class **implements requirements from multiple stories**.
 - Requirements with the **same ID** are reused in more than one story.
@@ -354,7 +354,7 @@ With only `@story` + `@req`, multi-story integration code either:
 - Cannot be expressed cleanly at all, or
 - Leads to confusing or incorrect deep-validation results when checked by `valid-req-reference`.
 
-`@implements` solves this by letting you list, on a single line, the story file followed by all requirement IDs from that story that the code implements.
+`@supports` solves this by letting you list, on a single line, the story file followed by all requirement IDs from that story that the code implements.
 
 ### Before: single-story annotations only
 
@@ -377,9 +377,9 @@ export async function applyFilters(rows, options) {
 
 This passes format validation but does **not** clearly show that some behavior comes from a second story, and deep requirement validation cannot reliably tell which story each requirement belongs to.
 
-### After: multi-story `@implements`
+### After: multi-story `@supports`
 
-With `@implements`, you keep `@story` + `@req` for the primary story (if you want), and add explicit, multi-story mappings:
+With `@supports`, you keep `@story` + `@req` for the primary story (if you want), and add explicit, multi-story mappings:
 
 ```js
 /**
@@ -388,8 +388,8 @@ With `@implements`, you keep `@story` + `@req` for the primary story (if you wan
  * @req REQ-AGE-THRESHOLD
  * @req REQ-OUTPUT
  *
- * @implements docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md REQ-AGE-THRESHOLD REQ-OUTPUT
- * @implements docs/stories/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md REQ-AUDIT-CHECK REQ-SAFE-ONLY
+ * @supports docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md REQ-AGE-THRESHOLD REQ-OUTPUT
+ * @supports docs/stories/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md REQ-AUDIT-CHECK REQ-SAFE-ONLY
  */
 export async function applyFilters(rows, options) {
   // combined behavior
@@ -398,21 +398,21 @@ export async function applyFilters(rows, options) {
 
 In this form:
 
-- `valid-annotation-format` checks that each `@implements` line uses a valid story path and requirement ID format.
-- `valid-req-reference` (see its rule documentation) performs deep validation that every requirement ID listed after `@implements` actually exists in the referenced story file.
+- `valid-annotation-format` checks that each `@supports` line uses a valid story path and requirement ID format.
+- `valid-req-reference` (see its rule documentation) performs deep validation that every requirement ID listed after `@supports` actually exists in the referenced story file.
 
 ### Mixed usage during migration
 
-You can introduce `@implements` **incrementally**:
+You can introduce `@supports` **incrementally**:
 
 1. Start from working code that already uses `@story` + `@req`.
-2. Add `@implements` lines that group requirements by story file, without removing the original annotations.
+2. Add `@supports` lines that group requirements by story file, without removing the original annotations.
 3. Run ESLint with `traceability/valid-annotation-format` and `traceability/valid-req-reference` enabled to confirm there are no new violations.
-4. Optionally, once your team is comfortable, standardize on always using `@implements` for multi-story integration functions.
+4. Optionally, once your team is comfortable, standardize on always using `@supports` for multi-story integration functions.
 
 Both annotation styles are fully supported:
 
 - Single-story code can continue to use only `@story` + `@req`.
-- Multi-story integration code should prefer `@implements` to get precise, per-story validation.
+- Multi-story integration code should prefer `@supports` to get precise, per-story validation.
 
-For more details on how `@implements` participates in deep requirement checking, including multi-story scenarios and requirement ID scoping, see the `valid-req-reference` rule documentation and Story `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`.
+For more details on how `@supports` participates in deep requirement checking, including multi-story scenarios and requirement ID scoping, see the `valid-req-reference` rule documentation and Story `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`.

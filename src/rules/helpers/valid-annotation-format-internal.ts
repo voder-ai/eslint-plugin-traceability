@@ -7,7 +7,7 @@
  * @req REQ-MULTILINE-SUPPORT - Handle annotations split across multiple lines
  * @req REQ-FLEXIBLE-PARSING - Support reasonable variations in whitespace and formatting
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-IMPLEMENTS-PARSE - Parse @implements annotations without affecting @story/@req
+ * @req REQ-SUPPORTS-PARSE - Parse @supports annotations without affecting @story/@req
  * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
  */
 
@@ -26,7 +26,7 @@ export interface PendingAnnotation {
  * This function trims whitespace, keeps any annotation tags that appear
  * later in the line, and supports common JSDoc styles such as leading "*".
  *
- * It detects @story, @req, and @implements tags while preserving the rest
+ * It detects @story, @req, and @supports tags while preserving the rest
  * of the line for downstream logic.
  */
 export function normalizeCommentLine(rawLine: string): string {
@@ -35,7 +35,7 @@ export function normalizeCommentLine(rawLine: string): string {
     return "";
   }
 
-  const annotationMatch = trimmed.match(/@story\b|@req\b|@implements\b/);
+  const annotationMatch = trimmed.match(/@story\b|@req\b|@supports\b/);
   if (!annotationMatch || annotationMatch.index === undefined) {
     const withoutLeadingStar = trimmed.replace(/^\*\s?/, "");
     return withoutLeadingStar;

@@ -1,5 +1,5 @@
 /**
- * ESLint rule implementation for preferring the consolidated `@implements`
+ * ESLint rule implementation for preferring the consolidated `@supports`
  * annotation over legacy combinations of `@story` and `@req` within JSDoc
  * block comments. This module provides:
  *
@@ -7,14 +7,14 @@
  * - Identification of multi-story comment blocks that are not safely
  *   auto-fixable.
  * - A conservative auto-fix that rewrites simple, single-story patterns into
- *   a single `@implements` annotation while preserving formatting.
+ *   a single `@supports` annotation while preserving formatting.
  *
  * The rule is intended as an **optional migration aid** to help projects
- * gradually move to the newer `@implements` format without breaking existing
+ * gradually move to the newer `@supports` format without breaking existing
  * traceability links.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
- * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage in favor of @supports
  * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
  * @req REQ-SINGLE-STORY-FIX - Restrict auto-fix to single-story, single-path cases
  * @req REQ-PRESERVE-FORMAT - Preserve original JSDoc indentation and prefix formatting
@@ -30,7 +30,7 @@ import { normalizeCommentLine } from "./helpers/valid-annotation-format-internal
 const MULTI_STORY_THRESHOLD = 1;
 
 // Minimum number of tokens required for a valid @story annotation line.
-// @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+// @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
 // @req REQ-MULTI-STORY-DETECT
 const MIN_STORY_TOKENS = 2;
 
@@ -65,8 +65,8 @@ function collectStoryAndReqMetadata(comment: any): {
     const normalized = normalizeCommentLine(rawLine);
     if (!normalized) return;
 
-    if (/^@implements\b/.test(normalized)) {
-      // Mixed @implements usage should have been filtered out earlier
+    if (/^@supports\b/.test(normalized)) {
+      // Mixed @supports usage should have been filtered out earlier
       return;
     }
 
@@ -111,7 +111,7 @@ function applyImplementsReplacement(
   const rawValue: string = comment.value || "";
   const rawLines: string[] = rawValue.split(/\r?\n/);
 
-  const implAnnotation = `@implements ${storyPath} ${reqIds.join(" ")}`;
+  const implAnnotation = `@supports ${storyPath} ${reqIds.join(" ")}`;
 
   // Determine the leading prefix (indentation and `*`) from the original @story line
   const storyRawLine = rawLines[storyIdx];
@@ -149,7 +149,7 @@ function applyImplementsReplacement(
 
 /**
  * Build an ESLint auto-fix for simple single-story `@story` + `@req` JSDoc
- * blocks, converting them to a single `@implements` annotation while
+ * blocks, converting them to a single `@supports` annotation while
  * preserving the original comment formatting.
  *
  * The fixer is intentionally conservative and only activates when:
@@ -160,13 +160,13 @@ function applyImplementsReplacement(
  *
  * When applicable, the fix:
  * - Removes the original `@story` and `@req` lines.
- * - Inserts a single `@implements` line in their place, preserving the
+ * - Inserts a single `@supports` line in their place, preserving the
  *   original leading comment prefix (indentation and `*` markers).
  *
  * More complex patterns remain diagnostics-only with no fix to avoid
  * producing invalid or ambiguous output.
  *
- * @implements docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+ * @implements docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
  * @req REQ-AUTO-FIX - Provide safe, opt-in auto-fix for simple legacy patterns
  * @req REQ-SINGLE-STORY-FIX - Restrict auto-fix to single-story, single-path cases
  * @req REQ-PRESERVE-FORMAT - Preserve original JSDoc indentation and prefix formatting
@@ -217,7 +217,7 @@ function analyzeComment(comment: any): CommentAnalysis {
     const normalized = normalizeCommentLine(rawLine);
     if (!normalized) return;
 
-    if (/^@implements\b/.test(normalized)) {
+    if (/^@supports\b/.test(normalized)) {
       hasImplements = true;
       return;
     }
@@ -257,8 +257,7 @@ function processComment(comment: any, context: Rule.RuleContext): void {
       node: comment as any,
       messageId: "cannotAutoFix",
       data: {
-        reason:
-          "comment mixes @story/@req with existing @implements annotations",
+        reason: "comment mixes @story/@req with existing @supports annotations",
       },
     });
     return;
@@ -285,10 +284,10 @@ function processComment(comment: any, context: Rule.RuleContext): void {
  * ESLint rule: prefer-implements-annotation
  *
  * Recommend migrating from legacy `@story` + `@req` annotations to the
- * newer `@implements` format. This rule is **disabled by default** and
+ * newer `@supports` format. This rule is **disabled by default** and
  * is intended as an optional, opt-in migration aid.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
  * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage
  * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
  * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy @story/@req annotations valid when the rule is disabled
@@ -298,7 +297,7 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
     type: "suggestion",
     docs: {
       description:
-        "Recommend using @implements instead of legacy @story + @req annotations (optional migration rule)",
+        "Recommend using @supports instead of legacy @story + @req annotations (optional migration rule)",
       recommended: false,
     },
     // Auto-fix support will be wired in a later iteration; the rule starts as
@@ -307,34 +306,34 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
     messages: {
       /**
        * Recommend migrating simple, single-story @story + @req blocks to a
-       * single @implements line. Auto-fix is provided where safe in a
+       * single @supports line. Auto-fix is provided where safe in a
        * follow-up iteration.
        *
-       * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+       * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
        * @req REQ-OPTIONAL-WARNING
        */
       preferImplements:
-        "Consider using @implements instead of @story + @req for clearer traceability. Run ESLint with --fix to auto-convert.",
+        "Consider using @supports instead of @story + @req for clearer traceability. Run ESLint with --fix to auto-convert.",
       /**
        * Report situations where the rule detects a legacy annotation pattern
        * but cannot safely provide an automatic fix. The `reason` field gives
        * a short, human-readable explanation to guide manual migration.
        *
-       * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+       * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
        * @req REQ-MULTI-STORY-DETECT
        */
       cannotAutoFix:
-        "Cannot auto-fix: {{reason}}. Manual migration to @implements required.",
+        "Cannot auto-fix: {{reason}}. Manual migration to @supports required.",
       /**
        * Specialized message for the most common non-fixable case where more
        * than one @story annotation appears in the same block, indicating a
        * likely multi-story integration that must be converted manually.
        *
-       * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+       * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
        * @req REQ-MULTI-STORY-DETECT
        */
       multiStoryDetected:
-        "Multiple @story annotations detected in the same comment block. Manually convert to separate @implements lines.",
+        "Multiple @story annotations detected in the same comment block. Manually convert to separate @supports lines.",
     },
     schema: [],
   },
@@ -346,7 +345,7 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
    * it surfaces recommendations when legacy `@story` + `@req` combinations are
    * present but does not yet perform automatic code modifications.
    *
-   * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+   * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
    * @req REQ-OPTIONAL-WARNING
    * @req REQ-MULTI-STORY-DETECT
    */
@@ -358,7 +357,7 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
        * Program-level visitor that scans all comments for legacy
        * `@story` + `@req` usage and emits recommendation diagnostics.
        *
-       * @story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md
+       * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
        * @req REQ-OPTIONAL-WARNING - Emit recommendations when legacy annotations are detected
        * @req REQ-MULTI-STORY-DETECT - Detect multi-story and mixed annotation patterns
        */

@@ -15,9 +15,9 @@
  * @req REQ-CONFIGURABLE-PATTERNS-FALLBACK - Invalid regex patterns fall back to default behavior without crashing
  * Tests for: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-PARSE - Rule parses @implements annotations with story and requirement references
- * @req REQ-FORMAT-VALIDATION - Rule validates story and requirement formats inside @implements annotations
- * @req REQ-MIXED-SUPPORT - Rule supports mixed @story/@req/@implements usage in the same comment
+ * @req REQ-SUPPORTS-PARSE - Rule parses @supports annotations with story and requirement references
+ * @req REQ-FORMAT-VALIDATION - Rule validates story and requirement formats inside @supports annotations
+ * @req REQ-MIXED-SUPPORT - Rule supports mixed @story/@req/@supports usage in the same comment
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/valid-annotation-format";
@@ -201,24 +201,24 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
         ],
       },
       {
-        name: "[REQ-IMPLEMENTS-PARSE] valid single @implements with one story and one requirement (default patterns)",
+        name: "[REQ-IMPLEMENTS-PARSE] valid single @supports with one story and one requirement (default patterns)",
         code: `/**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE
  */`,
       },
       {
-        name: "[REQ-IMPLEMENTS-PARSE] valid multiple @implements lines with different stories and requirements",
+        name: "[REQ-IMPLEMENTS-PARSE] valid multiple @supports lines with different stories and requirements",
         code: `/**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-FORMAT-VALIDATION
- * @implements docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FORMAT-SPECIFICATION
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-FORMAT-VALIDATION
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FORMAT-SPECIFICATION
  */`,
       },
       {
-        name: "[REQ-MIXED-SUPPORT] valid mixed @story/@req/@implements usage in same block comment",
+        name: "[REQ-MIXED-SUPPORT] valid mixed @story/@req/@supports usage in same block comment",
         code: `/**
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @req REQ-MIXED-SUPPORT
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
  */`,
       },
     ],
@@ -560,36 +560,36 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
         ],
       },
       makeInvalid({
-        name: "[REQ-IMPLEMENTS-PARSE] @implements with no value is invalid",
+        name: "[REQ-SUPPORTS-PARSE] @supports with no value is invalid",
         code: `/**
- * @implements
+ * @supports
  */`,
         messageId: "invalidImplementsFormat",
         details:
-          'Missing story path and requirement IDs for @implements annotation. Expected a value like "docs/stories/005.0-DEV-EXAMPLE.story.md REQ-EXAMPLE".',
+          'Missing story path and requirement IDs for @supports annotation. Expected a value like "docs/stories/005.0-DEV-EXAMPLE.story.md REQ-EXAMPLE".',
       }),
       makeInvalid({
-        name: "[REQ-IMPLEMENTS-PARSE] @implements with only story path and no requirement IDs is invalid",
+        name: "[REQ-SUPPORTS-PARSE] @supports with only story path and no requirement IDs is invalid",
         code: `/**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  */`,
         messageId: "invalidImplementsFormat",
         details:
-          'Missing requirement IDs for @implements annotation. Expected a value like "docs/stories/005.0-DEV-EXAMPLE.story.md REQ-EXAMPLE".',
+          'Missing requirement IDs for @supports annotation. Expected a value like "docs/stories/005.0-DEV-EXAMPLE.story.md REQ-EXAMPLE".',
       }),
       makeInvalid({
-        name: "[REQ-FORMAT-VALIDATION] @implements with invalid story path format",
+        name: "[REQ-FORMAT-VALIDATION] @supports with invalid story path format",
         code: `/**
- * @implements invalid/path.txt REQ-IMPLEMENTS-PARSE
+ * @supports invalid/path.txt REQ-IMPLEMENTS-PARSE
  */`,
         messageId: "invalidImplementsFormat",
         details:
-          'Invalid story path "invalid/path.txt" for @implements annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+          'Invalid story path "invalid/path.txt" for @supports annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
       }),
       {
-        name: "[REQ-FORMAT-VALIDATION] @implements with invalid requirement ID format",
+        name: "[REQ-FORMAT-VALIDATION] @supports with invalid requirement ID format",
         code: `/**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-VALID invalid-format
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-VALID invalid-format
  */`,
         errors: [
           {
@@ -602,9 +602,9 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
         ],
       },
       {
-        name: "[REQ-FORMAT-VALIDATION] @implements with multiple requirement IDs where one is invalid",
+        name: "[REQ-FORMAT-VALIDATION] @supports with multiple requirement IDs where one is invalid",
         code: `/**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-VALID-1 REQ-VALID-2 bad-id
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-VALID-1 REQ-VALID-2 bad-id
  */`,
         errors: [
           {

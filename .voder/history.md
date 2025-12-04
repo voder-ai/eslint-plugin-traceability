@@ -1,17 +1,16 @@
-Here’s a history-only summary of what’s been done so far in the project, combining the earlier work and the most recent documentation work.
+Here’s a history-only summary of what has been done so far in the project, including the most recent work.
 
 ---
 
 ## Test Duplication Reduction
 
-- Analyzed the existing jscpd duplication report in `.voder-jscpd-report/jscpd-report.json` and identified `tests/utils/annotation-checker.test.ts` as the most duplicated test file.
-- Refactored `tests/utils/annotation-checker.test.ts` to centralize its `RuleTester` TypeScript configuration:
-  - Reused the existing `withTsLanguageOptions` helper from `tests/utils/ts-language-options.ts`.
-  - Removed repeated inline `languageOptions` from test case definitions.
-  - Preserved all test names and assertions.
-- Re-ran targeted tests (`tests/utils/annotation-checker.test.ts` and `tests/rules/require-req-annotation.test.ts`) to confirm behavior remained unchanged.
-- Re-ran jscpd and confirmed duplicated lines for that file dropped to zero.
-- Committed the refactor as `test: refactor annotation-checker RuleTester setup to shared helper`.
+- Reviewed the `jscpd` duplication report (`.voder-jscpd-report/jscpd-report.json`) and identified `tests/utils/annotation-checker.test.ts` as highly duplicated.
+- Refactored `tests/utils/annotation-checker.test.ts` to reuse the shared `withTsLanguageOptions` helper from `tests/utils/ts-language-options.ts`:
+  - Removed repeated inline `languageOptions` from each test.
+  - Kept all test names and assertions intact.
+- Re-ran the affected tests (`tests/utils/annotation-checker.test.ts`, `tests/rules/require-req-annotation.test.ts`) to confirm behavior.
+- Re-ran `jscpd` and confirmed duplication for that file dropped to zero.
+- Committed as: `test: refactor annotation-checker RuleTester setup to shared helper`.
 
 ---
 
@@ -19,489 +18,448 @@ Here’s a history-only summary of what’s been done so far in the project, com
 
 ### `src/maintenance/cli.ts`
 
-- Added and refined `// @implements` traceability comments to align with `scripts/traceability-report.md`:
-  - On the `if (!command || command === "-h" || command === "--help")` help/usage branch.
-  - Around the main `try`/`catch` responsible for safe subcommand dispatch and error handling.
-  - For each `switch` case (`detect`, `verify`, `report`, `update`) and the `default` branch for unknown commands.
-- Adjusted placement so `@implements` lines appear as the first statements inside relevant `if`/`try` blocks, making sure the traceability checker associates them with the correct branch nodes.
+- Added and adjusted `// @implements` comments to align branches and error-handling paths with `scripts/traceability-report.md`:
+  - Help/usage branch (`-h`/`--help`).
+  - Main `try`/`catch` dispatch and error handling.
+  - Each `switch` case (`detect`, `verify`, `report`, `update`) and the `default` case.
+- Ensured `@implements` comments appear as the first statements inside the corresponding blocks so the traceability checker associates them with the correct nodes.
 
 ### `src/maintenance/detect.ts`
 
-- Added or tuned `@implements` annotations for:
-  - Early-return guards on invalid workspace roots.
+- Added or refined `@implements` annotations for:
+  - Invalid workspace-root guards.
   - `try`/`catch` blocks around file IO in `processFileForStaleAnnotations`.
-  - Branches in `handleStoryMatch` handling:
-    - In-project candidate detection.
-    - Boundary issues treated as out-of-project.
-    - Marking annotations as stale or safe.
-  - Branches in `getInProjectCandidates` that cover IO errors and boundary conditions.
-  - The arrow callback used in `anyInProjectCandidateExists` (`Array.prototype.some`), documented via a JSDoc-style `@implements`.
-- Iteratively adjusted comment locations (inside branch bodies and on the arrow callback) until the traceability tool recognized all intended associations.
+  - Branches inside `handleStoryMatch` for in-project candidates, out-of-project/boundary cases, and stale/safe annotations.
+  - `getInProjectCandidates` branches for IO errors and boundary conditions.
+  - The callback used in `anyInProjectCandidateExists` (documented with JSDoc-style `@implements`).
+- Iteratively moved comments to the correct locations so the traceability tool recognized each association.
 
 ### `src/rules/helpers/valid-annotation-utils.ts`
 
 - Annotated control flow in `getFixedStoryPath`:
-  - Branch rejecting `..` traversal segments.
-  - Branch for already-correct `.story.md` paths.
-  - Branches that autofix `.story` and `.md` to `.story.md`.
-  - The default branch for paths without those suffixes.
-- Added `@implements` comments to branches in `buildStoryErrorMessage` and `buildReqErrorMessage` (e.g., `kind === "missing"`), linking them to error-specificity and format-validation requirements.
-- Adjusted comment positions so `// @implements` appears directly inside target `if` blocks, as required by the traceability tooling.
+  - Rejection of `..` traversal segments.
+  - Already-correct `.story.md` paths.
+  - Autofixing `.story` and `.md` to `.story.md`.
+  - Fallback branch for paths without those suffixes.
+- Added `@implements` to specific branches in `buildStoryErrorMessage` and `buildReqErrorMessage` (e.g., `kind === "missing"`), tying them to error-format and specificity requirements.
+- Adjusted comment placement so `@implements` appears directly inside relevant `if` blocks.
 
 ### `src/rules/helpers/valid-story-reference-helpers.ts`
 
 - Added `@implements` comments to:
-  - The `for (const candidate of candidates)` loop that classifies in-project vs out-of-project candidates.
-  - Branches in `analyzeCandidateBoundaries` that track existence of only out-of-project candidates.
-  - Branches in `handleProjectBoundaryForExistence` for:
+  - The loop that classifies in-project vs out-of-project candidates.
+  - Branches in `analyzeCandidateBoundaries` for “only out-of-project” scenarios.
+  - `handleProjectBoundaryForExistence` branches for:
     - No candidates.
     - Only out-of-project candidates.
     - Mixed candidates.
-    - Reporting boundary violations for paths outside allowed roots.
-  - Security checks in `performSecurityValidations`, including:
-    - Absolute-path handling.
-    - Traversal detection and rejection of paths escaping the project root.
-- Ensured these annotations correspond directly to project-boundary and security requirements.
+    - Boundary violations for disallowed paths.
+  - Security checks in `performSecurityValidations`, including absolute-path handling and traversal rejection.
+- Aligned these annotations with project-boundary and security requirements.
 
 ### `src/utils/annotation-checker.ts`
 
-- Documented missing-`@req` autofix behavior for traceability:
-  - Initially added a JSDoc block on the `missingReqFix` function expression returned by `createMissingReqFix`, including `@implements` for autofix and reporting requirements.
-  - Then moved this to a function-level JSDoc on `createMissingReqFix` so the traceability checker treats it as the annotation for the autofix factory itself.
+- Documented missing-`@req` autofix behavior:
+  - Initially annotated the `missingReqFix` function expression with a JSDoc `@implements`.
+  - Then moved the annotation to the `createMissingReqFix` function itself, so the traceability tool associates the requirement with the autofix factory.
 
 ### Traceability Checks and Commit
 
-- Ran traceability checks repeatedly to confirm:
-  - New `@implements` comments correctly attached to functions and branch nodes.
-  - Missing annotations reported in `scripts/traceability-report.md` were systematically addressed.
-- After finalizing traceability updates and helper refactors, ran:
+- Repeatedly ran the traceability checker to verify that:
+  - Each `@implements` comment attached correctly to its target function/branch.
+  - Items previously reported missing in `scripts/traceability-report.md` were covered.
+- Ran:
   - `npm run check:traceability`
   - `npm run build`
   - `npm run lint`
   - `npm test`
   - `npm run format:check`
-- Staged and committed these changes as:
-  - `chore: improve traceability annotations for maintenance and validation helpers`
-- Pushed to `main`, triggering GitHub Actions CI/CD, which passed all configured checks.
+- Committed and pushed as:  
+  `chore: improve traceability annotations for maintenance and validation helpers`,  
+  with CI passing on `main`.
 
 ---
 
 ## Documentation Separation and Cleanup
 
-### Discovery and Analysis of User-Facing Docs
+### Discovery of Shipped User Docs
 
-- Enumerated user-facing documentation that ships with the package:
-  - Root:
-    - `README.md`
-    - `CHANGELOG.md`
-    - `SECURITY.md`
-    - `CONTRIBUTING.md`
-  - `user-docs/`:
-    - `user-docs/api-reference.md`
-    - `user-docs/migration-guide.md`
-    - `user-docs/eslint-9-setup-guide.md`
-    - `user-docs/examples.md`
-- Searched for `docs/` and `docs/stories` references across these files.
-- Found problematic references:
-  - `SECURITY.md`: link to `docs/security-overview.md`.
-  - `CONTRIBUTING.md`: links to:
-    - `docs/conventional-commits-guide.md`
-    - `docs/ci-cd-pipeline.md`
-    - `docs/decisions/adr-pre-push-parity.md`
-  - `user-docs/api-reference.md` and `user-docs/migration-guide.md`: multiple references to `docs/stories/*.story.md` treated as authoritative plugin docs.
+- Enumerated user-facing docs that ship with the package (per `package.json`):
+  - Root: `README.md`, `CHANGELOG.md`, `SECURITY.md`, `CONTRIBUTING.md`, `LICENSE`.
+  - `user-docs/`: `api-reference.md`, `migration-guide.md`, `eslint-9-setup-guide.md`, `examples.md`.
+- Searched for `docs/` and `docs/stories` references in these files.
+- Identified problematic references:
+  - `SECURITY.md` → `docs/security-overview.md`.
+  - `CONTRIBUTING.md` → `docs/conventional-commits-guide.md`, `docs/ci-cd-pipeline.md`, `docs/decisions/adr-pre-push-parity.md`.
+  - `user-docs/api-reference.md` and `user-docs/migration-guide.md` → multiple references treating `docs/stories/*.story.md` as authoritative plugin docs.
 - Confirmed:
-  - `user-docs/eslint-9-setup-guide.md` and `user-docs/examples.md` have no `docs/` references.
-  - `README.md` and `CHANGELOG.md` only reference `user-docs/*`, not `docs/*`.
+  - `user-docs/eslint-9-setup-guide.md`, `user-docs/examples.md`: no `docs/` references.
+  - `README.md`, `CHANGELOG.md`: only reference `user-docs/*`.
 
-### `SECURITY.md` Changes
+### Changes to `SECURITY.md`
 
-- Replaced the sentence referencing `docs/security-overview.md` with maintainer-focused text that:
-  - Refers generically to internal security overview documentation.
-  - States that this deeper detail is not required for normal end users.
-- Verified `SECURITY.md` no longer contains `docs/` references.
+- Replaced the explicit link to `docs/security-overview.md` with maintainer-focused language:
+  - Refers generically to internal security documentation.
+  - Clarifies that end users do not need that internal material.
+- Verified there are no remaining `docs/` references.
 
-### `CONTRIBUTING.md` Changes
+### Changes to `CONTRIBUTING.md`
 
-- In “Commit Message Conventions”:
-  - Replaced the link to `docs/conventional-commits-guide.md` with guidance pointing to:
-    - The Conventional Commits website.
-    - A brief local summary.
-    - A generic mention of internal, maintainer-focused project documentation.
-- In the “Coding Style and Quality Checks” section:
+- “Commit Message Conventions”:
+  - Removed link to `docs/conventional-commits-guide.md`.
+  - Pointed contributors to the official Conventional Commits site and a brief local summary.
+  - Mentioned internal maintainer docs generically rather than by path.
+- “Coding Style and Quality Checks”:
   - Removed links to `docs/ci-cd-pipeline.md` and `docs/decisions/adr-pre-push-parity.md`.
-  - Rephrased the explanation so CI-only steps are described without file-path references, and maintainers are told they can consult internal CI/CD and decision records.
-- Verified `CONTRIBUTING.md` contains no `docs/` references.
+  - Rephrased CI-only step descriptions without explicit file paths; maintainers are generically directed to internal CI/CD and decision records.
+- Confirmed `CONTRIBUTING.md` no longer mentions `docs/`.
 
-### `user-docs/api-reference.md` Changes
+### Changes to `user-docs/api-reference.md`
 
-- Introductory `@implements` example:
-  - Updated the example to use a generic project path like  
-    `@implements docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`.
-  - Clarified that this represents how a consuming project might structure its own stories, not this plugin’s internal docs.
-- `traceability/require-story-annotation` description:
-  - Removed explicit references to internal story files and requirement IDs.
-  - Described behavior generically, including acceptance of multi-story `@implements` annotations.
-- `traceability/require-req-annotation` description:
-  - Similarly removed references to specific internal stories/requirements.
-  - Replaced with a generic description of `@implements` handling and reliance on `valid-req-reference`.
+- Updated the introductory `@implements` example to use:
+  - A generic path like `docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`.
+  - Explicit wording that this is *how a consuming project* might structure its stories.
+- `traceability/require-story-annotation`:
+  - Removed references to specific internal story files/IDs.
+  - Described behavior in generic terms, including multi-story `@implements`.
+- `traceability/require-req-annotation`:
+  - Likewise removed internal story/requirement references.
+  - Framed behavior around `@implements` handling and `valid-req-reference`.
 - `valid-annotation-format` options:
-  - Explained default story pattern `^docs/stories/.*\.story\.md$` and example `"docs/stories/001.0-EXAMPLE.story.md"` as typical *project* conventions that users can override.
-  - Clarified these are generic examples, not references to this plugin’s internal docs.
-- Ending paragraph for `valid-annotation-format`:
-  - Replaced instructions to see a “multi-story support story” with a concise note that advanced edge cases are mainly of maintainer interest, and that end users can rely on options and examples in the API reference.
+  - Explained the default story pattern (`^docs/stories/.*\.story\.md$`) and `docs/stories/001.0-EXAMPLE.story.md` as typical *project* conventions that users can override.
+  - Clarified these are examples, not shipped internal docs.
+- Replaced a pointer to an internal “multi-story support story” with a brief note that advanced edge cases are mostly of maintainer interest, and that end users can rely on the API reference.
 
-### `user-docs/migration-guide.md` Changes
+### Changes to `user-docs/migration-guide.md`
 
-- Diff example under section 3:
-  - Clarified that `docs/stories/001.0-DEV-PLUGIN-SETUP.story.md` is a typical story file in the user’s own project documentation tree.
-- Multi-story `@implements` snippet:
-  - Explained that the example  
-    `@implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-IMPLEMENTS-VALIDATE`  
-    is illustrative of how a consuming project might structure multi-story annotations.
-- Other examples referencing:
+- Clarified that example paths like:
+  - `docs/stories/001.0-DEV-PLUGIN-SETUP.story.md`
+  - `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`
   - `docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md`
   - `docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md`
   - `docs/stories/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md`
-- For these, rephrased surrounding text to:
-  - Treat them as illustrative story paths within the user’s own docs tree.
-  - Avoid any suggestion that they are part of this plugin’s internal documentation.
-- End of section 3.1:
-  - Replaced references to a “multi-story support story in the project documentation” with text stating that:
-    - Detailed semantics are governed by the user’s own stories and requirements.
-    - The migration guide plus the API reference are sufficient for typical migrations.
+  represent typical story files in the *user’s* own documentation tree.
+- Reworded nearby content so these are clearly illustrative examples, not references to this plugin’s internal documentation.
+- At the end of section 3.1, removed references to internal “multi-story support” docs and instead stated that:
+  - Semantics are governed by the user’s own stories/requirements.
+  - The migration guide and API reference are sufficient for most migrations.
 
 ### Final Verification of Shipped User Docs
 
-- Confirmed the package’s shipped documentation set (per `package.json`) includes:
-  - `README.md`
-  - `CHANGELOG.md`
-  - `LICENSE`
-  - `SECURITY.md`
-  - `user-docs/` markdown files
-- Re-ran searches for `docs/` and `docs/stories` in shipped files:
-  - `README.md`: only references `user-docs/...`; no `docs/` paths.
-  - `CHANGELOG.md`: only references `user-docs/...`; no `docs/` paths.
-  - `SECURITY.md` and `CONTRIBUTING.md`: no `docs/` references.
-  - `user-docs/eslint-9-setup-guide.md` and `user-docs/examples.md`: no `docs/` references.
-  - `user-docs/api-reference.md` and `user-docs/migration-guide.md`: contain `docs/stories/...` only as clearly marked example paths in a consuming project.
-- Concluded that:
-  - User-facing docs that ship with the package are now self-contained.
-  - They do not depend on internal `docs/` files for correct understanding or usage.
-  - Any remaining `docs/stories/...` references are explicitly framed as illustrative project conventions.
+- Confirmed shipped docs include:
+  - `README.md`, `CHANGELOG.md`, `LICENSE`, `SECURITY.md`, and `user-docs/*.md`.
+- Re-ran searches for `docs/` and `docs/stories`:
+  - `README.md`, `CHANGELOG.md`: only `user-docs/*` references.
+  - `SECURITY.md`, `CONTRIBUTING.md`: no `docs/` references.
+  - `user-docs/eslint-9-setup-guide.md`, `user-docs/examples.md`: no `docs/` references.
+  - `user-docs/api-reference.md`, `user-docs/migration-guide.md`: `docs/stories/...` appears only as clearly-labeled example project paths.
+- Confirmed user-facing docs are self-contained and do not depend on internal `docs/` files.
 
-### Quality Checks and CI for the Docs Work
+### Quality Checks and CI for Docs Work
 
-- Ran full local quality gate via:
-
-  ```bash
-  npm run ci-verify:full
-  ```
-
-  which included:
-  - Traceability checks.
-  - Build and type-check.
-  - Linting.
-  - Duplication analysis.
-  - Jest tests with coverage.
-  - Formatting checks.
-  - Security/dependency audits.
-
+- Ran `npm run ci-verify:full` locally, covering:
+  - Traceability checks, build/type-check, lint, duplication, Jest with coverage, formatting, and security/dependency audits.
 - All checks passed.
-- Staged and committed the documentation changes with message:
-  - `docs: remove user-facing references to internal docs`
-- Pushed to `main`, triggering the GitHub Actions `CI/CD Pipeline`.
-  - The pipeline run (ID `19935224744`) completed successfully on `main`.
-
-**Most recently we've executed the following action:**
-
----
-Used tool: list_directory with input: {"dirPath":"."}
-Used tool: list_directory with input: {"dirPath":".voder"}
-Used tool: list_directory with input: {"dirPath":"src"}
-Used tool: list_directory with input: {"dirPath":"tests"}
-Used tool: list_directory with input: {"dirPath":"docs"}
-Used tool: list_directory with input: {"dirPath":"docs/stories"}
-Used tool: list_directory with input: {"dirPath":"docs/decisions"}
-Used tool: list_directory with input: {"dirPath":"src/rules"}
-Used tool: list_directory with input: {"dirPath":"src/maintenance"}
-Used tool: list_directory with input: {"dirPath":"tests/rules"}
-Used tool: list_directory with input: {"dirPath":"tests/maintenance"}
-Used tool: read_file with input: {"filePath":"docs/decisions/003-code-quality-ratcheting-plan.md"}
-Used tool: read_file with input: {"filePath":"docs/code-quality-refactor-opportunities-2025-12-03.md"}
-Used tool: read_file with input: {"filePath":"docs/functionality-coverage-2025-12-03.md"}
-Used tool: find_files with input: {"pattern":".voder*","directory":"."}
-Used tool: list_directory with input: {"dirPath":"src/utils"}
-Used tool: list_directory with input: {"dirPath":"tests/config"}
-Used tool: list_directory with input: {"dirPath":"tests/integration"}
-Used tool: list_directory with input: {"dirPath":"tests/utils"}
-Used tool: list_directory with input: {"dirPath":"tests/fixtures"}
-Used tool: read_file with input: {"filePath":"package.json"}
-Used tool: list_directory with input: {"dirPath":"scripts"}
-Used tool: search_file_content with input: {"filePath":"docs/ci-cd-pipeline.md","pattern":"CODE_QUALITY","isRegex":false}
-Used tool: list_directory with input: {"dirPath":"prompts"}
-Used tool: find_files with input: {"pattern":"*code-quality*","directory":"."}
-Used tool: read_file with input: {"filePath":"docs/decisions/code-quality-ratcheting-plan.md"}
-Used tool: generate_file with input: {"filePath":"docs/code-quality-assessment-slices.md","overwrite":false,"content":"# Code Quality Assessment Slices\n\n_Last updated: 2025-12-04_\n\nThis document defines **logical code slices** for eslint-plugin-traceability so that\nCODE_QUALITY-style analysis can run on smaller, self-contained parts of the\nrepository instead of attempting to load the entire project at once.\n\nThe goal is to:\n\n- Keep each slice small enough to fit comfortably within model/context limits.\n- Group related source and test files together (rules, helpers, maintenance CLI, etc.).\n- Ensure at least one high-priority slice can always be analyzed even if others are\n  temporarily too large.\n\nThese slices are also encoded in the machine-readable configuration file\n`.voder-code-quality-slices.json` at the repository root.\n\n## High-level strategy\n\nThe codebase is organized roughly into four concerns:\n\n1. **Core ESLint rules and helpers** (`src/rules`, `src/utils`, `tests/rules`, `tests/utils`)\n2. **Maintenance API and CLI** (`src/maintenance`, `tests/maintenance`, `tests/integration`, fixtures)\n3. **Plugin entrypoint and ESLint configuration** (`src/index.ts`, config files, plugin/config tests)\n4. **Tooling and CI helpers** (`scripts`, `.github/workflows`)\n\nTo avoid context explosions, **documentation is intentionally excluded** from these\nCODE_QUALITY slices; documentation is covered separately by the documentation\nassessment pipeline.\n\n## Slice definitions\n\nEach slice below is also represented in `.voder-code-quality-slices.json` with the\nsame `id`, `paths`, and `priority`.\n\n### 1. `rules-and-helpers` (priority 1)\n\n**Purpose:**\n\n- Capture the heart of the plugin: all ESLint rules plus their shared helper\n  utilities and tests.\n- Provide a **small, high-value slice** that can always be analyzed even under\n  tight context limits.\n\n**Included paths (relative to repo root):**\n\n- `src/rules`\n- `src/utils`\n- `tests/rules`\n- `tests/utils`\n\n**Notes:**\n\n- This slice deliberately **excludes** maintenance code, plugin entrypoint wiring,\n  CI scripts, and documentation to minimize size.\n- When only one slice can be analyzed, this is the default and highest-priority\n  target for CODE_QUALITY.\n\n### 2. `maintenance-and-cli` (priority 2)\n\n**Purpose:**\n\n- Cover maintenance operations and the `traceability-maint` CLI: detection,\n  update, verification, and reporting of annotations.\n\n**Included paths:**\n\n- `src/maintenance`\n- `tests/maintenance`\n- `tests/integration`\n- `tests/fixtures/stale`\n- `tests/fixtures/update`\n- `tests/fixtures/valid-annotations`\n\n**Notes:**\n\n- This slice can be analyzed independently of the rules: it focuses on\n  filesystem traversal, safety checks, CLI behavior, and JSON/report output.\n- If context is tight, prefer analyzing this slice **after**\n  `rules-and-helpers`.\n\n### 3. `plugin-and-config` (priority 3)\n\n**Purpose:**\n\n- Capture the plugin entrypoint wiring and flat-config presets, plus associated\n  tests for configuration behavior.\n\n**Included paths:**\n\n- `src/index.ts`\n- `eslint.config.js`\n- `jest.config.js`\n- `tsconfig.json`\n- `tests/config`\n- `tests/plugin-setup.test.ts`\n- `tests/plugin-default-export-and-configs.test.ts`\n- `tests/plugin-setup-error.test.ts`\n- `tests/cli-error-handling.test.ts`\n\n**Notes:**\n\n- This slice is smaller than the full repository but larger than\n  `rules-and-helpers`.\n- It is useful for verifying that rules are correctly exported, configs are\n  wired as documented, and CLI-level error handling is robust.\n\n### 4. `tooling-and-ci` (priority 4)\n\n**Purpose:**\n\n- Group build scripts and CI workflow definitions that support development and\n  release automation.\n\n**Included paths:**\n\n- `scripts`\n- `.github/workflows`\n\n**Notes:**\n\n- This slice is **lowest priority** for CODE_QUALITY; analyze it only if there\n  is sufficient context budget after higher-priority slices.\n- Scripts are already exercised indirectly via `npm run` commands in CI; this\n  slice is mainly for style/maintainability review of supporting tooling.\n\n## Using slices for CODE_QUALITY analysis\n\nAutomated assessment tools (including external CODE_QUALITY runs) should:\n\n1. Load `.voder-code-quality-slices.json`.\n2. Select a target slice (by `id`) based on priority and available context.\n3. Restrict file loading to the union of `paths` listed for that slice.\n4. Analyze additional slices in separate passes, rather than combining all\n   slices into a single massive context.\n\n### Recommended minimum viable target\n\n- **Always prefer `rules-and-helpers` first.** It provides the best signal for\n  overall code quality while remaining small enough to avoid context issues.\n- If context still proves too tight even for this slice, the next step would be\n  to further sub-divide it (for example, splitting `src/rules` and `tests/rules`\n  into multiple smaller groups by feature). That refinement can be done by\n  editing `.voder-code-quality-slices.json` and updating this document.\n\n### Handling future context issues\n\nIf a CODE_QUALITY run against a given slice still exceeds context limits:\n\n1. **Identify the heaviest directories or files** within that slice\n   (e.g. large test files or helper modules).\n2. **Split the slice** into two or more smaller slices, each with a disjoint set\n   of paths (for example, `rules-core` and `rules-edgecases`), and adjust the\n   `priority` values accordingly.\n3. Update `.voder-code-quality-slices.json` and this document in the same\n   change, then rerun CODE_QUALITY against the new highest-priority slice.\n\nBy following this pattern, the codebase can grow while maintaining a\n**stable, repeatable CODE_QUALITY workflow** that never attempts to load the\nentire repository into a single model context."}
-Used tool: generate_file with input: {"filePath":".voder-code-quality-slices.json","overwrite":false,"content":"{\n  \"$schema\": \"https://voder.ai/schemas/code-quality-slices-v1.json\",\n  \"slices\": [\n    {\n      \"id\": \"rules-and-helpers\",\n      \"description\": \"Core ESLint rules, shared utilities, and their tests.\",\n      \"priority\": 1,\n      \"paths\": [\n        \"src/rules\",\n        \"src/utils\",\n        \"tests/rules\",\n        \"tests/utils\"\n      ]\n    },\n    {\n      \"id\": \"maintenance-and-cli\",\n      \"description\": \"Maintenance API and traceability-maint CLI plus related tests and fixtures.\",\n      \"priority\": 2,\n      \"paths\": [\n        \"src/maintenance\",\n        \"tests/maintenance\",\n        \"tests/integration\",\n        \"tests/fixtures/stale\",\n        \"tests/fixtures/update\",\n        \"tests/fixtures/valid-annotations\"\n      ]\n    },\n    {\n      \"id\": \"plugin-and-config\",\n      \"description\": \"Plugin entrypoint, flat-config presets, and configuration tests.\",\n      \"priority\": 3,\n      \"paths\": [\n        \"src/index.ts\",\n        \"eslint.config.js\",\n        \"jest.config.js\",\n        \"tsconfig.json\",\n        \"tests/config\",\n        \"tests/plugin-setup.test.ts\",\n        \"tests/plugin-default-export-and-configs.test.ts\",\n        \"tests/plugin-setup-error.test.ts\",\n        \"tests/cli-error-handling.test.ts\"\n      ]\n    },\n    {\n      \"id\": \"tooling-and-ci\",\n      \"description\": \"Build scripts and CI/CD workflow definitions.\",\n      \"priority\": 4,\n      \"paths\": [\n        \"scripts\",\n        \".github/workflows\"\n      ]\n    }\n  ]\n}\n"}
-Used tool: modify_file with input: {"filePath":"docs/ci-cd-pipeline.md","instruction":"Append a short section at the end titled \"CODE_QUALITY Slices\" explaining that automated CODE_QUALITY assessments should use .voder-code-quality-slices.json to analyze the repository in slices instead of loading everything at once, and that the highest-priority slice is rules-and-helpers."}
-Used tool: generate_file with input: {"filePath":"docs/code-quality-assessment-guide.md","overwrite":false,"content":"# Code Quality Assessment Guide\n\nThis guide explains how maintainers and automated tools should approach\nCODE_QUALITY analysis for `eslint-plugin-traceability` using the **slice-based\nstrategy** defined in `docs/code-quality-assessment-slices.md` and\n`.voder-code-quality-slices.json`.\n\n## Goals\n\n- Avoid context/execution limits when analyzing the repository as a whole.\n- Provide a **repeatable, documented process** for running CODE_QUALITY\n  assessments on subsets of the codebase.\n- Ensure that at least one **high-value slice** (`rules-and-helpers`) can\n  always be assessed, even under strict limits.\n\n## Slices at a Glance\n\nThe canonical slice definitions live in:\n\n- `docs/code-quality-assessment-slices.md` (human-readable)\n- `.voder-code-quality-slices.json` (machine-readable)\n\nCurrent slices:\n\n1. `rules-and-helpers` (priority 1)\n2. `maintenance-and-cli` (priority 2)\n3. `plugin-and-config` (priority 3)\n4. `tooling-and-ci` (priority 4)\n\nSee `docs/code-quality-assessment-slices.md` for details.\n\n## How to Run a Slice-Based CODE_QUALITY Assessment\n\n### 1. Choose a target slice\n\nStart with the **highest-priority slice**:\n\n1. `rules-and-helpers`\n2. `maintenance-and-cli`\n3. `plugin-and-config`\n4. `tooling-and-ci`\n\nIf tooling or model limits prevent analyzing all slices, it is acceptable to\nanalyze only the first one or two slices, as long as the chosen\nslice(s) fit comfortably within context limits.\n\n### 2. Restrict file loading to slice paths\n\nWhen running CODE_QUALITY analysis (manually or via automation):\n\n1. Read `.voder-code-quality-slices.json`.\n2. Select the desired slice by `id` (e.g. `rules-and-helpers`).\n3. Build the file list by expanding each entry in `paths` relative to the\n   repository root.\n4. **Only load these files** into the analysis context.\n\nDo **not** attempt to add additional directories (like `docs/` or `.voder/`)\nfor CODE_QUALITY analysis; those areas are covered by other assessments.\n\n### 3. Analyze and record results per slice\n\nFor each slice you analyze:\n\n- Record which slice ID was used (e.g. `rules-and-helpers`).\n- Summarize:\n  - Notable strengths (structure, readability, test coverage alignment).\n  - Specific improvement opportunities (e.g. large functions, complex\n    branches, duplication, or missing traceability annotations).\n- If the analysis stopped early due to context limits, note that explicitly.\n\n### 4. Handling context errors\n\nIf a CODE_QUALITY run still fails with a context/size error **for a single\nslice**:\n\n1. Identify which directories or files inside that slice are the largest\n   contributors (for example, very large test files).\n2. Refine the slices by splitting the offending slice into two or more\n   smaller slices (e.g. `rules-core` and `rules-edgecases`).\n3. Update both:\n   - `.voder-code-quality-slices.json`\n   - `docs/code-quality-assessment-slices.md`\n4. Re-run CODE_QUALITY on the new highest-priority slice.\n\nThe aim is to iterate in **small, safe steps**, always keeping at least one\nslice analyzable.\n\n## Minimum Acceptable Assessment\n\nFor CODE_QUALITY to be considered sufficiently evaluated for this project:\n\n- At **minimum**, the `rules-and-helpers` slice must be analyzed successfully.\n- Additional slices (especially `maintenance-and-cli`) should be added over\n  time as context budgets allow, but they are **secondary** to the core rules.\n\n## Relationship to Other Quality Gates\n\nSlice-based CODE_QUALITY does **not** replace existing automated quality\ngates:\n\n- ESLint (`npm run lint`) with max-warnings=0\n- Type checking (`npm run type-check`)\n- Jest tests with coverage thresholds\n- Duplication checks (`npm run duplication`)\n- Dependency audits and security checks\n\nInstead, slice-based CODE_QUALITY provides **deeper, human/language-model\nreview** of maintainability, structure, and style **within the constraints** of\navailable context.\n\nBy following this guide and the slice definitions, future CODE_QUALITY\nassessments should complete without running into context-size issues and can\nfocus on actionable improvements in each part of the codebase."}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
-Used tool: get_git_status with input: {}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"docs: document CODE_QUALITY slice strategy"}
-Used tool: git_push with input: {}
-Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":19935786345,"timeout":600000}
----
-
-**This was the result:**
----
-Here’s what I implemented for the ##NOW and ##NEXT sections, and how it’s wired into the repo and CI.
+- Committed as: `docs: remove user-facing references to internal docs`.
+- Pushed to `main`; GitHub Actions CI (run ID `19935224744`) completed successfully.
 
 ---
 
-## Updated Plan Status
+## CODE_QUALITY Slice Strategy Documentation
 
-### NOW
+### Repository Exploration
 
-- [x] Review the source and test directory structure to decide on a small set of logical code slices (for example, rules, helpers, maintenance CLI, and tests) that can each be assessed for code quality independently without exceeding model context limits.
+- Used tooling to:
+  - Inspect top-level directories (`.`, `.voder`, `src`, `tests`, `docs`, `docs/stories`, `docs/decisions`, `scripts`, `prompts`).
+  - Inspect specific subtrees (`src/rules`, `src/maintenance`, `src/utils`, `tests/rules`, `tests/maintenance`, `tests/config`, `tests/integration`, `tests/utils`, `tests/fixtures`, including fixture subdirectories).
+- Read internal documentation:
+  - `docs/decisions/003-code-quality-ratcheting-plan.md`
+  - `docs/code-quality-refactor-opportunities-2025-12-03.md`
+  - `docs/functionality-coverage-2025-12-03.md`
+  - `docs/decisions/code-quality-ratcheting-plan.md`
+  - `docs/ci-cd-pipeline.md` (with a targeted search for `CODE_QUALITY`).
+- Reviewed `package.json` for scripts and shipped files.
 
-### NEXT
+### Defining Code-Quality Slices
 
-- [x] Document the chosen code slices in an internal maintainer guide that explains how the project should be analyzed for code quality in separate passes, including which directories belong to each slice and their relative priority.
-- [x] Introduce a lightweight configuration or metadata file that formally lists the code slices and the paths they cover so automated assessment tools can target one slice at a time instead of the entire repository at once.
-- [x] Refine the configuration and documentation so that at least one high-priority slice (such as the core rules and helpers) is guaranteed to fit comfortably within assessment context limits and can be used as the minimum viable target for CODE_QUALITY evaluation.
-- [ ] Once the slicing strategy is in place, trigger or request a CODE_QUALITY assessment focused on the highest-priority slice to verify that it now completes successfully without context errors and reaches the required quality threshold.
-- [ ] Iterate on slice boundaries or exclusions if the initial bounded assessment still encounters context issues, tightening the definition until a stable, repeatable CODE_QUALITY run is achievable.
+- Created `docs/code-quality-assessment-slices.md` describing logical slices for CODE_QUALITY analysis:
+  - **`rules-and-helpers` (priority 1):**
+    - `src/rules`, `src/utils`, `tests/rules`, `tests/utils`.
+    - Focused on core ESLint rules, shared utilities, and tests.
+  - **`maintenance-and-cli` (priority 2):**
+    - `src/maintenance`, `tests/maintenance`, `tests/integration`,
+      `tests/fixtures/stale`, `tests/fixtures/update`, `tests/fixtures/valid-annotations`.
+    - Focused on maintenance operations and the `traceability-maint` CLI.
+  - **`plugin-and-config` (priority 3):**
+    - `src/index.ts`, `eslint.config.js`, `jest.config.js`, `tsconfig.json`,
+      `tests/config`,
+      `tests/plugin-setup.test.ts`,
+      `tests/plugin-default-export-and-configs.test.ts`,
+      `tests/plugin-setup-error.test.ts`,
+      `tests/cli-error-handling.test.ts`.
+    - Focused on plugin entrypoint wiring and configuration behavior.
+  - **`tooling-and-ci` (priority 4):**
+    - `scripts`, `.github/workflows`.
+    - Focused on supporting build and CI tooling.
+- Documented:
+  - The intent to keep slices small and focused.
+  - The exclusion of documentation from slices (handled by separate documentation assessment).
+  - The notion that `rules-and-helpers` is the primary, high-value slice.
 
-The last two items require the external CODE_QUALITY assessment system to actually run and report back; from within this repo we can only prepare and document the slicing strategy (which is now done).
+### Machine-Readable Slice Configuration
 
----
+- Added `.voder-code-quality-slices.json` with the same four slices:
+  - Each slice includes `id`, `description`, `priority`, and `paths`.
+  - Mirrors the definitions in `docs/code-quality-assessment-slices.md`.
+- Enabled automated tools to:
+  - Load this file.
+  - Select slices by `id`/`priority`.
+  - Restrict analysis to listed `paths`.
 
-## What I Did for ##NOW
+### CODE_QUALITY Assessment Guide
 
-### 1. Reviewed source & test structure and defined logical slices
+- Created `docs/code-quality-assessment-guide.md` to explain how to use slices:
+  - How to choose a target slice by priority (starting with `rules-and-helpers`).
+  - How to restrict file loading to the slice’s paths based on `.voder-code-quality-slices.json`.
+  - How to record results per slice and note context limitations.
+  - What to do if a slice is still too large (identify heavy files, split slices, update docs and JSON).
+- Defined the “minimum acceptable assessment”:
+  - At minimum, the `rules-and-helpers` slice must be analyzed successfully.
+- Clarified that slice-based CODE_QUALITY supplements, rather than replaces:
+  - `npm run lint`, type-checking, tests, duplication checks, and security/audit steps.
 
-Using the project layout:
+### CI/CD Documentation Update
 
-- Core logic:
-  - `src/rules`
-  - `src/utils`
-- Maintenance & CLI:
-  - `src/maintenance`
-- Tests:
-  - `tests/rules`
-  - `tests/utils`
-  - `tests/maintenance`
-  - `tests/integration`
-  - `tests/fixtures/*`
-- Tooling / CI:
-  - `scripts`
-  - `.github/workflows`
+- Updated `docs/ci-cd-pipeline.md`:
+  - Appended a “CODE_QUALITY Slices” section.
+  - Stated that automated CODE_QUALITY assessments should consult `.voder-code-quality-slices.json` and analyze the repo slice-by-slice instead of loading everything at once.
+  - Noted that `rules-and-helpers` is the highest-priority slice.
 
-I grouped these into four coherent slices:
+### Quality Checks, Commit, and CI for Slice Work
 
-1. `rules-and-helpers` – core ESLint rules + shared utilities + tests.
-2. `maintenance-and-cli` – maintenance API + `traceability-maint` CLI + related tests/fixtures.
-3. `plugin-and-config` – plugin entrypoint and ESLint/Jest/TS config + config tests.
-4. `tooling-and-ci` – build scripts and GitHub Actions workflows.
-
-This satisfies the NOW task: we have a small, principled set of slices that can each be assessed independently.
-
----
-
-## What I Did for ##NEXT
-
-### 2. Documented slices in maintainer guide
-
-**New docs:**
-
-1. `docs/code-quality-assessment-slices.md`
-
-   - Human-readable definition of the slices:
-     - `rules-and-helpers` (priority 1)
-     - `maintenance-and-cli` (priority 2)
-     - `plugin-and-config` (priority 3)
-     - `tooling-and-ci` (priority 4)
-   - For each slice, it documents:
-     - Purpose
-     - Included paths (relative to repo root)
-     - Notes (e.g. exclusion of docs to keep context small, how to prefer this slice first).
-
-2. `docs/code-quality-assessment-guide.md`
-
-   - Explains how to actually run slice-based CODE_QUALITY assessments:
-     - How to choose a target slice by priority.
-     - How to restrict file loading to the slice’s `paths`.
-     - How to record results per slice.
-     - What to do if a single slice still hits context limits (split the slice, update config+docs).
-   - Defines the **minimum acceptable assessment**:
-     - At least the `rules-and-helpers` slice must be analyzed for CODE_QUALITY to be considered evaluated.
-   - Clarifies relationship with existing gates (`lint`, `type-check`, Jest, duplication, audits): slice-based CODE_QUALITY is an additional, deeper review, not a replacement.
-
-This covers the “internal maintainer guide” requirement.
-
----
-
-### 3. Introduced machine-readable slice configuration
-
-**New config file:**
-
-- `.voder-code-quality-slices.json`
-
-  ```json
-  {
-    "$schema": "https://voder.ai/schemas/code-quality-slices-v1.json",
-    "slices": [
-      {
-        "id": "rules-and-helpers",
-        "description": "Core ESLint rules, shared utilities, and their tests.",
-        "priority": 1,
-        "paths": [
-          "src/rules",
-          "src/utils",
-          "tests/rules",
-          "tests/utils"
-        ]
-      },
-      {
-        "id": "maintenance-and-cli",
-        "description": "Maintenance API and traceability-maint CLI plus related tests and fixtures.",
-        "priority": 2,
-        "paths": [
-          "src/maintenance",
-          "tests/maintenance",
-          "tests/integration",
-          "tests/fixtures/stale",
-          "tests/fixtures/update",
-          "tests/fixtures/valid-annotations"
-        ]
-      },
-      {
-        "id": "plugin-and-config",
-        "description": "Plugin entrypoint, flat-config presets, and configuration tests.",
-        "priority": 3,
-        "paths": [
-          "src/index.ts",
-          "eslint.config.js",
-          "jest.config.js",
-          "tsconfig.json",
-          "tests/config",
-          "tests/plugin-setup.test.ts",
-          "tests/plugin-default-export-and-configs.test.ts",
-          "tests/plugin-setup-error.test.ts",
-          "tests/cli-error-handling.test.ts"
-        ]
-      },
-      {
-        "id": "tooling-and-ci",
-        "description": "Build scripts and CI/CD workflow definitions.",
-        "priority": 4,
-        "paths": [
-          "scripts",
-          ".github/workflows"
-        ]
-      }
-    ]
-  }
-  ```
-
-Automated assessment tooling can now:
-
-1. Read this file.
-2. Choose a slice by `id` and `priority`.
-3. Limit analysis to the listed `paths`.
-
-This satisfies the “lightweight configuration/metadata file” requirement.
-
----
-
-### 4. Ensured at least one high-priority, small slice exists
-
-The design of `rules-and-helpers` addresses this point:
-
-- **Slice:** `rules-and-helpers` (priority `1`).
-- **Content:** just the core plugin logic and its tests:
-  - `src/rules`
-  - `src/utils`
-  - `tests/rules`
-  - `tests/utils`
-- **Excluded:** maintenance, CLI, configs, docs, CI, scripts – all to keep it as small as possible while still high-value.
-
-Both the JSON config and `docs/code-quality-assessment-slices.md` emphasize:
-
-- This slice is the **default and highest-priority target** when context is constrained.
-- If only one slice can be analyzed, it should be `rules-and-helpers`.
-
-Additionally, the **assessment guide** explicitly states:
-
-> For CODE_QUALITY to be considered sufficiently evaluated for this project:  
-> – At minimum, the `rules-and-helpers` slice must be analyzed successfully.
-
-This refines the configuration and documentation to provide a clear “minimum viable target” for CODE_QUALITY.
-
----
-
-### 5. Connected slicing strategy to CI/CD documentation
-
-To make the slicing strategy visible to anyone looking at the pipeline:
-
-- **Updated** `docs/ci-cd-pipeline.md` by appending a **“CODE_QUALITY Slices”** section:
-
-  > Automated `CODE_QUALITY` assessments should respect the slice configuration in `.voder-code-quality-slices.json`. Instead of loading the entire repository at once, tools should analyze the codebase slice by slice as defined there. The highest-priority slice is `rules-and-helpers`, and assessments should focus on that slice first before considering lower-priority slices.
-
-This doesn’t change the CI behavior directly (there’s no CODE_QUALITY step in the workflow yet), but it documents how future/automated CODE_QUALITY tooling should behave in relation to the current pipeline.
-
----
-
-## About the Remaining NEXT Tasks
-
-- **“Trigger or request a CODE_QUALITY assessment…”**  
-  Within this environment, there is no direct tool to run the external CODE_QUALITY assessment. What I have done is:
-  - Provide the machine-readable `.voder-code-quality-slices.json`.
-  - Document the expectations in `docs/code-quality-assessment-guide.md` and `docs/ci-cd-pipeline.md`.
-  - Run all existing project quality gates (`build`, `test`, `lint`, `type-check`, `format:check`) to ensure the repo is in a clean state.
-
-  The actual triggering of the next slice-based CODE_QUALITY run will be done by the assessment system that invoked this project, using the new configuration. Until that happens and reports success, I’ve left this checkbox unchecked.
-
-- **“Iterate on slice boundaries…”**  
-  This is explicitly conditional on the bounded assessment still hitting context limits. That hasn’t been attempted yet with the new slices, so there is nothing to iterate on yet; accordingly, this remains unchecked and is ready for a future refinement pass if needed.
-
----
-
-## Quality Checks, Commit, and CI
-
-Before pushing:
-
-- Ran locally (all succeeded):
+- Ran:
   - `npm run build`
   - `npm test -- --runInBand`
   - `npm run lint`
   - `npm run type-check`
   - `npm run format:check`
+- All commands succeeded.
+- Staged and committed changes as:  
+  `docs: document CODE_QUALITY slice strategy`
+- Pushed to `main`, triggering GitHub Actions:
+  - CI run ID `19935786345` completed successfully, including `ci-verify:full`, `security:secrets`, and semantic-release (no new release).
 
-- Committed changes:
+**Most recently we've executed the following action:**
 
-  - **Commit:** `docs: document CODE_QUALITY slice strategy`
+---
+Used tool: list_directory with input: {"dirPath":"."}
+Used tool: find_files with input: {"pattern":"*code-quality*","directory":"."}
+Used tool: find_files with input: {"pattern":"*ratchet*","directory":"docs"}
+Used tool: find_files with input: {"pattern":"*slice*","directory":"."}
+Used tool: find_files with input: {"pattern":"*functionality*","directory":"docs"}
+Used tool: read_file with input: {"filePath":"docs/code-quality-assessment-guide.md"}
+Used tool: read_file with input: {"filePath":"docs/code-quality-assessment-slices.md"}
+Used tool: read_file with input: {"filePath":"docs/decisions/003-code-quality-ratcheting-plan.md"}
+Used tool: read_file with input: {"filePath":"docs/functionality-coverage-2025-12-03.md"}
+Used tool: read_file with input: {"filePath":".voder-code-quality-slices.json"}
+Used tool: read_file with input: {"filePath":"docs/decisions/code-quality-ratcheting-plan.md"}
+Used tool: search_file_content with input: {"filePath":"docs/code-quality-assessment-guide.md","pattern":"passing","isRegex":false}
+Used tool: modify_file with input: {"filePath":"docs/code-quality-assessment-guide.md","instruction":"After the \"## Minimum Acceptable Assessment\" section, insert a new section titled \"## Interpreting CODE_QUALITY results for `rules-and-helpers`\" that clearly explains how maintainers and tools should treat CODE_QUALITY runs on the `rules-and-helpers` slice. Describe:\n- That a run is only considered valid if it completes without context/size errors.\n- What constitutes a \"passing\" outcome for this slice (e.g., no critical structural issues such as violations of the current ratcheted ESLint thresholds, missing traceability annotations, or untested core rule paths).\n- How to classify findings into three buckets: **Blockers** (must be refactored before FUNCTIONALITY can rely on this slice), **Near-term improvements** (should be scheduled soon but do not block FUNCTIONALITY), and **Informational observations**.\n- That for the purposes of higher-level assessments, CODE_QUALITY is considered \"passing\" for `rules-and-helpers` only when there are no open Blockers for this slice.\n- That if the run fails due to context limits, the assessment is treated as \"not run\" and maintainers must refine slices or reduce scope before trying again.\nReference `.voder-code-quality-slices.json`, `docs/code-quality-assessment-slices.md`, and `docs/decisions/code-quality-ratcheting-plan.md` where appropriate, and keep the tone consistent with the rest of the guide."}
+Used tool: modify_file with input: {"filePath":"docs/decisions/003-code-quality-ratcheting-plan.md","instruction":"Update this ADR so that it explicitly references the slice-based CODE_QUALITY approach. In the \"Context and Decision Drivers\" section, add a note that ratcheting is applied with particular focus on the `rules-and-helpers` slice as defined in `.voder-code-quality-slices.json` and `docs/code-quality-assessment-slices.md`. Then, after the \"Implementation Steps\" list, add a new section titled \"Relationship to Slice-based CODE_QUALITY\" that explains:\n- That ratcheting thresholds are evaluated primarily on the `rules-and-helpers` slice for CODE_QUALITY purposes.\n- That CODE_QUALITY assessments should treat violations of ratcheted thresholds in `rules-and-helpers` as Blockers (referencing the guidance in `docs/code-quality-assessment-guide.md`).\n- That other slices (`maintenance-and-cli`, `plugin-and-config`, `tooling-and-ci`) may adopt similar ratcheting over time, but the initial enforcement focus is on `rules-and-helpers`.\nKeep the ADR style and frontmatter format unchanged."}
+Used tool: modify_file with input: {"filePath":"docs/functionality-coverage-2025-12-03.md","instruction":"After the \"Scope\" section and before \"Story-level implementation summary\", insert a short \"Assessment Dependencies\" section that explains that FUNCTIONALITY assessments depend on CODE_QUALITY passing for at least the `rules-and-helpers` slice. Make it clear that:\n- FUNCTIONALITY assessments should not be treated as authoritative if CODE_QUALITY for `rules-and-helpers` is failing or \"not run\".\n- For future assessments, reviewers should verify that the latest CODE_QUALITY run for the `rules-and-helpers` slice completed successfully and has no open Blockers (as defined in `docs/code-quality-assessment-guide.md`) before updating functionality coverage.\nReference `.voder-code-quality-slices.json` and `docs/code-quality-assessment-guide.md` explicitly."}
+Used tool: get_git_status with input: {}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--colors=false"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"docs: clarify code-quality slice interpretation and dependencies"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: wait_for_github_workflow with input: {"runId":19936091302,"timeout":600000}
+---
 
-  This commit includes:
-  - `.voder-code-quality-slices.json`
-  - `docs/code-quality-assessment-slices.md`
-  - `docs/code-quality-assessment-guide.md`
-  - Updated `docs/ci-cd-pipeline.md`
-  - Updated `.voder` tracking files (handled automatically by the tooling)
-
-- Pushed to `main`, which automatically triggered the **CI/CD Pipeline**.
-
-- Monitored CI:
-  - Latest run ID `19935786345` completed with conclusion: `success`.
-  - Pipeline ran `ci-verify:full` and `security:secrets`, then semantic-release (no new release needed), all passing.
+**This was the result:**
+---
+Here’s what I’ve implemented and how it maps to your plan.
 
 ---
 
-If you’d like, the next step would be to have the assessment system rerun **CODE_QUALITY** targeting the `rules-and-helpers` slice, and then we can react to any feedback (or further split slices) in a follow-up.
+## Changes made
+
+### 1) Clarify interpretation of CODE_QUALITY for `rules-and-helpers` (##NOW)
+
+**File updated:** `docs/code-quality-assessment-guide.md`
+
+**What I added:**
+
+A new section:
+
+> `## Interpreting CODE_QUALITY results for \`rules-and-helpers\``
+
+Key points covered:
+
+- **Valid vs invalid runs**
+  - A run for `rules-and-helpers` is only **valid** if:
+    - Slice definitions come from `.voder-code-quality-slices.json` and match `docs/code-quality-assessment-slices.md`.
+    - The run completes without context/size errors or truncation.
+    - The assessment explicitly records that the `rules-and-helpers` slice was used.
+  - If the run fails due to context limits or truncation, it is treated as **“not run”**, and maintainers must refine slices (e.g., split into `rules-core`, `rules-edgecases`) and retry.
+
+- **What counts as “passing” for `rules-and-helpers`**
+  - No violations of ratcheted ESLint thresholds as defined in  
+    `docs/decisions/code-quality-ratcheting-plan.md` (size/complexity-style constraints).
+  - Core rule implementations and helpers:
+    - Have required traceability annotations.
+    - Have test coverage on critical/central code paths.
+  - No **critical structural issues**, such as:
+    - Extremely large/deeply nested functions that violate the current ratcheting expectations.
+    - Architectural tangles or hard-to-refactor coupling.
+    - Repeated duplication patterns that make evolution error‑prone.
+
+- **Finding classification into three buckets**
+  - **Blockers** (must be fixed before FUNCTIONALITY relies on this slice):
+    - Violations of ratcheted thresholds in `rules-and-helpers`.
+    - Missing/incorrect traceability on core rule code paths.
+    - Uncovered/un-tested core rule paths with significant impact.
+    - Structural problems that make correct behavior hard to reason about.
+  - **Near‑term improvements** (should be scheduled soon but do **not** block FUNCTIONALITY):
+    - Moderately complex but compliant code that could be clearer.
+    - Non-critical duplication or naming/structure issues.
+    - Imperfect but present traceability.
+  - **Informational observations**:
+    - Neutral, low‑risk insights, patterns to watch, or optional refactors.
+
+- **Relationship to higher-level assessments**
+  - CODE_QUALITY for `rules-and-helpers` is **passing** only if:
+    - A **valid** run has completed (no context/size errors), **and**
+    - There are **no open Blockers** for this slice.
+  - If Blockers exist → CODE_QUALITY for this slice is **failing**.
+  - If the run is invalid (context issues) → CODE_QUALITY for this slice is **“not run”**, and slices/scopes must be refined before proceeding.
+
+This directly matches the “what counts as passing vs when targeted refactoring is required” requirement and ties to the ratcheting ADR and slice JSON.
+
+---
+
+### 2) Update ratcheting ADR to reference slices and per-slice thresholds (##NEXT–1)
+
+**File updated:** `docs/decisions/003-code-quality-ratcheting-plan.md`
+
+**Adjustments:**
+
+- In **Context and Decision Drivers**, I added:
+
+  > “Ratcheting is applied with particular focus on the `rules-and-helpers` slice as defined in `.voder-code-quality-slices.json` and `docs/code-quality-assessment-slices.md`, since that slice has the greatest impact on overall CODE_QUALITY and plugin correctness.”
+
+- After **Implementation Steps**, I added:
+
+  #### Relationship to Slice-based CODE_QUALITY
+
+  - Ratcheting thresholds are **applied and measured primarily** on the `rules-and-helpers` slice for CODE_QUALITY purposes (with references to `.voder-code-quality-slices.json` and `docs/code-quality-assessment-slices.md`).
+  - In CODE_QUALITY assessments, **violations of ratcheted thresholds in `rules-and-helpers` must be treated as Blockers**, explicitly referencing the classification rules in `docs/code-quality-assessment-guide.md`.
+  - Other slices (`maintenance-and-cli`, `plugin-and-config`, `tooling-and-ci`) **may adopt similar ratcheting in future**, but the **initial and strictest enforcement focus** is the `rules-and-helpers` slice.
+
+This connects the ratcheting strategy directly to the slice-based CODE_QUALITY configuration and clarifies that `rules-and-helpers` is the primary enforcement target.
+
+---
+
+### 3) Document dependency of FUNCTIONALITY on CODE_QUALITY (##NEXT–2)
+
+**File updated:** `docs/functionality-coverage-2025-12-03.md`
+
+**What I inserted:**
+
+A new section:
+
+> `## Assessment Dependencies`  
+> (between “Scope” and “Story-level implementation summary”)
+
+Key points:
+
+- FUNCTIONALITY assessments in this document **assume** CODE_QUALITY for at least the `rules-and-helpers` slice (from `.voder-code-quality-slices.json`) is “healthy.”
+- FUNCTIONALITY **must not be treated as authoritative** if the latest CODE_QUALITY for `rules-and-helpers` is failing or “not run.”
+- For future updates, reviewers must:
+  - Confirm the most recent CODE_QUALITY run for `rules-and-helpers` **completed successfully**.
+  - Verify there are **no open Blockers** for that slice using the definitions in `docs/code-quality-assessment-guide.md`.
+  - Only then adjust or extend functionality coverage.
+
+This makes the dependency between CODE_QUALITY and FUNCTIONALITY explicit and ties it to the new interpretation rules.
+
+---
+
+### 4) Review slice configuration for lower-priority slices (##NEXT–3)
+
+**Files reviewed:**
+
+- `.voder-code-quality-slices.json`
+- `docs/code-quality-assessment-slices.md`
+
+**What I checked:**
+
+- **`rules-and-helpers` (priority 1)**  
+  - Paths: `src/rules`, `src/utils`, `tests/rules`, `tests/utils`.  
+  - This is already minimal and focused (no docs, no `.voder`, no CI scripts). Per your instruction, I **did not change** this slice.
+
+- **`maintenance-and-cli` (priority 2)**  
+  - Paths: `src/maintenance`, `tests/maintenance`, `tests/integration`, and three fixture dirs (`tests/fixtures/stale`, `tests/fixtures/update`, `tests/fixtures/valid-annotations`).
+  - All paths are directly relevant to maintenance/CLI behavior; there are **no obviously extraneous large directories** (e.g., docs, `.voder`, build outputs).
+  - This slice is larger than `rules-and-helpers` but still focused on a coherent concern. It can be further subdivided later (e.g., separate integration tests vs fixtures) if context becomes an issue, but nothing is currently misconfigured.
+
+- **`plugin-and-config` (priority 3)**  
+  - Paths: `src/index.ts`, `eslint.config.js`, `jest.config.js`, `tsconfig.json`, plus `tests/config` and key plugin/CLI tests.
+  - Again, only core plugin entrypoint & config plus focused tests; no unnecessary directories. This is an appropriate medium-sized slice.
+
+- **`tooling-and-ci` (priority 4)**  
+  - Paths: `scripts`, `.github/workflows`.
+  - Only development tooling and CI definitions—no user docs or `.voder`. As the lowest-priority slice, this is acceptable.
+
+**Conclusion:**
+
+- No lower-priority slice currently includes obviously “too large” or irrelevant paths (such as docs/, `.voder/`, build outputs, or unrelated areas) that would be likely to blow context limits.
+- The existing definitions already match the design in `docs/code-quality-assessment-slices.md`.
+- Given the recent context-limit problems were with full-repo assessments, not these focused slices, there is **no immediate need to adjust slice boundaries**. If a future CODE_QUALITY run on `maintenance-and-cli` or `plugin-and-config` hits context issues, we can then split those slices further as described in the docs.
+
+Because this task was to **review** and adjust “if needed,” and the review found no problematic inclusions, I left `.voder-code-quality-slices.json` and the slice doc unchanged.
+
+---
+
+## Quality checks and Git operations
+
+Before committing and pushing:
+
+- **Tests:**  
+  - `npm test -- --runInBand --colors=false` → all 35 suites / 266 tests passed.
+- **Lint:**  
+  - `npm run lint` → ESLint clean, `--max-warnings=0`.
+- **Type-check:**  
+  - `npm run type-check` → `tsc --noEmit` clean.
+- **Build:**  
+  - `npm run build` → `tsc -p tsconfig.json` succeeded.
+- **Format check:**  
+  - `npm run format:check` → Prettier check passed.
+
+Then:
+
+- Staged all changes: `git_add_all`
+- Commit:  
+  - `docs: clarify code-quality slice interpretation and dependencies`
+- Push: `git_push`  
+  - Pre-push hook ran `npm run ci-verify:full` and `npm run security:secrets` successfully.
+- CI:  
+  - GitHub Actions `CI/CD Pipeline` run `19936091302` for `main` completed with **success**.
+
+---
+
+## Updated plan with status
+
+### NOW
+
+- [x] Clarify in the internal code-quality assessment guide how maintainers and tools should interpret CODE_QUALITY results for the rules-and-helpers slice, including what counts as a passing outcome versus when targeted refactoring is required before re-running the assessment.
+
+### NEXT
+
+- [x] Update the existing architecture decision record about code-quality ratcheting to reference the slice-based approach and describe how ratcheting thresholds should now be applied per slice, starting with the rules-and-helpers slice.
+- [x] Add a note to the internal functionality-coverage documentation making it explicit that FUNCTIONALITY assessments must wait until CODE_QUALITY has successfully passed for the rules-and-helpers slice, so the dependency between these assessments is clear.
+- [x] Review the slice configuration file to confirm that no lower-priority slices inadvertently include large or unnecessary paths that could jeopardize context limits when they are assessed later, adjusting boundaries if needed without changing the already-defined rules-and-helpers slice.
 ---

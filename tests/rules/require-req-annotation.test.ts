@@ -9,7 +9,7 @@
  * @req REQ-TYPESCRIPT-SUPPORT - Verify TypeScript declarations are checked via shared annotation checker helper
  *
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Verify @implements is accepted as satisfying requirement annotations
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Verify @supports is accepted as satisfying requirement annotations
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-req-annotation";
@@ -79,7 +79,7 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
       },
       {
         name: "[REQ-REQUIRE-ACCEPTS-IMPLEMENTS] valid with only @implements annotation",
-        code: `/**\n * @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction implOnly() {}`,
+        code: `/**\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction implOnly() {}`,
       },
       {
         name: "[REQ-ANNOTATION-REQUIRED] valid with @story and @req annotations",

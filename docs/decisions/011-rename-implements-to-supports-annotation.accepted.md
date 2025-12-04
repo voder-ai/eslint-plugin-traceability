@@ -121,6 +121,18 @@ Multi-version deprecation path:
 - Bad, because maintains two parallel implementations temporarily
 - Bad, because delays semantic improvement to "supports"
 
+## Implementation Status
+
+- `@supports` is now the canonical and only supported multi-story annotation in user code.
+- `@implements` is no longer recognised by the plugin for user code and will be treated as an unknown/unsupported annotation.
+- The rename is implemented as a hard, breaking change in v2.0.0 with no alias, shim, or deprecation period; users must update `@implements` to `@supports`.
+- Multi-story semantics are otherwise unchanged from the original `@implements` design:
+  - Annotation format remains `@supports <story-path> <REQ-ID> [<REQ-ID> ...]`.
+  - Requirement IDs remain scoped per story file.
+  - Existing `@story` and `@req` annotations continue to work exactly as before, with full backward compatibility.
+- The optional migration rule keeps its historical name, `prefer-implements-annotation`, but its behaviour is updated:
+  - It now migrates from `@story`/`@req` to `@supports` instead of `@implements`.
+
 ## More Information
 
 **Implementation Plan:**

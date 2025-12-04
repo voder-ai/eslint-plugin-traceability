@@ -256,10 +256,10 @@ function validateReqAnnotation(
 }
 
 /**
- * Validate an @implements annotation value and report detailed errors when needed.
+ * Validate an @supports annotation value and report detailed errors when needed.
  *
  * Expected format:
- *   @implements <storyPath> <REQ-ID> [<REQ-ID> ...]
+ *   @supports <storyPath> <REQ-ID> [<REQ-ID> ...]
  *
  * Validation rules:
  *   - Value must include at least a story path and one requirement ID.
@@ -270,7 +270,7 @@ function validateReqAnnotation(
  * requirement ID issues reuse the existing "invalidReqFormat" message.
  *
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-PARSE - Parse @implements annotations without affecting @story/@req
+ * @req REQ-SUPPORTS-PARSE - Parse @supports annotations without affecting @story/@req
  * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
  * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
  */
@@ -338,7 +338,7 @@ function finalizePendingAnnotation(
  * @req REQ-SYNTAX-VALIDATION - Start new pending annotation when a tag is found
  * @req REQ-MULTILINE-SUPPORT - Treat subsequent lines as continuation for pending annotation
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-IMPLEMENTS-PARSE - Parse @implements annotations without affecting @story/@req
+ * @req REQ-IMPLEMENTS-PARSE - Parse @supports annotations without affecting @story/@req
  * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
  * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
  */
@@ -363,13 +363,13 @@ function processCommentLine({
 
   const isStory = /@story\b/.test(normalized);
   const isReq = /@req\b/.test(normalized);
-  const isImplements = /@implements\b/.test(normalized);
+  const isImplements = /@supports\b/.test(normalized);
 
-  // Handle @implements as an immediate, single-line annotation
+  // Handle @supports as an immediate, single-line annotation
   // @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-  // @req REQ-IMPLEMENTS-PARSE - Immediately validate @implements without starting multi-line state
+  // @req REQ-IMPLEMENTS-PARSE - Immediately validate @supports without starting multi-line state
   if (isImplements) {
-    const implementsValue = normalized.replace(/^@implements\b/, "").trim();
+    const implementsValue = normalized.replace(/^@supports\b/, "").trim();
     validateImplementsAnnotation(context, comment, implementsValue, options);
     return pending;
   }
@@ -417,13 +417,13 @@ function processCommentLine({
 }
 
 /**
- * Process a single comment node and validate any @story/@req/@implements annotations it contains.
+ * Process a single comment node and validate any @story/@req/@supports annotations it contains.
  *
  * Supports @story and @req annotations whose values span multiple lines within the same
  * comment block, collapsing whitespace so that the logical value can be
  * validated against the configured patterns.
  *
- * @implements annotations are validated immediately per-line and are not
+ * @supports annotations are validated immediately per-line and are not
  * accumulated into pending multi-line state.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
@@ -432,7 +432,7 @@ function processCommentLine({
  * @req REQ-MULTILINE-SUPPORT - Handle annotations split across multiple lines
  * @req REQ-FLEXIBLE-PARSING - Support reasonable variations in whitespace and formatting
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-IMPLEMENTS-PARSE - Parse @implements annotations without affecting @story/@req
+ * @req REQ-IMPLEMENTS-PARSE - Parse @supports annotations without affecting @story/@req
  * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
  * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
  */
@@ -463,7 +463,7 @@ export default {
     type: "problem",
     docs: {
       description:
-        "Validate format and syntax of @story, @req, and @implements annotations",
+        "Validate format and syntax of @story, @req, and @supports annotations",
       recommended: "error",
     },
     messages: {
@@ -483,8 +483,8 @@ export default {
       invalidReqFormat: "Invalid annotation format: {{details}}.",
       /**
        * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-       * @req REQ-ERROR-SPECIFIC - Provide specific details about invalid @implements annotation format
-       * @req REQ-ERROR-CONTEXT - Include human-readable details about the expected @implements annotation format
+       * @req REQ-ERROR-SPECIFIC - Provide specific details about invalid @supports annotation format
+       * @req REQ-ERROR-CONTEXT - Include human-readable details about the expected @supports annotation format
        * @req REQ-ERROR-CONSISTENCY - Use shared "Invalid annotation format: {{details}}." message pattern across rules
        * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
        */
@@ -521,7 +521,7 @@ export default {
    * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
    * @req REQ-REGEX-VALIDATION - Derive validation regexes from shared options helper
    * @req REQ-BACKWARD-COMP - Fall back to default patterns and continue validation on config errors
-   * @req REQ-IMPLEMENTS-PARSE - Parse @implements annotations without affecting @story/@req
+   * @req REQ-IMPLEMENTS-PARSE - Parse @supports annotations without affecting @story/@req
    * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
    * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
    */
@@ -532,7 +532,7 @@ export default {
 
     return {
       /**
-       * Program-level handler that inspects all comments for @story, @req, and @implements tags
+       * Program-level handler that inspects all comments for @story, @req, and @supports tags
        *
        * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
        * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -543,7 +543,7 @@ export default {
        * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
        * @req REQ-REGEX-VALIDATION - Surface regex configuration errors without blocking validation
        * @req REQ-BACKWARD-COMP - Continue validating comments using default patterns on error
-       * @req REQ-IMPLEMENTS-PARSE - Parse @implements annotations without affecting @story/@req
+       * @req REQ-IMPLEMENTS-PARSE - Parse @supports annotations without affecting @story/@req
        * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
        * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
        */

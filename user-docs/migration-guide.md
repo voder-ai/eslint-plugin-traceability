@@ -44,22 +44,22 @@ The following diff shows a typical migration in **your own project**, where `doc
 + /** @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md */
 ```
 
-### 3.1 Multi-story `@implements` annotations
+### 3.1 Multi-story `@supports` annotations
 
 Starting in v1.x, `eslint-plugin-traceability` supports an additional annotation form for integration code that implements requirements from multiple stories in a consuming project. The following snippet shows one example of how you might structure such an annotation in **your** codebase:
 
 ```js
 /**
- * @implements docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-IMPLEMENTS-VALIDATE
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-IMPLEMENTS-VALIDATE
  */
 function integrate() {}
 ```
 
-You **do not** need to change existing, single-story annotations that already use `@story` and `@req`. Migration to `@implements` is only recommended when a function or module genuinely implements requirements from more than one story file.
+You **do not** need to change existing, single-story annotations that already use `@story` and `@req`. Migration to `@supports` is only recommended when a function or module genuinely implements requirements from more than one story file.
 
 #### Optional `prefer-implements-annotation` migration rule
 
-For teams that want to gradually migrate from `@story` + `@req` to `@implements`, the plugin provides an optional rule: `traceability/prefer-implements-annotation`.
+For teams that want to gradually migrate from `@story` + `@req` to `@supports`, the plugin provides an optional rule: `traceability/prefer-implements-annotation`.
 
 - This rule is **disabled by default** and is **not** included in any built-in presets.
 - You can enable it with any standard ESLint severity (`"off"`, `"warn"`, or `"error"`) in your config, for example:
@@ -73,7 +73,7 @@ For teams that want to gradually migrate from `@story` + `@req` to `@implements`
   }
   ```
 
-- When enabled, it offers **conservative auto-fixes** that rewrite eligible `@story` + `@req` combinations into equivalent `@implements` lines, without attempting risky or ambiguous transformations.
+- When enabled, it offers **conservative auto-fixes** that rewrite eligible `@story` + `@req` combinations into equivalent `@supports` lines, without attempting risky or ambiguous transformations.
 - Detailed behavior, limitations, and examples are documented in the project’s internal rule documentation, which is primarily intended for maintainers; most users can rely on this guide and the API reference for day-to-day usage.
 
 #### When to keep `@story` + `@req`
@@ -96,9 +96,9 @@ export function initAuth() {
 }
 ```
 
-#### When to introduce `@implements`
+#### When to introduce `@supports`
 
-Adopt `@implements` for **multi-story integration** code, especially when:
+Adopt `@supports` for **multi-story integration** code, especially when:
 
 - The function combines behavior governed by **multiple** stories.
 - Requirement IDs are reused across stories (for example, `REQ-SHARED-ID` appears in more than one story file).
@@ -118,7 +118,7 @@ export async function applyFilters(rows, options) {
 }
 ```
 
-After (multi-story `@implements`), using illustrative story paths that represent typical files in your project’s documentation tree (they are examples, not files provided by this plugin):
+After (multi-story `@supports`), using illustrative story paths that represent typical files in your project’s documentation tree (they are examples, not files provided by this plugin):
 
 ```js
 /**
@@ -127,8 +127,8 @@ After (multi-story `@implements`), using illustrative story paths that represent
  * @req REQ-AGE-THRESHOLD
  * @req REQ-OUTPUT
  *
- * @implements docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md REQ-AGE-THRESHOLD REQ-OUTPUT
- * @implements docs/stories/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md REQ-AUDIT-CHECK REQ-SAFE-ONLY
+ * @supports docs/stories/003.0-DEV-IDENTIFY-OUTDATED.story.md REQ-AGE-THRESHOLD REQ-OUTPUT
+ * @supports docs/stories/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md REQ-AUDIT-CHECK REQ-SAFE-ONLY
  */
 export async function applyFilters(rows, options) {
   // combined behavior
@@ -137,17 +137,17 @@ export async function applyFilters(rows, options) {
 
 In the "after" example:
 
-- `valid-annotation-format` ensures the `@implements` lines use a valid story path and requirement ID format.
-- `valid-req-reference` validates that each requirement listed after `@implements` exists in the corresponding story file.
+- `valid-annotation-format` ensures the `@supports` lines use a valid story path and requirement ID format.
+- `valid-req-reference` validates that each requirement listed after `@supports` exists in the corresponding story file.
 
 #### Mixed usage during migration
 
-You can introduce `@implements` gradually without breaking existing code:
+You can introduce `@supports` gradually without breaking existing code:
 
 1. Leave existing `@story` and `@req` annotations in place.
-2. Add `@implements` lines that group requirements by story file.
+2. Add `@supports` lines that group requirements by story file.
 3. Run ESLint with `traceability/valid-annotation-format` and `traceability/valid-req-reference` enabled to confirm everything passes.
-4. Optionally, once you are comfortable, standardize on using `@implements` for multi-story integration functions while keeping `@story` + `@req` for simple, single-story code.
+4. Optionally, once you are comfortable, standardize on using `@supports` for multi-story integration functions while keeping `@story` + `@req` for simple, single-story code.
 
 Detailed semantics and edge cases (path validation, scoped requirement IDs, and multi-story fixtures) are ultimately governed by your own stories and requirements. For typical migrations, this guide together with the plugin’s API reference is sufficient.
 

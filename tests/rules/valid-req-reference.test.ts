@@ -30,13 +30,13 @@ describe("Valid Req Reference Rule (Story 010.0-DEV-DEEP-VALIDATION)", () => {
 // @req REQ-BULLET-LIST`,
       },
       {
-        name: "[REQ-DEEP-IMPLEMENTS] single implements line with multiple requirements in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)",
-        code: `// @implements tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A`,
+        name: "[REQ-DEEP-IMPLEMENTS] single supports line with multiple requirements in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)",
+        code: `// @supports tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A`,
       },
       {
-        name: "[REQ-DEEP-IMPLEMENTS] multi-story implements with shared requirement IDs (see 010.2-DEV-MULTI-STORY-SUPPORT)",
-        code: `// @implements tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A
-// @implements tests/fixtures/story_multi_b.md REQ-SHARED-ID REQ-ONLY-B`,
+        name: "[REQ-DEEP-IMPLEMENTS] multi-story supports with shared requirement IDs (see 010.2-DEV-MULTI-STORY-SUPPORT)",
+        code: `// @supports tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A
+// @supports tests/fixtures/story_multi_b.md REQ-SHARED-ID REQ-ONLY-B`,
       },
     ],
     invalid: [
@@ -96,8 +96,8 @@ describe("Valid Req Reference Rule (Story 010.0-DEV-DEEP-VALIDATION)", () => {
         ],
       },
       {
-        name: "[REQ-DEEP-IMPLEMENTS] missing implements requirement in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)",
-        code: `// @implements tests/fixtures/story_multi_a.md REQ-NOT-IN-A`,
+        name: "[REQ-DEEP-IMPLEMENTS] missing supports requirement in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)",
+        code: `// @supports tests/fixtures/story_multi_a.md REQ-NOT-IN-A`,
         errors: [
           {
             messageId: "reqMissing",
@@ -109,8 +109,8 @@ describe("Valid Req Reference Rule (Story 010.0-DEV-DEEP-VALIDATION)", () => {
         ],
       },
       {
-        name: "[REQ-DEEP-IMPLEMENTS] disallow path traversal in implements story path (see 010.2-DEV-MULTI-STORY-SUPPORT)",
-        code: `// @implements ../tests/fixtures/story_multi_a.md REQ-SHARED-ID`,
+        name: "[REQ-DEEP-IMPLEMENTS] disallow path traversal in supports story path (see 010.2-DEV-MULTI-STORY-SUPPORT)",
+        code: `// @supports ../tests/fixtures/story_multi_a.md REQ-SHARED-ID`,
         errors: [
           {
             messageId: "invalidPath",
