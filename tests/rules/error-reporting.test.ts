@@ -1,6 +1,7 @@
 /**
  * Tests for: docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-SUGGESTION REQ-ERROR-CONTEXT REQ-ERROR-LOCATION
  * @req REQ-ERROR-SPECIFIC - Specific details about what annotation is missing or invalid
  * @req REQ-ERROR-SUGGESTION - Suggest concrete steps to fix the issue
  * @req REQ-ERROR-CONTEXT - Include relevant context in error messages

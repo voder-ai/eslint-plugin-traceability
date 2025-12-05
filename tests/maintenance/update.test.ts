@@ -2,6 +2,7 @@
  * Tests for: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-UPDATE - Update annotation references
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
  */
 import fs from "fs";
 import os from "os";

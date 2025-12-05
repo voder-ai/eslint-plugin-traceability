@@ -1,7 +1,7 @@
 /**
  * Tests for: docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
- * @req REQ-PLUGIN-STRUCTURE - plugin exports rules and configs
+ * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE
  */
 import plugin, { rules, configs } from "../src/index";
 

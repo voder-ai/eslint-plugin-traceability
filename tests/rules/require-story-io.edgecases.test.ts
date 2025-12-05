@@ -2,6 +2,7 @@
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Edge case tests for IO helpers (linesBeforeHasStory/fallbackTextBeforeHasStory/parentChainHasStory)
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
  */
 
 import {

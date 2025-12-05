@@ -1,3 +1,12 @@
+/**
+ * Tests for ESLint config rule schemas.
+ *
+ * @supports docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
+ * @req REQ-RULE-OPTIONS
+ * @req REQ-CONFIG-VALIDATION
+ * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
+ */
+
 import validStoryReference from "../../src/rules/valid-story-reference";
 
 /** @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md */

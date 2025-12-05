@@ -3,6 +3,7 @@
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-REPORT - Generate maintenance report
  * @req REQ-MAINT-SAFE - Ensure operations are safe and reversible
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT REQ-MAINT-SAFE
  */
 import * as fs from "fs";
 import * as path from "path";

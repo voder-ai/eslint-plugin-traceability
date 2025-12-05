@@ -3,6 +3,7 @@
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-AUTOFIX-MISSING - Verify ESLint --fix automatically adds missing @story annotations to functions
  * @req REQ-AUTOFIX-FORMAT - Verify ESLint --fix corrects simple annotation format issues for @story annotations
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-FORMAT
  */
 import { RuleTester } from "eslint";
 import requireStoryRule from "../../src/rules/require-story-annotation";

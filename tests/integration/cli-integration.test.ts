@@ -1,4 +1,12 @@
 /**
+ * Tests for CLI integration of the traceability plugin.
+ * Validates that the plugin registers correctly and enforces
+ * traceability-related rules when invoked via the ESLint CLI.
+ *
+ * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE
+ * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+ */
+/**
  * Tests for CLI integration functionality
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-PLUGIN-STRUCTURE - Validate plugin registers via CLI

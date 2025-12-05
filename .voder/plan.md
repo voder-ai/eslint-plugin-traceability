@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Review and improve both user-facing and internal documentation for the optional prefer-implements-annotation rule so that its current behavior, deprecation status, migration path, and key edge cases are clearly described and aligned with the implemented code.
+- [ ] Review all existing Jest test files to ensure each has a file-level traceability header that uses the preferred @supports annotation format referencing the correct story and requirement IDs, and add or update these headers where they are missing or still using only legacy tags.
 
 ## NEXT
 
-- [ ] Inspect the implementation and existing tests for the prefer-implements-annotation rule to identify any edge cases or migration scenarios that are not yet covered by tests, and add focused tests to exercise those behaviors.
-- [ ] Design and extend at least one additional end-to-end flow that invokes the installed traceability-maint CLI binary in a realistic scenario, verifying its behavior for both success and error paths in line with the documented options and exit codes.
-- [ ] Update developer-focused documentation to briefly summarize the new tests and end-to-end CLI flows, explaining how they relate to optional and edge-case behaviors and how future contributors should extend them when changing those areas.
+- [ ] Align top-level describe block names in the test files with the associated stories and requirement IDs so that test reports clearly reflect the features and stories they validate.
+- [ ] Identify the most logic-heavy or complex test suites (such as large-workspace maintenance or CLI tests) and refactor common setup or control flow into shared test utilities so individual tests read as simple, behavior-focused specifications without changing tested behavior.
+- [ ] Verify that representative tests for each major rule and CLI behavior include requirement IDs in their test names, especially for edge cases, so traceability from requirements to test scenarios is clear.
 
 ## LATER
 
-- [ ] Broaden edge-case test coverage for other optional or less frequently used rules, ensuring that unusual configuration combinations and mixed legacy annotations are well exercised.
-- [ ] Introduce additional end-to-end scenarios for the CLI that cover more complex argument combinations, such as different output formats, dry-run behavior, and boundary error conditions.
-- [ ] Use insights from the new tests and documentation to identify any small refactors that could simplify handling of optional or deprecated behaviors without changing external behavior, and implement them incrementally.
+- [ ] Extend edge-case test coverage for additional optional or rarely used rules to ensure unusual configuration combinations and mixed legacy annotations are thoroughly exercised.
+- [ ] Further simplify or consolidate test utilities where duplication or incidental complexity remains, keeping tests fast, deterministic, and easy to maintain.
+- [ ] Once TESTING clearly exceeds the threshold, run a focused review to confirm the FUNCTIONALITY assessment can be applied confidently, and then address any functional gaps it reveals with additional tests and small, safe code changes.

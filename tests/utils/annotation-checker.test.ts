@@ -3,6 +3,7 @@
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
  * @req REQ-TEST-UTILS-TS-LANG - Shared TS RuleTester language options helper
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT REQ-TEST-UTILS-TS-LANG
  */
 import { RuleTester } from "eslint";
 import { checkReqAnnotation } from "../../src/utils/annotation-checker";

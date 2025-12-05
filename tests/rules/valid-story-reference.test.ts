@@ -7,6 +7,8 @@
  * @req REQ-ERROR-CONTEXT - Verify file-related error messages include contextual information (path, underlying error)
  * @req REQ-ERROR-CONSISTENCY - Verify file-related error messages follow consistent formatting and identifiers
  * @req REQ-ERROR-HANDLING - Verify file-related errors are reported via diagnostics instead of uncaught exceptions
+ * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE REQ-CONFIGURABLE-PATHS
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONTEXT REQ-ERROR-CONSISTENCY REQ-ERROR-HANDLING
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/valid-story-reference";

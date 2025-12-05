@@ -6,6 +6,7 @@
  * @req REQ-MAINT-REPORT - CLI reporting of stale annotations
  * @req REQ-MAINT-UPDATE - CLI updating of annotation references
  * @req REQ-MAINT-SAFE - Clear exit codes and non-destructive dry-run
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-VERIFY REQ-MAINT-REPORT REQ-MAINT-UPDATE REQ-MAINT-SAFE
  */
 import fs from "fs";
 import path from "path";

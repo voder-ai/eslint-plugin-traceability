@@ -3,6 +3,7 @@
  * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of branch types for annotation enforcement
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE
  */
 import { validateBranchTypes, DEFAULT_BRANCH_TYPES } from "../../src/utils/branch-annotation-helpers";
 import type { Rule } from "eslint";

@@ -3,6 +3,7 @@
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-BATCH - Perform batch updates
  * @req REQ-MAINT-VERIFY - Verify annotation references
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-BATCH REQ-MAINT-VERIFY
  */
 import * as fs from "fs";
 import * as path from "path";

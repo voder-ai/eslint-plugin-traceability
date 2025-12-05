@@ -2,6 +2,7 @@
  * Tests for: docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-ERROR-HANDLING - Gracefully handles plugin loading errors and missing dependencies
+ * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
  */
 
 describe("Traceability ESLint Plugin Error Handling (Story 001.0-DEV-PLUGIN-SETUP)", () => {

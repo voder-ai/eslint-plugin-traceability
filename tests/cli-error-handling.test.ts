@@ -2,6 +2,7 @@
  * Tests for CLI error handling when plugin loading fails
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @req REQ-ERROR-HANDLING - Plugin CLI should exit with error on rule load failure
+ * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
  */
 import { spawnSync } from "child_process";
 import path from "path";

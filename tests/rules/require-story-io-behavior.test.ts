@@ -2,6 +2,7 @@
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-IO-BEHAVIOR-EDGE-CASES - Edge-case behavior tests for IO helpers in require-story-io.ts
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-IO-BEHAVIOR-EDGE-CASES
  */
 
 import {

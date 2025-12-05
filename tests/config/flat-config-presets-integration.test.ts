@@ -1,9 +1,7 @@
 /**
  * Tests for: docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
  * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
- * @req REQ-CONFIG-PRESETS - Validate flat-config presets register traceability plugin and rules
- * @req REQ-FLAT-CONFIG - Ensure presets work with ESLint v9 flat config
- * @req REQ-PROJECT-INTEGRATION - Support seamless integration via documented preset usage
+ * @supports docs/stories/002.0-DEV-ESLINT-CONFIG.story.md REQ-CONFIG-PRESETS REQ-FLAT-CONFIG REQ-PROJECT-INTEGRATION
  */
 import { FlatESLint } from "eslint/use-at-your-own-risk";
 import { configs, default as traceabilityPlugin } from "../../src/index";

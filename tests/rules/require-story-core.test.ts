@@ -2,6 +2,7 @@
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Verify createMethodFix and reportMethod behaviors
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-AUTOFIX
  */
 import { createMethodFix } from "../../src/rules/helpers/require-story-core";
 import {

@@ -2,6 +2,7 @@
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-VISITORS-BEHAVIOR - Behavior tests for visitors in require-story-visitors.ts
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-VISITORS-BEHAVIOR
  */
 
 import { buildVisitors } from "../../src/rules/helpers/require-story-visitors";

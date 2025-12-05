@@ -6,6 +6,8 @@
  * @req REQ-ERROR-SPECIFIC - Branch-level missing-annotation error messages are specific and informative
  * @req REQ-ERROR-CONSISTENCY - Branch-level missing-annotation error messages follow shared conventions
  * @req REQ-ERROR-SUGGESTION - Branch-level missing-annotation errors include suggestions when applicable
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-branch-annotation";

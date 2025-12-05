@@ -2,6 +2,7 @@
  * Tests for: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-SAFE - Ensure all maintenance tools are exported correctly
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE REQ-MAINT-DETECT REQ-MAINT-UPDATE REQ-MAINT-BATCH REQ-MAINT-VERIFY REQ-MAINT-REPORT
  */
 import {
   detectStaleAnnotations,
