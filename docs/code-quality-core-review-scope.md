@@ -58,3 +58,42 @@ When a CODE_QUALITY assessment for this project needs to minimize context:
 Higher‑priority assessments (for example, determining whether CODE_QUALITY is
 "passing" for the purposes of FUNCTIONALITY) SHOULD be based at minimum on a
 successful, non‑truncated review of this core surface.
+
+## Known hotspots and incremental refactor opportunities
+
+Within the core scope, the following modules are known to be relatively large,
+complex, or central and are good candidates for **incremental refactor work**:
+
+- `src/rules/helpers/require-story-core.ts`
+- `src/rules/helpers/require-story-helpers.ts`
+- `src/rules/helpers/require-story-utils.ts`
+- `src/rules/helpers/valid-req-reference-helpers.ts`
+- `src/rules/helpers/require-test-traceability-helpers.ts`
+- `src/utils/reqAnnotationDetection.ts`
+
+For detailed, file‑level refactor ideas (including suggested extractions,
+naming cleanups, and test‑support improvements), see:
+
+- `docs/code-quality-refactor-opportunities-2025-12-03.md`
+
+CODE_QUALITY assessments that have enough context budget to go beyond a quick
+pass over the entire core surface SHOULD preferentially focus extra depth on
+these hotspots.
+
+## Existing automated quality gates for the core scope
+
+The core directories described above are already covered by several automated
+quality gates:
+
+- **ESLint lint script** (`npm run lint` or equivalent) targets `src/**/*` and
+  `tests/**/*`, enforcing rule correctness patterns, plugin conventions, and
+  basic code health across all rules, helpers, and tests.
+- **Prettier `format:check`** runs over `src/**/*.ts` and `tests/**/*.ts`,
+  ensuring consistent formatting and minimizing noise in CODE_QUALITY reviews.
+- **jscpd duplication check** is configured to scan `src` and `tests` while
+  typically ignoring `tests/utils`, highlighting copy‑paste duplication in
+  rule implementations and rule tests that may indicate refactor candidates.
+- **`ci-verify:fast` and `ci-verify:full` scripts** exercise TypeScript
+  type‑checking and Jest suites, with particularly heavy coverage of
+  `tests/rules` and `tests/utils`, providing a strong automated safety net for
+  changes within the core scope.
