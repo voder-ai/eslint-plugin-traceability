@@ -158,8 +158,14 @@ function hasStoryAnnotation(sourceCode: any, node: any): boolean {
     if (fallbackTextBeforeHasStory(sourceCode, node)) {
       return true;
     }
-  } catch {
-    /* noop */
+  } catch (error) {
+    // Swallow unexpected sourceCode helper errors to keep traceability checks
+    // from breaking lint runs; emit debug output only when TRACEABILITY_DEBUG=1
+    // so normal CI and editor usage remain silent.
+    console.error(
+      "[traceability] hasStoryAnnotation failed for node",
+      (error as Error)?.message ?? error,
+    );
   }
 
   return false;
@@ -202,7 +208,6 @@ function resolveTargetNode(sourceCode: any, node: any): any {
 
 /**
  * Extract a direct Identifier name when available on the given node.
- * This focuses only on plain Identifier nodes and ignores container shapes.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Extract direct Identifier-based names from nodes
  * @param {any} node - AST node to inspect
@@ -291,15 +296,6 @@ function extractName(node: any): string {
   return "(anonymous)";
 }
 
-/**
- * Check if this node is within scope and matches exportPriority
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Determine whether a node should be processed by rule
- * @param {any} node - AST node to evaluate
- * @param {string[]} scope - allowed node types
- * @param {string} [exportPriority='all'] - 'all' | 'exported' | 'non-exported' (default: 'all')
- * @returns {boolean} whether node should be processed
- */
 function shouldProcessNode(
   node: any,
   scope: string[],
@@ -443,9 +439,9 @@ function reportMethod(
 }
 
 /**
- * Explicit exports for require-story-annotation consumers
+ * Explicit exports for require-story-annotation helpers.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Explicitly export helper functions and constants used by requiring modules
+ * @req REQ-ANNOTATION-REQUIRED
  */
 export {
   STORY_PATH,

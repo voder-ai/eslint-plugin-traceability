@@ -1,4 +1,38 @@
 /**
+ * Compute the insertion start offset for inserting annotations before a node.
+ * Ensures we insert before any export wrapper when present, while remaining
+ * resilient to malformed or unexpected AST structures.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-AUTOFIX
+ * @req REQ-AUTOFIX-SAFE
+ */
+function getInsertionStart(candidate: any): number {
+  if (!candidate || typeof candidate !== "object") {
+    return 0;
+  }
+
+  const parent = candidate.parent;
+  if (
+    parent &&
+    (parent.type === "ExportNamedDeclaration" ||
+      parent.type === "ExportDefaultDeclaration") &&
+    Array.isArray(parent.range) &&
+    typeof parent.range[0] === "number"
+  ) {
+    return parent.range[0];
+  }
+
+  if (
+    Array.isArray(candidate.range) &&
+    typeof candidate.range[0] === "number"
+  ) {
+    return candidate.range[0];
+  }
+
+  return 0;
+}
+
+/**
  * Create a fixer function that inserts a @story annotation before the target node.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Provide automatic fix function for missing @story annotations
@@ -11,18 +45,7 @@ export function createAddStoryFix(target: any, annotationTemplate: string) {
    */
 
   function addStoryFixer(fixer: any) {
-    const start =
-      target && typeof target === "object"
-        ? target.parent &&
-          (target.parent.type === "ExportNamedDeclaration" ||
-            target.parent.type === "ExportDefaultDeclaration") &&
-          Array.isArray(target.parent.range) &&
-          typeof target.parent.range[0] === "number"
-          ? target.parent.range[0]
-          : Array.isArray(target.range) && typeof target.range[0] === "number"
-            ? target.range[0]
-            : 0
-        : 0;
+    const start = getInsertionStart(target);
     return fixer.insertTextBeforeRange(
       [start, start],
       `${annotationTemplate}\n`,
@@ -44,18 +67,7 @@ export function createMethodFix(node: any, annotationTemplate: string) {
    */
 
   function methodFixer(fixer: any) {
-    const start =
-      node && typeof node === "object"
-        ? node.parent &&
-          (node.parent.type === "ExportNamedDeclaration" ||
-            node.parent.type === "ExportDefaultDeclaration") &&
-          Array.isArray(node.parent.range) &&
-          typeof node.parent.range[0] === "number"
-          ? node.parent.range[0]
-          : Array.isArray(node.range) && typeof node.range[0] === "number"
-            ? node.range[0]
-            : 0
-        : 0;
+    const start = getInsertionStart(node);
     return fixer.insertTextBeforeRange(
       [start, start],
       `${annotationTemplate}\n  `,
@@ -165,8 +177,17 @@ export function coreReportMissing(
         },
       ],
     });
-  } catch {
-    /* noop */
+  } catch (error) {
+    // Intentionally swallow unexpected helper errors so traceability checks never
+    // break lint runs. When TRACEABILITY_DEBUG=1 is set, log a debug message to
+    // help diagnose misbehaving helpers in local development without affecting
+    // normal CI or production usage.
+    if (process.env.TRACEABILITY_DEBUG === "1") {
+      console.error(
+        "[traceability] coreReportMissing failed for node",
+        (error as Error)?.message ?? error,
+      );
+    }
   }
 }
 
@@ -219,7 +240,16 @@ export function coreReportMethod(
         },
       ],
     });
-  } catch {
-    /* noop */
+  } catch (error) {
+    // Intentionally swallow unexpected helper errors so traceability checks never
+    // break lint runs. When TRACEABILITY_DEBUG=1 is set, log a debug message to
+    // help diagnose misbehaving helpers in local development without affecting
+    // normal CI or production usage.
+    if (process.env.TRACEABILITY_DEBUG === "1") {
+      console.error(
+        "[traceability] coreReportMethod failed for node",
+        (error as Error)?.message ?? error,
+      );
+    }
   }
 }
