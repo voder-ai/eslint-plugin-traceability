@@ -81,7 +81,7 @@ Create a Jest test file, for example `tests/dev-test-traceability.spec.ts`:
 
 ```ts
 /**
- * @supports { "story": "docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md", "req": "REQ-TEST-TRACEABILITY" }
+ * @supports docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md#REQ-TEST-TRACEABILITY
  */
 
 describe("docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md", () => {
