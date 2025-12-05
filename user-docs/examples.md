@@ -72,3 +72,44 @@ Then run:
 ```bash
 npm run lint:trace
 ```
+
+## 5. Test Traceability Example
+
+This example complements the `traceability/require-test-traceability` rule and matches its default expectations for how stories and requirements are referenced from tests.
+
+Create a Jest test file, for example `tests/dev-test-traceability.spec.ts`:
+
+```ts
+/**
+ * @supports { "story": "docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md", "req": "REQ-TEST-TRACEABILITY" }
+ */
+
+describe("docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md", () => {
+  it("[REQ-TEST-TRACEABILITY] should handle the primary test scenario", () => {
+    // Arrange
+    const input = "happy-path";
+
+    // Act
+    const result = performOperation(input);
+
+    // Assert
+    expect(result).toBe("ok");
+  });
+
+  it("[REQ-TEST-TRACEABILITY-EDGE] should handle the edge-case scenario", () => {
+    // Arrange
+    const input = "edge-case";
+
+    // Act
+    const result = performOperation(input);
+
+    // Assert
+    expect(result).toBe("edge-ok");
+  });
+});
+
+// Example implementation under test (normally imported from your source code)
+function performOperation(input: string): string {
+  if (input === "edge-case") return "edge-ok";
+  return "ok";
+}
