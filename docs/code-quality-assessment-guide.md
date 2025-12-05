@@ -27,6 +27,8 @@ Current slices:
 3. `plugin-and-config` (priority 3)
 4. `tooling-and-ci` (priority 4)
 
+See `docs/code-quality-core-review-scope.md` for a concise overview of which areas are considered **core** for CODE_QUALITY, and `docs/code-quality-excluded-areas.md` for areas that are intentionally **out of scope** or covered by other processes.
+
 See `docs/code-quality-assessment-slices.md` for details.
 
 ## How to Run a Slice-Based CODE_QUALITY Assessment
