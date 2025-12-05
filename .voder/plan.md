@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Audit the repository for any remaining generated CI or report files that are still tracked in version control and decide, for each one, whether it should be removed or relocated so that only source and configuration files remain under version control.
+- [ ] Identify one of the most complex or heavily used source files and refactor it into smaller, single-responsibility helpers with clear traceability annotations while preserving existing behavior, to improve overall code clarity and maintainability.
 
 ## NEXT
 
-- [ ] Strengthen the existing guardrails against committing generated CI artifacts by reviewing the artifact-detection helper and wiring it into the project’s standard quality checks, so future accidental commits of reports are automatically blocked.
-- [ ] Review all recently added debug and error logging paths in the core helpers and maintenance tooling to ensure they are fully controlled by opt-in environment flags, remain silent in normal use, and avoid leaking unnecessary internal details.
-- [ ] Update internal development documentation to clearly state the policy that generated reports and CI artifacts must not be committed and to describe how to use the debug flags safely when troubleshooting.
+- [ ] Repeat the same focused refactoring approach on other identified hotspot files so that complex logic is consistently broken into readable, testable modules without behavior changes.
+- [ ] Review the internal development documentation to describe the evolved module structure and code-quality conventions, including how helpers are organized, how traceability annotations are applied, and how new code should follow these patterns.
+- [ ] Inspect the test suite structure around the refactored areas to ensure tests remain behavior-focused and clearly mapped to stories and requirements, adding or adjusting tests only where necessary to keep coverage aligned with the new structure.
 
 ## LATER
 
-- [ ] Perform a focused review of user-facing error messages and logs to confirm they provide helpful context without exposing sensitive or noisy implementation details, tightening wording where appropriate.
-- [ ] Revisit the security and repository-hygiene sections of the CI/CD and security docs to ensure they reflect the final behavior of artifact guards and debug logging, including any future refinements.
-- [ ] Consider extending automated checks to cover any new directories or tooling that might produce generated artifacts, keeping the repository consistently free of build and report outputs.
+- [ ] Perform a holistic pass over user-facing documentation (README, user-docs) to ensure installation and usage guidance is concise, self-contained, and does not depend on internal development docs.
+- [ ] Augment user-facing docs with a brief, high-level description of the plugin’s core rules and maintenance tools that reflects the current implementation, avoiding deep internal details while keeping examples accurate.
+- [ ] Periodically re-evaluate the balance between internal technical detail and user-facing simplicity in documentation, adjusting structure or splitting documents when they become too large or unfocused.

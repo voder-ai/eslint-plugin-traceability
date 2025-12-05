@@ -65,14 +65,15 @@ The eslint-plugin-traceability is not configured to enforce its own traceability
 
 1. **`eslint.config.js`**: Primary configuration file that needs traceability rules enabled
 2. **`src/index.ts`**: Exports the `configs.recommended` and `configs.strict` presets
-3. **`src/**/*.ts`**: Contains 1,737+ annotations that should be validated
-4. **`tests/**/*.ts`**: Contains annotations that should be validated
+3. **`src/**/\*.ts`\*\*: Contains 1,737+ annotations that should be validated
+4. **`tests/**/\*.ts`\*\*: Contains annotations that should be validated
 
 ### Root Cause Hypothesis
 
 The ESLint configuration was set up to load the plugin dynamically from source (development) or built output (CI/production), but the rule configuration step was never completed. The config registers the plugin with conditional spreading but never applies the rule severities from the recommended/strict presets or configures individual rules.
 
 Possible reasons:
+
 1. Development workflow evolved to load from source before build, but rule enablement was never added
 2. Fear of breaking existing code with initially invalid annotations
 3. Oversight during initial plugin setup
@@ -248,33 +249,36 @@ describe("Dogfooding Validation", () => {
   it("should have traceability rules enabled in eslint config", async () => {
     const configPath = path.join(__dirname, "../../eslint.config.js");
     const configContent = fs.readFileSync(configPath, "utf-8");
-    
+
     // Verify that traceability rules are configured
-    expect(configContent).toMatch(/traceability\.configs\.(recommended|strict)/);
+    expect(configContent).toMatch(
+      /traceability\.configs\.(recommended|strict)/,
+    );
   });
 
   it("should enforce traceability rules on plugin source code", async () => {
     const eslint = new ESLint();
-    
+
     // Lint a file known to have annotations
     const results = await eslint.lintFiles(["src/index.ts"]);
-    
+
     // Get the rules that were actually run
     const rulesRun = new Set<string>();
-    results.forEach(result => {
-      result.messages.forEach(message => {
+    results.forEach((result) => {
+      result.messages.forEach((message) => {
         if (message.ruleId?.startsWith("traceability/")) {
           rulesRun.add(message.ruleId);
         }
       });
     });
-    
+
     // At minimum, we should be running some traceability rules
     // (even if there are no violations, the rules should be active)
     const config = await eslint.calculateConfigForFile("src/index.ts");
-    const traceabilityRules = Object.keys(config.rules || {})
-      .filter(rule => rule.startsWith("traceability/"));
-    
+    const traceabilityRules = Object.keys(config.rules || {}).filter((rule) =>
+      rule.startsWith("traceability/"),
+    );
+
     expect(traceabilityRules.length).toBeGreaterThan(0);
   });
 });
@@ -284,12 +288,14 @@ describe("Dogfooding Validation", () => {
 
 **What it reproduces**: The test verifies that traceability rules are enabled in the ESLint configuration and actively running on the plugin's source code.
 
-**Expected behavior**: 
+**Expected behavior**:
+
 - The `eslint.config.js` should include the traceability preset
 - Running ESLint on plugin source files should have traceability rules active
 - Configuration for any source file should show traceability rules enabled
 
-**Actual behavior**: 
+**Actual behavior**:
+
 - The `eslint.config.js` registers the plugin but doesn't configure any rules
 - No traceability rules are active when linting
 - Configuration shows no traceability rules enabled
@@ -365,14 +371,14 @@ describe("Dogfooding Validation", () => {
 
 ## Timeline
 
-| Date       | Event                  | Notes                                              |
-| ---------- | ---------------------- | -------------------------------------------------- |
-| 2025-12-06 | Problem identified     | Discovered during review of ESLint configuration  |
-| 2025-12-06 | Investigation started  | Verified no traceability rules are enabled        |
-| 2025-12-06 | Impact assessed        | 1,737+ annotations not being validated            |
-|            |                        |                                                    |
-|            |                        |                                                    |
-|            |                        |                                                    |
+| Date       | Event                 | Notes                                            |
+| ---------- | --------------------- | ------------------------------------------------ |
+| 2025-12-06 | Problem identified    | Discovered during review of ESLint configuration |
+| 2025-12-06 | Investigation started | Verified no traceability rules are enabled       |
+| 2025-12-06 | Impact assessed       | 1,737+ annotations not being validated           |
+|            |                       |                                                  |
+|            |                       |                                                  |
+|            |                       |                                                  |
 
 ---
 

@@ -272,7 +272,6 @@ Main behaviors:
    ```
 
    Conceptually, the auto‑fix:
-
    - Extracts the single `@story` value.
    - Collects the requirement IDs from each `@req` line in that block.
    - Emits a single `@supports story-path#REQ-1 REQ-2 ...` line (or your project’s equivalent anchor scheme).
@@ -344,9 +343,9 @@ export default [
   traceability.configs.recommended,
   {
     rules: {
-      "traceability/prefer-implements-annotation": "warn"
-    }
-  }
+      "traceability/prefer-implements-annotation": "warn",
+    },
+  },
 ];
 ```
 
@@ -683,3 +682,4 @@ In CI:
 
 ```bash
 npm run traceability:verify
+```

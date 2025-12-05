@@ -100,7 +100,7 @@ Aligned with the internal rule behavior, the key cases are:
   - Comments that contain only `@req` lines,
   - Comments that contain only `@supports` lines, and
   - Line comments such as `// @story ...`.
-  
+
   These forms are still supported by the plugin and are not modified by `traceability/prefer-implements-annotation`.
 
 A typical migration path is:
