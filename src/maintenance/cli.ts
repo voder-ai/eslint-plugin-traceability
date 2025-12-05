@@ -25,8 +25,8 @@ export function runMaintenanceCli(rawArgv: string[]): number {
   const { subcommand: command } = initialNormalized;
 
   if (!command || command === "-h" || command === "--help") {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Branch to show usage when no command or help flag is provided; handle help requests safely and provide discoverable usage output
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Branch to show usage when no command or help flag is provided; handle help requests safely and provide discoverable usage output
     printHelp();
     return EXIT_OK;
   }
@@ -36,35 +36,35 @@ export function runMaintenanceCli(rawArgv: string[]): number {
   const normalized: NormalizedCliArgs = initialNormalized;
 
   try {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Catch unexpected errors and surface concise diagnostics without crashing
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Catch unexpected errors and surface concise diagnostics without crashing
     switch (command) {
       case "detect":
-        // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - Branch to dispatch to detection handler when 'detect' is requested; dispatch to detection handler
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - Branch to dispatch to detection handler when 'detect' is requested; dispatch to detection handler
         return handleDetect(normalized);
       case "verify":
-        // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-VERIFY - Branch to dispatch to verification handler when 'verify' is requested; dispatch to verification handler
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-VERIFY - Branch to dispatch to verification handler when 'verify' is requested; dispatch to verification handler
         return handleVerify(normalized);
       case "report":
-        // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT - Branch to dispatch to reporting handler when 'report' is requested; dispatch to reporting handler
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT - Branch to dispatch to reporting handler when 'report' is requested; dispatch to reporting handler
         return handleReport(normalized);
       case "update": {
-        // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE - Branch to dispatch to update handler when 'update' is requested; dispatch to update handler
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE - Branch to dispatch to update handler when 'update' is requested; dispatch to update handler
         const result = handleUpdate(normalized);
         if (result === EXIT_USAGE) {
-          // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Print help on usage errors from update; help branch for update usage errors
+          // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Print help on usage errors from update; help branch for update usage errors
           printHelp();
         }
         return result;
       }
       default:
-        // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Branch for unknown commands to emit diagnostics and safe usage guidance; handle unknown commands safely with diagnostics
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Branch for unknown commands to emit diagnostics and safe usage guidance; handle unknown commands safely with diagnostics
         console.error(`Unknown command: ${command}`);
         printHelp();
         return EXIT_USAGE;
     }
   } catch (error: unknown) {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Catch-all error branch to prevent crashes and provide concise diagnostics; catch unexpected errors and surface concise diagnostics without crashing
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Catch-all error branch to prevent crashes and provide concise diagnostics; catch unexpected errors and surface concise diagnostics without crashing
     const message =
       error instanceof Error
         ? error.message
@@ -80,7 +80,7 @@ export function runMaintenanceCli(rawArgv: string[]): number {
  * @req REQ-MAINT-SAFE - Provide discoverable CLI usage information
  */
 function printHelp(): void {
-  // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Help branch ensures users can discover maintenance CLI usage safely; provide discoverable CLI usage information
+  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Help branch ensures users can discover maintenance CLI usage safely; provide discoverable CLI usage information
   console.log(`traceability-maint - Traceability annotation maintenance tools
 
 Usage:
