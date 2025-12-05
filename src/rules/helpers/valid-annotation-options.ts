@@ -385,6 +385,7 @@ export function getRuleSchema() {
         storyPathExample: { type: "string" },
         requirementIdPattern: { type: "string" },
         requirementIdExample: { type: "string" },
+        autoFix: { type: "boolean" },
       },
       additionalProperties: false,
     },

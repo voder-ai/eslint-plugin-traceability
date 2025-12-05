@@ -86,7 +86,7 @@ if (error) {
 
 ### traceability/valid-annotation-format
 
-Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule limits changes to safe `@story` path suffix normalization only—for example, adding `.md` when the path ends with `.story`, or adding `.story.md` when the base path has no extension—using targeted replacements implemented in the `getFixedStoryPath` and `reportInvalidStoryFormatWithFix` helpers. It does not change directories, infer new story names, or modify any surrounding comment text or whitespace, in line with Story 008.0; more advanced path normalization strategies and selective toggles to enable or disable specific auto-fix behaviors are not yet implemented. You can also disable this suffix-normalization behavior explicitly via the `autoFix` option when you prefer purely diagnostic checks.
+Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule limits changes to safe `@story` path suffix normalization only—for example, adding `.md` when the path ends with `.story`, or adding `.story.md` when the base path has no extension—using targeted replacements implemented in the `getFixedStoryPath` and `reportInvalidStoryFormatWithFix` helpers. It does not change directories, infer new story names, or modify any surrounding comment text or whitespace, in line with Story 008.0. Selective disabling of this suffix-normalization auto-fix behavior is available via the `autoFix` option, which defaults to `true` for backward compatibility.
 
 Options:
 
@@ -285,7 +285,7 @@ Main behaviors:
    The rule **does not** attempt to merge or rewrite mixed blocks automatically, to avoid guessing your intended story/requirement grouping. All annotations in such blocks are left unchanged; you are expected to convert them to your preferred `@supports` shape by hand.
 
 3. **Multiple distinct `@story` paths → `multiStoryDetected` (manual migration)**  
-   When the same JSDoc block contains **multiple different `@story` paths**, the rule reports a `multiStoryDetected` diagnostic and leaves the block unchanged. This scenario usually indicates integration code that implements requirements from several stories, and the correct multi‑story `@supports` representation depends on how your project organizes those relationships.
+   When the same JSDoc block contains **multiple different `@story` paths**, the rule reports a `multiStoryDetected` diagnostic and leaves the block unchanged. This scenario usually indicates integration code that implements requirements from several stories, and the correct multi-story `@supports` representation depends on how your project organizes those relationships.
 
    Because there is no universally safe way to automatically group requirements across multiple stories, the rule does **not** attempt any auto‑fix in this case. Instead, it highlights the block so humans can migrate it to one or more explicit `@supports` annotations following your multi‑story conventions.
 

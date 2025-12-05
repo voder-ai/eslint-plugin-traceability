@@ -2,8 +2,20 @@
 <traceability>
   <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T08:47:46.072Z</last_validated>
+  <last_validated>2025-12-05T11:41:24.242Z</last_validated>
   <last_modified>2025-12-04T21:56:14.194Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>Story 020.0-DEV-TEST-ANNOTATION-VALIDATION is fully implemented. The ESLint rule traceability/require-test-traceability exists, enforces file-level @supports, describe-string story references, and [REQ-...] prefixes in it/test names for test files, supports multiple test frameworks, integrates with the plugin’s recommended/strict presets, and is covered by dedicated unit tests and user documentation. Deep validation of @supports references leverages existing rules from earlier stories as intended by the dependency list. All related tests pass in the current test run.</notes>
+  <evidence>[object Object]</evidence>
+  <notes>The story docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md is fully implemented. A dedicated ESLint rule `require-test-traceability` exists, with helpers, tests, documentation, and integration into the plugin and presets.
+
+All acceptance criteria are met:
+- File-Level Annotations: `ensureFileSupportsAnnotation` enforces presence of a file-level `@supports` in test files, with a clear error message and optional safe auto-fix template. Validity of referenced stories and requirements is handled by existing `valid-story-reference` and `valid-req-reference` rules, satisfying REQ-TEST-SUPPORTS-VALID via the story’s listed dependencies.
+- Describe Block Story References: `handleDescribeCall` enforces a configurable regex (default `Story [0-9]+\.[0-9]+-`) on `describe` description strings, with tests confirming failures when the story reference is missing.
+- Test Name Requirement Prefixes: `handleItOrTestCall` enforces `[REQ-...]` prefixes on `it`/`test` names, with comprehensive tests for missing prefixes and malformed prefixes, including auto-fix behavior where appropriate.
+- Quality Standards: The rule uses ESLint’s standard meta/schema/messages pattern, early-exits for non-test files, and minimal regex work, aligning with ESLint best practices and efficiency. Its tests pass as part of the overall suite.
+- Integration: The rule is registered in `src/index.ts`, included in severity maps, and activated in both `recommended` and `strict` configs, with ESLint flat config ensuring it runs on TS/JS test files.
+- Error Messages: Messages are explicit and actionable; they match or refine the examples given in the story and are verified via tests using messageIds.
+- Framework Support: The helper recognizes `describe`, `it`, `test`, and `context`, and supports member forms like `describe.each`, covering Jest, Mocha, Jasmine-style APIs, with explicit tests for Mocha-style `context`.
+- Documentation: README references the rule, and user-docs/api-reference.md provides a detailed section describing behavior, options, and examples in line with the story.
+
+Given the concrete implementation, targeted tests for all key behaviors, passing test suite, integration with configuration, and thorough documentation, this story is assessed as PASSED.</notes>
 </traceability>

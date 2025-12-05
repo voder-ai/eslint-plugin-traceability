@@ -180,6 +180,21 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
               },
             ],
           },
+          {
+            name: "[REQ-AUTOFIX-SELECTIVE] does not apply suffix fix when autoFix is false",
+            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
+            output: null,
+            options: [
+              {
+                autoFix: false,
+              },
+            ],
+            errors: [
+              {
+                messageId: "invalidStoryFormat",
+              },
+            ],
+          },
         ],
       },
     );
