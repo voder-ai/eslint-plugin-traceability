@@ -91,5 +91,42 @@ EOF
 echo "🔍 Testing plugin configuration..."
 npx eslint --print-config eslint.config.js > /dev/null
 
+# Test the traceability-maint CLI (success and error paths)
+echo "🧪 Testing traceability-maint CLI (success path)..."
+cat > example.ts << 'EOF'
+/**
+ * @story local-story.story.md
+ */
+export function example() {}
+EOF
+
+cat > local-story.story.md << 'EOF'
+# Local Story
+EOF
+
+npx traceability-maint detect --root . > cli-detect-output.txt 2>&1
+grep -q "No stale @story annotations found." cli-detect-output.txt
+
+echo "🧪 Testing traceability-maint CLI (error path)..."
+set +e
+npx traceability-maint report --root . --format yaml > cli-report-error.txt 2>&1
+cli_status=$?
+set -e
+
+if [ "$cli_status" -ne 2 ]; then
+  echo "❌ Expected traceability-maint report to exit with status 2, but got: $cli_status"
+  echo "   Full output:"
+  cat cli-report-error.txt || true
+  exit 1
+fi
+
+if ! grep -q "Invalid format: yaml" cli-report-error.txt || ! grep -q "Expected 'text' or 'json'" cli-report-error.txt; then
+  echo "❌ traceability-maint report error output did not contain expected validation messages."
+  echo "   Expected it to mention \"Invalid format: yaml\" and \"Expected 'text' or 'json'\"."
+  echo "   Full output:"
+  cat cli-report-error.txt || true
+  exit 1
+fi
+
 echo ""
-echo "✅ Smoke test passed! Plugin loads successfully."
+echo "✅ Smoke test passed! Plugin and CLI verified successfully."

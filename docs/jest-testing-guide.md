@@ -93,6 +93,18 @@ The project's Jest configuration is defined in `jest.config.js` and includes:
 - Test file patterns
 - CI-friendly options (--ci --bail --coverage)
 
+## Optional Migration Rule and CLI Smoke Tests
+
+The `tests/rules/prefer-implements-annotation.test.ts` suite exercises the optional `traceability/prefer-implements-annotation` migration rule from Story 010.3. It covers detection and auto-fix of single-story `@story` + `@req` blocks, diagnostics for mixed legacy annotations combined with `@supports` and multi-story blocks, and explicit backward-compatibility cases where comments containing only `@story`, only `@req`, only `@supports`, or simple mixed-but-non-migratable combinations (such as `@story` + `@supports` or `@req` + `@supports`) are intentionally ignored.
+
+When changing this migration behavior, contributors should:
+
+- Add or update valid/invalid test cases for any new edge conditions, autofix shapes, or message IDs.
+- Keep the test expectations aligned with Story 010.3 requirements, including REQ-OPTIONAL-WARNING and REQ-MULTI-STORY-DETECT, so that each requirement has explicit coverage.
+- Prefer table-driven or grouped test cases that make it clear which inputs are meant to be migratable, which are only diagnostic, and which are explicitly out of scope.
+
+In addition to the Jest-based CLI tests under `tests/maintenance/cli.test.ts` and `tests/perf/maintenance-cli-large-workspace.test.ts`, the `scripts/smoke-test.sh` script now runs an end-to-end flow: it packs and installs the plugin into a fresh temporary project, verifies that the ESLint plugin loads, and invokes the installed `traceability-maint` CLI binary for both a successful `detect --root .` run and an error-path `report --format yaml` run, asserting on exit codes and key messages. When maintainers change CLI behavior or exit codes, they must update both the Jest CLI tests and the smoke test assertions to keep end-to-end coverage in sync with the documented options and contracts.
+
 ## Related Documentation
 
 - [Story Files](stories/) - User story definitions

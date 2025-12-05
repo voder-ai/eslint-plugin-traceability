@@ -30,6 +30,14 @@ describe("prefer-implements-annotation rule (Story 010.3-DEV-MIGRATE-TO-SUPPORTS
         name: "[REQ-BACKWARD-COMP-VALIDATION] comment with @supports only is ignored",
         code: `/**\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction alreadyImplements() {}`,
       },
+      {
+        name: "[REQ-BACKWARD-COMP-VALIDATION] comment with @story and @supports but no @req is ignored",
+        code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction storyAndSupportsNoReq() {}`,
+      },
+      {
+        name: "[REQ-BACKWARD-COMP-VALIDATION] comment with @req and @supports but no @story is ignored",
+        code: `/**\n * @req REQ-ANNOTATION-REQUIRED\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction reqAndSupportsNoStory() {}`,
+      },
     ],
     invalid: [
       {
