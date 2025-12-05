@@ -259,6 +259,10 @@ ruleTester.run("require-story-annotation", rule, {
 
 ## Project-Specific Considerations
 
+### Helper Module Structure for Complex Rules
+
+Complex rules (such as `valid-req-reference` and `valid-story-reference`) must keep their rule entrypoints small and delegate complex or deeply nested logic to helper modules. Shared and reusable logic should live in `src/rules/helpers` and `src/utils`, with the rule’s `create` function mostly wiring up visitors and calling these helpers. For example, `createValidReqReferenceProgramVisitor` encapsulates the main traversal logic for `valid-req-reference`, and `valid-story-reference-helpers` holds the supporting functions used by the `valid-story-reference` rule. New complex rules should follow this pattern to keep rule files readable, testable, and consistent.
+
 ### File System Integration
 
 For validating @story references to actual files:

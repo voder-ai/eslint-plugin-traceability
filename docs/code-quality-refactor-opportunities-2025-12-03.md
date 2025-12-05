@@ -9,20 +9,26 @@ This note captures small, low-risk refactors that can be implemented incremental
 **Files:**
 
 - `src/maintenance/cli.ts`
+- `src/maintenance/flags.ts`
+- `src/maintenance/commands.ts`
 
-**Motivation:**
+**Status:**
+
+- This refactor has been completed. The CLI implementation is now decomposed into dedicated modules for flags and subcommand handlers, with `cli.ts` acting as a thin coordination layer.
+
+**Motivation (original):**
 
 - `cli.ts` is one of the larger source files and currently owns argument parsing, flag normalization, subcommand dispatch, and user-facing messaging.
 - While it still passes `max-lines` and `max-lines-per-function` rules, splitting responsibilities would improve navigability.
 
-**Potential refactors:**
+**Refactor outcome:**
 
-- Extract a dedicated `src/maintenance/flags.ts` module responsible solely for:
+- Extracted a dedicated `src/maintenance/flags.ts` module responsible solely for:
   - Defining the `CliFlags` shape and defaults.
   - Implementing `applyFlag` / `parseFlags` behavior and validation.
-- Extract a `src/maintenance/commands.ts` module for the four subcommand handlers:
+- Extracted a `src/maintenance/commands.ts` module for the four subcommand handlers:
   - `handleDetect`, `handleVerify`, `handleReport`, `handleUpdate`.
-  - Keep `runMaintenanceCli` as a small coordination layer that wires parsed arguments to these handlers.
+  - Kept `runMaintenanceCli` as a small coordination layer that wires parsed arguments to these handlers.
 
 ## 2. Narrow helper responsibilities in require-story helpers
 
@@ -40,6 +46,7 @@ This note captures small, low-risk refactors that can be implemented incremental
 
 - Introduce a dedicated `src/rules/helpers/require-story-io.ts` (already partially present) as the single place for reading and writing files in tests and rules.
 - Move purely structural helpers (e.g., small predicates, formatting helpers) into a `require-story-utils.ts`-style module so each file focuses on a single axis of responsibility.
+- Consider applying the same helper-extraction pattern used for `valid-story-reference` and `prefer-implements-annotation` to `valid-req-reference`, which is another relatively complex rule that would benefit from clearer separation between AST traversal, validation logic, and message construction.
 
 ## 3. Revisit targeted ESLint suppressions
 
