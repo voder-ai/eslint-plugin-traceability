@@ -27,7 +27,7 @@ export function createTempDir(prefix: string): TempDirHandle {
   return {
     dir,
     cleanup() {
-      // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+      // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
       fs.rmSync(dir, { recursive: true, force: true });
     },
   };

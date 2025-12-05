@@ -166,7 +166,7 @@ function applyImplementsReplacement(
  * More complex patterns remain diagnostics-only with no fix to avoid
  * producing invalid or ambiguous output.
  *
- * @implements docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
  * @req REQ-AUTO-FIX - Provide safe, opt-in auto-fix for simple legacy patterns
  * @req REQ-SINGLE-STORY-FIX - Restrict auto-fix to single-story, single-path cases
  * @req REQ-PRESERVE-FORMAT - Preserve original JSDoc indentation and prefix formatting
