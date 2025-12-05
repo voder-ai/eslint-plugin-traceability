@@ -35,8 +35,7 @@ Runs on:
 
 Matrix:
 
-- Node `18.x`
-- Node `20.x`
+- Node `22.14.0`
 
 Key steps (in order):
 
@@ -221,17 +220,19 @@ Because releases are determined solely from commit history on `main`, it is impo
 
 ## Supported Runtime and Tooling
 
-The pipeline runs against the following Node.js versions:
+The pipeline runs its full CI matrix on:
 
-- Node `18.x`
-- Node `20.x`
+- Node `22.14.0` (for all quality gates and semantic-release tooling)
 
 The package itself declares:
 
 - `engines.node: ">=18.18.0"`
 - `peerDependencies.eslint: "^9.0.0"`
 
-While the plugin’s runtime support is `>=18.18.0` and all quality gates run on Node 18.x/20.x, the semantic-release toolchain (and some of its plugins) require Node `^22.14.0 || >=24.10.0`. To satisfy these dev-tooling engine constraints and eliminate `EBADENGINE` warnings without changing the supported runtime matrix for end users, the CI workflow temporarily switches to Node `22.14.0` only for the semantic-release step; all other CI tasks continue to run on Node 18.x and 20.x.
+This means:
+
+- **CI** executes all checks (build, tests, linting, audits, semantic-release, etc.) on Node `22.14.0`.
+- **End users** can run `eslint-plugin-traceability` on any Node.js runtime version `>=18.18.0` that is compatible with their ESLint setup.
 
 User-facing docs are aligned with these constraints:
 
