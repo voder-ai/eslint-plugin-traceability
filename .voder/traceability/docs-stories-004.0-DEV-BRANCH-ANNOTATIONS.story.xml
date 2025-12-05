@@ -2,25 +2,8 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T04:19:44.936Z</last_validated>
+  <last_validated>2025-12-05T05:06:35.650Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object]</evidence>
-  <notes>The story defines an ESLint rule that enforces @story and @req annotations on significant code branches, with configurability, clear error messages, and documentation. Implementation is present in `src/rules/require-branch-annotation.ts` and `src/utils/branch-annotation-helpers.ts`, with dynamic registration and severity configured in `src/index.ts`.
-
-All functional requirements are met:
-- **REQ-BRANCH-DETECTION**: DEFAULT_BRANCH_TYPES plus handlers for `IfStatement`, `SwitchCase`, `TryStatement`, `CatchClause`, and all major loop types; tests cover valid and invalid cases for each.
-- **REQ-COMMENT-ASSOCIATION**: `gatherBranchCommentText` handles both inline and immediately preceding comments, including a special case for `SwitchCase` with blank lines; behavior is covered by tests such as the "fallback scanning comment detection" and "switch-case with blank line" cases.
-- **REQ-ANNOTATION-PARSING**: Regex-based parsing of `@story` and `@req` from assembled comment text, with missing-annotation reporting and autofix functions, all exercised by tests.
-- **REQ-SIGNIFICANCE-CRITERIA & REQ-CONFIGURABLE-SCOPE**: DEFAULT_BRANCH_TYPES defines which branches are significant by default, and `validateBranchTypes` allows narrowing/overriding via `branchTypes`, with tests for both valid and invalid configurations.
-- **REQ-NESTED-HANDLING**: The rule visits each configured branch node type via standard ESLint visitors; nested structures are handled naturally because each node is evaluated independently with no assumptions about nesting depth. There are multi-branch scenarios in tests (e.g., try/catch), and nothing in the implementation is sensitive to nesting, so nested branches are handled gracefully.
-- **REQ-PERFORMANCE-OPTIMIZATION**: Implementation uses simple per-node checks, shallow comment scanning (max 2 lines for SwitchCase), and avoids expensive traversals, which aligns with ESLint performance guidelines for custom rules.
-
-All acceptance criteria are satisfied:
-- Core functionality and integration are validated by the comprehensive Jest suite for this rule and its helpers.
-- Quality and performance concerns are addressed via standard ESLint patterns (schema, fixers, limited comment scanning, narrow AST node set).
-- User experience is covered by specific, consistent error messages (`missingAnnotation` for branches, clear messages for invalid `branchTypes`).
-- Error handling for misconfiguration and various branch forms is implemented and tested.
-- Documentation exists with examples and configuration guidance.
-
-Given the presence of implementation, targeted tests that all pass, and dedicated documentation tied to this story, the story `docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md` is fully implemented.</notes>
+  <evidence>[object Object]</evidence>
+  <notes>[object Object]</notes>
 </traceability>

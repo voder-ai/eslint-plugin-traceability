@@ -2,17 +2,16 @@
 <traceability>
   <specification>docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T04:20:31.999Z</last_validated>
+  <last_validated>2025-12-05T05:04:20.619Z</last_validated>
   <last_modified>2025-12-04T18:44:42.526Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md is a concrete specification for an optional ESLint migration rule that recommends and auto-fixes legacy @story/@req annotations to @supports. The implementation is provided by src/rules/prefer-implements-annotation.ts, which is explicitly tagged with this story and its requirement IDs. The rule:
+  <notes>All acceptance criteria and requirements in docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md are implemented and verified:
+- The `traceability/prefer-implements-annotation` rule is implemented with optional, configurable warnings and conservative auto-fix behavior, only active when users opt in (default off).
+- Auto-fix converts simple single-story `@story` + multiple `@req` annotations into a single `@supports` line, preserving JSDoc structure and formatting, and avoids fixing complex or ambiguous patterns while still warning.
+- Multi-story and mixed @story/@req/@supports scenarios are detected and reported with appropriate messages, without unsafe fixes.
+- Legacy `@story`/`@req` annotations remain valid when this rule is disabled, satisfying backward-compatibility requirements.
+- Tests explicitly tied to this story cover all key behaviors (warnings, auto-fix, multi-story detection, backward compatibility, configuration severity), and the full test suite passes.
+- User-facing migration documentation describes this rule, its default disabled state, opt-in configuration, and its auto-fix role in migrating from `@story`/`@req` to `@supports`.
 
-- Detects legacy @story + @req combinations, mixed @story/@req + @supports, and multiple @story paths via analyzeComment and hasMultipleStories (REQ-OPTIONAL-WARNING, REQ-MULTI-STORY-DETECT).
-- Provides a conservative auto-fix path (buildImplementsAutoFix/applyImplementsReplacement) that only fires for single-story comments with simple @req lines, rewriting them into a single @supports line while preserving indentation and comment structure (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX, REQ-PRESERVE-FORMAT, REQ-VALID-OUTPUT).
-- Leaves more complex or ambiguous patterns (multiple @story lines, existing @supports, or complex @req/@story text) as diagnostics-only without fix, emitting cannotAutoFix or multiStoryDetected messages (REQ-MULTI-STORY-DETECT, REQ-VALID-OUTPUT).
-- Is exported as a rule but not included in the recommended or strict flat-config presets, and its meta.docs.recommended is false, so it is disabled by default and only engaged when explicitly configured with a severity (off/warn/error), matching the configurable enforcement requirement (REQ-CONFIG-SEVERITY, REQ-BACKWARD-COMP-VALIDATION).
-
-The dedicated test suite tests/rules/prefer-implements-annotation.test.ts is annotated as supporting this story and validates all key behaviors: that pure @story, pure @req, and pure @supports comments are ignored; that simple @story + @req patterns trigger the preferImplements message and auto-fix into a single @supports line (including the multi-REQ aggregation case); that mixed and multi-story patterns produce the appropriate warning messages without fixes; that complex comment shapes are warned but not auto-fixed; and that the rule is disabled by default in plugin presets but can be configured with warn or error severities. All tests pass in the full Jest run.
-
-The user-facing migration guide (user-docs/migration-guide.md) documents the optional traceability/prefer-implements-annotation rule, its default disabled status, how to enable it with warn/error severities, and its conservative auto-fix behavior when migrating from @story/@req to @supports, satisfying the documentation acceptance criterion. Combined, the implementation, tests, configuration, and documentation provide concrete evidence that all acceptance criteria and listed requirements for story 010.3 are met.</notes>
+Based on concrete implementation, tests, and documentation, this story is fully implemented.</notes>
 </traceability>

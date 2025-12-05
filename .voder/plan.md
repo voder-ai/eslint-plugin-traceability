@@ -1,16 +1,16 @@
 ## NOW
 
-- [ ] Identify the most important uncovered or weakly covered branches in the core rules and helper modules, using the existing branch coverage analysis guidance, and select a small set of concrete branch cases to target for additional tests.
+- [ ] Review the maintenance and CLI modules, along with their existing tests, to identify the most critical workflows and code paths that are likely to be sensitive to very large workspaces, and define concrete target scales (for example, approximate numbers of files and annotations) for which we want to characterize performance.
 
 ## NEXT
 
-- [ ] Design and add focused tests that exercise the selected uncovered branches in the rules and helpers, ensuring each new test clearly documents the behavior it covers and aligns with the existing traceability conventions.
-- [ ] Refine or slightly extend the existing branch coverage analysis helper or its associated documentation so it is easy for maintainers to rerun and interpret branch coverage checks when evolving the rules and helpers.
-- [ ] Review the updated coverage results to confirm that the targeted branches are now covered and that overall branch coverage in the rules-and-helpers slice is trending upward without introducing brittle or over-specified tests.
-- [ ] Identify one or two safe, incremental opportunities to tighten an existing code-quality or tooling check (such as a modest reduction in allowed cyclomatic complexity for new or recently touched code) that the current codebase already satisfies, and document the change in the relevant decision record.
+- [ ] Design a synthetic large-workspace fixture or set of fixtures that mirror the identified critical workflows, including many files and traceability annotations, while keeping the fixture structure simple and deterministic.
+- [ ] Add focused, non-flaky performance and stress tests that exercise the selected maintenance and CLI workflows against the large-workspace fixtures, capturing basic expectations such as completing within a generous time budget without excessive memory use or errors.
+- [ ] Document the new performance and stress tests in the internal development documentation, explaining when to run them, what scenarios they cover, and how to interpret their results when evolving the rules and maintenance tooling.
+- [ ] Review the outcomes of the new performance and stress tests to see whether any hotspots or regressions are apparent, and, if needed, make small, localized refactors or optimizations to the most expensive code paths while keeping behavior unchanged and tests green.
 
 ## LATER
 
-- [ ] Systematically extend branch-coverage improvements beyond the initial rules-and-helpers focus into other important parts of the codebase, such as maintenance and CLI modules, while keeping tests fast and behavior-focused.
-- [ ] Introduce lightweight automation or guidance that helps prevent future regressions in branch coverage on critical modules, for example by documenting minimum expectations in internal quality guides or by expanding existing maintenance scripts to highlight newly uncovered hot paths.
-- [ ] Revisit the linting and code-quality configuration after these improvements to consider further, carefully justified tightening of thresholds or additional rules, always validating that the existing code passes before adopting any stricter settings. 
+- [ ] Extend the performance and stress testing approach to other important parts of the codebase, such as additional rules or helper modules that may be used in very large projects, ensuring that tests remain fast enough for regular use.
+- [ ] Introduce lightweight observability or diagnostic options for the maintenance CLI (for example, optional timing or file-count summaries) so that maintainers can more easily understand performance characteristics on real-world repositories.
+- [ ] Periodically revisit the performance test suite and internal guidance as the codebase evolves to ensure that large-workspace behavior remains within acceptable bounds and that new high-impact paths are covered by stress tests.
