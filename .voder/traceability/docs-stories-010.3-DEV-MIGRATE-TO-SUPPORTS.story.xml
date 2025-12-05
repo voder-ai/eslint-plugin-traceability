@@ -2,19 +2,52 @@
 <traceability>
   <specification>docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T13:12:31.581Z</last_validated>
+  <last_validated>2025-12-05T14:46:24.348Z</last_validated>
   <last_modified>2025-12-04T18:44:42.526Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and requirements for story 010.3-DEV-MIGRATE-TO-SUPPORTS are implemented and verified:
+  <evidence>[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and technical requirements from `docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md` are implemented and verified:
 
-- **Optional Warning (REQ-OPTIONAL-WARNING)**: The `prefer-implements-annotation` rule detects legacy `@story` + `@req` blocks and reports a `preferImplements` message when appropriate. The rule is a suggestion-type rule, disabled by default, and only active when configured, matching the optional recommendation requirement.
-- **Auto-fix Support (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX)**: For simple single-story, single-path comments with one or more simple `@req` lines, the rule offers an ESLint auto-fix that replaces `@story`/`@req` lines with a single `@supports` line listing all requirement IDs. Tests assert the exact transformed output for both single and multiple `@req` cases.
-- **Multi-story Detection (REQ-MULTI-STORY-DETECT)**: The rule distinguishes and reports non-fixable cases: mixed legacy/`@supports` annotations (via `cannotAutoFix`) and comments with multiple distinct story paths (via `multiStoryDetected`). Both are reported without fixes, as required.
-- **Preserve Order / JSDoc Structure (REQ-PRESERVE-FORMAT)**: Fix construction preserves the original comment’s line ordering except for substituting the `@story`/`@req` cluster with a single `@supports` line at the same position, and it reuses the original indentation and leading `*` prefix. This maintains the relative position after the description and before any subsequent tags, satisfying the formatting and order requirements.
-- **Configurable Enforcement (REQ-CONFIG-SEVERITY)**: The rule is not included in the plugin’s recommended or strict presets and has no custom options; its behavior is controlled solely via ESLint severity configuration (`"off"`, `"warn"`, `"error"`), with tests explicitly confirming both the default-off behavior and the ability to configure severities.
-- **Both Formats Valid (REQ-BACKWARD-COMP-VALIDATION)**: The rule intentionally ignores comments that contain only `@story`, only `@req`, or only `@supports`, and the core validation rules remain unchanged and active in presets. Tests verify these ignored patterns, and plugin configs confirm the migration rule is not enforced by default, ensuring legacy annotations remain valid.
-- **Valid @supports Output (REQ-VALID-OUTPUT)**: Auto-fix only triggers under strict, simple conditions and emits a canonical `@supports <story-path> <REQ-IDs...>` line that matches the formats validated by the existing `valid-annotation-format` and `valid-req-reference` rules. More complex or ambiguous cases are explicitly reported without fixes, avoiding invalid output.
-- **Documentation**: Both the rule documentation and the user-facing migration guide provide examples of before/after transformations, explain when auto-fix applies or is refused, and show how to configure severity levels. This satisfies the documentation acceptance criterion.
+1. **Optional Warning (REQ-OPTIONAL-WARNING)**
+   - Implemented by `processComment` and `messages.preferImplements` in `prefer-implements-annotation.ts`.
+   - Triggered only when both `@story` and `@req` are present (legacy combination), as required.
+   - Tests confirm the rule surfaces a diagnostic in these cases and remains silent when only one tag type is present.
+   - The rule is a standard ESLint suggestion rule and is configurable via normal severity settings (off/warn/error).
 
-Given the direct traceability between the story, implementation, tests, and documentation—and the fully passing test suite—the story 010.3-DEV-MIGRATE-TO-SUPPORTS is fully implemented and passes all acceptance criteria.</notes>
+2. **Auto-fix Support & Single Story Conversion (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX)**
+   - Auto-fix is implemented using `collectStoryAndReqMetadata`, `buildImplementsAutoFix`, and `applyImplementsReplacement`.
+   - Tests validate:
+     - Single `@story` + single `@req` → auto-fix to single `@supports` line with matching path and REQ ID.
+     - Single `@story` + multiple `@req` lines → auto-fix to a single `@supports` line containing all REQ IDs, in order.
+   - Complex forms (extra tokens in `@story` or `@req`) deliberately **do not** produce a fix (storyPath forced to null and `buildImplementsAutoFix` returns `null`); tests assert that these still produce a warning but no `output` change, ensuring only safe transformations occur.
+
+3. **Multi-story Detection & Cannot-auto-fix Scenarios (REQ-MULTI-STORY-DETECT, REQ-VALID-OUTPUT)**
+   - `analyzeComment` + `hasMultipleStories` detect when multiple distinct `@story` paths appear in a single block.
+   - Mixed `@story/@req` with existing `@supports` lines sets `hasImplements` and triggers the `cannotAutoFix` message.
+   - Tests cover both cases:
+     - Mixed `@story/@req` + `@supports` → `cannotAutoFix` with specific `reason`.
+     - Multiple `@story` paths → `multiStoryDetected`.
+   - In all non-simple cases, the rule reports diagnostics but does **not** apply fixes, fulfilling the requirement to avoid unsafe auto-fixes.
+
+4. **Preserve Order / JSDoc Structure (REQ-PRESERVE-FORMAT)**
+   - The implementation leaves non-`@story`/`@req` lines untouched and replaces the `@story` line in-place with `@supports` while removing `@req` lines.
+   - `applyImplementsReplacement` preserves leading whitespace and `*` markers from the original `@story` line, maintaining JSDoc formatting.
+   - While the story example emphasizes placing `@supports` after the description and before `@param`, the rule conservatively keeps the new annotation at the exact location of the original `@story` line. This satisfies the intent of preserving structure and relative order rather than reordering tags, and does so in a safe, non-disruptive way.
+
+5. **Configurable Enforcement / Default Off (REQ-CONFIG-SEVERITY)**
+   - The rule is **not** included in the plugin’s preset severity map or flat configs, so it is effectively `off` by default.
+   - Tests explicitly confirm absence from both `configs.recommended` and `configs.strict` and show how to configure `'warn'` or `'error'` severities.
+
+6. **Both Formats Valid & Backward Compatibility (REQ-BACKWARD-COMP-VALIDATION)**
+   - Because the rule only reports when **both** `@story` and `@req` are present, comments that use only `@story`, only `@req`, or only `@supports` are untouched.
+   - Other validation rules (`valid-annotation-format`, `valid-story-reference`, `valid-req-reference`) continue to enforce syntax and reference correctness independently of this migration rule.
+   - Tests clearly mark and verify `[REQ-BACKWARD-COMP-VALIDATION]` scenarios where legacy formats remain valid when this rule is enabled.
+
+7. **Quality Standards / Valid Output (REQ-VALID-OUTPUT)**
+   - The rule’s auto-fix path is deliberately narrow, guarding against malformed or ambiguous annotations by abandoning fixes when parsing conditions are not exactly met.
+   - This, combined with the existing validation rules, ensures that generated `@supports` lines are structurally valid and reference-correct.
+
+8. **Documentation (Migration Guide)**
+   - `user-docs/migration-guide.md` documents the `prefer-implements-annotation` rule, its optional nature, configuration (off/warn/error), behavior, and examples of when and how auto-fixes are applied or withheld. This directly satisfies the story’s documentation requirement.
+
+Given the concrete implementation, passing tests tied directly to this story and its REQ IDs, and the presence of aligned user documentation, this specification is fully implemented and verified.</notes>
 </traceability>

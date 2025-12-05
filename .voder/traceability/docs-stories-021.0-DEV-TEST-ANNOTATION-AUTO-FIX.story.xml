@@ -2,8 +2,26 @@
 <traceability>
   <specification>docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T13:12:22.456Z</last_validated>
+  <last_validated>2025-12-05T14:49:06.525Z</last_validated>
   <last_modified>2025-12-04T21:56:14.211Z</last_modified>
-  <evidence>[object Object]</evidence>
-  <notes>All requirements and acceptance criteria from docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md are implemented and verified via tests:,- File-level @supports template insertion (REQ-TEST-FIX-TEMPLATE / PLACEHOLDER / SAFE / PRESERVE / NO-INFERENCE) is implemented in buildSupportsTemplateComment, insertSupportsTemplate, and ensureFileSupportsAnnotation, with RuleTester tests confirming exact before/after output.,- Malformed `[REQ-XXX]` prefix normalization (REQ-TEST-FIX-PREFIX-FORMAT / SAFE / PRESERVE / NO-INFERENCE) is implemented in normalizeReqId, normalizeReqPrefixInDescription, and handleItOrTestCall; tests cover spacing, underscores, lowercase, and parentheses, and also verify that correct prefixes are not changed.,- Safety constraints are respected: fixes only touch comments and string literals, never infer story paths or REQ IDs, and only emit fixes when normalization is unambiguous; otherwise the rule reports an error with no fixer (e.g., missing prefix case).,- Integration with ESLint --fix is correct: the rule is a standard RuleModule with meta.fixable = 'code', uses ESLint fixer APIs, and is wired into the plugin and documented in the user API reference.,- Documentation in user-docs/api-reference.md explicitly documents autoFixTestTemplate, autoFixTestPrefixFormat, and testSupportsTemplate, including the placeholder template behavior and safety constraints, satisfying the story’s documentation requirement.,- The dedicated test suite `tests/rules/require-test-traceability.test.ts` is explicitly annotated as supporting this story and all its requirement IDs, and the full Jest test run passes.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and requirements for story docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md are implemented and verified:
+
+- **File-Level Template** (REQ-TEST-FIX-TEMPLATE, REQ-TEST-FIX-PLACEHOLDER): Implemented via `ensureFileSupportsAnnotation` and `buildSupportsTemplateComment`, inserting a JSDoc `@supports` block with clear placeholder story path/requirement IDs and an explicit TODO line. Behavior is validated by RuleTester tests that assert the exact before/after code.
+
+- **Format Fixes for `[REQ-XXX]` prefixes** (REQ-TEST-FIX-PREFIX-FORMAT): Implemented in `normalizeReqId` and `normalizeReqPrefixInDescription` and applied from `handleItOrTestCall`. They normalize spacing, underscores vs. hyphens, casing, and parentheses-vs-brackets — exactly the patterns listed in the story. Tests cover each malformed case and confirm the canonical output.
+
+- **Template Quality & User Experience**: The default template uses obvious placeholder tokens (`XXX.X-STORY-NAME`, `REQ-XXX-YYY`) and a TODO guidance line, making required user edits explicit and consistent. Tests assert the full inserted block, showing the placeholder content.
+
+- **Quality Standards & Error Handling** (REQ-TEST-FIX-SAFE, REQ-TEST-FIX-PRESERVE, REQ-TEST-FIX-NO-INFERENCE):
+  - File template insertion only adds comments at a safe location (start of file or after shebang), never touching code.
+  - Prefix normalization only runs when a recognizable REQ prefix is already present; otherwise, the rule reports an error without providing a fix, avoiding any inference of IDs.
+  - String literal updates preserve quote style and only change the content needed to normalize the prefix.
+  - Tests explicitly cover the “no prefix” case to verify that no auto-fix is applied there.
+
+- **Integration with ESLint --fix and Test Validation Rules**: The rule is marked `fixable: "code"`, uses standard `context.report({ ..., fix(...) })` callbacks, and is exercised via ESLint’s RuleTester with `output` assertions. The same rule enforces validation behavior from Story 020.0 and auto-fix behavior from Story 021.0, ensuring the auto-fix integrates with existing validation.
+
+- **Documentation**: The `user-docs/api-reference.md` entry for `traceability/require-test-traceability` documents both the placeholder template insertion and malformed prefix normalization, along with configuration options that match the story. This meets the story’s documentation acceptance criterion.
+
+Given the concrete implementation, passing tests that directly reference this story’s requirements, and aligned documentation, this story is fully implemented and passes all acceptance criteria.</notes>
 </traceability>

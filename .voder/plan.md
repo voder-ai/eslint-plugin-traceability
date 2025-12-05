@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Identify one of the most complex or heavily used source files and refactor it into smaller, single-responsibility helpers with clear traceability annotations while preserving existing behavior, to improve overall code clarity and maintainability.
+- [ ] Review the branch-annotation rule implementation, its helpers, and the associated story and test files to understand exactly how nested control-flow structures are currently handled and what gaps remain for the nested-handling requirement in the branch-annotations story.
 
 ## NEXT
 
-- [ ] Repeat the same focused refactoring approach on other identified hotspot files so that complex logic is consistently broken into readable, testable modules without behavior changes.
-- [ ] Review the internal development documentation to describe the evolved module structure and code-quality conventions, including how helpers are organized, how traceability annotations are applied, and how new code should follow these patterns.
-- [ ] Inspect the test suite structure around the refactored areas to ensure tests remain behavior-focused and clearly mapped to stories and requirements, adding or adjusting tests only where necessary to keep coverage aligned with the new structure.
+- [ ] Extend the branch-annotation rule and its helpers so that nested control-flow structures (such as nested conditionals, loops, and try/catch blocks) are explicitly and correctly supported in line with the nested-handling requirement, without changing existing behavior for simple branches.
+- [ ] Add or update targeted tests for the branch-annotation rule that exercise a variety of nested and complex control-flow scenarios, with clear traceability annotations back to the nested-handling requirement in the branch-annotations story.
+- [ ] Create a focused performance-oriented test for the branch-annotation rule that validates its behavior and execution time on code containing many branch constructs, and document this as fulfilling the performance-optimization requirement for the branch-annotations story.
 
 ## LATER
 
-- [ ] Perform a holistic pass over user-facing documentation (README, user-docs) to ensure installation and usage guidance is concise, self-contained, and does not depend on internal development docs.
-- [ ] Augment user-facing docs with a brief, high-level description of the plugin’s core rules and maintenance tools that reflects the current implementation, avoiding deep internal details while keeping examples accurate.
-- [ ] Periodically re-evaluate the balance between internal technical detail and user-facing simplicity in documentation, adjusting structure or splitting documents when they become too large or unfocused.
+- [ ] Re-evaluate the branch-annotations story against all its documented requirements, confirming that nested handling and performance optimization are now fully met and updating any internal traceability annotations or ADRs as needed.
+- [ ] Perform small, localized refactors on the branch-annotation helpers to further reduce duplication or complexity identified during implementation, ensuring tests continue to describe behavior rather than implementation details.
+- [ ] Update the user-facing rule documentation to briefly describe how the branch-annotation rule behaves with nested control flow and to note any performance characteristics or limits relevant to typical usage.

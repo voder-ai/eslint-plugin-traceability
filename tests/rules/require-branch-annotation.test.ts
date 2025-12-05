@@ -6,7 +6,8 @@
  * @req REQ-ERROR-SPECIFIC - Branch-level missing-annotation error messages are specific and informative
  * @req REQ-ERROR-CONSISTENCY - Branch-level missing-annotation error messages follow shared conventions
  * @req REQ-ERROR-SUGGESTION - Branch-level missing-annotation errors include suggestions when applicable
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION
+ * @req REQ-NESTED-HANDLING - Nested branch annotations are correctly enforced without duplicative reporting
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION REQ-NESTED-HANDLING
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION
  */
 import { RuleTester } from "eslint";
@@ -123,6 +124,18 @@ while (condition) {
   // @req REQ-BRANCH-DETECTION
   case 'a':
     break;
+}`,
+      },
+      {
+        name: "[REQ-NESTED-HANDLING] nested if-statements with annotations on outer and inner branches",
+        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-BRANCH-DETECTION
+if (outer) {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-NESTED-HANDLING
+  if (inner) {
+    doWork();
+  }
 }`,
       },
       {
@@ -247,6 +260,25 @@ try {
   // @story <story-file>.story.md
   case 'a':
     break;
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-NESTED-HANDLING] missing annotations on nested if-statement inside annotated outer branch",
+        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-BRANCH-DETECTION
+if (outer) {
+  if (inner) {
+    doWork();
+  }
+}`,
+        output: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-BRANCH-DETECTION
+if (outer) {
+  // @story <story-file>.story.md
+  if (inner) {
+    doWork();
+  }
 }`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
