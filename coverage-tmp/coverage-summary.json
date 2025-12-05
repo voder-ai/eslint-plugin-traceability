@@ -1,36 +1,218 @@
-{"total": {"lines":{"total":6895,"covered":6663,"skipped":0,"pct":96.63},"statements":{"total":6895,"covered":6663,"skipped":0,"pct":96.63},"functions":{"total":218,"covered":218,"skipped":0,"pct":100},"branches":{"total":920,"covered":753,"skipped":0,"pct":81.84},"branchesTrue":{"total":0,"covered":0,"skipped":0,"pct":100}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/index.ts": {"lines":{"total":163,"covered":163,"skipped":0,"pct":100},"functions":{"total":3,"covered":3,"skipped":0,"pct":100},"statements":{"total":163,"covered":163,"skipped":0,"pct":100},"branches":{"total":6,"covered":5,"skipped":0,"pct":83.33}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/batch.ts": {"lines":{"total":35,"covered":33,"skipped":0,"pct":94.28},"functions":{"total":2,"covered":2,"skipped":0,"pct":100},"statements":{"total":35,"covered":33,"skipped":0,"pct":94.28},"branches":{"total":3,"covered":2,"skipped":0,"pct":66.66}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts": {"lines":{"total":108,"covered":102,"skipped":0,"pct":94.44},"functions":{"total":2,"covered":2,"skipped":0,"pct":100},"statements":{"total":108,"covered":102,"skipped":0,"pct":94.44},"branches":{"total":15,"covered":12,"skipped":0,"pct":80}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/commands.ts": {"lines":{"total":158,"covered":138,"skipped":0,"pct":87.34},"functions":{"total":4,"covered":4,"skipped":0,"pct":100},"statements":{"total":158,"covered":138,"skipped":0,"pct":87.34},"branches":{"total":24,"covered":16,"skipped":0,"pct":66.66}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts": {"lines":{"total":200,"covered":179,"skipped":0,"pct":89.5},"functions":{"total":5,"covered":5,"skipped":0,"pct":100},"statements":{"total":200,"covered":179,"skipped":0,"pct":89.5},"branches":{"total":24,"covered":20,"skipped":0,"pct":83.33}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/flags.ts": {"lines":{"total":193,"covered":187,"skipped":0,"pct":96.89},"functions":{"total":5,"covered":5,"skipped":0,"pct":100},"statements":{"total":193,"covered":187,"skipped":0,"pct":96.89},"branches":{"total":24,"covered":21,"skipped":0,"pct":87.5}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/index.ts": {"lines":{"total":14,"covered":14,"skipped":0,"pct":100},"functions":{"total":5,"covered":5,"skipped":0,"pct":100},"statements":{"total":14,"covered":14,"skipped":0,"pct":100},"branches":{"total":5,"covered":5,"skipped":0,"pct":100}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/report.ts": {"lines":{"total":19,"covered":19,"skipped":0,"pct":100},"functions":{"total":1,"covered":1,"skipped":0,"pct":100},"statements":{"total":19,"covered":19,"skipped":0,"pct":100},"branches":{"total":2,"covered":2,"skipped":0,"pct":100}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/update.ts": {"lines":{"total":105,"covered":105,"skipped":0,"pct":100},"functions":{"total":2,"covered":2,"skipped":0,"pct":100},"statements":{"total":105,"covered":105,"skipped":0,"pct":100},"branches":{"total":8,"covered":7,"skipped":0,"pct":87.5}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/utils.ts": {"lines":{"total":68,"covered":66,"skipped":0,"pct":97.05},"functions":{"total":2,"covered":2,"skipped":0,"pct":100},"statements":{"total":68,"covered":66,"skipped":0,"pct":97.05},"branches":{"total":8,"covered":7,"skipped":0,"pct":87.5}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/prefer-implements-annotation.ts": {"lines":{"total":412,"covered":409,"skipped":0,"pct":99.27},"functions":{"total":8,"covered":8,"skipped":0,"pct":100},"statements":{"total":412,"covered":409,"skipped":0,"pct":99.27},"branches":{"total":52,"covered":45,"skipped":0,"pct":86.53}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-branch-annotation.ts": {"lines":{"total":90,"covered":90,"skipped":0,"pct":100},"functions":{"total":2,"covered":2,"skipped":0,"pct":100},"statements":{"total":90,"covered":90,"skipped":0,"pct":100},"branches":{"total":8,"covered":8,"skipped":0,"pct":100}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-req-annotation.ts": {"lines":{"total":143,"covered":143,"skipped":0,"pct":100},"functions":{"total":8,"covered":8,"skipped":0,"pct":100},"statements":{"total":143,"covered":143,"skipped":0,"pct":100},"branches":{"total":17,"covered":17,"skipped":0,"pct":100}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-story-annotation.ts": {"lines":{"total":115,"covered":115,"skipped":0,"pct":100},"functions":{"total":2,"covered":2,"skipped":0,"pct":100},"statements":{"total":115,"covered":115,"skipped":0,"pct":100},"branches":{"total":5,"covered":5,"skipped":0,"pct":100}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-test-traceability.ts": {"lines":{"total":148,"covered":148,"skipped":0,"pct":100},"functions":{"total":1,"covered":1,"skipped":0,"pct":100},"statements":{"total":148,"covered":148,"skipped":0,"pct":100},"branches":{"total":3,"covered":3,"skipped":0,"pct":100}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-annotation-format.ts": {"lines":{"total":262,"covered":260,"skipped":0,"pct":99.23},"functions":{"total":4,"covered":4,"skipped":0,"pct":100},"statements":{"total":262,"covered":260,"skipped":0,"pct":99.23},"branches":{"total":28,"covered":22,"skipped":0,"pct":78.57}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-req-reference.ts": {"lines":{"total":474,"covered":454,"skipped":0,"pct":95.78},"functions":{"total":16,"covered":16,"skipped":0,"pct":100},"statements":{"total":474,"covered":454,"skipped":0,"pct":95.78},"branches":{"total":46,"covered":35,"skipped":0,"pct":76.08}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-story-reference.ts": {"lines":{"total":374,"covered":369,"skipped":0,"pct":98.66},"functions":{"total":8,"covered":8,"skipped":0,"pct":100},"statements":{"total":374,"covered":369,"skipped":0,"pct":98.66},"branches":{"total":32,"covered":26,"skipped":0,"pct":81.25}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-core.ts": {"lines":{"total":159,"covered":159,"skipped":0,"pct":100},"functions":{"total":6,"covered":6,"skipped":0,"pct":100},"statements":{"total":159,"covered":159,"skipped":0,"pct":100},"branches":{"total":39,"covered":29,"skipped":0,"pct":74.35}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-helpers.ts": {"lines":{"total":391,"covered":374,"skipped":0,"pct":95.65},"functions":{"total":16,"covered":16,"skipped":0,"pct":100},"statements":{"total":391,"covered":374,"skipped":0,"pct":95.65},"branches":{"total":114,"covered":100,"skipped":0,"pct":87.71}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-io.ts": {"lines":{"total":209,"covered":203,"skipped":0,"pct":97.12},"functions":{"total":7,"covered":7,"skipped":0,"pct":100},"statements":{"total":209,"covered":203,"skipped":0,"pct":97.12},"branches":{"total":52,"covered":49,"skipped":0,"pct":94.23}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-utils.ts": {"lines":{"total":222,"covered":191,"skipped":0,"pct":86.03},"functions":{"total":7,"covered":7,"skipped":0,"pct":100},"statements":{"total":222,"covered":191,"skipped":0,"pct":86.03},"branches":{"total":57,"covered":30,"skipped":0,"pct":52.63}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-visitors.ts": {"lines":{"total":201,"covered":198,"skipped":0,"pct":98.5},"functions":{"total":13,"covered":13,"skipped":0,"pct":100},"statements":{"total":201,"covered":198,"skipped":0,"pct":98.5},"branches":{"total":23,"covered":18,"skipped":0,"pct":78.26}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-test-traceability-helpers.ts": {"lines":{"total":348,"covered":326,"skipped":0,"pct":93.67},"functions":{"total":15,"covered":15,"skipped":0,"pct":100},"statements":{"total":348,"covered":326,"skipped":0,"pct":93.67},"branches":{"total":55,"covered":34,"skipped":0,"pct":61.81}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-format-internal.ts": {"lines":{"total":68,"covered":66,"skipped":0,"pct":97.05},"functions":{"total":2,"covered":2,"skipped":0,"pct":100},"statements":{"total":68,"covered":66,"skipped":0,"pct":97.05},"branches":{"total":11,"covered":10,"skipped":0,"pct":90.9}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-format-validators.ts": {"lines":{"total":343,"covered":331,"skipped":0,"pct":96.5},"functions":{"total":7,"covered":7,"skipped":0,"pct":100},"statements":{"total":343,"covered":331,"skipped":0,"pct":96.5},"branches":{"total":32,"covered":29,"skipped":0,"pct":90.62}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-options.ts": {"lines":{"total":298,"covered":296,"skipped":0,"pct":99.32},"functions":{"total":12,"covered":12,"skipped":0,"pct":100},"statements":{"total":298,"covered":296,"skipped":0,"pct":99.32},"branches":{"total":47,"covered":46,"skipped":0,"pct":97.87}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-utils.ts": {"lines":{"total":163,"covered":153,"skipped":0,"pct":93.86},"functions":{"total":4,"covered":4,"skipped":0,"pct":100},"statements":{"total":163,"covered":153,"skipped":0,"pct":93.86},"branches":{"total":20,"covered":14,"skipped":0,"pct":70}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-implements-utils.ts": {"lines":{"total":224,"covered":224,"skipped":0,"pct":100},"functions":{"total":7,"covered":7,"skipped":0,"pct":100},"statements":{"total":224,"covered":224,"skipped":0,"pct":100},"branches":{"total":19,"covered":18,"skipped":0,"pct":94.73}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-story-reference-helpers.ts": {"lines":{"total":172,"covered":162,"skipped":0,"pct":94.18},"functions":{"total":3,"covered":3,"skipped":0,"pct":100},"statements":{"total":172,"covered":162,"skipped":0,"pct":94.18},"branches":{"total":18,"covered":16,"skipped":0,"pct":88.88}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-checker.ts": {"lines":{"total":171,"covered":163,"skipped":0,"pct":95.32},"functions":{"total":9,"covered":9,"skipped":0,"pct":100},"statements":{"total":171,"covered":163,"skipped":0,"pct":95.32},"branches":{"total":27,"covered":20,"skipped":0,"pct":74.07}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts": {"lines":{"total":299,"covered":299,"skipped":0,"pct":100},"functions":{"total":13,"covered":13,"skipped":0,"pct":100},"statements":{"total":299,"covered":299,"skipped":0,"pct":100},"branches":{"total":30,"covered":29,"skipped":0,"pct":96.66}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/reqAnnotationDetection.ts": {"lines":{"total":215,"covered":196,"skipped":0,"pct":91.16},"functions":{"total":5,"covered":5,"skipped":0,"pct":100},"statements":{"total":215,"covered":196,"skipped":0,"pct":91.16},"branches":{"total":32,"covered":20,"skipped":0,"pct":62.5}}
-,"/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/storyReferenceUtils.ts": {"lines":{"total":331,"covered":328,"skipped":0,"pct":99.09},"functions":{"total":12,"covered":12,"skipped":0,"pct":100},"statements":{"total":331,"covered":328,"skipped":0,"pct":99.09},"branches":{"total":34,"covered":33,"skipped":0,"pct":97.05}}
+{
+  "total": {
+    "lines": { "total": 6895, "covered": 6663, "skipped": 0, "pct": 96.63 },
+    "statements": {
+      "total": 6895,
+      "covered": 6663,
+      "skipped": 0,
+      "pct": 96.63
+    },
+    "functions": { "total": 218, "covered": 218, "skipped": 0, "pct": 100 },
+    "branches": { "total": 920, "covered": 753, "skipped": 0, "pct": 81.84 },
+    "branchesTrue": { "total": 0, "covered": 0, "skipped": 0, "pct": 100 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/index.ts": {
+    "lines": { "total": 163, "covered": 163, "skipped": 0, "pct": 100 },
+    "functions": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "statements": { "total": 163, "covered": 163, "skipped": 0, "pct": 100 },
+    "branches": { "total": 6, "covered": 5, "skipped": 0, "pct": 83.33 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/batch.ts": {
+    "lines": { "total": 35, "covered": 33, "skipped": 0, "pct": 94.28 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 35, "covered": 33, "skipped": 0, "pct": 94.28 },
+    "branches": { "total": 3, "covered": 2, "skipped": 0, "pct": 66.66 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/cli.ts": {
+    "lines": { "total": 108, "covered": 102, "skipped": 0, "pct": 94.44 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 108, "covered": 102, "skipped": 0, "pct": 94.44 },
+    "branches": { "total": 15, "covered": 12, "skipped": 0, "pct": 80 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/commands.ts": {
+    "lines": { "total": 158, "covered": 138, "skipped": 0, "pct": 87.34 },
+    "functions": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "statements": { "total": 158, "covered": 138, "skipped": 0, "pct": 87.34 },
+    "branches": { "total": 24, "covered": 16, "skipped": 0, "pct": 66.66 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/detect.ts": {
+    "lines": { "total": 200, "covered": 179, "skipped": 0, "pct": 89.5 },
+    "functions": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "statements": { "total": 200, "covered": 179, "skipped": 0, "pct": 89.5 },
+    "branches": { "total": 24, "covered": 20, "skipped": 0, "pct": 83.33 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/flags.ts": {
+    "lines": { "total": 193, "covered": 187, "skipped": 0, "pct": 96.89 },
+    "functions": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "statements": { "total": 193, "covered": 187, "skipped": 0, "pct": 96.89 },
+    "branches": { "total": 24, "covered": 21, "skipped": 0, "pct": 87.5 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/index.ts": {
+    "lines": { "total": 14, "covered": 14, "skipped": 0, "pct": 100 },
+    "functions": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "statements": { "total": 14, "covered": 14, "skipped": 0, "pct": 100 },
+    "branches": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/report.ts": {
+    "lines": { "total": 19, "covered": 19, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 19, "covered": 19, "skipped": 0, "pct": 100 },
+    "branches": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/update.ts": {
+    "lines": { "total": 105, "covered": 105, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 105, "covered": 105, "skipped": 0, "pct": 100 },
+    "branches": { "total": 8, "covered": 7, "skipped": 0, "pct": 87.5 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/maintenance/utils.ts": {
+    "lines": { "total": 68, "covered": 66, "skipped": 0, "pct": 97.05 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 68, "covered": 66, "skipped": 0, "pct": 97.05 },
+    "branches": { "total": 8, "covered": 7, "skipped": 0, "pct": 87.5 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/prefer-implements-annotation.ts": {
+    "lines": { "total": 412, "covered": 409, "skipped": 0, "pct": 99.27 },
+    "functions": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 },
+    "statements": { "total": 412, "covered": 409, "skipped": 0, "pct": 99.27 },
+    "branches": { "total": 52, "covered": 45, "skipped": 0, "pct": 86.53 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-branch-annotation.ts": {
+    "lines": { "total": 90, "covered": 90, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 90, "covered": 90, "skipped": 0, "pct": 100 },
+    "branches": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-req-annotation.ts": {
+    "lines": { "total": 143, "covered": 143, "skipped": 0, "pct": 100 },
+    "functions": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 },
+    "statements": { "total": 143, "covered": 143, "skipped": 0, "pct": 100 },
+    "branches": { "total": 17, "covered": 17, "skipped": 0, "pct": 100 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-story-annotation.ts": {
+    "lines": { "total": 115, "covered": 115, "skipped": 0, "pct": 100 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 115, "covered": 115, "skipped": 0, "pct": 100 },
+    "branches": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/require-test-traceability.ts": {
+    "lines": { "total": 148, "covered": 148, "skipped": 0, "pct": 100 },
+    "functions": { "total": 1, "covered": 1, "skipped": 0, "pct": 100 },
+    "statements": { "total": 148, "covered": 148, "skipped": 0, "pct": 100 },
+    "branches": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-annotation-format.ts": {
+    "lines": { "total": 262, "covered": 260, "skipped": 0, "pct": 99.23 },
+    "functions": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "statements": { "total": 262, "covered": 260, "skipped": 0, "pct": 99.23 },
+    "branches": { "total": 28, "covered": 22, "skipped": 0, "pct": 78.57 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-req-reference.ts": {
+    "lines": { "total": 474, "covered": 454, "skipped": 0, "pct": 95.78 },
+    "functions": { "total": 16, "covered": 16, "skipped": 0, "pct": 100 },
+    "statements": { "total": 474, "covered": 454, "skipped": 0, "pct": 95.78 },
+    "branches": { "total": 46, "covered": 35, "skipped": 0, "pct": 76.08 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/valid-story-reference.ts": {
+    "lines": { "total": 374, "covered": 369, "skipped": 0, "pct": 98.66 },
+    "functions": { "total": 8, "covered": 8, "skipped": 0, "pct": 100 },
+    "statements": { "total": 374, "covered": 369, "skipped": 0, "pct": 98.66 },
+    "branches": { "total": 32, "covered": 26, "skipped": 0, "pct": 81.25 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-core.ts": {
+    "lines": { "total": 159, "covered": 159, "skipped": 0, "pct": 100 },
+    "functions": { "total": 6, "covered": 6, "skipped": 0, "pct": 100 },
+    "statements": { "total": 159, "covered": 159, "skipped": 0, "pct": 100 },
+    "branches": { "total": 39, "covered": 29, "skipped": 0, "pct": 74.35 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-helpers.ts": {
+    "lines": { "total": 391, "covered": 374, "skipped": 0, "pct": 95.65 },
+    "functions": { "total": 16, "covered": 16, "skipped": 0, "pct": 100 },
+    "statements": { "total": 391, "covered": 374, "skipped": 0, "pct": 95.65 },
+    "branches": { "total": 114, "covered": 100, "skipped": 0, "pct": 87.71 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-io.ts": {
+    "lines": { "total": 209, "covered": 203, "skipped": 0, "pct": 97.12 },
+    "functions": { "total": 7, "covered": 7, "skipped": 0, "pct": 100 },
+    "statements": { "total": 209, "covered": 203, "skipped": 0, "pct": 97.12 },
+    "branches": { "total": 52, "covered": 49, "skipped": 0, "pct": 94.23 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-utils.ts": {
+    "lines": { "total": 222, "covered": 191, "skipped": 0, "pct": 86.03 },
+    "functions": { "total": 7, "covered": 7, "skipped": 0, "pct": 100 },
+    "statements": { "total": 222, "covered": 191, "skipped": 0, "pct": 86.03 },
+    "branches": { "total": 57, "covered": 30, "skipped": 0, "pct": 52.63 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-visitors.ts": {
+    "lines": { "total": 201, "covered": 198, "skipped": 0, "pct": 98.5 },
+    "functions": { "total": 13, "covered": 13, "skipped": 0, "pct": 100 },
+    "statements": { "total": 201, "covered": 198, "skipped": 0, "pct": 98.5 },
+    "branches": { "total": 23, "covered": 18, "skipped": 0, "pct": 78.26 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-test-traceability-helpers.ts": {
+    "lines": { "total": 348, "covered": 326, "skipped": 0, "pct": 93.67 },
+    "functions": { "total": 15, "covered": 15, "skipped": 0, "pct": 100 },
+    "statements": { "total": 348, "covered": 326, "skipped": 0, "pct": 93.67 },
+    "branches": { "total": 55, "covered": 34, "skipped": 0, "pct": 61.81 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-format-internal.ts": {
+    "lines": { "total": 68, "covered": 66, "skipped": 0, "pct": 97.05 },
+    "functions": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 },
+    "statements": { "total": 68, "covered": 66, "skipped": 0, "pct": 97.05 },
+    "branches": { "total": 11, "covered": 10, "skipped": 0, "pct": 90.9 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-format-validators.ts": {
+    "lines": { "total": 343, "covered": 331, "skipped": 0, "pct": 96.5 },
+    "functions": { "total": 7, "covered": 7, "skipped": 0, "pct": 100 },
+    "statements": { "total": 343, "covered": 331, "skipped": 0, "pct": 96.5 },
+    "branches": { "total": 32, "covered": 29, "skipped": 0, "pct": 90.62 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-options.ts": {
+    "lines": { "total": 298, "covered": 296, "skipped": 0, "pct": 99.32 },
+    "functions": { "total": 12, "covered": 12, "skipped": 0, "pct": 100 },
+    "statements": { "total": 298, "covered": 296, "skipped": 0, "pct": 99.32 },
+    "branches": { "total": 47, "covered": 46, "skipped": 0, "pct": 97.87 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-annotation-utils.ts": {
+    "lines": { "total": 163, "covered": 153, "skipped": 0, "pct": 93.86 },
+    "functions": { "total": 4, "covered": 4, "skipped": 0, "pct": 100 },
+    "statements": { "total": 163, "covered": 153, "skipped": 0, "pct": 93.86 },
+    "branches": { "total": 20, "covered": 14, "skipped": 0, "pct": 70 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-implements-utils.ts": {
+    "lines": { "total": 224, "covered": 224, "skipped": 0, "pct": 100 },
+    "functions": { "total": 7, "covered": 7, "skipped": 0, "pct": 100 },
+    "statements": { "total": 224, "covered": 224, "skipped": 0, "pct": 100 },
+    "branches": { "total": 19, "covered": 18, "skipped": 0, "pct": 94.73 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/valid-story-reference-helpers.ts": {
+    "lines": { "total": 172, "covered": 162, "skipped": 0, "pct": 94.18 },
+    "functions": { "total": 3, "covered": 3, "skipped": 0, "pct": 100 },
+    "statements": { "total": 172, "covered": 162, "skipped": 0, "pct": 94.18 },
+    "branches": { "total": 18, "covered": 16, "skipped": 0, "pct": 88.88 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-checker.ts": {
+    "lines": { "total": 171, "covered": 163, "skipped": 0, "pct": 95.32 },
+    "functions": { "total": 9, "covered": 9, "skipped": 0, "pct": 100 },
+    "statements": { "total": 171, "covered": 163, "skipped": 0, "pct": 95.32 },
+    "branches": { "total": 27, "covered": 20, "skipped": 0, "pct": 74.07 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/branch-annotation-helpers.ts": {
+    "lines": { "total": 299, "covered": 299, "skipped": 0, "pct": 100 },
+    "functions": { "total": 13, "covered": 13, "skipped": 0, "pct": 100 },
+    "statements": { "total": 299, "covered": 299, "skipped": 0, "pct": 100 },
+    "branches": { "total": 30, "covered": 29, "skipped": 0, "pct": 96.66 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/reqAnnotationDetection.ts": {
+    "lines": { "total": 215, "covered": 196, "skipped": 0, "pct": 91.16 },
+    "functions": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
+    "statements": { "total": 215, "covered": 196, "skipped": 0, "pct": 91.16 },
+    "branches": { "total": 32, "covered": 20, "skipped": 0, "pct": 62.5 }
+  },
+  "/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/storyReferenceUtils.ts": {
+    "lines": { "total": 331, "covered": 328, "skipped": 0, "pct": 99.09 },
+    "functions": { "total": 12, "covered": 12, "skipped": 0, "pct": 100 },
+    "statements": { "total": 331, "covered": 328, "skipped": 0, "pct": 99.09 },
+    "branches": { "total": 34, "covered": 33, "skipped": 0, "pct": 97.05 }
+  }
 }

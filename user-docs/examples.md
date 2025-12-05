@@ -113,3 +113,4 @@ function performOperation(input: string): string {
   if (input === "edge-case") return "edge-ok";
   return "ok";
 }
+```
