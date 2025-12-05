@@ -8,6 +8,11 @@ import {
 /**
  * Configuration options for require-test-traceability rule.
  *
+ * The testFilePatterns option is interpreted as a list of simple substring
+ * patterns, not glob patterns. The rule checks context.getFilename() (a
+ * normalized path string) and considers a file a test file when any configured
+ * pattern string appears anywhere in that path.
+ *
  * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-PATTERN-DETECT REQ-TEST-FRAMEWORK-COMPAT
  * @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT
  */
@@ -58,12 +63,7 @@ const rule: Rule.RuleModule = {
           testFilePatterns: {
             type: "array",
             items: { type: "string" },
-            default: [
-              "**/tests/**/*.test.{js,ts}",
-              "**/tests/**/*.spec.{js,ts}",
-              "**/__tests__/**/*.{js,ts}",
-              "**/*.{test,spec}.{js,ts}",
-            ],
+            default: ["/tests/", "/test/", "/__tests__", ".test.", ".spec."],
           },
           requireDescribeStory: {
             type: "boolean",

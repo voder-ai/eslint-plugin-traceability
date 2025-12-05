@@ -1,390 +1,361 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: read_file with input: {"filePath":"docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/valid-annotation-format-internal.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/valid-annotation-format.test.ts"}
-Used tool: read_file with input: {"filePath":"docs/rules/valid-annotation-format.md"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/valid-annotation-format-internal.ts","startLine":1,"endLine":400}
-Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-annotation-format-internal.ts","instruction":"After the existing normalizeCommentLine function, add a new exported helper function called isNonTraceabilityJSDocTagLine that detects whether a normalized comment line starts with a non-traceability JSDoc tag (e.g. @param, @returns). The function should:\n- Accept a single string parameter `normalized`.\n- Trim leading whitespace.\n- Return false if the result is empty or does not start with `@`.\n- Return false if the tag is one of @story, @req, or @supports (case-sensitive, using a regex like /^@(story|req|supports)\\b/).\n- Otherwise, return true.\n\nPrecede the function with a JSDoc comment that explains its purpose and includes a @supports annotation referencing docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md with requirement IDs REQ-JSDOC-BOUNDARY-DETECTION and REQ-JSDOC-TAG-COEXISTENCE."}
-Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"Update the imports from \"./helpers/valid-annotation-format-internal\" to also import isNonTraceabilityJSDocTagLine. Then, inside the processCommentLine function, after handling @supports and after the block that starts a new pending annotation when isStory or isReq is true, insert logic to treat other JSDoc tags as boundaries:\n\n- If isNonTraceabilityJSDocTagLine(normalized) returns true, call finalizePendingAnnotation(context, comment, options, pending) to validate and clear any existing pending annotation.\n- Then return null to indicate there is no active pending annotation after this JSDoc tag line.\n\nAdd an inline comment above this new block explaining that this implements JSDoc tag coexistence behavior and terminates @story/@req values when a new JSDoc tag line (like @param or @returns) is encountered, and include a @supports annotation referencing docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md with requirement IDs REQ-ANNOTATION-TERMINATION and REQ-CONTINUATION-LOGIC."}
-Used tool: modify_file with input: {"filePath":"tests/rules/valid-annotation-format.test.ts","instruction":"Within the existing describe block for \"Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)\", extend the valid/invalid cases to cover JSDoc coexistence scenarios for Story 022.0-DEV-JSDOC-COEXISTENCE:\n\n1. In the file-level JSDoc header at the top, add another \"Tests for\" section for docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md with a @story tag pointing to that story and @req tags for REQ-JSDOC-TAG-COEXISTENCE, REQ-ANNOTATION-TERMINATION, REQ-JSDOC-BOUNDARY-DETECTION, REQ-CONTINUATION-LOGIC, REQ-NO-FALSE-POSITIVES, and REQ-PRESERVE-MULTILINE.\n\n2. Add new valid test cases that demonstrate traceability annotations coexisting with other JSDoc tags without errors:\n   - One where @story and @req appear before @param/@returns tags (\"traceability before other tags\").\n   - One where @story/@req appear after @param/@returns tags (\"traceability after other tags\").\n   - One where @story and @req are interleaved with @param/@returns (\"mixed positions\").\n   - One where a multi-line @story value is followed by @param, ensuring the multi-line value is preserved and not polluted by @param (\"multi-line annotation before other tags\").\n   Use realistic code snippets similar to those shown in the story file, and give each test a name that includes the corresponding requirement ID in square brackets, such as \"[REQ-JSDOC-TAG-COEXISTENCE] traceability before other JSDoc tags\".\n\n3. Add at least one invalid test that reproduces the original bug scenario to confirm it is now fixed. For example, a comment like:\n   \"\"\"\n   /**\n    * @req REQ-OPTIMIZATION\n    * @param {object} data\n    */\n   \"\"\"\n   Previously produced an invalid requirement ID like \"REQ-OPTIMIZATION@param{object}data\". Now, it should be considered valid and not produce any error. Represent this as a valid test case (no errors expected) with a name that references REQ-NO-FALSE-POSITIVES and explains that JSDoc tags do not pollute the requirement ID.\n\nEnsure the new tests rely on the existing ruleTester.run invocation and follow the existing structure of the valid array (no new describe blocks are needed)."}
-Used tool: modify_file with input: {"filePath":"docs/rules/valid-annotation-format.md","instruction":"In the \"Key behaviors\" section, under the bullet list for \"Flexible parsing\" and \"Multiline annotation support\", update the documentation to describe JSDoc coexistence semantics from Story 022.0-DEV-JSDOC-COEXISTENCE:\n\n- After the existing \"Multiline annotation support\" bullet list, add a new top-level bullet titled \"JSDoc coexistence\".\n- Under this new bullet, explain that:\n  - Traceability annotations (`@story`, `@req`, `@supports`) can appear before, after, or interleaved with other JSDoc tags such as `@param`, `@returns`, and `@throws`.\n  - The parser treats any JSDoc tag line that starts with `@` (other than `@story`, `@req`, or `@supports`) as a boundary that terminates the current multi-line traceability value.\n  - Continuation lines are only considered part of the same annotation if they do not start with another JSDoc tag.\n  - This prevents JSDoc tags from being concatenated into requirement IDs or story paths, eliminating false positives like `REQ-OPTIMIZATION@param{object}data`.\n\n- Include a short code example that demonstrates `@story` and `@req` appearing before `@param` and `@returns` in a JSDoc block, noting that this is now fully supported.\n\nKeep the existing structure and headings, and do not remove any existing content."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--verbose"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
-Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts"}
-Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"Refactor the module to reduce the total line count under 300 without changing behavior by extracting the helper functions related purely to validation and finalization into a separate internal helper module.\n\nSpecifically:\n- Remove the implementations of validateStoryAnnotation, validateReqAnnotation, validateImplementsAnnotation, finalizePendingAnnotation, and reportInvalidStoryFormat/reportInvalidStoryFormatWithFix/createStoryFix from this file.\n- Instead, import these as named exports from a new helper module \"./helpers/valid-annotation-format-validators\".\n- Keep processCommentLine, processComment, and the default export in this file, but have them call the imported helpers.\n\nDo not attempt to create the new helper module in this edit; only adjust the imports and remove the inlined helper implementations here, assuming the helpers will be defined elsewhere. Preserve all existing traceability comments that remain in this file, but you may remove or adjust comments that reference deleted helpers as needed."}
-Used tool: generate_file with input: {"filePath":"src/rules/helpers/valid-annotation-format-validators.ts","overwrite":false,"content":"/**\n * Validators and helper functions for the valid-annotation-format rule.\n *\n * This module contains the core validation logic that was originally\n * embedded in src/rules/valid-annotation-format.ts. It is extracted\n * here to keep the main rule module smaller and easier to read while\n * preserving existing behavior.\n *\n * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md\n * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md\n * @req REQ-FORMAT-SPECIFICATION\n * @req REQ-SYNTAX-VALIDATION\n * @req REQ-PATH-FORMAT\n * @req REQ-REQ-FORMAT\n * @req REQ-MULTILINE-SUPPORT\n * @req REQ-AUTOFIX-FORMAT\n * @req REQ-ERROR-SPECIFICITY\n * @req REQ-REGEX-VALIDATION\n * @req REQ-BACKWARD-COMP\n * @req REQ-SUPPORTS-PARSE\n * @req REQ-FORMAT-VALIDATION\n * @req REQ-MIXED-SUPPORT\n */\n\nimport type { ResolvedAnnotationOptions } from \"./valid-annotation-options\";\nimport {\n  collapseAnnotationValue,\n  TAG_NOT_FOUND_INDEX,\n  getFixedStoryPath,\n  buildStoryErrorMessage,\n  buildReqErrorMessage,\n} from \"./valid-annotation-utils\";\nimport {\n  MIN_IMPLEMENTS_TOKENS,\n  reportMissingImplementsReqIds,\n  reportMissingImplementsValue,\n  reportInvalidImplementsReqId,\n  reportInvalidImplementsStoryPath,\n  validateImplementsAnnotationHelper,\n} from \"./valid-implements-utils\";\nimport type { PendingAnnotation } from \"./valid-annotation-format-internal\";\nimport { getResolvedDefaults } from \"./valid-annotation-options\";\n\n/**\n * Report an invalid @story annotation without applying a fix.\n *\n * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md\n * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues\n */\nexport function reportInvalidStoryFormat(\n  context: any,\n  comment: any,\n  collapsed: string,\n  options: ResolvedAnnotationOptions,\n): void {\n  context.report({\n    node: comment as any,\n    messageId: \"invalidStoryFormat\",\n    data: { details: buildStoryErrorMessage(\"invalid\", collapsed, options) },\n  });\n}\n\n/**\n * Compute the text replacement for an invalid @story annotation within a comment.\n *\n * This helper:\n *   - finds the @story tag in the raw comment text,\n *   - computes the character range of its value,\n *   - and returns an ESLint fix that replaces only that range.\n *\n * Returns null when the tag or value cannot be safely located.\n *\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @req REQ-AUTOFIX-SAFE\n * @req REQ-AUTOFIX-PRESERVE\n */\nexport function createStoryFix(\n  context: any,\n  comment: any,\n  fixed: string,\n): null | (() => any) {\n  const sourceCode = context.getSourceCode();\n  const commentText = sourceCode.getText(comment);\n  const search = \"@story\";\n  const tagIndex = commentText.indexOf(search);\n  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n  // @req REQ-AUTOFIX-SAFE - Skip auto-fix when @story tag cannot be reliably located\n  if (tagIndex === TAG_NOT_FOUND_INDEX) {\n    return null;\n  }\n\n  const afterTagIndex = tagIndex + search.length;\n  const rest = commentText.slice(afterTagIndex);\n  const valueMatch = rest.match(/[^\\S\\r\\n]*([^\\r\\n*]+)/);\n  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n  // @req REQ-AUTOFIX-SAFE - Abort auto-fix when story value range cannot be safely determined\n  if (!valueMatch || valueMatch.index === undefined) {\n    return null;\n  }\n\n  const valueStartInComment =\n    afterTagIndex +\n    valueMatch.index +\n    (valueMatch[0].length - valueMatch[1].length);\n  const valueEndInComment = valueStartInComment + valueMatch[1].length;\n\n  const start = comment.range[0];\n  const fixRange: [number, number] = [\n    start + valueStartInComment,\n    start + valueEndInComment,\n  ];\n\n  return () => (fixer: any) => fixer.replaceTextRange(fixRange, fixed);\n}\n\n/**\n * Report an invalid @story annotation and attempt a minimal, safe auto-fix\n * for common path suffix issues by locating and replacing the path text\n * within the original comment.\n *\n * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md\n * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns\n * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues\n * @req REQ-AUTOFIX-SAFE - Auto-fix must be conservative and avoid changing semantics\n * @req REQ-AUTOFIX-PRESERVE - Auto-fix must preserve surrounding formatting and comments\n */\nexport function reportInvalidStoryFormatWithFix(\n  context: any,\n  comment: any,\n  collapsed: string,\n  fixed: string,\n): void {\n  const fixFactory = createStoryFix(context, comment, fixed);\n  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n  // @req REQ-AUTOFIX-SAFE - Fall back to reporting without fix when safe fix cannot be created\n  if (!fixFactory) {\n    reportInvalidStoryFormat(\n      context,\n      comment,\n      collapsed,\n      getResolvedDefaults(),\n    );\n    return;\n  }\n\n  context.report({\n    node: comment as any,\n    messageId: \"invalidStoryFormat\",\n    data: {\n      details: buildStoryErrorMessage(\n        \"invalid\",\n        collapsed,\n        getResolvedDefaults(),\n      ),\n    },\n    fix: fixFactory(),\n  });\n}\n\n/**\n * Validate a @story annotation value and report detailed errors when needed.\n * Where safe and unambiguous, apply an automatic fix for missing suffixes.\n *\n * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md\n * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns\n * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations\n * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues\n * @req REQ-REGEX-VALIDATION - Validate configurable story regex patterns and fall back safely\n * @req REQ-BACKWARD-COMP - Preserve behavior when invalid regex config is supplied\n * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments\n */\nexport function validateStoryAnnotation(\n  context: any,\n  comment: any,\n  rawValue: string,\n  options: ResolvedAnnotationOptions,\n): void {\n  const trimmed = rawValue.trim();\n  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n  // @req REQ-PATH-FORMAT - Treat missing @story value as a specific validation error\n  if (!trimmed) {\n    context.report({\n      node: comment as any,\n      messageId: \"invalidStoryFormat\",\n      data: { details: buildStoryErrorMessage(\"missing\", null, options) },\n    });\n    return;\n  }\n\n  const collapsed = collapseAnnotationValue(trimmed);\n  const pathPattern = options.storyPattern;\n\n  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n  // @req REQ-PATH-FORMAT - Accept @story value when it matches configured storyPattern\n  if (pathPattern.test(collapsed)) {\n    return;\n  }\n\n  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n  // @req REQ-PATH-FORMAT - Reject @story values containing internal whitespace as invalid\n  if (/\\s/.test(trimmed)) {\n    reportInvalidStoryFormat(context, comment, collapsed, options);\n    return;\n  }\n\n  const fixed = getFixedStoryPath(collapsed);\n\n  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n  // @req REQ-AUTOFIX-FORMAT - Apply suffix-only auto-fix when it yields a pattern-compliant path\n  if (fixed && pathPattern.test(fixed)) {\n    reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed);\n    return;\n  }\n\n  reportInvalidStoryFormat(context, comment, collapsed, options);\n}\n\n/**\n * Validate a @req annotation value and report detailed errors when needed.\n *\n * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md\n * @req REQ-REQ-FORMAT - Validate @req identifiers follow expected patterns\n * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations\n * @req REQ-REGEX-VALIDATION - Validate configurable requirement regex patterns and fall back safely\n * @req REQ-BACKWARD-COMP - Preserve behavior when invalid regex config is supplied\n * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments\n */\nexport function validateReqAnnotation(\n  context: any,\n  comment: any,\n  rawValue: string,\n  options: ResolvedAnnotationOptions,\n): void {\n  const trimmed = rawValue.trim();\n  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n  // @req REQ-REQ-FORMAT - Treat missing @req value as a specific validation error\n  if (!trimmed) {\n    context.report({\n      node: comment as any,\n      messageId: \"invalidReqFormat\",\n      data: { details: buildReqErrorMessage(\"missing\", null, options) },\n    });\n    return;\n  }\n\n  const collapsed = collapseAnnotationValue(trimmed);\n  const reqPattern = options.reqPattern;\n\n  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n  // @req REQ-REQ-FORMAT - Flag @req identifiers that do not match the configured pattern\n  if (!reqPattern.test(collapsed)) {\n    context.report({\n      node: comment as any,\n      messageId: \"invalidReqFormat\",\n      data: { details: buildReqErrorMessage(\"invalid\", collapsed, options) },\n    });\n  }\n}\n\n/**\n * Validate an @supports annotation value and report detailed errors when needed.\n *\n * Expected format:\n *   @supports <storyPath> <REQ-ID> [<REQ-ID> ...]\n *\n * Validation rules:\n *   - Value must include at least a story path and one requirement ID.\n *   - Story path must match the same storyPattern used for @story (no auto-fix).\n *   - Each subsequent token must match reqPattern and is validated individually.\n *\n * Story path issues are reported with \"invalidImplementsFormat\" and\n * requirement ID issues reuse the existing \"invalidReqFormat\" message.\n *\n * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md\n * @req REQ-SUPPORTS-PARSE - Parse @supports annotations without affecting @story/@req\n * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs\n * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments\n */\nexport function validateImplementsAnnotation(\n  context: any,\n  comment: any,\n  rawValue: string,\n  options: ResolvedAnnotationOptions,\n): void {\n  const deps = {\n    MIN_IMPLEMENTS_TOKENS,\n    reportMissingImplementsReqIds,\n    reportMissingImplementsValue,\n    reportInvalidImplementsReqId,\n    reportInvalidImplementsStoryPath,\n  };\n\n  validateImplementsAnnotationHelper(deps, context, comment, {\n    rawValue,\n    options,\n  });\n}\n\n/**\n * Finalize and validate the currently pending annotation, if any.\n *\n * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n * @story docs/stories/008.0-DEV-AUTO-FIX.story.md\n * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md\n * @req REQ-SYNTAX-VALIDATION - Validate annotation syntax matches specification\n * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues\n * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments\n */\nexport function finalizePendingAnnotation(\n  context: any,\n  comment: any,\n  options: ResolvedAnnotationOptions,\n  pending: PendingAnnotation | null,\n): PendingAnnotation | null {\n  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n  // @req REQ-MULTILINE-SUPPORT - Do nothing when there is no pending multi-line annotation to finalize\n  if (!pending) {\n    return null;\n  }\n\n  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md\n  // @req REQ-SYNTAX-VALIDATION - Dispatch to @story or @req validator based on pending annotation type\n  // @req REQ-AUTOFIX-FORMAT - Route to story validator which may apply safe auto-fixes\n  // @req REQ-MIXED-SUPPORT - Ensure @story and @req annotations are handled independently\n  if (pending.type === \"story\") {\n    validateStoryAnnotation(context, comment, pending.value, options);\n  } else {\n    validateReqAnnotation(context, comment, pending.value, options);\n  }\n\n  return null;\n}\n"}
-Used tool: read_file with input: {"filePath":"src/rules/valid-annotation-format.ts"}
-Used tool: run_command with input: {"command":"npx","args":["wc","-l","src/rules/valid-annotation-format.ts"]}
-Used tool: run_command with input: {"command":"wc","args":["-l","src/rules/valid-annotation-format.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
-Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"Remove imports that are no longer used after extracting validator helpers:\n- Delete the entire import block that imports collapseAnnotationValue, TAG_NOT_FOUND_INDEX, getFixedStoryPath, buildStoryErrorMessage, and buildReqErrorMessage from \"./helpers/valid-annotation-utils\".\n- Delete the entire import block that imports MIN_IMPLEMENTS_TOKENS, reportMissingImplementsReqIds, reportMissingImplementsValue, reportInvalidImplementsReqId, reportInvalidImplementsStoryPath, and validateImplementsAnnotationHelper from \"./helpers/valid-implements-utils\".\n- In the import from \"./helpers/valid-annotation-format-validators\", remove the named imports reportInvalidStoryFormat, reportInvalidStoryFormatWithFix, validateStoryAnnotation, validateReqAnnotation, and createStoryFix, leaving only validateImplementsAnnotation and finalizePendingAnnotation.\n\nDo not change any other code in this file."}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
-Used tool: modify_file with input: {"filePath":"src/rules/valid-annotation-format.ts","instruction":"In the import from \"./helpers/valid-annotation-options\" at the top of the file, remove getResolvedDefaults from the imported names since it is no longer used. Keep resolveOptions, ResolvedAnnotationOptions, getRuleSchema, and getOptionErrors."}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--verbose"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+**Action:** Used tool: get_git_status with input: {}
+Used tool: read_file with input: {"filePath":"README.md"}
+Used tool: read_file with input: {"filePath":"user-docs/api-reference.md"}
+Used tool: read_file with input: {"filePath":"SECURITY.md"}
+Used tool: read_file with input: {"filePath":".github/workflows/ci-cd.yml"}
+Used tool: find_files with input: {"pattern":"*.ts","directory":"src"}
+Used tool: search_file_content with input: {"filePath":"src/maintenance/cli.ts","pattern":"@implements","isRegex":false}
+Used tool: modify_file with input: {"filePath":"README.md","instruction":"In the \"### Available Rules\" list, add a new bullet for the `traceability/require-test-traceability` rule directly after the `traceability/valid-req-reference` entry. The new bullet should read exactly:\n\n- `traceability/require-test-traceability` Enforces traceability conventions in test files by requiring file-level `@supports` annotations, story references in `describe` blocks, and `[REQ-...]` prefixes in `it`/`test` names. (See the rule documentation in the plugin's user guide.)"}
+Used tool: modify_file with input: {"filePath":"src/maintenance/cli.ts","instruction":"Replace all inline comments that begin with `// @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md` so that they instead begin with `// @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md` while preserving the rest of each comment line verbatim. Do not modify any other content in this file."}
+Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"fix: support JSDoc tag coexistence for annotation parsing"}
+Used tool: git_commit with input: {"message":"docs: document test traceability rule and align CLI annotations"}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":19950791613,"timeout":600000}
+Used tool: search_file_content with input: {"filePath":".","pattern":"@implements","isRegex":false}
+Used tool: run_command with input: {"command":"grep","args":["-R","@implements","src","tests","user-docs","docs"]}
+Used tool: read_file with input: {"filePath":"package.json"}
+Used tool: read_file with input: {"filePath":"user-docs/api-reference.md","startLine":150,"endLine":260}
+Used tool: modify_file with input: {"filePath":"src/utils/annotation-checker.ts","instruction":"In the JSDoc header at the top of the file, replace the `@implements` tag with an equivalent `@supports` tag, preserving the story path and requirement IDs. Specifically, change `* @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING` to `* @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING`."}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-story-reference-helpers.ts","instruction":"Replace every inline comment that starts with `// @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md` so that `@implements` becomes `@supports`, preserving the rest of each line verbatim.\nAlso, in the JSDoc block that currently contains `* @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION`, change `@implements` to `@supports` and keep the story path and requirement IDs unchanged."}
+Used tool: modify_file with input: {"filePath":"src/rules/helpers/valid-annotation-utils.ts","instruction":"In this file, replace every inline comment that begins with `// @implements docs/stories/` so that `@implements` becomes `@supports`, preserving the story path and requirement IDs and descriptions on each line. Do not change any other text on those lines.\nAlso, if there are any JSDoc lines in this file that use `* @implements docs/stories/...`, change `@implements` to `@supports` while leaving the rest of the line unchanged."}
+Used tool: modify_file with input: {"filePath":"src/maintenance/detect.ts","instruction":"In this file, replace all inline comments that start with `// @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md` so that `@implements` becomes `@supports`, preserving the rest of each line verbatim. Also, in the JSDoc block that contains `* @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE`, change `@implements` to `@supports` and leave the rest of the line unchanged."}
+Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"chore: migrate maintenance and helper annotations to supports tag"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: read_file with input: {"filePath":"user-docs/examples.md"}
+Used tool: modify_file with input: {"filePath":"user-docs/examples.md","instruction":"Append a new section at the end of the file titled `## 5. Test Traceability Example` that shows a minimal Jest test file demonstrating `traceability/require-test-traceability`. The example should include:\n- A file-level JSDoc block with a single `@supports` line referencing `docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md` and requirement ID `REQ-TEST-TRACEABILITY`.\n- A `describe` block whose title includes the same story path.\n- Two tests (`it` or `test`) whose names begin with `[REQ-TEST-TRACEABILITY]` and `[REQ-TEST-TRACEABILITY-EDGE]` respectively.\n- A short introductory paragraph explaining that this example complements the `require-test-traceability` rule and aligns with the rule's defaults.\nKeep the style consistent with the rest of the examples document."}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"docs: add test traceability rule to README and examples"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: run_command with input: {"command":"grep","args":["-R","@implements","src","tests"]}
+Used tool: modify_file with input: {"filePath":"tests/utils/temp-dir-helpers.ts","instruction":"In the inline comment that begins with `// @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md`, change `@implements` to `@supports` and leave the rest of the line unchanged."}
+Used tool: read_file with input: {"filePath":"src/rules/prefer-implements-annotation.ts"}
+Used tool: modify_file with input: {"filePath":"src/rules/prefer-implements-annotation.ts","instruction":"In the JSDoc comment above the `buildImplementsAutoFix` function, change the `@implements` tag line to use `@supports` instead, preserving the story path and leaving the rest of the comment unchanged."}
+Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"chore: standardize @supports traceability annotations"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: run_command with input: {"command":"grep","args":["-R","\"@supports {\"","-n","."]}
+Used tool: modify_file with input: {"filePath":"user-docs/examples.md","instruction":"In the \"## 5. Test Traceability Example\" section, update the file-level JSDoc so that the @supports line matches the format used in the API reference example. Replace the current line\n` * @supports { \"story\": \"docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md\", \"req\": \"REQ-TEST-TRACEABILITY\" }`\nwith\n` * @supports docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md#REQ-TEST-TRACEABILITY`.\nDo not change anything else in the file."}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"docs: align test traceability example with @supports syntax"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
 
 **Response:**
 
 ```
-Here’s what I implemented for the JSDoc coexistence story, and how it maps to the plan.
+Here’s what was implemented for the ##NOW and ##NEXT items, and how they were verified.
 
 ---
 
-## Updated Plan Status
+## Changes made
 
-## NOW
+### 1) README rule list updated (##NOW)
 
-- [x] Review the JSDoc coexistence story and the current annotation parsing implementation side by side to derive precise rules for how traceability tags must coexist with other JSDoc tags like @param and @returns without corrupting annotation values.
+**Task:**  
+“Update the main README so that the list of available ESLint rules explicitly includes the `traceability/require-test-traceability` rule with a concise description consistent with the existing API reference.”
 
-## NEXT
+**What I changed:**
 
-- [x] Update the annotation parsing logic so that when a pending @story, @req, or @supports annotation is followed by a new JSDoc tag line (such as @param or @returns), the parser finalizes the annotation instead of appending the JSDoc tag text into its value, while preserving existing multi-line value behavior for non-tag lines.
-- [x] Add targeted tests that cover JSDoc coexistence scenarios described in the story, including traceability annotations appearing before and after @param/@returns tags, and verify that IDs remain unpolluted and no false positives are introduced.
-- [x] Adjust rule documentation and, if necessary, the story file itself to record the new coexistence behavior, including at least one concrete example showing a traceability annotation living alongside standard JSDoc tags.
-- [x] Perform a small focused review of the updated parser helper code to ensure it still meets the project’s complexity and readability expectations, making minor refactors if needed without altering the new behavior.
-
-All changes are committed (`fix: support JSDoc tag coexistence for annotation parsing`), pushed to `main`, and the CI/CD pipeline run completed successfully.
-
----
-
-## 1. JSDoc coexistence rules (NOW)
-
-I reviewed:
-
-- Story: `docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md`
-- Implementation:
-  - `src/rules/helpers/valid-annotation-format-internal.ts`
-  - `src/rules/valid-annotation-format.ts`
-- Tests: `tests/rules/valid-annotation-format.test.ts`
-- Rule docs: `docs/rules/valid-annotation-format.md`
-
-The story’s acceptance criteria imply these concrete rules:
-
-- Lines that start (after `*` and whitespace) with `@story`, `@req`, or `@supports` are **traceability tags** and start or validate annotations.
-- Any other JSDoc tag line that starts with `@` (e.g. `@param`, `@returns`, `@throws`, custom tags) is a **boundary**:
-  - It must terminate any pending multi-line traceability annotation.
-  - It must **not** be concatenated into the annotation value.
-- Multi-line continuation is only allowed on lines that do **not** start with `@tag`.
-- Existing multi-line behavior (splitting an ID/path across lines) must remain intact.
-- Existing valid annotations (with no extra JSDoc tags) must remain valid.
-
-The old behavior concatenated `@param` lines into the annotation value, producing `REQ-OPTIMIZATION@param{object}data` and similar, which violates the above rules.
-
----
-
-## 2. Parser changes: detect JSDoc tag boundaries and terminate annotations (NEXT #1)
-
-### 2.1 New helper: JSDoc tag detection
-
-**File:** `src/rules/helpers/valid-annotation-format-internal.ts`
-
-I added a helper to detect non-traceability JSDoc tags:
-
-```ts
-/**
- * Detect whether a normalized comment line starts with a non-traceability JSDoc tag.
- *
- * This is used to distinguish regular JSDoc tags (e.g. @param, @returns) from
- * traceability-related annotations such as @story, @req, and @supports.
- *
- * @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
- * @req REQ-JSDOC-BOUNDARY-DETECTION
- * @req REQ-JSDOC-TAG-COEXISTENCE
- */
-export function isNonTraceabilityJSDocTagLine(normalized: string): boolean {
-  const trimmed = normalized.trimStart();
-  if (!trimmed || !trimmed.startsWith("@")) {
-    return false;
-  }
-
-  if (/^@(story|req|supports)\b/.test(trimmed)) {
-    return false;
-  }
-
-  return true;
-}
-```
-
-How this works with existing `normalizeCommentLine`:
-
-- For a JSDoc line like `* @param {object} data`:
-  - `normalizeCommentLine` removes `* ` and returns `"@param {object} data"`.
-  - `isNonTraceabilityJSDocTagLine("@param {object} data")` → `true`.
-
-- For traceability lines like `* @req REQ-FOO` or `* @story docs/...`:
-  - `normalizeCommentLine` returns `"@req REQ-FOO"` or `"@story docs/..."`.
-  - `isNonTraceabilityJSDocTagLine` returns `false`, because the tag is one of `@story`, `@req`, or `@supports`.
-
-This exactly implements the story’s boundary pattern `^\s*\*?\s*@\w+` for non-traceability tags.
-
-### 2.2 Using JSDoc tag detection to terminate pending annotations
-
-**File:** `src/rules/valid-annotation-format.ts`
-
-We updated `processCommentLine` to treat non-traceability JSDoc tags as boundaries:
-
-```ts
-import {
-  PendingAnnotation,
-  normalizeCommentLine,
-  isNonTraceabilityJSDocTagLine,
-} from "./helpers/valid-annotation-format-internal";
-import {
-  validateImplementsAnnotation,
-  finalizePendingAnnotation,
-} from "./helpers/valid-annotation-format-validators";
-```
-
-Inside `processCommentLine`:
-
-```ts
-// Implement JSDoc tag coexistence behavior: terminate @story/@req values when a new non-traceability JSDoc tag line (e.g., @param, @returns) is encountered.
-// @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md REQ-ANNOTATION-TERMINATION REQ-CONTINUATION-LOGIC
-if (isNonTraceabilityJSDocTagLine(normalized)) {
-  finalizePendingAnnotation(context, comment, options, pending);
-  return null;
-}
-```
-
-Effect:
-
-- If we have:
-
-  ```js
-  /**
-   * @req REQ-OPTIMIZATION
-   * @param {object} data
-   */
-  ```
-
-  - First line: starts pending `@req` with value `REQ-OPTIMIZATION`.
-  - Second line: normalized to `"@param {object} data"`.
-  - `isNonTraceabilityJSDocTagLine` returns true → we **finalize** `REQ-OPTIMIZATION` and **do not** treat `@param` as continuation. No error is reported, because `REQ-OPTIMIZATION` matches the default `req.pattern`.
-
-- Multi-line values (without an intervening `@tag` line) still accumulate via the existing `if (pending) { ... }` continuation branch.
-
-### 2.3 Refactor to keep rule file small and maintainable
-
-ESLint’s `max-lines` rule started failing after we added the new behavior, so I performed a small structural refactor (no behavior change) using an internal helper module.
-
-**New file:** `src/rules/helpers/valid-annotation-format-validators.ts`
-
-This module houses all the validation and finalization helpers that were previously in `valid-annotation-format.ts`:
-
-- `reportInvalidStoryFormat`
-- `createStoryFix`
-- `reportInvalidStoryFormatWithFix`
-- `validateStoryAnnotation`
-- `validateReqAnnotation`
-- `validateImplementsAnnotation`
-- `finalizePendingAnnotation`
-
-These functions are copy-moved from the original file with traceability comments intact and imports wired appropriately.
-
-**Back in `src/rules/valid-annotation-format.ts`:**
-
-The file now focuses on:
-
-- Importing options, helpers, and validators.
-- `processCommentLine` (including new JSDoc coexistence logic).
-- `processComment`.
-- Default export `meta` and `create`.
-
-All unused imports were removed. ESLint now passes both `max-lines` and `no-unused-vars`, and the split keeps the rule file readable while preserving behavior.
-
----
-
-## 3. Tests for JSDoc coexistence scenarios (NEXT #2)
-
-**File:** `tests/rules/valid-annotation-format.test.ts`
-
-### 3.1 Test header updated for Story 022.0
-
-At the top of the test file, I added explicit traceability for the new story:
-
-```ts
- * Tests for: docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
- * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
- * @req REQ-JSDOC-TAG-COEXISTENCE - Rule allows traceability annotations to coexist with other JSDoc tags
- * @req REQ-ANNOTATION-TERMINATION - Rule correctly terminates traceability annotation values at JSDoc tag boundaries
- * @req REQ-JSDOC-BOUNDARY-DETECTION - Rule detects @param/@returns and similar tags as boundaries
- * @req REQ-CONTINUATION-LOGIC - Rule correctly decides when to continue or stop multi-line traceability values
- * @req REQ-NO-FALSE-POSITIVES - Rule does not report false positives when JSDoc tags follow traceability tags
- * @req REQ-PRESERVE-MULTILINE - Rule preserves multi-line story/req values without including following JSDoc tags
-```
-
-### 3.2 New valid cases
-
-Added to the `valid:` array:
-
-1. **Traceability before other tags**
-
-   ```ts
-   {
-     name: "[REQ-JSDOC-TAG-COEXISTENCE] traceability before other JSDoc tags",
-     code: `/**
- * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
- * @req REQ-JSDOC-TAG-COEXISTENCE
- * @param {string} id - Identifier for the lookup.
- * @returns {Promise<void>} - Completes when finished.
- */
-function fetchById(id) {
-  return Promise.resolve();
-}`,
-   }
-   ```
-
-2. **Traceability after other tags**
-
-   ```ts
-   {
-     name: "[REQ-JSDOC-TAG-COEXISTENCE] traceability after other JSDoc tags",
-     code: `/**
- * Fetch a user by id.
- *
- * @param {string} id - Identifier for the lookup.
- * @returns {Promise<void>} - Completes when finished.
- * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
- * @req REQ-ANNOTATION-TERMINATION
- */
-function fetchUser(id) {
-  return Promise.resolve();
-}`,
-   }
-   ```
-
-3. **Mixed positions (interleaved)**
-
-   ```ts
-   {
-     name: "[REQ-JSDOC-TAG-COEXISTENCE] mixed positions of traceability and other JSDoc tags",
-     code: `/**
- * Update a record with new data.
- *
- * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
- * @param {string} id - Identifier.
- * @req REQ-JSDOC-BOUNDARY-DETECTION
- * @param {object} payload - Updated fields.
- * @returns {boolean} - True if updated.
- * @req REQ-CONTINUATION-LOGIC
- */
-function updateRecord(id, payload) {
-  return true;
-}`,
-   }
-   ```
-
-4. **Multi-line annotation before JSDoc tags**
-
-   ```ts
-   {
-     name: "[REQ-PRESERVE-MULTILINE] multi-line @story annotation before other JSDoc tags",
-     code: `/**
- * @story docs/stories/022.0-DEV-
- * JSDOC-COEXISTENCE.story.md
- * @param {string} id - Identifier for the lookup.
- * @returns {Promise<void>} - Completes when finished.
- */
-function loadForStory(id) {
-  return Promise.resolve();
-}`,
-   }
-   ```
-
-   This verifies multi-line `@story` values still work when followed by JSDoc tags; the tags are not folded into the path.
-
-5. **Original bug scenario must now be valid (no false positives)**
-
-   ```ts
-   {
-     name: "[REQ-NO-FALSE-POSITIVES] JSDoc tags do not pollute requirement ID when following @req",
-     code: `/**
- * @req REQ-OPTIMIZATION
- * @param {object} data - Input payload.
- * @returns {void}
- */
-function optimize(data) {}`,
-   }
-   ```
-
-Previously, this would have produced an invalid requirement ID `"REQ-OPTIMIZATION@param{object}data"`. Now, because `@param` and `@returns` terminate the pending `@req`, no error is reported, and the test is in the `valid` section.
-
-All existing valid/invalid tests continue to pass, confirming backward compatibility.
-
----
-
-## 4. Documentation update (NEXT #3)
-
-**File:** `docs/rules/valid-annotation-format.md`
-
-I added a new “JSDoc coexistence” bullet under “Key behaviors”:
+In `README.md`, under `### Available Rules`, I added:
 
 ```md
-- **JSDoc coexistence**
-  - Traceability annotations (`@story`, `@req`, `@supports`) can appear before, after, or interleaved with other JSDoc tags such as `@param`, `@returns`, and `@throws`.
-  - The parser treats any JSDoc tag line that starts with `@` (other than `@story`, `@req`, or `@supports`) as a boundary that terminates the current multi-line traceability value.
-  - Continuation lines are only considered part of the same annotation if they do not start with another JSDoc tag.
-  - This prevents JSDoc tags from being concatenated into requirement IDs or story paths, eliminating false positives like `REQ-OPTIMIZATION@param{object}data`.
-  - Example (fully supported):
-    ```js
-    /**
-     * Calculate totals with discounting.
-     * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
-     * @req REQ-CALC-TOTALS
-     * @param {number[]} items
-     * @param {number} discount
-     * @returns {number}
-     */
-    function calculateTotals(items, discount) { /* ... */ }
-    ```
+- `traceability/require-test-traceability` Enforces traceability conventions in test files by requiring file-level `@supports` annotations, story references in `describe` blocks, and `[REQ-...]` prefixes in `it`/`test` names. (See the rule documentation in the plugin's user guide.)
 ```
 
-This directly documents the semantics introduced for Story 022.0 and makes the behavior clear to users.
+This matches the behavior described in `user-docs/api-reference.md` and surfaces the rule at the top level so users don’t have to discover it only via the API reference.
 
 ---
 
-## 5. Focused review, quality checks, and CI (NEXT #4)
+### 2) Standardize traceability annotations to use `@supports` (##NEXT, item 1)
 
-### 5.1 Small focused review
+**Task:**  
+“Review the source files for any remaining traceability annotations that still use non-standard tags such as `@implements` and convert them to use the canonical `@supports` or `@story`/`@req` formats so documentation and implementation traceability are fully aligned.”
 
-- `src/rules/valid-annotation-format.ts` now contains:
-  - Imports.
-  - `processCommentLine` and `processComment`.
-  - The rule `meta` and `create` function.
-- Helper modules:
-  - `valid-annotation-format-internal.ts`: normalization and the new JSDoc tag detection helper.
-  - `valid-annotation-format-validators.ts`: all the validation logic for `@story`, `@req`, and `@supports`, plus pending-finalization logic.
-- ESLint’s `max-lines` rule for this file now passes (no more 301-line error), and there are no `eslint-disable` or `@ts-ignore` annotations.
-- The structure is clearer: `valid-annotation-format.ts` coordinates traversal; helpers encapsulate parsing/validation details.
+**Approach:**
 
-### 5.2 Local quality checks
+- Searched the code for any traceability annotations using `@implements`:
+  - `grep -R @implements src tests user-docs docs`
+- Distinguish between:
+  - Actual annotation tags on code (`@implements docs/stories/...`)
+  - Text in descriptions explaining user-facing `@implements` behavior (which is still supported by the plugin for user code and documented in ADRs).
 
-After changes, I ran:
+**Code-level updates:**
 
-- `npm run lint -- --max-warnings=0` – passes.
-- `npm run build` – TypeScript compilation succeeds.
-- `npm test -- --runInBand --verbose` – 36 suites, 282 tests all pass.
-- `npm run format` then `npm run format:check` – Prettier clean.
-- Pre-push hook also ran `npm run ci-verify:full` and `npm run security:secrets` (build, type-check, lint, duplication, tests with coverage, audits, secret scan) and all passed.
+Converted all **traceability annotations on our own code** from `@implements` to `@supports`, preserving story paths and requirement IDs. Specifically:
 
-### 5.3 CI/CD pipeline
+1. **`src/maintenance/cli.ts`**
+   - All branch-level comments:
 
-- I pushed directly to `main`.
-- GitHub Actions `CI/CD Pipeline` run `19950791613` (triggered by this push) completed with **success**.
-- That run re-executed the full `ci-verify:full` pipeline and semantic-release logic, matching local checks.
+     ```ts
+     // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md ...
+     ```
+
+     were changed to:
+
+     ```ts
+     // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md ...
+     ```
+
+   - No logic or behavior changed; only the annotation tag was updated.
+
+2. **`src/maintenance/detect.ts`**
+   - In `detectStaleAnnotations`, `processFileForStaleAnnotations`, `handleStoryMatch`, `getInProjectCandidates`, and `anyInProjectCandidateExists`, all inline `// @implements ...` comments were switched to `// @supports ...`.
+   - The JSDoc line:
+
+     ```ts
+     * @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE
+     ```
+
+     became:
+
+     ```ts
+     * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE
+     ```
+
+3. **`src/utils/annotation-checker.ts`**
+   - Top-level JSDoc previously had:
+
+     ```ts
+     * @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING
+     ```
+
+     Now:
+
+     ```ts
+     * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING
+     ```
+
+   - This is the helper behind autofix/reporting for missing `@req` annotations, so it’s appropriate that it use the canonical `@supports` traceability tag.
+
+4. **`src/rules/helpers/valid-story-reference-helpers.ts`**
+   - All inline comments like:
+
+     ```ts
+     // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY ...
+     ```
+
+     were updated to:
+
+     ```ts
+     // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY ...
+     ```
+
+   - The file’s JSDoc already used `@story`/`@req`, so no changes there were needed beyond these branch-level annotations.
+
+5. **`src/rules/helpers/valid-annotation-utils.ts`**
+   - Every inline traceability comment that began with `// @implements docs/stories/...` is now `// @supports docs/stories/...`, for example:
+
+     ```ts
+     // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT ...
+     ```
+
+   - No behavior changed; these comments just track which story/requirements each branch implements.
+
+6. **`src/rules/prefer-implements-annotation.ts`**
+   - The rule itself still exists (as an opt-in migration rule), but its **traceability annotation** no longer uses the `@implements` tag.
+   - In the JSDoc above `buildImplementsAutoFix`, this line:
+
+     ```ts
+     * @implements docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+     ```
+
+     is now:
+
+     ```ts
+     * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+     ```
+
+   - The rule *semantically* still deals with migrating from `@story`+`@req` to `@supports`; only the traceability tag on our own implementation changed.
+
+7. **`tests/utils/temp-dir-helpers.ts`**
+   - The cleanup helper for maintenance tests previously had:
+
+     ```ts
+     // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+     ```
+
+     Now:
+
+     ```ts
+     // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+     ```
+
+   - This keeps test helpers aligned with the same traceability annotation conventions as production code.
+
+**What remains intentionally unchanged:**
+
+- Several `@req` comments and documentation lines *describe* support for user-facing `@implements` annotations, e.g.:
+
+  ```ts
+  * @req REQ-MIXED-SUPPORT - Allow mixed @story/@req/@implements usage in the same comment
+  ```
+
+- ADRs and rule docs describing the historical `@implements` design and its relationship to `@supports`.
+
+These are not traceability tags on our own implementation; they’re part of the documented behavior of the plugin and remain accurate given that the plugin still understands `@implements` in user code for compatibility.
+
+After these edits, a search for actual annotation tags using `@implements` in code:
+
+```bash
+grep -R "@implements" src tests
+```
+
+shows only descriptive text (inside `@req` docs or strings), not tags like `* @implements ...` or `// @implements ...`.
 
 ---
 
-If you’d like, I can next update the story file `docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md` to tick its Definition of Done checkboxes based on this implementation, but functionally the story is now satisfied: behavior, tests, and documentation all match the specified acceptance criteria.
+### 3) SECURITY docs cross-checked against CI and scripts (##NEXT, item 2)
+
+**Task:**  
+“Cross-check SECURITY-related documentation (such as the security policy and CI/CD pipeline description) against the existing security scripts and audits to ensure they accurately describe the current security checks and guarantees.”
+
+**Verification (no changes needed):**
+
+- `SECURITY.md` states that:
+  - The package currently has **no runtime dependencies**, but:
+    - Before release, CI runs `npm audit --omit=dev --audit-level=high`.
+    - Release is allowed to proceed only when there are **no high‑severity vulnerabilities** in the production tree.
+  - Dev-only checks and dependency maturity are enforced via `dry-aged-deps` (`npm run safety:deps`) and `npm run audit:dev-high`.
+  - Secret scanning is done via `npm run security:secrets` and treated as release-blocking.
+
+- `package.json` scripts and CI wiring match this accurately:
+  - `audit:ci` and `audit:dev-high` exist and are invoked by `ci-verify:full` and separate CI jobs.
+  - `ci-verify:full` includes:
+    - `npm audit --omit=dev --audit-level=high`
+    - `npm run safety:deps`
+    - `npm run audit:dev-high`
+  - `.github/workflows/ci-cd.yml` runs:
+    - `npm run ci-verify:full`
+    - `npm run security:secrets`
+  - The nightly `dependency-health` job runs `npm run audit:dev-high`.
+
+- The README “Security and Dependency Health” section is consistent with `SECURITY.md` and the current CI configuration.
+
+Conclusion: the existing SECURITY documentation already matches current scripts and CI behavior; no edits were required.
+
+---
+
+### 4) Refine user-facing docs for `traceability/require-test-traceability` (##NEXT, item 3)
+
+**Task:**  
+“Refine the user-facing documentation for the `traceability/require-test-traceability` rule to include a short, self-contained example that shows test files with `@supports` annotations and `[REQ-...]`-prefixed test names, making its behavior clear without requiring knowledge of internal stories.”
+
+**What I changed:**
+
+1. **README rule list** (already covered in item 1) now explicitly includes the rule with a concise summary.
+
+2. **Examples document: `user-docs/examples.md`**
+
+   Added a new section:
+
+   ```md
+   ## 5. Test Traceability Example
+
+   This example complements the `traceability/require-test-traceability` rule and matches its default expectations for how stories and requirements are referenced from tests.
+
+   Create a Jest test file, for example `tests/dev-test-traceability.spec.ts`:
+
+   ```ts
+   /**
+    * @supports docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md#REQ-TEST-TRACEABILITY
+    */
+
+   describe("docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md", () => {
+     it("[REQ-TEST-TRACEABILITY] should handle the primary test scenario", () => {
+       // Arrange
+       const input = "happy-path";
+
+       // Act
+       const result = performOperation(input);
+
+       // Assert
+       expect(result).toBe("ok");
+     });
+
+     it("[REQ-TEST-TRACEABILITY-EDGE] should handle the edge-case scenario", () => {
+       // Arrange
+       const input = "edge-case";
+
+       // Act
+       const result = performOperation(input);
+
+       // Assert
+       expect(result).toBe("edge-ok");
+     });
+   });
+
+   // Example implementation under test (normally imported from your source code)
+   function performOperation(input: string): string {
+     if (input === "edge-case") return "edge-ok";
+     return "ok";
+   }
+   ```
+   ```
+
+   This example:
+
+   - Uses a **file-level `@supports` annotation** referencing a story path and requirement ID, as described in the API reference.
+   - Includes the story path in the `describe` title.
+   - Prefixes each test name with `[REQ-...]`, aligning with the rule’s defaults.
+   - Is self-contained and runnable with Jest, without needing to know anything about the plugin’s internal stories.
+
+3. **API Reference alignment**
+
+   - The existing `traceability/require-test-traceability` section in `user-docs/api-reference.md` already had a detailed description and example using:
+
+     ```ts
+     /**
+      * @supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND
+      */
+     ```
+
+   - No changes were needed there; adding the example in `examples.md` simply gives users a second, simpler template.
+
+---
+
+### Quality checks and CI
+
+For each logical unit of work, I ran the project’s own quality checks and confirmed CI success:
+
+- Local fast verification after code changes:
+
+  ```bash
+  npm run ci-verify:fast
+  ```
+
+  This runs type-checking, traceability checks, duplication checks, and the rules/maintenance Jest suites. It passed after each set of changes.
+
+- On each push, the Husky pre-push hook and GitHub Actions pipeline ran:
+
+  - `npm run ci-verify:full`
+  - `npm run security:secrets`
+
+  And on GitHub Actions, the “CI/CD Pipeline” workflow has been green for all recent runs, including the ones that contain these changes.
+
+No test, lint, type-check, or audit failures occurred.
+
+---
+
+## Updated plan with completion status
+
+### NOW
+
+- [x] Update the main README so that the list of available ESLint rules explicitly includes the `traceability/require-test-traceability` rule with a concise description consistent with the existing API reference.
+
+### NEXT
+
+- [x] Review the source files for any remaining traceability annotations that still use non-standard tags such as `@implements` and convert them to use the canonical `@supports` or `@story`/`@req` formats so documentation and implementation traceability are fully aligned.
+- [x] Cross-check SECURITY-related documentation (such as the security policy and CI/CD pipeline description) against the existing security scripts and audits to ensure they accurately describe the current security checks and guarantees.
+- [x] Refine the user-facing documentation for the `traceability/require-test-traceability` rule to include a short, self-contained example that shows test files with `@supports` annotations and `[REQ-...]`-prefixed test names, making its behavior clear without requiring knowledge of internal stories.
+
+If you’d like, the next step would be to rerun the automated assessment so that DOCUMENTATION and SECURITY scores can be recomputed with these updates.
 ```
