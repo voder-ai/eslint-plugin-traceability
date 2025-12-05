@@ -83,7 +83,7 @@ export default [
 
 ```js
 /**
- * @story stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  *   // Point this to your own project's story/requirements file, not to this plugin's internal docs.
  * @req REQ-ANNOTATION-REQUIRED
  */
