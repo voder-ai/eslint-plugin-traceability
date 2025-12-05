@@ -64,7 +64,7 @@ const rule: any = {
   },
 };
 
-describe("annotation-checker helper", () => {
+describe("annotation-checker helper (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", () => {
   runAnnotationCheckerTests("annotation-checker", {
     rule,
     valid: [

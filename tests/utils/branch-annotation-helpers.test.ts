@@ -8,7 +8,7 @@
 import { validateBranchTypes, DEFAULT_BRANCH_TYPES } from "../../src/utils/branch-annotation-helpers";
 import type { Rule } from "eslint";
 
-describe("validateBranchTypes helper", () => {
+describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
   let context: Partial<Rule.RuleContext> & { report: jest.Mock };
 
   beforeEach(() => {
