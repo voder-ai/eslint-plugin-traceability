@@ -84,7 +84,7 @@ Create a Jest test file, for example `tests/dev-test-traceability.spec.ts`:
  * @supports docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md#REQ-TEST-TRACEABILITY
  */
 
-describe("docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md", () => {
+describe("Story 021.0-DEV-TEST-TRACEABILITY", () => {
   it("[REQ-TEST-TRACEABILITY] should handle the primary test scenario", () => {
     // Arrange
     const input = "happy-path";
@@ -113,4 +113,3 @@ function performOperation(input: string): string {
   if (input === "edge-case") return "edge-ok";
   return "ok";
 }
-```

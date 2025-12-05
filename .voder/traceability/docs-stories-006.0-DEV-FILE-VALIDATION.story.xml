@@ -2,49 +2,91 @@
 <traceability>
   <specification>docs/stories/006.0-DEV-FILE-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T06:43:49.007Z</last_validated>
+  <last_validated>2025-12-05T07:56:23.801Z</last_validated>
   <last_modified>2025-12-04T18:44:42.520Z</last_modified>
-  <evidence>Key implementation:
-- ESLint rule src/rules/valid-story-reference.ts implements validation that @story annotations reference existing story files with correct .story.md extension. It:
-  - Parses @story lines from all comments (handleComment, validateStoryPath)
-  - Resolves paths using context.cwd (falling back to process.cwd) plus configurable storyDirectories and flags allowAbsolutePaths/requireStoryExtension
-  - Applies security checks (performSecurityValidations) to block disallowed absolute paths and traversal, then extension checks via hasValidExtension, and finally existence + boundary checks via normalizeStoryPath and handleProjectBoundaryForExistence
-  - Reports clear diagnostics through messageIds fileMissing, invalidExtension, invalidPath, and fileAccessError, each including the offending path (and error) in the data
+  <evidence>Story file:
+- docs/stories/006.0-DEV-FILE-VALIDATION.story.md exists and defines requirements REQ-FILE-EXISTENCE, REQ-ERROR-HANDLING, REQ-ANNOTATION-VALIDATION, REQ-PATH-RESOLUTION, REQ-SECURITY-VALIDATION, REQ-PERFORMANCE-OPTIMIZATION, REQ-PROJECT-BOUNDARY, REQ-CONFIGURABLE-PATHS.
 
-Supporting utilities (src/utils/storyReferenceUtils.ts, src/rules/helpers/valid-story-reference-helpers.ts):
-- buildStoryCandidates() builds candidate absolute paths from cwd and storyDirectories, respecting explicit ./ and ../ semantics (REQ-PATH-RESOLUTION, REQ-CONFIGURABLE-PATHS)
-- enforceProjectBoundary() and analyzeCandidateBoundaries()/handleProjectBoundaryForExistence() ensure resolved paths stay within project root and treat out-of-project candidates as invalidPath even if the filesystem says they exist (REQ-PROJECT-BOUNDARY, REQ-SECURITY-VALIDATION)
-- Caching of fs checks via fileExistStatusCache with __resetStoryExistenceCacheForTests() (REQ-PERFORMANCE-OPTIMIZATION)
-- Robust, non-throwing filesystem handling in checkSingleCandidate(), getStoryExistence(), and storyExists(), classifying statuses as exists/missing/fs-error and surfacing a representative error where appropriate (REQ-FILE-EXISTENCE, REQ-ERROR-HANDLING)
-- Security helpers isAbsolutePath, containsPathTraversal, hasValidExtension, isUnsafeStoryPath enforce path and extension constraints (REQ-SECURITY-VALIDATION)
+Core implementation:
+- src/rules/valid-story-reference.ts
+  - ESLint rule module annotated with @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md and requirement tags.
+  - Uses context.cwd ?? process.cwd for path resolution (per Implementation Notes).
+  - Parses comments to find @story lines (handleComment, validateStoryPath), satisfying REQ-ANNOTATION-VALIDATION.
+  - processStoryPath() enforces security (performSecurityValidations), extension (hasValidExtension + requireStoryExtension option), then delegates existence and boundary checks (reportExistenceProblems).
+  - reportExistenceProblems() + reportExistenceStatus() use normalizeStoryPath() to distinguish exists / missing / fs-error and report messageIds fileMissing, invalidPath, fileAccessError.
+  - Rule meta defines messages:
+    - fileMissing: "Story file '{{path}}' not found".
+    - invalidExtension: "Invalid story file extension for '{{path}}', expected '.story.md'".
+    - invalidPath: "Invalid story path '{{path}}'".
+    - fileAccessError: detailed filesystem error message including {{path}} and {{error}}.
+  - Options schema supports storyDirectories, allowAbsolutePaths, requireStoryExtension (REQ-CONFIGURABLE-PATHS).
 
-Tests (tests/rules/valid-story-reference.test.ts):
-- File header explicitly ties tests to docs/stories/006.0-DEV-FILE-VALIDATION.story.md and requirement IDs (REQ-FILE-EXISTENCE, REQ-ERROR-HANDLING, REQ-ERROR-SPECIFIC, REQ-ERROR-CONTEXT, REQ-ERROR-CONSISTENCY)
-- RuleTester suite "Valid Story Reference Rule (Story 006.0-DEV-FILE-VALIDATION)":
-  - Valid cases: correct .story.md references and ./ relative paths
-  - Invalid cases: missing files → fileMissing, wrong extensions → invalidExtension, traversal and disallowed absolute paths → invalidPath
-- Additional RuleTester suites cover:
-  - Configurable storyDirectories, allowAbsolutePaths, and requireStoryExtension (REQ-CONFIGURABLE-PATHS)
-  - Rejection of out-of-project absolute paths and misconfigured external storyDirectories (REQ-PROJECT-BOUNDARY)
-- Jest-only tests "Valid Story Reference Rule Configuration and Boundaries" and "Valid Story Reference Rule Error Handling" verify:
-  - storyDirectories-based resolution
-  - Absolute-path handling within project
-  - Boundary behavior when normalize or config would escape cwd
-  - storyExists behavior when fs throws (EACCES/EIO) – never throws, returns false
-  - Rule’s reporting of fileAccessError with error details when filesystem operations fail (permissions, I/O errors) (REQ-ERROR-HANDLING, user-facing diagnostics)
+Supporting helpers:
+- src/rules/helpers/valid-story-reference-helpers.ts
+  - performSecurityValidations(): checks absolute paths and traversal; reports invalidPath when disallowed (REQ-SECURITY-VALIDATION, REQ-PROJECT-BOUNDARY).
+  - handleProjectBoundaryForExistence(): uses enforceProjectBoundary to ensure matched paths and candidates stay within project root; if all candidates are outside, reports invalidPath (REQ-PROJECT-BOUNDARY, REQ-CONFIGURABLE-PATHS).
+- src/utils/storyReferenceUtils.ts
+  - buildStoryCandidates(): builds candidate absolute paths from storyPath, cwd, and storyDirectories, covering direct cwd resolution and configured directories (REQ-PATH-RESOLUTION).
+  - fileExistStatusCache and checkSingleCandidate(): cache fs.existsSync/statSync results, never throw, return status 'exists' | 'missing' | 'fs-error' (REQ-FILE-EXISTENCE, REQ-PERFORMANCE-OPTIMIZATION, REQ-ERROR-HANDLING).
+  - getStoryExistence(): aggregates across candidates, preferring an existing file, then fs-error, else missing (REQ-FILE-EXISTENCE, REQ-ERROR-HANDLING).
+  - storyExists(): boolean wrapper preserving backward compatibility (used and tested in error-handling tests).
+  - normalizeStoryPath(): builds candidates, computes StoryExistenceResult and boolean exists (REQ-PATH-RESOLUTION, REQ-FILE-EXISTENCE, REQ-ERROR-HANDLING, REQ-PERFORMANCE-OPTIMIZATION).
+  - enforceProjectBoundary(): ensures normalized candidate is within the project root (REQ-PROJECT-BOUNDARY).
 
-Documentation (docs/rules/valid-story-reference.md):
-- Describes the rule, explicitly referencing story 006.0 and REQ-FILE-EXISTENCE / REQ-PATH-RESOLUTION / REQ-SECURITY-VALIDATION
-- Details project-boundary behavior, differentiation between fileMissing/invalidExtension/invalidPath/fileAccessError, and configuration options storyDirectories/allowAbsolutePaths/requireStoryExtension, matching the story’s implementation notes and examples (Documentation acceptance criterion)
+Tests (all passing):
+- Global run: `npm test -- --verbose` – 38 suites, 290 tests passed, including:
+  - tests/rules/valid-story-reference.test.ts – multiple describes explicitly referencing "Story 006.0-DEV-FILE-VALIDATION".
+- Targeted run: `npm test -- --verbose --runTestsByPath tests/rules/valid-story-reference.test.ts` – 1 suite, 21 tests all passed.
 
-Test run:
-- npm test -- --runInBand --verbose executed successfully (exit code 0)
-- Jest output shows all suites, including:
-  - "Valid Story Reference Rule (Story 006.0-DEV-FILE-VALIDATION)"
-  - "Valid Story Reference Rule Configuration and Boundaries (Story 006.0-DEV-FILE-VALIDATION)"
-  - "Valid Story Reference Rule Error Handling (Story 006.0-DEV-FILE-VALIDATION)"
-  - All tests passed (38 suites, 290 tests total)
+Key tests per requirement in tests/rules/valid-story-reference.test.ts:
+- Header:
+  - `* Tests for: docs/stories/006.0-DEV-FILE-VALIDATION.story.md`
+  - `@story docs/stories/006.0-DEV-FILE-VALIDATION.story.md` and @req entries for REQ-FILE-EXISTENCE and REQ-ERROR-HANDLING.
 
-Together, the rule implementation, utilities, tests, and docs directly address all the enumerated requirements and acceptance criteria for story 006.0-DEV-FILE-VALIDATION.</evidence>
-  <notes>All acceptance criteria for 006.0-DEV-FILE-VALIDATION are satisfied. The valid-story-reference rule validates that @story paths exist and use the .story.md extension, integrates with prior annotation format validation, enforces security and project-boundary constraints, caches filesystem checks for performance, and provides clear, specific error messages including fileAccessError for filesystem issues. Tests explicitly mapped to this story and its REQ IDs comprehensively cover file existence, path resolution, error handling, security, project boundaries, and configurable paths, and all pass. Documentation in docs/rules/valid-story-reference.md describes the behavior and configuration in line with the story. Therefore the story is fully implemented.</notes>
+- REQ-FILE-EXISTENCE:
+  - Valid: "[REQ-FILE-EXISTENCE] valid story file reference" using `// @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md` (and that file exists in docs/stories). No errors expected.
+  - Invalid: "[REQ-PATH-RESOLUTION] missing file" with `// @story docs/stories/missing-file.story.md` expects messageId 'fileMissing'.
+
+- REQ-EXTENSION & core .story.md behavior (part of Core Functionality acceptance criterion):
+  - Valid: "[REQ-EXTENSION] valid .story.md extension".
+  - Invalid: "[REQ-EXTENSION] invalid extension" with `.md` expects messageId 'invalidExtension'.
+
+- REQ-PATH-RESOLUTION:
+  - "[REQ-PATH-RESOLUTION] valid relative path with ./ prefix".
+  - Missing-file case above uses ordinary relative path.
+  - Jest test: "[REQ-CONFIGURABLE-PATHS] uses storyDirectories when resolving relative paths (Story 006.0-DEV-FILE-VALIDATION)" uses mockFsForExistingFile and runRuleOnCode to confirm behavior with storyDirectories.
+
+- REQ-SECURITY-VALIDATION:
+  - "[REQ-PATH-SECURITY] path traversal" with `// @story ../outside.story.md` => messageId 'invalidPath'.
+  - "[REQ-ABSOLUTE-PATH] absolute path not allowed" with `/etc/passwd.story.md` => messageId 'invalidPath'.
+
+- REQ-CONFIGURABLE-PATHS:
+  - configurablePathsTester: "[REQ-CONFIGURABLE-PATHS] honors custom storyDirectories using docs/stories".
+  - allowAbsolutePathsTester:
+    * Valid when allowAbsolutePaths: true and storyDirectories: ["docs/stories"].
+    * Invalid with messageId 'invalidPath' when allowAbsolutePaths: false.
+  - relaxedExtensionTester: "[REQ-CONFIGURABLE-PATHS] accepts .story.md story path when requireStoryExtension is false (still valid and existing)".
+  - Additional Jest tests under "Valid Story Reference Rule Configuration and Boundaries" for storyDirectories resolution and requireStoryExtension=false allowing .md files when they exist.
+
+- REQ-PROJECT-BOUNDARY:
+  - "[REQ-PROJECT-BOUNDARY] story reference outside project root is rejected when discovered via absolute path" – uses an absolute path under a fake outside-project root and expects invalidPath.
+  - Jest tests:
+    * "[REQ-PROJECT-BOUNDARY] storyDirectories cannot escape project even when normalize resolves outside cwd".
+    * "[REQ-PROJECT-BOUNDARY] misconfigured storyDirectories outside project cannot validate external files" – uses mockFsForExistingFile for an external path, runRuleOnCode, and asserts diagnostics include messageId 'invalidPath'.
+
+- REQ-ERROR-HANDLING:
+  - Jest tests under "Valid Story Reference Rule Error Handling (Story 006.0-DEV-FILE-VALIDATION)":
+    * storyExists returns false when fs throws (simulated EACCES) and does not throw.
+    * storyExists returns false when fs.statSync throws EIO and existsSync is true.
+    * Rule reports fileAccessError when fs.statSync throws and existsSync is true; diagnostics filtered by messageId 'fileAccessError' and error message matched against /EIO/.
+    * Rule reports fileAccessError when fs throws (EACCES), also checking diagnostics and error text.
+
+Documentation:
+- docs/rules/valid-story-reference.md
+  - Tagged with @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md and reqs REQ-FILE-EXISTENCE, REQ-PATH-RESOLUTION, REQ-SECURITY-VALIDATION.
+  - Describes behavior, boundary rules, differentiation between fileMissing, invalidExtension, invalidPath, and fileAccessError.
+  - Documents configuration options and provides correct/incorrect examples matching the story’s examples (correct .story.md path; invalid: nonexistent, wrong extension, traversal, absolute path).
+
+All relevant tests pass in the full suite and in an isolated run of tests/rules/valid-story-reference.test.ts, and the implementation and documentation directly address every requirement and acceptance criterion in the story.</evidence>
+  <notes>All functional acceptance criteria and listed requirements for 006.0-DEV-FILE-VALIDATION are fully implemented and verified by targeted Jest tests. The `valid-story-reference` rule validates that @story annotations reference existing .story.md files, enforces path security and project boundaries, supports configurable story directories and options, handles filesystem errors gracefully with clear diagnostics, and is documented in docs/rules/valid-story-reference.md. Tests explicitly reference this story and its REQ IDs and all pass. Therefore, this story is assessed as PASSED.</notes>
 </traceability>

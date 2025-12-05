@@ -193,6 +193,12 @@ one of three buckets:
    Informational observations do not require tracking as tasks unless
    maintainers choose to, and they do **not** affect pass/fail status.
 
+   When rule defaults or patterns change (for example, annotation formats or
+   test traceability expectations such as regex patterns and `describe` label
+   formats), maintainers should also update both the user-facing API Reference
+   and Examples documentation so that documented defaults stay aligned with
+   the implementation.
+
 ### Relationship to higher-level assessments
 
 For the purposes of higher-level quality gates and project decisions:

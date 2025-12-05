@@ -1,16 +1,17 @@
 ## NOW
 
-- [ ] Review the current repository contents to identify all files that are clearly generated reports, coverage outputs, or CI artifacts that are still tracked, and classify which of them should be treated as transient build or assessment outputs rather than source or documentation.
+- [ ] Update the user-facing rule documentation so that the documented default patterns and options for annotation format and test traceability exactly match the current implementation, including the precise default story path regex and the default describe pattern used for test files.
 
 ## NEXT
 
-- [ ] Update the repository’s ignore rules so that all identified generated reports, coverage outputs, and CI artifacts are excluded from version control going forward while keeping source, configuration, and documentation files tracked.
-- [ ] Remove the already-tracked generated reports and CI artifacts from version control so that the tracked file set contains only source, configuration, and documentation files.
-- [ ] Verify that any maintenance or CI scripts that produce these reports still function correctly with the outputs treated as transient files, adjusting script paths or documentation comments if necessary to make their transient nature explicit.
-- [ ] Confirm that there are no remaining tracked files that match the patterns of generated reports or CI artifacts by re-reviewing the tracked file list after cleanup.
+- [ ] Review all examples in the user-facing documentation that demonstrate story annotations and test traceability to ensure they either conform to the actual default patterns or clearly indicate any required configuration overrides, and adjust the examples where needed.
+- [ ] Add concise clarification sections to the user-facing rule documentation explaining how to customize the story path pattern and test traceability patterns, including describe labels and test name prefixes, so users understand why certain violations might be reported and how to adapt the rules to their own conventions.
+- [ ] Update any internal development documentation that talks about default annotation or test-traceability patterns so that it reflects the stricter, implementation-accurate defaults, helping future maintainers keep code and docs in sync when changing these patterns.
+- [ ] Do a light pass over the codebase to spot any other small documentation or comment inconsistencies around defaults or examples for the traceability rules and bring them into alignment without changing behavior.
 
 ## LATER
 
-- [ ] Introduce or refine an automated check in the development tooling that fails if generated reports or CI artifacts are accidentally committed in the future, reinforcing the repository hygiene policy.
-- [ ] Update internal development documentation to clearly list which directories and file patterns are considered ephemeral outputs so contributors know not to commit them.
-- [ ] After repository hygiene is confirmed, re-evaluate the version control assessment and, once it passes thresholds, proceed with a full functionality assessment and any follow-up improvements it reveals.
+- [ ] Evaluate whether to further tighten code-quality limits such as maximum function length or cyclomatic complexity in small increments, and plan targeted refactors where needed to stay within any new limits.
+- [ ] Consider refactoring the remaining small duplicated logic in helper modules into shared internal functions to further reduce even minor duplication while keeping public interfaces unchanged.
+- [ ] Extend the contributor documentation with a short checklist for updating documentation whenever rule defaults or options change, ensuring future behavior and docs stay aligned.
+- [ ] After these refinements, revisit the overall code-quality and documentation assessments to confirm all previously noted minor nits have been addressed.

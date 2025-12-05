@@ -2,28 +2,8 @@
 <traceability>
   <specification>docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T06:48:07.425Z</last_validated>
+  <last_validated>2025-12-05T07:57:10.034Z</last_validated>
   <last_modified>2025-12-04T21:56:14.211Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and explicit requirements in Story 021.0-DEV-TEST-ANNOTATION-AUTO-FIX are implemented and verified:
-
-- **File-Level Template (REQ-TEST-FIX-TEMPLATE, REQ-TEST-FIX-PLACEHOLDER):** `ensureFileSupportsAnnotation` uses `buildSupportsTemplateComment` and `insertSupportsTemplate` to insert a top-of-file JSDoc `@supports` block when missing, with a standard placeholder path (`docs/stories/XXX.X-STORY-NAME.story.md REQ-XXX-YYY REQ-XXX-ZZZ`) and a clear TODO line indicating that real values must be filled in. Tests assert the exact output.
-
-- **Format Fixes for `[REQ-XXX]` prefixes (REQ-TEST-FIX-PREFIX-FORMAT):** `normalizeReqId` and `normalizeReqPrefixInDescription` normalize malformed prefixes covering spacing (`[ REQ-XXX ]`), underscores (`[REQ_XXX]`), lowercase (`[req-xxx]`), and parentheses (`(REQ-XXX)`) into canonical `[REQ-...]` form. `handleItOrTestCall` wires this through ESLint’s fixer. Tests in `require-test-traceability.test.ts` validate each case.
-
-- **Safety and Non-Semantic Nature (REQ-TEST-FIX-SAFE, REQ-TEST-FIX-NO-INFERENCE):**
-  - File-level template always uses a generic placeholder; no attempt is made to infer story paths or requirement IDs.
-  - For test names, only strings already containing a recognizable REQ prefix in brackets/parentheses are auto-fixed; names like `'missing prefix'` produce an error but no fix, ensuring no new IDs are invented.
-  - Fixes are limited to comments and string literals, not test implementation bodies.
-
-- **Preservation of Formatting (REQ-TEST-FIX-PRESERVE):**
-  - Template insertion is purely additive and respects existing shebang lines.
-  - String literal updates use `createUpdatedStringLiteralRaw` to preserve quote style and escaping, changing only the content needed to normalize the prefix.
-
-- **Integration and UX:**
-  - Rule `meta.fixable: "code"` and the use of ESLint’s `fix` callbacks integrate cleanly with `--fix` workflows.
-  - All behavior is exercised via `RuleTester` tests that assert both diagnostics and fixed output.
-  - User-facing documentation in `user-docs/api-reference.md` documents the new auto-fix capabilities, options, and behavior, including placeholder templates and prefix normalization.
-
-Given the concrete implementation, comprehensive tests tied directly to this story’s REQ IDs, and passing test suite, the story is fully implemented and satisfies its Definition of Done.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md defines two main behaviors: (1) inserting a file-level @supports template with clear placeholders when missing, and (2) auto-fixing malformed [REQ-XXX] prefixes in test names while preserving semantics and not inferring new IDs. The require-test-traceability rule and its helpers implement both behaviors with configuration flags (autoFixTestTemplate, autoFixTestPrefixFormat, testSupportsTemplate). Tests in tests/rules/require-test-traceability.test.ts explicitly cover all listed requirements (REQ-TEST-FIX-TEMPLATE, REQ-TEST-FIX-PREFIX-FORMAT, REQ-TEST-FIX-SAFE, REQ-TEST-FIX-PRESERVE, REQ-TEST-FIX-PLACEHOLDER, REQ-TEST-FIX-NO-INFERENCE), including both before/after fixes and ensuring no auto-fix is applied where semantic inference would be required. User documentation in user-docs/api-reference.md documents the auto-fix capabilities and configuration in line with the story. All acceptance criteria and requirements are satisfied with concrete implementation and passing tests, so this story is PASSED.</notes>
 </traceability>
