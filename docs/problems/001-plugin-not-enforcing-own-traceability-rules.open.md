@@ -314,17 +314,17 @@ describe("Dogfooding Validation", () => {
 
 ## Permanent Fix Story
 
-**Story Reference**: To be created  
-**Story Status**: Not Created
+**Story Reference**: `docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md`  
+**Story Status**: Created - Ready for implementation
 
 ### Story Requirements
 
-- [ ] **Independent**: Can be developed independently
-- [ ] **Negotiable**: Implementation details can be refined (could use recommended or strict, could configure individual rules)
-- [ ] **Valuable**: Delivers clear business value by ensuring plugin validates its own annotations
-- [ ] **Estimable**: Scope is clear - enable preset and fix violations
-- [ ] **Small**: Can be completed within reasonable timeframe (may require fixing existing violations)
-- [ ] **Testable**: Success can be verified through lint runs and automated tests
+- [x] **Independent**: Can be developed independently
+- [x] **Negotiable**: Implementation details can be refined (could use recommended or strict, could configure individual rules)
+- [x] **Valuable**: Delivers clear business value by ensuring plugin validates its own annotations
+- [x] **Estimable**: Scope is clear - enable preset and fix violations
+- [x] **Small**: Can be completed within reasonable timeframe (may require fixing existing violations)
+- [x] **Testable**: Success can be verified through lint runs and automated tests
 
 ## Resolution and Closure
 
@@ -358,7 +358,7 @@ describe("Dogfooding Validation", () => {
 
 ### Related Stories
 
-- To be created - story for permanent fix
+- **023.0-MAINT-DOGFOODING-VALIDATION** - Permanent fix story for enabling plugin self-validation
 
 ### Related Decisions
 

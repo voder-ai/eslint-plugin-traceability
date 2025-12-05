@@ -2,8 +2,18 @@
 <traceability>
   <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T15:53:51.715Z</last_validated>
+  <last_validated>2025-12-05T17:02:52.441Z</last_validated>
   <last_modified>2025-12-04T18:45:50.452Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria for Story 010.2-DEV-MULTI-STORY-SUPPORT are implemented and verified by passing tests. The plugin supports the `@supports story-path REQ-ID...` format, validates each requirement against its referenced story file (with path and requirement scoping), treats @supports as satisfying both story and requirement presence checks while preserving legacy @story/@req behavior, supports mixed usage in the same file/comment, and surfaces clear error messages that include the story path. Comprehensive unit tests for valid/invalid/mixed scenarios all pass, and user-facing documentation (API reference and Migration Guide) explains the @supports format and migration strategy. Therefore this story is fully implemented and passes.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and technical requirements in docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md are implemented and validated by passing tests.
+
+Specifically:
+- `@supports story-path REQ-ID...` format is parsed and validated at the syntax level (valid-annotation-format + valid-implements-utils) and at the deep requirement level (valid-req-reference-helpers), including appropriate error messages that mention the concrete storyPath and reqId when validation fails.
+- Deep validation confirms that each requirement in an @supports line exists in the referenced story file, and multi-story scenarios with shared requirement IDs are supported by scoping IDs per story file.
+- Core rules `require-story-annotation` and `require-req-annotation` treat @supports as satisfying their respective presence checks, while keeping legacy @story and @req behavior unchanged and well-tested.
+- Mixed usage of @story, @req, and @supports in the same comment and across codebases is explicitly supported and covered by tests.
+- Error messages for missing or invalid requirements include storyPath context, satisfying the error-context requirement and user-facing acceptance criteria.
+- User documentation (API Reference, Migration Guide, README) describes @supports, multi-story behavior, and migration patterns, satisfying the documentation acceptance criterion.
+
+Given the comprehensive test coverage tied directly to this story file and the implementation details above, this story is fully implemented and passes.</notes>
 </traceability>

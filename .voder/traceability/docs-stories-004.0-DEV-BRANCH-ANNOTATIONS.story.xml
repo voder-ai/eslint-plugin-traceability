@@ -2,16 +2,17 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T15:49:30.566Z</last_validated>
+  <last_validated>2025-12-05T16:57:44.226Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
-  <evidence>[object Object]</evidence>
-  <notes>All acceptance criteria and named requirements for story 004.0-DEV-BRANCH-ANNOTATIONS are implemented and verified:
-- A dedicated ESLint rule (require-branch-annotation) detects missing @story/@req on all configured branch types using a clear, conventional ESLint RuleModule structure.
-- Comment association and annotation parsing are implemented via branch-annotation-helpers, including special handling for SwitchCase and support for both line and block comments.
-- Nested branches and a wide range of branch constructs (if/else, loops, switch, try/catch, do/while, for-of, for-in) are covered by comprehensive RuleTester suites.
-- Configuration is validated with clear error messages for invalid branchTypes, and the rule supports configurable scope over which branch types are enforced.
-- Performance is explicitly tested with large, deeply nested branch structures under a strict time budget, and helper implementations are careful to avoid unbounded scanning.
-- The rule is documented in docs/rules/require-branch-annotation.md with examples, configuration guidance, and invalid configuration behavior, and it is integrated into the plugin’s recommended/strict configs.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All explicit acceptance criteria and requirements in docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md are implemented and verified:
 
-Given the concrete implementation, tests, documentation, and successful Jest run, this story is fully implemented.</notes>
+- Core Functionality: The `require-branch-annotation` rule detects missing @story/@req annotations across all significant branch types (if, loops, switch cases, try/catch), with comprehensive valid/invalid RuleTester cases.
+- Quality & Integration: The rule follows ESLint best practices (meta, schema, message IDs, separation of concerns into helpers) and handles nested and varied branch patterns. Configuration is validated via `validateBranchTypes`, which either returns a branchTypes array or a Program listener that reports invalid configuration.
+- User Experience: Errors use a clear, single message template `Branch is missing required annotation: {{missing}}.`, which, together with the node location and the specific `missing` value (@story or @req), clearly communicates what is wrong and why. Autofixes insert placeholder annotations where appropriate, aiding developer workflow.
+- Error Handling: Edge cases such as default switch cases (ignored via significance criteria), nested branches, missing-only-story vs missing-only-req, and invalid `branchTypes` values are explicitly tested and handled gracefully.
+- Documentation: A dedicated rule doc (docs/rules/require-branch-annotation.md) ties back to this story, documents configuration and behavior, and includes correct/incorrect and invalid-configuration examples.
+- Definition of Done: The rule is integrated into plugin presets (recommended/strict), thoroughly tested (functional, helper-level, and performance tests), and documented. Performance tests confirm acceptable behavior on files with many nested branches.
+
+Given the direct mapping between the story’s requirements (REQ-BRANCH-DETECTION, REQ-COMMENT-ASSOCIATION, REQ-ANNOTATION-PARSING, REQ-SIGNIFICANCE-CRITERIA, REQ-NESTED-HANDLING, REQ-CONFIGURABLE-SCOPE, REQ-PERFORMANCE-OPTIMIZATION) and the implemented code, tests, and docs, this story is fully implemented and passes.</notes>
 </traceability>
