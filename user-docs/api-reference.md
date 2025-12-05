@@ -19,12 +19,15 @@ The `prefer-implements-annotation` rule is an **opt-in migration helper** that i
 
 ### traceability/require-story-annotation
 
-Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When you adopt multi-story `@supports` annotations, this rule also accepts `@supports` as an alternative way to prove story coverage, so either `@story` or at least one `@supports` tag will satisfy the presence check. When run with `--fix`, the rule inserts a single-line placeholder JSDoc `@story` annotation above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. This template is currently fixed but structured for future configurability, and fixes are strictly limited to adding this placeholder annotation without altering the function body or changing any runtime behavior. Selective enabling of different auto-fix behaviors (such as applying fixes only to certain scopes or node types) is planned for a future version.
+Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When you adopt multi-story `@supports` annotations, this rule also accepts `@supports` as an alternative way to prove story coverage, so either `@story` or at least one `@supports` tag will satisfy the presence check. When run with `--fix`, the rule inserts a single-line placeholder JSDoc `@story` annotation above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. This template is now configurable on a per-rule basis, and the rule exposes an explicit auto-fix toggle so you can choose between diagnostic-only behavior and automatic placeholder insertion. The default template remains aligned with Story 008.0, but you can now customize it per rule configuration and optionally disable auto-fix entirely when you only want diagnostics without edits.
 
 Options:
 
 - `scope` (string[], optional) – Controls which function-like node types are required to have @story annotations. Allowed values: "FunctionDeclaration", "FunctionExpression", "MethodDefinition", "TSDeclareFunction", "TSMethodSignature". Default: ["FunctionDeclaration", "FunctionExpression", "MethodDefinition", "TSDeclareFunction", "TSMethodSignature"].
 - `exportPriority` ("all" | "exported" | "non-exported", optional) – Controls whether the rule checks all functions, only exported ones, or only non-exported ones. Default: "all".
+- `annotationTemplate` (string, optional) – Overrides the default placeholder JSDoc used when inserting missing `@story` annotations for functions and non-method constructs. When omitted or blank, the built-in template from Story 008.0 is used.
+- `methodAnnotationTemplate` (string, optional) – Overrides the default placeholder JSDoc used when inserting missing `@story` annotations for class methods and TypeScript method signatures. When omitted or blank, falls back to `annotationTemplate` if provided, otherwise the built-in template.
+- `autoFix` (boolean, optional) – When set to `false`, disables all automatic fix behavior for this rule while retaining its suggestions and diagnostics. When omitted or `true`, the rule behaves as before, inserting placeholder annotations in `--fix` mode.
 
 Default Severity: `error`
 Example:
@@ -83,7 +86,7 @@ if (error) {
 
 ### traceability/valid-annotation-format
 
-Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule limits changes to safe `@story` path suffix normalization only—for example, adding `.md` when the path ends with `.story`, or adding `.story.md` when the base path has no extension—using targeted replacements implemented in the `getFixedStoryPath` and `reportInvalidStoryFormatWithFix` helpers. It does not change directories, infer new story names, or modify any surrounding comment text or whitespace, in line with Story 008.0; more advanced path normalization strategies and selective toggles to enable or disable specific auto-fix behaviors are not yet implemented.
+Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule limits changes to safe `@story` path suffix normalization only—for example, adding `.md` when the path ends with `.story`, or adding `.story.md` when the base path has no extension—using targeted replacements implemented in the `getFixedStoryPath` and `reportInvalidStoryFormatWithFix` helpers. It does not change directories, infer new story names, or modify any surrounding comment text or whitespace, in line with Story 008.0; more advanced path normalization strategies and selective toggles to enable or disable specific auto-fix behaviors are not yet implemented. You can also disable this suffix-normalization behavior explicitly via the `autoFix` option when you prefer purely diagnostic checks.
 
 Options:
 
@@ -95,6 +98,7 @@ This rule accepts an optional configuration object. The primary configuration sh
 - `req` (object, optional) – Configuration for `@req` values.
   - `pattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that all `@req` values must match. If provided, the rule validates each `@req` identifier against this pattern. Defaults to the value returned by `getDefaultReqPattern()`, which is equivalent to `^REQ-[A-Z0-9_-]+$`, matching IDs such as `REQ-USER-AUTH` or `REQ-1234`.
   - `example` (string, optional) – A short example requirement ID shown in error messages when `req.pattern` is configured. Defaults to the value returned by `getDefaultReqExample()`, `"REQ-USER-AUTH"`. This value is used **only** for guidance and does not affect validation.
+- `autoFix` (boolean, optional) – When set to `false`, disables all automatic suffix-normalization fixes while keeping validation and error messages intact. When omitted or `true`, the rule continues to apply safe suffix-only auto-fixes in `--fix` mode.
 
 For backward compatibility, the rule also supports **flat shorthand** fields that map directly to the nested properties:
 

@@ -35,7 +35,14 @@ function buildFunctionDeclarationVisitor(
     if (!options.shouldProcessNode(node)) return;
 
     const target = resolveTargetNode(sourceCode, node);
-    helperReportMissing(context, sourceCode, node, target);
+    helperReportMissing(context, sourceCode, {
+      node,
+      target,
+      options: {
+        annotationTemplateOverride: options.annotationTemplate,
+        autoFixToggle: options.autoFix,
+      },
+    });
   }
 
   return {
@@ -69,7 +76,14 @@ function buildFunctionExpressionVisitor(
     if (node.parent && node.parent.type === "MethodDefinition") return;
 
     const target = resolveTargetNode(sourceCode, node);
-    helperReportMissing(context, sourceCode, node, target);
+    helperReportMissing(context, sourceCode, {
+      node,
+      target,
+      options: {
+        annotationTemplateOverride: options.annotationTemplate,
+        autoFixToggle: options.autoFix,
+      },
+    });
   }
 
   return {
@@ -95,7 +109,14 @@ function buildArrowFunctionVisitor(
   function handleArrowFunctionExpression(node: any) {
     if (!options.shouldProcessNode(node)) return;
     const target = resolveTargetNode(sourceCode, node);
-    helperReportMissing(context, sourceCode, node, target);
+    helperReportMissing(context, sourceCode, {
+      node,
+      target,
+      options: {
+        annotationTemplateOverride: options.annotationTemplate,
+        autoFixToggle: options.autoFix,
+      },
+    });
   }
 
   return {
@@ -120,7 +141,14 @@ function buildTSDeclareFunctionVisitor(
    */
   function handleTSDeclareFunction(node: any) {
     if (!options.shouldProcessNode(node)) return;
-    helperReportMissing(context, sourceCode, node, node);
+    helperReportMissing(context, sourceCode, {
+      node,
+      target: node,
+      options: {
+        annotationTemplateOverride: options.annotationTemplate,
+        autoFixToggle: options.autoFix,
+      },
+    });
   }
 
   return {
@@ -146,7 +174,15 @@ function buildTSMethodSignatureVisitor(
   function handleTSMethodSignature(node: any) {
     if (!options.shouldProcessNode(node)) return;
     const target = resolveTargetNode(sourceCode, node);
-    helperReportMissing(context, sourceCode, node, target);
+    helperReportMissing(context, sourceCode, {
+      node,
+      target,
+      options: {
+        annotationTemplateOverride:
+          options.methodAnnotationTemplate ?? options.annotationTemplate,
+        autoFixToggle: options.autoFix,
+      },
+    });
   }
 
   return {
@@ -171,7 +207,14 @@ function buildMethodDefinitionVisitor(
    */
   function handleMethodDefinition(node: any) {
     if (!options.shouldProcessNode(node)) return;
-    helperReportMethod(context, sourceCode, node);
+    helperReportMethod(context, sourceCode, {
+      node,
+      options: {
+        annotationTemplateOverride:
+          options.methodAnnotationTemplate ?? options.annotationTemplate,
+        autoFixToggle: options.autoFix,
+      },
+    });
   }
 
   return {

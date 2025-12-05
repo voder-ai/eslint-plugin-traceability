@@ -27,24 +27,24 @@ function baseFixer() {
 }
 
 function exerciseBranch1(
-  createAddStoryFix: any,
+  createAddStoryFixFactory: (_target: any, _annotationTemplate: string) => (_fixer: any) => any,
   annotation: string,
 ) {
   const fixer = baseFixer();
-  const fixFn = createAddStoryFix(null as any);
+  const fixFn = createAddStoryFixFactory(null as any, annotation);
   const res = fixFn(fixer);
   expect(fixer.insertTextBeforeRange).toHaveBeenCalledTimes(1);
   const args = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];
   expect(args[0]).toEqual([0, 0]);
-  expect(args[1]).toBe(annotation);
+  expect(args[1]).toBe(`${annotation}\n`);
   expect(res).toEqual({
     r: [0, 0],
-    t: annotation,
+    t: `${annotation}\n`,
   });
 }
 
 function exerciseBranch2(
-  createAddStoryFix: any,
+  createAddStoryFixFactory: (_target: any, _annotationTemplate: string) => (_fixer: any) => any,
   annotation: string,
 ) {
   const target: any = {
@@ -53,22 +53,22 @@ function exerciseBranch2(
     parent: { type: "ClassBody" },
   };
   const fixer = baseFixer();
-  const fixFn = createAddStoryFix(target);
+  const fixFn = createAddStoryFixFactory(target, annotation);
   const res = fixFn(fixer);
   expect(
     (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][0],
   ).toEqual([RANGE_ONE_START, RANGE_ONE_START]);
   expect(
     (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][1],
-  ).toBe(annotation);
+  ).toBe(`${annotation}\n`);
   expect(res).toEqual({
     r: [RANGE_ONE_START, RANGE_ONE_START],
-    t: annotation,
+    t: `${annotation}\n`,
   });
 }
 
 function exerciseBranch3(
-  createAddStoryFix: any,
+  createAddStoryFixFactory: (_target: any, _annotationTemplate: string) => (_fixer: any) => any,
   annotation: string,
 ) {
   const target: any = {
@@ -80,27 +80,27 @@ function exerciseBranch3(
     },
   };
   const fixer = baseFixer();
-  const fixFn = createAddStoryFix(target);
+  const fixFn = createAddStoryFixFactory(target, annotation);
   const res = fixFn(fixer);
   expect(
     (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][0],
   ).toEqual([RANGE_PARENT_START, RANGE_PARENT_START]);
   expect(
     (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][1],
-  ).toBe(annotation);
+  ).toBe(`${annotation}\n`);
   expect(res).toEqual({
     r: [RANGE_PARENT_START, RANGE_PARENT_START],
-    t: annotation,
+    t: `${annotation}\n`,
   });
 }
 
 export function exerciseCreateAddStoryFixBranches(
-  createAddStoryFix: any,
+  createAddStoryFixFactory: (_target: any, _annotationTemplate: string) => (_fixer: any) => any,
   options: ExerciseOptions = {},
 ): void {
   const annotation = options.annotationText ?? DEFAULT_ANNOTATION;
 
-  exerciseBranch1(createAddStoryFix, annotation);
-  exerciseBranch2(createAddStoryFix, annotation);
-  exerciseBranch3(createAddStoryFix, annotation);
+  exerciseBranch1(createAddStoryFixFactory, annotation);
+  exerciseBranch2(createAddStoryFixFactory, annotation);
+  exerciseBranch3(createAddStoryFixFactory, annotation);
 }

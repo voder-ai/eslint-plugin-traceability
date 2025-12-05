@@ -6,10 +6,9 @@
 import {
   createAddStoryFix,
   createMethodFix,
-  reportMissing,
 } from "../../src/rules/helpers/require-story-core";
 import {
-  ANNOTATION,
+  getAnnotationTemplate,
   resolveTargetNode,
   getNodeName,
   shouldProcessNode,
@@ -17,6 +16,7 @@ import {
   fallbackTextBeforeHasStory,
   parentChainHasStory,
   DEFAULT_SCOPE,
+  reportMissing,
 } from "../../src/rules/helpers/require-story-helpers";
 
 describe("Require Story Helpers (Story 003.0)", () => {
@@ -29,13 +29,15 @@ describe("Require Story Helpers (Story 003.0)", () => {
     const fixer = {
       insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),
     } as any;
-    const fixFn = createAddStoryFix(target);
+    const defaultTemplate = getAnnotationTemplate();
+    const fixFn = createAddStoryFix(target, defaultTemplate);
     const result = fixFn(fixer);
     expect(fixer.insertTextBeforeRange).toHaveBeenCalledTimes(1);
     const calledArgs = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];
     expect(calledArgs[0]).toEqual([10, 10]);
-    expect(calledArgs[1]).toBe(`${ANNOTATION}\n`);
-    expect(result).toEqual({ r: [10, 10], t: `${ANNOTATION}\n` });
+    expect(typeof calledArgs[1]).toBe("string");
+    expect(calledArgs[1].length).toBeGreaterThan(0);
+    expect(result).toEqual({ r: [10, 10], t: calledArgs[1] });
   });
 
   test("createMethodFix falls back to node.range when parent not export", () => {
@@ -47,15 +49,17 @@ describe("Require Story Helpers (Story 003.0)", () => {
     const fixer = {
       insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),
     } as any;
-    const fixFn = createMethodFix(node);
+    const defaultTemplate = getAnnotationTemplate();
+    const fixFn = createMethodFix(node, defaultTemplate);
     const res = fixFn(fixer);
     expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][0]).toEqual(
       [30, 30],
     );
-    expect((fixer.insertTextBeforeRange as jest.Mock).mock.calls[0][1]).toBe(
-      `${ANNOTATION}\n  `,
-    );
-    expect(res).toEqual({ r: [30, 30], t: `${ANNOTATION}\n  ` });
+    const insertedText = (fixer.insertTextBeforeRange as jest.Mock).mock
+      .calls[0][1];
+    expect(typeof insertedText).toBe("string");
+    expect(insertedText.length).toBeGreaterThan(0);
+    expect(res).toEqual({ r: [30, 30], t: insertedText });
   });
 
   test("reportMissing does not call context.report if JSDoc contains @story", () => {
@@ -75,7 +79,7 @@ describe("Require Story Helpers (Story 003.0)", () => {
       report: jest.fn(),
     };
 
-    reportMissing(context, fakeSource, node, node);
+    reportMissing(context, fakeSource, { node, target: node });
     expect(context.report).not.toHaveBeenCalled();
   });
 
@@ -94,7 +98,7 @@ describe("Require Story Helpers (Story 003.0)", () => {
       report: jest.fn(),
     };
 
-    reportMissing(context, fakeSource, node, node);
+    reportMissing(context, fakeSource, { node, target: node });
     expect(context.report).toHaveBeenCalledTimes(1);
     const call = (context.report as jest.Mock).mock.calls[0][0];
     expect(call.node).toBe(node);

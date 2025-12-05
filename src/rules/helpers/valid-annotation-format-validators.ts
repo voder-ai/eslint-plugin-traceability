@@ -217,7 +217,12 @@ export function validateStoryAnnotation(
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
   // @req REQ-AUTOFIX-FORMAT - Apply suffix-only auto-fix when it yields a pattern-compliant path
   if (fixed && pathPattern.test(fixed)) {
-    reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed);
+    if (options.autoFix !== false) {
+      reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed);
+      return;
+    }
+
+    reportInvalidStoryFormat(context, comment, collapsed, options);
     return;
   }
 

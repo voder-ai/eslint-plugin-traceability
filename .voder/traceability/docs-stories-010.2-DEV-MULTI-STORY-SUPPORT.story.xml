@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-12-05T05:09:17.772Z</last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-12-05T05:40:51.695Z</last_validated>
   <last_modified>2025-12-04T18:45:50.452Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All functional acceptance criteria and listed requirements for 010.2-DEV-MULTI-STORY-SUPPORT are implemented and verified by tests. The plugin supports the @supports story-path + REQ-ID format, validates requirements against the correct story files (including multi-story and shared-ID scenarios), maintains full backward compatibility with @story/@req, accepts @supports as satisfying both story and requirement annotations, handles mixed usage within the same comment/file, and reports errors that include the relevant story path. Documentation and migration guidance for @supports are present in the user docs. The Jest test suite, including all tests referencing this story and its requirements, passes successfully. Therefore this story is fully implemented.</notes>
+  <evidence>Assessment error: 400 Input tokens exceed the configured limit of 272000 tokens. Your messages resulted in 401773 tokens. Please reduce the length of the messages.</evidence>
+  <notes>Technical error during assessment</notes>
 </traceability>

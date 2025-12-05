@@ -2,16 +2,17 @@
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T05:03:10.475Z</last_validated>
+  <last_validated>2025-12-05T05:38:47.357Z</last_validated>
   <last_modified>2025-12-04T22:10:02.692Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md defines a validation rule that must enforce format and syntax for @story and @req annotations (including path patterns, requirement ID patterns, multiline support, flexible parsing, and specific error messages), integrate with the existing plugin, and be documented and tested.
+  <evidence>[object Object]</evidence>
+  <notes>All acceptance criteria and requirements in docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md are implemented and verified:
 
-Evidence shows this is fully implemented:
-- The ESLint rule `src/rules/valid-annotation-format.ts` is dedicated to validating `@story`, `@req`, and `@supports` annotations. It uses shared helpers, a proper ESLint `meta` definition, schema, and messageIds. The implementation explicitly references this story and its requirements via annotations.
-- The test suite `tests/rules/valid-annotation-format.test.ts` is explicitly tagged as tests for this story and includes focused tests for each listed requirement (REQ-FORMAT-SPECIFICATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT, REQ-MULTILINE-SUPPORT, REQ-FLEXIBLE-PARSING, and detailed error messaging), covering both valid and invalid cases including edge cases and malformed comments.
-- Jest was run with `--verbose`; all tests, including the full valid-annotation-format suite, passed.
-- The rule documentation in `docs/rules/valid-annotation-format.md` provides a clear format specification, configuration options, and examples of correct and incorrect annotations, matching the story’s documentation acceptance criterion.
+- Core Functionality: The valid-annotation-format rule and its helpers validate @story and @req annotation syntax and format, including @supports; they enforce the specified patterns for story paths and requirement IDs and operate on all comments in the file.
+- Quality Standards: The rule follows ESLint best practices with meta.docs, meta.messages, JSON schema for options, configurable patterns, and uses RuleTester-based tests. It is properly integrated into the plugin and configs.
+- Integration: The rule is loaded via src/index.ts and participates in the recommended/strict flat configs; it works alongside function and branch rules by scanning the same annotations in source comments. Tests for plugin configs confirm inclusion and severity.
+- User Experience: Error messages are specific and actionable, distinguishing missing vs invalid values and including both the offending path/ID and an example. Tests assert exact message text for many scenarios.
+- Error Handling: Edge cases such as missing values, malformed/multiline comments, path traversal, invalid regex configurations, and JSDoc coexistence are handled gracefully; configuration errors are reported separately while still allowing validation to proceed.
+- Documentation: docs/rules/valid-annotation-format.md provides a detailed format specification, default and configurable patterns, and examples of valid/invalid annotations that match both the story and the tests.
 
-Based on the implemented rule, comprehensive tests directly mapped to the story’s requirements, and supporting documentation, all acceptance criteria for this story are satisfied.</notes>
+The Jest test suite includes a dedicated suite for this story with extensive coverage of all listed REQs, and all tests pass. There is no evidence of any missing or unimplemented requirement from this story, so the story is fully implemented.</notes>
 </traceability>

@@ -64,6 +64,9 @@ const rule: Rule.RuleModule = {
             uniqueItems: true,
           },
           exportPriority: { type: "string", enum: EXPORT_PRIORITY_VALUES },
+          annotationTemplate: { type: "string" },
+          methodAnnotationTemplate: { type: "string" },
+          autoFix: { type: "boolean" },
         },
         additionalProperties: false,
       },
@@ -83,6 +86,17 @@ const rule: Rule.RuleModule = {
     const opts = (context.options && context.options[0]) || {};
     const scope = opts.scope || DEFAULT_SCOPE;
     const exportPriority = opts.exportPriority || "all";
+    const annotationTemplate =
+      typeof opts.annotationTemplate === "string" &&
+      opts.annotationTemplate.trim().length > 0
+        ? opts.annotationTemplate.trim()
+        : undefined;
+    const methodAnnotationTemplate =
+      typeof opts.methodAnnotationTemplate === "string" &&
+      opts.methodAnnotationTemplate.trim().length > 0
+        ? opts.methodAnnotationTemplate.trim()
+        : undefined;
+    const autoFix = typeof opts.autoFix === "boolean" ? opts.autoFix : true;
 
     /**
      * Optional debug logging for troubleshooting this rule.
@@ -108,6 +122,9 @@ const rule: Rule.RuleModule = {
       shouldProcessNode: should,
       scope,
       exportPriority,
+      annotationTemplate,
+      methodAnnotationTemplate,
+      autoFix,
     });
   },
 };

@@ -1,7 +1,11 @@
 /**
  * Helpers for the "require-story" rule
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-ANNOTATION-REQUIRED - File-level header for rule helper utilities
+ * @req REQ-AUTOFIX-MISSING
+ * @req REQ-AUTOFIX-TEMPLATE
+ * @req REQ-AUTOFIX-SELECTIVE
  */
 import type { Rule } from "eslint";
 import {
@@ -22,7 +26,29 @@ import {
  * Path to the story file for annotations
  */
 const STORY_PATH = "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
-const ANNOTATION = `/** @story ${STORY_PATH} */`;
+
+/**
+ * Derive the annotation template, optionally using an override.
+ * When override is a non-empty string, its trimmed value is used.
+ * Otherwise, the default template is returned.
+ */
+function getAnnotationTemplate(override?: string): string {
+  if (typeof override === "string" && override.trim().length > 0) {
+    return override.trim();
+  }
+  return `/** @story ${STORY_PATH} */`;
+}
+
+/**
+ * Determine whether auto-fix should be applied.
+ * Explicit false disables auto-fix; all other values enable it.
+ */
+function shouldApplyAutoFix(autoFix: boolean | undefined): boolean {
+  if (autoFix === false) {
+    return false;
+  }
+  return true;
+}
 
 /**
  * Number of physical source lines to inspect before a node when searching for @story text
@@ -261,6 +287,11 @@ function shouldProcessNode(
   return true;
 }
 
+interface ReportOptions {
+  annotationTemplateOverride?: string;
+  autoFixToggle?: boolean;
+}
+
 /**
  * Report a missing @story annotation for a function-like node
  * Provides a suggestion to add the annotation.
@@ -272,15 +303,15 @@ function shouldProcessNode(
  * @req REQ-ERROR-SPECIFIC - Error reports must include both name and functionName in the data payload for specific function context
  * @param {Rule.RuleContext} context - ESLint rule context used to report
  * @param {any} sourceCode - ESLint sourceCode object
- * @param {any} node - AST node that is missing the annotation
- * @param {any} [passedTarget] - optional AST node to use as insertion target instead of resolving from node
+ * @param {{ node: any; target?: any; options?: ReportOptions }} config - configuration containing the node to report, optional insertion target, and optional report options
  */
 function reportMissing(
   context: Rule.RuleContext,
   sourceCode: any,
-  node: any,
-  passedTarget?: any,
+  config: { node: any; target?: any; options?: ReportOptions },
 ): void {
+  const { node, target: passedTarget, options = {} } = config;
+
   try {
     const functionName = extractName(
       node && (node.id || node.key) ? node.id || node.key : node,
@@ -296,15 +327,22 @@ function reportMissing(
       (node.key && node.key.type === "Identifier" && node.key) ||
       node;
 
+    const effectiveTemplate = getAnnotationTemplate(
+      options.annotationTemplateOverride,
+    );
+    const allowFix = shouldApplyAutoFix(options.autoFixToggle);
+
     context.report({
       node: nameNode,
       messageId: "missingStory",
       data: { name, functionName: name },
-      fix: createAddStoryFix(resolvedTarget),
+      fix: allowFix
+        ? createAddStoryFix(resolvedTarget, effectiveTemplate)
+        : undefined,
       suggest: [
         {
-          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-          fix: createAddStoryFix(resolvedTarget),
+          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${effectiveTemplate}`,
+          fix: createAddStoryFix(resolvedTarget, effectiveTemplate),
         },
       ],
     });
@@ -327,15 +365,15 @@ function reportMissing(
  * @req REQ-ERROR-CONTEXT - Method error reports must include functionName data for consistent error context
  * @param {Rule.RuleContext} context - ESLint rule context to report
  * @param {any} sourceCode - ESLint sourceCode object
- * @param {any} node - AST node that is missing the annotation
- * @param {any} [passedTarget] - optional AST node to use as insertion target instead of resolving from node
+ * @param {{ node: any; target?: any; options?: ReportOptions }} config - configuration containing the node to report, optional insertion target, and optional report options
  */
 function reportMethod(
   context: Rule.RuleContext,
   sourceCode: any,
-  node: any,
-  passedTarget?: any,
+  config: { node: any; target?: any; options?: ReportOptions },
 ): void {
+  const { node, target: passedTarget, options = {} } = config;
+
   try {
     if (hasStoryAnnotation(sourceCode, node)) {
       return;
@@ -345,15 +383,22 @@ function reportMethod(
     const nameNode =
       (node.key && node.key.type === "Identifier" && node.key) || node;
 
+    const effectiveTemplate = getAnnotationTemplate(
+      options.annotationTemplateOverride,
+    );
+    const allowFix = shouldApplyAutoFix(options.autoFixToggle);
+
     context.report({
       node: nameNode,
       messageId: "missingStory",
       data: { name, functionName: name },
-      fix: createMethodFix(resolvedTarget),
+      fix: allowFix
+        ? createMethodFix(resolvedTarget, effectiveTemplate)
+        : undefined,
       suggest: [
         {
-          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-          fix: createMethodFix(resolvedTarget),
+          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${effectiveTemplate}`,
+          fix: createMethodFix(resolvedTarget, effectiveTemplate),
         },
       ],
     });
@@ -369,7 +414,8 @@ function reportMethod(
  */
 export {
   STORY_PATH,
-  ANNOTATION,
+  getAnnotationTemplate,
+  shouldApplyAutoFix,
   LOOKBACK_LINES,
   FALLBACK_WINDOW,
   isExportedNode,

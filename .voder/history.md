@@ -1,35 +1,35 @@
-Here’s a history-only summary of what’s been done so far, including the most recent work, with all forward-looking plan content removed.
+Here’s a history-only summary of what’s been done so far on the project, including the most recent work, with all forward-looking content removed.
 
 ---
 
 ## Test Duplication Reduction
 
-- Analyzed `jscpd` reports and identified heavy duplication in `tests/utils/annotation-checker.test.ts`.
-- Refactored that test file to reuse the shared `withTsLanguageOptions` helper from `tests/utils/ts-language-options.ts`, removing repeated inline `languageOptions`.
-- Re-ran tests and `jscpd` to verify behavior and duplication reduction.
+- Used `jscpd` reports to locate heavy duplication in `tests/utils/annotation-checker.test.ts`.
+- Refactored the tests to reuse `withTsLanguageOptions` from `tests/utils/ts-language-options.ts` instead of inlining `languageOptions` repeatedly.
+- Re-ran tests and `jscpd` to confirm behavior and lower duplication.
 - Committed as `test: refactor annotation-checker RuleTester setup to shared helper`.
 
 ---
 
 ## Traceability Annotation Improvements
 
-- In `src/maintenance/cli.ts`, added and repositioned traceability annotations (`@implements`, later migrated to `@supports`) for CLI flags, error handling, and `switch` branches so the checker recognizes them.
-- In `src/maintenance/detect.ts`, added traceability comments for invalid roots, IO errors, `handleStoryMatch` branches, and candidate search edge cases, iterating placement to satisfy tooling.
-- In `src/rules/helpers/valid-annotation-utils.ts`, annotated `getFixedStoryPath` branches and missing-case handling in `buildStoryErrorMessage` / `buildReqErrorMessage`.
-- In `src/rules/helpers/valid-story-reference-helpers.ts`, annotated project-boundary handling, candidate loops, and security checks for absolute/traversal paths.
-- In `src/utils/annotation-checker.ts`, moved the missing-`@req` autofix annotation from `missingReqFix` to `createMissingReqFix` for correct tracking.
-- Re-ran `npm run check:traceability` and main quality scripts; CI on `main` passed.
+- In `src/maintenance/cli.ts`, added and adjusted traceability annotations (initially `@implements`, later `@supports`) for CLI flags, error handling, and `switch` branches so the annotation checker could track them.
+- In `src/maintenance/detect.ts`, added traceability comments for invalid roots, IO errors, `handleStoryMatch` branches, and candidate-search edge cases, iterating placement until the tooling recognized them correctly.
+- In `src/rules/helpers/valid-annotation-utils.ts`, annotated `getFixedStoryPath` branches and missing-case logic in `buildStoryErrorMessage` / `buildReqErrorMessage`.
+- In `src/rules/helpers/valid-story-reference-helpers.ts`, annotated handling of project boundaries, candidate loops, and path security checks.
+- In `src/utils/annotation-checker.ts`, moved the missing-`@req` autofix annotation from `missingReqFix` to `createMissingReqFix` for accurate tracking.
+- Ran `npm run check:traceability` and main quality scripts; CI on `main` passed.
 - Committed as `chore: improve traceability annotations for maintenance and validation helpers`.
 
 ---
 
 ## Documentation Separation and Cleanup
 
-- Cataloged shipped user docs via `package.json` and scanned for references to internal `docs/` and `docs/stories`.
-- In `SECURITY.md`, removed links to internal security docs and phrased references generically as internal maintainer docs.
-- In `CONTRIBUTING.md`, removed explicit links to internal docs (conventional commits guide, CI/CD pipeline, ADRs) and substituted external references or generalized wording.
-- In `user-docs/api-reference.md`, clarified that `docs/stories/...` paths are example project-local files, generalized rule behavior, and removed references to specific internal `.story.md` files and IDs.
-- In `user-docs/migration-guide.md`, described `docs/stories/...` as consumer-owned paths and removed references to internal multi-story documentation, emphasizing user-controlled story/requirement files.
+- Cataloged shipped user docs from `package.json` and checked for references to internal `docs/` or `docs/stories`.
+- In `SECURITY.md`, removed links to internal security docs and described them generically as internal maintainer docs.
+- In `CONTRIBUTING.md`, removed explicit links to internal docs (conventional commits, CI/CD pipeline, ADRs) and used external references or neutral wording instead.
+- In `user-docs/api-reference.md`, clarified that `docs/stories/...` paths are example project-local files and removed references to specific internal story files and IDs.
+- In `user-docs/migration-guide.md`, clarified that `docs/stories/...` paths are consumer-owned and removed references to internal multi-story documentation.
 - Ran `npm run ci-verify:full`; CI run `19935224744` succeeded.
 - Committed as `docs: remove user-facing references to internal docs`.
 
@@ -37,10 +37,10 @@ Here’s a history-only summary of what’s been done so far, including the most
 
 ## CODE_QUALITY Slice Strategy
 
-- Reviewed repository layout and existing code quality and coverage documentation.
-- Authored `docs/code-quality-assessment-slices.md` defining four slices: `rules-and-helpers`, `maintenance-and-cli`, `plugin-and-config`, and `tooling-and-ci`, with priorities.
-- Created `.voder-code-quality-slices.json` with machine-readable slice definitions.
-- Wrote `docs/code-quality-assessment-guide.md` describing slice selection, JSON config usage, and result interpretation, establishing `rules-and-helpers` as the minimum baseline.
+- Reviewed repo layout and current code quality / coverage docs.
+- Wrote `docs/code-quality-assessment-slices.md` defining four slices: `rules-and-helpers`, `maintenance-and-cli`, `plugin-and-config`, and `tooling-and-ci`, with priorities.
+- Added `.voder-code-quality-slices.json` with machine-readable slice definitions.
+- Authored `docs/code-quality-assessment-guide.md` describing how to pick slices, use the JSON config, and interpret results, calling out `rules-and-helpers` as the baseline.
 - Updated `docs/ci-cd-pipeline.md` with a “CODE_QUALITY Slices” section.
 - Ran full quality checks; CI run `19935786345` passed.
 - Committed as `docs: document CODE_QUALITY slice strategy`.
@@ -49,14 +49,14 @@ Here’s a history-only summary of what’s been done so far, including the most
 
 ## Clarifying CODE_QUALITY Interpretation and Dependencies
 
-- Re-reviewed documentation and `.voder-code-quality-slices.json`.
+- Re-reviewed slice documentation and `.voder-code-quality-slices.json`.
 - Expanded `docs/code-quality-assessment-guide.md` to:
-  - Define criteria for a valid `rules-and-helpers` assessment.
-  - Define “passing” in terms of ratcheted ESLint thresholds, traceability/tests on critical paths, and absence of critical structural issues.
-  - Introduce finding classifications (Blockers / near-term / informational).
+  - Define what a valid `rules-and-helpers` assessment entails.
+  - Define “passing” in terms of ESLint thresholds, traceability/tests on critical paths, and absence of critical structural issues.
+  - Introduce classifications for findings (Blockers / near-term / informational).
   - Clarify that context-failure runs count as “not run”.
-- Updated `docs/decisions/003-code-quality-ratcheting-plan.md` to tie enforcement to the `rules-and-helpers` slice, treating violations there as Blockers.
-- Updated `docs/functionality-coverage-2025-12-03.md` to note that functionality assessments depend on a passing `rules-and-helpers` CODE_QUALITY run.
+- Updated `docs/decisions/003-code-quality-ratcheting-plan.md` to tie enforcement to the `rules-and-helpers` slice and treat violations there as Blockers.
+- Updated `docs/functionality-coverage-2025-12-03.md` to note dependency on a passing `rules-and-helpers` CODE_QUALITY run.
 - Revalidated slices configuration.
 - Ran tests, lint, type-check, build, and format checks; pre-push and CI (`19936091302`) passed.
 - Committed as `docs: clarify code-quality slice interpretation and dependencies`.
@@ -65,28 +65,27 @@ Here’s a history-only summary of what’s been done so far, including the most
 
 ## Rename Multi-Story Annotation from `@implements` to `@supports`
 
-- Confirmed via Story 010.2 and ADRs 010/011 that `@supports` is canonical and `@implements` should no longer be exposed to users.
-- Standardized on `@supports` as the user-facing multi-story annotation.
+- Confirmed via Story 010.2 and ADRs 010/011 that `@supports` is canonical and `@implements` should not be user-facing.
 
-**Documentation:**
+**Documentation work:**
 
-- Updated ADR 011 to state that `@supports` is the only supported multi-story annotation and `@implements` is no longer recognized, preserving semantics.
-- Updated Story 010.2 to note that ADR 010’s `@implements` is superseded by ADR 011.
-- Updated `README.md`, `user-docs/api-reference.md`, and `user-docs/migration-guide.md` to use `@supports` everywhere.
-- Updated rule docs (`valid-annotation-format`, `valid-req-reference`, `prefer-implements-annotation`) to describe `@supports`, clarifying that `prefer-implements-annotation` migrates to `@supports` despite its name.
+- Updated ADR 011 to specify `@supports` as the only supported multi-story annotation and to deprecate `@implements` while preserving semantics.
+- Updated Story 010.2 to document that ADR 010’s `@implements` is superseded by ADR 011.
+- Updated `README.md`, `user-docs/api-reference.md`, and `user-docs/migration-guide.md` to use `@supports` exclusively.
+- Updated rule docs (`valid-annotation-format`, `valid-req-reference`, `prefer-implements-annotation`) to describe `@supports` and clarified that `prefer-implements-annotation` migrates to `@supports` despite its name.
 
-**Implementation:**
+**Implementation work:**
 
-- In `valid-annotation-format-internal.ts`, updated docs and parsing logic to recognize `@supports`.
+- In `valid-annotation-format-internal.ts`, updated docs and parsing to recognize `@supports`.
 - In `valid-implements-utils.ts`, updated comments and messages to describe `@supports` parsing.
-- In `valid-annotation-format.ts` and `valid-req-reference.ts`, switched detection/validation to operate on `@supports` lines.
+- In `valid-annotation-format.ts` and `valid-req-reference.ts`, switched detection/validation to handle `@supports`.
 - In `src/utils/reqAnnotationDetection.ts`, treated `@req` or `@supports` as satisfying requirement presence.
-- In `require-story-io.ts`, treated `@story` or `@supports` as satisfying story presence and included `@supports` in scans.
-- In `prefer-implements-annotation.ts`, changed the migration target from `@implements` to `@supports` and updated metadata/messages, keeping the rule name.
+- In `require-story-io.ts`, treated `@story` or `@supports` as satisfying story presence, and included `@supports` in scans.
+- In `prefer-implements-annotation.ts`, changed the migration target from `@implements` to `@supports` and updated messaging, keeping the rule name.
 
-**Tests/tooling:**
+**Tests and tooling:**
 
-- Updated rule tests (`valid-annotation-format`, `valid-req-reference`, `require-story-annotation`, `require-req-annotation`, `prefer-implements-annotation`) to use `@supports` and `REQ-SUPPORTS-*` IDs and adjusted traceability annotations.
+- Updated rule tests (`valid-annotation-format`, `valid-req-reference`, `require-story-annotation`, `require-req-annotation`, `prefer-implements-annotation`) to use `@supports` and new ID conventions.
 - Updated Husky hook configuration in `package.json` from `"postinstall": "husky"` to `"prepare": "husky"` to avoid running Husky in consumer installs and to fix smoke tests.
 - Re-ran build, tests (including smoke), lint, type-check, and format checks.
 - Committed:
@@ -98,19 +97,19 @@ Here’s a history-only summary of what’s been done so far, including the most
 
 ## New Rule: `traceability/require-test-traceability` (Story 020.0)
 
-- Reviewed Story `020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md` and derived behavior/options.
+- Reviewed Story `020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md` and derived the rule’s behavior and options.
 - Implemented `src/rules/require-test-traceability.ts` with:
-  - `meta` (`type: "problem"`, options schema, messages).
+  - Proper `meta` (`type: "problem"`, messages, options schema).
   - `determineIsTestFile` for filename-based detection.
   - `ensureFileSupportsAnnotation` for file-level `@supports` enforcement.
-  - Helpers (`isTestCallName`, `getCalleeName`, `getFirstArgumentLiteral`).
-  - `create(context)` logic to:
-    - Resolve options (`testFilePatterns`, `requireDescribeStory`, `requireTestReqPrefix`, `describePattern`).
-    - On matching test files, enforce:
+  - Helper functions (`isTestCallName`, `getCalleeName`, `getFirstArgumentLiteral`).
+  - `create(context)` to:
+    - Resolve `testFilePatterns`, `requireDescribeStory`, `requireTestReqPrefix`, `describePattern`.
+    - For matching test files, enforce:
       - File-level `@supports`.
-      - Story reference in `describe` names.
+      - Story references in `describe` block names.
       - `[REQ-XXX]` prefixes in `it`/`test` names.
-- Added `tests/rules/require-test-traceability.test.ts` with valid/invalid cases.
+- Added `tests/rules/require-test-traceability.test.ts` with valid and invalid cases.
 - Integrated the rule into the plugin (`RULE_NAMES`, `TRACEABILITY_RULE_SEVERITIES`) and updated `tests/plugin-default-export-and-configs.test.ts`.
 - Documented the rule in `user-docs/api-reference.md`.
 - Ran full quality checks; CI passed.
@@ -120,7 +119,7 @@ Here’s a history-only summary of what’s been done so far, including the most
 
 ## Safe Auto-Fix for `require-test-traceability` (Story 021.0)
 
-- Reviewed Story `021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md` and the existing rule.
+- Reviewed Story `021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md` and the initial implementation of the rule.
 
 **Rule enhancements:**
 
@@ -128,29 +127,29 @@ Here’s a history-only summary of what’s been done so far, including the most
   - `autoFixTestTemplate?: boolean;`
   - `autoFixTestPrefixFormat?: boolean;`
   - `testSupportsTemplate?: string;`
-- Updated `meta` with `fixable: "code"` and expanded schema.
+- Updated `meta` to include `fixable: "code"` and expanded the JSON schema.
 
 **Helper extraction:**
 
-- Created `src/rules/helpers/require-test-traceability-helpers.ts` with:
-  - Types for auto-fix options.
+- Created `src/rules/helpers/require-test-traceability-helpers.ts` defining:
+  - Types for the auto-fix options.
   - `determineIsTestFile`.
   - `ensureFileSupportsAnnotation` to:
-    - Insert a placeholder file-level `@supports` when missing (unless disabled).
-    - Support custom templates via `testSupportsTemplate`.
-  - `handleCallExpression` delegating to:
-    - `handleDescribeCall` for story-reference checks.
-    - `handleItOrTestCall` for REQ-prefix enforcement/normalization.
-  - Internal helpers for template construction, insertion, test call detection, and safe string-literal normalization.
+    - Insert placeholder `@supports` when missing (unless disabled).
+    - Support custom templates (`testSupportsTemplate`).
+  - `handleCallExpression`, delegating to:
+    - `handleDescribeCall` for story-reference behavior.
+    - `handleItOrTestCall` for REQ-prefix handling and normalization.
+  - Internal helpers for template building, insertion, test-call detection, and safe string-literal normalization.
 
 **Wiring and tests:**
 
-- Updated `require-test-traceability.ts` to use the new helpers and pass auto-fix options.
+- Updated `require-test-traceability.ts` to use these helpers and pass auto-fix options through.
 - Extended rule JSDoc with Story 020.0 and 021.0 annotations.
 - Reworked `tests/rules/require-test-traceability.test.ts` to:
   - Adjust validation tests.
   - Add auto-fix tests for:
-    - Placeholder `@supports` insertion.
+    - Insertion of placeholder `@supports`.
     - No fix when REQ ID is missing.
     - Normalization of malformed prefixes that already contain an ID.
   - Update header annotations.
@@ -162,9 +161,12 @@ Here’s a history-only summary of what’s been done so far, including the most
 
 ## Ignoring Generated Assessment and CI Report Artifacts
 
-- Identified tracked generated artifacts (e.g., `scripts/*-report.md`, `.voder-*.json`, `.voder-jscpd-report/*`).
-- Updated `.gitignore` to exclude these report files and directories.
-- Removed them from the Git index without deleting them locally.
+- Identified tracked generated artifacts such as:
+  - `scripts/*-report.md`
+  - `.voder-*.json`
+  - `.voder-jscpd-report/*`
+- Updated `.gitignore` to exclude these generated report files/directories.
+- Removed them from the Git index while keeping local copies.
 - Ran build, tests (`--runInBand --ci`), lint, type-check, and format checks.
 - Committed as `chore: ignore generated assessment and ci report artifacts`; CI succeeded.
 
@@ -172,16 +174,16 @@ Here’s a history-only summary of what’s been done so far, including the most
 
 ## CI Tooling Engine Alignment and Workflow Updates
 
-- Investigated `semantic-release` and its plugins’ `engines` field, confirming requirement of `^22.14.0 || >=24.10.0`.
-- Observed that CI previously mixed Node `18.x`/`20.x` with `22.14.0`, causing `EBADENGINE` warnings.
+- Investigated `semantic-release` and plugin `engines` requirements, confirming `^22.14.0 || >=24.10.0`.
+- Noted that earlier CI runs mixed Node `18.x`/`20.x` with `22.14.0`, generating `EBADENGINE` warnings.
 
-**Workflow updates in `.github/workflows/ci-cd.yml`:**
+**Workflow changes in `.github/workflows/ci-cd.yml`:**
 
-- Updated `quality-and-deploy` job to a single Node version matrix: `['22.14.0']`.
-- Simplified matrix usage and removed the separate “Setup Node.js for semantic-release” step.
-- Updated the `semantic-release` condition to `matrix['node-version'] == '22.14.0'`.
-- Updated comments to refer to Node `22.14.0`.
-- Changed the `dependency-health` job’s Node version from `20.x` to `22.14.0`.
+- Updated `quality-and-deploy` job to use a single Node version matrix: `['22.14.0']`.
+- Simplified matrix handling and removed the separate “Setup Node.js for semantic-release” step.
+- Updated `semantic-release` condition to `matrix['node-version'] == '22.14.0'`.
+- Updated comments to mention Node `22.14.0`.
+- Switched the `dependency-health` job’s Node version from `20.x` to `22.14.0`.
 - Ran build, tests, lint, type-check, and format checks.
 - Committed as `ci: align workflow node version with semantic-release engines`; CI succeeded.
 
@@ -190,57 +192,57 @@ Here’s a history-only summary of what’s been done so far, including the most
 ## CI/CD Documentation Sync and Ephemeral Artifacts Documentation
 
 - Updated `docs/ci-cd-pipeline.md` to:
-  - Reflect that `quality-and-deploy` runs only on Node `22.14.0`.
-  - Clarify that:
+  - Note that `quality-and-deploy` now runs only on Node `22.14.0`.
+  - Clarify:
     - CI and semantic-release use Node `22.14.0`.
     - The plugin `engines.node` remains `>=18.18.0` for consumers.
-  - Explain semantic-release engine requirements and the rationale for using Node `22.14.0` in CI.
-- Documented ephemeral CI/assessment artifacts (reports and `.voder*` files), noting that they are generated, `.gitignore`d, and not to be committed.
+  - Explain the semantic-release engine requirements and rationale for Node `22.14.0` in CI.
+- Documented ephemeral CI/assessment artifacts (`.voder*` files and reports) as generated, `.gitignore`d, and not to be committed.
 - Committed as:
   - `docs: document ignored ephemeral ci and assessment artifacts`
   - `docs: sync ci-cd documentation with updated workflow node version`
-- Re-ran build, tests, lint, type-check, and format checks; CI pipeline completed successfully.
+- Re-ran build, tests, lint, type-check, and format checks; CI passed.
 
 ---
 
 ## JSDoc Coexistence for Annotation Parsing (Story 022.0)
 
-- Reviewed Story `022.0-DEV-JSDOC-COEXISTENCE.story.md`, `valid-annotation-format` implementation/tests, and documentation.
-- Clarified rules:
+- Reviewed Story `022.0-DEV-JSDOC-COEXISTENCE.story.md`, current `valid-annotation-format` implementation/tests, and docs.
+- Clarified behavior:
   - `@story`, `@req`, `@supports` are traceability tags.
-  - Any other `@tag` line (e.g. `@param`, `@returns`) must terminate a pending traceability annotation and not be concatenated.
-  - Multi-line continuation is only allowed on lines not starting with another `@tag`.
+  - Any other `@tag` line (e.g. `@param`, `@returns`) must terminate a pending traceability annotation and must not be concatenated.
+  - Multi-line continuation is allowed only on lines not starting with another `@tag`.
 
 **Parser and helper changes:**
 
 - In `valid-annotation-format-internal.ts`:
   - Left `normalizeCommentLine` unchanged.
-  - Added `isNonTraceabilityJSDocTagLine(normalized: string): boolean` to treat any non-traceability `@...` tag as a boundary.
-  - Added `@supports` annotations for Story 022.0 and relevant requirements.
+  - Added `isNonTraceabilityJSDocTagLine(normalized: string): boolean` to treat any non-traceability `@...` line as a boundary.
+  - Added `@supports` annotations for Story 022.0 and related requirements.
 
 - In `valid-annotation-format.ts`:
   - Imported `isNonTraceabilityJSDocTagLine`.
   - In `processCommentLine`, after handling traceability tags, added logic to:
     - Call `finalizePendingAnnotation` and stop continuation when `isNonTraceabilityJSDocTagLine(normalized)` is true.
-  - Annotated this behavior with `@supports` for Story 022.0.
+  - Annotated this logic with `@supports` for Story 022.0.
 
 **Refactor to keep rule small:**
 
-- Extracted validators/finalization from `valid-annotation-format.ts` to `src/rules/helpers/valid-annotation-format-validators.ts`:
+- Extracted validator/finalization helpers into `src/rules/helpers/valid-annotation-format-validators.ts`:
   - `reportInvalidStoryFormat`, `createStoryFix`, `reportInvalidStoryFormatWithFix`,
     `validateStoryAnnotation`, `validateReqAnnotation`, `validateImplementsAnnotation`,
     `finalizePendingAnnotation`.
-- Updated `valid-annotation-format.ts` to import these helpers and removed local copies/unused imports, satisfying ESLint size rules.
+- Updated `valid-annotation-format.ts` to import these helpers and removed local copies, satisfying ESLint size rules.
 
 **Tests:**
 
 - In `tests/rules/valid-annotation-format.test.ts`:
-  - Extended the header with Story 022.0 and related requirements.
-  - Added `valid` cases covering:
+  - Extended header with Story 022.0 and related requirements.
+  - Added valid cases for:
     - Traceability tags before/after other JSDoc tags.
-    - Interleaved traceability and `@param`/`@returns`.
-    - Multi-line `@story` followed by `@param`, ensuring only the intended story value is captured.
-    - The original bug scenario:
+    - Interleaving traceability with `@param`/`@returns`.
+    - Multi-line `@story` followed by `@param`, ensuring only the intended story text is captured.
+    - The prior bug scenario:
 
       ```js
       /**
@@ -249,17 +251,17 @@ Here’s a history-only summary of what’s been done so far, including the most
        */
       ```
 
-      confirming no concatenation and no errors.
+      verifying no concatenation and no errors.
 
-- Integrated tests into the existing `describe` suite.
+- Ensured tests are integrated into the existing suite.
 
 **Documentation:**
 
-- In `docs/rules/valid-annotation-format.md`, added a **JSDoc coexistence** section under “Key behaviors”:
-  - Explained that traceability tags can coexist with other JSDoc tags.
-  - Clarified that non-traceability `@tag` lines terminate multi-line annotations.
-  - Stated that continuation lines must not start with another `@tag`.
-  - Included an example showing `@story`/`@req` alongside `@param`/`@returns` and noting avoidance of concatenated IDs like `REQ-OPTIMIZATION@param{object}data`.
+- Updated `docs/rules/valid-annotation-format.md` with a **JSDoc coexistence** section under “Key behaviors”:
+  - Documented that traceability tags can coexist with other JSDoc tags.
+  - Stated that non-traceability `@tag` lines terminate multi-line traceability annotations.
+  - Clarified continuation lines must not start with another `@tag`.
+  - Added example with `@story`/`@req` plus `@param`/`@returns`, emphasizing prevention of concatenated IDs like `REQ-OPTIMIZATION@param{object}data`.
 
 **Quality checks:**
 
@@ -270,33 +272,23 @@ Here’s a history-only summary of what’s been done so far, including the most
 
 ## README and Docs Updates for Test Traceability & Annotation Alignment
 
-- Updated `README.md` under `### Available Rules` to include:
-
-  ```md
-  - `traceability/require-test-traceability` Enforces traceability conventions in test files by requiring file-level `@supports` annotations, story references in `describe` blocks, and `[REQ-...]` prefixes in `it`/`test` names. (See the rule documentation in the plugin's user guide.)
-  ```
-
-- Performed a codebase-wide search for `@implements` and standardized internal implementation traceability annotations to `@supports` (leaving descriptive mentions and compatibility notes intact):
+- Updated `README.md` under “Available Rules” to include `traceability/require-test-traceability` with a short description of its responsibilities (file-level `@supports`, story references in `describe`, `[REQ-...]` prefixes in tests).
+- Ran a codebase search for `@implements` and standardized internal traceability annotations to `@supports`, leaving descriptive/compatibility mentions unchanged:
 
   - `src/maintenance/cli.ts`: converted all traceability `// @implements` comments to `// @supports`.
   - `src/maintenance/detect.ts`: converted inline and JSDoc `@implements` traceability annotations to `@supports`.
-  - `src/utils/annotation-checker.ts`: updated top-level JSDoc traceability line from `@implements` to `@supports`.
-  - `src/rules/helpers/valid-story-reference-helpers.ts`: converted branch-level `// @implements` to `// @supports`.
-  - `src/rules/helpers/valid-annotation-utils.ts`: converted all traceability `@implements` references to `@supports`.
+  - `src/utils/annotation-checker.ts`: updated top-level traceability JSDoc from `@implements` to `@supports`.
+  - `src/rules/helpers/valid-story-reference-helpers.ts`: converted branch-level traceability `// @implements` to `// @supports`.
+  - `src/rules/helpers/valid-annotation-utils.ts`: converted internal traceability `@implements` uses to `@supports`.
   - `src/rules/prefer-implements-annotation.ts`: updated the JSDoc above `buildImplementsAutoFix` from `@implements` to `@supports`.
   - `tests/utils/temp-dir-helpers.ts`: changed the helper’s inline traceability `// @implements` to `// @supports`.
 
-- Verified that `grep -R "@implements" src tests` now returns only descriptive text, not traceability tags.
+- Verified that `grep -R "@implements" src tests` now reports only descriptive text, not traceability tags.
+- Cross-checked `SECURITY.md`, README security content, and `.github/workflows/ci-cd.yml` against `package.json` scripts (`npm audit`, `npm run safety:deps`, `npm run audit:dev-high`, `npm run security:secrets`) and confirmed existing docs were already accurate.
 
-- Cross-checked `SECURITY.md`, relevant `README` security sections, and `.github/workflows/ci-cd.yml` against `package.json` scripts:
-  - Confirmed documentation correctly describes:
-    - `npm audit --omit=dev --audit-level=high` for release gating.
-    - `npm run safety:deps`, `npm run audit:dev-high`, and `npm run security:secrets`.
-  - No documentation edits were required for those points.
+- Extended `user-docs/examples.md` with a **“5. Test Traceability Example”**:
 
-- Extended `user-docs/examples.md` with a new **“## 5. Test Traceability Example”**:
-
-  - Added a minimal Jest test file example consistent with `traceability/require-test-traceability` defaults:
+  - Added a minimal Jest test file using defaults for `traceability/require-test-traceability`:
 
     ```ts
     /**
@@ -319,23 +311,20 @@ Here’s a history-only summary of what’s been done so far, including the most
     }
     ```
 
-  - Initially used a JSON-style `@supports` payload, then updated it to the canonical `@supports story#REQ-ID` syntax used in the API reference:
+  - Initially used a JSON-style `@supports` payload and then updated it to the canonical `story#REQ-ID` syntax consistent with the API reference by replacing:
 
-    - Replaced:
+    ```ts
+    * @supports { "story": "docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md", "req": "REQ-TEST-TRACEABILITY" }
+    ```
 
-      ```ts
-      * @supports { "story": "docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md", "req": "REQ-TEST-TRACEABILITY" }
-      ```
+    with:
 
-      with:
+    ```ts
+    * @supports docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md#REQ-TEST-TRACEABILITY
+    ```
 
-      ```ts
-      * @supports docs/stories/021.0-DEV-TEST-TRACEABILITY.story.md#REQ-TEST-TRACEABILITY
-      ```
-
-- After each documentation / annotation batch, ran `npm run ci-verify:fast` locally and confirmed GitHub Actions CI remained green.
-
-- Committed these as:
+- After each documentation / annotation batch, ran `npm run ci-verify:fast` and confirmed CI remained green.
+- Committed as:
   - `docs: document test traceability rule and align CLI annotations`
   - `chore: migrate maintenance and helper annotations to supports tag`
   - `docs: add test traceability rule to README and examples`
@@ -344,416 +333,522 @@ Here’s a history-only summary of what’s been done so far, including the most
 
 ---
 
-## Most Recent Work: Test Traceability Docs Alignment & Prefer-implements Traceability Annotations
+## Alignment of `require-test-traceability` Docs with Implementation
 
-### Aligning `require-test-traceability` Docs with Implementation
+- Reviewed `src/rules/require-test-traceability.ts`, its tests, and `user-docs/api-reference.md` to ensure consistency.
 
-- Reviewed `src/rules/require-test-traceability.ts`, `tests/rules/require-test-traceability.test.ts`, and the corresponding section in `user-docs/api-reference.md` to reconcile documented behavior with actual implementation.
+**Code updates:**
 
-**Code (`src/rules/require-test-traceability.ts`):**
+- Clarified `TestTraceabilityOptions` JSDoc that `testFilePatterns` are interpreted as simple path-substring patterns, not globs.
+- Clarified that the rule normalizes `context.getFilename()` and treats a file as a test file when any of the configured patterns appears in that normalized path.
+- Adjusted the JSON schema default for `testFilePatterns` to match runtime defaults:
 
-- Updated the `TestTraceabilityOptions` JSDoc to clarify that:
+  ```ts
+  default: [
+    "/tests/",
+    "/test/",
+    "/__tests__",
+    ".test.",
+    ".spec.",
+  ]
+  ```
 
-  - `testFilePatterns` are interpreted as simple substring patterns, not globs.
-  - The rule normalizes `context.getFilename()` and considers a file a test file when any configured pattern string appears in that path.
+- Ensured both `meta.schema` and `create()` use the same default list.
 
-- Adjusted the JSON schema default for `testFilePatterns` to match runtime defaults used in `create()`:
+**Docs updates:**
 
-  - Replaced glob-like defaults with substring defaults:
+- In `user-docs/api-reference.md`, within the `traceability/require-test-traceability` section:
+  - Rewrote the `testFilePatterns` description to:
+    - Emphasize substring semantics and forward-slash normalization.
+    - Document the exact defaults: `["/tests/", "/test/", "/__tests__", ".test.", ".spec."]`.
+    - Explain how these values approximate common test directory/filename conventions.
+  - Updated behavior notes to state that the rule only analyzes files whose normalized paths contain at least one `testFilePatterns` substring.
 
-    ```ts
-    default: [
-      "/tests/",
-      "/test/",
-      "/__tests__",
-      ".test.",
-      ".spec.",
-    ]
-    ```
-
-  - Ensured both `meta.schema` and `create()` use the same list.
-
-**Docs (`user-docs/api-reference.md`):**
-
-- In the `traceability/require-test-traceability` section:
-
-  - Rewrote the `testFilePatterns` option description to:
-
-    - Emphasize path-substring semantics.
-    - Explain normalization to forward slashes.
-    - Document the true defaults: `["/tests/", "/test/", "/__tests__", ".test.", ".spec."]`.
-    - Describe how these defaults approximate “files in `tests`/`test` directories or filenames with `.test.` / `.spec.`”.
-
-  - Updated the relevant behavior note to:
-
-    - State that the rule analyzes only files whose normalized paths contain at least one of the `testFilePatterns` substrings.
-
-- Left existing examples and other behavior notes unchanged where they were already accurate.
-
-**Verification and commit:**
+**Verification:**
 
 - Ran `npm run lint -- --max-warnings=0` and `npm test -- --runInBand --ci`.
 - Committed as `docs: align require-test-traceability docs with implementation`.
 
 ---
 
-### Adding Traceability Annotations for `prefer-implements-annotation` Helpers
+## Traceability Annotations for `prefer-implements-annotation` Helpers
 
-- Reviewed `src/rules/prefer-implements-annotation.ts` to identify helpers lacking explicit `@supports` coverage tied to Story 010.3.
+- Reviewed `src/rules/prefer-implements-annotation.ts` to identify helpers lacking explicit `@supports` annotations tied to Story 010.3.
 
-**Traceability annotation additions (`src/rules/prefer-implements-annotation.ts`):**
+**Traceability additions:**
 
-- Added JSDoc above `CommentAnalysis` interface:
+- Added JSDoc above `CommentAnalysis` describing its role and annotating:
 
-  - Describes its role as a lightweight summary of traceability markers.
-  - Annotated with:
+  ```ts
+  @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT
+  ```
 
-    ```ts
-    @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT
-    ```
+- Added JSDoc above `collectStoryAndReqMetadata` describing its metadata collection responsibilities and annotating:
 
-- Added JSDoc above `collectStoryAndReqMetadata`:
+  ```ts
+  @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-VALID-OUTPUT
+  ```
 
-  - Explains that it collects line indices and metadata for `@story` and `@req` within a block comment for safe auto-fix decisions.
-  - Annotated with:
+- Added JSDoc above `applyImplementsReplacement` describing how it constructs the `@supports` replacement while preserving formatting and annotating:
 
-    ```ts
-    @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-VALID-OUTPUT
-    ```
+  ```ts
+  @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-PRESERVE-FORMAT REQ-VALID-OUTPUT
+  ```
 
-- Added JSDoc above `applyImplementsReplacement`:
+- Added JSDoc above `analyzeComment` describing detection of legacy tags vs existing `@supports` and multiple `@story` paths, and annotating:
 
-  - Describes constructing the `@supports` replacement while preserving indentation and prefix formatting.
-  - Annotated with:
+  ```ts
+  @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT
+  ```
 
-    ```ts
-    @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-PRESERVE-FORMAT REQ-VALID-OUTPUT
-    ```
+- Replaced the simple leading comment for `processComment` with a full JSDoc describing its end-to-end behavior (classification, decision between warnings vs auto-fix, message selection) and annotating:
 
-- Added JSDoc above `analyzeComment`:
+  ```ts
+  @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-AUTO-FIX REQ-VALID-OUTPUT
+  ```
 
-  - Explains detection of legacy `@story`/`@req`, existing `@supports`, and multiple distinct `@story` paths.
-  - Annotated with:
+- Left existing annotations on `buildImplementsAutoFix` and `hasMultipleStories` as-is after verifying correctness.
 
-    ```ts
-    @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT
-    ```
-
-- Replaced the simple leading comment for `processComment` with a fuller JSDoc:
-
-  - Describes end-to-end processing for one block comment: classification, decision between recommendations vs auto-fix, and message selection.
-  - Annotated with:
-
-    ```ts
-    @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-AUTO-FIX REQ-VALID-OUTPUT
-    ```
-
-- Verified that existing annotations for `buildImplementsAutoFix` and inline `@req` on `hasMultipleStories` were still correct and left them unchanged.
-
-**Verification and commit:**
+**Verification:**
 
 - Ran `npm run lint -- --max-warnings=0`, `npm test -- --runInBand --ci`, `npm run build`, `npm run type-check`, and `npm run format:check`.
 - Committed as `chore: add traceability annotations for prefer-implements-annotation helpers`.
-- Pushed changes and confirmed the GitHub Actions CI workflow (run `19951915485`) completed successfully.
+- CI run `19951915485` passed.
 
 ---
 
 ## Additional Traceability Helper Review
 
-- Inspected `src/rules/helpers/valid-implements-utils.ts` and related helper modules:
+- Inspected `src/rules/helpers/valid-implements-utils.ts` and related helpers.
+- Confirmed file-level JSDoc references Story 010.2 with appropriate `@req` tags (`REQ-SUPPORTS-PARSE`, `REQ-FORMAT-VALIDATION`, `REQ-MIXED-SUPPORT`).
+- Verified that key exports (`reportMissingImplementsValue`, `reportMissingImplementsReqIds`, `reportInvalidImplementsStoryPath`, `reportInvalidImplementsReqId`, `validateImplementsAnnotationHelper`, etc.) already had proper traceability annotations.
+- No code changes were needed.
+- Existing pre-push checks (including `ci-verify:full` and `security:secrets`) continued to pass.
 
-  - Confirmed file-level JSDoc references Story 010.2 (`docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`) with appropriate `@req` tags (`REQ-SUPPORTS-PARSE`, `REQ-FORMAT-VALIDATION`, `REQ-MIXED-SUPPORT`).
-  - Verified that key exports (`reportMissingImplementsValue`, `reportMissingImplementsReqIds`, `reportInvalidImplementsStoryPath`, `reportInvalidImplementsReqId`, `validateImplementsAnnotationHelper`, etc.) already had appropriate traceability annotations.
+---
 
-- No changes were required in those helpers.
+## Centralization of Maintenance and Debug Scripts via NPM Scripts
 
-- Pre-push checks (including `ci-verify:full` and `security:secrets`) continued to pass after these reviews.
+- Listed and reviewed all scripts in `scripts/`, distinguishing between those already wired into npm/CI and “orphaned” but useful maintenance/debug tools:
+  - Wired scripts: `ci-audit.js`, `ci-safety-deps.js`, `generate-dev-deps-audit.js`, `lint-plugin-check.js`, `lint-plugin-guard.js`, `traceability-check.js`, `smoke-test.sh`, `validate-scripts-nonempty.js`.
+  - Orphaned but functional scripts: `check-no-tracked-ci-artifacts.js`, `cli-debug.js`, `debug-repro.js`, `debug-require-story.js`, `extract-uncovered-branches.js`, `report-eslint-suppressions.js`.
+- Confirmed each orphaned script is non-placeholder and useful:
+  - `check-no-tracked-ci-artifacts.js` checks for tracked CI artifacts under `ci/` (outside `.voder/ci/`).
+  - `extract-uncovered-branches.js` inspects `jest-coverage.json` for uncovered branches in `src/rules/helpers`.
+  - `report-eslint-suppressions.js` scans for ESLint/TypeScript suppressions and generates a report.
+  - `cli-debug.js`, `debug-repro.js`, `debug-require-story.js` provide debug harnesses for `require-story-annotation` and related behavior.
+
+**NPM script additions:**
+
+- Updated `package.json`’s `scripts` section to introduce npm aliases for these tools:
+
+  - `check:ci-artifacts`: `node scripts/check-no-tracked-ci-artifacts.js`
+  - `coverage:branches`: `node scripts/extract-uncovered-branches.js`
+  - `debug:cli`: `node scripts/cli-debug.js`
+  - `debug:require-story`: `node scripts/debug-require-story.js`
+  - `debug:repro`: `node scripts/debug-repro.js`
+  - `report:eslint-suppressions`: `node scripts/report-eslint-suppressions.js`
+  - `check:scripts`: `node scripts/validate-scripts-nonempty.js`
+
+- Ensured JSON validity and retained existing CI-related scripts.
+
+**Verification and quality checks:**
+
+- Ran:
+  - `npm run check:scripts` to validate all `scripts/` files are non-empty and not placeholders.
+  - `npm run check:ci-artifacts` to confirm no tracked CI artifacts.
+  - `npm run ci-verify:fast` to verify fast CI checks.
+- Committed as `chore: centralize maintenance and debug scripts via npm scripts`.
+- Ran `npm run build`, `npm test`, `npm run lint`, `npm run type-check`, and `npm run format:check`.
+- Pushed changes; CI pipeline (`CI/CD Pipeline`) completed successfully.
+
+---
+
+## Documentation of Centralized Maintenance and Debug Scripts
+
+- Updated `docs/ci-cd-pipeline.md` to reflect the centralized script usage:
+
+  - In the **Script validation** section of the `quality-and-deploy` job, replaced the description of a raw `node` command with the documented alias:
+
+    - Documented that CI uses `npm run check:scripts` (which internally calls `node scripts/validate-scripts-nonempty.js`) to ensure all `scripts/` files referenced by CI exist and are non-empty, non-placeholder scripts.
+
+  - Under **Local Workflow and Hooks**, after the “Local verification commands” subsection, added a new subsection:
+
+    ### Maintenance and debug helpers
+
+    - Documented the newly aliased npm scripts:
+
+      - `npm run check:ci-artifacts` – runs `scripts/check-no-tracked-ci-artifacts.js` to detect accidentally committed CI artifacts under `ci/` (excluding `.voder/ci/`).
+      - `npm run coverage:branches` – runs `scripts/extract-uncovered-branches.js` against `jest-coverage.json` to list uncovered branch ranges for `src/rules/helpers`.
+      - `npm run report:eslint-suppressions` – runs `scripts/report-eslint-suppressions.js` to generate `scripts/eslint-suppressions-report.md` summarizing ESLint/TypeScript suppression comments and suggested remediations.
+      - `npm run check:scripts` – runs `scripts/validate-scripts-nonempty.js` to assert that each file in `scripts/` is non-empty and not just comments or placeholder text.
+      - `npm run debug:cli`, `npm run debug:require-story`, and `npm run debug:repro` – ad-hoc debug entry points for the `require-story-annotation` rule and related helpers, for maintainers investigating rule behavior.
+
+- Ran `npm run build`, `npm test`, `npm run lint`, `npm run type-check`, and `npm run format:check`.
+- Committed as `docs: document centralized maintenance and debug scripts`.
+- Pushed changes; CI pipeline (`CI/CD Pipeline`) completed successfully.
 
 **Most recently we've executed the following action:**
 
 ---
-Used tool: list_directory with input: {"dirPath":"scripts"}
+Used tool: list_directory with input: {"dirPath":"."}
+Used tool: list_directory with input: {"dirPath":"src/maintenance"}
+Used tool: list_directory with input: {"dirPath":"tests/maintenance"}
+Used tool: list_directory with input: {"dirPath":"docs/stories"}
 Used tool: read_file with input: {"filePath":"package.json"}
-Used tool: list_directory with input: {"dirPath":"docs/decisions"}
-Used tool: read_file with input: {"filePath":".github/workflows/ci-cd.yml"}
-Used tool: read_file with input: {"filePath":"scripts/check-no-tracked-ci-artifacts.js"}
-Used tool: read_file with input: {"filePath":"scripts/cli-debug.js"}
-Used tool: read_file with input: {"filePath":"scripts/debug-repro.js"}
-Used tool: read_file with input: {"filePath":"scripts/debug-require-story.js"}
-Used tool: read_file with input: {"filePath":"scripts/extract-uncovered-branches.js"}
-Used tool: read_file with input: {"filePath":"scripts/report-eslint-suppressions.js"}
-Used tool: read_file with input: {"filePath":"scripts/validate-scripts-nonempty.js"}
-Used tool: search_file_content with input: {"filePath":"package.json","pattern":"check-no-tracked-ci-artifacts","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"package.json","pattern":"report-eslint-suppressions","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"package.json","pattern":"extract-uncovered-branches","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"package.json","pattern":"cli-debug","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"package.json","pattern":"debug-repro","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"package.json","pattern":"debug-require-story","isRegex":false}
-Used tool: search_file_content with input: {"filePath":".github/workflows/ci-cd.yml","pattern":"check-no-tracked-ci-artifacts","isRegex":false}
-Used tool: search_file_content with input: {"filePath":".github/workflows/ci-cd.yml","pattern":"report-eslint-suppressions","isRegex":false}
-Used tool: search_file_content with input: {"filePath":".github/workflows/ci-cd.yml","pattern":"extract-uncovered-branches","isRegex":false}
-Used tool: read_file with input: {"filePath":"scripts/ci-audit.js"}
-Used tool: read_file with input: {"filePath":"scripts/ci-safety-deps.js"}
-Used tool: read_file with input: {"filePath":"scripts/generate-dev-deps-audit.js"}
-Used tool: read_file with input: {"filePath":"scripts/lint-plugin-check.js"}
-Used tool: read_file with input: {"filePath":"scripts/lint-plugin-guard.js"}
-Used tool: read_file with input: {"filePath":"scripts/traceability-check.js"}
-Used tool: read_file with input: {"filePath":"scripts/smoke-test.sh"}
-Used tool: find_files with input: {"pattern":"scripts/traceability-report.md","directory":"."}
-Used tool: search_file_content with input: {"filePath":".","pattern":"extract-uncovered-branches","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs","pattern":"scripts/validate-scripts-nonempty.js","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs","pattern":"dev script centralization","isRegex":true}
-Used tool: search_file_content with input: {"filePath":"docs","pattern":"npm run ci-verify:full","isRegex":false}
-Used tool: find_files with input: {"pattern":"*.md","directory":"docs"}
-Used tool: search_file_content with input: {"filePath":"docs/code-quality-assessment-guide.md","pattern":"validate-scripts-nonempty","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs/ci-cd-pipeline.md","pattern":"validate-scripts-nonempty","isRegex":false}
-Used tool: read_file with input: {"filePath":"docs/ci-cd-pipeline.md"}
-Used tool: run_command with input: {"command":"grep","args":["-R","check-no-tracked-ci-artifacts","-n","."]}
-Used tool: modify_file with input: {"filePath":"package.json","instruction":"In the \"scripts\" section, add npm script aliases for existing maintenance/debug tools:\n- After the \"audit:ci\" entry, add \"check:ci-artifacts\": \"node scripts/check-no-tracked-ci-artifacts.js\".\n- After \"duplication\", add \"coverage:branches\": \"node scripts/extract-uncovered-branches.js\".\n- After \"smoke-test\", add the following entries: \"debug:cli\": \"node scripts/cli-debug.js\", \"debug:require-story\": \"node scripts/debug-require-story.js\", \"debug:repro\": \"node scripts/debug-repro.js\", \"report:eslint-suppressions\": \"node scripts/report-eslint-suppressions.js\", and \"check:scripts\": \"node scripts/validate-scripts-nonempty.js\".\nEnsure JSON remains valid."}
-Used tool: read_file with input: {"filePath":"package.json"}
+Used tool: read_file with input: {"filePath":"src/maintenance/cli.ts"}
+Used tool: read_file with input: {"filePath":"src/maintenance/detect.ts"}
+Used tool: read_file with input: {"filePath":"docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md"}
+Used tool: read_file with input: {"filePath":"tests/maintenance/detect.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/maintenance/detect-isolated.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/maintenance/cli.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/maintenance/update.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/maintenance/index.test.ts"}
+Used tool: list_directory with input: {"dirPath":"docs"}
+Used tool: read_file with input: {"filePath":"docs/cli-integration.md"}
+Used tool: read_file with input: {"filePath":"src/maintenance/index.ts"}
+Used tool: read_file with input: {"filePath":"src/maintenance/update.ts"}
+Used tool: read_file with input: {"filePath":"src/maintenance/report.ts"}
+Used tool: read_file with input: {"filePath":"src/maintenance/commands.ts"}
+Used tool: read_file with input: {"filePath":"src/maintenance/utils.ts"}
+Used tool: read_file with input: {"filePath":"src/maintenance/batch.ts"}
+Used tool: read_file with input: {"filePath":"src/maintenance/flags.ts"}
+Used tool: read_file with input: {"filePath":"tests/maintenance/batch.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/maintenance/report.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/maintenance/update-isolated.test.ts"}
+Used tool: search_file_content with input: {"filePath":"docs/code-quality-assessment-guide.md","pattern":"performance","isRegex":false}
+Used tool: read_file with input: {"filePath":"tests/utils/temp-dir-helpers.ts"}
+Used tool: generate_file with input: {"filePath":"docs/maintenance-performance-tests.md","content":"# Maintenance Tools Performance & Stress Testing\n\n**Story:** docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md  \n**Scope:** `src/maintenance/*`, maintenance CLI entrypoint, and related tests under `tests/maintenance/*`.\n\n## Critical Workflows and Code Paths\n\nAfter reviewing the maintenance and CLI modules plus their existing tests, the following workflows are the most sensitive to very large workspaces:\n\n1. **Stale annotation detection**\n   - **Code paths**:\n     - `detectStaleAnnotations` in `src/maintenance/detect.ts`\n     - `getAllFiles` in `src/maintenance/utils.ts`\n     - `handleStoryMatch` and boundary checks in `src/maintenance/detect.ts`\n     - `isUnsafeStoryPath` / `enforceProjectBoundary` in `src/utils/storyReferenceUtils.ts` (used transitively)\n   - **Why critical**:\n     - Performs a full recursive traversal of the workspace and reads each file.\n     - Uses regular expressions to scan contents for `@story` annotations.\n     - Performs multiple filesystem existence checks for each distinct `@story` path.\n     - This is the primary **O(number of files + number of annotations)** operation in the maintenance toolchain.\n\n2. **Batch verification and reporting**\n   - **Code paths**:\n     - `verifyAnnotations` in `src/maintenance/batch.ts`\n     - `generateMaintenanceReport` in `src/maintenance/report.ts`\n     - These both reuse `detectStaleAnnotations` internally.\n   - **Why critical**:\n     - They directly wrap detection and therefore inherit its scaling behavior.\n     - Often run as part of CI or local quality gates where prolonged runtime is user-visible.\n\n3. **In-place annotation updates**\n   - **Code paths**:\n     - `updateAnnotationReferences` in `src/maintenance/update.ts`\n     - `batchUpdateAnnotations` in `src/maintenance/batch.ts`\n   - **Why critical**:\n     - Also performs a full traversal via `getAllFiles` and reads each file.\n     - Uses a global regex replace to update `@story` paths and writes files back when changed.\n     - On very large workspaces, this can stress both IO throughput and string processing.\n\n4. **CLI entrypoints for maintenance workflows**\n   - **Code paths**:\n     - `runMaintenanceCli` in `src/maintenance/cli.ts`\n     - Subcommand handlers in `src/maintenance/commands.ts` (`handleDetect`, `handleVerify`, `handleReport`, `handleUpdate`).\n     - Flag parsing and normalization in `src/maintenance/flags.ts`.\n   - **Why critical**:\n     - The CLI wiring is thin, but it ties user-visible performance directly to the detection and update routines.\n     - Stress tests should exercise these entrypoints so we detect regressions in real invocation patterns, not just internal helpers.\n\n## Target Scales for Performance Characterization\n\nTo keep tests reliable while still exercising realistic \"large workspace\" behavior, we define the following target scales:\n\n1. **Large detection workspace (core maintenance APIs)**\n   - **Shape**:\n     - ~10 top-level subdirectories under a synthetic workspace root.\n     - ~50 TypeScript source files per directory, for a total of **≈500 source files**.\n     - Each source file contains at least one `@story` annotation.\n     - A mix of **existing** and **stale** story paths:\n       - ~250 unique `*.story.md` paths that **do** exist.\n       - ~250 unique `*.story.md` paths that **do not** exist (stale).\n   - **Operations under test**:\n     - `detectStaleAnnotations(workspaceRoot)`\n     - `verifyAnnotations(workspaceRoot)`\n     - `generateMaintenanceReport(workspaceRoot)`\n   - **Expectation**:\n     - All operations complete successfully and return correct results on this dataset.\n     - Wall-clock runtime for the combined detection/verification/reporting path on a CI-class machine remains **comfortably under ~5 seconds**.\n     - No excessive memory usage (no attempts to load the entire workspace contents into a single, long-lived in-memory structure).\n\n2. **Large update workspace (in-place rewrite flows)**\n   - **Shape**:\n     - Reuses the same ~500-file layout, but with a controlled set of `@story old.path-X.story.md` references.\n     - A subset (e.g. ~250 annotations) target an \"old\" path that will be updated to a new path.\n   - **Operations under test**:\n     - `updateAnnotationReferences(workspaceRoot, oldPath, newPath)`\n     - `batchUpdateAnnotations(workspaceRoot, mappings)`\n   - **Expectation**:\n     - All matching annotations are updated correctly and idempotently.\n     - Total runtime for a representative update (single mapping) remains **comfortably under ~5 seconds**.\n     - The API remains safe to use in CI and pre-commit hooks for workspaces of this order of magnitude.\n\n3. **CLI-level large workspace scenarios**\n   - **Shape**:\n     - Reuse the same synthetic large workspace roots from the maintenance API tests.\n   - **Operations under test**:\n     - `runMaintenanceCli([\"node\", \"traceability-maint\", \"detect\", \"--root\", <workspaceRoot>, \"--json\"])`.\n     - Optionally, additional coverage for `report` and `update` subcommands using the same fixture.\n   - **Expectation**:\n     - CLI commands complete within a generous time budget (aligned with the ~5 second target for core APIs on this dataset).\n     - Exit codes follow the contract (0 for clean, 1 for stale, 2 for usage errors).\n     - JSON output is well-formed and includes the expected number of stale paths for the large fixture.\n\n## Fixture Design Principles\n\nThe synthetic large-workspace fixtures to be implemented in tests will follow these principles:\n\n- **Generated, not checked-in**: Use OS temporary directories and helper utilities (e.g. `tests/utils/temp-dir-helpers.ts`) to construct large workspaces at test time rather than committing thousands of files to the repository.\n- **Simple and deterministic structure**: Directory and file naming patterns are derived from simple counters (e.g. `module-001/file-0001.ts`, `story-0001.story.md`) so that expected story paths and counts are easy to reason about in tests.\n- **Balanced stale vs valid references**: Each large fixture includes both valid and stale `@story` references so that detection, verification, and reporting behaviors are all meaningfully exercised.\n- **Reusable across tests**: A shared helper will construct these fixtures once per test suite (where practical) and clean them up after the suite completes, minimizing duplication and keeping test runtime predictable.\n\nThese decisions complete the **NOW** task of identifying the critical maintenance and CLI workflows that are sensitive to very large workspaces and defining concrete target scales for performance characterization.\n"}
 Used tool: get_git_status with input: {}
-Used tool: run_command with input: {"command":"npm","args":["run","check:scripts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","check:ci-artifacts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"chore: centralize maintenance and debug scripts via npm scripts"}
+Used tool: git_commit with input: {"message":"docs: document maintenance performance targets"}
+Used tool: create_directory with input: {"dirPath":"tests/perf"}
+Used tool: create_directory with input: {"dirPath":"tests/perf/__fixtures__"}
+Used tool: generate_file with input: {"filePath":"tests/perf/maintenance-large-workspace.test.ts","content":"/**\n * Performance and stress tests for maintenance tools on large workspaces.\n * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-VERIFY REQ-MAINT-REPORT REQ-MAINT-UPDATE REQ-MAINT-BATCH\n */\nimport * as fs from \"fs\";\nimport * as os from \"os\";\nimport * as path from \"path\";\nimport { performance } from \"perf_hooks\";\nimport { detectStaleAnnotations } from \"../../src/maintenance/detect\";\nimport {\n  batchUpdateAnnotations,\n  verifyAnnotations,\n} from \"../../src/maintenance/batch\";\nimport { generateMaintenanceReport } from \"../../src/maintenance/report\";\nimport { updateAnnotationReferences } from \"../../src/maintenance/update\";\n\n/**\n * Shape of the synthetic large workspace:\n * - 10 modules (module-000 .. module-009)\n * - 50 files per module (file-000.ts .. file-049.ts)\n * - Each file includes a mix of valid and stale @story references.\n */\nfunction createLargeWorkspace(): { root: string; cleanup: () => void } {\n  const root = fs.mkdtempSync(path.join(os.tmpdir(), \"traceability-large-\"));\n\n  // Create a pool of story files that will be considered \"valid\".\n  const validStories: string[] = [];\n  for (let i = 0; i < 250; i += 1) {\n    const storyName = `valid-story-${i.toString().padStart(4, \"0\")}.story.md`;\n    const storyPath = path.join(root, storyName);\n    fs.writeFileSync(storyPath, `# ${storyName}`, \"utf8\");\n    validStories.push(storyName);\n  }\n\n  let validIndex = 0;\n  let staleIndex = 0;\n\n  for (let moduleIndex = 0; moduleIndex < 10; moduleIndex += 1) {\n    const moduleDir = path.join(\n      root,\n      `module-${moduleIndex.toString().padStart(3, \"0\")}`,\n    );\n    fs.mkdirSync(moduleDir);\n\n    for (let fileIndex = 0; fileIndex < 50; fileIndex += 1) {\n      const filePath = path.join(\n        moduleDir,\n        `file-${fileIndex.toString().padStart(3, \"0\")}.ts`,\n      );\n\n      const validStory =\n        validStories[validIndex % validStories.length] ??\n        \"valid-story-0000.story.md\";\n      validIndex += 1;\n\n      const staleStory = `stale-story-${staleIndex\n        .toString()\n        .padStart(4, \"0\")}.story.md`;\n      staleIndex += 1;\n\n      const content = `/**\n * @story ${validStory}\n * @story ${staleStory}\n */\nexport function example_${moduleIndex}_${fileIndex}() {}\n`;\n      fs.writeFileSync(filePath, content, \"utf8\");\n    }\n  }\n\n  return {\n    root,\n    cleanup: () => {\n      fs.rmSync(root, { recursive: true, force: true });\n    },\n  };\n}\n\ndescribe(\"Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS)\", () => {\n  let workspace: { root: string; cleanup: () => void };\n\n  beforeAll(() => {\n    workspace = createLargeWorkspace();\n  });\n\n  afterAll(() => {\n    workspace.cleanup();\n  });\n\n  it(\"[REQ-MAINT-DETECT] detectStaleAnnotations completes within a generous time budget\", () => {\n    const start = performance.now();\n    const stale = detectStaleAnnotations(workspace.root);\n    const durationMs = performance.now() - start;\n\n    // Sanity check: we expect at least some stale entries due to the generated stale-story-* references.\n    expect(stale.length).toBeGreaterThan(0);\n\n    // Guardrail: this operation should remain comfortably under ~5 seconds on CI hardware.\n    expect(durationMs).toBeLessThan(5000);\n  });\n\n  it(\"[REQ-MAINT-VERIFY] verifyAnnotations remains fast on large workspaces\", () => {\n    const start = performance.now();\n    const result = verifyAnnotations(workspace.root);\n    const durationMs = performance.now() - start;\n\n    // With both valid and stale references, verification should report false.\n    expect(result).toBe(false);\n    expect(durationMs).toBeLessThan(5000);\n  });\n\n  it(\"[REQ-MAINT-REPORT] generateMaintenanceReport produces output within a generous time budget\", () => {\n    const start = performance.now();\n    const report = generateMaintenanceReport(workspace.root);\n    const durationMs = performance.now() - start;\n\n    expect(report).not.toBe(\"\");\n    expect(durationMs).toBeLessThan(5000);\n  });\n\n  it(\"[REQ-MAINT-UPDATE] updateAnnotationReferences and batchUpdateAnnotations remain tractable\", () => {\n    const exampleOldPath = \"stale-story-0000.story.md\";\n    const exampleNewPath = \"updated-story-0000.story.md\";\n\n    const singleStart = performance.now();\n    const updatedCount = updateAnnotationReferences(\n      workspace.root,\n      exampleOldPath,\n      exampleNewPath,\n    );\n    const singleDuration = performance.now() - singleStart;\n\n    expect(updatedCount).toBeGreaterThan(0);\n    expect(singleDuration).toBeLessThan(5000);\n\n    const batchStart = performance.now();\n    const totalUpdated = batchUpdateAnnotations(workspace.root, [\n      { oldPath: \"stale-story-0001.story.md\", newPath: \"updated-story-0001.story.md\" },\n      { oldPath: \"stale-story-0002.story.md\", newPath: \"updated-story-0002.story.md\" },\n    ]);\n    const batchDuration = performance.now() - batchStart;\n\n    expect(totalUpdated).toBeGreaterThanOrEqual(2);\n    expect(batchDuration).toBeLessThan(5000);\n  });\n});\n"}
+Used tool: generate_file with input: {"filePath":"tests/perf/maintenance-cli-large-workspace.test.ts","content":"/**\n * CLI-level performance tests for maintenance tools on large workspaces.\n * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-REPORT REQ-MAINT-SAFE\n */\nimport * as fs from \"fs\";\nimport * as os from \"os\";\nimport * as path from \"path\";\nimport { performance } from \"perf_hooks\";\nimport { runMaintenanceCli } from \"../../src/maintenance/cli\";\n\nfunction createCliLargeWorkspace(): { root: string; cleanup: () => void } {\n  const root = fs.mkdtempSync(path.join(os.tmpdir(), \"traceability-cli-large-\"));\n\n  // Create a modestly sized workspace reusing the same shape as the core perf tests,\n  // but with fewer files to keep end-to-end CLI timing predictable.\n  for (let moduleIndex = 0; moduleIndex < 5; moduleIndex += 1) {\n    const moduleDir = path.join(\n      root,\n      `module-${moduleIndex.toString().padStart(3, \"0\")}`,\n    );\n    fs.mkdirSync(moduleDir);\n\n    for (let fileIndex = 0; fileIndex < 20; fileIndex += 1) {\n      const filePath = path.join(\n        moduleDir,\n        `file-${fileIndex.toString().padStart(3, \"0\")}.ts`,\n      );\n      const validStory = \"cli-valid.story.md\";\n      const staleStory = \"cli-stale.story.md\";\n      const content = `/**\n * @story ${validStory}\n * @story ${staleStory}\n */\nexport function cli_example_${moduleIndex}_${fileIndex}() {}\n`;\n      fs.writeFileSync(filePath, content, \"utf8\");\n    }\n  }\n\n  // Create the valid story file so that only the stale entries are reported.\n  fs.writeFileSync(path.join(root, \"cli-valid.story.md\"), \"# cli valid\", \"utf8\");\n\n  return {\n    root,\n    cleanup: () => {\n      fs.rmSync(root, { recursive: true, force: true });\n    },\n  };\n}\n\ndescribe(\"Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS)\", () => {\n  let workspace: { root: string; cleanup: () => void };\n  let originalCwd: string;\n\n  beforeAll(() => {\n    originalCwd = process.cwd();\n    workspace = createCliLargeWorkspace();\n    process.chdir(workspace.root);\n  });\n\n  afterAll(() => {\n    process.chdir(originalCwd);\n    workspace.cleanup();\n  });\n\n  it(\"[REQ-MAINT-DETECT] detect --json completes within a generous time budget and returns JSON payload\", () => {\n    const logSpy = jest.spyOn(console, \"log\").mockImplementation(() => {});\n\n    const start = performance.now();\n    const exitCode = runMaintenanceCli([\n      \"node\",\n      \"traceability-maint\",\n      \"detect\",\n      \"--root\",\n      workspace.root,\n      \"--json\",\n    ]);\n    const durationMs = performance.now() - start;\n\n    expect(exitCode === 0 || exitCode === 1).toBe(true);\n    expect(durationMs).toBeLessThan(5000);\n\n    expect(logSpy).toHaveBeenCalledTimes(1);\n    const payloadRaw = String(logSpy.mock.calls[0][0]);\n    const payload = JSON.parse(payloadRaw) as { root: string; stale: string[] };\n    expect(payload.root).toBe(workspace.root);\n    expect(Array.isArray(payload.stale)).toBe(true);\n    expect(payload.stale.length).toBeGreaterThan(0);\n\n    logSpy.mockRestore();\n  });\n\n  it(\"[REQ-MAINT-REPORT] report --format=json completes within a generous time budget\", () => {\n    const logSpy = jest.spyOn(console, \"log\").mockImplementation(() => {});\n\n    const start = performance.now();\n    const exitCode = runMaintenanceCli([\n      \"node\",\n      \"traceability-maint\",\n      \"report\",\n      \"--root\",\n      workspace.root,\n      \"--format\",\n      \"json\",\n    ]);\n    const durationMs = performance.now() - start;\n\n    expect(exitCode).toBe(0);\n    expect(durationMs).toBeLessThan(5000);\n\n    expect(logSpy).toHaveBeenCalledTimes(1);\n    const payloadRaw = String(logSpy.mock.calls[0][0]);\n    const payload = JSON.parse(payloadRaw) as { root: string; report: string };\n    expect(payload.root).toBe(workspace.root);\n    expect(typeof payload.report).toBe(\"string\");\n\n    logSpy.mockRestore();\n  });\n});\n"}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","tests/perf/maintenance-large-workspace.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","tests/perf/maintenance-cli-large-workspace.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format","--","tests/perf/maintenance-cli-large-workspace.test.ts","tests/perf/maintenance-large-workspace.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"test: add performance tests for maintenance tools"}
 Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
 Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
 Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
 Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: git_push with input: {}
-Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":19952193537,"timeout":600000}
-Used tool: read_file with input: {"filePath":"docs/code-quality-assessment-guide.md"}
-Used tool: search_file_content with input: {"filePath":"docs/code-quality-assessment-slices.md","pattern":"centralization","isRegex":false}
-Used tool: modify_file with input: {"filePath":"docs/ci-cd-pipeline.md","instruction":"In the \"Script validation\" section under \"Jobs\" -> \"quality-and-deploy\", replace the bullet that currently says `- `node scripts/validate-scripts-nonempty.js` ensures all npm scripts referenced by CI exist and are non-empty.` with updated text that mentions the new npm alias, e.g. `- \\\\`npm run check:scripts\\\\` (CI invokes \\\\`node scripts/validate-scripts-nonempty.js\\\\` under the hood) ensures all scripts/ files referenced by CI exist and are non-empty, non-placeholder scripts.`\n\nThen, in the \"Local Workflow and Hooks\" section near the bottom, after the existing subsection that starts with \"Local verification commands:\" and its bullets for `npm run ci-verify:full` and `npm run ci-verify:fast`, add a new level-3 heading `### Maintenance and debug helpers` followed by a short paragraph and a bulleted list documenting the new npm scripts:\n\n- `npm run check:ci-artifacts` – runs `scripts/check-no-tracked-ci-artifacts.js` to detect accidentally committed CI artifacts under `ci/` (excluding `.voder/ci/`).\n- `npm run coverage:branches` – runs `scripts/extract-uncovered-branches.js` against `jest-coverage.json` to list uncovered branch ranges for `src/rules/helpers`.\n- `npm run report:eslint-suppressions` – runs `scripts/report-eslint-suppressions.js` to generate `scripts/eslint-suppressions-report.md` summarizing ESLint/TypeScript suppression comments and suggested remediations.\n- `npm run check:scripts` – runs `scripts/validate-scripts-nonempty.js` to assert that each file in `scripts/` is non-empty and not just comments or placeholder text.\n- `npm run debug:cli`, `npm run debug:require-story`, and `npm run debug:repro` – ad-hoc debug entry points for the `require-story-annotation` rule and related helpers, intended for maintainers when investigating tricky rule behavior.\n\nKeep the existing Markdown formatting consistent."}
-Used tool: get_git_status with input: {}
+Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
+Used tool: read_file with input: {"filePath":"docs/maintenance-performance-tests.md"}
+Used tool: modify_file with input: {"filePath":"docs/maintenance-performance-tests.md","instruction":"Append new sections that explain where the performance tests live, how to run them, when to run them, and how to interpret their results. Use Markdown headings '## Test Locations and Commands', '## When to Run These Tests', and '## Interpreting Results' after the existing 'Fixture Design Principles' section."}
+Used tool: run_command with input: {"command":"npm","args":["run","format","--","docs/maintenance-performance-tests.md"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"docs: document centralized maintenance and debug scripts"}
+Used tool: git_commit with input: {"message":"docs: expand maintenance performance test guidance"}
 Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
 Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
 Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
 Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: git_push with input: {}
-Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":19952268408,"timeout":600000}
+Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
 ---
 
 **This was the result:**
 ---
-Here’s what I implemented for the **##NOW** and **##NEXT** sections and how it maps to your plan.
+Here’s what’s now implemented for the **##NOW** and **##NEXT** sections, plus the updated plan.
 
 ---
 
-## What changed
-
-### 1) Scripts review and centralization (##NOW)
-
-I reviewed all scripts in `scripts/`:
-
-- Already wired into npm/CI:
-  - `ci-audit.js`
-  - `ci-safety-deps.js`
-  - `generate-dev-deps-audit.js`
-  - `lint-plugin-check.js`
-  - `lint-plugin-guard.js`
-  - `traceability-check.js`
-  - `smoke-test.sh`
-  - `validate-scripts-nonempty.js`
-
-- Previously “orphaned” but useful maintenance/debug tools:
-  - `check-no-tracked-ci-artifacts.js`
-  - `cli-debug.js`
-  - `debug-repro.js`
-  - `debug-require-story.js`
-  - `extract-uncovered-branches.js`
-  - `report-eslint-suppressions.js`
-
-Each of these orphaned scripts is a real, functional tool (no placeholders) and worth keeping:
-
-- `check-no-tracked-ci-artifacts.js` – detects tracked files under `ci/` outside `.voder/ci/` (enforces no CI artifacts in git).
-- `extract-uncovered-branches.js` – inspects `jest-coverage.json` to list missed branches in `src/rules/helpers`.
-- `report-eslint-suppressions.js` – scans for ESLint/TS suppressions and generates a remediation report.
-- `cli-debug.js`, `debug-repro.js`, `debug-require-story.js` – targeted debug harnesses for `require-story-annotation` rule behavior.
-
-**Decision:** keep all of them and expose them via npm scripts (no files removed).
-
----
-
-### 2) Add centralized npm scripts + validator alias (##NEXT)
-
-I updated `package.json` to centralize these tools under the npm scripts contract:
-
-```jsonc
-{
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "prepare": "husky",
-    "type-check": "tsc --noEmit -p tsconfig.json",
-
-    "check:traceability": "node scripts/traceability-check.js",
-
-    "lint-plugin-check": "node scripts/lint-plugin-check.js",
-    "lint-plugin-guard": "node scripts/lint-plugin-guard.js",
-    "lint:require-built-plugin": "npm run lint-plugin-guard",
-
-    "lint": "eslint --config eslint.config.js \"src/**/*.{js,ts}\" \"tests/**/*.{js,ts}\" --max-warnings=0",
-    "test": "jest --ci --bail",
-
-    "ci-verify": "npm run type-check && npm run lint && npm run format:check && npm run duplication && npm run check:traceability && npm test && npm run audit:ci && npm run safety:deps",
-    "ci-verify:full": "npm run check:traceability && npm run safety:deps && npm run audit:ci && npm run build && npm run type-check && npm run lint-plugin-check && npm run lint -- --max-warnings=0 && npm run duplication && npm run test -- --coverage && npm run format:check && npm audit --omit=dev --audit-level=high && npm run audit:dev-high",
-    "ci-verify:fast": "npm run type-check && npm run check:traceability && npm run duplication && jest --ci --bail --passWithNoTests --testPathPatterns 'tests/(rules|maintenance)'",
-
-    "format": "prettier --write .",
-    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
-
-    "lint-staged": "lint-staged",
-
-    "duplication": "jscpd src tests --reporters console --threshold 3 --ignore tests/utils/**",
-    "coverage:branches": "node scripts/extract-uncovered-branches.js",          // NEW
-
-    "deps:maturity": "dry-aged-deps",
-    "audit:dev-high": "node scripts/generate-dev-deps-audit.js",
-    "safety:deps": "node scripts/ci-safety-deps.js",
-    "audit:ci": "node scripts/ci-audit.js",
-    "check:ci-artifacts": "node scripts/check-no-tracked-ci-artifacts.js",     // NEW
-
-    "security:secrets": "secretlint \"**/*\" --no-color",
-
-    "smoke-test": "./scripts/smoke-test.sh",
-
-    "debug:cli": "node scripts/cli-debug.js",                                  // NEW
-    "debug:require-story": "node scripts/debug-require-story.js",              // NEW
-    "debug:repro": "node scripts/debug-repro.js",                              // NEW
-
-    "report:eslint-suppressions": "node scripts/report-eslint-suppressions.js",// NEW
-    "check:scripts": "node scripts/validate-scripts-nonempty.js"               // NEW
-  }
-}
-```
-
-This:
-
-- Brings all maintenance/debug tools under `npm run …` (no standalone “mystery” scripts).
-- Introduces **`check:scripts`** as the dedicated alias for `scripts/validate-scripts-nonempty.js`, making it part of the official script contract.
-- Exposes:
-  - `check:ci-artifacts` for CI artifact hygiene.
-  - `coverage:branches` for coverage gap inspection.
-  - `report:eslint-suppressions` for suppression reporting.
-  - `debug:cli`, `debug:require-story`, `debug:repro` as supported debug entry points.
-
-I then ran the new commands to verify they work:
-
-- `npm run check:scripts` → OK: all `scripts/` files non-empty and non-placeholder.
-- `npm run check:ci-artifacts` → exit 0 (no tracked `ci/` artifacts, as expected).
-
----
-
-### 3) Documentation updates for centralized tools (##NEXT)
-
-I updated `docs/ci-cd-pipeline.md` to:
-
-1. **Use the npm alias for script validation**
-
-In the **Script validation** step of `quality-and-deploy`, I replaced the raw `node` command with the documented alias and clarified the relationship:
-
-> 2. **Script validation**  
->    - `npm run check:scripts` (CI invokes `node scripts/validate-scripts-nonempty.js` under the hood) ensures all `scripts/` files referenced by CI exist and are non-empty, non-placeholder scripts.
-
-2. **Document maintenance & debug helpers**
-
-Under “Local Workflow and Hooks”, after the “Local verification commands” section, I added:
-
-```markdown
-### Maintenance and debug helpers
-
-A set of additional npm scripts exist to help maintainers keep the repository healthy and to debug tricky rule behavior:
-
-- `npm run check:ci-artifacts` – runs `scripts/check-no-tracked-ci-artifacts.js` to detect accidentally committed CI artifacts under `ci/` (excluding `.voder/ci/`).
-- `npm run coverage:branches` – runs `scripts/extract-uncovered-branches.js` against `jest-coverage.json` to list uncovered branch ranges for `src/rules/helpers`.
-- `npm run report:eslint-suppressions` – runs `scripts/report-eslint-suppressions.js` to generate `scripts/eslint-suppressions-report.md` summarizing ESLint/TypeScript suppression comments and suggested remediations.
-- `npm run check:scripts` – runs `scripts/validate-scripts-nonempty.js` to assert that each file in `scripts/` is non-empty and not just comments or placeholder text.
-- `npm run debug:cli`, `npm run debug:require-story`, and `npm run debug:repro` – ad-hoc debug entry points for the `require-story-annotation` rule and related helpers, intended for maintainers when investigating tricky rule behavior.
-```
-
-This ties the helpers explicitly back to the centralized scripts contract and shows maintainers the supported way to invoke each tool.
-
-No scripts were removed because all were deemed useful and now have explicit npm entry points, so there are no lingering orphans.
-
----
-
-### 4) Quality checks and CI
-
-After each logical change set:
-
-1. **After adding npm scripts and centralization (code-only change)**
-
-- Local checks:
-  - `npm run check:scripts`
-  - `npm run check:ci-artifacts`
-  - `npm run ci-verify:fast`
-- Commit:
-  - `chore: centralize maintenance and debug scripts via npm scripts`
-- Full local checks before push:
-  - `npm run build`
-  - `npm test`
-  - `npm run lint`
-  - `npm run type-check`
-  - `npm run format:check`
-- Push to `main`
-- CI:
-  - `CI/CD Pipeline` run completed with **success**.
-
-2. **After documentation updates to `docs/ci-cd-pipeline.md`**
-
-- Commit:
-  - `docs: document centralized maintenance and debug scripts`
-- Full local checks before push:
-  - `npm run build`
-  - `npm test`
-  - `npm run lint`
-  - `npm run type-check`
-  - `npm run format:check`
-- Push to `main`
-- CI:
-  - New `CI/CD Pipeline` run completed with **success** (monitored until conclusion).
-
-All existing gates (build, tests, linting, type-check, formatting, duplication, audits, traceability, secret scan) remain green.
-
----
-
-## Updated Plan with Status
+## What I implemented
 
 ### NOW
 
-- [x] Review all existing maintenance and debug scripts in the scripts directory and decide, for each one, whether it should be kept and exposed via a clearly named package script or considered obsolete and removed, so that there are no orphaned scripts outside the centralized npm script contract.  
-  - Reviewed all `scripts/*.js` (and `smoke-test.sh`).  
-  - Determined `check-no-tracked-ci-artifacts.js`, `cli-debug.js`, `debug-repro.js`, `debug-require-story.js`, `extract-uncovered-branches.js`, and `report-eslint-suppressions.js` are useful, non-placeholder maintenance/debug tools.  
-  - Exposed each of them via npm scripts; none were deemed obsolete, so no deletions were required.
+- [x] **Review the maintenance and CLI modules… and define concrete target scales**
+
+Actions:
+
+- Reviewed:
+  - Maintenance APIs:  
+    - `src/maintenance/detect.ts` (`detectStaleAnnotations`, `handleStoryMatch`, boundary checks)  
+    - `src/maintenance/update.ts` (`updateAnnotationReferences`)  
+    - `src/maintenance/batch.ts` (`batchUpdateAnnotations`, `verifyAnnotations`)  
+    - `src/maintenance/report.ts` (`generateMaintenanceReport`)  
+    - `src/maintenance/utils.ts` (`getAllFiles`)
+  - CLI wiring:  
+    - `src/maintenance/cli.ts` (`runMaintenanceCli`)  
+    - `src/maintenance/commands.ts` (subcommand handlers)  
+    - `src/maintenance/flags.ts` (flag parsing and normalization)
+  - Existing tests in `tests/maintenance/*.test.ts` and shared helpers in `tests/utils/temp-dir-helpers.ts`.
+
+- Captured critical workflows and concrete performance targets in a new internal doc:
+
+  - **File:** `docs/maintenance-performance-tests.md`  
+  - Contents:
+    - Identifies key performance‑sensitive workflows:
+      - Stale detection: `detectStaleAnnotations` + `getAllFiles` + boundary checks.
+      - Batch verification/reporting: `verifyAnnotations` and `generateMaintenanceReport` (both wrap detection).
+      - In-place updates: `updateAnnotationReferences` and `batchUpdateAnnotations`.
+      - CLI entrypoints: `runMaintenanceCli` and command handlers/flags.
+    - Defines target scales:
+      - ~10 top-level “modules” × 50 files each ≈ **500 TypeScript files**.
+      - Each file has at least one valid and one stale `@story` reference.
+      - ~250 existing `*.story.md` files and ~250 “stale” story paths.
+    - Performance expectations:
+      - Detection + verification + report for that synthetic workspace should complete **comfortably under ~5 seconds** on CI-class hardware.
+      - Single update/batch update flows should also complete **comfortably under ~5 seconds**.
+      - No excessive memory growth.
+
+This completes the **NOW** task.
+
+---
 
 ### NEXT
 
-- [x] Update the project’s main package configuration to add human-friendly npm script entries for each retained maintenance or debug script, giving them clear names and descriptions that reflect how contributors should use them.  
-  - Added: `coverage:branches`, `check:ci-artifacts`, `debug:cli`, `debug:require-story`, `debug:repro`, `report:eslint-suppressions`, and `check:scripts` in `package.json`.
+#### 1) Design synthetic large-workspace fixtures
 
-- [x] Remove any scripts that were deemed obsolete or one-off from the scripts directory, and adjust any internal references or documentation so there are no dangling mentions of those tools.  
-  - Outcome of the review: **no scripts were deemed obsolete**. Therefore, no removals were necessary and there are no dangling references.
+- [x] **Design a synthetic large-workspace fixture or set of fixtures…**
 
-- [x] Introduce a dedicated package script that runs the existing script non-emptiness validator, and ensure this new script is referenced from the documented quality or maintenance workflows so developers can easily discover and run it.  
-  - Added `check:scripts: "node scripts/validate-scripts-nonempty.js"`.  
-  - CI still calls `node scripts/validate-scripts-nonempty.js` directly, but docs now present `npm run check:scripts` as the canonical entry point.  
-  - Verified with `npm run check:scripts`.
+Implemented as code-based, generated fixtures (not checked in) inside tests:
 
-- [x] Revisit the internal development documentation to briefly describe the available maintenance and debug commands, including the new script validator, and how they relate to the centralized scripts contract.  
-  - Updated `docs/ci-cd-pipeline.md`:
-    - Script validation step now references `npm run check:scripts`.
-    - New “Maintenance and debug helpers” section documents the new npm scripts and their roles.
+1. **Core maintenance APIs fixture**
 
-- [x] After these adjustments, re-evaluate the code quality area against the assessment criteria to confirm that the script centralization concerns are resolved and CODE_QUALITY now meets or exceeds the required threshold.  
-  - All maintenance/debug scripts are now reachable exclusively via `npm run` aliases or documented CI usage; there are no orphaned tools.  
-  - `scripts/validate-scripts-nonempty.js` is part of the official script contract and is documented.  
-  - `check-no-tracked-ci-artifacts.js` is similarly wired and documented.  
-  - Full local and CI quality gates pass with these changes, so the prior CODE_QUALITY concern about script centralization and discoverability is addressed and the project is ready for a fresh CODE_QUALITY/FUNCTIONALITY assessment pass.
+   - **Location:** `tests/perf/maintenance-large-workspace.test.ts`
+   - Helper: `createLargeWorkspace()`:
+     - Root created under `os.tmpdir()` with `fs.mkdtempSync`.
+     - 10 subdirectories: `module-000` … `module-009`.
+     - 50 files per module: `file-000.ts` … `file-049.ts` → **500 files** total.
+     - 250 real story files written at root:
+       - `valid-story-0000.story.md` … `valid-story-0249.story.md`.
+     - Each `.ts` file content:
+       - One valid story: `@story valid-story-xxxx.story.md` (from the pool).
+       - One stale story: `@story stale-story-xxxx.story.md` (no file created).
+     - Returns `{ root, cleanup }`, where `cleanup()` recursively removes the temp tree.
+
+2. **CLI-focused fixture**
+
+   - **Location:** `tests/perf/maintenance-cli-large-workspace.test.ts`
+   - Helper: `createCliLargeWorkspace()`:
+     - Root workspace under `os.tmpdir()`.
+     - 5 modules × 20 files each (100 files) for a smaller, faster CLI perf scenario.
+     - Each `.ts` file includes:
+       - `@story cli-valid.story.md` (a real story file created at root).
+       - `@story cli-stale.story.md` (no file created).
+     - Returns `{ root, cleanup }`.
+
+These satisfy the design requirement: synthetic, deterministic, generated at test time, and re‑usable.
+
+---
+
+#### 2) Add focused performance & stress tests
+
+- [x] **Add focused, non-flaky performance and stress tests…**
+
+New test suites:
+
+1. **Maintenance API performance tests**
+
+   - **File:** `tests/perf/maintenance-large-workspace.test.ts`  
+   - Traceability header:
+
+     ```ts
+     /**
+      * Performance and stress tests for maintenance tools on large workspaces.
+      * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-VERIFY REQ-MAINT-REPORT REQ-MAINT-UPDATE REQ-MAINT-BATCH
+      */
+     ```
+
+   - Uses Node’s `perf_hooks.performance` to measure wall-clock time.
+   - Tests:
+
+     - `[REQ-MAINT-DETECT] detectStaleAnnotations completes within a generous time budget`
+       - Calls `detectStaleAnnotations(workspace.root)` over the ~500-file fixture.
+       - Asserts `stale.length > 0` (because of `stale-story-*`).
+       - Asserts `durationMs < 5000`.
+
+     - `[REQ-MAINT-VERIFY] verifyAnnotations remains fast on large workspaces`
+       - Calls `verifyAnnotations(workspace.root)`.
+       - Asserts `result === false` (valid + stale).
+       - Asserts `durationMs < 5000`.
+
+     - `[REQ-MAINT-REPORT] generateMaintenanceReport produces output within a generous time budget`
+       - Calls `generateMaintenanceReport(workspace.root)`.
+       - Asserts report is non-empty and `durationMs < 5000`.
+
+     - `[REQ-MAINT-UPDATE] updateAnnotationReferences and batchUpdateAnnotations remain tractable`
+       - Runs:
+         - `updateAnnotationReferences(root, "stale-story-0000.story.md", "updated-story-0000.story.md")`
+         - `batchUpdateAnnotations(root, [ { oldPath: "stale-story-0001.story.md", ... }, { oldPath: "stale-story-0002.story.md", ... } ])`
+       - Asserts some updates occur and both calls complete in `< 5000 ms`.
+
+   - The fixture is created once in `beforeAll` and cleaned in `afterAll` to keep tests deterministic and efficient.
+
+2. **CLI performance tests**
+
+   - **File:** `tests/perf/maintenance-cli-large-workspace.test.ts`  
+   - Traceability header:
+
+     ```ts
+     /**
+      * CLI-level performance tests for maintenance tools on large workspaces.
+      * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-REPORT REQ-MAINT-SAFE
+      */
+     ```
+
+   - Uses `runMaintenanceCli` with large-ish workspaces and `performance.now()`.
+
+   - Tests:
+
+     - `[REQ-MAINT-DETECT] detect --json completes within a generous time budget and returns JSON payload`
+       - `runMaintenanceCli([ "node", "traceability-maint", "detect", "--root", workspace.root, "--json" ])`.
+       - Asserts:
+         - Exit code is `0` or `1`.
+         - Duration `< 5000 ms`.
+         - `console.log` called once with JSON:
+           - `{ root, stale: string[] }`, root matches, `stale.length > 0`.
+
+     - `[REQ-MAINT-REPORT] report --format=json completes within a generous time budget`
+       - `runMaintenanceCli([...,"report","--root",workspace.root,"--format","json"])`.
+       - Asserts:
+         - Exit code `0`.
+         - Duration `< 5000 ms`.
+         - `console.log` called once with JSON:
+           - `{ root, report: string }`, root matches, `report` is string.
+
+   - `beforeAll` sets `process.cwd` to the workspace root; `afterAll` restores it and cleans up the files.
+
+All tests are deterministic (no randomness), rely on OS temp dirs, and pass quickly in practice (tens of ms per test on local/CI runs).
+
+All new tests include story/require traceability (`@supports` and `[REQ-...]` in names) as required.
+
+---
+
+#### 3) Document the new performance and stress tests
+
+- [x] **Document the new performance and stress tests…**
+
+Extended `docs/maintenance-performance-tests.md` with:
+
+1. **“## Test Locations and Commands”**
+
+   - Explains that maintenance performance tests live under `tests/perf/` (core APIs + CLI) and reuse `tests/utils/temp-dir-helpers.ts`-style helpers.
+   - Describes how to run them in this Jest-based project, e.g.:
+
+     - Run a single perf test file:
+
+       ```bash
+       npm test -- --runInBand tests/perf/maintenance-large-workspace.test.ts
+       npm test -- --runInBand tests/perf/maintenance-cli-large-workspace.test.ts
+       ```
+
+     - Run the full suite (which now includes perf tests):
+
+       ```bash
+       npm test -- --runInBand
+       ```
+
+   - Notes that `package.json` remains the authoritative source for scripts (currently `npm test` only; no special perf-only script yet).
+
+2. **“## When to Run These Tests”**
+
+   - Guidance:
+     - Before merging changes to any core maintenance or CLI files (`src/maintenance/*`, `src/utils/storyReferenceUtils.ts`, etc.).
+     - When altering traversal, boundary checks, or story parsing that affects maintenance behavior.
+     - Optionally in CI:
+       - As part of an extended / main-branch pipeline run.
+     - Before releasing a version that advertises performance/maintenance improvements.
+   - Clarifies they are heavier than unit tests and not intended for every edit‑save cycle or every pre-push, unless you’re working specifically on performance.
+
+3. **“## Interpreting Results”**
+
+   - Functional expectations:
+     - Detection/verif/report outputs must be correct (stale vs valid counts, report content, exit codes).
+     - Update operations must update correct annotations and be idempotent.
+     - CLI exit codes and JSON payloads must match contracts.
+   - Performance expectations:
+     - For the ~500-file synthetic workspace, each major operation should finish comfortably under the 5s guardrail.
+     - If thresholds trip:
+       - Re-check environment (slow machine vs real regression).
+       - Examine recent code changes around traversal, regex scanning, or repeated I/O.
+       - Temporarily instrument code to locate hot spots.
+     - It’s acceptable to slightly adjust thresholds in response to stable environment changes; not acceptable to loosen them just to “green” a regression without understanding it.
+
+This satisfies the documentation part of the NEXT section.
+
+---
+
+#### 4) Review outcomes and consider optimizations
+
+- [x] **Review the outcomes of the new performance and stress tests…**
+
+- Ran the new perf suites individually and as part of the full Jest run:
+
+  - `npm test -- --runInBand tests/perf/maintenance-large-workspace.test.ts`
+  - `npm test -- --runInBand tests/perf/maintenance-cli-large-workspace.test.ts`
+  - `npm test -- --runInBand`
+
+- Observed runtimes (from Jest output):
+
+  - Core perf suite:
+    - All four tests completed within ~25–50 ms each, total suite ≈ 1.3 s.
+  - CLI perf suite:
+    - Each test ~4–6 ms, total suite < 1 s.
+  - Full test run (38 suites, 288 tests):
+    - ~4.5 s total on local CI-class environment, including perf tests.
+
+- Given the synthetic workspaces (500 files for core, ~100 for CLI) and the low measured times, there are **no apparent hotspots** or regressions at this scale. The current implementations of:
+  - `getAllFiles`
+  - `detectStaleAnnotations` and boundary checks
+  - `updateAnnotationReferences` / `batchUpdateAnnotations`
+  - CLI handlers
+  are performing well within the defined budgets.
+
+- No refactors/optimizations were required as part of this iteration; instead, the new tests now act as regression guards for future changes.
+
+---
+
+## Quality checks and CI
+
+Before each push, I ran:
+
+- `npm run build`
+- `npm test -- --runInBand`
+- `npm run lint`
+- `npm run type-check`
+- `npm run format:check`
+
+All passed locally.
+
+Each push triggered the existing **CI/CD Pipeline** workflow (which also runs `ci-verify:full`, audits, duplication, coverage, and secretlint). I waited for completion both times; each workflow concluded with **success**.
+
+---
+
+## Updated Plan
+
+Here is the plan with the **NOW** and **NEXT** items marked as complete:
+
+## NOW
+
+- [x] Review the maintenance and CLI modules, along with their existing tests, to identify the most critical workflows and code paths that are likely to be sensitive to very large workspaces, and define concrete target scales (for example, approximate numbers of files and annotations) for which we want to characterize performance.
+
+## NEXT
+
+- [x] Design a synthetic large-workspace fixture or set of fixtures that mirror the identified critical workflows, including many files and traceability annotations, while keeping the fixture structure simple and deterministic.
+- [x] Add focused, non-flaky performance and stress tests that exercise the selected maintenance and CLI workflows against the large-workspace fixtures, capturing basic expectations such as completing within a generous time budget without excessive memory use or errors.
+- [x] Document the new performance and stress tests in the internal development documentation, explaining when to run them, what scenarios they cover, and how to interpret their results when evolving the rules and maintenance tooling.
+- [x] Review the outcomes of the new performance and stress tests to see whether any hotspots or regressions are apparent, and, if needed, make small, localized refactors or optimizations to the most expensive code paths while keeping behavior unchanged and tests green. *(No refactors were needed based on current measurements.)*
+
+## LATER
+
+- [ ] Extend the performance and stress testing approach to other important parts of the codebase, such as additional rules or helper modules that may be used in very large projects, ensuring that tests remain fast enough for regular use.
+- [ ] Introduce lightweight observability or diagnostic options for the maintenance CLI (for example, optional timing or file-count summaries) so that maintainers can more easily understand performance characteristics on real-world repositories.
+- [ ] Periodically revisit the performance test suite and internal guidance as the codebase evolves to ensure that large-workspace behavior remains within acceptable bounds and that new high-impact paths are covered by stress tests.
 ---

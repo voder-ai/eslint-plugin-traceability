@@ -1,12 +1,9 @@
-import type { Rule } from "eslint";
-import { ANNOTATION } from "./require-story-helpers";
-
 /**
  * Create a fixer function that inserts a @story annotation before the target node.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Provide automatic fix function for missing @story annotations
  */
-export function createAddStoryFix(target: any) {
+export function createAddStoryFix(target: any, annotationTemplate: string) {
   /**
    * Fixer that inserts a @story annotation before the target node.
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -26,7 +23,10 @@ export function createAddStoryFix(target: any) {
             ? target.range[0]
             : 0
         : 0;
-    return fixer.insertTextBeforeRange([start, start], `${ANNOTATION}\n`);
+    return fixer.insertTextBeforeRange(
+      [start, start],
+      `${annotationTemplate}\n`,
+    );
   }
   return addStoryFixer;
 }
@@ -36,7 +36,7 @@ export function createAddStoryFix(target: any) {
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
  */
-export function createMethodFix(node: any) {
+export function createMethodFix(node: any, annotationTemplate: string) {
   /**
    * Fixer that inserts a @story annotation before a method node.
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -56,7 +56,10 @@ export function createMethodFix(node: any) {
             ? node.range[0]
             : 0
         : 0;
-    return fixer.insertTextBeforeRange([start, start], `${ANNOTATION}\n  `);
+    return fixer.insertTextBeforeRange(
+      [start, start],
+      `${annotationTemplate}\n  `,
+    );
   }
   return methodFixer;
 }
@@ -78,82 +81,3 @@ export const DEFAULT_SCOPE: string[] = [
  * Allowed values for export priority option.
  */
 export const EXPORT_PRIORITY_VALUES = ["all", "exported", "non-exported"];
-
-/**
- * Report a missing @story annotation for a general function-like node.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Report missing annotation and provide autofix using createAddStoryFix
- */
-export function reportMissing(
-  context: Rule.RuleContext,
-  sourceCode: any,
-  node: any,
-  target?: any,
-) {
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-AUTOFIX - Prefer provided sourceCode, fallback to context.getSourceCode()
-  const sc = sourceCode || context.getSourceCode();
-
-  /**
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-AUTOFIX - Only attempt to read JSDoc comment if source supports it
-   */
-  if (typeof sc?.getJSDocComment === "function") {
-    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQUIRED - Skip reporting when JSDoc already contains @story
-    const js = sc.getJSDocComment(node);
-    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQUIRED - If @story present in JSDoc, do not report
-    if (js && typeof js.value === "string" && js.value.includes("@story"))
-      return;
-  }
-
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-REQUIRED - Resolve function name for reporting, default to <unknown>
-  const name = node && node.id && node.id.name ? node.id.name : "<unknown>";
-  const resolvedTarget = target ?? node;
-  const nameNode =
-    node && node.id && node.id.type === "Identifier"
-      ? node.id
-      : node && node.key && node.key.type === "Identifier"
-        ? node.key
-        : node;
-  context.report({
-    node: nameNode,
-    messageId: "missingStory",
-    data: { name },
-    suggest: [
-      {
-        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-        fix: createAddStoryFix(resolvedTarget),
-      },
-    ],
-  });
-}
-
-/**
- * Report missing @story annotation for methods
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
- */
-export function reportMethod(
-  context: Rule.RuleContext,
-  sourceCode: any,
-  node: any,
-  target?: any,
-) {
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-REQUIRED - Resolve method name for reporting, default to <unknown>
-  const name = node && node.key && node.key.name ? node.key.name : "<unknown>";
-  context.report({
-    node,
-    messageId: "missingStory",
-    data: { name },
-    suggest: [
-      {
-        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${ANNOTATION}`,
-        fix: createMethodFix(target ?? node),
-      },
-    ],
-  });
-}

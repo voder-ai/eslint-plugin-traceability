@@ -120,6 +120,29 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
             },
           ],
         },
+        {
+          name: "[REQ-AUTOFIX-TEMPLATE] uses configured templates for functions and methods",
+          code: `function fn() {}\nclass C { method() {} }`,
+          output: `/** @story CUSTOM-FN */\nfunction fn() {}\nclass C { /** @story CUSTOM-METHOD */\n  method() {} }`,
+          options: [
+            {
+              annotationTemplate: "/** @story CUSTOM-FN */",
+              methodAnnotationTemplate: "/** @story CUSTOM-METHOD */",
+            },
+          ],
+          errors: 2,
+        },
+        {
+          name: "[REQ-AUTOFIX-SELECTIVE] does not insert annotations when autoFix is false",
+          code: `function fnNoFix() {}`,
+          output: null,
+          options: [
+            {
+              autoFix: false,
+            },
+          ],
+          errors: 1,
+        },
       ],
     });
   });

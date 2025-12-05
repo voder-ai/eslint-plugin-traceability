@@ -55,6 +55,12 @@ export interface AnnotationRuleOptions {
    * Human-readable example requirement ID used in error messages.
    */
   requirementIdExample?: string;
+
+  /**
+   * Global toggle for auto-fix behavior in valid-annotation-format.
+   * When false, no automatic suffix-normalization fixes are applied.
+   */
+  autoFix?: boolean;
 }
 
 /**
@@ -65,6 +71,7 @@ export interface ResolvedAnnotationOptions {
   storyExample: string;
   reqPattern: RegExp;
   reqExample: string;
+  autoFix: boolean;
 }
 
 function getDefaultStoryPattern(): RegExp {
@@ -92,6 +99,7 @@ let resolvedDefaults: ResolvedAnnotationOptions = {
   storyExample: getDefaultStoryExample(),
   reqPattern: getDefaultReqPattern(),
   reqExample: getDefaultReqExample(),
+  autoFix: true,
 };
 
 /**
@@ -225,6 +233,9 @@ export function resolveOptions(
   const nestedReqExample = user?.req?.example;
   const flatReqExample = user?.requirementIdExample;
 
+  const autoFixFlag = user?.autoFix;
+  const autoFix = typeof autoFixFlag === "boolean" ? autoFixFlag : true;
+
   const storyPattern = resolvePattern({
     nestedPattern: nestedStoryPattern,
     nestedFieldName: "story.pattern",
@@ -258,6 +269,7 @@ export function resolveOptions(
     storyExample,
     reqPattern,
     reqExample,
+    autoFix,
   };
 
   return resolvedDefaults;

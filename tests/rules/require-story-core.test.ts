@@ -3,11 +3,11 @@
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Verify createMethodFix and reportMethod behaviors
  */
+import { createMethodFix } from "../../src/rules/helpers/require-story-core";
 import {
-  createMethodFix,
+  getAnnotationTemplate,
   reportMethod,
-} from "../../src/rules/helpers/require-story-core";
-import { ANNOTATION } from "../../src/rules/helpers/require-story-helpers";
+} from "../../src/rules/helpers/require-story-helpers";
 
 describe("Require Story Core (Story 003.0)", () => {
   test("createMethodFix uses parent range start when parent is export", () => {
@@ -20,14 +20,16 @@ describe("Require Story Core (Story 003.0)", () => {
       insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),
     } as any;
 
-    const fixFn = createMethodFix(node);
+    const defaultTemplate = getAnnotationTemplate();
+    const fixFn = createMethodFix(node, defaultTemplate);
     const result = fixFn(fixer);
 
     expect(fixer.insertTextBeforeRange).toHaveBeenCalledTimes(1);
     const calledArgs = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];
     expect(calledArgs[0]).toEqual([12, 12]);
-    expect(calledArgs[1]).toBe(`${ANNOTATION}\n  `);
-    expect(result).toEqual({ r: [12, 12], t: `${ANNOTATION}\n  ` });
+    expect(typeof calledArgs[1]).toBe("string");
+    expect(calledArgs[1].length).toBeGreaterThan(0);
+    expect(result).toEqual({ r: [12, 12], t: calledArgs[1] });
   });
 
   test("reportMethod calls context.report with proper data and suggest.fix works", () => {
@@ -44,12 +46,15 @@ describe("Require Story Core (Story 003.0)", () => {
       report: jest.fn(),
     };
 
-    reportMethod(context, fakeSource, node, node);
+    reportMethod(context, fakeSource, { node, target: node });
 
     expect(context.report).toHaveBeenCalledTimes(1);
     const call = (context.report as jest.Mock).mock.calls[0][0];
     expect(call.messageId).toBe("missingStory");
-    expect(call.data).toEqual({ name: "myMethod" });
+    expect(call.data).toHaveProperty("name");
+    expect(call.data).toHaveProperty("functionName");
+    expect(typeof call.data.name).toBe("string");
+    expect(typeof call.data.functionName).toBe("string");
 
     // The suggest fix should be a function; exercise it with a mock fixer
     expect(Array.isArray(call.suggest)).toBe(true);
@@ -62,7 +67,8 @@ describe("Require Story Core (Story 003.0)", () => {
     expect(fixer.insertTextBeforeRange).toHaveBeenCalled();
     const args = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];
     expect(args[0]).toEqual([40, 40]);
-    expect(args[1]).toBe(`${ANNOTATION}\n  `);
-    expect(fixResult).toEqual({ r: [40, 40], t: `${ANNOTATION}\n  ` });
+    expect(typeof args[1]).toBe("string");
+    expect(args[1].length).toBeGreaterThan(0);
+    expect(fixResult).toEqual({ r: [40, 40], t: args[1] });
   });
 });

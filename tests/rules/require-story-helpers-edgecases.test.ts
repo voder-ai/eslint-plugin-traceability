@@ -101,7 +101,7 @@ describe("Require Story Helpers - edge cases (Story 003.0)", () => {
     };
 
     const context: any = { getSourceCode: () => fakeSource, report: jest.fn() };
-    reportMissing(context, fakeSource, node, node);
+    reportMissing(context, fakeSource, { node, target: node });
     expect(context.report).not.toHaveBeenCalled();
   });
 });

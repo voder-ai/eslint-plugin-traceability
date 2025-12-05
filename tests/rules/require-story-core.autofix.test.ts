@@ -3,18 +3,19 @@
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Cover additional branch cases in require-story-core (addStoryFixer/reportMissing)
  */
+import { createAddStoryFix } from "../../src/rules/helpers/require-story-core";
 import {
-  createAddStoryFix,
+  getAnnotationTemplate,
   reportMissing,
-} from "../../src/rules/helpers/require-story-core";
-import { ANNOTATION } from "../../src/rules/helpers/require-story-helpers";
+} from "../../src/rules/helpers/require-story-helpers";
 import { exerciseCreateAddStoryFixBranches } from "../utils/require-story-core-test-helpers";
 
 describe("Require Story Core (Story 003.0)", () => {
   test("createAddStoryFix covers primary branch combinations via shared helper", () => {
-    exerciseCreateAddStoryFixBranches(createAddStoryFix, {
-      annotationText: ANNOTATION + "\n",
-    });
+    const defaultTemplate = getAnnotationTemplate();
+    const factory = (target: any, _annotationTemplate: string) =>
+      createAddStoryFix(target, defaultTemplate);
+    exerciseCreateAddStoryFixBranches(factory);
   });
 
   test("reportMissing uses context.getSourceCode fallback when sourceCode not provided and still reports", () => {
@@ -29,7 +30,11 @@ describe("Require Story Core (Story 003.0)", () => {
     };
     const context: any = { getSourceCode: () => fakeSource, report: jest.fn() };
 
-    reportMissing(context, undefined as any, node, node);
+    reportMissing(context, undefined as any, {
+      node,
+      target: node,
+      options: { autoFixToggle: true },
+    });
     expect(context.report).toHaveBeenCalledTimes(1);
     const call = (context.report as jest.Mock).mock.calls[0][0];
     expect(call.node).toBe(node);

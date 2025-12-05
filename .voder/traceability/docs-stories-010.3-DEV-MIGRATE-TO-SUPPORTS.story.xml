@@ -2,16 +2,24 @@
 <traceability>
   <specification>docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T05:04:20.619Z</last_validated>
+  <last_validated>2025-12-05T05:38:59.594Z</last_validated>
   <last_modified>2025-12-04T18:44:42.526Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and requirements in docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md are implemented and verified:
-- The `traceability/prefer-implements-annotation` rule is implemented with optional, configurable warnings and conservative auto-fix behavior, only active when users opt in (default off).
-- Auto-fix converts simple single-story `@story` + multiple `@req` annotations into a single `@supports` line, preserving JSDoc structure and formatting, and avoids fixing complex or ambiguous patterns while still warning.
-- Multi-story and mixed @story/@req/@supports scenarios are detected and reported with appropriate messages, without unsafe fixes.
-- Legacy `@story`/`@req` annotations remain valid when this rule is disabled, satisfying backward-compatibility requirements.
-- Tests explicitly tied to this story cover all key behaviors (warnings, auto-fix, multi-story detection, backward compatibility, configuration severity), and the full test suite passes.
-- User-facing migration documentation describes this rule, its default disabled state, opt-in configuration, and its auto-fix role in migrating from `@story`/`@req` to `@supports`.
+  <evidence>[object Object]</evidence>
+  <notes>All functional acceptance criteria in docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md are implemented and verified by tests:
 
-Based on concrete implementation, tests, and documentation, this story is fully implemented.</notes>
+- Optional Warning / Configurable Enforcement (REQ-OPTIONAL-WARNING, REQ-CONFIG-SEVERITY): The rule is defined as a suggestion, is not included in the recommended/strict presets, and is controlled entirely via ESLint severity (off/warn/error). Tests in tests/rules/prefer-implements-annotation.test.ts confirm it is disabled by default in both presets and can be configured with warn/error severities.
+
+- Auto-fix Support & Single Story Conversion (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX): The rule implements conservative auto-fix logic via buildImplementsAutoFix and applyImplementsReplacement, which converts a single @story with one or multiple simple @req lines into a single @supports line while removing the originals. Tests assert correct output for both single-req and multi-req cases.
+
+- Multi-story Detection / Mixed Usage (REQ-MULTI-STORY-DETECT): The implementation detects mixed @story/@req/@supports comments and multiple distinct @story paths, reporting cannotAutoFix with an explicit reason or multiStoryDetected, respectively. Tests cover both scenarios and validate the messages.
+
+- Preserve Order and Formatting (REQ-PRESERVE-FORMAT): The fixer reconstructs the comment in-place, replacing only the @story line with a @supports line, removing @req lines, and preserving all other lines (description, @param, @returns, etc.) in their original order and using the original indentation and leading `*` prefix. This matches the story’s requirement that @supports sit after the description and before parameter tags.
+
+- Both Formats Valid / Backward Compatibility (REQ-BACKWARD-COMP-VALIDATION): When the rule is disabled (the default in presets), it has no effect. Even when enabled, processComment exits early if a comment has only @story, only @req, or only @supports, meaning legacy annotations still pass. The tests’ valid cases explicitly exercise and confirm that behavior.
+
+- Valid Output (REQ-VALID-OUTPUT): Auto-fix is intentionally conservative—only simple single-story, single-line @story and @req forms are transformed; any complex or ambiguous case causes the fixer to bail and emit diagnostics without changing code. This design ensures that all generated @supports lines conform to the existing validation rules.
+
+- Documentation: There is a dedicated rule doc (docs/rules/prefer-implements-annotation.md), a user-facing migration guide (user-docs/migration-guide.md), and README entries describing the optional migration rule, auto-fix behavior, and opt-in configuration. These collectively satisfy the documentation acceptance criterion.
+
+All relevant Jest tests for this story pass as part of the full test suite. There is a minor traceability naming inconsistency in docs/rules/prefer-implements-annotation.md (it references MIGRATE-TO-IMPLEMENTS rather than MIGRATE-TO-SUPPORTS), but this does not affect behavior and does not undermine satisfaction of the story’s functional and documentation acceptance criteria. Overall, the story is fully implemented and verified.</notes>
 </traceability>
