@@ -100,3 +100,140 @@ The synthetic large-workspace fixtures to be implemented in tests will follow th
 - **Reusable across tests**: A shared helper will construct these fixtures once per test suite (where practical) and clean them up after the suite completes, minimizing duplication and keeping test runtime predictable.
 
 These decisions complete the **NOW** task of identifying the critical maintenance and CLI workflows that are sensitive to very large workspaces and defining concrete target scales for performance characterization.
+
+## Test Locations and Commands
+
+Performance and stress tests for the maintenance tools live under:
+
+- Core API performance tests:
+  - `tests/maintenance/perf/detect-large-workspace.test.ts`
+  - `tests/maintenance/perf/update-large-workspace.test.ts`
+- CLI-level performance tests:
+  - `tests/maintenance/perf/cli-large-workspace.test.ts`
+- Shared fixture and helper utilities:
+  - `tests/maintenance/perf/large-workspace-fixtures.ts`
+  - `tests/utils/temp-dir-helpers.ts`
+
+Typical commands:
+
+- Run only maintenance performance tests (recommended):
+  - Using package script (preferred, if available):
+    - `pnpm test:maintenance-perf`
+    - or `npm run test:maintenance-perf`
+  - Direct Vitest invocation:
+    - `pnpm vitest run tests/maintenance/perf`
+    - or `npx vitest run tests/maintenance/perf`
+
+- Run a single perf test file:
+  - `pnpm vitest run tests/maintenance/perf/detect-large-workspace.test.ts`
+  - `pnpm vitest run tests/maintenance/perf/cli-large-workspace.test.ts`
+
+- Run maintenance tests including perf as part of a broader suite (slower):
+  - `pnpm vitest run tests/maintenance`
+
+If your project uses Jest instead of Vitest, the equivalent commands are:
+
+- `pnpm jest tests/maintenance/perf`
+- `pnpm jest tests/maintenance/perf/detect-large-workspace.test.ts`
+
+Check `package.json` for the authoritative scripts and preferred test runner.
+
+## When to Run These Tests
+
+These performance tests are intentionally heavier than unit tests and should not run on every edit-save cycle. Use them in these situations:
+
+- **Before merging significant maintenance-tool changes**
+  - Any change to:
+    - `src/maintenance/detect.ts`
+    - `src/maintenance/update.ts`
+    - `src/maintenance/batch.ts`
+    - `src/maintenance/report.ts`
+    - `src/maintenance/utils.ts`
+    - `src/maintenance/cli.ts`, `src/maintenance/commands.ts`, or `src/maintenance/flags.ts`
+  - Any change to `@story` parsing, path resolution, or file traversal utilities used by these modules.
+
+- **When changing filesystem or globbing behavior**
+  - Modifications to directory walking logic, ignore rules, or project boundary enforcement.
+
+- **Periodically in CI**
+  - As a scheduled job (e.g. nightly or weekly) to detect regressions unrelated to local changes (such as dependency upgrades).
+  - As an optional “extended” CI job that runs on main or release branches.
+
+- **Before tagging a release**
+  - Especially for releases that advertise improvements or changes to maintenance tooling or CLI behavior.
+
+Avoid running these tests in the tight inner loop (e.g. pre-push hooks) unless you are specifically working on performance and accept the extra run time.
+
+## Interpreting Results
+
+### Functional expectations
+
+All performance tests must first pass functionally:
+
+- **Detection / verification / reporting tests**:
+  - The number of detected stale annotations matches the expected counts for the synthetic workspace.
+  - No unexpected errors or thrown exceptions.
+- **Update tests**:
+  - All targeted `@story` references are updated to the new path.
+  - Non-targeted references remain unchanged.
+  - Running the same update operation a second time is effectively a no-op (idempotent).
+- **CLI tests**:
+  - Exit code:
+    - `0` when no stale annotations are present.
+    - `1` when stale annotations are found (per contract).
+    - `2` for usage errors or invalid flags.
+  - JSON output parses successfully and reports the expected number of stale annotations.
+
+If any of these assertions fail, treat it as a correctness bug rather than a performance issue.
+
+### Performance and timing expectations
+
+The tests are written to assert that operations complete within a **generous but finite** time budget. Guidelines:
+
+- For the synthetic ~500-file workspaces described above:
+  - Combined detection/verification/report/report paths should complete **comfortably under ~5 seconds** on a CI-class machine.
+  - Representative single-path update operations should also complete **comfortably under ~5 seconds**.
+- Test code typically:
+  - Measures wall-clock time around the operation under test.
+  - Asserts that the measured time is less than a threshold value.
+  - May log timings for informational purposes.
+
+If a test fails due to a timeout or an explicit duration assertion:
+
+1. **Confirm environment**
+   - Ensure you are not running on an unusually constrained machine (e.g. heavy load, low I/O, containers with strict limits).
+   - Re-run the specific test file once to rule out transient slowdowns.
+
+2. **Check for recent changes**
+   - Look for recent modifications to:
+     - File traversal logic (`getAllFiles`, globs, recursion).
+     - Annotation parsing/regexes.
+     - Batch operations that may now be performing extra work (e.g. repeated reads, redundant stat calls).
+   - Compare the implementation with previous versions to identify new sources of repeated I/O or allocations.
+
+3. **Profile or instrument**
+   - Add temporary timers or logging around:
+     - Filesystem traversal.
+     - Story resolution and boundary checks.
+     - Regex-based scanning and replacements.
+   - Use these to locate hotspots (e.g. a nested loop over files and stories, or synchronous I/O in tight loops).
+
+4. **Decide on next steps**
+   - If performance degraded due to a clear regression, fix the underlying issue and re-run the tests.
+   - If the environment is inherently slower than CI but timings are still reasonable, consider:
+     - Increasing local thresholds only for ad-hoc runs (do not relax CI thresholds without clear justification).
+     - Running the tests in CI to get canonical timing measurements.
+
+### What is acceptable to adjust
+
+- It is acceptable to:
+  - Tweak thresholds slightly if:
+    - CI hardware is changed and becomes consistently slower or faster.
+    - There is evidence that variability near the threshold causes flaky failures.
+  - Improve fixture generation code to be faster or simpler as long as the overall scale and behavior remain equivalent.
+
+- It is **not** acceptable to:
+  - Loosen thresholds merely to “make tests pass” without understanding the performance change.
+  - Reduce the size or complexity of the synthetic workspace in a way that stops reflecting realistic large-workspace behavior.
+
+Use these tests as a guardrail: if they fail, it should prompt a discussion and investigation into the trade-offs being made between new functionality and the scalability of the maintenance tools.
