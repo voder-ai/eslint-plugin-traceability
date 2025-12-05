@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<traceability>
-  <specification>docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md</specification>
-  <status>NOT_SPEC</status>
-  <last_validated>2025-12-04T13:46:14.520Z</last_validated>
-  <last_modified>2025-12-04T09:11:12.089Z</last_modified>
-  <evidence>Specification file not found: ENOENT: no such file or directory, open '/Users/tomhoward/Projects/eslint-plugin-traceability/docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md'</evidence>
-  <notes>File does not exist or is not accessible</notes>
-</traceability>

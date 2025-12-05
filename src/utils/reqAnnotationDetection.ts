@@ -163,6 +163,46 @@ function fallbackTextBeforeHasReq(sourceCode: any, node: any): boolean {
 }
 
 /**
+ * Helper to combine advanced, location-based heuristics for requirement detection.
+ * Uses preceding lines, parent-chain comments, and fallback text windows to find @req/@supports.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ * @req REQ-ANNOTATION-REQ-DETECTION - Use multiple heuristics to detect @req markers around the node
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Use multiple heuristics to detect @supports markers around the node
+ */
+function hasReqInAdvancedHeuristics(sourceCode: any, node: any): boolean {
+  if (!sourceCode || !node) {
+    return false;
+  }
+
+  return (
+    linesBeforeHasReq(sourceCode, node) ||
+    parentChainHasReq(sourceCode, node) ||
+    fallbackTextBeforeHasReq(sourceCode, node)
+  );
+}
+
+/**
+ * Helper to check JSDoc and nearby comments for requirement annotations.
+ * Accepts both @req and @supports markers as evidence of requirement coverage.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation in JSDoc/comments
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept @supports as requirement coverage in JSDoc/comments
+ */
+function hasReqInJsdocOrComments(jsdoc: any, comments: any[]): boolean {
+  if (
+    jsdoc &&
+    typeof jsdoc.value === "string" &&
+    (jsdoc.value.includes("@req") || jsdoc.value.includes("@supports"))
+  ) {
+    return true;
+  }
+
+  return comments.some(commentContainsReq);
+}
+
+/**
  * Helper to determine whether a JSDoc or any nearby comments contain a requirement annotation.
  * Treats both @req and @supports annotations as evidence of requirement coverage.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -182,34 +222,12 @@ export function hasReqAnnotation(
         ? context.getSourceCode()
         : undefined;
 
-    // Prefer robust, location-based heuristics when sourceCode and node are available.
-    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQ-DETECTION - Use multiple heuristics to detect @req markers around the node
-    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Use multiple heuristics to detect @supports markers around the node
-    if (sourceCode && node) {
-      if (
-        linesBeforeHasReq(sourceCode, node) ||
-        parentChainHasReq(sourceCode, node) ||
-        fallbackTextBeforeHasReq(sourceCode, node)
-      ) {
-        return true;
-      }
+    if (hasReqInAdvancedHeuristics(sourceCode, node)) {
+      return true;
     }
   } catch {
-    // Swallow detection errors and fall through to simple checks.
-    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQ-DETECTION - Fail gracefully when advanced detection heuristics throw
+    // swallow and fall through to simple checks
   }
 
-  // BRANCH requirement detection on JSDoc or comments, accepting both @req and @supports.
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-  // @req REQ-ANNOTATION-REQ-DETECTION
-  // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS
-  return (
-    (jsdoc &&
-      typeof jsdoc.value === "string" &&
-      (jsdoc.value.includes("@req") || jsdoc.value.includes("@supports"))) ||
-    comments.some(commentContainsReq)
-  );
+  return hasReqInJsdocOrComments(jsdoc, comments);
 }

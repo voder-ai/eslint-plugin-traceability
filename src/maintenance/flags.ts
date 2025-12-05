@@ -123,47 +123,170 @@ function createDefaultFlags(): ParsedFlags {
 }
 
 /**
+ * Safely check if the next argument value exists and is a string.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+function isNextValueString(args: string[], index: number): boolean {
+  return typeof args[index + 1] === "string";
+}
+
+/**
+ * Handle the --root flag, updating the root path if present.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+function handleRootFlag(
+  flags: ParsedFlags,
+  args: string[],
+  index: number,
+): number {
+  if (args[index] !== "--root" || !isNextValueString(args, index)) {
+    return index;
+  }
+
+  flags.root = path.resolve(args[index + 1]);
+  return index + 1;
+}
+
+/**
+ * Handle the --json flag, toggling JSON output when present.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+function handleJsonFlag(
+  flags: ParsedFlags,
+  args: string[],
+  index: number,
+): number {
+  if (args[index] !== "--json") {
+    return index;
+  }
+
+  flags.json = true;
+  return index;
+}
+
+/**
+ * Handle the --format flag, validating and setting the output format.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+function handleFormatFlag(
+  flags: ParsedFlags,
+  args: string[],
+  index: number,
+): number {
+  if (args[index] !== "--format" || !isNextValueString(args, index)) {
+    return index;
+  }
+
+  const value = args[index + 1];
+  if (value === "text" || value === "json") {
+    flags.format = value;
+  } else {
+    throw new Error(`Invalid format: ${value}. Expected 'text' or 'json'.`);
+  }
+
+  return index + 1;
+}
+
+/**
+ * Handle the --from flag, capturing the starting reference if present.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+function handleFromFlag(
+  flags: ParsedFlags,
+  args: string[],
+  index: number,
+): number {
+  if (args[index] !== "--from" || !isNextValueString(args, index)) {
+    return index;
+  }
+
+  flags.from = args[index + 1];
+  return index + 1;
+}
+
+/**
+ * Handle the --to flag, capturing the ending reference if present.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+function handleToFlag(
+  flags: ParsedFlags,
+  args: string[],
+  index: number,
+): number {
+  if (args[index] !== "--to" || !isNextValueString(args, index)) {
+    return index;
+  }
+
+  flags.to = args[index + 1];
+  return index + 1;
+}
+
+/**
+ * Handle the --dry-run flag, enabling dry-run mode when present.
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ */
+function handleDryRunFlag(
+  flags: ParsedFlags,
+  args: string[],
+  index: number,
+): number {
+  if (args[index] !== "--dry-run") {
+    return index;
+  }
+
+  flags.dryRun = true;
+  return index;
+}
+
+/**
  * Handle a single CLI argument and update the flags accordingly.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
  */
 function applyFlag(flags: ParsedFlags, args: string[], index: number): number {
-  const arg = args[index];
-
-  if (arg === "--root" && typeof args[index + 1] === "string") {
-    flags.root = path.resolve(args[index + 1]);
-    return index + 1;
+  const afterRoot = handleRootFlag(flags, args, index);
+  if (afterRoot !== index) {
+    return afterRoot;
   }
 
-  if (arg === "--json") {
-    flags.json = true;
-    return index;
+  const afterJson = handleJsonFlag(flags, args, index);
+  if (afterJson !== index) {
+    return afterJson;
   }
 
-  if (arg === "--format" && typeof args[index + 1] === "string") {
-    const value = args[index + 1];
-    if (value === "text" || value === "json") {
-      flags.format = value;
-    } else {
-      throw new Error(`Invalid format: ${value}. Expected 'text' or 'json'.`);
-    }
-    return index + 1;
+  const afterFormat = handleFormatFlag(flags, args, index);
+  if (afterFormat !== index) {
+    return afterFormat;
   }
 
-  if (arg === "--from" && typeof args[index + 1] === "string") {
-    flags.from = args[index + 1];
-    return index + 1;
+  const afterFrom = handleFromFlag(flags, args, index);
+  if (afterFrom !== index) {
+    return afterFrom;
   }
 
-  if (arg === "--to" && typeof args[index + 1] === "string") {
-    flags.to = args[index + 1];
-    return index + 1;
+  const afterTo = handleToFlag(flags, args, index);
+  if (afterTo !== index) {
+    return afterTo;
   }
 
-  if (arg === "--dry-run") {
-    flags.dryRun = true;
-    return index;
+  const afterDryRun = handleDryRunFlag(flags, args, index);
+  if (afterDryRun !== index) {
+    return afterDryRun;
   }
 
   return index;

@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-12-05T05:40:51.695Z</last_validated>
+  <status>PASSED</status>
+  <last_validated>2025-12-05T06:47:48.037Z</last_validated>
   <last_modified>2025-12-04T18:45:50.452Z</last_modified>
-  <evidence>Assessment error: 400 Input tokens exceed the configured limit of 272000 tokens. Your messages resulted in 401773 tokens. Please reduce the length of the messages.</evidence>
-  <notes>Technical error during assessment</notes>
+  <evidence>[object Object]</evidence>
+  <notes>The 010.2-DEV-MULTI-STORY-SUPPORT story is fully implemented and validated.
+
+Core @supports behavior is implemented in the valid-annotation-format rule with dedicated helpers in valid-implements-utils, covering parsing and strict format validation, including detailed error messages. The valid-req-reference rule has been extended to parse @supports lines, resolve the specified story file, load its requirement IDs, and check each listed requirement; its tests explicitly cover single- and multi-story @supports scenarios, including reuse of a requirement ID across multiple story files, satisfying REQ-SUPPORTS-VALIDATE, REQ-SCOPED-IDS, and error-context requirements.
+
+Backward compatibility is maintained: all existing @story/@req behaviors remain covered by tests (valid-annotation-format, valid-req-reference, require-story-annotation). Mixed usage is explicitly tested in valid-annotation-format (a comment containing @story, @req, and @supports together) and in valid-req-reference (both @story/@req and @supports in the same suite).
+
+For presence checks, the require-req-annotation rule delegates to shared detection logic that treats @supports as satisfying requirement annotations; this is directly tested via a valid case with only an @supports line. The require-story-annotation rule’s IO helpers were updated so that @supports in comments or surrounding text also counts as a story marker; these helpers are used by hasStoryAnnotation, ensuring @supports can satisfy the story requirement without breaking existing @story-based behavior.
+
+Tests and code are richly annotated with @story references pointing to docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md, and Jest output confirms all related suites are passing. Collectively, this provides concrete evidence that all acceptance criteria and listed technical requirements for this story are met.</notes>
 </traceability>

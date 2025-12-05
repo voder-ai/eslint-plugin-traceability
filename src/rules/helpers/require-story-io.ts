@@ -155,6 +155,62 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
 }
 
 /**
+ * Safely compute the starting range index for fallback text scanning.
+ * Centralizes guards around sourceCode.getText and node.range structure.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Centralize guards for fallback range computation
+ */
+function getFallbackRangeStart(sourceCode: any, node: any): number | null {
+  if (typeof sourceCode?.getText !== "function") {
+    return null;
+  }
+  const range = (node && node.range) || null;
+  if (!Array.isArray(range) || typeof range[0] !== "number") {
+    return null;
+  }
+  return range[0];
+}
+
+/**
+ * Safely slice a bounded fallback text window immediately preceding the node start index.
+ * Restricts scanning to a fixed-size window and treats IO/slicing failures as non-fatal.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Restrict fallback text scanning to a safe, fixed-size window and handle failures gracefully
+ */
+function getFallbackTextWindow(
+  sourceCode: any,
+  nodeStartIndex: number,
+): string | null {
+  const start = Math.max(0, nodeStartIndex - FALLBACK_WINDOW);
+  try {
+    const textBefore = sourceCode.getText().slice(start, nodeStartIndex);
+    return typeof textBefore === "string" ? textBefore : null;
+  } catch {
+    /*
+     * Swallow low-level IO or slicing errors so annotation detection never breaks lint execution.
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-ANNOTATION-REQUIRED - Treat fallback text inspection failures as "no annotation" instead of raising
+     */
+    return null;
+  }
+}
+
+/**
+ * Detect whether the provided fallback text window contains a story marker.
+ * Recognizes both @story and @supports annotations in the inspected text.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Recognize story annotations discovered via fallback text scanning
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Recognize @supports annotations discovered via fallback text scanning
+ */
+function fallbackTextHasMarker(textBefore: string | null): boolean {
+  if (typeof textBefore !== "string") {
+    return false;
+  }
+  return textBefore.includes("@story") || textBefore.includes("@supports");
+}
+
+/**
  * Fallback: inspect text immediately preceding the node in sourceCode.getText to find @story
  * Also accepts @supports annotations as satisfying story presence for this rule.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -166,44 +222,10 @@ export function fallbackTextBeforeHasStory(
   sourceCode: any,
   node: any,
 ): boolean {
-  // Skip fallback text inspection when the sourceCode API or node range information is not available.
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-REQUIRED - Avoid throwing when source text or range metadata cannot be read
-  if (
-    typeof sourceCode?.getText !== "function" ||
-    !Array.isArray((node && node.range) || [])
-  ) {
+  const nodeStartIndex = getFallbackRangeStart(sourceCode, node);
+  if (nodeStartIndex === null) {
     return false;
   }
-  const range = node.range;
-  // Guard against malformed range values that cannot provide a numeric start index for slicing.
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-REQUIRED - Validate node range structure before computing fallback window
-  if (!Array.isArray(range) || typeof range[0] !== "number") {
-    return false;
-  }
-  try {
-    // Limit the fallback inspection window to a bounded region immediately preceding the node.
-    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQUIRED - Restrict fallback text scanning to a safe, fixed-size window
-    const start = Math.max(0, range[0] - FALLBACK_WINDOW);
-    const textBefore = sourceCode.getText().slice(start, range[0]);
-    // Detect any @story or @supports marker that appears within the bounded fallback window.
-    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQUIRED - Recognize story annotations discovered via fallback text scanning
-    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Recognize @supports annotations discovered via fallback text scanning
-    if (
-      typeof textBefore === "string" &&
-      (textBefore.includes("@story") || textBefore.includes("@supports"))
-    ) {
-      return true;
-    }
-  } catch {
-    /*
-     * Swallow low-level IO or slicing errors so annotation detection never breaks lint execution.
-     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-     * @req REQ-ANNOTATION-REQUIRED - Treat fallback text inspection failures as "no annotation" instead of raising
-     */
-  }
-  return false;
+  const textBefore = getFallbackTextWindow(sourceCode, nodeStartIndex);
+  return fallbackTextHasMarker(textBefore);
 }

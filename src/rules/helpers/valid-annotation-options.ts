@@ -212,6 +212,135 @@ function resolveExample(
   return defaultExample;
 }
 
+function getUserOptions(
+  rawOptions: unknown[],
+): AnnotationRuleOptions | undefined {
+  return normalizeUserOptions(rawOptions);
+}
+
+function resolveAutoFixFlag(user: AnnotationRuleOptions | undefined): boolean {
+  const autoFixFlag = user?.autoFix;
+  return typeof autoFixFlag === "boolean" ? autoFixFlag : true;
+}
+
+function resolveStoryPattern(
+  nestedStoryPattern: string | undefined,
+  flatStoryPattern: string | undefined,
+): RegExp {
+  return resolvePattern({
+    nestedPattern: nestedStoryPattern,
+    nestedFieldName: "story.pattern",
+    flatPattern: flatStoryPattern,
+    flatFieldName: "storyPathPattern",
+    defaultPattern: getDefaultStoryPattern(),
+  });
+}
+
+function resolveReqPattern(
+  nestedReqPattern: string | undefined,
+  flatReqPattern: string | undefined,
+): RegExp {
+  return resolvePattern({
+    nestedPattern: nestedReqPattern,
+    nestedFieldName: "req.pattern",
+    flatPattern: flatReqPattern,
+    flatFieldName: "requirementIdPattern",
+    defaultPattern: getDefaultReqPattern(),
+  });
+}
+
+function resolveStoryExample(
+  nestedStoryExample: string | undefined,
+  flatStoryExample: string | undefined,
+): string {
+  return resolveExample(
+    nestedStoryExample,
+    flatStoryExample,
+    getDefaultStoryExample(),
+  );
+}
+
+function resolveReqExample(
+  nestedReqExample: string | undefined,
+  flatReqExample: string | undefined,
+): string {
+  return resolveExample(
+    nestedReqExample,
+    flatReqExample,
+    getDefaultReqExample(),
+  );
+}
+
+function getStoryPatternInputs(user: AnnotationRuleOptions | undefined): {
+  nestedStoryPattern: string | undefined;
+  flatStoryPattern: string | undefined;
+} {
+  return {
+    nestedStoryPattern: user?.story?.pattern,
+    flatStoryPattern: user?.storyPathPattern,
+  };
+}
+
+function getStoryExampleInputs(user: AnnotationRuleOptions | undefined): {
+  nestedStoryExample: string | undefined;
+  flatStoryExample: string | undefined;
+} {
+  return {
+    nestedStoryExample: user?.story?.example,
+    flatStoryExample: user?.storyPathExample,
+  };
+}
+
+function getReqPatternInputs(user: AnnotationRuleOptions | undefined): {
+  nestedReqPattern: string | undefined;
+  flatReqPattern: string | undefined;
+} {
+  return {
+    nestedReqPattern: user?.req?.pattern,
+    flatReqPattern: user?.requirementIdPattern,
+  };
+}
+
+function getReqExampleInputs(user: AnnotationRuleOptions | undefined): {
+  nestedReqExample: string | undefined;
+  flatReqExample: string | undefined;
+} {
+  return {
+    nestedReqExample: user?.req?.example,
+    flatReqExample: user?.requirementIdExample,
+  };
+}
+
+function resolveOptionsInternal(
+  user: AnnotationRuleOptions | undefined,
+): ResolvedAnnotationOptions {
+  const { nestedStoryPattern, flatStoryPattern } = getStoryPatternInputs(user);
+  const { nestedStoryExample, flatStoryExample } = getStoryExampleInputs(user);
+  const { nestedReqPattern, flatReqPattern } = getReqPatternInputs(user);
+  const { nestedReqExample, flatReqExample } = getReqExampleInputs(user);
+
+  const autoFix = resolveAutoFixFlag(user);
+
+  const storyPattern = resolveStoryPattern(
+    nestedStoryPattern,
+    flatStoryPattern,
+  );
+  const reqPattern = resolveReqPattern(nestedReqPattern, flatReqPattern);
+  const storyExample = resolveStoryExample(
+    nestedStoryExample,
+    flatStoryExample,
+  );
+  const reqExample = resolveReqExample(nestedReqExample, flatReqExample);
+
+  return {
+    storyPattern,
+    storyExample,
+    reqPattern,
+    reqExample,
+    autoFix,
+  };
+}
+
 /**
  * Resolve user options into concrete, validated configuration.
  * Falls back to existing defaults when options are not provided or invalid.
@@ -221,57 +350,10 @@ export function resolveOptions(
 ): ResolvedAnnotationOptions {
   optionErrors = [];
 
-  const user = normalizeUserOptions(rawOptions);
+  const user = getUserOptions(rawOptions);
+  const resolved = resolveOptionsInternal(user);
 
-  const nestedStoryPattern = user?.story?.pattern;
-  const flatStoryPattern = user?.storyPathPattern;
-  const nestedStoryExample = user?.story?.example;
-  const flatStoryExample = user?.storyPathExample;
-
-  const nestedReqPattern = user?.req?.pattern;
-  const flatReqPattern = user?.requirementIdPattern;
-  const nestedReqExample = user?.req?.example;
-  const flatReqExample = user?.requirementIdExample;
-
-  const autoFixFlag = user?.autoFix;
-  const autoFix = typeof autoFixFlag === "boolean" ? autoFixFlag : true;
-
-  const storyPattern = resolvePattern({
-    nestedPattern: nestedStoryPattern,
-    nestedFieldName: "story.pattern",
-    flatPattern: flatStoryPattern,
-    flatFieldName: "storyPathPattern",
-    defaultPattern: getDefaultStoryPattern(),
-  });
-
-  const reqPattern = resolvePattern({
-    nestedPattern: nestedReqPattern,
-    nestedFieldName: "req.pattern",
-    flatPattern: flatReqPattern,
-    flatFieldName: "requirementIdPattern",
-    defaultPattern: getDefaultReqPattern(),
-  });
-
-  const storyExample = resolveExample(
-    nestedStoryExample,
-    flatStoryExample,
-    getDefaultStoryExample(),
-  );
-
-  const reqExample = resolveExample(
-    nestedReqExample,
-    flatReqExample,
-    getDefaultReqExample(),
-  );
-
-  resolvedDefaults = {
-    storyPattern,
-    storyExample,
-    reqPattern,
-    reqExample,
-    autoFix,
-  };
-
+  resolvedDefaults = resolved;
   return resolvedDefaults;
 }
 

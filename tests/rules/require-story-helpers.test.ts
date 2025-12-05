@@ -65,7 +65,7 @@ describe("Require Story Helpers (Story 003.0)", () => {
   test("reportMissing does not call context.report if JSDoc contains @story", () => {
     const node: any = {
       type: "FunctionDeclaration",
-      id: { name: "fn" },
+      id: { type: "Identifier", name: "fn" },
       range: [0, 10],
     };
     const fakeSource = {
@@ -86,7 +86,7 @@ describe("Require Story Helpers (Story 003.0)", () => {
   test("reportMissing calls context.report when no JSDoc story present", () => {
     const node: any = {
       type: "FunctionDeclaration",
-      id: { name: "fn2" },
+      id: { type: "Identifier", name: "fn2" },
       range: [0, 10],
     };
     const fakeSource = {
@@ -101,7 +101,7 @@ describe("Require Story Helpers (Story 003.0)", () => {
     reportMissing(context, fakeSource, { node, target: node });
     expect(context.report).toHaveBeenCalledTimes(1);
     const call = (context.report as jest.Mock).mock.calls[0][0];
-    expect(call.node).toBe(node);
+    expect(call.node).toBe(node.id);
     expect(call.messageId).toBe("missingStory");
   });
 

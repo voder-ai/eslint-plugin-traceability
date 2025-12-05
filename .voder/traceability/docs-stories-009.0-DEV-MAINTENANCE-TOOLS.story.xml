@@ -2,137 +2,80 @@
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T05:39:59.689Z</last_validated>
+  <last_validated>2025-12-05T06:44:49.765Z</last_validated>
   <last_modified>2025-12-04T18:44:42.549Z</last_modified>
-  <evidence>Test run (npm test -- --runInBand --verbose) – all suites passed, including all maintenance-related tests that explicitly reference this story: tests/maintenance/*.test.ts, tests/perf/maintenance-large-workspace.test.ts, tests/perf/maintenance-cli-large-workspace.test.ts. Jest output shows:
-  - "Maintenance Tools Index Exports (Story 009.0-DEV-MAINTENANCE-TOOLS)" – all checks passed
-  - "detectStaleAnnotations (Story 009.0-DEV-MAINTENANCE-TOOLS)" – all checks passed
-  - "detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)" – all checks passed
-  - "updateAnnotationReferences (Story 009.0-DEV-MAINTENANCE-TOOLS)" – all checks passed
-  - "batchUpdateAnnotations (Story 009.0-DEV-MAINTENANCE-TOOLS)" / "verifyAnnotations (Story 009.0-DEV-MAINTENANCE-TOOLS)" – all checks passed
-  - "generateMaintenanceReport (Story 009.0-DEV-MAINTENANCE-TOOLS)" – all checks passed
-  - "Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)" – all checks passed
-  - "Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS)" – all checks passed
-  - "Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS)" – all checks passed,Core detection functionality (REQ-MAINT-DETECT):
-  - Implementation: src/maintenance/detect.ts
-    - export function detectStaleAnnotations(codebasePath: string): string[]
-      - Resolves a workspaceRoot, returns [] if it does not exist or is not a directory (safe default)
-      - Uses getAllFiles(workspaceRoot) to walk files
-      - Regex-scans for `@story <path>` in file contents
-      - Uses isUnsafeStoryPath + enforceProjectBoundary to avoid path traversal / absolute-path issues and to stay inside project boundaries
-      - For in-project candidates, checks fs.existsSync and collects missing ones into a set of stale paths
-  - Tests:
-    - tests/maintenance/detect.test.ts – verifies empty result when no annotations, and detection of a basic stale story
-    - tests/maintenance/detect-isolated.test.ts – verifies:
-      - returns [] when directory does not exist
-      - detects stale annotations in nested directories
-      - throws on permission denied
-      - performs security validation (no fs.existsSync/statSync calls on malicious or out-of-project story paths), while still checking valid in-workspace paths
-    - tests/perf/maintenance-large-workspace.test.ts – REQ-MAINT-DETECT perf test: detectStaleAnnotations returns >0 stale entries and completes well under 5 seconds on a large synthetic workspace,Core update & batch functionality (REQ-MAINT-UPDATE, REQ-MAINT-BATCH):
-  - Implementation: src/maintenance/update.ts
-    - export function updateAnnotationReferences(codebasePath, oldPath, newPath): number
-      - Validates that codebasePath exists and is a directory; returns 0 otherwise
-      - Uses getAllFiles to walk files
-      - Builds a regex `(@story\s*)${escapedOldPath}` and only replaces the path portion, preserving surrounding content/formatting
-      - Writes file only if content actually changed; counts replacements
-  - Implementation: src/maintenance/batch.ts
-    - export function batchUpdateAnnotations(codebasePath, mappings): number
-      - Iterates mappings and calls updateAnnotationReferences for each, summing counts
-    - export function verifyAnnotations(codebasePath): boolean
-      - Uses detectStaleAnnotations and returns true iff no stale annotations remain
-  - Tests:
-    - tests/maintenance/update.test.ts – verifies updateAnnotationReferences returns 0 when there are no matches
-    - tests/maintenance/batch.test.ts – verifies:
-      - batchUpdateAnnotations returns 0 with empty mappings
-      - verifyAnnotations returns true when a matching .story.md file exists for the annotated story
-    - tests/perf/maintenance-large-workspace.test.ts – verifies:
-      - updateAnnotationReferences updates >0 annotations and runs under a generous time budget
-      - batchUpdateAnnotations updates >=2 annotations and runs under budget,Reporting & verification functionality (REQ-MAINT-VERIFY, REQ-MAINT-REPORT, REQ-MAINT-SAFE):
-  - Implementation: src/maintenance/report.ts
-    - export function generateMaintenanceReport(codebasePath): string
-      - Uses detectStaleAnnotations
-      - Returns "" when there are no stale annotations (explicit safe no-op signal)
-      - Otherwise returns a newline-separated list of stale story paths
-  - Implementation: src/maintenance/batch.ts
-    - verifyAnnotations (above) provides simple boolean verification over detectStaleAnnotations
-  - Tests:
-    - tests/maintenance/report.test.ts – verifies:
-      - generateMaintenanceReport returns empty string when no stale annotations
-      - generateMaintenanceReport returns a report containing the stale story name when configured with a missing story
-    - tests/maintenance/batch.test.ts – verifies verifyAnnotations returns true when annotations and story files are consistent
-    - tests/perf/maintenance-large-workspace.test.ts – verifies generateMaintenanceReport returns a non-empty string and runs under 5 seconds,CLI integration and user experience (REQ-MAINT-DETECT, REQ-MAINT-VERIFY, REQ-MAINT-REPORT, REQ-MAINT-UPDATE, REQ-MAINT-BATCH, REQ-MAINT-SAFE):
-  - CLI entrypoint & command dispatch:
-    - src/maintenance/cli.ts – runMaintenanceCli(rawArgv: string[]): number
-      - Normalizes args via normalizeCliArgs
-      - When no subcommand or help flags (-h/--help) are provided, prints a multi-line help message and exits with EXIT_OK (0)
-      - Switches on subcommand to call handleDetect/handleVerify/handleReport/handleUpdate
-      - For unknown commands, prints an error plus help and returns EXIT_USAGE (2)
-      - Wraps handlers in a try/catch; on error logs `traceability-maint failed: <message>` and returns EXIT_USAGE
-      - printHelp() prints detailed usage, commands, and options, including --root/--json/--format/--from/--to/--dry-run
-    - src/maintenance/commands.ts – implements subcommand behavior:
-      - handleDetect: calls detectStaleAnnotations, prints JSON payload when --json is set, otherwise prints human-readable messages and a summary; returns EXIT_OK for 0 stale, EXIT_STALE (1) otherwise
-      - handleVerify: calls verifyAnnotations, prints a success or failure summary, returns EXIT_OK or EXIT_STALE
-      - handleReport: uses generateMaintenanceReport; supports text or json formats; prints friendly messages when nothing to report
-      - handleUpdate: validates --from and --to; supports dry-run mode that prints estimated impact; performs in-place updates using updateAnnotationReferences and prints a summary (or JSON) of changes
-  - Flag parsing & safety:
-    - src/maintenance/flags.ts – parseCliInput, normalizeCliArgs, parseFlags, with defaults:
-      - --root resolves to an absolute path; defaults to process.cwd()
-      - --json toggles JSON output
-      - --format supports 'text' | 'json', throws on invalid values
-      - --from, --to, --dry-run parsed for update
-  - Tests (user experience and error handling): tests/maintenance/cli.test.ts
-    - [REQ-MAINT-DETECT] detect exits 0, logs "No stale @story annotations found." when no stale
-    - [REQ-MAINT-VERIFY] verify exits 0 when annotations are valid, with one log call
-    - [REQ-MAINT-REPORT] report prints a human-readable summary containing "Traceability Maintenance Report" and the missing story, exits 0
-    - [REQ-MAINT-UPDATE] update replaces @story paths in-place and exits 0; file content is verified
-    - [REQ-MAINT-SAFE] update without --from/--to logs an error, prints help, and exits 2
-    - [REQ-MAINT-SAFE] update --dry-run does not modify files and exits 0, while logging output
-    - [REQ-MAINT-SAFE] report with invalid --format value causes exit code 2 and logs an error containing "Invalid format: yaml" and "Expected 'text' or 'json'"
-    - [REQ-MAINT-DETECT] detect --json returns exit code 1 and prints a JSON payload with a stale array containing 'stale.story.md'
-    - [REQ-MAINT-DETECT] detect with non-existent --root exits 0 and prints "No stale @story annotations found."
-    - [REQ-MAINT-SAFE] when no subcommand is provided, CLI prints help and exits 0 without any error logs
-    - [REQ-MAINT-SAFE] detect path on filesystem permission errors (mocked statSync throwing EACCES) leads to exit code 2 and an error message prefixed with "traceability-maint failed:",Large workspace and performance behavior (ties into Quality Standards and Integration):
-  - tests/perf/maintenance-large-workspace.test.ts
-    - Builds a synthetic workspace (10 modules × 50 files; each file with a mix of valid and stale @story references)
-    - Confirms:
-      - detectStaleAnnotations returns >0 stale entries and completes under 5 seconds
-      - verifyAnnotations returns false when stale entries exist and runs under 5 seconds
-      - generateMaintenanceReport returns a non-empty string and runs under 5 seconds
-      - updateAnnotationReferences and batchUpdateAnnotations update multiple references and run under 5 seconds
-  - tests/perf/maintenance-cli-large-workspace.test.ts
-    - Creates a workspace with valid and stale CLI-focused stories
-    - Confirms:
-      - `detect --json` returns exit code 0 or 1, logs a single JSON payload containing root and non-empty stale array, finishes within budget
-      - `report --format=json` returns exit code 0, logs a JSON payload with root and a string report, finishes within budget,Integration & exports (tools usable from project code and tooling):
-  - src/maintenance/index.ts
-    - Re-exports detectStaleAnnotations, updateAnnotationReferences, batchUpdateAnnotations, verifyAnnotations, generateMaintenanceReport
-  - tests/maintenance/index.test.ts
-    - Verifies all exported symbols are functions for:
-      - REQ-MAINT-DETECT
-      - REQ-MAINT-UPDATE
-      - REQ-MAINT-BATCH
-      - REQ-MAINT-VERIFY
-      - REQ-MAINT-REPORT
-  - package.json
-    - "bin": { "traceability-maint": "lib/src/maintenance/cli.js" } – ensures an installed CLI binary for the maintenance tools, integrating them into the project’s tooling ecosystem,Documentation (REQ-DOCUMENTATION / acceptance criterion: Documentation):
-  - README.md section "Maintenance CLI"
-    - Describes purpose: "helps you maintain and audit @story annotations outside of ESLint runs..."
-    - Lists commands: detect, verify, report, update – with one-line descriptions
-    - Provides concrete usage examples:
-      - `npx traceability-maint --help`
-      - `npx traceability-maint detect --root .`
-      - `npx traceability-maint verify --root .`
-      - `npx traceability-maint report --root . --format json`
-      - `npx traceability-maint update --root . --from "stories/feature-authentication.story.md" --to "stories/feature-auth-v2.story.md"`
-    - Points to [Maintenance API and CLI](user-docs/api-reference.md#maintenance-api-and-cli) for full option and payload documentation
-  - All maintenance code and tests include story-level traceability annotations referencing docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md and the specific REQ-MAINT-* IDs, indicating deliberate alignment with the story’s requirements</evidence>
-  <notes>All functional requirements and acceptance criteria for 009.0-DEV-MAINTENANCE-TOOLS appear fully implemented:
-- Core functionality is present: detection of stale @story references, per-path updates, batch updates, and verification, exposed both as programmatic APIs and via the traceability-maint CLI.
-- Quality and safety are addressed: operations only touch @story paths, preserve surrounding content, short-circuit on invalid roots, respect project boundaries, and are covered by performance tests on large synthetic workspaces.
-- Integration is in place: the maintenance tools are exported from src/maintenance/index.ts, wired into the published CLI via package.json, and reuse existing story reference utilities from the plugin.
-- User experience is validated: CLI commands provide clear text output, JSON modes for automation, a detailed help message, specific exit codes, and tests explicitly confirm the UX behavior.
-- Error handling is robust: non-existent roots, invalid flags, permission errors, unsafe story paths, missing parameters, and unknown commands are handled gracefully with safe defaults and informative messages.
-- Documentation exists and is user-facing in README.md with concrete examples and references to deeper API docs.
+  <evidence>Story file exists with specified content: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md,Maintenance module exports all tools with traceability to this story: src/maintenance/index.ts (exports detectStaleAnnotations, updateAnnotationReferences, batchUpdateAnnotations, verifyAnnotations, generateMaintenanceReport; annotated with @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md and REQ-MAINT-* requirements),Core detection logic implemented and tested:
+  - src/maintenance/detect.ts implements detectStaleAnnotations with workspace-root handling, traversal of all files, regex scanning for @story, project-boundary and security checks, and safe handling of missing/invalid directories/files.
+  - tests/maintenance/detect.test.ts verifies:
+    • [REQ-MAINT-DETECT] returns [] when no stale annotations
+    • [REQ-MAINT-DETECT] detects stale annotation references for missing story files
+  - tests/maintenance/detect-isolated.test.ts verifies additional behaviors:
+    • [REQ-MAINT-DETECT] returns [] when directory does not exist
+    • [REQ-MAINT-DETECT] detects stale annotations in nested directories
+    • [REQ-MAINT-DETECT] throws on permission denied (low-level behavior)
+    • [REQ-MAINT-DETECT] performs security validation so unsafe and invalid-extension paths are never stat'ed outside workspace,Update logic implemented and tested:
+  - src/maintenance/update.ts implements updateAnnotationReferences(codebasePath, oldPath, newPath) using regex replacement on @story <oldPath> → <newPath>, counting updates, skipping non-directories, and only writing files when content changes.
+  - tests/maintenance/update.test.ts: [REQ-MAINT-UPDATE] should return 0 when no updates made (empty directory).
+  - tests/maintenance/update-isolated.test.ts:
+    • [REQ-MAINT-UPDATE] updates @story annotations in files (verifies content change and count=1)
+    • [REQ-MAINT-UPDATE] should return 0 when directory does not exist.,Batch and verification tools implemented and tested:
+  - src/maintenance/batch.ts:
+    • batchUpdateAnnotations(...) loops over mappings and delegates to updateAnnotationReferences (REQ-MAINT-BATCH).
+    • verifyAnnotations(codebasePath) delegates to detectStaleAnnotations and returns true when no stale annotations (REQ-MAINT-VERIFY).
+  - tests/maintenance/batch.test.ts:
+    • [REQ-MAINT-BATCH] should return 0 when no mappings applied.
+    • [REQ-MAINT-VERIFY] should return true when annotations are valid (creates matching story file and annotation).,Reporting tool implemented and tested:
+  - src/maintenance/report.ts implements generateMaintenanceReport(codebasePath) returning "" when no stale annotations, or newline-separated list of stale @story paths (REQ-MAINT-REPORT, REQ-MAINT-SAFE).
+  - tests/maintenance/report.test.ts:
+    • [REQ-MAINT-REPORT] should return empty string when no operations.
+    • [REQ-MAINT-REPORT] should report stale story annotation when non-existent.story.md is referenced.,Maintenance utilities implemented and used:
+  - src/maintenance/utils.ts implements getAllFiles(dir) and recursive traversal helpers, with directory validation and file-only collection; used by detectStaleAnnotations and updateAnnotationReferences.
+  - This supports robust scanning across multiple files for both detection and update operations.,CLI and user experience implemented and tested:
+  - src/maintenance/flags.ts implements parsed/normalized CLI argument structures and flag parsing for --root, --json, --format, --from, --to, --dry-run (REQ-MAINT-SAFE).
+  - src/maintenance/commands.ts implements CLI handlers:
+    • handleDetect: uses detectStaleAnnotations, prints human-readable or JSON output, returns EXIT_OK vs EXIT_STALE (REQ-MAINT-DETECT, REQ-MAINT-REPORT, REQ-MAINT-SAFE).
+    • handleVerify: uses verifyAnnotations, prints status and returns EXIT_OK vs EXIT_STALE (REQ-MAINT-VERIFY, REQ-MAINT-SAFE).
+    • handleReport: uses generateMaintenanceReport, supports --format=text|json (REQ-MAINT-REPORT, REQ-MAINT-SAFE).
+    • handleUpdate: validates --from/--to, supports --dry-run and JSON output, calls updateAnnotationReferences, prints clear summary (REQ-MAINT-UPDATE, REQ-MAINT-SAFE).
+  - src/maintenance/cli.ts exports runMaintenanceCli and wires subcommands to handlers, includes help text and catch-all error handling, and is wired as the bin traceability-maint in package.json (Integration & UX).
+  - tests/maintenance/cli.test.ts verifies CLI behavior end-to-end:
+    • [REQ-MAINT-DETECT] detect exits 0 with message when no stale annotations.
+    • [REQ-MAINT-VERIFY] verify exits 0 when annotations valid.
+    • [REQ-MAINT-REPORT] report prints human-readable summary containing report header and missing.story.md, exits 0.
+    • [REQ-MAINT-UPDATE] update performs replacements and exits 0; file content shows updated @story path.
+    • [REQ-MAINT-SAFE] update requires --from/--to, exits 2, logs error and help.
+    • [REQ-MAINT-SAFE] dry-run does not modify files and exits 0.
+    • [REQ-MAINT-SAFE] report with invalid --format value exits 2 and prints a clear error message.
+    • [REQ-MAINT-DETECT] detect --json returns exit code 1 and a JSON payload with a stale array containing stale.story.md.
+    • [REQ-MAINT-DETECT] detect with non-existent --root exits 0 and reports no stale annotations.
+    • [REQ-MAINT-SAFE] no subcommand prints help and exits 0 without errors.
+    • [REQ-MAINT-SAFE] detect catches filesystem permission errors and exits 2 with a prefixed error message.,Module index export verification:
+  - tests/maintenance/index.test.ts asserts that src/maintenance exports all maintenance functions as functions (REQ-MAINT-DETECT, REQ-MAINT-UPDATE, REQ-MAINT-BATCH, REQ-MAINT-VERIFY, REQ-MAINT-REPORT).,Performance/large-workspace behavior:
+  - tests/perf/maintenance-large-workspace.test.ts validates detectStaleAnnotations, verifyAnnotations, generateMaintenanceReport, and updateAnnotationReferences are performant on large workspaces (REQ-MAINT-DETECT, REQ-MAINT-VERIFY, REQ-MAINT-REPORT, REQ-MAINT-UPDATE).
+  - tests/perf/maintenance-cli-large-workspace.test.ts validates CLI detect --json and report --format=json remain fast on large workspaces (contributes to Quality Standards and UX).,Documentation present and aligned with story:
+  - README.md “Maintenance CLI” section documents traceability-maint CLI, including `detect`, `verify`, `report`, `update` commands; describes purpose (maintain and audit @story annotations, stale references, safe batch updates) and provides concrete usage examples for each command, including JSON output (fulfills Documentation and User Experience acceptance criteria).,All tests, including those for this story, pass:
+  - npm test -- --runInBand --verbose
+  - Jest output shows:
+    • PASS tests/maintenance/detect.test.ts
+    • PASS tests/maintenance/detect-isolated.test.ts
+    • PASS tests/maintenance/update.test.ts
+    • PASS tests/maintenance/update-isolated.test.ts
+    • PASS tests/maintenance/batch.test.ts
+    • PASS tests/maintenance/report.test.ts
+    • PASS tests/maintenance/index.test.ts
+    • PASS tests/maintenance/cli.test.ts
+    • PASS tests/perf/maintenance-large-workspace.test.ts
+    • PASS tests/perf/maintenance-cli-large-workspace.test.ts
+  - Overall: 38 test suites, 290 tests passed (no failures).</evidence>
+  <notes>All requirements and acceptance criteria for 009.0-DEV-MAINTENANCE-TOOLS appear fully implemented and verified.
 
-Given the breadth of implementation, extensive targeted tests tied to this story, and a fully passing test suite, this story is assessed as PASSED.</notes>
+Core functionality: detectStaleAnnotations, updateAnnotationReferences, batchUpdateAnnotations, verifyAnnotations, and generateMaintenanceReport together cover detection of stale references, targeted/batch updates, and post-operation verification. Tests exercise both isolated units and end-to-end behavior via the CLI.
+
+Quality and safety: updateAnnotationReferences performs targeted string replacement on @story paths and only writes files when content changes. The maintenance utilities validate directories and skip non-files. Detection logic enforces project boundaries and avoids filesystem access for unsafe or invalid paths. Extensive tests confirm behavior for non-existent roots, permission errors, nested directories, and malformed paths.
+
+Integration and UX: the tools are exposed via src/maintenance, wired to the published binary traceability-maint via package.json, and thoroughly tested through CLI tests that assert exit codes and user-facing output (text and JSON). README provides clear documentation and examples for all commands.
+
+Error handling: CLI commands return distinct exit codes for clean vs stale vs usage/error conditions, validate required flags, support dry-run mode, and handle invalid formats and filesystem errors gracefully. Lower-level detection logic includes safe fallbacks for boundary enforcement failures and file read errors.
+
+Given the concrete implementation, comprehensive test coverage (unit, integration, CLI, and performance), and supporting documentation, this story is assessed as PASSED.</notes>
 </traceability>

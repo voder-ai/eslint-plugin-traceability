@@ -100,6 +100,38 @@ function createMissingReqFix(node: any) {
 }
 
 /**
+ * Resolve the display name used when reporting a missing @req annotation.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REPORTING - Use consistent naming when reporting missing @req
+ * @req REQ-ERROR-SPECIFIC - Derive a specific, human-readable name for the node
+ */
+function getReportedName(contextNode: any, parentNode: any): string {
+  const rawName = getNodeName(contextNode) ?? getNodeName(parentNode);
+  return rawName ?? "(anonymous)";
+}
+
+/**
+ * Determine the AST sub-node that should be used as the location for reporting.
+ * Prefers Identifier nodes (id or key) over the broader function-like node.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REPORTING - Report missing @req on the most relevant node
+ * @req REQ-ERROR-SPECIFIC - Target the identifier when available for precise errors
+ */
+function getNameNodeForReqReport(node: any): any {
+  const candidateId = (node as any).id;
+  if (candidateId && candidateId.type === "Identifier") {
+    return candidateId;
+  }
+
+  const candidateKey = (node as any).key;
+  if (candidateKey && candidateKey.type === "Identifier") {
+    return candidateKey;
+  }
+
+  return node;
+}
+
+/**
  * Helper to report a missing @req annotation via the ESLint context API.
  * Uses getNodeName to provide a readable name for the node.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -111,15 +143,9 @@ function createMissingReqFix(node: any) {
  * @req REQ-ERROR-CONTEXT - Include contextual hints to help understand the error
  */
 function reportMissing(context: any, node: any, enableFix: boolean = true) {
-  const rawName =
-    getNodeName(node) ?? (node && getNodeName((node as any).parent));
-  const name = rawName ?? "(anonymous)";
-  const nameNode =
-    (node && (node as any).id && (node as any).id.type === "Identifier"
-      ? (node as any).id
-      : node && (node as any).key && (node as any).key.type === "Identifier"
-        ? (node as any).key
-        : node) ?? node;
+  const parentNode = (node as any)?.parent;
+  const name = getReportedName(node, parentNode);
+  const nameNode = getNameNodeForReqReport(node);
   const reportOptions: any = {
     node: nameNode,
     messageId: "missingReq",

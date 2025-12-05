@@ -18,14 +18,12 @@ import { getNodeName } from "./require-story-utils";
 import {
   DEFAULT_SCOPE,
   EXPORT_PRIORITY_VALUES,
+  STORY_PATH,
   createAddStoryFix,
   createMethodFix,
+  coreReportMissing,
+  coreReportMethod,
 } from "./require-story-core";
-
-/**
- * Path to the story file for annotations
- */
-const STORY_PATH = "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
 
 /**
  * Derive the annotation template, optionally using an override.
@@ -49,20 +47,6 @@ function shouldApplyAutoFix(autoFix: boolean | undefined): boolean {
   }
   return true;
 }
-
-/**
- * Number of physical source lines to inspect before a node when searching for @story text
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Replace magic number for lookback lines with named constant
- */
-const LOOKBACK_LINES = 4;
-
-/**
- * Window (in characters) to inspect before a node as a fallback when searching for @story text
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Replace magic number for fallback text window with named constant
- */
-const FALLBACK_WINDOW = 800;
 
 /**
  * Determine if a node is in an export declaration
@@ -165,7 +149,7 @@ function hasStoryAnnotation(sourceCode: any, node: any): boolean {
     if (leadingCommentsHasStory(node)) {
       return true;
     }
-    if (linesBeforeHasStory(sourceCode, node, LOOKBACK_LINES)) {
+    if (linesBeforeHasStory(sourceCode, node)) {
       return true;
     }
     if (parentChainHasStory(sourceCode, node)) {
@@ -217,6 +201,64 @@ function resolveTargetNode(sourceCode: any, node: any): any {
 }
 
 /**
+ * Extract a direct Identifier name when available on the given node.
+ * This focuses only on plain Identifier nodes and ignores container shapes.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Extract direct Identifier-based names from nodes
+ * @param {any} node - AST node to inspect
+ * @returns {string | null} identifier name or null when not applicable
+ */
+function getDirectIdentifierName(node: any): string | null {
+  if (
+    node &&
+    node.type === "Identifier" &&
+    typeof node.name === "string" &&
+    node.name.length > 0
+  ) {
+    return node.name;
+  }
+  return null;
+}
+
+/**
+ * Normalize container nodes that expose names via id/key properties.
+ * Supports common function and method containers, including literal keys.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Normalize container id/key-based names into a single helper
+ * @param {any} node - AST node that may contain id/key name information
+ * @returns {string | null} resolved container name or null when unavailable
+ */
+function getContainerKeyOrIdName(node: any): string | null {
+  if (!node) {
+    return null;
+  }
+
+  if (node.id) {
+    const idName = getNodeName(node.id);
+    if (typeof idName === "string" && idName.length > 0) {
+      return idName;
+    }
+  }
+
+  if (node.key) {
+    const keyName = getNodeName(node.key);
+    if (typeof keyName === "string" && keyName.length > 0) {
+      return keyName;
+    }
+
+    if (
+      node.key.type === "Literal" &&
+      typeof (node.key as any).value === "string" &&
+      (node.key as any).value.length > 0
+    ) {
+      return (node.key as any).value;
+    }
+  }
+
+  return null;
+}
+
+/**
  * Small utility to walk the node and its parents to extract an Identifier or key name.
  * Walks up the parent chain and inspects common properties (id, key, name, Identifier nodes).
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -225,38 +267,27 @@ function resolveTargetNode(sourceCode: any, node: any): any {
  * @returns {string} extracted name or "(anonymous)" when no name found
  */
 function extractName(node: any): string {
-  let n = node;
-  while (n) {
-    // Direct Identifier node
-    if (n.type === "Identifier" && typeof n.name === "string") {
-      return n.name;
+  let current: any = node;
+
+  while (current) {
+    const directIdentifierName = getDirectIdentifierName(current);
+    if (directIdentifierName) {
+      return directIdentifierName;
     }
-    // id property (FunctionDeclaration, etc.)
-    if (n.id && n.id.type === "Identifier" && typeof n.id.name === "string") {
-      return n.id.name;
+
+    const containerName = getContainerKeyOrIdName(current);
+    if (containerName) {
+      return containerName;
     }
-    // key property (Property, MethodDefinition, etc.)
-    if (
-      n.key &&
-      n.key.type === "Identifier" &&
-      typeof n.key.name === "string"
-    ) {
-      return n.key.name;
+
+    const directName = (current as any).name;
+    if (typeof directName === "string" && directName.length > 0) {
+      return directName;
     }
-    // name property (some nodes may have a 'name' string directly)
-    if (typeof (n as any).name === "string" && (n as any).name.length > 0) {
-      return (n as any).name;
-    }
-    // computed keys may have an Identifier inside
-    if (
-      n.key &&
-      n.key.type === "Literal" &&
-      typeof (n.key as any).value === "string"
-    ) {
-      return (n.key as any).value;
-    }
-    n = n.parent;
+
+    current = current.parent;
   }
+
   return "(anonymous)";
 }
 
@@ -293,118 +324,122 @@ interface ReportOptions {
 }
 
 /**
- * Report a missing @story annotation for a function-like node
- * Provides a suggestion to add the annotation.
+ * Resolve the effective function name to report for a node.
+ * Normalizes id/key handling before delegating to extractName.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing annotations with suggestion
- * @req REQ-AUTOFIX-MISSING - Provide autofix for missing annotations while preserving suggestions
- * @req REQ-ERROR-SPECIFIC - Error reports must include both name and functionName in the data payload for specific function context
- * @param {Rule.RuleContext} context - ESLint rule context used to report
- * @param {any} sourceCode - ESLint sourceCode object
- * @param {{ node: any; target?: any; options?: ReportOptions }} config - configuration containing the node to report, optional insertion target, and optional report options
+ * @req REQ-ANNOTATION-REQUIRED - Centralize reported function name resolution
+ * @param {any} node - AST node used to derive the function name
+ * @returns {string} resolved function name
  */
+function getReportedFunctionName(node: any): string {
+  const candidate = node && (node.id || node.key) ? node.id || node.key : node;
+  return extractName(candidate);
+}
+
+/**
+ * Determine the most appropriate AST node to anchor error location for a report.
+ * Prefers Identifier nodes from id/key properties when available.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Normalize name node selection for error reporting
+ * @param {any} node - AST node used for error anchoring
+ * @returns {any} node to use as the report location
+ */
+function getNameNodeForReport(node: any): any {
+  if (node?.id?.type === "Identifier") {
+    return node.id;
+  }
+
+  if (node?.key?.type === "Identifier") {
+    return node.key;
+  }
+
+  return node;
+}
+
+/**
+ * Resolve the node that should receive the @story annotation,
+ * respecting an explicitly passed target when provided.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Centralize annotation target node resolution
+ * @param {any} sourceCode - ESLint sourceCode object
+ * @param {any} node - original function-like AST node
+ * @param {any} passedTarget - optional explicit annotation target
+ * @returns {any} node that should receive the annotation
+ */
+function resolveAnnotationTargetNode(
+  sourceCode: any,
+  node: any,
+  passedTarget: any,
+): any {
+  return passedTarget ?? resolveTargetNode(sourceCode, node);
+}
+
+/**
+ * Build the effective annotation template and autofix toggle
+ * from the provided report options.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Normalize template and autofix configuration
+ * @param {ReportOptions} [options] - optional report configuration
+ * @returns {{ effectiveTemplate: string; allowFix: boolean }} template and autofix flags
+ */
+function buildTemplateConfig(options?: ReportOptions): {
+  effectiveTemplate: string;
+  allowFix: boolean;
+} {
+  const effectiveTemplate = getAnnotationTemplate(
+    options?.annotationTemplateOverride,
+  );
+  const allowFix = shouldApplyAutoFix(options?.autoFixToggle);
+
+  return { effectiveTemplate, allowFix };
+}
+
 function reportMissing(
   context: Rule.RuleContext,
   sourceCode: any,
   config: { node: any; target?: any; options?: ReportOptions },
 ): void {
-  const { node, target: passedTarget, options = {} } = config;
-
-  try {
-    const functionName = extractName(
-      node && (node.id || node.key) ? node.id || node.key : node,
-    );
-
-    if (hasStoryAnnotation(sourceCode, node)) {
-      return;
-    }
-    const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
-    const name = functionName;
-    const nameNode =
-      (node.id && node.id.type === "Identifier" && node.id) ||
-      (node.key && node.key.type === "Identifier" && node.key) ||
-      node;
-
-    const effectiveTemplate = getAnnotationTemplate(
-      options.annotationTemplateOverride,
-    );
-    const allowFix = shouldApplyAutoFix(options.autoFixToggle);
-
-    context.report({
-      node: nameNode,
-      messageId: "missingStory",
-      data: { name, functionName: name },
-      fix: allowFix
-        ? createAddStoryFix(resolvedTarget, effectiveTemplate)
-        : undefined,
-      suggest: [
-        {
-          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${effectiveTemplate}`,
-          fix: createAddStoryFix(resolvedTarget, effectiveTemplate),
-        },
-      ],
-    });
-  } catch {
-    /* noop */
-  }
+  coreReportMissing(
+    {
+      hasStoryAnnotation,
+      getReportedFunctionName,
+      resolveAnnotationTargetNode,
+      getNameNodeForReport,
+      buildTemplateConfig,
+      extractName,
+      getAnnotationTemplate,
+      shouldApplyAutoFix,
+      createAddStoryFix,
+      createMethodFix,
+    },
+    context,
+    sourceCode,
+    config,
+  );
 }
 
-/**
- * Report a missing @story annotation for a method-like node
- * Provides a suggestion to update the method/interface with the annotation.
- * The error data payload uses both name and functionName for consistent, specific error context.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @req REQ-ANNOTATION-REQUIRED - Implement reporting for missing method/interface annotations with suggestion
- * @req REQ-AUTOFIX-MISSING - Provide autofix for missing method/interface annotations while preserving suggestions
- * @req REQ-ERROR-SPECIFIC - Method error reports must include both name and functionName in the data payload for specific function context
- * @req REQ-ERROR-LOCATION - Method error reports must use the method name node to anchor error location
- * @req REQ-ERROR-CONTEXT - Method error reports must include functionName data for consistent error context
- * @param {Rule.RuleContext} context - ESLint rule context to report
- * @param {any} sourceCode - ESLint sourceCode object
- * @param {{ node: any; target?: any; options?: ReportOptions }} config - configuration containing the node to report, optional insertion target, and optional report options
- */
 function reportMethod(
   context: Rule.RuleContext,
   sourceCode: any,
   config: { node: any; target?: any; options?: ReportOptions },
 ): void {
-  const { node, target: passedTarget, options = {} } = config;
-
-  try {
-    if (hasStoryAnnotation(sourceCode, node)) {
-      return;
-    }
-    const resolvedTarget = passedTarget ?? resolveTargetNode(sourceCode, node);
-    const name = extractName(node);
-    const nameNode =
-      (node.key && node.key.type === "Identifier" && node.key) || node;
-
-    const effectiveTemplate = getAnnotationTemplate(
-      options.annotationTemplateOverride,
-    );
-    const allowFix = shouldApplyAutoFix(options.autoFixToggle);
-
-    context.report({
-      node: nameNode,
-      messageId: "missingStory",
-      data: { name, functionName: name },
-      fix: allowFix
-        ? createMethodFix(resolvedTarget, effectiveTemplate)
-        : undefined,
-      suggest: [
-        {
-          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${effectiveTemplate}`,
-          fix: createMethodFix(resolvedTarget, effectiveTemplate),
-        },
-      ],
-    });
-  } catch {
-    /* noop */
-  }
+  coreReportMethod(
+    {
+      hasStoryAnnotation,
+      getReportedFunctionName,
+      resolveAnnotationTargetNode,
+      getNameNodeForReport,
+      buildTemplateConfig,
+      extractName,
+      getAnnotationTemplate,
+      shouldApplyAutoFix,
+      createAddStoryFix,
+      createMethodFix,
+    },
+    context,
+    sourceCode,
+    config,
+  );
 }
 
 /**
@@ -416,8 +451,6 @@ export {
   STORY_PATH,
   getAnnotationTemplate,
   shouldApplyAutoFix,
-  LOOKBACK_LINES,
-  FALLBACK_WINDOW,
   isExportedNode,
   jsdocHasStory,
   commentsBeforeHasStory,
@@ -427,11 +460,11 @@ export {
   extractName,
   resolveTargetNode,
   shouldProcessNode,
-  reportMissing,
-  reportMethod,
   DEFAULT_SCOPE,
   EXPORT_PRIORITY_VALUES,
   linesBeforeHasStory,
   parentChainHasStory,
   fallbackTextBeforeHasStory,
+  reportMissing,
+  reportMethod,
 };
