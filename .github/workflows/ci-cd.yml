@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ['18.x', '20.x']
+        node-version: ['22.14.0']
     env:
       HUSKY: 0
     steps:
@@ -48,7 +48,6 @@ jobs:
         run: npm run ci-verify:full
 
       - name: Run secret scanning
-        if: ${{ matrix['node-version'] == '20.x' }}
         run: npm run security:secrets
 
       - name: Upload dry-aged deps artifact
@@ -86,21 +85,14 @@ jobs:
       # Local developers should NOT run semantic-release directly; it is meant
       # to be invoked by this workflow so that versioning, changelog, and
       # publishing are centralized and reproducible.
-      - name: Setup Node.js for semantic-release
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix['node-version'] == '20.x' && success() }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.14.0'
-          cache: npm
-
       - name: Release with semantic-release
         # Guard rails to ensure semantic-release only runs:
         #   - in CI (this workflow),
         #   - on push events,
         #   - on the main branch,
-        #   - and on the Node 20.x matrix job.
+        #   - and on the Node 22.14.0 matrix job.
         # Do not bypass these conditions or invoke semantic-release manually.
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix['node-version'] == '20.x' && success() }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix['node-version'] == '22.14.0' && success() }}
         id: semantic-release
         run: |
           set -uo pipefail
@@ -174,7 +166,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '22.14.0'
           cache: npm
 
       - name: Validate scripts non-empty
