@@ -84,7 +84,7 @@ function getFixTargetNode(node: any) {
  * Returned function is a proper named function so no inline arrow is used.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation
- * @implements docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING
  */
 function createMissingReqFix(node: any) {
   const target = getFixTargetNode(node);

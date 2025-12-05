@@ -56,13 +56,13 @@ export function analyzeCandidateBoundaries(
   let hasOutOfProjectCandidate = false;
 
   for (const candidate of candidates) {
-    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
     const boundary = enforceProjectBoundary(candidate, cwd);
     if (boundary.isWithinProject) {
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
       hasInProjectCandidate = true;
     } else {
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
       hasOutOfProjectCandidate = true;
     }
   }
@@ -92,14 +92,14 @@ export function handleProjectBoundaryForExistence({
   reportInvalidPath,
 }: HandleBoundaryOptions): boolean {
   if (candidates.length > 0) {
-    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
-    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
     const { hasInProjectCandidate, hasOutOfProjectCandidate } =
       analyzeCandidateBoundaries(candidates, cwd);
 
     if (hasOutOfProjectCandidate && !hasInProjectCandidate) {
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
       reportInvalidPath({ storyPath, commentNode, context });
       return true;
     }
@@ -110,12 +110,12 @@ export function handleProjectBoundaryForExistence({
     existenceResult.status === "exists" &&
     existenceResult.matchedPath
   ) {
-    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
-    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
     const boundary = enforceProjectBoundary(existenceResult.matchedPath, cwd);
     if (!boundary.isWithinProject) {
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
       reportInvalidPath({ storyPath, commentNode, context });
       return true;
     }
@@ -142,11 +142,11 @@ export function performSecurityValidations({
 }: SecurityValidationOptions): boolean {
   // Absolute path check
   if (path.isAbsolute(storyPath)) {
-    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
-    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
     if (!allowAbsolute) {
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
       reportInvalidPath({ storyPath, commentNode, context });
       return false;
     }
@@ -157,12 +157,12 @@ export function performSecurityValidations({
   // Path traversal check
   const containsTraversal = storyPath.includes("..") || /\\|\//.test(storyPath);
   if (containsTraversal) {
-    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
-    // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
     const full = path.resolve(cwd, path.normalize(storyPath));
     if (!full.startsWith(cwd + path.sep)) {
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
-      // @implements docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY REQ-SECURITY-VALIDATION
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
       reportInvalidPath({ storyPath, commentNode, context });
       return false;
     }

@@ -26,9 +26,9 @@ export function detectStaleAnnotations(codebasePath: string): string[] {
     !fs.existsSync(workspaceRoot) ||
     !fs.statSync(workspaceRoot).isDirectory()
   ) {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     return [];
   }
 
@@ -60,11 +60,11 @@ function processFileForStaleAnnotations(
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-DETECT - Handle file read errors gracefully
   try {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     content = fs.readFileSync(file, "utf8");
   } catch {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Swallow file read failures without aborting detection
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Swallow file read failures without aborting detection
     return;
   }
 
@@ -90,7 +90,7 @@ function handleStoryMatch(
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-DETECT REQ-SECURITY-VALIDATION - Skip traversal/absolute-unsafe or invalid-extension story paths before any filesystem or boundary checks
   if (isUnsafeStoryPath(storyPath)) {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     return;
   }
 
@@ -109,7 +109,7 @@ function handleStoryMatch(
 
   // If both candidates are out-of-project, do not mark as stale and skip FS checks
   if (inProjectCandidates.length === 0) {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - No in-project candidates means nothing to check or mark stale
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - No in-project candidates means nothing to check or mark stale
     return;
   }
 
@@ -120,7 +120,7 @@ function handleStoryMatch(
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-DETECT - Mark story as stale if any in-project candidate exists conceptually but none exist on disk
   if (!anyExists) {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     stale.add(storyPath);
   }
 }
@@ -138,14 +138,14 @@ function getInProjectCandidates(
   let codebaseBoundary: ProjectBoundaryCheckResult;
 
   try {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     projectBoundary = enforceProjectBoundary(
       storyProjectCandidate,
       workspaceRoot,
     );
   } catch {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Treat boundary enforcement failures as out-of-project
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Treat boundary enforcement failures as out-of-project
     projectBoundary = {
       isWithinProject: false,
       candidate: storyProjectCandidate,
@@ -153,14 +153,14 @@ function getInProjectCandidates(
   }
 
   try {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     codebaseBoundary = enforceProjectBoundary(
       storyCodebaseCandidate,
       workspaceRoot,
     );
   } catch {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Treat boundary enforcement failures as out-of-project
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Treat boundary enforcement failures as out-of-project
     codebaseBoundary = {
       isWithinProject: false,
       candidate: storyCodebaseCandidate,
@@ -169,11 +169,11 @@ function getInProjectCandidates(
 
   const inProjectCandidates: string[] = [];
   if (projectBoundary.isWithinProject) {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - Collect project-relative in-project candidate
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - Collect project-relative in-project candidate
     inProjectCandidates.push(projectBoundary.candidate);
   }
   if (codebaseBoundary.isWithinProject) {
-    // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - Collect workspace-root-relative in-project candidate
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - Collect workspace-root-relative in-project candidate
     inProjectCandidates.push(codebaseBoundary.candidate);
   }
 
@@ -187,12 +187,12 @@ function getInProjectCandidates(
 function anyInProjectCandidateExists(inProjectCandidates: string[]): boolean {
   return inProjectCandidates.some(
     /**
-     * @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE
+     * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE
      */
     (p) => {
       const exists = fs.existsSync(p);
       if (!exists) {
-        // @implements docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Safely handle non-existent candidate without throwing
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Safely handle non-existent candidate without throwing
       }
       return exists;
     },
