@@ -159,6 +159,8 @@ The table below summarizes which commands are **gating** (can fail CI/pre-push) 
 
 > Note: While `check:traceability` is primarily about requirements traceability rather than security, failures in this command do block CI and pre-push because traceability is part of the projects overall quality bar.
 
+Generated CI and assessment artifacts (for example, files under `ci/` and `scripts/*-report.md`) are treated as **ephemeral** and must not be committed. This repository-hygiene rule is enforced by both `.gitignore` and the gating `npm run check:ci-artifacts` command, which fails if ephemeral outputs are accidentally added to version control.
+
 ## 6. Relationship to Other Security Documentation
 
 - **`SECURITY.md` (root)**

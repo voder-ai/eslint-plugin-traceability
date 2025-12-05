@@ -211,7 +211,7 @@ Developers should rely on:
 
 A set of additional npm scripts exist to help maintainers keep the repository healthy and to debug tricky rule behavior:
 
-- `npm run check:ci-artifacts` – runs `scripts/check-no-tracked-ci-artifacts.js` to detect accidentally committed CI artifacts under `ci/` (excluding `.voder/ci/`).
+- `npm run check:ci-artifacts` – runs `scripts/check-no-tracked-ci-artifacts.js` to detect accidentally committed CI artifacts under `ci/` (excluding `.voder/ci/`), and is wired into `ci-verify:full` (and thus the pre-push hook) as a guardrail to prevent committing tracked CI artifacts.
 - `npm run coverage:branches` – runs `scripts/extract-uncovered-branches.js` against `jest-coverage.json` to list uncovered branch ranges for `src/rules/helpers`.
 - `npm run report:eslint-suppressions` – runs `scripts/report-eslint-suppressions.js` to generate `scripts/eslint-suppressions-report.md` summarizing ESLint/TypeScript suppression comments and suggested remediations.
 - `npm run check:scripts` – runs `scripts/validate-scripts-nonempty.js` to assert that each file in `scripts/` is non-empty and not just comments or placeholder text.

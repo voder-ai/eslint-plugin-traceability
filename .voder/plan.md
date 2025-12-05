@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Update the configuration schema and tests for the valid-annotation-format rule so that its documented auto-fix toggle option is actually usable and correctly disables suffix-normalization fixes while still reporting invalid annotations, fully satisfying the selective auto-fix requirement from the auto-fix story.
+- [ ] Audit the repository for any remaining generated CI or report files that are still tracked in version control and decide, for each one, whether it should be removed or relocated so that only source and configuration files remain under version control.
 
 ## NEXT
 
-- [ ] Review and, if necessary, adjust the user-facing documentation for the valid-annotation-format rule so that its description of the auto-fix option, default behavior, and limitations exactly matches the implemented behavior.
-- [ ] Perform a focused pass over the require-story helper and core modules to identify and refactor small duplicated logic blocks into shared helpers without changing observable behavior, further reducing duplication.
-- [ ] Audit defensive error-handling paths in the require-story core helpers (such as empty catch blocks) and either document the rationale clearly or introduce minimal, non-intrusive hooks that make future debugging easier while preserving current user-facing behavior.
+- [ ] Strengthen the existing guardrails against committing generated CI artifacts by reviewing the artifact-detection helper and wiring it into the project’s standard quality checks, so future accidental commits of reports are automatically blocked.
+- [ ] Review all recently added debug and error logging paths in the core helpers and maintenance tooling to ensure they are fully controlled by opt-in environment flags, remain silent in normal use, and avoid leaking unnecessary internal details.
+- [ ] Update internal development documentation to clearly state the policy that generated reports and CI artifacts must not be committed and to describe how to use the debug flags safely when troubleshooting.
 
 ## LATER
 
-- [ ] Re-run a targeted review of the auto-fix story’s requirements against the implementation and tests to confirm all aspects, including edge cases, are now fully covered by behavior and tests.
-- [ ] Once duplication and defensive handling refinements are complete, consider cautiously tightening any duplication or complexity thresholds in the quality tools to align configuration with the improved codebase.
-- [ ] Look for any other rules or maintenance tools that expose configuration options in documentation but not in their schemas, and align those schemas and tests so similar gaps cannot recur.
+- [ ] Perform a focused review of user-facing error messages and logs to confirm they provide helpful context without exposing sensitive or noisy implementation details, tightening wording where appropriate.
+- [ ] Revisit the security and repository-hygiene sections of the CI/CD and security docs to ensure they reflect the final behavior of artifact guards and debug logging, including any future refinements.
+- [ ] Consider extending automated checks to cover any new directories or tooling that might produce generated artifacts, keeping the repository consistently free of build and report outputs.

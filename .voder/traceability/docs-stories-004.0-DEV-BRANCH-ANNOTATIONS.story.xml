@@ -2,17 +2,22 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T11:44:05.904Z</last_validated>
+  <last_validated>2025-12-05T13:11:52.446Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All key acceptance criteria and story requirements for 004.0-DEV-BRANCH-ANNOTATIONS are implemented and verified:
+  <evidence>[object Object]</evidence>
+  <notes>All acceptance criteria for story 004.0-DEV-BRANCH-ANNOTATIONS are satisfied with concrete implementation and passing tests.
 
-- Core Functionality: The require-branch-annotation rule exists, is registered in the plugin, and, per tests, detects missing @story and/or @req on all specified significant branch types (if, switch cases including special-case/default handling, try/finally, catch, and all loop forms). It also provides auto-fixes for missing annotations where appropriate.
-- Quality Standards: The rule is implemented as a standard ESLint RuleModule with proper meta, schema, message definitions, and uses helper utilities for configuration validation and comment/annotation parsing. Tests use RuleTester in line with ESLint best practices.
-- Integration: The rule relies on ESLint’s AST traversal, so nested branches are handled naturally; each branch node—regardless of nesting level—gets its own visitor and annotation check. The default and configurable branchTypes define the scope of enforcement and are verified by unit tests.
-- User Experience: Error messages use a clear, parameterized messageId (missingAnnotation) that tells the user exactly which annotation (@story or @req) is missing, and ESLint’s usual location reporting indicates which branch needs it. Auto-fix inserts template annotations in the correct place and with correct indentation.
-- Error Handling: Misconfiguration of branchTypes is handled gracefully by validateBranchTypes, which returns a Program listener that reports explicit configuration errors for each invalid type. The rule also deliberately allows certain benign patterns (e.g., switch default without annotations) as covered by tests.
-- Documentation: A dedicated rule doc describes behavior, options, and examples (correct, incorrect, and invalid configuration), and the README points to this rule. Implementation files and tests are annotated with this story and requirement IDs, ensuring traceability.
+- **Core Functionality**: The `require-branch-annotation` ESLint rule is fully implemented. It visits all significant control-flow branches (if, switch cases, try/catch, loops) defined via DEFAULT_BRANCH_TYPES, collects preceding comments, parses for `@story` and `@req`, and reports missing annotations with a clear `missingAnnotation` message parameterized by the missing symbol (`@story` or `@req`). Auto-fixes insert sensible placeholder annotations where appropriate.
 
-There is no evidence of missing core behavior relative to the story’s requirements (branch detection, comment association, annotation parsing, significance criteria via DEFAULT_BRANCH_TYPES, configurable scope, and an efficient, linear scan implementation). All related tests pass in the full test suite, so this story is assessed as fully implemented.</notes>
+- **Quality Standards**: The rule follows ESLint best practices: proper `meta` (type, docs, schema, messages), uses RuleTester for comprehensive unit tests, returns a RuleListener based on validated configuration, and uses efficient helpers (`gatherBranchCommentText`, `getBranchAnnotationInfo`) with simple regex checks. There is no excessive AST work; behavior is linear in number of branches.
+
+- **Integration**: The rule is integrated into the plugin exports and flat-config presets (`src/index.ts`), with severity set to `error` in both `recommended` and `strict` configs. Tests confirm the plugin exports and configs work, and the rule is exercised under the ESLint RuleTester across a wide variety of branch patterns. Nested branches are inherently supported because ESLint fires the same visitors for nested nodes; every matching AST node type, whether nested or not, is processed through `reportMissingAnnotations`.
+
+- **User Experience**: Error messages are clear and consistent: `Branch is missing required annotation: {{missing}}.` combined with ESLint's location info tells the user exactly which annotation (`@story` or `@req`) is missing on which branch. Auto-fix suggestions add stub annotations in the right place with preserved indentation, improving developer experience. Tests assert both message IDs and data payloads.
+
+- **Error Handling**: Configuration errors (unsupported `branchTypes` values) are handled gracefully by returning a `Program` listener that reports a clear error for each invalid type, with messages describing allowed values. The rule skips SwitchCase nodes representing the default branch (where `test == null`), avoiding false positives on trivial defaults. SwitchCase comments are handled via a dedicated scanning loop, ensuring robustness even with blank lines between comments and cases.
+
+- **Documentation**: `docs/rules/require-branch-annotation.md` documents the rule’s intent, configuration (`branchTypes`), default and allowed values, and includes correct/incorrect examples and an invalid configuration example whose behavior matches the implementation and tests. README lists the rule and points to the user guide.
+
+Given the implemented rule, helper utilities, integration into the plugin configuration, dedicated story-linked tests, and matching documentation, this story is fully implemented and passes all specified acceptance criteria.</notes>
 </traceability>
