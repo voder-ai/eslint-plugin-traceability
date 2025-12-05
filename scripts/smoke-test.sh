@@ -93,18 +93,20 @@ npx eslint --print-config eslint.config.js > /dev/null
 
 # Test the traceability-maint CLI (success and error paths)
 echo "🧪 Testing traceability-maint CLI (success path)..."
-cat > example.ts << 'EOF'
+mkdir -p workspace
+
+cat > workspace/example.ts << 'EOF'
 /**
  * @story local-story.story.md
  */
 export function example() {}
 EOF
 
-cat > local-story.story.md << 'EOF'
+cat > workspace/local-story.story.md << 'EOF'
 # Local Story
 EOF
 
-npx traceability-maint detect --root . > cli-detect-output.txt 2>&1
+npx traceability-maint detect --root workspace > cli-detect-output.txt 2>&1
 grep -q "No stale @story annotations found." cli-detect-output.txt
 
 echo "🧪 Testing traceability-maint CLI (error path)..."
