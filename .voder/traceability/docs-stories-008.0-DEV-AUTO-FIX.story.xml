@@ -2,18 +2,26 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T07:56:19.158Z</last_validated>
+  <last_validated>2025-12-05T08:42:42.740Z</last_validated>
   <last_modified>2025-12-05T06:16:39.799Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story docs/stories/008.0-DEV-AUTO-FIX.story.md describes adding safe, configurable auto-fix behavior for missing @story annotations and simple @story path format issues, plus options to control templates and auto-fix application.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and explicit requirements for Story 008.0-DEV-AUTO-FIX are implemented and verified.
 
-Code implementation matches these requirements:
-- REQ-AUTOFIX-MISSING: `traceability/require-story-annotation` declares `fixable: "code"` and, via helpers in require-story-helpers.ts and require-story-core.ts, inserts a single-line JSDoc @story annotation before functions/methods/TS declarations when missing. Rule options `annotationTemplate` and `methodAnnotationTemplate` allow overriding the built-in template. Visitors cover all relevant function-like node types, and tests verify the expected before/after outputs.
-- REQ-AUTOFIX-FORMAT: `traceability/valid-annotation-format` uses `getFixedStoryPath` and `reportInvalidStoryFormatWithFix` to perform suffix-only path normalization for @story values. It only appends or adjusts `.story`/`.md` suffixes and rejects unsafe paths (e.g., those with `..`). Tests in tests/rules/auto-fix-behavior-008.test.ts confirm `.story` -> `.story.md` and bare path -> `.story.md` behaviors.
-- REQ-AUTOFIX-SAFE & REQ-AUTOFIX-PRESERVE: Fixes never touch runtime code, only comments or string literals within comments. `createAddStoryFix` and `createMethodFix` insert comments before nodes; `createStoryFix` computes minimal ranges inside comment text for suffix replacement. Unsafe or ambiguous situations fall back to diagnostics without a fix.
-- REQ-AUTOFIX-TEMPLATE: `require-story-annotation` options and helpers implement configurable templates, and dedicated tests confirm that custom templates are applied to both functions and methods.
-- REQ-AUTOFIX-SELECTIVE: Both rules honor an `autoFix` boolean option. When `autoFix` is false, fixes are not applied while diagnostics remain. This is validated for require-story-annotation in tests; valid-annotation-format has the corresponding flag in its resolved options and guards fix application with `options.autoFix !== false`.
-- Acceptance criteria for core functionality, quality, integration, user experience, and error handling are validated by the combination of targeted unit tests, shared helpers designed for safety, and documentation explaining behavior and constraints.
+• Core functionality (ESLint --fix): Implemented via `meta.fixable = "code"` and fixer callbacks in `require-story-annotation` (for missing @story on functions/methods, TS declare functions, TS method signatures) and `valid-annotation-format` (for simple @story suffix normalization). `tests/rules/auto-fix-behavior-008.test.ts` exercises these behaviors with before/after code comparisons and all tests pass under Jest.
 
-All relevant tests, including the story-specific auto-fix suite, pass. Documentation in user-docs/api-reference.md clearly describes the auto-fix capabilities and options. Based on this concrete evidence, the story is fully implemented.</notes>
+• Safety and preservation: Fixers are conservative. `createAddStoryFix` and `createMethodFix` only insert a single JSDoc line at a computed insertion boundary, without changing existing code or comments. `getFixedStoryPath` only adjusts the `.story`/`.md` suffix and explicitly refuses paths with `..`. `createStoryFix` finds and replaces only the @story value substring; if it cannot safely locate it, it returns null and the rule falls back to reporting without a fix. This matches REQ-AUTOFIX-SAFE and REQ-AUTOFIX-PRESERVE.
+
+• Integration with existing rules/toolchain: Auto-fix is built into the existing validation rules (`require-story-annotation`, `valid-annotation-format`) rather than separate utilities, and uses standard ESLint rule metadata and `context.report({ fix })` patterns. The passing Jest RuleTester suites confirm these rules behave correctly when run in fix mode.
+
+• User experience and consistency: Tests cover a representative set of code patterns (function declarations, function expressions, class methods, TS declare functions, TS method signatures) and confirm both that already-correct code remains unchanged and that fixes are applied consistently when violations exist. Suffix normalization tests cover `.story`→`.story.md` and bare base path→`.story.md` scenarios.
+
+• Error handling for non-fixable cases: For `valid-annotation-format`, if the @story tag or its value range cannot be safely derived, `createStoryFix` returns null and `reportInvalidStoryFormatWithFix` intentionally falls back to a non-fix reporting path. For story values with internal whitespace or paths that still do not match the required pattern after attempted normalization, the rule reports errors without applying fixes.
+
+• Configurable templates (REQ-AUTOFIX-TEMPLATE): `require-story-annotation` exposes `annotationTemplate` and `methodAnnotationTemplate` options, which are fed through `require-story-helpers` into `coreReportMissing`/`coreReportMethod`. Tests explicitly verify that custom templates are used when supplied.
+
+• Selective enable/disable (REQ-AUTOFIX-SELECTIVE): `require-story-annotation` supports an `autoFix` boolean option that controls whether the fixer is attached; tests confirm that when `autoFix: false` is configured, the rule still reports an error but does not change output. `valid-annotation-format` similarly includes an `autoFix` rule option; `validateStoryAnnotation` checks `options.autoFix !== false` before attaching a fix, otherwise it only reports the invalid format.
+
+• Documentation: `user-docs/api-reference.md` documents the `--fix` behavior, the configurable templates, and the `autoFix` toggles for both rules, aligning with the behavior in code.
+
+Given the passing targeted tests, presence of configuration and fix logic matching all REQ-AUTOFIX-* items, safe handling of edge cases, and up-to-date user documentation, this story is fully implemented.</notes>
 </traceability>

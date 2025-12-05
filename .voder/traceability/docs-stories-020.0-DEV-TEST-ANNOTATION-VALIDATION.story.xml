@@ -2,17 +2,8 @@
 <traceability>
   <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T07:57:42.392Z</last_validated>
+  <last_validated>2025-12-05T08:47:46.072Z</last_validated>
   <last_modified>2025-12-04T21:56:14.194Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and listed requirements for story `docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md` are implemented and verified:
-- File-level @supports enforcement is implemented via `ensureFileSupportsAnnotation`, with safe auto-fix templates and integration with existing `valid-story-reference`/`valid-req-reference` rules to ensure referenced stories and REQ IDs are valid.
-- Describe block story references are enforced for every `describe()` call using a configurable regex pattern (`describePattern`), defaulting to the expected story format.
-- Test names for `it()` and `test()` are required to start with `[REQ-...]` prefixes, with robust, non-inferential normalization for malformed but recognizable prefixes.
-- Test file detection uses configurable, efficient substring patterns that match the directories/extensions specified in the story, and non-test files are explicitly tested and confirmed to be ignored.
-- Framework support is provided for Jest and Mocha semantics (`describe`, `it`, `test`, `context`, plus member forms like `describe.each`), with tests confirming Mocha’s `context` does not generate false positives.
-- Error messages are clear and example-based, and the rule follows ESLint best practices (meta, schema, messages, no heavy I/O) and is integrated into the plugin’s recommended/strict configs.
-- Comprehensive unit tests for the rule itself and plugin-level integration tests all pass, and user-facing documentation in `user-docs/api-reference.md` accurately describes the rule’s behavior and configuration.
-
-Given this concrete evidence, the story `020.0-DEV-TEST-ANNOTATION-VALIDATION` is fully implemented and passes all defined acceptance criteria.</notes>
+  <notes>Story 020.0-DEV-TEST-ANNOTATION-VALIDATION is fully implemented. The ESLint rule traceability/require-test-traceability exists, enforces file-level @supports, describe-string story references, and [REQ-...] prefixes in it/test names for test files, supports multiple test frameworks, integrates with the plugin’s recommended/strict presets, and is covered by dedicated unit tests and user documentation. Deep validation of @supports references leverages existing rules from earlier stories as intended by the dependency list. All related tests pass in the current test run.</notes>
 </traceability>

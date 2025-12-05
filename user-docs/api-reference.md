@@ -246,6 +246,110 @@ describe("Refunds flow docs/stories/010.0-PAYMENTS.story.md", () => {
 });
 ```
 
+### traceability/prefer-implements-annotation
+
+Description: An optional, opt-in migration helper that encourages converting legacy single‑story `@story` + `@req` JSDoc blocks into the newer multi‑story `@supports` format. The rule is **disabled by default** and is **not included in any built‑in preset**; you enable it explicitly and control its behavior entirely via ESLint severity (`"off" | "warn" | "error"`). It does not change what the core rules consider valid—it only adds migration recommendations and safe auto‑fixes on top of existing validation.
+
+Options: None – this rule does not accept a configuration object. All tuning is done via the ESLint rule level (`"off"`, `"warn"`, `"error"`).
+
+This rule focuses on **single‑story** legacy blocks where automatic migration is unambiguous. It inspects JSDoc comments attached to function‑like constructs and looks for the following patterns:
+
+- A single `@story` annotation with one story path.
+- One or more simple `@req` lines in the same block (each with a single requirement ID).
+- No `@supports` annotations yet present in that block.
+
+When these conditions are met, the rule recommends replacing the legacy block with a single `@supports` line that encodes the same relationship between the story and its requirements.
+
+Main behaviors:
+
+1. **Single‑story legacy blocks → `preferImplements` (auto‑fixable)**  
+   When a JSDoc block contains exactly one `@story` path and one or more simple `@req` identifiers, and no `@supports` tags, the rule reports a `preferImplements` diagnostic. In `--fix` mode, and when it is safe to do so, it rewrites the block to a consolidated `@supports` annotation of the form:
+
+   ```js
+   /**
+    * @supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND REQ-PAYMENTS-EDGE
+    */
+   ```
+
+   Conceptually, the auto‑fix:
+
+   - Extracts the single `@story` value.
+   - Collects the requirement IDs from each `@req` line in that block.
+   - Emits a single `@supports story-path#REQ-1 REQ-2 ...` line (or your project’s equivalent anchor scheme).
+
+   All legacy `@story` and `@req` tags in that block are removed as part of the fix, since their meaning is now captured by the `@supports` line. The fix is only applied when the story path and requirement IDs are straightforward to parse; complex or ambiguous shapes are left for manual migration.
+
+2. **Mixed usage with existing `@supports` → `cannotAutoFix` (manual migration)**  
+   If a JSDoc block already contains at least one `@supports` annotation **and** still has legacy `@story`/`@req` tags, the rule treats this as a mixed‑style block. In this case, it reports a `cannotAutoFix` diagnostic that includes a human‑readable `reason` explaining that the block already uses `@supports` and must be cleaned up manually.
+
+   The rule **does not** attempt to merge or rewrite mixed blocks automatically, to avoid guessing your intended story/requirement grouping. All annotations in such blocks are left unchanged; you are expected to convert them to your preferred `@supports` shape by hand.
+
+3. **Multiple distinct `@story` paths → `multiStoryDetected` (manual migration)**  
+   When the same JSDoc block contains **multiple different `@story` paths**, the rule reports a `multiStoryDetected` diagnostic and leaves the block unchanged. This scenario usually indicates integration code that implements requirements from several stories, and the correct multi‑story `@supports` representation depends on how your project organizes those relationships.
+
+   Because there is no universally safe way to automatically group requirements across multiple stories, the rule does **not** attempt any auto‑fix in this case. Instead, it highlights the block so humans can migrate it to one or more explicit `@supports` annotations following your multi‑story conventions.
+
+Deliberate non‑targets and ignored comments:
+
+- JSDoc blocks that contain **only** `@story`, **only** `@req`, or **only** `@supports` are **not** modified by this rule. They remain valid and continue to be governed solely by the core rules such as `require-story-annotation`, `require-req-annotation`, and `valid-annotation-format`.
+- Inline or line comments like `// @story ...`, `// @req ...`, or `// @supports ...` are intentionally ignored by this migration helper; they are still checked by the underlying validation rules where applicable.
+- Any block that does not match the “single story + simple requirements, no supports” shape is treated conservatively: the rule may report a diagnostic to flag the legacy/mixed pattern, but it will not rewrite comments unless it is clearly safe.
+
+Interaction with other rules:
+
+- Enabling this rule does **not** change what is required or permitted by:
+  - `traceability/valid-annotation-format`
+  - `traceability/valid-req-reference`
+  - `traceability/require-story-annotation`
+  - `traceability/require-req-annotation`
+- All existing `@story` + `@req` blocks that pass those rules are still valid when this rule is off. Turning it on simply adds a migration layer that nudges you toward the consolidated `@supports` style and, where unambiguous, performs structural rewrites on your behalf.
+
+Example: single‑story auto‑fix
+
+Given this legacy JSDoc block:
+
+```js
+/**
+ * @story docs/stories/010.0-PAYMENTS.story.md
+ * @req REQ-PAYMENTS-REFUND
+ * @req REQ-PAYMENTS-REFUND-EDGE
+ */
+function issueRefund() {
+  // ...
+}
+```
+
+With `traceability/prefer-implements-annotation` enabled and ESLint run with `--fix`, the rule rewrites it to:
+
+```js
+/**
+ * @supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND REQ-PAYMENTS-REFUND-EDGE
+ */
+function issueRefund() {
+  // ...
+}
+```
+
+All other function‑level rules (such as `require-story-annotation`, `require-req-annotation`, and `valid-annotation-format`) continue to validate the resulting `@supports` annotation according to your existing configuration.
+
+Configuration example (opt‑in at `"warn"`):
+
+```js
+// eslint.config.js (flat config)
+import js from "@eslint/js";
+import traceability from "eslint-plugin-traceability";
+
+export default [
+  js.configs.recommended,
+  traceability.configs.recommended,
+  {
+    rules: {
+      "traceability/prefer-implements-annotation": "warn"
+    }
+  }
+];
+```
+
 ## Configuration Presets
 
 The plugin provides two built-in presets for easy configuration:

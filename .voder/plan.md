@@ -1,17 +1,15 @@
 ## NOW
 
-- [ ] Update the user-facing rule documentation so that the documented default patterns and options for annotation format and test traceability exactly match the current implementation, including the precise default story path regex and the default describe pattern used for test files.
+- [ ] Review and improve both user-facing and internal documentation for the optional prefer-implements-annotation rule so that its current behavior, deprecation status, migration path, and key edge cases are clearly described and aligned with the implemented code.
 
 ## NEXT
 
-- [ ] Review all examples in the user-facing documentation that demonstrate story annotations and test traceability to ensure they either conform to the actual default patterns or clearly indicate any required configuration overrides, and adjust the examples where needed.
-- [ ] Add concise clarification sections to the user-facing rule documentation explaining how to customize the story path pattern and test traceability patterns, including describe labels and test name prefixes, so users understand why certain violations might be reported and how to adapt the rules to their own conventions.
-- [ ] Update any internal development documentation that talks about default annotation or test-traceability patterns so that it reflects the stricter, implementation-accurate defaults, helping future maintainers keep code and docs in sync when changing these patterns.
-- [ ] Do a light pass over the codebase to spot any other small documentation or comment inconsistencies around defaults or examples for the traceability rules and bring them into alignment without changing behavior.
+- [ ] Inspect the implementation and existing tests for the prefer-implements-annotation rule to identify any edge cases or migration scenarios that are not yet covered by tests, and add focused tests to exercise those behaviors.
+- [ ] Design and extend at least one additional end-to-end flow that invokes the installed traceability-maint CLI binary in a realistic scenario, verifying its behavior for both success and error paths in line with the documented options and exit codes.
+- [ ] Update developer-focused documentation to briefly summarize the new tests and end-to-end CLI flows, explaining how they relate to optional and edge-case behaviors and how future contributors should extend them when changing those areas.
 
 ## LATER
 
-- [ ] Evaluate whether to further tighten code-quality limits such as maximum function length or cyclomatic complexity in small increments, and plan targeted refactors where needed to stay within any new limits.
-- [ ] Consider refactoring the remaining small duplicated logic in helper modules into shared internal functions to further reduce even minor duplication while keeping public interfaces unchanged.
-- [ ] Extend the contributor documentation with a short checklist for updating documentation whenever rule defaults or options change, ensuring future behavior and docs stay aligned.
-- [ ] After these refinements, revisit the overall code-quality and documentation assessments to confirm all previously noted minor nits have been addressed.
+- [ ] Broaden edge-case test coverage for other optional or less frequently used rules, ensuring that unusual configuration combinations and mixed legacy annotations are well exercised.
+- [ ] Introduce additional end-to-end scenarios for the CLI that cover more complex argument combinations, such as different output formats, dry-run behavior, and boundary error conditions.
+- [ ] Use insights from the new tests and documentation to identify any small refactors that could simplify handling of optional or deprecated behaviors without changing external behavior, and implement them incrementally.

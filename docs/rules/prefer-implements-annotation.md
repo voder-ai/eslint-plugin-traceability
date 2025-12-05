@@ -2,7 +2,7 @@
 
 Optional migration rule that recommends converting legacy `@story` + `@req` annotations to the newer `@supports` format.
 
-@story docs/stories/010.3-DEV-MIGRATE-TO-IMPLEMENTS.story.md  
+@story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md  
 @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage
 @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns and mixed usage that cannot be auto-fixed yet
 @req REQ-AUTO-FIX - Provide safe auto-fix support for simple single-story @story + @req blocks

@@ -73,8 +73,41 @@ For teams that want to gradually migrate from `@story` + `@req` to `@supports`, 
   }
   ```
 
-- When enabled, it offers **conservative auto-fixes** that rewrite eligible `@story` + `@req` combinations into equivalent `@supports` lines, without attempting risky or ambiguous transformations.
-- Detailed behavior, limitations, and examples are documented in the project’s internal rule documentation, which is primarily intended for maintainers; most users can rely on this guide and the API reference for day-to-day usage.
+This rule is an **optional migration aid**, not a deprecation notice. `@story` and `@req` remain fully supported, and there is no hard requirement or deadline to migrate existing annotations. Use the rule only where `@supports` gives you clearer, multi-story traceability.
+
+When enabled, it offers **conservative auto-fixes** that rewrite eligible `@story` + `@req` combinations into equivalent `@supports` lines, without attempting risky or ambiguous transformations. It intentionally refuses to modify comments that are even slightly unclear, and will instead surface diagnostics that explain what needs manual attention.
+
+Aligned with the internal rule behavior, the key cases are:
+
+- **Simple, single-story JSDoc blocks**  
+  For comments that contain exactly one `@story` path and one or more simple `@req` lines, the rule:
+  - Reports a recommendation to consolidate them, and
+  - In `--fix` mode, converts them into a single `@supports` line that keeps the same story path and requirement IDs.
+
+- **Mixed `@story` / `@req` plus existing `@supports`**  
+  For comments that already contain one or more `@supports` lines alongside `@story` and/or `@req`, the rule:
+  - Reports a diagnostic explaining that mixed usage cannot be auto-fixed safely, and
+  - Leaves the comment unchanged so you can decide how to migrate it manually.
+
+- **Multiple distinct `@story` paths**  
+  For comments that refer to more than one different `@story` path, the rule:
+  - Reports that multiple stories were detected, and
+  - Requires you to manually convert them into separate `@supports` lines (one per story path, each followed by the appropriate requirement IDs).
+
+- **Intentionally ignored comments**  
+  The following are **ignored** by this rule and remain valid:
+  - Comments that contain only `@story` lines,
+  - Comments that contain only `@req` lines,
+  - Comments that contain only `@supports` lines, and
+  - Line comments such as `// @story ...`.
+  
+  These forms are still supported by the plugin and are not modified by `traceability/prefer-implements-annotation`.
+
+A typical migration path is:
+
+- Start with the rule set to `"off"` while you introduce `@supports` in new or refactored code.
+- Enable it as `"warn"` to get non-breaking guidance and auto-fixes for straightforward cases.
+- Optionally move to `"error"` once you want to strictly enforce `@supports` usage for all JSDoc blocks that are eligible for safe conversion.
 
 #### When to keep `@story` + `@req`
 
