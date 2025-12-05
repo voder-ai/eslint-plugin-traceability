@@ -2,18 +2,17 @@
 <traceability>
   <specification>docs/stories/006.0-DEV-FILE-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T14:46:51.145Z</last_validated>
+  <last_validated>2025-12-05T15:51:42.468Z</last_validated>
   <last_modified>2025-12-04T18:44:42.520Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story `006.0-DEV-FILE-VALIDATION` is fully implemented and verified.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and listed requirements for Story 006.0-DEV-FILE-VALIDATION are implemented and verified:
 
-All acceptance criteria are met:
-- **Core Functionality**: `src/rules/valid-story-reference.ts` + `src/utils/storyReferenceUtils.ts` implement validation that @story paths refer to existing `.story.md` files, using `normalizeStoryPath()`, `buildStoryCandidates()`, and `getStoryExistence()` to resolve and check files. Tests exercise both valid references and missing/invalid cases.
-- **Quality Standards**: Filesystem access is wrapped in try/catch (`checkSingleCandidate()`), results are cached, and the rule uses ESLint best practices (RuleTester tests, meta.schema, messages, options). No uncaught fs errors are allowed; error states are modeled explicitly as `fs-error`.
-- **Integration**: The rule consumes already-parsed annotations by scanning comment text for `@story` lines and extracting the path token. It integrates cleanly with the prior annotation format validation rules (005.0) without duplicating their concerns.
-- **User Experience**: Error messages `fileMissing`, `invalidExtension`, `invalidPath`, and `fileAccessError` are specific, include the offending path, and tests assert exact messageIds and data. The rule docs explain each diagnostic with examples.
-- **Error Handling**: Tests deliberately mock `fs.existsSync` and `fs.statSync` to throw (EACCES, EIO); the implementation converts these into `fs-error` status and `fileAccessError` diagnostics rather than throwing, fulfilling graceful handling of permission and I/O errors.
-- **Documentation**: The story, the dedicated rule documentation file, and README references provide clear path resolution rules, examples, configuration options, and boundary behavior.
+- The `traceability/valid-story-reference` ESLint rule exists, is exported, and is enabled in the recommended/strict configs.
+- It parses `@story` annotations, resolves paths relative to project root with configurable `storyDirectories`, enforces `.story.md` extension by default, and supports relaxing this via `requireStoryExtension`.
+- It defends against path traversal and disallows (or conditionally allows) absolute paths, while enforcing that any resolved file remains within the project boundary.
+- Filesystem access is fully wrapped in try/catch with a cached existence layer, and rule-level diagnostics distinguish between missing files and filesystem errors with clear, contextual messages.
+- Tests explicitly tied to this story cover file existence, extension validation, path traversal, absolute paths, project boundaries, configurable paths, and error handling under various filesystem failure modes, and all of these tests pass in the recorded test run.
+- Documentation in both the story file and user-facing API reference explains the rule’s behavior, path resolution rules, and configuration, matching the story’s examples.
 
-All listed requirements (REQ-FILE-EXISTENCE, REQ-ERROR-HANDLING, REQ-ANNOTATION-VALIDATION, REQ-PATH-RESOLUTION, REQ-SECURITY-VALIDATION, REQ-PERFORMANCE-OPTIMIZATION, REQ-PROJECT-BOUNDARY, REQ-CONFIGURABLE-PATHS) are directly implemented in the code and are covered by targeted tests. The Jest test run shows all relevant suites passing. Therefore, this story is assessed as PASSED.</notes>
+Given this concrete evidence across implementation, tests, and documentation, the story is fully implemented and passes.</notes>
 </traceability>

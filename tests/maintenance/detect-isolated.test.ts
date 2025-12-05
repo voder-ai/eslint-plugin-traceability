@@ -43,7 +43,7 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
     }
   });
 
-  it("[REQ-MAINT-DETECT] throws error on permission denied", () => {
+  it("[REQ-MAINT-DETECT] handles permission denied errors by returning an empty result", () => {
     const tmpDir2 = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-perm-"));
     const dir = path.join(tmpDir2, "subdir");
     fs.mkdirSync(dir);

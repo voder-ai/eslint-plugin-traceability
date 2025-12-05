@@ -2,32 +2,14 @@
 <traceability>
   <specification>docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T14:45:42.661Z</last_validated>
+  <last_validated>2025-12-05T15:49:29.016Z</last_validated>
   <last_modified>2025-12-05T00:39:20.388Z</last_modified>
-  <evidence>[object Object]</evidence>
-  <notes>The story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md defines requirements for JSDoc tag coexistence with traceability annotations. Implementation is centered in the valid-annotation-format ESLint rule and its helper module.
-
-Mapping to acceptance criteria:
-
-1. **Before Other Tags** – The test "[REQ-JSDOC-TAG-COEXISTENCE] traceability before other JSDoc tags" in tests/rules/valid-annotation-format.test.ts uses a JSDoc block where @story and @req precede @param and @returns. It is in the `valid` array and passes in the Jest run, showing such ordering is accepted.
-
-2. **After Other Tags** – The test "[REQ-JSDOC-TAG-COEXISTENCE] traceability after other JSDoc tags" places @story/@req after @param/@returns and is also valid and passing, confirming support for traceability tags after other JSDoc tags.
-
-3. **Mixed Positions** – The test "[REQ-JSDOC-TAG-COEXISTENCE] mixed positions of traceability and other JSDoc tags" interleaves @story, @param, @req, another @param, @returns, and a final @req. This is marked valid and passes, satisfying mixed-position behavior.
-
-4. **Proper Termination** – processCommentLine calls isNonTraceabilityJSDocTagLine; when a non-traceability JSDoc tag (e.g. @param, @returns) is encountered, it finalizes any pending @story/@req and clears the pending state. The test "[REQ-NO-FALSE-POSITIVES] JSDoc tags do not pollute requirement ID when following @req" reproduces the original bug scenario and is now valid and passing (no concatenated "REQ-OPTIMIZATION@param{object}data"), confirming correct termination at tag boundaries.
-
-5. **JSDoc Tag Detection** – isNonTraceabilityJSDocTagLine (annotated with this story and REQ-JSDOC-BOUNDARY-DETECTION / REQ-JSDOC-TAG-COEXISTENCE) treats any line starting with '@' (excluding @story/@req/@supports) as a JSDoc boundary. normalizeCommentLine ensures that JSDoc lines like "* @param ..." are normalized to "@param ..." so they match this detection.
-
-6. **Continuation Lines** – Continuation only happens when a pending annotation exists and the current normalized line is non-empty, not a traceability tag, and not a non-traceability JSDoc tag. Lines that do not start with '@' (e.g. the continuation part of a multi-line story path) are appended to the pending value. The test "[REQ-PRESERVE-MULTILINE] multi-line @story annotation before other JSDoc tags" exercises this pattern and passes, showing continuation only on non-tag lines.
-
-7. **Error Messages / No False Positives** – Existing invalid cases (missing values, bad formats) still have precise, requirement-linked error messages via invalidStoryFormat/invalidReqFormat; the specific false-positive scenario described in the story is now a valid case (no error) as shown by the REQ-NO-FALSE-POSITIVES test. This demonstrates that only genuine format issues produce errors, and valid annotations in any JSDoc position do not.
-
-8. **Backward Compatible** – The test file includes extensive pre-existing cases for multi-line annotations, configurable patterns, supports parsing, and error messaging. All 38 Jest suites (including these) pass, indicating that new logic did not break previous valid annotations.
-
-9. **Documentation** – docs/rules/valid-annotation-format.md has a dedicated "JSDoc coexistence" section explaining that traceability annotations can appear before/after/interleaved with other JSDoc tags, that JSDoc tag lines act as boundaries, and that continuation lines are only those without a leading JSDoc tag. It includes an example with story 022.0, fulfilling the documentation acceptance criterion.
-
-10. **Tests** – Story linkage in tests/rules/valid-annotation-format.test.ts explicitly references docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md and all the REQ-* IDs for this story. Multiple tests cover before/after/mixed positions, multi-line behavior, and the no-false-positive scenario. The full Jest run (`npm test -- --verbose`) shows this suite passing.
-
-Based on the implemented helper functions, updated rule logic, comprehensive targeted tests, passing test run, and updated documentation, all acceptance criteria and listed requirements for Story 022.0-DEV-JSDOC-COEXISTENCE are satisfied.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria for Story 022.0-DEV-JSDOC-COEXISTENCE are implemented and verified:
+- Parser logic has been updated to detect non-traceability JSDoc tags (@param/@returns/etc.) as boundaries, terminating pending @story/@req values and preventing them from consuming later tags.
+- Continuation lines only extend multi-line annotation values when they do not start with another @tag, while multi-line @story values remain supported before JSDoc tags.
+- Valid examples for traceability annotations before, after, and interleaved with JSDoc tags are covered by passing tests.
+- The original false-positive scenario (`REQ-OPTIMIZATION@param{object}data`) is explicitly tested and no longer occurs.
+- Documentation for the valid-annotation-format rule has been updated to describe JSDoc coexistence behavior and includes an example tied to this story.
+Given the concrete implementation changes, targeted tests mapped to each requirement, and successful full test run, this story is fully implemented and passes.</notes>
 </traceability>

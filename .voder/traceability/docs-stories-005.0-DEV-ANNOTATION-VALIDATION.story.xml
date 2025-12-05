@@ -2,101 +2,55 @@
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T14:46:24.356Z</last_validated>
+  <last_validated>2025-12-05T15:49:27.453Z</last_validated>
   <last_modified>2025-12-04T22:10:02.692Z</last_modified>
-  <evidence>Story file exists and matches the provided spec: docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md.,Core ESLint rule implementation: src/rules/valid-annotation-format.ts
-  - Rule meta:
-    - type: "problem", fixable: "code", schema from getRuleSchema().
-    - docs.description: "Validate format and syntax of @story, @req, and @supports annotations".
-    - messages.invalidStoryFormat / invalidReqFormat / invalidImplementsFormat / invalidRuleConfiguration provide structured, reusable error messages.
-  - create(context) implementation:
-    - Resolves options via resolveOptions (shared options handling).
-    - On Program, reports any configuration errors from getOptionErrors() with messageId "invalidRuleConfiguration".
-    - Iterates all comments via sourceCode.getAllComments() and calls processComment() to validate annotations.
-  - Inline traceability annotations explicitly map this rule to story 005.0 and its requirements:
-    - create(): @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md, @req REQ-SYNTAX-VALIDATION, REQ-FORMAT-SPECIFICATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT, REQ-MULTILINE-SUPPORT, REQ-FLEXIBLE-PARSING, REQ-ERROR-SPECIFICITY, etc.
-    - processComment/processCommentLine: multiple @story refs to 005.0 and @req for REQ-MULTILINE-SUPPORT, REQ-FLEXIBLE-PARSING, REQ-SYNTAX-VALIDATION, REQ-MIXED-SUPPORT.,Shared option and format specification helpers: src/rules/helpers/valid-annotation-options.ts
-  - Defines the canonical format and default patterns:
-    - getDefaultStoryPattern(): /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/ (matches story's described pattern: relative docs/stories, version, -DEV-, .story.md suffix).
-    - getDefaultStoryExample(): "docs/stories/005.0-DEV-EXAMPLE.story.md".
-    - getDefaultReqPattern(): /^REQ-[A-Z0-9-]+$/.
-    - getDefaultReqExample(): "REQ-EXAMPLE".
-  - Implements nested + flat options for story/req patterns and examples, fulfilling REQ-FORMAT-SPECIFICATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT, and flexible configuration notes in the story.
-  - resolveOptions() normalizes user options, validates regex patterns, caches resolved defaults, and collects optionErrors using a stable error message builder (buildInvalidRegexError).,Annotation parsing and multiline/JSdoc handling: src/rules/helpers/valid-annotation-format-internal.ts
-  - normalizeCommentLine(rawLine):
-    - Trims whitespace, supports leading '*' for JSDoc, and preserves @story/@req/@supports tags even if they appear later in the line.
-    - This implements flexible parsing across line comments, block comments, and JSDoc, matching REQ-FLEXIBLE-PARSING.
-  - PendingAnnotation type (story | req, value, hasValue) and related comments are explicitly tagged to Story 005.0 and REQ-MULTILINE-SUPPORT.
-  - isNonTraceabilityJSDocTagLine(normalized): detects non-traceability JSDoc tags (e.g., @param, @returns) and is used in processCommentLine() to terminate multi-line traceability values when a new JSDoc tag begins, aligning with the story’s requirement to handle “malformed comment structures” and JSDoc coexistence cleanly.,Validation and error-handling logic: src/rules/helpers/valid-annotation-format-validators.ts
-  - validateStoryAnnotation(context, comment, rawValue, options):
-    - Trims rawValue.
-    - If empty, reports invalidStoryFormat with details from buildStoryErrorMessage("missing", ...):
-      - Message shape: 'Missing story path for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".' (REQ-PATH-FORMAT, REQ-ERROR-SPECIFICITY).
-    - Collapses whitespace using collapseAnnotationValue() to support multi-line annotations (REQ-MULTILINE-SUPPORT).
-    - Checks against options.storyPattern; accepts matches (valid format).
-    - For non-matching values:
-      - If value contains internal whitespace, reports invalid story format (malformed values across lines).
-      - Else uses getFixedStoryPath() to attempt minimal, suffix-only fixes (.story → .story.md or .md → .story.md), only when safe (no ".." traversal) and pattern-compliant; respects options.autoFix flag. This fulfills REQ-PATH-FORMAT, REQ-FLEXIBLE-PARSING, and the auto-fix notes in the story’s implementation section.
-  - validateReqAnnotation(context, comment, rawValue, options):
-    - Trims and checks for missing value; reports with buildReqErrorMessage("missing", ...) when empty (REQ-REQ-FORMAT, REQ-ERROR-SPECIFICITY).
-    - Collapses whitespace and validates against options.reqPattern; reports "invalid requirement ID ..." with pattern-specific examples when non-matching, satisfying REQ-REQ-FORMAT and REQ-ERROR-SPECIFICITY.
-  - finalizePendingAnnotation() dispatches to validateStoryAnnotation or validateReqAnnotation based on pending.type, tying the multi-line parsing flow to actual syntax validation (REQ-SYNTAX-VALIDATION, REQ-MULTILINE-SUPPORT).
-  - validateImplementsAnnotation() integrates @supports validation logic using shared helpers, extending validation to story + multiple req IDs, aligning with the story’s expanded scope and later multi-story support stories (010.2).,Core utilities for multiline and safe autofix: src/rules/helpers/valid-annotation-utils.ts
-  - collapseAnnotationValue(value): replaces all whitespace with "" so multi-line annotations are validated as a single logical value, exactly as described in the story’s examples (REQ-MULTILINE-SUPPORT, REQ-FLEXIBLE-PARSING).
-  - getFixedStoryPath(original): implements conservative suffix normalization for @story paths and explicitly rejects paths containing ".." traversal segments, matching the story’s path traversal invalid examples.
-  - buildStoryErrorMessage(kind, value, options) and buildReqErrorMessage(kind, value, options):
-    - Use configurable examples (or defaults) to construct precise, user-facing details strings that explain exactly what is wrong (missing vs invalid) and what format is expected (REQ-ERROR-SPECIFICITY).
-    - These are used by validateStoryAnnotation/validateReqAnnotation and are exactly what the tests assert against.,Rule documentation aligned with the story: docs/rules/valid-annotation-format.md
-  - Top-level summary explicitly matches the story: "Validates that @story, @req, and @supports annotations follow the correct format and syntax rules...".
-  - Includes story and requirement tags back to docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md and its REQ-FORMAT-SPECIFICATION, REQ-SYNTAX-VALIDATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT.
-  - Documents:
-    - Supported comment forms (line, block, JSDoc) and flexible parsing behavior.
-    - Multiline annotation support with worked examples that match the story’s examples.
-    - JSDoc coexistence rules preventing tags like @param from being concatenated into IDs.
-    - @supports format and how it is validated.
-    - Configuration options for patterns and examples (nested and flat forms) consistent with valid-annotation-options.ts.
-    - Example error messages for missing/invalid story and requirement values.
-  - Provides concrete valid/invalid examples that mirror those in the story, fulfilling the "Documentation" acceptance criterion.,Integration with function and branch rules via shared annotations:
-  - The plugin exports and config include the rule:
-    - src/index.ts: RULE_NAMES includes "valid-annotation-format".
-    - TRACEABILITY_RULE_SEVERITIES maps "traceability/valid-annotation-format" to "warn", so it is part of the recommended/strict presets created by createTraceabilityFlatConfig() and attached to plugin.configs.
-  - Function/branch rules (require-story-annotation, require-req-annotation, require-branch-annotation) operate on the same @story/@req annotations in comments/JSDoc.
-    - valid-annotation-format scans *all* comments in the Program (via sourceCode.getAllComments()) and thus validates the same annotations those rules rely on.
-    - This satisfies the "Integration: Works with annotations found by function and branch validation rules" criterion: the same annotations that must exist for functions/branches are also format-validated by this rule.,Tests specifically tied to this story and its requirements: tests/rules/valid-annotation-format.test.ts
-  - Header annotations:
-    - Tests for: docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md.
-    - @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md.
-    - @req REQ-FORMAT-SPECIFICATION - Verify valid-annotation-format rule enforces annotation format syntax.
-  - Valid cases include:
-    - "[REQ-PATH-FORMAT] valid story annotation format (single-line)": // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md.
-    - "[REQ-REQ-FORMAT] valid req annotation format (single-line)": // @req REQ-EXAMPLE.
-    - "[REQ-FORMAT-SPECIFICATION] valid block annotations (single-line values)": block comment with @story and @req.
-    - "[REQ-MULTILINE-SUPPORT] valid multi-line @story annotation value in block comment": splits story path across lines and expects no error.
-    - "[REQ-MULTILINE-SUPPORT] valid multi-line @req annotation value in block comment".
-    - "[REQ-FLEXIBLE-PARSING] valid JSDoc-style comment with leading stars and spacing".
-  - Invalid cases explicitly test the story’s invalid examples and error specifics:
-    - "[REQ-PATH-FORMAT] missing story path (single line)": // @story → expects missing story path message.
-    - "[REQ-PATH-FORMAT] invalid story file extension": missing .md; expects output with .story.md autofix and the invalid-path error details.
-    - "[REQ-PATH-FORMAT] story path must not use path traversal": ../docs/stories/... → expects invalid path message (no autofix; path traversal).
-    - "[REQ-REQ-FORMAT] missing req id (single line)": // @req.
-    - "[REQ-REQ-FORMAT] invalid req id format (single line)": // @req invalid-format, etc.
-    - "[REQ-MULTILINE-SUPPORT] missing story path with multi-line block comment" and "invalid multi-line story path after collapsing whitespace".
-    - "[REQ-MULTILINE-SUPPORT] invalid multi-line req id after collapsing whitespace".
-  - Additional groups validate configurable patterns and example messages, confirming that error messages are clear, specific, and include offending identifiers/paths, satisfying REQ-ERROR-SPECIFICITY and the UX acceptance criteria.,End-to-end test execution including this rule’s tests:
-  - Command executed: npm test -- --verbose.
-  - Jest output (excerpt) shows:
-    - PASS tests/rules/valid-annotation-format.test.ts
-      - Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)
-        - Contains many tests labeled with [REQ-PATH-FORMAT], [REQ-REQ-FORMAT], [REQ-FORMAT-SPECIFICATION], [REQ-MULTILINE-SUPPORT], [REQ-FLEXIBLE-PARSING], [REQ-ERROR-SPECIFICITY], etc.
-    - Overall summary:
-      - Test Suites: 38 passed, 38 total
-      - Tests: 293 passed, 293 total
-      - Exit code: 0
-  - This confirms that all behavior asserted by the Story 005.0 tests is currently implemented and passing.,Evidence of ESLint rule quality and best-practices:
-  - Uses ESLint.RuleTester for comprehensive, isolated rule tests.
-  - Supplies a JSON Schema for options via getRuleSchema(), matching the story’s guidance under "Rule Options and Schema".
-  - Splits responsibilities into small helper modules (options, internal parsing, validators, utils) for maintainability.
-  - Implements fixable behavior conservatively, only for safe suffix adjustments, as documented.
-  - Integrates with plugin presets (recommended/strict), aligning with ESLint/plugin best practices.</evidence>
-  <notes>The story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md describe an ESLint rule that validates the format and syntax of @story and @req annotations (including multiline, configurable patterns, and clear error messages) and later extends to @supports. The implementation is present as the traceability/valid-annotation-format rule with supporting helpers, and it is fully wired into the plugin’s rule set and config presets. The rule enforces the documented default patterns for story paths and requirement IDs, supports multiline annotations and flexible comment/JSDoc formats, and produces specific, actionable error messages backed by buildStoryErrorMessage/buildReqErrorMessage. The rule’s behavior is thoroughly covered by tests in tests/rules/valid-annotation-format.test.ts, which are explicitly tagged to this story and its requirements and all pass under the current test run. Documentation in docs/rules/valid-annotation-format.md matches the story’s specification and provides the required valid/invalid examples and option descriptions. Given the concrete implementation, passing tests, and aligned documentation, all acceptance criteria and listed requirements for Story 005.0 are satisfied; status is PASSED.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and requirements of docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md are implemented and verified:
+
+1. **Core Functionality (Validates @story and @req format and syntax)**
+   - Implemented by the `valid-annotation-format` ESLint rule, plus its helpers:
+     - `validateStoryAnnotation` and `validateReqAnnotation` enforce the specified patterns, detect missing values, and treat malformed values as errors.
+     - `collapseAnnotationValue` and `PendingAnnotation` logic provide correct logical values across multiple lines.
+   - Comprehensive tests in `tests/rules/valid-annotation-format.test.ts` cover both valid and invalid scenarios for @story and @req annotations.
+
+2. **Quality Standards (ESLint rule best practices)**
+   - Rule defines `meta`, `messages`, `schema`, and `fixable` correctly.
+   - Options are validated and normalized via `valid-annotation-options.ts`.
+   - JSON Schema ensures configuration integrity; invalid regex patterns surface as `invalidRuleConfiguration` without crashing the rule.
+   - Tests explicitly exercise configuration error cases.
+
+3. **Integration (Works with function and branch validation rules)**
+   - Plugin index (src/index.ts) exports `valid-annotation-format` alongside `require-story-annotation`, `require-req-annotation`, and `require-branch-annotation`, and includes it in the recommended/strict configs via `TRACEABILITY_RULE_SEVERITIES`.
+   - Flat config integration tests confirm the preset wiring is correct, meaning in a real ESLint run, format validation executes together with the other traceability rules on the same codebase.
+   - The rule operates purely on comment nodes (`getAllComments`), so it naturally complements function/branch rules which operate on AST nodes, matching the story’s “foundation before file validation” positioning.
+
+4. **User Experience (Clear, specific error messages)**
+   - `buildStoryErrorMessage` and `buildReqErrorMessage` generate explicit, contextual messages that include the offending value (where applicable) and a concrete example.
+   - Tests assert exact `details` strings, e.g.:
+     - Missing story path: `Missing story path for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".`
+     - Invalid story path: `Invalid story path "..." for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".`
+     - Missing/invalid `@req` IDs with clear guidance.
+   - The ESLint message template `Invalid annotation format: {{details}}.` standardizes presentation while allowing detailed, actionable content per error.
+
+5. **Error Handling (Edge cases and malformed comments)**
+   - `normalizeCommentLine` gracefully handles empty lines, JSDoc leading `*`, and lines without any traceability tags.
+   - `isNonTraceabilityJSDocTagLine` correctly terminates multi-line traceability values when encountering tags like `@param` or `@returns`, avoiding mis-parsing JSDoc docs as annotation content.
+   - Multi-line handling is robust: pending state is cleared or extended appropriately depending on tag detection.
+   - Configuration errors for patterns do not break validation; they are reported separately and defaults are used.
+   - Tests cover malformed single- and multi-line annotations, invalid patterns, and invalid examples, confirming graceful handling rather than crashes.
+
+6. **Documentation (Format specification and examples)**
+   - The story file itself includes a dedicated “Annotation Format Examples” section with both valid and invalid examples matching the implemented behavior.
+   - The implementation and tests mirror these examples closely (e.g., missing extension, path traversal, invalid `REQ-` formats), demonstrating that the code was built against the documented spec.
+
+7. **Requirements Mapping**
+   - REQ-FORMAT-SPECIFICATION: Default patterns and helpers define clear format rules; tests verify valid and invalid cases.
+   - REQ-SYNTAX-VALIDATION: `finalizePendingAnnotation` and validators enforce syntax and dispatch to correct checks.
+   - REQ-PATH-FORMAT: Story paths must match the `docs/stories/<number>-DEV-... .story.md` regex; invalid extensions and traversal are rejected, with auto-fix for safe suffix issues.
+   - REQ-REQ-FORMAT: Requirement IDs must match `^REQ-[A-Z0-9-]+$`; missing and malformed IDs produce specific messages.
+   - REQ-MULTILINE-SUPPORT: Multi-line `@story` and `@req` values are collapsed and validated as a single logical value, both for valid and invalid paths/IDs.
+   - REQ-FLEXIBLE-PARSING: Handling of JSDoc `*`, whitespace, and non-traceability JSDoc tags ensures robust parsing under varied formatting.
+   - REQ-ERROR-SPECIFICITY: Separate message variants for missing vs invalid values, with examples and echoing the problematic identifier/path, and thoroughly asserted in tests.
+
+Given the direct mapping between requirements, implementation, and passing tests, the story 005.0-DEV-ANNOTATION-VALIDATION is fully implemented and verified.</notes>
 </traceability>

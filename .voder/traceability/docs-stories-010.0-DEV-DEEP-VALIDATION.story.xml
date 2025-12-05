@@ -2,34 +2,17 @@
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T14:47:49.254Z</last_validated>
+  <last_validated>2025-12-05T15:52:31.314Z</last_validated>
   <last_modified>2025-12-04T18:44:42.514Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>Based on the implementation and tests, Story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md is fully implemented.
+  <notes>Story 010.0-DEV-DEEP-VALIDATION is fully implemented.
 
-Mapping to Acceptance Criteria:
-1) **Core Functionality**: Implemented via `valid-req-reference` rule and helpers:
-   - Reads referenced story files, extracts `REQ-...` identifiers, and verifies each `@req` and `@supports` requirement ID exists in the corresponding file. Confirmed by multiple valid/invalid tests in tests/rules/valid-req-reference.test.ts.
+The `valid-req-reference` rule and its helpers provide deep validation of `@req` and `@supports` annotations by:
+- Parsing referenced story files and extracting requirement IDs with a regex that is agnostic to markdown structure (REQ-DEEP-PARSE).
+- Matching each referenced requirement ID against the extracted set, reporting clear `reqMissing` diagnostics when not found (REQ-DEEP-MATCH, REQ-DEEP-ERROR).
+- Validating story paths, preventing path traversal and absolute paths, and enforcing project boundaries via `invalidPath` diagnostics (REQ-DEEP-PATH).
+- Caching parsed requirements per story file within a lint run to avoid repeated reads (REQ-DEEP-CACHE).
+- Supporting requirements in different file structures (standard stories, bullet lists, multi-story fixtures) and both `@story`/`@req` and `@supports` flows, which together satisfy the acceptance criteria around quality, integration, and user experience.
 
-2) **Quality Standards**: Handling of various formats and structures:
-   - Story content is scanned with a generic `REQ-[A-Z0-9-]+` regex, independent of markdown structure, so requirements in bullet lists, arbitrary sections, and other formats are all recognized.
-   - Dedicated fixtures (story_bullet.md, story_multi_a.md, story_multi_b.md) and their tests demonstrate support for different file structures and multi-story scenarios.
-
-3) **Integration**: Works with existing file validation and annotation parsing logic:
-   - Respects the established `@story`/`@req` semantics, using the last `@story` as the default story path for `@req` lines, so it composes cleanly with annotation-format rules.
-   - Validates story paths (traversal, absolute paths) and uses actual filesystem reads for deep content validation, complementing the basic file-existence checks in the `valid-story-reference` rule.
-
-4) **User Experience**: Clear error messages when requirements are not found:
-   - `reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'"` and `invalidPath: "Invalid story path '{{storyPath}}'"` provide precise, contextual feedback.
-   - Tests assert exact `messageId` and `data` payloads, confirming message clarity and consistency.
-
-5) **Error Handling**: Graceful behavior on malformed/missing content:
-   - File read/parsing is wrapped in `try/catch`; IO errors populate an empty Set instead of throwing, so linting does not crash on unreadable or malformed story files.
-   - Path issues are caught early and reported via `invalidPath` before any IO.
-   - From the user’s perspective, the rule either reports specific path/requirement problems or remains silent; there are no uncaught exceptions.
-
-6) **Documentation**: Completed:
-   - docs/rules/valid-req-reference.md documents the deep validation behavior in detail, with examples of correct and incorrect usage, covering different formats and the interaction of `@story`/`@req` and `@supports`.
-
-Given the concrete implementation, comprehensive tests explicitly tied to this story, and the documentation, all practical aspects of the story’s acceptance criteria are satisfied. The unchecked boxes in the story markdown appear to be outdated rather than reflecting current implementation state.</notes>
+All relevant tests (unit and rule-level) pass, and the behavior is documented with examples in docs/rules/valid-req-reference.md. Based on concrete code, tests, and documentation, all acceptance criteria and listed requirements for this story are met.</notes>
 </traceability>
