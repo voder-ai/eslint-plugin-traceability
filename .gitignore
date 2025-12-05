@@ -143,3 +143,15 @@ tmp_jest_output.json
 
 ci/
 jscpd-report/
+
+# Voder and tooling-generated assessment reports (not for version control)
+.voder-code-quality-slices.json
+.voder-eslint-report.json
+.voder-secretlint.json
+.voder-test-output.json
+.voder-jscpd-report/
+
+# Generated CI/script reports
+scripts/eslint-suppressions-report.md
+scripts/traceability-report.md
+scripts/tsc-output.md
