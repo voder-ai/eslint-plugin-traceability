@@ -122,4 +122,29 @@ describe("Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS
 
     logSpy.mockRestore();
   });
+
+  it("[REQ-MAINT-VERIFY] verify completes within a generous time budget and reports stale annotations", () => {
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+
+    const start = performance.now();
+    const exitCode = runMaintenanceCli([
+      "node",
+      "traceability-maint",
+      "verify",
+      "--root",
+      workspace.root,
+    ]);
+    const durationMs = performance.now() - start;
+
+    expect(exitCode).toBe(1);
+    expect(durationMs).toBeLessThan(5000);
+
+    expect(logSpy).toHaveBeenCalledTimes(1);
+    const message = String(logSpy.mock.calls[0][0]);
+    expect(message).toContain(
+      "Stale or invalid traceability annotations detected under",
+    );
+
+    logSpy.mockRestore();
+  });
 });

@@ -5,8 +5,8 @@
 ## NEXT
 
 - [x] Design and add one or two targeted tests that exercise the identified maintenance edge-case scenarios, ensuring they validate both correct behavior and reasonable execution time under those conditions.
-- [ ] Refine small internal parts of the maintenance implementation, where justified by the new tests, to avoid unnecessary work or repeated I/O while preserving existing behavior.
-- [ ] Extend performance-oriented tests to cover any newly optimized paths or additional edge scenarios discovered during the review, keeping them deterministic and fast enough for regular runs.
+- [x] Refine small internal parts of the maintenance implementation, where justified by the new tests, to avoid unnecessary work or repeated I/O while preserving existing behavior.
+- [x] Extend performance-oriented tests to cover any newly optimized paths or additional edge scenarios discovered during the review, keeping them deterministic and fast enough for regular runs.
 
 ## LATER
 

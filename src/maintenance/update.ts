@@ -12,20 +12,7 @@ function processFileForAnnotationUpdates(
   newPath: string,
   replacementCountRef: { count: number },
 ): void {
-  const stat = fs.statSync(fullPath);
-  /**
-   * Skip non-files in iteration
-   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-   * @req REQ-MAINT-UPDATE
-   */
-  /**
-   * Skip entries that are not regular files (e.g., directories)
-   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-   * @req REQ-MAINT-UPDATE
-   */
-  if (!stat.isFile()) return;
-
-  const content = fs.readFileSync(fullPath, "utf8");
+  const content = fs.readFileSync(fullPath, "utf8"); // getAllFiles already returns regular files
   const newContent = content.replace(
     regex,
     /**

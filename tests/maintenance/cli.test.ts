@@ -62,6 +62,32 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
+  it("[REQ-MAINT-VERIFY] verify exits with code 1 and prints guidance when annotations are stale or invalid", () => {
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
+    process.chdir(dir);
+    const tsContent = `/**\n * @story missing.story.md\n */`;
+    fs.writeFileSync(path.join(dir, "file.ts"), tsContent, "utf8");
+
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const code = runMaintenanceCli(["node", "traceability-maint", "verify"]);
+
+    try {
+      expect(code).toBe(1);
+      expect(logSpy).toHaveBeenCalledTimes(1);
+      const message = String(logSpy.mock.calls[0][0]);
+      expect(message).toContain(
+        "Stale or invalid traceability annotations detected under",
+      );
+      expect(message).toContain(
+        "Run 'traceability-maint detect' or 'traceability-maint report' for details.",
+      );
+    } finally {
+      logSpy.mockRestore();
+      temp.cleanup();
+    }
+  });
+
   it("[REQ-MAINT-REPORT] report prints human-readable summary and exits 0", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
@@ -76,6 +102,27 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
       const allMessages = logSpy.mock.calls.flat().join("\n");
       expect(allMessages).toContain("Traceability Maintenance Report");
       expect(allMessages).toContain("missing.story.md");
+    } finally {
+      logSpy.mockRestore();
+      temp.cleanup();
+    }
+  });
+
+  it("[REQ-MAINT-REPORT] report prints 'nothing to report' when no stale annotations exist", () => {
+    const temp = createTempDir("maint-cli-");
+    const dir = temp.dir;
+    process.chdir(dir);
+
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const code = runMaintenanceCli(["node", "traceability-maint", "report"]);
+
+    try {
+      expect(code).toBe(0);
+      expect(logSpy).toHaveBeenCalled();
+      const allMessages = logSpy.mock.calls.flat().join("\n");
+      expect(allMessages).toContain(
+        "No stale @story annotations found. Nothing to report.",
+      );
     } finally {
       logSpy.mockRestore();
       temp.cleanup();
