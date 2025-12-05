@@ -15,7 +15,9 @@ describe("Require Story Core (Story 003.0)", () => {
     const defaultTemplate = getAnnotationTemplate();
     const factory = (target: any, _annotationTemplate: string) =>
       createAddStoryFix(target, defaultTemplate);
-    exerciseCreateAddStoryFixBranches(factory);
+    exerciseCreateAddStoryFixBranches(factory, {
+      annotationText: defaultTemplate,
+    });
   });
 
   test("reportMissing uses context.getSourceCode fallback when sourceCode not provided and still reports", () => {
