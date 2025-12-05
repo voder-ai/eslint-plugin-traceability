@@ -2,106 +2,116 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-04T23:02:14.783Z</last_validated>
+  <last_validated>2025-12-05T00:16:52.306Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
   <evidence>Implementation:
-- Core rule file: src/rules/require-branch-annotation.ts
-  - JSDoc links directly to story: `@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md`, `@req REQ-BRANCH-DETECTION`, `@req REQ-CONFIGURABLE-SCOPE`.
+- Rule source: src/rules/require-branch-annotation.ts
+  - ESLint RuleModule `require-branch-annotation` implemented.
+  - Traceability: @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md with @req REQ-BRANCH-DETECTION and REQ-CONFIGURABLE-SCOPE.
   - meta:
     - type: "problem"; fixable: "code".
     - docs.description: "Require @story and @req annotations on code branches".
     - messages.missingAnnotation: "Branch is missing required annotation: {{missing}}." (clear which annotation is missing).
-    - schema: object with `branchTypes` array, uniqueItems, additionalProperties: false.
+    - schema validates `branchTypes` option (array of strings, uniqueItems, additionalProperties: false).
   - create(context):
-    - Calls validateBranchTypes(context) to get either a list of branch types or a RuleListener if config invalid.
-    - If invalid config, returns the listener directly (graceful config error path).
-    - Otherwise, iterates configured branchTypes, builds handlers that:
-      - For each branch node, call reportMissingAnnotations(context, node, storyFixCountRef).
-      - Special handling: for type === "SwitchCase" and node.test == null (default case), handler returns early (default case not required to be annotated => significance criteria).
+    - Uses validateBranchTypes(context) to either return a RuleListener (for invalid config) or an array of branch types.
+    - Registers handlers for each configured branch type. For SwitchCase, skips default cases (`test == null`) as non-significant.
+    - Calls reportMissingAnnotations(context, node, storyFixCountRef) for each branch node, enforcing @story/@req.
 
-- Branch utilities: src/utils/branch-annotation-helpers.ts
+- Helper logic: src/utils/branch-annotation-helpers.ts
   - DEFAULT_BRANCH_TYPES (REQ-SIGNIFICANCE-CRITERIA):
     - ["IfStatement", "SwitchCase", "TryStatement", "CatchClause", "ForStatement", "ForOfStatement", "ForInStatement", "WhileStatement", "DoWhileStatement"].
+    - Matches story requirement of significant branches (if/else, try/catch, switch, loops).
   - validateBranchTypes(context) (REQ-CONFIGURABLE-SCOPE):
-    - Reads context.options[0].branchTypes.
-    - If branchTypes is an array, filters invalid values by checking membership in DEFAULT_BRANCH_TYPES.
-    - If invalid types exist:
-      - Returns `{ Program(node) { ... } }` that calls context.report once per invalid type with message:
-        - `Value "${t}" should be equal to one of the allowed values: ${DEFAULT_BRANCH_TYPES.join(", ")}`.
-      - This matches invalid configuration behavior described in the story.
-    - If all are valid, returns the configured branchTypes; if no branchTypes, returns DEFAULT_BRANCH_TYPES.
+    - Reads `context.options[0].branchTypes`.
+    - If provided and any values are not in DEFAULT_BRANCH_TYPES, returns { Program(node) { ... } } that reports:
+      - `Value "${t}" should be equal to one of the allowed values: ${DEFAULT_BRANCH_TYPES.join(", ")}` for each invalid type.
+    - If all provided values are valid, returns that list; otherwise returns a copy of DEFAULT_BRANCH_TYPES when no option is given.
   - gatherBranchCommentText(sourceCode, node) (REQ-COMMENT-ASSOCIATION):
-    - For SwitchCase:
-      - Uses sourceCode.lines and PRE_COMMENT_OFFSET = 2 to scan up to 2 lines above the case for lines starting with // or /*; aggregates them, supports the "switch with blank line and comments" pattern.
-    - For other branches:
-      - Uses sourceCode.getCommentsBefore(node), maps to value, joins text.
-    - Supports both line and block comments as required.
-  - reportMissingStory / reportMissingReq (REQ-ANNOTATION-PARSING):
-    - Use context.report with messageId: "missingAnnotation" and data.missing set to "@story" or "@req".
-    - Provide auto-fixes:
-      - When first missing @story: inserts `// @story <story-file>.story.md` above branch with correct indentation.
-      - When @req is missing but @story present: inserts `// @req <REQ-ID>` above branch.
-  - getBranchAnnotationInfo and reportMissingAnnotations (REQ-ANNOTATION-PARSING, REQ-NESTED-HANDLING, REQ-PERFORMANCE-OPTIMIZATION):
-    - getBranchAnnotationInfo:
-      - Calls gatherBranchCommentText to get combined comment text.
-      - Detects presence of @story and @req via regex.
-      - Computes indent from the source line and insertPos via sourceCode.getIndexFromLoc.
-    - reportMissingAnnotations:
-      - Builds an `actions` array for story and req, each with a `missing` flag and handler.
-      - Iterates with forEach and calls handlers only when missing is true.
-      - Handles nested/complex control flow naturally since ESLint will invoke this per branch node.
+    - For SwitchCase, scans up to PRE_COMMENT_OFFSET (2) lines above the case line while they start with // or /*, collecting comments (handles inline comments and blank-line edge cases).
+    - For other nodes, uses sourceCode.getCommentsBefore(node) and maps comment.value to reconstruct leading comment text.
+  - getBranchAnnotationInfo(...) (REQ-ANNOTATION-PARSING):
+    - text = gatherBranchCommentText(...); missingStory = !/@story\b/.test(text); missingReq = !/@req\b/.test(text).
+    - Derives indentation and insertPos from sourceCode and node.loc.
+  - reportMissingStory(...) and reportMissingReq(...) (REQ-ANNOTATION-PARSING + UX):
+    - When missing @story and this is the first story fix, inserts `// @story <story-file>.story.md\n` before the branch via a fixer.
+    - When missing @req and @story is present, inserts `// @req <REQ-ID>\n` before the branch via a fixer.
+    - Always report with messageId "missingAnnotation" and data { missing: "@story" or "@req" }.
+  - reportMissingAnnotations(context, node, storyFixCountRef):
+    - Uses getBranchAnnotationInfo(...) and then iterates actions (for @story and @req). For each missing, calls corresponding reporter.
+    - Works for any branch node visited, including nested structures.
 
-- Plugin integration: src/index.ts
-  - RULE_NAMES includes "require-branch-annotation" so it is dynamically required and exposed under plugin.rules.
-  - TRACEABILITY_RULE_SEVERITIES maps "traceability/require-branch-annotation" to "error".
-  - createTraceabilityFlatConfig() builds configs using TRACEABILITY_RULE_SEVERITIES.
-  - configs.recommended and configs.strict both include this rule => it is integrated into plugin presets as required.
+Documentation:
+- docs/rules/require-branch-annotation.md
+  - Describes rule purpose: "Ensures that significant code branches (if/else, switch cases, loops, try/catch) have `@story` and `@req` annotations for traceability."
+  - Traceability annotations:
+    - @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+    - @req REQ-BRANCH-DETECTION, REQ-CONFIGURABLE-SCOPE.
+  - Options section documents `branchTypes`: default and allowed values exactly match DEFAULT_BRANCH_TYPES.
+  - Explains invalid config behavior: error message of the form `Value "InvalidType" should be equal to one of the allowed values.`
+  - Provides correct/incorrect code examples and invalid configuration example, satisfying documentation acceptance criterion.
 
-- Tests for this story:
-  - tests/rules/require-branch-annotation.test.ts
-    - Header:
-      - `Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md, docs/stories/007.0-DEV-ERROR-REPORTING.story.md`
-      - `@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md` and `@req REQ-BRANCH-DETECTION`.
-    - Uses RuleTester to validate many branch patterns.
-    - Valid tests (cover REQ-BRANCH-DETECTION, REQ-NESTED-HANDLING, REQ-COMMENT-ASSOCIATION):
-      - Annotated examples for: IfStatement, ForStatement (with block comments), SwitchCase (annotated case, unannotated default), TryStatement and CatchClause, DoWhileStatement, ForOfStatement, ForInStatement, WhileStatement.
-      - A "fallback scanning comment detection" case where comments precede a switch case with a blank line, confirming the special SwitchCase comment scan logic works.
-      - Configurable scope:
-        - branchTypes limited to ["IfStatement"] => switch without annotations is allowed.
-        - branchTypes ["IfStatement", "SwitchCase"] with properly annotated if, confirming only configured types are enforced.
-    - Invalid tests (verify Core Functionality, UX, Error Handling):
-      - Missing annotations for each branch type: if, for, while, switch-case (with and without blank line), do-while, for-of, for-in, try/catch.
-      - For each invalid case, asserts:
-        - `output` (autofix) shows inserted `@story` and/or `@req` at correct position and indentation.
-        - `errors` matches `makeMissingAnnotationErrors("@story", "@req")` or single missing as appropriate, verifying messageId and data.missing.
-      - Try/catch case provides two sets of missingAnnotation errors (for try and catch), demonstrating multi-branch handling.
-      - Config error case:
-        - Options: [{ branchTypes: ["UnknownType"] }].
-        - Expects an error with message matching `/should be equal to one of the allowed values/`, aligning with validateBranchTypes behavior and story text.
-  - tests/utils/branch-annotation-helpers.test.ts
-    - Header ties tests to `docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md` and `@req REQ-CONFIGURABLE-SCOPE`.
-    - Tests:
-      - Default behavior: no options => validateBranchTypes returns DEFAULT_BRANCH_TYPES.
-      - Valid custom branchTypes => returns only configured types.
-      - Invalid types => validateBranchTypes returns a listener with Program handler, which when invoked:
-        - Calls context.report once per invalid type with a message containing `Value "${t}" should be equal to one of the allowed values:`.
+Integration into plugin and configs:
+- src/index.ts
+  - RULE_NAMES includes "require-branch-annotation" so the rule is dynamically required via `require(./rules/${name})`.
+  - TRACEABILITY_RULE_SEVERITIES maps:
+    - "traceability/require-branch-annotation": "error".
+  - createTraceabilityFlatConfig() returns recommended/strict flat configs that include this rule at error severity.
+  - configs.recommended and configs.strict therefore both enforce the branch rule, meeting integration criteria.
 
-- Documentation:
-  - docs/rules/require-branch-annotation.md
-    - Describes rule: "Ensures that significant code branches (if/else, switch cases, loops, try/catch) have `@story` and `@req` annotations for traceability."
-    - Includes traceability annotations referencing story 004.0 and REQ-BRANCH-DETECTION / REQ-CONFIGURABLE-SCOPE.
-    - Explains behavior: checks JSDoc or inline comments immediately preceding branches for `@story` and `@req`.
-    - Documents `branchTypes` option, default values, allowed values, and error message for invalid configuration.
-    - Provides correct/incorrect code examples and invalid configuration example.
-  - README.md
-    - References `traceability/require-branch-annotation` as enforcing presence of branch annotations, pointing to rule docs.
+Tests (behavior, UX, error handling, configurable scope):
+- tests/rules/require-branch-annotation.test.ts
+  - Header explicitly references this story:
+    - Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+    - @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+    - @req REQ-BRANCH-DETECTION etc.
+  - describe: "Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)".
+  - Valid tests (REQ-BRANCH-DETECTION & REQ-CONFIGURABLE-SCOPE):
+    - Branches with both @story and @req:
+      - IfStatement, ForStatement (with block comments), WhileStatement, DoWhileStatement, ForOfStatement, ForInStatement.
+      - SwitchCase examples including inline annotations and a fallback-scanning scenario with a blank line before the case.
+      - Try/finally and try/catch with annotations.
+      - Default switch case without annotations is allowed (significance decision implemented and tested).
+    - Configurable scope:
+      - Custom branchTypes ignoring unlisted types.
+      - Custom branchTypes that enforce only listed types, e.g., ["IfStatement", "SwitchCase"].
+  - Invalid tests (Core functionality, UX, nested/complex structures, error handling):
+    - Missing annotations on if-statement: expects two missingAnnotation errors (for "@story" and "@req") and autofix inserting `// @story <story-file>.story.md`.
+    - Missing @req when only @story present on for-loop: expects missingAnnotation for "@req" and fix inserting `// @req <REQ-ID>`.
+    - Missing @story when only @req present on while-loop: expects missingAnnotation for "@story" and fix inserting `// @story <story-file>.story.md`.
+    - Missing annotations on switch-case (with and without blank lines before case): validates fallback scanning behavior and autofix placement.
+    - Missing annotations on do-while, for-of, for-in, testing all loop types.
+    - Missing annotations on try-catch blocks: expects multiple missingAnnotation errors covering both try and catch branches.
+    - Configurable scope with ForStatement only: missing annotations produce errors and autofix, proving branchTypes control works.
+  - Invalid configuration behavior:
+    - Test "[REQ-CONFIGURABLE-SCOPE] invalid branchTypes option should error schema" uses options [{ branchTypes: ["UnknownType"] }] and expects an error message matching `/should be equal to one of the allowed values/`, validating validateBranchTypes and its Program handler.
 
-- Test run evidence:
-  - `npm test -- --runInBand --verbose` (captured earlier) shows:
-    - PASS tests/rules/require-branch-annotation.test.ts (all valid and invalid cases pass).
-    - PASS tests/utils/branch-annotation-helpers.test.ts.
-    - Overall: 35 test suites passed, 266 tests passed, 0 failures.
+- tests/utils/branch-annotation-helpers.test.ts
+  - Validates:
+    - validateBranchTypes returns default types when no options.
+    - Returns custom list when valid types provided.
+    - Returns a listener that reports configuration errors when invalid types are passed.
 
-These files and passing tests demonstrate that all specified behaviors for the branch-annotation rule are implemented and verified.</evidence>
-  <notes>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md describes an ESLint rule that enforces @story and @req annotations on significant code branches, with requirements for branch detection, comment association, annotation parsing, significance criteria, nested handling, configurable scope, performance, and documentation. The implementation in src/rules/require-branch-annotation.ts and src/utils/branch-annotation-helpers.ts fulfills these requirements: it supports all specified branch node types, correctly associates nearby comments (including special handling for SwitchCase and blank lines), parses @story/@req, and offers appropriate auto-fixes. validateBranchTypes provides configurable scope and clear configuration error reporting. The rule is wired into the plugin’s recommended and strict configs, satisfying integration requirements. User experience is covered with a clear, specific error message identifying the missing annotation, and tests verify both error reporting and autofix behavior across many realistic patterns, including nested/multiple branches. Documentation in docs/rules/require-branch-annotation.md (plus the README reference) provides examples and configuration details matching the story. All related tests pass in the full Jest run, so this story’s acceptance criteria and technical requirements are met; the story is fully implemented.</notes>
+- Plugin/config integration tests:
+  - tests/plugin-default-export-and-configs.test.ts
+    - Confirms plugin default export includes rules and configs.
+    - Confirms rule names include "require-branch-annotation".
+    - Confirms configs.recommended and configs.strict include correct rule configuration and severity mappings.
+
+Test execution evidence:
+- Command executed: `npm test -- --runInBand --verbose`.
+- Jest output shows:
+  - PASS tests/rules/require-branch-annotation.test.ts with all valid and invalid cases passing.
+  - PASS tests/utils/branch-annotation-helpers.test.ts.
+  - PASS tests/plugin-default-export-and-configs.test.ts and other integration tests.
+  - Overall summary: 36 test suites passed, 272 tests passed, 0 failed.
+
+Mapping to story acceptance criteria:
+- Core Functionality: Rule detects missing @story/@req on all significant branch types specified, with tests verifying detection and autofix.
+- Quality Standards: ESLint best practices followed (meta, schema, option validation, no heavy operations). Implementation uses simple AST visitors and string checks, suitable for large files.
+- Integration: Rule registered in plugin, dynamically loaded, and included in recommended/strict flat-config presets; integration tests confirm this.
+- User Experience: Error message clearly indicates the missing annotation (via {{missing}}). Autofixes provide concrete placeholder annotations, guiding developers.
+- Error Handling: Handles invalid configuration via validateBranchTypes and Program listener; handles SwitchCase default and blank-line edge cases; nested branches are fully supported as visitors are bound to node types irrespective of nesting.
+- Documentation: docs/rules/require-branch-annotation.md documents behavior, configuration, and examples tied to this story.</evidence>
+  <notes>All functional and non-functional aspects described in docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md are implemented and verified. The `require-branch-annotation` rule enforces @story and @req annotations on all specified branch types, supports configurable scope, provides clear and fixable error messages, integrates into the plugin’s recommended/strict flat configs, and is fully documented. Multiple targeted Jest test suites reference this story, cover valid/invalid branch patterns, configuration errors, and helpers, and all pass. This satisfies the story’s acceptance criteria and definition of done elements that are observable in the codebase, so the assessment status is PASSED.</notes>
 </traceability>

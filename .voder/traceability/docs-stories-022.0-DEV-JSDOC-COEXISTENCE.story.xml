@@ -2,8 +2,147 @@
 <traceability>
   <specification>docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-12-04T23:02:42.347Z</last_validated>
+  <last_validated>2025-12-05T00:17:56.991Z</last_validated>
   <last_modified>2025-12-04T22:12:21.463Z</last_modified>
-  <evidence>1) Implementation: The JSDoc/annotation parsing logic is in src/rules/helpers/valid-annotation-format-internal.ts and src/rules/valid-annotation-format.ts. normalizeCommentLine only detects @story, @req, and @supports (regex /@story\b|@req\b|@supports\b/) and otherwise strips a leading '*' but returns the rest of the line unchanged. processCommentLine treats any non-empty line when a PendingAnnotation exists as a continuation, appending normalized.trim() to the current annotation value. There is no generic JSDoc tag boundary detection (no /^\s*\*?\s*@\w+/ helper) and no special handling for other JSDoc tags like @param or @returns. As a result, for the example in the story: `/** * @req REQ-OPTIMIZATION * @param {object} data */`, line 1 starts a pending @req with value 'REQ-OPTIMIZATION', and line 2 ('@param {object} data' after normalization) is appended as continuation, yielding a combined value that will be collapsed to 'REQ-OPTIMIZATION@param{object}data'—exactly the broken behavior described in the story. 2) Tests: The valid-annotation-format tests in tests/rules/valid-annotation-format.test.ts cover multi-line values and a JSDoc-style comment with leading stars but only for traceability tags themselves (e.g., @story and @req); there are no tests where @story/@req/@supports coexist with @param, @returns, @throws, or any other JSDoc tags. There is no test file named tests/unit/annotation-parser.test.ts as referenced in the story, and no tests mention docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md or its REQ-JSDOC-* requirements. 3) Documentation: docs/rules/valid-annotation-format.md still documents behavior as concatenating all lines that belong to the same annotation and removing internal whitespace (including newlines); it does not mention JSDoc tag boundaries, generic @tag detection, or provide examples mixing traceability annotations with other JSDoc tags in different positions. 4) Search: A repository-wide search shows no implementation or tests referencing 022.0-DEV-JSDOC-COEXISTENCE, and no helper that recognizes arbitrary JSDoc tags as boundaries.</evidence>
-  <notes>The behavior required by docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md has not been fully implemented. The current parser still treats any non-empty line in a block comment as a continuation of the current @story/@req annotation value when a pending annotation exists, regardless of whether that line begins with another JSDoc tag like @param or @returns. There is no generic JSDoc-tag boundary detection to terminate annotation values when a new @tag appears, so the specific bug described in the story (e.g., REQ-OPTIMIZATION@param{object}data) still exists. Tests do not cover coexistence scenarios with other JSDoc tags, and the documentation has not been updated with examples or explanation for JSDoc coexistence. Therefore multiple acceptance criteria (Before Other Tags, After Other Tags, Mixed Positions, Proper Termination, JSDoc Tag Detection, Continuation Lines, Error Messages tuned to avoid these false positives, Documentation, and Tests) are not satisfied, so the story is failed.</notes>
+  <evidence>Story file exists: docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md (confirmed via check_file_exists).,Core parser implementation is in src/rules/helpers/valid-annotation-format-internal.ts and src/rules/helpers/valid-annotation-utils.ts, used by src/rules/valid-annotation-format.ts.,normalizeCommentLine implementation (src/rules/helpers/valid-annotation-format-internal.ts):
+
+```ts
+export function normalizeCommentLine(rawLine: string): string {
+  const trimmed = rawLine.trim();
+  if (!trimmed) {
+    return "";
+  }
+
+  const annotationMatch = trimmed.match(/@story\b|@req\b|@supports\b/);
+  if (!annotationMatch || annotationMatch.index === undefined) {
+    const withoutLeadingStar = trimmed.replace(/^\*\s?/, "");
+    return withoutLeadingStar;
+  }
+
+  return trimmed.slice(annotationMatch.index);
+}
+```
+- This only detects `@story`, `@req`, and `@supports` and does NOT treat other JSDoc tags (e.g. `@param`, `@returns`) as boundaries.
+- For a JSDoc line like `* @param {object} data`, normalizeCommentLine returns `"@param {object} data"`, which will be treated as a continuation line by the downstream logic.,processCommentLine implementation (src/rules/helpers/valid-annotation-format-internal.ts, via src/rules/valid-annotation-format.ts):
+
+```ts
+function processCommentLine({
+  normalized,
+  pending,
+  context,
+  comment,
+  options,
+}: {
+  normalized: string;
+  pending: PendingAnnotation | null;
+  context: any;
+  comment: any;
+  options: ResolvedAnnotationOptions;
+}): PendingAnnotation | null {
+  if (!normalized) {
+    return pending;
+  }
+
+  const isStory = /@story\b/.test(normalized);
+  const isReq = /@req\b/.test(normalized);
+  const isImplements = /@supports\b/.test(normalized);
+
+  if (isImplements) {
+    const implementsValue = normalized.replace(/^@supports\b/, "").trim();
+    validateImplementsAnnotation(context, comment, implementsValue, options);
+    return pending;
+  }
+
+  if (isStory || isReq) {
+    finalizePendingAnnotation(context, comment, options, pending);
+    const value = normalized.replace(/^@story\b|^@req\b/, "").trim();
+    return {
+      type: isStory ? "story" : "req",
+      value,
+      hasValue: value.trim().length > 0,
+    };
+  }
+
+  if (pending) {
+    const continuation = normalized.trim();
+    if (!continuation) {
+      return pending;
+    }
+    const updatedValue = pending.value
+      ? `${pending.value} ${continuation}`
+      : continuation;
+    return {
+      ...pending,
+      value: updatedValue,
+      hasValue: pending.hasValue || continuation.length > 0,
+    };
+  }
+
+  return pending;
+}
+```
+- Any non-empty line that does NOT contain `@story`, `@req`, or `@supports` is treated as a continuation of the current pending annotation.
+- That includes lines starting with any other JSDoc tag (e.g. `@param`, `@returns`, `@throws`), which directly conflicts with the story’s requirement that JSDoc tags act as boundaries.,Whitespace collapsing (src/rules/helpers/valid-annotation-utils.ts):
+
+```ts
+export function collapseAnnotationValue(value: string): string {
+  return value.replace(/\s+/g, "");
+}
+```
+- This removes ALL whitespace (including newlines) inside an annotation value.
+- Combined with the current continuation logic, a sequence like:
+  ```js
+  /**
+   * @req REQ-OPTIMIZATION
+   * @param {object} data
+   */
+  ```
+  is parsed into a single pending `@req` value of `"REQ-OPTIMIZATION @param {object} data"`, which is then collapsed to `"REQ-OPTIMIZATION@param{object}data"` before validation — exactly the incorrect behavior described in the story’s Problem Context.,There is no implementation of a generic JSDoc tag boundary detector such as the story’s suggested `/^\s*\*?\s*@\w+/` pattern. The only tag checks in the parser are `@story`, `@req`, and `@supports`.,Tests for valid-annotation-format (tests/rules/valid-annotation-format.test.ts) include only these JSDoc-related valid cases:
+
+```ts
+{
+  name: "[REQ-FORMAT-SPECIFICATION] valid block annotations (single-line values)",
+  code: `/**
+ * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @req REQ-VALID-EXAMPLE
+ */`,
+},
+{
+  name: "[REQ-MULTILINE-SUPPORT] valid multi-line @story annotation value in block comment",
+  code: `/**
+ * @story docs/stories/005.0-
+ * DEV-ANNOTATION-VALIDATION.story.md
+ */`,
+},
+{
+  name: "[REQ-MULTILINE-SUPPORT] valid multi-line @req annotation value in block comment",
+  code: `/**
+ * @req REQ-
+ * EXAMPLE
+ */`,
+},
+{
+  name: "[REQ-FLEXIBLE-PARSING] valid JSDoc-style comment with leading stars and spacing",
+  code: `/**
+ *   @story   docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ *   @req   REQ-FLEXIBLE-PARSING
+ */`,
+},
+```
+- None of these tests cover coexistence of traceability tags with other JSDoc tags like `@param` or `@returns`.
+- There are no tests matching the story’s specific examples with `@param` / other JSDoc tags interleaved.,Global and targeted searches show no references to the story or its requirement IDs in code or tests:
+- No `022.0-DEV-JSDOC-COEXISTENCE` or `REQ-JSDOC-TAG-COEXISTENCE` appears in src/ or tests/ (search_file_content on those paths is limited by ignore rules, but the Jest output lists all describe blocks and none mention Story 022.0).
+- Test output from `npm test -- --runInBand --verbose` shows stories 001.0 through 021.0 referenced in describe blocks, but no suite for Story 022.0-DEV-JSDOC-COEXISTENCE.,Documentation for valid-annotation-format (docs/rules/valid-annotation-format.md) mentions JSDoc comments and multiline behavior in general but does NOT show any examples of traceability annotations coexisting with other JSDoc tags (`@param`, `@returns`, etc.) as required by this story. It also does not mention Story 022.0 or its requirements.,All existing tests pass (`npm test -- --runInBand --verbose`), but there are no tests that exercise or validate the JSDoc tag-coexistence scenarios described in this story, so the known bug can still be present without causing test failures.</evidence>
+  <notes>The JSDoc tag coexistence behavior described in docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md has not been implemented.
+
+The current annotation parser (normalizeCommentLine + processCommentLine + collapseAnnotationValue) explicitly exhibits the problematic behavior called out in the story: when a traceability annotation like `@req REQ-OPTIMIZATION` is followed by another JSDoc tag line such as `@param {object} data`, the second line is treated as a continuation of the `@req` value. That combined value is then whitespace-collapsed into a single token like `REQ-OPTIMIZATION@param{object}data`, which fails validation and produces the kind of invalid requirement ID error described in Issue #3.
+
+No logic exists to:
+- Detect generic JSDoc tags (`@word`) as boundaries,
+- Stop continuation when the next line starts with another JSDoc tag,
+- Or otherwise ensure proper termination of annotation values at tag boundaries.
+
+Tests do not cover the coexistence scenarios (traceability tags interleaved with @param/@returns/@throws), nor is there any test suite labeled for Story 022.0 or its requirement IDs. Documentation for valid-annotation-format has not been updated to include examples or narrative about JSDoc tag coexistence.
+
+Given the missing parser changes, absence of targeted tests, and lack of documentation updates, multiple acceptance criteria are not met: JSDoc tag detection as boundaries, correct continuation logic, prevention of false positives in mixed JSDoc blocks, and explicit documentation and tests for these combinations. The story is therefore not fully implemented.</notes>
 </traceability>

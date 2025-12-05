@@ -2,238 +2,47 @@
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-04T23:04:05.813Z</last_validated>
+  <last_validated>2025-12-05T00:18:08.208Z</last_validated>
   <last_modified>2025-12-04T18:44:42.514Z</last_modified>
-  <evidence>Implementation, tests, and docs for deep requirement validation are present and passing:
+  <evidence>1) Implementation: src/rules/valid-req-reference.ts
+- Implements deep validation of @req and @supports annotations against story file requirements.
+- Parses story markdown contents and extracts requirement IDs via `const regex = /REQ-[A-Z0-9-]+/g;` in loadAndCacheRequirements, so any `REQ-...` pattern in any section or list format is supported (satisfying REQ-DEEP-PARSE, REQ-DEEP-FORMAT, REQ-DEEP-SECTION).
+- Caches requirement IDs per story file using `Map<string, Set<string>>` (REQ-DEEP-CACHE), so each story file is only read and parsed once per lint run.
+- Validates that each @req line refers to an existing requirement in the current storyPath via validateReqLine and checkRequirementExists; similar validation is applied for each requirement ID listed after an @supports line via validateImplementsLine (REQ-DEEP-MATCH).
+- Performs path safety checks (no `..`, no absolute paths, and must remain inside cwd) in validateAndResolveStoryPath, and reports `invalidPath` instead of throwing, covering error handling and integration with file validation.
+- Provides clear, specific error messages in meta.messages: `reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'` and `invalidPath: "Invalid story path '{{storyPath}}'`, including both the requirement ID and story path for context (REQ-DEEP-ERROR & user experience).
+- Integrates with existing annotation parsing by scanning all comments via processAllComments, recognizing @story, @req, and @supports lines in handleAnnotationLine, and maintaining a current storyPath across lines and comments.
 
-1. **Core rule implementation (valid-req-reference)**
-   - File: `src/rules/valid-req-reference.ts`
-   - Implements deep validation that `@req` and `@supports` annotations reference actual requirements in story files.
-   - Key behaviors:
-     - Parses comments for `@story`, `@req`, and `@supports`:
-       - `extractStoryPath(comment)` locates `@story` lines and extracts the story path.
-       - `handleAnnotationLine` dispatches `@story`, `@req`, and `@supports` lines to the appropriate handlers.
-       - `processCommentLines` and `processAllComments` iterate over all comment blocks in a file.
-     - Deep requirement parsing & matching:
-       - `loadAndCacheRequirements` reads a story file and extracts all `REQ-[A-Z0-9-]+` tokens via `const regex = /REQ-[A-Z0-9-]+/g;` and caches them by resolved path.
-       - `validateReqLine`:
-         - Extracts the requirement ID from `@req` lines (`extractReqIdFromLine`).
-         - Resolves story path and loads requirements via `resolveStoryAndRequirements`.
-         - Uses `checkRequirementExists` to report `reqMissing` when a requirement is absent.
-       - `parseImplementsLine` and `validateImplementsLine` perform equivalent checks for `@supports <storyPath> <REQ-...>...` annotations.
-     - Path validation and safety:
-       - `validateAndResolveStoryPath` rejects `..` path traversal and absolute paths, reporting `invalidPath`:
-         ```ts
-         if (storyPath.includes("..") || path.isAbsolute(storyPath)) {
-           context.report({ messageId: "invalidPath", data: { storyPath } });
-           return null;
-         }
-         ```
-       - Ensures resolved path stays within `cwd`.
-     - Caching:
-       - Uses `const reqCache = new Map<string, Set<string>>();` in `programListener` and populates it in `loadAndCacheRequirements`, avoiding re-reading the same story file multiple times.
-     - Error messages (user experience / error reporting):
-       - `reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'"`
-       - `invalidPath: "Invalid story path '{{storyPath}}'"`
-       - Both messages are annotated to `docs/stories/010.0-DEV-DEEP-VALIDATION.story.md` and `docs/stories/007.0-DEV-ERROR-REPORTING.story.md`, aligning with REQ-DEEP-ERROR / error-reporting stories.
-     - Rule is wired into ESLint lifecycle via `create(context) { return { Program: programListener(context) }; }`.
+2) Plugin integration: src/index.ts
+- The rule is registered under RULE_NAMES as "valid-req-reference" and dynamically loaded from ./rules/valid-req-reference, so ESLint can use it.
+- TRACEABILITY_RULE_SEVERITIES includes "traceability/valid-req-reference": "error", and createTraceabilityFlatConfig plus configs.recommended/strict expose this rule in the plugin configs, showing it is integrated with the existing validation rule set.
 
-   - Traceability annotations in this rule explicitly reference story 010.0 and map to the story requirements:
-     - `@req REQ-DEEP-PARSE` on parsing helpers (`extractStoryPath`, `loadAndCacheRequirements`, `validateReqLine`, `processCommentLines`, `processAllComments`, etc.).
-     - `@req REQ-DEEP-MATCH` on matching/coordination helpers (`checkRequirementExists`, `validateReqLine`, `handleAnnotationLine`, `processCommentLines`, `processAllComments`, `programListener/create`).
-     - `@req REQ-DEEP-CACHE` on caching logic (`loadAndCacheRequirements`, `resolveStoryAndRequirements`, `processAllComments`, `programListener`, `create`).
-     - `@req REQ-DEEP-PATH` on path validation and propagation (`validateAndResolveStoryPath`, `resolveStoryAndRequirements`, `validateReqLine`, `validateImplementsLine`, `programListener`, `create`).
+3) Tests: tests/rules/valid-req-reference.test.ts with fixtures
+- Test file is explicitly tied to this story: header contains `Tests for: docs/stories/010.0-DEV-DEEP-VALIDATION.story.md` and `@story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md`.
+- Valid cases:
+  • Uses a real story markdown file docs/stories/001.0-DEV-PLUGIN-SETUP.story.md with `// @req REQ-PLUGIN-STRUCTURE`; that REQ exists in the story file, verifying basic deep match.
+  • Uses tests/fixtures/story_bullet.md containing `- REQ-BULLET-LIST - a requirement in bullet list format`, verifying support for bullet-list requirement formatting.
+  • Uses tests/fixtures/story_multi_a.md and story_multi_b.md with lists containing REQ-SHARED-ID and per-file unique requirements, validated via @supports lines, confirming handling of multi-story usage and requirement ID scoping.
+- Invalid cases:
+  • Missing requirement in a real story file (`REQ-NON-EXISTENT`) asserts an error with messageId "reqMissing" and correct reqId/storyPath data.
+  • Path traversal and absolute path scenarios for both @story and @supports assert "invalidPath" with the offending storyPath.
+  • Missing bullet requirement in story_bullet.md and missing @supports requirements in multi-story fixtures assert the proper `reqMissing` messages.
+- These tests directly exercise core functionality, quality standards (various formats and structures), integration with existing annotation semantics, user-facing error messages, and error handling for bad paths.
 
-2. **Tests explicitly targeting this story**
-   - File: `tests/rules/valid-req-reference.test.ts`
-   - Header links directly to this story and its requirements:
-     ```ts
-     /**
-      * Tests for: docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-      * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-      * @req REQ-DEEP-PARSE - Verify valid-req-reference rule enforces existing requirement content
-      *
-      * Additional coverage for error reporting behavior:
-      * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
-      * @req REQ-ERROR-SPECIFIC ...
-      */
-     ```
-   - Uses `RuleTester` to exercise valid and invalid cases:
-     - **Valid cases (deep parsing and multi-format support):**
-       - Standard story file reference:
-         ```ts
-         {
-           name: "[REQ-DEEP-PARSE] valid requirement reference existing in story file",
-           code: `// @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
-         // @req REQ-PLUGIN-STRUCTURE`,
-         }
-         ```
-       - Bullet list requirements (tests story file structure and alternative format):
-         ```ts
-         {
-           name: "[REQ-DEEP-BULLET] valid bullet list requirement existing in bullet story fixture",
-           code: `// @story tests/fixtures/story_bullet.md
-         // @req REQ-BULLET-LIST`,
-         }
-         ```
-         Backed by fixture `tests/fixtures/story_bullet.md`:
-         ```md
-         ## Requirements
-         - REQ-BULLET-LIST - a requirement in bullet list format
-         - REQ-ANOTHER - another requirement
-         ```
-       - Multi-story `@supports` deep validation:
-         ```ts
-         {
-           name: "[REQ-DEEP-IMPLEMENTS] single supports line with multiple requirements in multi-story fixture",
-           code: `// @supports tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A`,
-         },
-         {
-           name: "[REQ-DEEP-IMPLEMENTS] multi-story supports with shared requirement IDs",
-           code: `// @supports tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A
-         // @supports tests/fixtures/story_multi_b.md REQ-SHARED-ID REQ-ONLY-B`,
-         },
-         ```
-         with fixtures:
-         - `tests/fixtures/story_multi_a.md` and `story_multi_b.md` listing `REQ-SHARED-ID` and per-file-only requirement IDs, verifying that IDs are scoped per story file and can be reused across files.
+4) Documentation: docs/rules/valid-req-reference.md
+- Document is annotated with `@story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md` and requirements like REQ-DEEP-PARSE, REQ-DEEP-MATCH, REQ-DEEP-PATH.
+- Describes exactly what the rule does: parses story files, extracts requirement IDs, validates each @req and @supports ID, reports `invalidPath` and `reqMissing`, and explains that requirement IDs are scoped per story file.
+- Provides concrete examples covering correct and incorrect usages, including multi-story @supports and path traversal/absolute path cases, satisfying the documentation acceptance criterion with clear examples of supported formats and behaviors.
 
-     - **Invalid cases (matching and error messages):**
-       - Missing requirement ID in a story file:
-         ```ts
-         {
-           name: "[REQ-DEEP-MATCH] missing requirement in story file",
-           code: `// @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
-         // @req REQ-NON-EXISTENT`,
-           errors: [
-             {
-               messageId: "reqMissing",
-               data: {
-                 reqId: "REQ-NON-EXISTENT",
-                 storyPath: "docs/stories/001.0-DEV-PLUGIN-SETUP.story.md",
-               },
-             },
-           ],
-         },
-         ```
-       - Path traversal and absolute-path handling for both `@story` and `@supports`:
-         ```ts
-         {
-           name: "[REQ-DEEP-PARSE] disallow path traversal in story path",
-           code: `// @story ../docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
-         // @req REQ-PLUGIN-STRUCTURE`,
-           errors: [{ messageId: "invalidPath", data: { storyPath: "../docs/stories/001.0-DEV-PLUGIN-SETUP.story.md" } }],
-         },
-         {
-           name: "[REQ-DEEP-PARSE] disallow absolute path in story path",
-           code: `// @story /absolute/path/docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
-         // @req REQ-PLUGIN-STRUCTURE`,
-           errors: [{ messageId: "invalidPath", data: { storyPath: "/absolute/path/docs/stories/001.0-DEV-PLUGIN-SETUP.story.md" } }],
-         },
-         {
-           name: "[REQ-DEEP-IMPLEMENTS] disallow path traversal in supports story path",
-           code: `// @supports ../tests/fixtures/story_multi_a.md REQ-SHARED-ID`,
-           errors: [{ messageId: "invalidPath", data: { storyPath: "../tests/fixtures/story_multi_a.md" } }],
-         },
-         ```
-       - Missing requirement IDs in bullet and multi-story fixtures:
-         ```ts
-         {
-           name: "[REQ-DEEP-BULLET] missing bullet list requirement in bullet story fixture",
-           code: `// @story tests/fixtures/story_bullet.md
-         // @req REQ-MISSING-BULLET`,
-           errors: [{ messageId: "reqMissing", data: { reqId: "REQ-MISSING-BULLET", storyPath: "tests/fixtures/story_bullet.md" } }],
-         },
-         {
-           name: "[REQ-DEEP-IMPLEMENTS] missing supports requirement in multi-story fixture",
-           code: `// @supports tests/fixtures/story_multi_a.md REQ-NOT-IN-A`,
-           errors: [{ messageId: "reqMissing", data: { reqId: "REQ-NOT-IN-A", storyPath: "tests/fixtures/story_multi_a.md" } }],
-         },
-         ```
+5) Test run evidence
+- Command: `npm test -- --runInBand --verbose`.
+- Output includes: `PASS tests/rules/valid-req-reference.test.ts` under `Valid Req Reference Rule (Story 010.0-DEV-DEEP-VALIDATION)` with all valid and invalid scenarios passing.
+- Global summary: `Test Suites: 36 passed, 36 total; Tests: 272 passed, 272 total`, confirming the deep validation behavior is fully tested and currently passing.</evidence>
+  <notes>The story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md defines deep requirement validation that must (1) verify @req references actually correspond to requirement identifiers present in story files, (2) handle different markdown formats and structures, (3) integrate with existing annotation parsing and file validation, (4) provide clear error messages, (5) handle malformed or unsafe paths safely, and (6) be documented with examples.
 
-   - These tests directly exercise and confirm:
-     - **REQ-DEEP-PARSE** (parsing comments and story content for requirement IDs).
-     - **REQ-DEEP-MATCH** (ensuring referenced IDs exist, reporting `reqMissing` when they do not).
-     - Support for multiple file structures (core stories, bullet fixtures, multi-story fixtures).
-     - Path safety and clear error messages for invalid paths.
+The implemented ESLint rule src/rules/valid-req-reference.ts fulfills these requirements: it parses story files once per file and caches discovered REQ identifiers, supports multiple markdown structures by scanning the entire file with a regex for REQ- patterns, validates both @req and @supports annotations against those IDs, and integrates with existing annotation semantics through a Program-level visitor that walks all comments. It includes robust path validation that prevents traversal/absolute paths and reports them via a dedicated error message instead of throwing, and emits precise error messages when requirements are missing, including both the missing ID and the associated story path.
 
-   - All Jest tests (including this suite) pass:
-     - From `npm test -- --runInBand --verbose`:
-       - `PASS tests/rules/valid-req-reference.test.ts` with all tests green.
+Tests in tests/rules/valid-req-reference.test.ts (plus the supporting fixtures) cover successful and failing scenarios across real stories, bullet-list fixtures, and multi-story fixtures, and assert the exact error messages and data. The plugin exports and config wiring in src/index.ts ensure the rule is available and enabled in recommended/strict presets. Documentation in docs/rules/valid-req-reference.md clearly explains the behavior and provides examples matching the implementation.
 
-3. **Plugin integration**
-   - File: `src/index.ts`
-   - The rule is registered and included in recommended configs:
-     - In `RULE_NAMES`:
-       ```ts
-       const RULE_NAMES = [
-         "require-story-annotation",
-         "require-req-annotation",
-         "require-branch-annotation",
-         "valid-annotation-format",
-         "valid-story-reference",
-         "valid-req-reference",
-         "prefer-implements-annotation",
-       ] as const;
-       ```
-     - Severity mapping used by flat config presets:
-       ```ts
-       const TRACEABILITY_RULE_SEVERITIES = {
-         "traceability/require-story-annotation": "error",
-         "traceability/require-req-annotation": "error",
-         "traceability/require-branch-annotation": "error",
-         "traceability/valid-annotation-format": "warn",
-         "traceability/valid-story-reference": "error",
-         "traceability/valid-req-reference": "error",
-       } as const;
-       ```
-     - `createTraceabilityFlatConfig` and `configs.recommended/strict` expose this rule alongside others, satisfying the integration criterion.
-
-4. **User-facing documentation**
-   - File: `docs/rules/valid-req-reference.md`
-   - Documents behavior and provides concrete examples:
-     - Describes purpose: *"Enforces that `@req` and `@supports` annotations reference existing requirements in story files and protects against invalid paths."*
-     - Annotated with this story and requirements:
-       ```md
-       @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
-       @req REQ-DEEP-PARSE - Parse story files to extract requirement identifiers
-       @req REQ-DEEP-MATCH - Validate `@req` references against story file content
-       @req REQ-DEEP-PATH - Protect against path traversal in story paths
-       ```
-     - Explains how `@story` / `@req` and `@supports` interact and how requirement IDs are scoped per story file.
-     - Includes multiple examples:
-       - Correct/incorrect usage for single-story `@req`.
-       - Correct/incorrect usage for multi-story `@supports`.
-       - Invalid path traversal and absolute paths.
-       - Migration examples from single-story deep validation to multi-story `@supports`.
-   - This satisfies the Documentation acceptance criterion by clearly explaining requirement validation behavior and showing supported formats (standard REQ tokens, bullet lists, multi-story usage).
-
-5. **Story file alignment**
-   - Story: `docs/stories/010.0-DEV-DEEP-VALIDATION.story.md` lists:
-     - **REQ-DEEP-PARSE**: Fully implemented via file reading + regex over whole markdown content; tested on standard and bullet-format files.
-     - **REQ-DEEP-MATCH**: Implemented via `checkRequirementExists` and related helpers; tested through multiple valid/invalid scenarios.
-     - **REQ-DEEP-FORMAT**: Implementation is format-agnostic and works across plain text, bullets, and other markdown structures by matching `REQ-...` tokens anywhere in the file; fixtures demonstrate at least two distinct formats (core story and bullet list), and numbered lists or checkbox items would also contain the same `REQ-...` tokens and therefore be supported by the same mechanism.
-     - **REQ-DEEP-SECTION**: The parser does not depend on specific section headings; it scans the entire file content, so requirements in any section (Requirements, Acceptance Criteria, etc.) are handled uniformly. This is consistent with the requirement focus on *handling different sections*, not on enforcing a particular section structure.
-     - **REQ-DEEP-CACHE**: Achieved via `Map<string, Set<string>>` keyed by resolved path; a file is parsed once and reused for all annotations referencing it during a rule run.
-     - **REQ-DEEP-ERROR**: Implemented by clear, requirement-specific error messages (`reqMissing` with `reqId` and `storyPath`, and `invalidPath` with `storyPath`), and exercised in tests.
-
-6. **Acceptance criteria coverage (from the story)**
-   - **Core Functionality**: Implemented and tested.
-     - Rule validates that `@req` and `@supports` annotations point to requirement IDs that actually exist in the referenced story files (positive and negative cases in tests).
-   - **Quality Standards**: Implemented and partially proven via tests.
-     - Regex-based parsing works across various story file structures and requirement formats as long as IDs follow `REQ-...` pattern; fixtures cover a normal story file, bullet lists, and multi-story fixtures.
-   - **Integration**: Implemented.
-     - Rule is registered in `src/index.ts`, pulled into recommended/strict configs, and uses the same annotation conventions as `valid-annotation-format` and `valid-story-reference`. It complements existing file-existence validation by adding content-level checks.
-   - **User Experience**: Implemented and tested.
-     - Error messages are precise and include both the missing requirement ID and the story path; tests assert `messageId` and `data` values, and docs explain these behaviors.
-   - **Error Handling**: Implemented in a robust, non-crashing way.
-     - `loadAndCacheRequirements` wraps `fs.readFileSync` in a `try/catch`; on any read/parsing error it records an empty set instead of throwing, so linting continues without crashing even for malformed or unreadable files.
-     - Because requirement extraction is regex-based and not dependent on markdown structure, malformed markdown and missing sections do not cause parse errors.
-   - **Documentation**: Implemented.
-     - `docs/rules/valid-req-reference.md` documents behavior and includes multiple usage examples, including different annotation patterns and path edge cases.
-
-7. **Test suite status**
-   - Command run: `npm test -- --runInBand --verbose`.
-   - Result: `PASS tests/rules/valid-req-reference.test.ts` along with all other suites (35/35 passed, 266/266 tests passed).
-   - Confirms that the deep-validation behavior for this story is fully covered and currently working.</evidence>
-  <notes>Story 010.0-DEV-DEEP-VALIDATION is fully implemented. The `valid-req-reference` rule parses story files, caches requirement IDs, validates `@req` and `@supports` annotations against those IDs, enforces safe paths, and reports clear, requirement-specific errors. Behavior is documented in `docs/rules/valid-req-reference.md`, integrated into the plugin and configs via `src/index.ts`, and extensively verified by `tests/rules/valid-req-reference.test.ts` and supporting fixtures. All acceptance criteria and listed requirements for this story are satisfied based on the concrete code, tests, and documentation in the repository.</notes>
+Given this evidence and the passing test suite, all acceptance criteria for 010.0-DEV-DEEP-VALIDATION are satisfied, so the story is fully implemented.</notes>
 </traceability>

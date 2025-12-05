@@ -197,7 +197,7 @@ Description: Enforces traceability conventions in test files by requiring:
 - Story references in top-level `describe` blocks.
 - Requirement identifiers in `it`/`test` names using a `[REQ-XXX]` prefix.
 
-The rule is designed to complement the function-level rules (such as `require-story-annotation` and `require-req-annotation`) by ensuring that tests explicitly declare which requirements and stories they validate. It is enabled in both the `recommended` and `strict` presets alongside the other core rules.
+The rule is designed to complement the function-level rules (such as `require-story-annotation` and `require-req-annotation`) by ensuring that tests explicitly declare which requirements and stories they validate. It is enabled in both the `recommended` and `strict` presets alongside the other core rules. For Story 021.0, this rule also provides targeted auto-fix capabilities: when run with `--fix`, it can (1) insert a safe, non-semantic file-level `@supports` placeholder template at the top of matching test files when the annotation is missing, including clear TODO guidance for humans to replace the template with a real story and requirement reference, and (2) normalize malformed `[REQ-XXX]` prefixes that already contain an identifiable requirement ID, correcting spacing, bracket/parenthesis usage, underscores, and casing while preserving the original ID text and never inventing new requirement identifiers.
 
 Options:
 
@@ -207,6 +207,9 @@ The rule accepts an optional configuration object:
 - `requireDescribeStory` (boolean, optional) – When `true` (default), requires that each top-level `describe` block include a story reference somewhere in its description text (for example, a path such as `docs/stories/010.0-PAYMENTS.story.md` or a shorter project-specific alias that your team uses consistently).
 - `requireTestReqPrefix` (boolean, optional) – When `true` (default), requires each `it`/`test` block name to begin with a requirement identifier in square brackets, such as `[REQ-PAYMENTS-REFUND]`. The exact `REQ-` pattern is shared with the `valid-annotation-format` rule’s requirement ID checks.
 - `describePattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that the `describe` description text must match when `requireDescribeStory` is enabled. This lets you enforce a project-specific format such as requiring a canonical story path or a `STORY-` style identifier in the `describe` string. If omitted, a built-in default that loosely matches a typical story path (similar to `docs/stories/<name>.story.md`) is used.
+- `autoFixTestTemplate` (boolean, optional) – When `true` (default), allows the rule’s `--fix` mode to insert a file-level `@supports` placeholder template at the top of test files that are missing it. The template is intentionally non-semantic and includes TODO-style guidance so humans can later replace it with a real story path and requirement IDs; disabling this option prevents the rule from inserting the template automatically.
+- `autoFixTestPrefixFormat` (boolean, optional) – When `true` (default), enables safe normalization of malformed `[REQ-XXX]` prefixes in `it`/`test` names during `--fix`. The rule only rewrites prefixes that already contain a recognizable requirement identifier and limits changes to formatting concerns (spacing, square brackets vs. parentheses, underscore and dash usage, and letter casing) without fabricating new IDs or guessing requirement names.
+- `testSupportsTemplate` (string, optional) – Overrides the default file-level `@supports` placeholder template used when `autoFixTestTemplate` is enabled. This string should be a complete JSDoc-style block (for example, including `/**`, `*`, and `*/`) that encodes your project’s preferred TODO guidance or placeholder story path; it is inserted verbatim at the top of matching test files that lack a `@supports` annotation, and is never interpreted or expanded by the rule.
 
 Behavior notes:
 
@@ -568,3 +571,4 @@ In CI:
 
 ```bash
 npm run traceability:verify
+```

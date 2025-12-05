@@ -1,77 +1,25 @@
 import type { Rule } from "eslint";
+import {
+  determineIsTestFile,
+  ensureFileSupportsAnnotation,
+  handleCallExpression,
+} from "./helpers/require-test-traceability-helpers";
 
 /**
- * Determine if a file should be treated as a test file based on patterns.
+ * Configuration options for require-test-traceability rule.
  *
- * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-PATTERN-DETECT
+ * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-PATTERN-DETECT REQ-TEST-FRAMEWORK-COMPAT
+ * @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT
  */
-function determineIsTestFile(
-  filename: string,
-  rawPatterns: string[] = [
-    "/tests/",
-    "/test/",
-    "/__tests__/",
-    ".test.",
-    ".spec.",
-  ],
-): boolean {
-  return rawPatterns.some((pattern: string) =>
-    filename.includes(pattern.replace("**", "")),
-  );
-}
-
-/**
- * Ensure the file has a @supports annotation listing tested requirements.
- *
- * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FILE-SUPPORTS REQ-TEST-SUPPORTS-VALID
- */
-function ensureFileSupportsAnnotation(context: any, sourceCode: any): void {
-  const fileComments = sourceCode.getAllComments() || [];
-
-  const fileHasSupports = fileComments.some((comment: any) =>
-    /@supports\b/.test(comment.value || ""),
-  );
-
-  if (!fileHasSupports) {
-    const node =
-      (fileComments[0] as any) || (sourceCode.ast && (sourceCode.ast as any));
-    context.report({
-      node: node as any,
-      messageId: "missingFileSupports",
-    });
-  }
-}
-
-/**
- * Check if a callee name corresponds to a test framework function.
- *
- * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FRAMEWORK-COMPAT
- */
-function isTestCallName(name: string): boolean {
-  return ["describe", "it", "test", "context"].includes(name);
-}
-
-function getCalleeName(node: any): string | null {
-  if (node.callee.type === "Identifier") {
-    return node.callee.name;
-  }
-  if (
-    node.callee.type === "MemberExpression" &&
-    node.callee.object.type === "Identifier"
-  ) {
-    return node.callee.object.name;
-  }
-  return null;
-}
-
-function getFirstArgumentLiteral(node: any): string | null {
-  const arg = node.arguments && node.arguments[0];
-  if (!arg) return null;
-  if (arg.type === "Literal" && typeof arg.value === "string") {
-    return arg.value;
-  }
-  return null;
-}
+type TestTraceabilityOptions = {
+  testFilePatterns?: string[];
+  requireDescribeStory?: boolean;
+  requireTestReqPrefix?: boolean;
+  describePattern?: string;
+  autoFixTestTemplate?: boolean;
+  autoFixTestPrefixFormat?: boolean;
+  testSupportsTemplate?: string;
+};
 
 /**
  * Enforce traceability conventions in test files.
@@ -80,6 +28,8 @@ function getFirstArgumentLiteral(node: any): string | null {
  * - Test files have a file-level @supports annotation listing tested requirements.
  * - describe()/it()/test()/context() blocks include story and requirement references
  *   following project conventions.
+ * - When ESLint runs with --fix, safe, non-semantic auto-fixes are applied for
+ *   missing file-level @supports and malformed [REQ-XXX] prefixes in test names.
  *
  * @story docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
  * @req REQ-TEST-FILE-SUPPORTS
@@ -90,6 +40,7 @@ function getFirstArgumentLiteral(node: any): string | null {
  * @req REQ-TEST-FRAMEWORK-COMPAT
  * @req REQ-TEST-NESTED-DESCRIBE
  * @req REQ-TEST-ERROR-CONTEXT
+ * @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT REQ-TEST-FIX-SAFE REQ-TEST-FIX-PRESERVE REQ-TEST-FIX-PLACEHOLDER REQ-TEST-FIX-NO-INFERENCE
  */
 const rule: Rule.RuleModule = {
   meta: {
@@ -99,6 +50,7 @@ const rule: Rule.RuleModule = {
         "Enforce traceability annotations and naming conventions in test files",
       recommended: "error",
     },
+    fixable: "code",
     schema: [
       {
         type: "object",
@@ -125,6 +77,17 @@ const rule: Rule.RuleModule = {
             type: "string",
             default: "Story [0-9]+\\.[0-9]+-",
           },
+          autoFixTestTemplate: {
+            type: "boolean",
+            default: true,
+          },
+          autoFixTestPrefixFormat: {
+            type: "boolean",
+            default: true,
+          },
+          testSupportsTemplate: {
+            type: "string",
+          },
         },
         additionalProperties: false,
       },
@@ -140,64 +103,44 @@ const rule: Rule.RuleModule = {
   },
   create(context) {
     const filename = context.getFilename();
-    const options = (context.options && context.options[0]) || {};
+    const rawOptions = (context.options && context.options[0]) || {};
     const {
       testFilePatterns = [
         "/tests/",
         "/test/",
-        "/__tests__/",
+        "/__tests__",
         ".test.",
         ".spec.",
       ],
       requireDescribeStory = true,
       requireTestReqPrefix = true,
       describePattern = "Story [0-9]+\\.[0-9]+-",
-    } = options;
+      autoFixTestTemplate = true,
+      autoFixTestPrefixFormat = true,
+      testSupportsTemplate,
+    } = rawOptions as TestTraceabilityOptions;
 
     const isTestFile = determineIsTestFile(filename, testFilePatterns);
-
-    if (!isTestFile) {
-      return {};
-    }
+    if (!isTestFile) return {};
 
     const sourceCode = context.getSourceCode();
-
-    ensureFileSupportsAnnotation(context, sourceCode);
+    ensureFileSupportsAnnotation(context, sourceCode, {
+      autoFixTestTemplate,
+      testSupportsTemplate,
+    });
 
     const describeRegex = new RegExp(describePattern);
 
     return {
       // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY REQ-TEST-IT-REQ-PREFIX REQ-TEST-NESTED-DESCRIBE REQ-TEST-ERROR-CONTEXT
-      CallExpression(node: any) {
-        const calleeName = getCalleeName(node);
-        if (!calleeName || !isTestCallName(calleeName)) {
-          return;
-        }
-
-        const description = getFirstArgumentLiteral(node);
-        if (!description) return;
-
-        if (requireDescribeStory && calleeName === "describe") {
-          if (!describeRegex.test(description)) {
-            context.report({
-              node: node as any,
-              messageId: "missingDescribeStory",
-            });
-          }
-        }
-
-        if (
-          requireTestReqPrefix &&
-          (calleeName === "it" || calleeName === "test")
-        ) {
-          if (!/^\[REQ-[^\]]+]/.test(description)) {
-            context.report({
-              node: node as any,
-              messageId: "missingReqPrefix",
-            });
-          }
-        }
-      },
+      // @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-PREFIX-FORMAT REQ-TEST-FIX-SAFE REQ-TEST-FIX-PRESERVE REQ-TEST-FIX-NO-INFERENCE
+      CallExpression: handleCallExpression(context, {
+        sourceCode,
+        describeRegex,
+        requireDescribeStory,
+        requireTestReqPrefix,
+        autoFixTestPrefixFormat,
+      }),
     };
   },
 };

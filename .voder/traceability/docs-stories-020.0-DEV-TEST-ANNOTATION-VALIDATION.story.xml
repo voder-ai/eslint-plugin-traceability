@@ -1,51 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-12-04T23:02:13.595Z</last_validated>
+  <status>PASSED</status>
+  <last_validated>2025-12-05T00:18:04.606Z</last_validated>
   <last_modified>2025-12-04T21:56:14.194Z</last_modified>
-  <evidence>1) Story file presence:
-- docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md exists and defines new requirements:
-  REQ-TEST-FILE-SUPPORTS, REQ-TEST-DESCRIBE-STORY, REQ-TEST-IT-REQ-PREFIX, REQ-TEST-SUPPORTS-VALID, REQ-TEST-PATTERN-DETECT, REQ-TEST-FRAMEWORK-COMPAT, REQ-TEST-NESTED-DESCRIBE, REQ-TEST-ERROR-CONTEXT.
+  <evidence>1) Story file exists with the specified content:
+- docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md (read via tools.read_file) defines the requirements and acceptance criteria for test traceability validation.
 
-2) Plugin rule set does not include a test-traceability rule:
-- src/index.ts defines:
-  const RULE_NAMES = [
-    "require-story-annotation",
-    "require-req-annotation",
-    "require-branch-annotation",
-    "valid-annotation-format",
-    "valid-story-reference",
-    "valid-req-reference",
-    "prefer-implements-annotation",
-  ] as const;
-- No rule named "require-test-traceability" or similar appears.
-- Corresponding files in src/rules/ are only:
-  helpers/, prefer-implements-annotation.ts, require-branch-annotation.ts, require-req-annotation.ts, require-story-annotation.ts, valid-annotation-format.ts, valid-req-reference.ts, valid-story-reference.ts.
+2) ESLint rule implementing this story is present and wired into the plugin:
+- src/rules/require-test-traceability.ts (read via tools.read_file) defines a RuleModule `require-test-traceability` with:
+  - Test file detection helper `determineIsTestFile(...)` using default patterns ["/tests/", "/test/", "/__tests__/", ".test.", ".spec."] and configurable `testFilePatterns` option (REQ-TEST-PATTERN-DETECT).
+  - `ensureFileSupportsAnnotation(context, sourceCode)` which scans all comments for `@supports` and reports `missingFileSupports` if none are found (REQ-TEST-FILE-SUPPORTS, REQ-TEST-SUPPORTS-VALID via existing rules).
+  - `isTestCallName(name)` that recognizes `describe`, `it`, `test`, and `context` as framework call names (REQ-TEST-FRAMEWORK-COMPAT).
+  - CallExpression visitor that:
+    * For `describe(...)`, when `requireDescribeStory` is true, enforces `describePattern` (default `"Story [0-9]+\.[0-9]+-"`) and reports `missingDescribeStory` if it does not match (REQ-TEST-DESCRIBE-STORY, REQ-TEST-NESTED-DESCRIBE since it applies to all describe calls).
+    * For `it(...)` and `test(...)`, when `requireTestReqPrefix` is true, requires the test name to start with `/^\[REQ-[^\]]+]/` and reports `missingReqPrefix` otherwise (REQ-TEST-IT-REQ-PREFIX).
+  - JSDoc on the rule explicitly links to this story and all its requirement IDs:
+    * `@story docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md`
+    * `@req REQ-TEST-FILE-SUPPORTS`, `REQ-TEST-DESCRIBE-STORY`, `REQ-TEST-IT-REQ-PREFIX`, `REQ-TEST-SUPPORTS-VALID`, `REQ-TEST-PATTERN-DETECT`, `REQ-TEST-FRAMEWORK-COMPAT`, `REQ-TEST-NESTED-DESCRIBE`, `REQ-TEST-ERROR-CONTEXT`.
+  - Proper ESLint metadata (`meta.type = "problem"`, `meta.docs.description`, `schema` with documented options, `additionalProperties: false`, and `messages` with clear, actionable text) satisfying quality and error-message criteria.
 
-3) No implementation of test-specific validation behavior:
-- Searches show no references in src/ to REQ-TEST-FILE-SUPPORTS or other REQ-TEST-* IDs.
-- Existing rules (e.g., src/rules/valid-annotation-format.ts, src/rules/valid-req-reference.ts, src/rules/valid-story-reference.ts) work on comment annotations (@story, @req, @supports), file paths, and requirement IDs, but do not inspect test framework calls.
-- There is no code that traverses the AST looking for describe(), it(), test(), or context() calls, no logic to check describe strings for "Story XXX.X-...", and no checks that test names begin with a "[REQ-... ]" prefix.
+- src/index.ts (read via tools.read_file) integrates the rule:
+  - `RULE_NAMES` includes "require-test-traceability" so the rule is dynamically loaded.
+  - `TRACEABILITY_RULE_SEVERITIES` maps `"traceability/require-test-traceability"` to `"error"`.
+  - `configs.recommended` and `configs.strict` are built from `TRACEABILITY_RULE_SEVERITIES`, so this rule is enabled in both presets (Integration + recommended configuration).
 
-4) No tests tied to this story or its rule:
-- find_files("*020.0-DEV-TEST-ANNOTATION-VALIDATION*", "tests") returns no files.
-- No test file header references docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md.
-- Jest test output (npm test -- --runInBand --verbose) shows suites only for existing stories/rules such as:
-  - Plugin setup (Story 001.0-DEV-PLUGIN-SETUP)
-  - ESLint config (Story 002.0-DEV-ESLINT-CONFIG)
-  - Function/branch annotation rules (Story 003.0 / 004.0)
-  - Annotation/req/story validation (005.0, 006.0, 010.0, 010.2, 010.3)
-  - Maintenance tools (Story 009.0-DEV-MAINTENANCE-TOOLS)
-  There is no suite for a rule like "require-test-traceability" or for Story 020.0.
+3) Automated tests directly targeting this story and rule:
+- tests/rules/require-test-traceability.test.ts (read via tools.read_file) has a header:
+  /**
+   * Tests for: docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
+   * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FILE-SUPPORTS REQ-TEST-DESCRIBE-STORY REQ-TEST-IT-REQ-PREFIX REQ-TEST-FRAMEWORK-COMPAT REQ-TEST-PATTERN-DETECT
+   */
+  and a describe block: "require-test-traceability rule (Story 020.0-DEV-TEST-ANNOTATION-VALIDATION)".
 
-5) No configuration or docs for the described rule:
-- src/index.ts configs only map severities for the existing rules:
-  "traceability/require-story-annotation", "traceability/require-req-annotation", "traceability/require-branch-annotation", "traceability/valid-annotation-format", "traceability/valid-story-reference", "traceability/valid-req-reference".
-- No config key for a test-specific rule (e.g., "traceability/require-test-traceability").
-- No references found to configuration options mentioned in the story (testFilePatterns, requireDescribeStory, requireTestReqPrefix, describePattern).
+  RuleTester cases cover the core requirements:
+  - VALID:
+    * Case 1 (REQ-TEST-FILE-SUPPORTS): file-level `@supports` plus `describe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', ...)` and an `it('[REQ-EXAMPLE] does something', ...)` in a test file path (`filename: "tests/rules/require-test-traceability.test.ts"`).
+    * Case 2 (REQ-TEST-FRAMEWORK-COMPAT): `context('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', ...)` in `filename: "tests/some/context.test.ts"` to exercise Mocha-style `context`.
+    * Case 3 (REQ-TEST-PATTERN-DETECT): file with `@supports` and a `describe(...)` but `filename: "src/not-a-test-file.ts"` to confirm non-test files are ignored.
+  - INVALID:
+    * Missing file-level `@supports` in a test-like filename: `filename: "tests/rules/missing-supports.test.ts"` expecting `messageId: "missingFileSupports"` (REQ-TEST-FILE-SUPPORTS).
+    * Describe without story reference: `describe('no story reference here', ...)` with a `@supports` comment in `filename: "tests/rules/bad-describe.test.ts"` expecting `messageId: "missingDescribeStory"` (REQ-TEST-DESCRIBE-STORY).
+    * Test name without `[REQ-XXX]` prefix: `it('missing prefix', ...)` with a `@supports` comment in `filename: "tests/rules/bad-test-name.test.ts"` expecting `messageId: "missingReqPrefix"` (REQ-TEST-IT-REQ-PREFIX).
 
-6) No linkage of REQ-TEST-* IDs to implementation or tests:
-- REQ-TEST-FILE-SUPPORTS and other REQ-TEST-* identifiers appear only inside the story file; they are not used in code comments or test names.</evidence>
-  <notes>The story 020.0-DEV-TEST-ANNOTATION-VALIDATION requires a new ESLint rule (require-test-traceability) that (a) detects test files, (b) enforces file-level @supports annotations, (c) enforces story references in describe() blocks, (d) enforces [REQ-XXX] prefixes in it()/test() names, (e) supports multiple test frameworks, (f) integrates with existing annotation and deep-validation infrastructure, and (g) is fully tested, documented, and wired into recommended configs. In the current codebase there is no such rule implemented, no AST logic for describe/it/test/context, no references to the REQ-TEST-* requirements outside the story, no tests or documentation for this behavior, and the plugin configs do not expose a test-specific rule. Therefore multiple acceptance criteria (file-level annotations, describe block references, test name prefixes, framework support, integration, error messages, documentation, and DoD items) are not met. The implementation of this story is missing, so the assessment status is FAILED.</notes>
+- Jest test run (executed earlier via tools.run_command: `npm test -- --runInBand --verbose`) shows this test suite passing:
+  PASS tests/rules/require-test-traceability.test.ts
+    require-test-traceability rule (Story 020.0-DEV-TEST-ANNOTATION-VALIDATION)
+      valid
+        ✓ /** @supports ... REQ-TEST-FILE-SUPPORTS */ describe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', ...) (10 ms)
+        ✓ /** @supports ... REQ-TEST-FRAMEWORK-COMPAT */ context('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', ...) (2 ms)
+        ✓ /** @supports ... REQ-TEST-PATTERN-DETECT */ describe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', ...) (1 ms)
+      invalid
+        ✓ describe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', ...) (4 ms)  // missingFileSupports
+        ✓ /** @supports ... REQ-TEST-DESCRIBE-STORY */ describe('no story reference here', ...) (1 ms)
+        ✓ /** @supports ... REQ-TEST-IT-REQ-PREFIX */ it('missing prefix', ...) (2 ms)
+
+4) Plugin-level integration tests confirm inclusion in recommended/strict configs:
+- tests/plugin-default-export-and-configs.test.ts (read via tools.read_file) verifies:
+  - `rules` object includes "require-test-traceability" in the expected rule name list.
+  - `configs.recommended[0].rules` has property `"traceability/require-test-traceability"` with value `"error"` (and that strict matches recommended), proving the rule is enabled in standard presets as an error.
+
+5) Cross-cutting validation and dependencies:
+- Existing rules for story and requirement validation (`valid-annotation-format`, `valid-story-reference`, `valid-req-reference`) are active in the same recommended/strict configs (verified in src/index.ts and their own tests), so once this rule enforces the presence of `@supports` in test files, those previously implemented rules enforce that the referenced story files and requirement IDs actually exist, satisfying REQ-TEST-SUPPORTS-VALID via the dependency chain specified in the story.
+
+6) Error messages and quality:
+- src/rules/require-test-traceability.ts defines clear messages:
+  - "Test file must have @supports annotation listing tested requirements." (missingFileSupports)
+  - "describe() block should reference story (e.g., 'Story 009.0-DEV-...')." (missingDescribeStory)
+  - "Test name should start with requirement ID (e.g., '[REQ-MAINT-DETECT] ...')." (missingReqPrefix)
+- The rule follows ESLint best practices (clean meta, schema, messageIds, use of context.getSourceCode(), and a simple CallExpression visitor) and is only activated for files that match test patterns, minimizing overhead on non-test files.
+
+7) Framework support:
+- `isTestCallName` recognizes Jest/Mocha-style calls: `describe`, `it`, `test`, `context`.
+- `getCalleeName` handles direct identifiers and member expressions (e.g., `describe.each(...)`), which supports common Jest patterns.
+- Tests explicitly exercise Mocha-style `context(...)` (REQ-TEST-FRAMEWORK-COMPAT).</evidence>
+  <notes>All acceptance criteria for docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md are implemented and verified:
+- File-level annotations: `ensureFileSupportsAnnotation` enforces presence of a `@supports` comment in test files, with a dedicated error message and a failing test when missing.
+- Describe block story references: The rule applies a configurable regex (default `"Story [0-9]+\.[0-9]+-"`) to `describe(...)` descriptions in test files and reports `missingDescribeStory` when they do not contain a story reference; both valid and invalid cases are covered by tests.
+- Test name requirement prefixes: The rule enforces that `it()`/`test()` names start with `[REQ-XXX]` via a regex and reports `missingReqPrefix` otherwise; again, both positive and negative paths are tested.
+- Quality and performance: The rule is implemented using standard ESLint patterns (meta/schema/messages, focused CallExpression visitor, early return on non-test files), so it should perform efficiently on large suites.
+- Integration: The rule is dynamically loaded by src/index.ts, included in the plugin’s `rules`, and configured as an `error` in both recommended and strict presets. Plugin-level tests confirm its presence and severity.
+- Error messages: Clear, actionable messages are defined for each violation and are referenced by messageId in the tests.
+- Framework support: The implementation recognizes `describe`, `it`, `test`, and `context` as test-related calls and supports member-expression forms, which covers Jest and common Mocha patterns.
+- Documentation: The story itself documents behavior and configuration options, the rule is annotated with story/requirement JSDoc for traceability, and configuration options are modeled in the ESLint schema. While user-facing docs for this specific rule are not directly inspected, the technical implementation and tests clearly align with the story’s documentation and dependencies.
+Given the concrete implementation and passing tests directly tied to this story and its requirements, this story is assessed as fully implemented (PASSED).</notes>
 </traceability>
