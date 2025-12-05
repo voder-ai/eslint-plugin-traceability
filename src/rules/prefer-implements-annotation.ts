@@ -40,6 +40,13 @@ const MIN_REQ_TOKENS = MIN_STORY_TOKENS;
 // Length of the opening "/*" portion of a block comment prefix.
 const COMMENT_PREFIX_LENGTH = 2;
 
+/**
+ * Lightweight summary of traceability-related markers extracted from a
+ * single block comment, used to decide whether migration recommendations
+ * or auto-fix can safely be applied.
+ *
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT
+ */
 interface CommentAnalysis {
   hasStory: boolean;
   hasReq: boolean;
@@ -47,6 +54,14 @@ interface CommentAnalysis {
   storyPaths: Set<string>;
 }
 
+/**
+ * Collect line indices and metadata for @story and @req annotations within a
+ * single block comment. This helper isolates the parsing logic used by the
+ * auto-fix path so that complex or ambiguous patterns can be detected and
+ * safely rejected.
+ *
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-VALID-OUTPUT
+ */
 function collectStoryAndReqMetadata(comment: any): {
   storyLineIndices: number[];
   reqLineIndices: number[];
@@ -96,6 +111,13 @@ function collectStoryAndReqMetadata(comment: any): {
   return { storyLineIndices, reqLineIndices, reqIds, storyPath };
 }
 
+/**
+ * Apply the @supports replacement for simple, single-story legacy blocks,
+ * constructing a fixed comment body that preserves existing indentation and
+ * prefix formatting while removing the original @story/@req lines.
+ *
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-PRESERVE-FORMAT REQ-VALID-OUTPUT
+ */
 function applyImplementsReplacement(
   context: Rule.RuleContext,
   comment: any,
@@ -205,6 +227,12 @@ function buildImplementsAutoFix(
   });
 }
 
+/**
+ * Analyze a block comment to detect legacy @story/@req usage, existing
+ * @supports lines, and the presence of multiple distinct @story paths.
+ *
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT
+ */
 function analyzeComment(comment: any): CommentAnalysis {
   const rawLines: string[] = (comment.value || "").split(/\r?\n/);
 
@@ -244,6 +272,13 @@ function hasMultipleStories(storyPaths: Set<string>): boolean {
   return storyPaths.size > MULTI_STORY_THRESHOLD;
 }
 
+/**
+ * End-to-end processing for a single block comment: classify its
+ * traceability annotations, decide whether to report recommendations only
+ * or emit an auto-fix, and surface the appropriate message ID.
+ *
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-AUTO-FIX REQ-VALID-OUTPUT
+ */
 function processComment(comment: any, context: Rule.RuleContext): void {
   const { hasStory, hasReq, hasImplements, storyPaths } =
     analyzeComment(comment);
