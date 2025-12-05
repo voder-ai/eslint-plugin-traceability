@@ -1,18 +1,16 @@
 ## NOW
 
-- [ ] Identify the helper functions with the highest logical complexity in the rules and maintenance helpers and select the single worst offender as the first target for a small, behavior-preserving refactor that will reduce its complexity without changing external behavior.
+- [ ] Review the current repository contents to identify all files that are clearly generated reports, coverage outputs, or CI artifacts that are still tracked, and classify which of them should be treated as transient build or assessment outputs rather than source or documentation.
 
 ## NEXT
 
-- [ ] Refactor the selected high-complexity helper function into smaller, focused helpers while keeping behavior identical and ensuring all existing tests around that area continue to pass.
-- [ ] Repeat the same analysis-and-refactor process for the next most complex helper functions until the key hotspots identified in the assessment have been simplified to an acceptable complexity level.
-- [ ] Once the main helper hotspots are simplified, lower the configured complexity threshold in the linting rules to lock in the new standard without introducing violations.
-- [ ] Review the user-facing documentation for the valid-annotation-format and related rules to locate any mismatches between documented defaults (such as story path patterns or examples) and the actual implementation, and update the docs to match real behavior.
-- [ ] Scan the remaining examples and quick-start snippets to ensure they are consistent with the current default configuration and recently added auto-fix options, adjusting wording or paths where necessary.
+- [ ] Update the repository’s ignore rules so that all identified generated reports, coverage outputs, and CI artifacts are excluded from version control going forward while keeping source, configuration, and documentation files tracked.
+- [ ] Remove the already-tracked generated reports and CI artifacts from version control so that the tracked file set contains only source, configuration, and documentation files.
+- [ ] Verify that any maintenance or CI scripts that produce these reports still function correctly with the outputs treated as transient files, adjusting script paths or documentation comments if necessary to make their transient nature explicit.
+- [ ] Confirm that there are no remaining tracked files that match the patterns of generated reports or CI artifacts by re-reviewing the tracked file list after cleanup.
 
 ## LATER
 
-- [ ] Extend the complexity review to other parts of the codebase beyond the initially identified helpers, gradually tightening standards while keeping changes small and fully covered by tests.
-- [ ] Consider introducing targeted unit tests around newly extracted helper functions to better document their behavior and guard against regressions as complexity is reduced.
-- [ ] Review all rule and maintenance documentation in one pass to ensure terminology, option names, and defaults are consistently described, especially where recent features like auto-fix toggles and templates were added.
-- [ ] After complexity and documentation have been tightened, reassess overall code quality metrics to determine if further ratcheting (such as stricter limits or additional structural rules) is both safe and beneficial.
+- [ ] Introduce or refine an automated check in the development tooling that fails if generated reports or CI artifacts are accidentally committed in the future, reinforcing the repository hygiene policy.
+- [ ] Update internal development documentation to clearly list which directories and file patterns are considered ephemeral outputs so contributors know not to commit them.
+- [ ] After repository hygiene is confirmed, re-evaluate the version control assessment and, once it passes thresholds, proceed with a full functionality assessment and any follow-up improvements it reveals.

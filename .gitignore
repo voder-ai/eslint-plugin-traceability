@@ -155,3 +155,10 @@ jscpd-report/
 scripts/eslint-suppressions-report.md
 scripts/traceability-report.md
 scripts/tsc-output.md
+
+# Coverage summary temp directory
+coverage-tmp/
+
+# ESLint complexity JSON reports
+eslint-complexity-report.json
+eslint-complexity-report-detailed.json
