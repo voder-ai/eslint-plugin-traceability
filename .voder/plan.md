@@ -1,15 +1,16 @@
 ## NOW
 
-- [ ] Identify all currently tracked generated report and CI artifact files outside of the internal state directories, decide which of them should not be versioned, and update ignore patterns and file tracking so these artifacts are no longer kept in the repository going forward.
+- [ ] Review the JSDoc coexistence story and the current annotation parsing implementation side by side to derive precise rules for how traceability tags must coexist with other JSDoc tags like @param and @returns without corrupting annotation values.
 
 ## NEXT
 
-- [ ] Scan the repository for any additional generated reports or automation outputs outside the internal state directories, classify which ones should remain untracked long term, and either move them under the internal state area or add ignore patterns so they are clearly excluded from version control.
-- [ ] Review recent continuous integration logs to pinpoint any remaining version-control related warnings (such as engine mismatch and deprecation notices from development tooling), and design a minimal set of dependency or configuration adjustments that will eliminate those warnings without weakening existing quality and security checks.
-- [ ] Apply the selected dependency or configuration adjustments so that the CI environment aligns with the supported engine ranges of the tooling (or uses updated tooling), and confirm that subsequent CI runs are free of the previously identified warnings.
-- [ ] Update internal development and CI documentation to clearly list which files are considered generated artifacts that must not be committed and how contributors should run the associated tools without polluting version control.
+- [ ] Update the annotation parsing logic so that when a pending @story, @req, or @supports annotation is followed by a new JSDoc tag line (such as @param or @returns), the parser finalizes the annotation instead of appending the JSDoc tag text into its value, while preserving existing multi-line value behavior for non-tag lines.
+- [ ] Add targeted tests that cover JSDoc coexistence scenarios described in the story, including traceability annotations appearing before and after @param/@returns tags, and verify that IDs remain unpolluted and no false positives are introduced.
+- [ ] Adjust rule documentation and, if necessary, the story file itself to record the new coexistence behavior, including at least one concrete example showing a traceability annotation living alongside standard JSDoc tags.
+- [ ] Perform a small focused review of the updated parser helper code to ensure it still meets the project’s complexity and readability expectations, making minor refactors if needed without altering the new behavior.
 
 ## LATER
 
-- [ ] Revisit the repository periodically to catch any newly introduced generated artifacts or reports that might have been added to version control and refine ignore rules or tooling configurations to keep history clean.
-- [ ] Extend or add decision records that document the rationale for excluding specific classes of generated artifacts from version control and describe the strategy for maintaining warning-free CI logs over time.
+- [ ] Extend tests to cover additional JSDoc tag variants (such as @type, @throws, or custom tags) to ensure the coexistence logic is robust against less common but realistic comment structures.
+- [ ] Consider extracting a small reusable JSDoc line-classification helper if similar logic is later needed in other rules that parse comment annotations, keeping cross-rule behavior consistent.
+- [ ] Revisit related stories and rules that depend on annotation parsing to see if any can benefit from the improved JSDoc coexistence semantics or require their own additional tests.

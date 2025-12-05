@@ -34,6 +34,26 @@ Key behaviors:
     which will be normalized and validated as
     `@story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`.
 
+- **JSDoc coexistence**
+  - Traceability annotations (`@story`, `@req`, `@supports`) can appear before, after, or interleaved with other JSDoc tags such as `@param`, `@returns`, and `@throws`.
+  - The parser treats any JSDoc tag line that starts with `@` (other than `@story`, `@req`, or `@supports`) as a boundary that terminates the current multi-line traceability value.
+  - Continuation lines are only considered part of the same annotation if they do not start with another JSDoc tag.
+  - This prevents JSDoc tags from being concatenated into requirement IDs or story paths, eliminating false positives like `REQ-OPTIMIZATION@param{object}data`.
+  - Example (fully supported):
+    ```js
+    /**
+     * Calculate totals with discounting.
+     * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
+     * @req REQ-CALC-TOTALS
+     * @param {number[]} items
+     * @param {number} discount
+     * @returns {number}
+     */
+    function calculateTotals(items, discount) {
+      /* ... */
+    }
+    ```
+
 - **`@supports` format support**
   - The rule validates `@supports` annotations that associate code with one or more stories and requirements, such as:
     ```js

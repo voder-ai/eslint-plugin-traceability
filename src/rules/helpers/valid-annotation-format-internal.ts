@@ -43,3 +43,26 @@ export function normalizeCommentLine(rawLine: string): string {
 
   return trimmed.slice(annotationMatch.index);
 }
+
+/**
+ * Detect whether a normalized comment line starts with a non-traceability JSDoc tag.
+ *
+ * This is used to distinguish regular JSDoc tags (e.g. @param, @returns) from
+ * traceability-related annotations such as @story, @req, and @supports.
+ *
+ * @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
+ * @req REQ-JSDOC-BOUNDARY-DETECTION
+ * @req REQ-JSDOC-TAG-COEXISTENCE
+ */
+export function isNonTraceabilityJSDocTagLine(normalized: string): boolean {
+  const trimmed = normalized.trimStart();
+  if (!trimmed || !trimmed.startsWith("@")) {
+    return false;
+  }
+
+  if (/^@(story|req|supports)\b/.test(trimmed)) {
+    return false;
+  }
+
+  return true;
+}

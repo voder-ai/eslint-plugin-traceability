@@ -18,6 +18,14 @@
  * @req REQ-SUPPORTS-PARSE - Rule parses @supports annotations with story and requirement references
  * @req REQ-FORMAT-VALIDATION - Rule validates story and requirement formats inside @supports annotations
  * @req REQ-MIXED-SUPPORT - Rule supports mixed @story/@req/@supports usage in the same comment
+ * Tests for: docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
+ * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
+ * @req REQ-JSDOC-TAG-COEXISTENCE - Rule allows traceability annotations to coexist with other JSDoc tags
+ * @req REQ-ANNOTATION-TERMINATION - Rule correctly terminates traceability annotation values at JSDoc tag boundaries
+ * @req REQ-JSDOC-BOUNDARY-DETECTION - Rule detects @param/@returns and similar tags as boundaries
+ * @req REQ-CONTINUATION-LOGIC - Rule correctly decides when to continue or stop multi-line traceability values
+ * @req REQ-NO-FALSE-POSITIVES - Rule does not report false positives when JSDoc tags follow traceability tags
+ * @req REQ-PRESERVE-MULTILINE - Rule preserves multi-line story/req values without including following JSDoc tags
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/valid-annotation-format";
@@ -220,6 +228,69 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
  * @req REQ-MIXED-SUPPORT
  * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
  */`,
+      },
+      {
+        name: "[REQ-JSDOC-TAG-COEXISTENCE] traceability before other JSDoc tags",
+        code: `/**
+ * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
+ * @req REQ-JSDOC-TAG-COEXISTENCE
+ * @param {string} id - Identifier for the lookup.
+ * @returns {Promise<void>} - Completes when finished.
+ */
+function fetchById(id) {
+  return Promise.resolve();
+}`,
+      },
+      {
+        name: "[REQ-JSDOC-TAG-COEXISTENCE] traceability after other JSDoc tags",
+        code: `/**
+ * Fetch a user by id.
+ *
+ * @param {string} id - Identifier for the lookup.
+ * @returns {Promise<void>} - Completes when finished.
+ * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
+ * @req REQ-ANNOTATION-TERMINATION
+ */
+function fetchUser(id) {
+  return Promise.resolve();
+}`,
+      },
+      {
+        name: "[REQ-JSDOC-TAG-COEXISTENCE] mixed positions of traceability and other JSDoc tags",
+        code: `/**
+ * Update a record with new data.
+ *
+ * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
+ * @param {string} id - Identifier.
+ * @req REQ-JSDOC-BOUNDARY-DETECTION
+ * @param {object} payload - Updated fields.
+ * @returns {boolean} - True if updated.
+ * @req REQ-CONTINUATION-LOGIC
+ */
+function updateRecord(id, payload) {
+  return true;
+}`,
+      },
+      {
+        name: "[REQ-PRESERVE-MULTILINE] multi-line @story annotation before other JSDoc tags",
+        code: `/**
+ * @story docs/stories/022.0-DEV-
+ * JSDOC-COEXISTENCE.story.md
+ * @param {string} id - Identifier for the lookup.
+ * @returns {Promise<void>} - Completes when finished.
+ */
+function loadForStory(id) {
+  return Promise.resolve();
+}`,
+      },
+      {
+        name: "[REQ-NO-FALSE-POSITIVES] JSDoc tags do not pollute requirement ID when following @req",
+        code: `/**
+ * @req REQ-OPTIMIZATION
+ * @param {object} data - Input payload.
+ * @returns {void}
+ */
+function optimize(data) {}`,
       },
     ],
     invalid: [
