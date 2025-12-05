@@ -44,7 +44,7 @@ Key steps (in order):
    - `actions/setup-node@v4` with `cache: npm`
 
 2. **Script validation**
-   - `node scripts/validate-scripts-nonempty.js` ensures all npm scripts referenced by CI exist and are non-empty.
+   - `npm run check:scripts` (CI invokes `node scripts/validate-scripts-nonempty.js` under the hood) ensures all `scripts/` files referenced by CI exist and are non-empty, non-placeholder scripts.
 
 3. **Install dependencies**
    - `npm ci`
@@ -206,6 +206,16 @@ Developers should rely on:
 
 - `npm run ci-verify:full` for a full CI-equivalent check (and what will run on push via Husky before integrating to `main`).
 - `npm run ci-verify` or `npm run ci-verify:fast` for quicker, targeted local feedback loops when working on rules or maintenance logic.
+
+### Maintenance and debug helpers
+
+A set of additional npm scripts exist to help maintainers keep the repository healthy and to debug tricky rule behavior:
+
+- `npm run check:ci-artifacts` – runs `scripts/check-no-tracked-ci-artifacts.js` to detect accidentally committed CI artifacts under `ci/` (excluding `.voder/ci/`).
+- `npm run coverage:branches` – runs `scripts/extract-uncovered-branches.js` against `jest-coverage.json` to list uncovered branch ranges for `src/rules/helpers`.
+- `npm run report:eslint-suppressions` – runs `scripts/report-eslint-suppressions.js` to generate `scripts/eslint-suppressions-report.md` summarizing ESLint/TypeScript suppression comments and suggested remediations.
+- `npm run check:scripts` – runs `scripts/validate-scripts-nonempty.js` to assert that each file in `scripts/` is non-empty and not just comments or placeholder text.
+- `npm run debug:cli`, `npm run debug:require-story`, and `npm run debug:repro` – ad-hoc debug entry points for the `require-story-annotation` rule and related helpers, intended for maintainers when investigating tricky rule behavior.
 
 ## How Semantic Versioning Is Determined
 
