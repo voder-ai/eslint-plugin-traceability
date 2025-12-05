@@ -35,12 +35,19 @@
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "lint-staged": "lint-staged",
     "duplication": "jscpd src tests --reporters console --threshold 3 --ignore tests/utils/**",
+    "coverage:branches": "node scripts/extract-uncovered-branches.js",
     "deps:maturity": "dry-aged-deps",
     "audit:dev-high": "node scripts/generate-dev-deps-audit.js",
     "safety:deps": "node scripts/ci-safety-deps.js",
     "audit:ci": "node scripts/ci-audit.js",
+    "check:ci-artifacts": "node scripts/check-no-tracked-ci-artifacts.js",
     "security:secrets": "secretlint \"**/*\" --no-color",
-    "smoke-test": "./scripts/smoke-test.sh"
+    "smoke-test": "./scripts/smoke-test.sh",
+    "debug:cli": "node scripts/cli-debug.js",
+    "debug:require-story": "node scripts/debug-require-story.js",
+    "debug:repro": "node scripts/debug-repro.js",
+    "report:eslint-suppressions": "node scripts/report-eslint-suppressions.js",
+    "check:scripts": "node scripts/validate-scripts-nonempty.js"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,md}": [

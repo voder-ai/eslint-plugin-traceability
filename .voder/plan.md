@@ -1,15 +1,17 @@
 ## NOW
 
-- [ ] Review the `traceability/require-test-traceability` rule and its user-facing documentation to align the described behavior (especially how test files are detected) with the actual implementation, updating either the docs or the rule so that there is no mismatch between what users read and what the rule enforces.
+- [ ] Review all existing maintenance and debug scripts in the scripts directory and decide, for each one, whether it should be kept and exposed via a clearly named package script or considered obsolete and removed, so that there are no orphaned scripts outside the centralized npm script contract.
 
 ## NEXT
 
-- [ ] Identify all helper functions and significant branches in the `prefer-implements-annotation` rule and related helper modules that currently lack explicit traceability annotations, and add appropriate `@supports` or `@story`/`@req` comments so every piece of logic is tied back to its documented story and requirements.
-- [ ] Revisit the user-facing examples and API reference sections for the `traceability/require-test-traceability` rule to ensure they clearly document the final semantics, including how test files are recognized, what a valid `@supports` line looks like, and how `[REQ-...]` prefixes should be used in test names.
-- [ ] Do a focused sweep of other rule helper and utility files to catch any remaining missing or outdated traceability annotations, updating them to the canonical `@supports` format so that implementation and story documentation remain in full sync.
+- [ ] Update the project’s main package configuration to add human-friendly npm script entries for each retained maintenance or debug script, giving them clear names and descriptions that reflect how contributors should use them.
+- [ ] Remove any scripts that were deemed obsolete or one-off from the scripts directory, and adjust any internal references or documentation so there are no dangling mentions of those tools.
+- [ ] Introduce a dedicated package script that runs the existing script non-emptiness validator, and ensure this new script is referenced from the documented quality or maintenance workflows so developers can easily discover and run it.
+- [ ] Revisit the internal development documentation to briefly describe the available maintenance and debug commands, including the new script validator, and how they relate to the centralized scripts contract.
+- [ ] After these adjustments, re-evaluate the code quality area against the assessment criteria to confirm that the script centralization concerns are resolved and CODE_QUALITY now meets or exceeds the required threshold.
 
 ## LATER
 
-- [ ] Perform a short holistic review of all user-facing rule documentation to confirm that option defaults, examples, and edge-case descriptions match the current behavior of the codebase, adjusting wording where necessary for precision and consistency.
-- [ ] Extend the documentation around test traceability into a small thematic guide that shows how `require-test-traceability` works together with core rules such as `require-story-annotation` and `require-req-annotation` in a typical project layout.
-- [ ] Once documentation and traceability are fully aligned, trigger or request a renewed functionality assessment to validate that the project’s features are now considered complete against their stories.
+- [ ] Consider incrementally tightening one or two linting thresholds (such as maximum cyclomatic complexity) in line with the existing ratcheting ADR, validating that the current codebase already passes before adopting stricter limits.
+- [ ] Look for any remaining low-impact duplicated patterns in tests or helper code that could be cleanly extracted into shared utilities without harming readability, and refactor them opportunistically.
+- [ ] Once CODE_QUALITY comfortably clears its threshold and supporting documentation is in sync, trigger or request a fresh functionality assessment so the project can be evaluated for complete feature coverage against its stories.
