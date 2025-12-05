@@ -323,6 +323,10 @@ interface RuleOptions {
 }
 ```
 
+### Debug Logging
+
+For local development and debugging of traceability helpers, set the environment variable `TRACEABILITY_DEBUG=1` to enable additional debug logging. This flag should not be enabled in CI or production runs; normal plugin usage is intentionally silent unless rules report findings.
+
 ## Build and Distribution
 
 ### TypeScript Configuration
