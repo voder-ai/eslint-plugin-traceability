@@ -92,12 +92,53 @@ RULE_NAMES.forEach(
   },
 );
 
+/**
+ * Plugin metadata used by ESLint for debugging and caching.
+ *
+ * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE REQ-NPM-PACKAGE
+ */
+const pluginMeta = (() => {
+  type Pkg = { name?: string; version?: string };
+
+  let pkg: Pkg = {};
+
+  try {
+    // When running from built output (lib/src/index.js)
+    // this resolves to the package.json at the project root.
+    // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-NPM-PACKAGE
+    pkg = require("../../package.json") as Pkg;
+  } catch {
+    try {
+      // When running via the TypeScript sources (src/index.ts) in this repo,
+      // fall back to resolving package.json one level up from src/.
+      // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-NPM-PACKAGE
+      pkg = require("../package.json") as Pkg;
+    } catch {
+      // As a last resort (tests, unusual environments), provide sensible
+      // defaults so that plugin loading never fails just for metadata.
+      // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE
+      pkg = {
+        name: "eslint-plugin-traceability",
+        version: "0.0.0-development",
+      };
+    }
+  }
+
+  return {
+    name: pkg.name ?? "eslint-plugin-traceability",
+    version: pkg.version ?? "0.0.0-development",
+    namespace: "traceability",
+  } as const;
+})();
+
 const plugin: {
   rules: typeof rules;
   configs?: unknown;
   maintenance?: unknown;
+  meta?: typeof pluginMeta;
 } = {
   rules,
+  meta: pluginMeta,
 };
 
 /**

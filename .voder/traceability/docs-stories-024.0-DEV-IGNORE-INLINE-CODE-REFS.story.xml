@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-12-06T08:52:01.506Z</last_validated>
+  <last_modified>2025-12-06T07:42:57.709Z</last_modified>
+  <evidence>normalizeCommentLine implementation does not perform any backtick/inline-code filtering:
+
+File: src/rules/helpers/valid-annotation-format-internal.ts
+
+export function normalizeCommentLine(rawLine: string): string {
+  const trimmed = rawLine.trim();
+  if (!trimmed) {
+    return "";
+  }
+
+  const annotationMatch = trimmed.match(/@story\b|@req\b|@supports\b/);
+  if (!annotationMatch || annotationMatch.index === undefined) {
+    const withoutLeadingStar = trimmed.replace(/^\*\s?/, "");
+    return withoutLeadingStar;
+  }
+
+  return trimmed.slice(annotationMatch.index);
+}
+
+There is no logic here to strip backtick-wrapped content or replace it with spaces as required by REQ-IGNORE-INLINE-CODE and REQ-PRESERVE-BOUNDARIES.,Searches show no reference to the new requirement IDs or inline-code/backtick behavior in implementation or tests:
+
+- grep -R REQ-IGNORE-INLINE-CODE -n src tests docs
+  -> only hit is in docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md (the story itself)
+
+- search_file_content on src/rules/helpers/valid-annotation-format-internal.ts for "inline code" and "REQ-IGNORE-INLINE-CODE" -> no matches
+
+- grep -R ` (backtick character) src
+  -> hits are general string templates and documentation comments (e.g. in prefer-implements-annotation.ts, require-test-traceability-helpers.ts), but none in normalizeCommentLine or related comment-normalization logic.
+
+- grep -R 024.0-DEV-IGNORE-INLINE-CODE-REFS tests src docs
+  -> only in docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md and docs/stories/plugin-developer-story.map.md, not in any test or source file implementing behavior.,Existing tests for valid-annotation-format and related helpers do not cover inline-code/backtick cases or reference Story 024.0:
+
+- tests/rules/valid-annotation-format.test.ts header references stories 005.0, 007.0, 010.1, 010.2, 022.0 but not 024.0. It has no test cases whose code strings include backtick-wrapped @story/@req/@supports.
+
+- search_file_content on tests/rules/valid-annotation-format.test.ts for "`@story`" returned no matches.
+
+- grep -R "backtick" src tests docs failed (no semantic references to backtick handling outside of a few generic comments).
+
+This means there are no unit tests for the new behavior required by this story (Core Functionality, Common Patterns, Real Annotations Detected, Multi-Line Support).,Documentation update required by the story is missing:
+
+- The only documentation mentioning this behavior is the story itself:
+  docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md (defines REQ-IGNORE-INLINE-CODE, REQ-PRESERVE-BOUNDARIES, REQ-CENTRALIZED-FILTER and the Technical Approach for normalizeCommentLine).
+
+- No other docs (e.g., README, user-docs, or rule-level docs/comments around normalizeCommentLine) describe backtick/inline-code filtering behavior.
+
+Thus the "Documentation: Comment normalization behavior documented to explain inline code filtering" acceptance criterion is not met.,All existing tests currently pass (jest --ci --bail --verbose completed with 39 test suites, 299 tests, all passing), but this only satisfies the "No Regression" criterion in isolation; it does not demonstrate the new behavior exists because there are no tests targeting inline-code/backtick scenarios or Story 024.0. The green test run therefore cannot be used as evidence that this story’s functional criteria are implemented.</evidence>
+  <notes>The story docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md clearly define new behavior for comment normalization: normalizeCommentLine must strip backtick-wrapped content (e.g., `@story`, `@req`, `@supports`) before annotation detection, replacing it with spaces to preserve word boundaries, and this filtering must be centralized so it applies across all rules. Current implementation of normalizeCommentLine only trims whitespace, optionally removes a leading '*', and slices from the first @story/@req/@supports occurrence. It does not inspect or modify backtick-wrapped segments at all. There are also no tests referencing Story 024.0 or exercising inline-code/backtick patterns, and no external documentation mentioning this behavior beyond the story itself. Therefore multiple acceptance criteria are unmet (Core Functionality, Common Patterns, Real Annotations Detected, Multi-Line Support, Documentation), so this story is not yet fully implemented.</notes>
+</traceability>

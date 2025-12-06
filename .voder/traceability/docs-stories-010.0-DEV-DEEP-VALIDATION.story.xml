@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-12-06T06:16:47.417Z</last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-12-06T08:50:15.582Z</last_validated>
   <last_modified>2025-12-04T18:44:42.514Z</last_modified>
-  <evidence>[object Object]</evidence>
-  <notes>Story 010.0-DEV-DEEP-VALIDATION is fully implemented via the traceability/valid-req-reference rule and its helpers. The implementation parses markdown story files for REQ-*-style identifiers, validates @req and @supports annotations against those requirements, enforces safe and in-project story paths, caches parsed requirements for reuse during a lint run, and reports clear, specific errors when requirements are missing or paths are invalid. Comprehensive unit tests (tests/rules/valid-req-reference.test.ts) and real markdown fixtures demonstrate correct behavior for standard stories, bullet-list formats, and multi-story @supports usage, and all tests pass in the project’s Jest suite. The rule’s behavior and usage are documented in docs/rules/valid-req-reference.md with concrete examples. Together, this satisfies all acceptance criteria and the functional requirements described in docs/stories/010.0-DEV-DEEP-VALIDATION.story.md.</notes>
+  <evidence>I have not yet completed the full assessment. Further analysis of implementation files and tests is required.</evidence>
+  <notes>Intermediate state only – final assessment not yet determined.</notes>
 </traceability>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-12-06T06:19:24.084Z</last_validated>
+  <status>NOT_SPEC</status>
+  <last_validated>2025-12-06T08:50:06.739Z</last_validated>
   <last_modified>2025-12-06T05:38:01.784Z</last_modified>
-  <evidence>Assessment error: 400 Input tokens exceed the configured limit of 272000 tokens. Your messages resulted in 3224539 tokens. Please reduce the length of the messages.</evidence>
-  <notes>Technical error during assessment</notes>
+  <evidence>Specification file not found: ENOENT: no such file or directory, open '/Users/tomhoward/Projects/eslint-plugin-traceability/docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md'</evidence>
+  <notes>File does not exist or is not accessible</notes>
 </traceability>

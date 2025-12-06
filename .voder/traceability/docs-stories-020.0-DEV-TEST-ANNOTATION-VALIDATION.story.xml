@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-12-06T06:18:49.307Z</last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-12-06T08:50:23.999Z</last_validated>
   <last_modified>2025-12-04T21:56:14.194Z</last_modified>
-  <evidence>[object Object]</evidence>
-  <notes>The story 020.0-DEV-TEST-ANNOTATION-VALIDATION is fully implemented. The new ESLint rule `traceability/require-test-traceability` exists, is wired into the plugin’s exports and presets, and directly references this story and its requirements via @story/@supports annotations. The rule enforces file-level `@supports` annotations, requires story references in `describe` descriptions, and ensures `it`/`test` names use `[REQ-...]` prefixes, with configurable options that match the Implementation Notes. Helper utilities implement test-file detection, file-level @supports insertion, multi-framework call recognition, and safe auto-fix of malformed requirement prefixes. Comprehensive unit tests in `tests/rules/require-test-traceability.test.ts` explicitly cover the core acceptance criteria (file-level supports, describe story validation, REQ-prefixed test names, framework compatibility, and test vs non-test detection), and the full Jest suite passes. Documentation in README and the API Reference describes this rule, its intent, and configuration options in a way that aligns with the story. Deep validation of @supports story paths and requirement IDs leverages existing rules from prior stories (`valid-story-reference` and `valid-req-reference`), consistent with the dependency declarations. Based on this concrete code, tests, and documentation, all acceptance criteria for this story are satisfied.</notes>
+  <evidence>This field will be filled after analysis with tools. Disregard this placeholder.</evidence>
+  <notes>This field will be filled after analysis with tools. Disregard this placeholder.</notes>
 </traceability>

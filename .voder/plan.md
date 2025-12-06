@@ -1,17 +1,14 @@
 ## NOW
 
-- [ ] Add complete traceability annotations to the helper functions and significant branches in the valid-req-reference helper module so that each piece of logic clearly references the appropriate story file and requirement IDs.
+- [ ] Review the plugin setup story’s acceptance criteria and compare them with the current plugin entry and configuration implementation to identify exactly which setup behaviors and validations are still missing or incomplete.
 
 ## NEXT
 
-- [ ] Review other helper modules in the rules/helpers directory to identify any remaining functions or branches that lack @supports-style traceability annotations and add the missing references to their corresponding stories and requirements.
-- [ ] Re-scan the TypeScript rule and helper code to confirm that every exported function and important conditional branch has a consistent, parseable traceability annotation and that none point to incorrect or placeholder story paths.
-- [ ] Update the ESLint plugin development guide to explicitly state that helper modules must carry the same level of traceability annotations as rule entrypoints, including examples that show how to document helpers and internal branches.
-- [ ] Align any affected story documents or requirement IDs with the new annotations if necessary, ensuring that requirement identifiers used in code actually exist in the referenced story files and are described clearly.
+- [ ] Update the main plugin entry and configuration objects so that exported rules, presets, and metadata align precisely with the plugin setup story’s requirements, including any error-handling or validation behavior it specifies.
+- [ ] Create or extend automated tests that exercise the plugin’s setup and configuration behavior end to end, ensuring they directly validate each acceptance criterion from the plugin setup story.
+- [ ] Adjust the plugin setup story document to accurately reflect the implemented behavior, marking fulfilled acceptance criteria as complete and refining any wording that no longer matches the code or tests.
 
 ## LATER
 
-- [ ] Introduce or tighten automated checks that enforce the presence and correctness of traceability annotations on helper functions and branches, reducing the chance of future drift.
-- [ ] Extend the dogfooding and self-validation strategy so that traceability enforcement covers helper modules explicitly, and document how failures in helper-level annotations surface in tests and CI.
-- [ ] Periodically review and refactor helper modules to keep them small, focused, and well-documented as additional rules and requirements are added to the plugin.
-- [ ] Revisit the overall documentation and architecture decision records to capture the convention that all implementation layers (rules, helpers, utilities) participate equally in story and requirement traceability.
+- [ ] Cross-check other core plugin-related stories that build on the setup story to ensure they are consistent with the finalized plugin entrypoint structure and configuration patterns.
+- [ ] Look for opportunities to further simplify or refactor the plugin setup code while keeping all plugin setup story acceptance criteria satisfied and fully covered by tests.
