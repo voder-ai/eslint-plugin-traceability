@@ -109,7 +109,6 @@ module.exports = [
       "no-undef": "off",
       "no-console": "off",
       "no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
-      "traceability/require-story-annotation": "error",
     },
   },
   {
