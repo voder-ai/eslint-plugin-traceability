@@ -1,14 +1,14 @@
 ## NOW
 
-- [ ] Update the project’s ESLint configuration so that this repository dogfoods its own traceability rules or recommended preset for its TypeScript and JavaScript sources, in a way that matches the requirements described in Story 023.0-MAINT-DOGFOODING-VALIDATION.
+- [x] Update the project’s ESLint configuration so that this repository dogfoods its own traceability rules or recommended preset for its TypeScript and JavaScript sources, in a way that matches the requirements described in Story 023.0-MAINT-DOGFOODING-VALIDATION.
 
 ## NEXT
 
-- [ ] Identify and add any necessary, minimal eslint-disable suppressions for newly enabled traceability rules in existing source and test files, ensuring each suppression is clearly documented and traceable to Story 023.0 requirements.
-- [ ] Design and implement a focused dogfooding validation flow (for example a dedicated script or entry point) that runs ESLint with the project’s traceability configuration against this codebase and fails when traceability rules are violated.
-- [ ] Create an integration test file dedicated to dogfooding validation that executes the new validation flow, covers both passing and failing scenarios, and includes explicit traceability annotations back to docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md and its requirement IDs.
-- [ ] Integrate the dogfooding validation flow into the existing automation by wiring it into an npm script that is invoked from the CI pipeline and pre-push workflow, making sure it runs quickly enough not to degrade overall pipeline time.
-- [ ] Update the internal development and security documentation to describe the dogfooding validation mechanism, how and when it runs locally and in CI, and how it satisfies each acceptance criterion in Story 023.0-MAINT-DOGFOODING-VALIDATION.
+- [x] Identify and add any necessary, minimal eslint-disable suppressions for newly enabled traceability rules in existing source and test files, ensuring each suppression is clearly documented and traceable to Story 023.0 requirements.
+- [x] Design and implement a focused dogfooding validation flow (for example a dedicated script or entry point) that runs ESLint with the project’s traceability configuration against this codebase and fails when traceability rules are violated.
+- [x] Create an integration test file dedicated to dogfooding validation that executes the new validation flow, covers both passing and failing scenarios, and includes explicit traceability annotations back to docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md and its requirement IDs.
+- [x] Integrate the dogfooding validation flow into the existing automation by wiring it into an npm script that is invoked from the CI pipeline and pre-push workflow, making sure it runs quickly enough not to degrade overall pipeline time.
+- [x] Update the internal development and security documentation to describe the dogfooding validation mechanism, how and when it runs locally and in CI, and how it satisfies each acceptance criterion in Story 023.0-MAINT-DOGFOODING-VALIDATION.
 - [ ] Re-evaluate Story 023.0 against the implemented configuration, validation flow, tests, and documentation to confirm that every acceptance criterion is met and the story can be marked complete in the project’s tracking docs.
 
 ## LATER
