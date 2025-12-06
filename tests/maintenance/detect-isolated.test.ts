@@ -24,20 +24,20 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
       const filePath2 = path.join(nestedDir, "file2.ts");
       const content1 = `
 /**
- * @story stale1.story.md
+ * @story docs/stories/non-existent-story.story.md
  */
 `;
       fs.writeFileSync(filePath1, content1, "utf8");
       const content2 = `
 /**
- * @story stale2.story.md
+ * @story docs/stories/another-non-existent.story.md
  */
 `;
       fs.writeFileSync(filePath2, content2, "utf8");
       const result = detectStaleAnnotations(tmpDir);
       expect(result).toHaveLength(2);
-      expect(result).toContain("stale1.story.md");
-      expect(result).toContain("stale2.story.md");
+      expect(result).toContain("docs/stories/non-existent-story.story.md");
+      expect(result).toContain("docs/stories/another-non-existent.story.md");
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
