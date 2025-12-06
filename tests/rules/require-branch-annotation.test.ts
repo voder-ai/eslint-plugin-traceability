@@ -1,7 +1,8 @@
 /**
- * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md, docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md, docs/stories/007.0-DEV-ERROR-REPORTING.story.md, docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * @req REQ-BRANCH-DETECTION - Verify require-branch-annotation rule enforces branch annotations
  * @req REQ-ERROR-SPECIFIC - Branch-level missing-annotation error messages are specific and informative
  * @req REQ-ERROR-CONSISTENCY - Branch-level missing-annotation error messages follow shared conventions
@@ -9,6 +10,7 @@
  * @req REQ-NESTED-HANDLING - Nested branch annotations are correctly enforced without duplicative reporting
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION REQ-NESTED-HANDLING
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF REQ-POSITION-PRIORITY-ELSE-IF REQ-PRETTIER-AUTOFIX-ELSE-IF
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-branch-annotation";
@@ -289,6 +291,21 @@ if (outer) {
         output: `// @story <story-file>.story.md
 for (let i = 0; i < 3; i++) {}`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-PRETTIER-AUTOFIX-ELSE-IF] missing annotations on else-if branch with Prettier-style autofix insertion",
+        code: `if (a) {
+  doA();
+} else if (b) {
+  doB();
+}`,
+        output: `// @story <story-file>.story.md
+if (a) {
+  doA();
+} else if (b) {
+  doB();
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req", "@story", "@req"),
       },
     ],
   });

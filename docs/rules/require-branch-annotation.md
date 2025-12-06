@@ -23,6 +23,17 @@ When the rule applies an auto-fix for missing catch annotations, it inserts plac
 
 This behavior is covered by unit tests in `tests/utils/branch-annotation-catch-position.test.ts` and integration tests in `tests/integration/catch-annotation-prettier.integration.test.ts`.
 
+### Else-if annotation positions
+
+For `else if` branches, there are two valid locations for the required annotations:
+
+1. Immediately before the `else if` keyword (in a line or block comment directly above the `else if`).
+2. On comment-only lines between the `else if (condition)` line and the first statement of the consequent body. This matches the region where Prettier places comments when it wraps long `else if` conditions so that the condition and the consequent statement appear on separate lines.
+
+If annotations are present in both locations, the annotations immediately before the `else if` keyword take precedence for validation and reporting.
+
+When the rule applies an auto-fix for missing annotations on an `else if` branch, it inserts placeholder `@story` and `@req` comments on a dedicated line between the `else if (condition)` line and the first statement of the consequent body, aligned with the indentation style that Prettier uses for comments in this region. This behavior is covered by tests in `tests/rules/require-branch-annotation.test.ts` and integration tests in `tests/integration/else-if-annotation-prettier.integration.test.ts`.
+
 ### Options
 
 Property: `branchTypes` (array of AST node type strings)  
@@ -81,4 +92,3 @@ module.exports = {
 };
 
 // Error: Value "InvalidType" should be equal to one of the allowed values.
-```

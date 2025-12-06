@@ -95,6 +95,16 @@ function extractCommentValue(_c: any): string {
   return _c.value;
 }
 
+function isElseIfBranch(node: any, parent: any | undefined): boolean {
+  return (
+    node &&
+    node.type === "IfStatement" &&
+    parent &&
+    parent.type === "IfStatement" &&
+    parent.alternate === node
+  );
+}
+
 /**
  * Gather annotation text for CatchClause nodes, supporting both before-catch and inside-catch positions.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
@@ -153,13 +163,74 @@ function gatherCatchClauseCommentText(
 }
 
 /**
+ * Gather annotation text for IfStatement else-if branches, supporting comments placed
+ * between the else-if condition and the consequent statement body.
+ * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports REQ-FALLBACK-LOGIC
+ */
+function gatherElseIfCommentText(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  parent: any | undefined,
+  beforeText: string,
+): string {
+  if (/@story\b/.test(beforeText) || /@req\b/.test(beforeText)) {
+    return beforeText;
+  }
+
+  if (!isElseIfBranch(node, parent)) {
+    return beforeText;
+  }
+
+  if (
+    !node.consequent ||
+    node.consequent.type !== "BlockStatement" ||
+    !node.consequent.loc ||
+    !node.consequent.loc.start
+  ) {
+    return beforeText;
+  }
+
+  if (!node.test || !node.test.loc || !node.test.loc.end) {
+    return beforeText;
+  }
+
+  const lines = sourceCode.lines;
+  const conditionEndLine: number = node.test.loc.end.line;
+  const consequentStartLine: number = node.consequent.loc.start.line;
+
+  const comments: string[] = [];
+  for (
+    let lineIndex = conditionEndLine;
+    lineIndex < consequentStartLine;
+    lineIndex++
+  ) {
+    const line = lines[lineIndex];
+    if (!line || !line.trim()) {
+      break;
+    }
+    if (!/^\s*(\/\/|\/\*)/.test(line)) {
+      break;
+    }
+    comments.push(line.trim());
+  }
+
+  const betweenText = comments.join(" ");
+  return betweenText || beforeText;
+}
+
+/**
  * Gather leading comment text for a branch node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-COMMENT-ASSOCIATION - Associate inline comments with their corresponding code branches
+ * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * @supports REQ-DUAL-POSITION-DETECTION
  */
 export function gatherBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
+  parent?: any,
 ): string {
   /**
    * Conditional branch for SwitchCase nodes that may include inline comments.
@@ -186,6 +257,16 @@ export function gatherBranchCommentText(
 
   if (node.type === "CatchClause") {
     return gatherCatchClauseCommentText(sourceCode, node, beforeText);
+  }
+
+  /**
+   * Conditional branch for IfStatement else-if nodes that may include inline comments
+   * after the else-if condition but before the consequent body.
+   * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+   * @supports REQ-DUAL-POSITION-DETECTION
+   */
+  if (node.type === "IfStatement") {
+    return gatherElseIfCommentText(sourceCode, node, parent, beforeText);
   }
 
   return beforeText;
@@ -285,23 +366,17 @@ export function reportMissingReq(
 }
 
 /**
- * Compute annotation-related metadata for a branch node.
+ * Compute the base indent and insert position for a branch node, including
+ * special handling for CatchClause bodies.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
+ * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
+ * @supports REQ-ANNOTATION-PARSING
+ * @supports REQ-DUAL-POSITION-DETECTION
  */
-function getBranchAnnotationInfo(
+function getBaseBranchIndentAndInsertPos(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
-): {
-  missingStory: boolean;
-  missingReq: boolean;
-  indent: string;
-  insertPos: number;
-} {
-  const text = gatherBranchCommentText(sourceCode, node);
-  const missingStory = !/@story\b/.test(text);
-  const missingReq = !/@req\b/.test(text);
-
+): { indent: string; insertPos: number } {
   let indent =
     sourceCode.lines[node.loc.start.line - 1].match(/^(\s*)/)?.[1] || "";
   let insertPos = sourceCode.getIndexFromLoc({
@@ -341,6 +416,52 @@ function getBranchAnnotationInfo(
     }
   }
 
+  return { indent, insertPos };
+}
+
+/**
+ * Compute annotation-related metadata for a branch node.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
+ * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * @supports REQ-DUAL-POSITION-DETECTION
+ */
+function getBranchAnnotationInfo(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  parent?: any,
+): {
+  missingStory: boolean;
+  missingReq: boolean;
+  indent: string;
+  insertPos: number;
+} {
+  const text = gatherBranchCommentText(sourceCode, node, parent);
+  const missingStory = !/@story\b/.test(text);
+  const missingReq = !/@req\b/.test(text);
+
+  let { indent, insertPos } = getBaseBranchIndentAndInsertPos(sourceCode, node);
+
+  if (
+    isElseIfBranch(node, parent) &&
+    node.consequent &&
+    node.consequent.type === "BlockStatement" &&
+    node.consequent.loc &&
+    node.consequent.loc.start
+  ) {
+    // For else-if blocks, align auto-fix comments with Prettier's tendency to place comments
+    // inside the wrapped block body; non-block consequents intentionally keep the default behavior.
+    const commentLine = node.consequent.loc.start.line + 1;
+    const commentIndent =
+      sourceCode.lines[commentLine - 1]?.match(/^(\s*)/)?.[1] || indent;
+
+    indent = commentIndent;
+    insertPos = sourceCode.getIndexFromLoc({
+      line: commentLine,
+      column: 0,
+    });
+  }
+
   return { missingStory, missingReq, indent, insertPos };
 }
 
@@ -348,6 +469,8 @@ function getBranchAnnotationInfo(
  * Report missing annotations on a branch node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
+ * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * @supports REQ-DUAL-POSITION-DETECTION
  */
 export function reportMissingAnnotations(
   context: Rule.RuleContext,
@@ -356,8 +479,18 @@ export function reportMissingAnnotations(
 ): void {
   const sourceCode = context.getSourceCode();
 
+  /**
+   * Determine the direct parent of the node using the ancestors stack when available.
+   * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+   * @supports REQ-DUAL-POSITION-DETECTION
+   */
+  const contextAny = context as unknown as { getAncestors?: () => any[] };
+  const ancestors = contextAny.getAncestors?.() || [];
+  const parent =
+    ancestors.length > 0 ? ancestors[ancestors.length - 1] : undefined;
+
   const { missingStory, missingReq, indent, insertPos } =
-    getBranchAnnotationInfo(sourceCode, node);
+    getBranchAnnotationInfo(sourceCode, node, parent);
 
   const actions: Array<{ missing: boolean; fn: Function; args: any[] }> = [
     {

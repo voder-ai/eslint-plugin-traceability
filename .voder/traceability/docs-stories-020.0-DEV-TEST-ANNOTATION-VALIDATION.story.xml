@@ -2,14 +2,8 @@
 <traceability>
   <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T18:58:43.399Z</last_validated>
+  <last_validated>2025-12-06T23:12:05.997Z</last_validated>
   <last_modified>2025-12-04T21:56:14.194Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and detailed requirements for Story 020.0-DEV-TEST-ANNOTATION-VALIDATION are implemented:
-- Test files are detected via configurable path-substring patterns and selectively validated.
-- File-level @supports annotations are required in test files, with a safe, TODO-style placeholder auto-fix when missing.
-- describe() blocks in test files must include a story reference matching a configurable pattern (defaulting to "Story N.N-").
-- it()/test() names in test files must start with a [REQ-XXX] requirement prefix; malformed but recognizable prefixes are optionally normalized, while completely missing prefixes produce a clear error without guessing IDs.
-- The rule follows ESLint best practices (meta, schema, messageIds, fixers), is integrated into the plugin’s recommended/strict configs as an error-level rule, is thoroughly tested (valid/invalid and auto-fix scenarios), and is documented in user-docs.
-- The full Jest suite, including tests explicitly tagged as supporting docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md, passes. Accordingly, this story is fully implemented and verified.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>Story 020.0-DEV-TEST-ANNOTATION-VALIDATION is fully implemented. A dedicated ESLint rule `require-test-traceability` exists with helpers, enforcing: (1) file-level `@supports` annotations in test files; (2) presence of a story reference in `describe` descriptions; and (3) `[REQ-XXX]` prefixes in `it`/`test` names, with safe auto-fix for missing file-level supports and malformed prefixes. Test file detection is configurable and defaults match the story’s directory and extension patterns. The rule supports Jest and Mocha-style APIs (`describe`, `it`, `test`, `context`) and integrates with the plugin’s dynamic loading and recommended/strict configs. Comprehensive RuleTester tests directly reference this story and validate all key behaviors, and all Jest tests pass. User-facing documentation in `user-docs/api-reference.md` describes behavior, options, and examples consistent with the implementation. Cross-story requirements for validating the actual story and requirement references are satisfied by existing rules from dependency stories (valid-annotation-format, valid-story-reference, valid-req-reference), which apply equally to test files. Accordingly, all acceptance criteria and requirements for this story are met.</notes>
 </traceability>

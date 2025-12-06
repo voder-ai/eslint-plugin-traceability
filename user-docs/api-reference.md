@@ -68,7 +68,7 @@ function initAuth() {
 
 ### traceability/require-branch-annotation
 
-Description: Ensures significant code branches (if/else, loops, switch cases, try/catch) have both `@story` and `@req` annotations in preceding comments. For `catch` clauses specifically, the rule accepts annotations either immediately before the `catch` keyword or as the first comment-only lines inside the catch block. This dual-position handling is designed to stay compatible with common formatters such as Prettier, which often move comments from before `catch` into the catch body.
+Description: Ensures significant code branches (if/else, loops, switch cases, try/catch) have both `@story` and `@req` annotations in preceding comments. For `catch` clauses specifically, the rule accepts annotations either immediately before the `catch` keyword or as the first comment-only lines inside the catch block; for `else if` branches, the rule accepts annotations either immediately before the `else if` keyword or on comment-only lines between the `else if (condition)` and the first statement of the consequent body, matching Prettier’s wrapped style.
 
 Options:
 
@@ -690,4 +690,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```

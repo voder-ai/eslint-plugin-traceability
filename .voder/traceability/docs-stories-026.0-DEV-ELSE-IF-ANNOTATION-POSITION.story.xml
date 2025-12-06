@@ -2,30 +2,14 @@
 <traceability>
   <specification>docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-12-06T18:59:41.153Z</last_validated>
+  <last_validated>2025-12-06T23:11:48.634Z</last_validated>
   <last_modified>2025-12-06T13:26:12.165Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION is not implemented.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION is a concrete specification, so it is assessable. Its requirements center on enhancing the require-branch-annotation rule to support dual annotation positions for else-if branches (before the else keyword and between the else-if condition and body), plus Prettier and auto-fix compatibility.
 
-Key unmet acceptance criteria and requirements:
+Current implementation only provides dual-position and Prettier-aware handling for CatchClause nodes, via gatherCatchClauseCommentText and a CatchClause-specific branch in getBranchAnnotationInfo. Else-if / IfStatement branches are still handled by the generic logic that only considers comments before the node and uses a simple insert position at the start of the branch line. There is no detection of else-if chains (parent.alternate === node), no scanning of comments between the else-if condition and the body, no position-priority logic, and no adjusted auto-fix insertion point for else-if.
 
-1. **Before-Else and After-Condition Positions (REQ-DUAL-POSITION-DETECTION-ELSE-IF, REQ-FALLBACK-LOGIC-ELSE-IF, REQ-POSITION-PRIORITY-ELSE-IF)**
-   - The helper gatherBranchCommentText only inspects comments *before* the node for IfStatement branches. It has dual-position logic only for CatchClause (before vs inside body) and special line-scanning for SwitchCase; there is no analogous logic for else-if.
-   - There is no detection of whether an IfStatement is part of an else-if chain via parent.alternate === node, and no code that looks for comments between 'else if (condition)' and the statement body.
-   - Therefore, annotations placed after the else-if condition (the Prettier-wrapped position) will not be detected, and there is no priority resolution when annotations appear in both positions.
+Tests similarly do not cover else-if annotation placement or Story 026.0’s requirement IDs, and there is no Prettier integration test for else-if, only for catch. Documentation has not been updated to describe else-if dual positions.
 
-2. **Prettier Compatibility & Auto-Fix (REQ-PRETTIER-AUTOFIX-ELSE-IF)**
-   - getBranchAnnotationInfo and reportMissingStory/reportMissingReq compute insert positions for all non-CatchClause branches as the start of the branch line. This causes auto-fix to insert annotations above 'if (condition)', not between condition and body for else-if.
-   - There is no logic to detect wrapped else-if lines or to choose a Prettier-stable insertion point for else-if branches.
-   - No tests cover Prettier-formatted else-if code or verify that auto-fix output remains stable under Prettier reformatting.
-
-3. **Testing & Traceability**
-   - No tests reference Story 026.0 or its requirement IDs (e.g., REQ-DUAL-POSITION-DETECTION-ELSE-IF, REQ-PRETTIER-AUTOFIX-ELSE-IF).
-   - The require-branch-annotation test suite includes only simple 'if' examples and does not include any 'else if' constructs, comments positioned before 'else', or comments between condition and body.
-   - There is no integration test with actual Prettier-formatted else-if code, as called for in the Definition of Done.
-
-4. **Documentation**
-   - Aside from the story file itself, documentation does not explain else-if annotation positions or Prettier compatibility for else-if. The rule docs still only describe generic branch annotation behavior.
-
-Because the implementation and tests still only support the existing branch types and catch dual-position behavior (Story 025.0), and there is no special handling or testing for else-if annotation positions, the story’s acceptance criteria and requirements are not satisfied. Thus the status for this story is FAILED.</notes>
+Therefore, multiple acceptance criteria remain unmet (After-Condition Position, Prettier Compatibility for else-if, Position Priority, Auto-Fix Compatibility, Documentation, and the specific helper behavior in the Definition of Done). The story is not fully implemented and the appropriate status is FAILED.</notes>
 </traceability>
