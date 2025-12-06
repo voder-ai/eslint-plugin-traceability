@@ -18,13 +18,13 @@
 
 # User Story Map with Releases
 
-| **Release 0.5 (Quality Foundation)**     | **Setup Dev Environment** | **Develop Features**              | **Validate Quality** | **Deploy** | **Maintain** |
-| ---------------------------------------- | ------------------------- | --------------------------------- | -------------------- | ---------- | ------------ |
-| **Core Fixes**                           | -                         | 024.0-DEV-IGNORE-INLINE-CODE-REFS | -                    | -          | -            |
+| **Release 0.5 (Quality Foundation)** | **Setup Dev Environment** | **Develop Features**              | **Validate Quality** | **Deploy** | **Maintain** |
+| ------------------------------------ | ------------------------- | --------------------------------- | -------------------- | ---------- | ------------ |
+| **Core Fixes**                       | -                         | 024.0-DEV-IGNORE-INLINE-CODE-REFS | -                    | -          | -            |
 
-| **Release 0.6 (Formatter Compatibility)** (Current) | **Setup Dev Environment** | **Develop Features**                    | **Validate Quality** | **Deploy** | **Maintain** |
-| --------------------------------------------------- | ------------------------- | --------------------------------------- | -------------------- | ---------- | ------------ |
-| **Rule Enhancements**                               | -                         | 025.0-DEV-CATCH-ANNOTATION-POSITION     | -                    | -          | -            |
+| **Release 0.6 (Formatter Compatibility)** (Current) | **Setup Dev Environment** | **Develop Features**                | **Validate Quality** | **Deploy** | **Maintain** |
+| --------------------------------------------------- | ------------------------- | ----------------------------------- | -------------------- | ---------- | ------------ |
+| **Rule Enhancements**                               | -                         | 025.0-DEV-CATCH-ANNOTATION-POSITION | -                    | -          | -            |
 
 ---
 

@@ -8,8 +8,8 @@
  * small, single-responsibility functions that can be reused and tested
  * in isolation if needed.
  *
- * @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE REQ-DEEP-MATCH REQ-DEEP-CACHE REQ-DEEP-PATH
- * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-VALIDATE REQ-MIXED-SUPPORT REQ-SCOPED-IDS
+ * @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE REQ-DEEP-MATCH REQ-DEEP-CACHE
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-VALIDATE REQ-MIXED-SUPPORT REQ-SCOPED-IDS
  */
 import fs from "fs";
 import path from "path";
@@ -47,7 +47,7 @@ function extractStoryPath(comment: any): string | null {
  * Validate and resolve the referenced story path.
  * Performs traversal/absolute checks and resolves to a disk path.
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PATH - Validate and resolve referenced story file paths
+ * @req REQ-DEEP-CACHE - Validate and resolve referenced story file paths
  */
 function validateAndResolveStoryPath(opts: {
   comment: any;
@@ -149,7 +149,7 @@ function extractReqIdFromLine(line: string): string | undefined {
 /**
  * Resolve story path and load requirements set for validation.
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PATH - Validate and resolve referenced story file paths
+ * @req REQ-DEEP-CACHE - Validate and resolve referenced story file paths
  * @req REQ-DEEP-CACHE - Cache requirement IDs discovered in story files
  */
 function resolveStoryAndRequirements(opts: {
@@ -184,7 +184,7 @@ function resolveStoryAndRequirements(opts: {
  * Validate a @req annotation line against the extracted story content.
  * Performs path validation, file reading, caching, and requirement existence checks.
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PATH - Validate and resolve referenced story file paths
+ * @req REQ-DEEP-CACHE - Validate and resolve referenced story file paths
  * @req REQ-DEEP-CACHE - Cache requirement IDs discovered in story files
  * @req REQ-DEEP-MATCH - Verify that a referenced requirement ID exists in the story
  * @req REQ-DEEP-PARSE - Parse story file contents to extract requirement identifiers
@@ -229,7 +229,7 @@ function validateReqLine(opts: {
  * Expects the format: "@supports <storyPath> <REQ-ID-1> <REQ-ID-2> ..."
  * Invalid formats (missing storyPath or reqIds) are ignored by this deep rule.
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-VALIDATE - Support validation of @supports annotations
+ * @req REQ-SUPPORTS-VALIDATE - Support validation of @supports annotations
  * @req REQ-MIXED-SUPPORT - Allow mixed @story/@req/@implements usage in the same comment
  * @req REQ-SCOPED-IDS - Treat requirement IDs as scoped to the referenced story file
  */
@@ -250,7 +250,7 @@ function parseImplementsLine(
  * Performs path validation, file reading, caching, and requirement existence checks
  * for each requirement ID listed on the line.
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-VALIDATE - Validate that all @supports requirement IDs exist
+ * @req REQ-SUPPORTS-VALIDATE - Validate that all @supports requirement IDs exist
  * @req REQ-MIXED-SUPPORT - Ensure @supports can coexist with @story/@req annotations
  * @req REQ-SCOPED-IDS - Validate requirement IDs in the scope of their explicit story
  */
@@ -295,10 +295,10 @@ function validateImplementsLine(opts: {
 /**
  * Handle a single annotation line for story or requirement metadata.
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE - Parse annotation lines for @story and @req tags
+ * @req REQ-DEEP-PARSE - Parse annotation lines for @story, @req, and @supports tags
  * @req REQ-DEEP-MATCH - Dispatch @req lines for validation against story requirements
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-VALIDATE - Dispatch @supports lines for validation
+ * @req REQ-SUPPORTS-VALIDATE - Dispatch @supports lines for validation
  * @req REQ-MIXED-SUPPORT - Support mixed annotation types without interfering with each other
  */
 function handleAnnotationLine(opts: {
@@ -409,7 +409,7 @@ function processAllComments(opts: {
  * Create a Program listener that iterates comments and validates annotations.
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
  * @req REQ-DEEP-CACHE - Initialize and share a requirement cache for the program
- * @req REQ-DEEP-PATH - Derive the working directory context for path resolution
+ * @req REQ-DEEP-CACHE - Derive the working directory context for path resolution
  */
 function programListener(context: any) {
   const sourceCode = context.getSourceCode();
@@ -423,7 +423,7 @@ function programListener(context: any) {
    * @req REQ-DEEP-PARSE - Collect all comments from the source code
    * @req REQ-DEEP-MATCH - Drive comment-level handling for traceability checks
    * @req REQ-DEEP-CACHE - Reuse story path and requirement cache across comments
-   * @req REQ-DEEP-PATH - Ensure validation respects project-relative paths
+   * @req REQ-DEEP-CACHE - Ensure validation respects project-relative paths
    */
   return function Program() {
     processAllComments({
@@ -442,8 +442,8 @@ function programListener(context: any) {
  * itself to remain small and focused on meta configuration while the
  * heavier deep-validation logic is encapsulated here.
  *
- * @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE REQ-DEEP-MATCH REQ-DEEP-CACHE REQ-DEEP-PATH
- * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-IMPLEMENTS-VALIDATE REQ-MIXED-SUPPORT REQ-SCOPED-IDS
+ * @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE REQ-DEEP-MATCH REQ-DEEP-CACHE
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-VALIDATE REQ-MIXED-SUPPORT REQ-SCOPED-IDS
  */
 export function createValidReqReferenceProgramVisitor(
   context: Rule.RuleContext,

@@ -1,18 +1,17 @@
 ## NOW
 
-- [ ] Update the ESLint configuration so that this repository begins dogfooding the next traceability rule (for example the valid-story-reference rule) for its own TypeScript sources, in a way that follows the Acceptance Criteria and Definition of Done in Story 023.0-MAINT-DOGFOODING-VALIDATION.
+- [ ] Add complete traceability annotations to the helper functions and significant branches in the valid-req-reference helper module so that each piece of logic clearly references the appropriate story file and requirement IDs.
 
 ## NEXT
 
-- [ ] Analyze the impact of the newly enabled traceability rule on the existing TypeScript code and tests to identify exactly which files would violate it and why.
-- [ ] Decide for each violation whether to fix the underlying code or annotation, or to introduce a minimal, well-documented eslint-disable suppression that is explicitly tied back to Story 023.0 requirements.
-- [ ] Extend the existing dogfooding-validation integration test so it also verifies that the newly enabled traceability rule is present in the configuration and exercised by the ESLint CLI on representative TypeScript input.
-- [ ] Update the dogfooding-related development documentation to describe the expanded rule set being enforced on this repository, the rationale for the chosen next rule, and how violations and suppressions for it are managed over time.
-- [ ] Revisit Story 023.0-MAINT-DOGFOODING-VALIDATION and its related problem document to record which additional acceptance criteria are now satisfied after enabling the second rule and strengthening the validation tests.
+- [ ] Review other helper modules in the rules/helpers directory to identify any remaining functions or branches that lack @supports-style traceability annotations and add the missing references to their corresponding stories and requirements.
+- [ ] Re-scan the TypeScript rule and helper code to confirm that every exported function and important conditional branch has a consistent, parseable traceability annotation and that none point to incorrect or placeholder story paths.
+- [ ] Update the ESLint plugin development guide to explicitly state that helper modules must carry the same level of traceability annotations as rule entrypoints, including examples that show how to document helpers and internal branches.
+- [ ] Align any affected story documents or requirement IDs with the new annotations if necessary, ensuring that requirement identifiers used in code actually exist in the referenced story files and are described clearly.
 
 ## LATER
 
-- [ ] Continue incrementally enabling further traceability rules or the full recommended preset on this repository, repeating the pattern of enablement, violation analysis, targeted fixes or suppressions, and dogfooding-validation test updates for each rule.
-- [ ] Broaden dogfooding validation to include additional representative or synthetic workspaces that cover different project layouts and rule combinations, ensuring the plugin behaves correctly across a wider range of real-world scenarios.
-- [ ] Improve the failure output for dogfooding validation (both in tests and in CI) so that maintainers can quickly see which files, rules, and requirement IDs caused a failure and what actions are recommended.
-- [ ] Document the overall dogfooding-validation strategy, including rule selection order, suppression lifecycle, and how it will evolve as new stories and rules are introduced, in a dedicated architecture decision record.
+- [ ] Introduce or tighten automated checks that enforce the presence and correctness of traceability annotations on helper functions and branches, reducing the chance of future drift.
+- [ ] Extend the dogfooding and self-validation strategy so that traceability enforcement covers helper modules explicitly, and document how failures in helper-level annotations surface in tests and CI.
+- [ ] Periodically review and refactor helper modules to keep them small, focused, and well-documented as additional rules and requirements are added to the plugin.
+- [ ] Revisit the overall documentation and architecture decision records to capture the convention that all implementation layers (rules, helpers, utilities) participate equally in story and requirement traceability.

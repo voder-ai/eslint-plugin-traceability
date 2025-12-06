@@ -263,6 +263,33 @@ ruleTester.run("require-story-annotation", rule, {
 
 Complex rules (such as `valid-req-reference` and `valid-story-reference`) must keep their rule entrypoints small and delegate complex or deeply nested logic to helper modules. Shared and reusable logic should live in `src/rules/helpers` and `src/utils`, with the rule’s `create` function mostly wiring up visitors and calling these helpers. For example, `createValidReqReferenceProgramVisitor` encapsulates the main traversal logic for `valid-req-reference`, and `valid-story-reference-helpers` holds the supporting functions used by the `valid-story-reference` rule. New complex rules should follow this pattern to keep rule files readable, testable, and consistent.
 
+These helper modules must maintain the same level of traceability as rule entrypoints:
+
+- Every **exported helper function** must have a JSDoc block with `@supports` or `@story`/`@req` annotations referencing the appropriate `docs/stories/*.story.md` files and concrete requirement IDs.
+- Significant **internal branches** (such as complex conditionals or loops) may include inline `// @supports` annotations to clarify which requirements they implement.
+- Helper modules that **serve multiple rules** should use multiple `@supports` lines in their file- or function-level JSDoc to map behavior to all relevant stories.
+
+Example helper with multi-story traceability:
+
+```typescript
+/**
+ * Normalizes a traceability tag from comments.
+ *
+ * @supports docs/stories/010.1-RULE-VALID-REQ-REFERENCE.story.md REQ-010-TRACE-PARSE
+ * @supports docs/stories/011.2-RULE-VALID-STORY-REFERENCE.story.md REQ-011-TRACE-NORMALIZE
+ */
+export function normalizeTraceTag(raw: string): string {
+  const trimmed = raw.trim();
+
+  // @supports docs/stories/010.1-RULE-VALID-REQ-REFERENCE.story.md REQ-010-TRACE-CASE
+  if (!trimmed) {
+    return "";
+  }
+
+  return trimmed.toUpperCase();
+}
+```
+
 ### File System Integration
 
 For validating @story references to actual files:
