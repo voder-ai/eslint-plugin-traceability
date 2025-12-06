@@ -297,4 +297,18 @@ describe("reqAnnotationDetection advanced heuristics (Story 003.0-DEV-FUNCTION-A
 
     expect(has).toBe(true);
   });
+
+  it("[REQ-ANNOTATION-REQ-DETECTION] falls back to jsdoc/comments when context.getSourceCode throws", () => {
+    const context = {
+      getSourceCode() {
+        throw new Error("boom from getSourceCode");
+      },
+    } as any;
+
+    const jsdoc = { value: "/** @req REQ-FROM-GETSOURCECODE */" } as any;
+
+    const has = _hasReqAnnotation(jsdoc, [], context, { parent: {} } as any);
+
+    expect(has).toBe(true);
+  });
 });
