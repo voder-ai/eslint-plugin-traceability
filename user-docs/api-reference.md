@@ -68,10 +68,16 @@ function initAuth() {
 
 ### traceability/require-branch-annotation
 
-Description: Ensures significant code branches (if/else, loops, switch cases, try/catch) have both `@story` and `@req` annotations in preceding comments.
+Description: Ensures significant code branches (if/else, loops, switch cases, try/catch) have both `@story` and `@req` annotations in preceding comments. For `catch` clauses specifically, the rule accepts annotations either immediately before the `catch` keyword or as the first comment-only lines inside the catch block. This dual-position handling is designed to stay compatible with common formatters such as Prettier, which often move comments from before `catch` into the catch body.
+
 Options:
 
 - `branchTypes` (string[], optional) – AST node types that are treated as significant branches for annotation enforcement. Allowed values: "IfStatement", "SwitchCase", "TryStatement", "CatchClause", "ForStatement", "ForOfStatement", "ForInStatement", "WhileStatement", "DoWhileStatement". Default: ["IfStatement", "SwitchCase", "TryStatement", "CatchClause", "ForStatement", "ForOfStatement", "ForInStatement", "WhileStatement", "DoWhileStatement"]. If an invalid branch type is provided, the rule reports a configuration error for each invalid value.
+
+Behavior notes:
+
+- When both before-`catch` and inside-block annotations are present for the same catch clause, the comments immediately before `catch` take precedence for validation and reporting.
+- When auto-fixing missing annotations on a catch clause, the rule inserts placeholder comments inside the catch body so that formatters like Prettier preserve them and do not move them to unexpected locations.
 
 Default Severity: `error`
 Example:

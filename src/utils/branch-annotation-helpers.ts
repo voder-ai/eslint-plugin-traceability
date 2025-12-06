@@ -87,6 +87,72 @@ export function validateBranchTypes(
 }
 
 /**
+ * Extract the raw value from a comment node.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @req REQ-TRACEABILITY-MAP-CALLBACK - Trace mapping of comment nodes to their text values
+ */
+function extractCommentValue(_c: any): string {
+  return _c.value;
+}
+
+/**
+ * Gather annotation text for CatchClause nodes, supporting both before-catch and inside-catch positions.
+ * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
+ * @req REQ-DUAL-POSITION-DETECTION
+ * @req REQ-FALLBACK-LOGIC
+ */
+function gatherCatchClauseCommentText(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  beforeText: string,
+): string {
+  if (/@story\b/.test(beforeText) || /@req\b/.test(beforeText)) {
+    return beforeText;
+  }
+
+  const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
+  if (node.body && typeof getCommentsInside === "function") {
+    try {
+      const insideComments =
+        (getCommentsInside as (_node: any) => any[])(node.body) || [];
+      const insideText = insideComments.map(extractCommentValue).join(" ");
+      if (insideText) {
+        return insideText;
+      }
+    } catch {
+      // fall through to line-based fallback
+    }
+  }
+
+  if (node.body && node.body.loc && node.body.loc.start && node.body.loc.end) {
+    const lines = sourceCode.lines;
+    const startIndex = node.body.loc.start.line - 1;
+    const endIndex = node.body.loc.end.line - 1;
+    const comments: string[] = [];
+    let i = startIndex + 1;
+
+    while (i <= endIndex) {
+      const line = lines[i];
+      if (!line || !line.trim()) {
+        break;
+      }
+      if (!/^\s*(\/\/|\/\*)/.test(line)) {
+        break;
+      }
+      comments.push(line.trim());
+      i++;
+    }
+
+    const insideText = comments.join(" ");
+    if (insideText) {
+      return insideText;
+    }
+  }
+
+  return beforeText;
+}
+
+/**
  * Gather leading comment text for a branch node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-COMMENT-ASSOCIATION - Associate inline comments with their corresponding code branches
@@ -116,35 +182,10 @@ export function gatherBranchCommentText(
 
   const beforeComments = sourceCode.getCommentsBefore(node) || [];
 
-  /**
-   * Mapper to extract the text value from a comment node.
-   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-TRACEABILITY-MAP-CALLBACK - Trace mapping of comment nodes to their text values
-   */
-  function commentToValue(_c: any) {
-    return _c.value;
-  }
-
-  const beforeText = beforeComments.map(commentToValue).join(" ");
+  const beforeText = beforeComments.map(extractCommentValue).join(" ");
 
   if (node.type === "CatchClause") {
-    if (/@story\b/.test(beforeText) || /@req\b/.test(beforeText)) {
-      return beforeText;
-    }
-
-    const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
-    if (node.body && typeof getCommentsInside === "function") {
-      try {
-        const insideComments =
-          (getCommentsInside as (_node: any) => any[])(node.body) || [];
-        const insideText = insideComments.map(commentToValue).join(" ");
-        return insideText || beforeText;
-      } catch {
-        return beforeText;
-      }
-    }
-
-    return beforeText;
+    return gatherCatchClauseCommentText(sourceCode, node, beforeText);
   }
 
   return beforeText;
@@ -221,8 +262,8 @@ export function reportMissingReq(
      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
      * @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer function used to insert missing @req
      */
-    function insertReqFixer(fixer: any) {
-      return fixer.insertTextBeforeRange(
+    function insertReqFixer(fxer: any) {
+      return fxer.insertTextBeforeRange(
         [insertPos, insertPos],
         `${indent}// @req <REQ-ID>\n`,
       );

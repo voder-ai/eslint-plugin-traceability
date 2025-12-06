@@ -2,17 +2,59 @@
 <traceability>
   <specification>docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-12-06T17:51:40.490Z</last_validated>
+  <last_validated>2025-12-06T18:58:12.554Z</last_validated>
   <last_modified>2025-12-06T17:03:12.749Z</last_modified>
-  <evidence>[object Object]</evidence>
-  <notes>The story 025.0-DEV-CATCH-ANNOTATION-POSITION is only partially implemented. Core functional requirements are satisfied:
-- CatchClause annotations are detected both before the catch keyword and as first comments inside the catch block (REQ-DUAL-POSITION-DETECTION, REQ-FALLBACK-LOGIC), with correct priority given to before-catch annotations (REQ-POSITION-PRIORITY).
-- Auto-fix behavior for CatchClause inserts annotations inside the catch body at the first statement (REQ-PRETTIER-AUTOFIX), which aligns with how Prettier preserves comments, and this is exercised by dedicated unit tests.
-- The require-branch-annotation rule still handles CatchClause via DEFAULT_BRANCH_TYPES, and the entire rule test suite passes, indicating no regressions to other branch types.
+  <evidence>Story file docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md itself marks some items as incomplete:
+- Acceptance Criteria:
+  - **Prettier Compatibility**: [ ] (unchecked), with note: "no explicit end-to-end Prettier integration test yet"
+  - **Documentation**: [ ] (unchecked), rule docs update still required
+- Definition of Done:
+  - "Integration test with actual Prettier-formatted code" is [ ] (unchecked)
+  - "Rule documentation updated with Prettier compatibility notes" is [ ] (unchecked)
+  - "Migration guide updated..." is [ ] (unchecked),Implementation for dual-position detection and fallback is present in src/utils/branch-annotation-helpers.ts:
+- gatherBranchCommentText(sourceCode, node):
+  - For non-SwitchCase nodes, collects before-comments via sourceCode.getCommentsBefore(node).
+  - For CatchClause specifically:
+    - Computes beforeText from comments before the node.
+    - If beforeText contains @story or @req, returns beforeText immediately (before-catch has priority).
+    - Otherwise, attempts to call (sourceCode as any).getCommentsInside(node.body) and concatenates those comment values into insideText.
+    - Returns insideText || beforeText, giving a fallback to inside-catch comments.
+  - This satisfies REQ-DUAL-POSITION-DETECTION, REQ-FALLBACK-LOGIC, and REQ-POSITION-PRIORITY.,Implementation for Prettier-stable auto-fix position is present in src/utils/branch-annotation-helpers.ts:
+- getBranchAnnotationInfo(sourceCode, node):
+  - For all nodes, derives indent and insertPos from the branch line by default.
+  - For CatchClause with a BlockStatement body:
+    - If the body has statements, uses the first statement’s loc.start.line to get innerIndent and sets insertPos to the start of that line (first statement inside catch).
+    - Else (empty block), uses the block’s start line, derives blockIndent, and sets innerIndent = `${blockIndent} ` to place text just inside the braces.
+  - reportMissingStory/reportMissingReq then use indent and insertPos to insert annotations inside the catch body.
+  - This satisfies REQ-PRETTIER-AUTOFIX (auto-fix inside the catch block).,Targeted tests for this story exist and pass:
+- tests/utils/branch-annotation-catch-position.test.ts (from jest output):
+  - "gatherBranchCommentText CatchClause behavior (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)"
+    - ✓ [REQ-DUAL-POSITION-DETECTION] prefers before-catch annotations when present
+    - ✓ [REQ-FALLBACK-LOGIC] falls back to inside-catch annotations when before-catch is missing
+    - ✓ [REQ-FALLBACK-LOGIC] returns before-catch text when getCommentsInside is not available
+- tests/utils/branch-annotation-catch-insert-position.test.ts:
+  - "CatchClause insert position (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)"
+    - ✓ [REQ-PRETTIER-AUTOFIX] inserts annotations at the first statement inside the catch body
+- These tests are annotated with @supports for docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md, directly tying them to this story’s REQs.,Rule-level behavior and regressions are covered and passing:
+- tests/rules/require-branch-annotation.test.ts (from jest output):
+  - Includes valid case: "[REQ-BRANCH-DETECTION] valid catch with annotations" (before-catch behavior preserved).
+  - Includes invalid case: "[REQ-BRANCH-DETECTION] missing annotations on try-catch blocks" (catch handling still enforced).
+- Jest run (npm test -- --runInBand --verbose) summary:
+  - PASS tests/utils/branch-annotation-catch-position.test.ts
+  - PASS tests/utils/branch-annotation-catch-insert-position.test.ts
+  - PASS tests/rules/require-branch-annotation.test.ts
+  - Overall: 45 test suites, 343 tests all passed.,No explicit Prettier end-to-end integration tests exist:
+- find_files pattern "*prettier*" in tests/ returned 0 files (no Prettier-specific test suite).
+- The story itself explicitly notes: "no explicit end-to-end Prettier integration test yet" and DoD item "Integration test with actual Prettier-formatted code" is unchecked.,Documentation has not been updated to describe dual catch positions or Prettier compatibility:
+- search_file_content docs/rules/require-branch-annotation.md for "Prettier" → no matches.
+- search_file_content user-docs/api-reference.md for "Prettier" → no matches.
+- docs/rules/require-branch-annotation.md and user-docs/api-reference.md still describe annotations only as comments preceding branches, with no mention of inside-catch annotations or formatter compatibility.
+- Story’s Acceptance Criteria marks **Documentation** as [ ] (unchecked).</evidence>
+  <notes>The core functional behavior for this story is implemented and well tested: CatchClause annotations are detected both before the catch keyword and as the first comments inside the catch body, with correct fallback and priority rules, and auto-fix now inserts annotations inside the catch block in a Prettier-friendly position. These behaviors are covered by dedicated unit tests and the main require-branch-annotation rule tests, all of which pass.
 
-However, not all acceptance criteria and Definition of Done items are met:
-- There is no explicit end-to-end Prettier integration test that formats code and then runs the rule, despite the story’s acceptance criteria and DoD calling this out as an outstanding item; the story itself marks the Prettier compatibility criterion and the Prettier integration test as unchecked.
-- The rule documentation (docs/rules/require-branch-annotation.md) has not been updated to describe the dual valid positions for CatchClause annotations or to mention Prettier/formatter compatibility, and the story DoD explicitly marks documentation updates as pending.
+However, two acceptance criteria and corresponding Definition-of-Done items remain unmet:
+- There is no explicit end-to-end integration test that runs Prettier on code and then validates it via the plugin, and the story itself acknowledges this as still pending.
+- Documentation (rule docs and user-facing API docs) has not been updated to describe the dual valid positions for catch annotations or to mention Prettier/formatter compatibility, and the story’s own Documentation checkbox is still unchecked.
 
-Because these documentation and explicit integration-test criteria are part of the story’s acceptance criteria/DoD and remain unimplemented, the story cannot be considered fully complete, so the assessment status is FAILED.</notes>
+Because the specification requires all acceptance criteria to be met, and the story explicitly marks Prettier integration testing and documentation work as still open, this story is not fully complete and is assessed as FAILED.</notes>
 </traceability>

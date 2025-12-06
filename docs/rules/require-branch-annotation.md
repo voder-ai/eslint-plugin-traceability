@@ -8,7 +8,20 @@ Ensures that significant code branches (if/else, switch cases, loops, try/catch)
 
 ## Rule Details
 
-This rule checks for JSDoc or inline comments immediately preceding significant code branches and ensures both `@story` and `@req` annotations are present.
+This rule checks for JSDoc or inline comments associated with significant code branches and ensures both `@story` and `@req` annotations are present. For most branch types, the rule expects these annotations in comments immediately preceding the branch node. For `CatchClause` nodes, the rule is more flexible and also accepts annotations placed as the first comment-only lines inside the catch block body, to stay compatible with formatters such as Prettier that may move `catch` comments into the block.
+
+### Catch clause annotation positions
+
+For `catch` blocks, there are two valid locations for the required annotations:
+
+1. Immediately before the `catch` keyword (in a line or block comment directly above the `catch`).
+2. As the first comment-only lines inside the catch block body (before any executable statements).
+
+If annotations are present in both locations, the annotations immediately before the `catch` keyword take precedence.
+
+When the rule applies an auto-fix for missing catch annotations, it inserts placeholder `@story` and `@req` comments inside the catch block body, matching Prettier’s tendency to place `catch` comments there. Other branch types continue to receive auto-fix annotations immediately before the branch keyword.
+
+This behavior is covered by unit tests in `tests/utils/branch-annotation-catch-position.test.ts` and integration tests in `tests/integration/catch-annotation-prettier.integration.test.ts`.
 
 ### Options
 

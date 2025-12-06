@@ -1,17 +1,17 @@
 ## NOW
 
-- [ ] Review the annotation validation story’s acceptance criteria to identify which specific behaviors and edge cases in that story are still unimplemented or insufficiently covered by existing annotation-validation rules and tests.
+- [ ] Review the catch-annotation position story to extract the specific Prettier compatibility acceptance criteria and end-to-end scenarios that still need to be covered by tests.
 
 ## NEXT
 
-- [ ] Map each uncovered or incomplete acceptance criterion from the annotation validation story to the existing rules and helpers, deciding whether they need new logic, configuration, or only additional tests.
-- [ ] Implement any missing or incomplete validation behavior in the relevant annotation-validation rule helpers so they fully satisfy the story’s specified requirements and edge cases.
-- [ ] Extend or adjust the unit and integration tests for the annotation-validation rules so that each acceptance criterion from the story is explicitly exercised and verified.
-- [ ] Update traceability annotations in the affected source and test files to reference the annotation validation story and its requirement IDs, ensuring the new or changed behavior is clearly linked to the documented requirements.
-- [ ] Revise the annotation validation story document to mark the now-completed acceptance criteria and definition-of-done items as satisfied, adding implementation links to the relevant code and test files.
+- [ ] Design one concrete end-to-end test scenario that formats code containing CatchClause annotations with Prettier and then validates it with the plugin, ensuring the annotations remain in a valid position and are recognized correctly.
+- [ ] Implement the new end-to-end test using the existing testing patterns, covering at least both before-catch and inside-catch annotation placements after formatting.
+- [ ] If needed, add additional end-to-end scenarios to exercise edge cases mentioned in the story, such as empty catch blocks or comments that Prettier may reflow in non-trivial ways.
+- [ ] Update the catch-annotation story document to mark the Prettier compatibility and integration-test acceptance criteria as satisfied, linking to the new tests.
+- [ ] Review user-facing rule documentation and API docs to ensure they explicitly describe the valid positions for catch annotations and mention their compatibility with common formatters, updating the text where necessary.
 
 ## LATER
 
-- [ ] Perform a cross-story review of all annotation-related stories to ensure their validation behaviors are consistent and no conflicting requirements exist between them.
-- [ ] Add higher-level integration tests that run the full set of annotation-validation rules together on representative example projects to detect any unexpected interactions or gaps.
-- [ ] Consider adding developer-facing documentation that explains how the various annotation-validation rules work together, including examples that align directly with the annotation validation story’s requirements.
+- [ ] Add similar formatter-integration tests for other branch types covered by related stories (for example, else-if and switch cases) to provide broader evidence of formatter compatibility.
+- [ ] Perform a small end-to-end validation pass that runs a full ESLint configuration with the plugin and Prettier on a realistic sample project, confirming that catch-annotation handling and other branch annotations behave correctly together.
+- [ ] Revisit the deep validation story to align its higher-level validation pipeline description with the new formatter-aware behavior and any additional integration tests that have been added.

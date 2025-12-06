@@ -2,18 +2,17 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T17:51:28.089Z</last_validated>
+  <last_validated>2025-12-06T18:59:25.108Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All aspects of story 004.0-DEV-BRANCH-ANNOTATIONS are implemented and verified.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md are unchanged from the previous assessment. The current implementation provides an ESLint rule traceability/require-branch-annotation that:
+- Detects significant branches (if/else, try/catch, switch cases, loops) and enforces presence of @story and @req annotations (REQ-BRANCH-DETECTION).
+- Correctly associates comments with branches, including special handling for SwitchCase and CatchClause, with dedicated tests (REQ-COMMENT-ASSOCIATION, REQ-NESTED-HANDLING).
+- Parses annotations via regex-based helpers and reports missing ones with a clear, specific message (REQ-ANNOTATION-PARSING, User Experience).
+- Defines significance via DEFAULT_BRANCH_TYPES while allowing a configurable branchTypes option and robustly reporting invalid configuration (REQ-SIGNIFICANCE-CRITERIA, REQ-CONFIGURABLE-SCOPE).
+- Handles nested and complex control flow structures, with tests explicitly targeting nested branches and catch-specific positioning (Integration, Error Handling).
+- Has been performance-tested on large files with many nested branches (REQ-PERFORMANCE-OPTIMIZATION, Quality Standards) and passes within the specified budget.
+- Is documented in docs/rules/require-branch-annotation.md with usage, configuration, and examples, and is integrated into the plugin’s recommended and strict configs.
 
-Mapping to Acceptance Criteria:
-- Core Functionality: The `require-branch-annotation` rule, together with `branch-annotation-helpers`, detects missing @story/@req annotations on all specified significant branch types (if/else, try/catch, switch cases, loops). Jest RuleTester cases cover both positive and negative scenarios across these constructs.
-- Quality Standards: The rule follows ESLint best practices (RuleModule with meta.schema, messages, and clean visitors) and is decomposed into reusable helpers. Schema-based config plus explicit validation via `validateBranchTypes` handle misconfigurations robustly.
-- Integration: Tests cover nested ifs, try/catch with separate branches, switches (including default case handling), and multiple loop types. The rule is integrated into the plugin’s dynamic loader and flat-config presets, and is listed in the README.
-- User Experience: Error messages use `missingAnnotation` with `{{missing}}` to state clearly which annotation (@story or @req) is missing. Tests assert both the messageId and data, and autofix behavior inserts readable placeholder annotations in intuitive positions, including within catch bodies.
-- Error Handling: Invalid `branchTypes` configurations are turned into ESLint config errors with clear messages. Comment association logic has dedicated tests for tricky CatchClause cases and blank-line switch cases. Nested-branch tests ensure inner branches are enforced independently of outer annotations.
-- Documentation: A dedicated rule doc (`docs/rules/require-branch-annotation.md`) plus README entries document purpose, configuration (including invalid config behavior), and annotated examples, matching the story’s documentation requirements.
-
-Given the passing, targeted tests and aligned documentation and implementation, this story is fully satisfied.</notes>
+All acceptance criteria and listed requirements for this story are satisfied and verified by passing automated tests and documentation, so the story is fully implemented.</notes>
 </traceability>
