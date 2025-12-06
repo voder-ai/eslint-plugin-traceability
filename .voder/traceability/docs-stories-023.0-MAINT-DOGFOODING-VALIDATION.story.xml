@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-12-05T22:29:14.675Z</last_validated>
+  <last_modified>2025-12-05T21:34:41.758Z</last_modified>
+  <evidence>Story file docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md exists with detailed acceptance criteria and requirements (dogfooding, preset enablement, test, CI, docs).,ESLint flat config (eslint.config.js) registers the traceability plugin for TS/JS files but DOES NOT spread the plugin's recommended preset:
+- Current config:
+  - TS block: `plugins: { ...(plugin.rules ? { traceability: plugin } : {}) }`, `rules` only contain core ESLint rules (complexity, max-lines, no-magic-numbers, etc.)
+  - JS block: same pattern
+  - There is NO line like `...(plugin.configs?.recommended || [])` anywhere in eslint.config.js.,Plugin exports flat-config presets but they are not used by eslint.config.js:
+- src/index.ts:
+  - `const configs = { recommended: [createTraceabilityFlatConfig()], strict: [createTraceabilityFlatConfig()] };`
+  - `plugin.configs = configs;`
+- No reference to `configs.recommended` or `plugin.configs.recommended` in eslint.config.js.,Running `npm run lint` succeeds but only runs generic ESLint rules, not traceability rules:
+- Command: `npm run lint`
+- Output:
+  - `> eslint --config eslint.config.js "src/**/*.{js,ts}" "tests/**/*.{js,ts}" --max-warnings=0`
+  - Exit code 0 (no errors)
+- Given eslint.config.js, this lint run does not enable any `traceability/...` rules for src/**/*.ts or src/**/*.js, so dogfooding via the recommended preset is not occurring.,Attempting to inspect ESLint resolved config shows CLI runs but config still lacks preset spreading:
+- `npm run lint -- --print-config src/index.ts` fails due to the way the lint script adds file globs; regardless, manual inspection of eslint.config.js confirms no preset spreading.,There is NO dogfooding validation test file as specified:
+- Expected: tests/integration/dogfooding-validation.test.ts
+- find_files on tests/*.test.ts lists many test files, but none named dogfooding-validation.test.ts.
+- grep for "dogfooding" across tests/src/docs only finds references in docs/problems and the story itself, not in any test implementation.,Existing config tests only verify preset behavior in isolation, not dogfooding on this codebase:
+- tests/config/flat-config-presets-integration.test.ts:
+  - Asserts that `configs.recommended` and `configs.strict` enable `traceability/require-story-annotation` when applied to sample code.
+  - This test uses an in-memory config `[baseConfig, ...configs.recommended]`; it does NOT assert that eslint.config.js for this repo spreads the recommended preset or that plugin source files are linted with those rules.,No eslint-disable based incremental suppression strategy is present in the codebase:
+- `grep -R -n 'eslint-disable' src tests` returns no matches.
+- `grep -R -n 'eslint-disable-next-line' src tests` returns no matches.
+- This contradicts REQ-DOGFOODING-SUPPRESS and the acceptance criterion about adding suppressions for existing violations.,Suppression tracking command exists but is not wired into the dogfooding flow or CI:
+- package.json scripts include: `"report:eslint-suppressions": "node scripts/report-eslint-suppressions.js"`.
+- The main CI pipeline job (ci-cd.yml) runs `npm run ci-verify:full`, which in turn runs: build, type-check, lint, duplication, tests, traceability-check, audits, format:check, check:ci-artifacts.
+- `report:eslint-suppressions` is NOT called anywhere in ci-verify:full or ci-cd.yml, so suppressions (if any) are not tracked as part of CI as required by REQ-DOGFOODING-TRACK.,CI pipeline currently does not enforce ESLint traceability rules on the plugin codebase:
+- .github/workflows/ci-cd.yml runs `npm run ci-verify:full`.
+- `ci-verify:full` includes `npm run lint` (which uses current eslint.config.js without the traceability preset) and `npm run check:traceability` (a separate TypeScript-based checker in scripts/traceability-check.js).
+- While check:traceability enforces presence of @story/@req in TypeScript sources, the story explicitly requires dogfooding via ESLint traceability rules (recommended preset), which are not enabled in eslint.config.js; thus REQ-DOGFOODING-CI and the CI enforcement acceptance criterion are not met.,No developer documentation describes the dogfooding approach or incremental fix process beyond the problem and story documents themselves:
+- `grep -R -n 'dogfooding' docs README.md user-docs` finds mentions only in:
+  - docs/problems/001-plugin-not-enforcing-own-traceability-rules.open.md
+  - docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md
+- There is no dedicated guide or section in internal dev docs (e.g., docs/*.md) explaining how dogfooding is implemented, how suppressions are used, or the incremental removal process, as required by REQ-DOGFOODING-DOCS and REQ-DOGFOODING-PROCESS.,Search for explicit references to this story in tests/src/docs shows only planning references, not implemented logic:
+- `grep -R -n '023.0-MAINT-DOGFOODING-VALIDATION' tests src docs` yields only:
+  - docs/problems/001-plugin-not-enforcing-own-traceability-rules.open.md (planning/problem doc)
+  - docs/stories/plugin-developer-story.map.md
+  - docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md
+- No test or source file is annotated with @supports/@story for this story, indicating no explicit implementation or verification tied to it.</evidence>
+  <notes>The story 023.0-MAINT-DOGFOODING-VALIDATION is a concrete specification (not a high-level map), but its requirements are not implemented. The plugin exports flat-config presets (recommended/strict), and CI runs general linting and a custom traceability script, but eslint.config.js does not spread plugin.configs.recommended, so ESLint traceability rules are not applied to this repo’s source code. There is no dogfooding-specific integration test (tests/integration/dogfooding-validation.test.ts is missing), no eslint-disable-based suppression strategy in src/tests, suppression reporting is not integrated into CI, and there is no developer documentation describing the dogfooding and incremental fix process. Consequently, multiple acceptance criteria and requirements (REQ-DOGFOODING-ENABLE, -VERIFY, -TEST, -CI, -SUPPRESS, -TRACK, -DOCS, -PROCESS) are unmet. Status: FAILED.</notes>
+</traceability>
