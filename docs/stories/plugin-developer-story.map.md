@@ -20,7 +20,7 @@
 
 | **Release 0.5 (Quality Foundation)** (Current) | **Setup Dev Environment** | **Develop Features** | **Validate Quality** | **Deploy** | **Maintain** |
 |-----------------------------------------------|---------------------------|---------------------|---------------------|-----------|-------------|
-| **Dogfooding & Self-Validation** | - | - | 023.0-MAINT-DOGFOODING-VALIDATION | - | - |
+| **Dogfooding & Self-Validation** | - | 024.0-DEV-IGNORE-INLINE-CODE-REFS | 023.0-MAINT-DOGFOODING-VALIDATION | - | - |
 
 ---
 
@@ -35,8 +35,9 @@
 **Stories by Category:**
 
 - **Dogfooding**: 023.0-MAINT-DOGFOODING-VALIDATION (enable plugin rules on own codebase)
+- **Feature Development**: 024.0-DEV-IGNORE-INLINE-CODE-REFS (ignore backtick-wrapped annotation keywords in comments)
 
-**Total**: 1 story covering self-validation setup
+**Total**: 2 stories covering self-validation setup and inline code reference handling
 
 **Note**: This is foundational work to ensure plugin developers maintain the same standards they enforce for users. Uses incremental fix strategy to avoid blocking development while violations are cleaned up.
 
