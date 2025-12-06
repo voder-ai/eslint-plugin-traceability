@@ -1,14 +1,15 @@
 ## NOW
 
-- [ ] Review the plugin setup story’s acceptance criteria and compare them with the current plugin entry and configuration implementation to identify exactly which setup behaviors and validations are still missing or incomplete.
+- [ ] Implement the next dogfooding requirement from the dogfooding validation story by extending the project’s ESLint configuration so that an additional core traceability rule is enforced on this repository in line with that story’s acceptance criteria.
 
 ## NEXT
 
-- [ ] Update the main plugin entry and configuration objects so that exported rules, presets, and metadata align precisely with the plugin setup story’s requirements, including any error-handling or validation behavior it specifies.
-- [ ] Create or extend automated tests that exercise the plugin’s setup and configuration behavior end to end, ensuring they directly validate each acceptance criterion from the plugin setup story.
-- [ ] Adjust the plugin setup story document to accurately reflect the implemented behavior, marking fulfilled acceptance criteria as complete and refining any wording that no longer matches the code or tests.
+- [ ] Add or update automated tests that verify the updated ESLint configuration correctly enforces the newly enabled traceability rule, including both configuration inspection and CLI-based failure behavior when annotations are missing.
+- [ ] Update the dogfooding validation story document to mark the newly satisfied acceptance criteria as complete and link them to the new tests and configuration, ensuring the story accurately reflects the current state.
+- [ ] Review related problem/incident or design documents connected to the dogfooding work and adjust them so they describe the resolved state and the new level of self-enforcement provided by the plugin.
 
 ## LATER
 
-- [ ] Cross-check other core plugin-related stories that build on the setup story to ensure they are consistent with the finalized plugin entrypoint structure and configuration patterns.
-- [ ] Look for opportunities to further simplify or refactor the plugin setup code while keeping all plugin setup story acceptance criteria satisfied and fully covered by tests.
+- [ ] Extend the dogfooding approach to cover all remaining traceability rules that are safe to enforce on this codebase, updating ESLint configuration and tests incrementally for each rule.
+- [ ] Refine CI and pre-push guidance in contributor documentation so that developers clearly understand how the self-enforced traceability rules and dogfooding tests protect the project.
+- [ ] Look for opportunities to further simplify or refactor the ESLint configuration and dogfooding tests while keeping all dogfooding story acceptance criteria fully satisfied and covered.

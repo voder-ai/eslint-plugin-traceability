@@ -2,69 +2,91 @@
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T08:50:45.095Z</last_validated>
+  <last_validated>2025-12-06T09:20:04.223Z</last_validated>
   <last_modified>2025-12-04T22:10:02.692Z</last_modified>
-  <evidence>1. Tests
-- Ran `npm test -- --verbose`.
+  <evidence>1) Story file existence and content
+- Verified the story file exists:
+  - `docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`
+- Its contents (title, requirements REQ-FORMAT-SPECIFICATION, REQ-SYNTAX-VALIDATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT, REQ-MULTILINE-SUPPORT, REQ-FLEXIBLE-PARSING, REQ-ERROR-SPECIFICITY, acceptance criteria, and valid/invalid examples) match the specification provided in the prompt. There are no additional or changed requirements compared to the previously assessed version.
+
+2) Tests re-run (current session)
+- Command executed:
+  - `npm test -- --runInBand --verbose`
 - Jest summary:
   - Test Suites: 39 passed, 39 total
-  - Tests: 299 passed, 299 total
-- Story-specific tests:
-  - `tests/rules/valid-annotation-format.test.ts`:
-    - Suite: `Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)`
-    - Covers requirements:
-      - [REQ-PATH-FORMAT] valid story annotation format and path rules (valid and multiple invalid cases)
-      - [REQ-REQ-FORMAT] valid/invalid requirement identifier formats
-      - [REQ-FORMAT-SPECIFICATION] clear handling of single-line and block annotations
-      - [REQ-MULTILINE-SUPPORT] multi-line @story and @req annotations
-      - [REQ-FLEXIBLE-PARSING] JSDoc-style comments and whitespace variations
-      - [REQ-ERROR-SPECIFICITY], [REQ-CONFIGURABLE-PATTERNS-*], [REQ-EXAMPLE-MESSAGES] verifying specific error messages and configurable examples
-      - [REQ-IMPLEMENTS-PARSE], [REQ-MIXED-SUPPORT], [REQ-JSDOC-TAG-COEXISTENCE], [REQ-PRESERVE-MULTILINE], [REQ-NO-FALSE-POSITIVES]
-    - All tests in this suite passed.
+  - Tests:       300 passed, 300 total
+  - All tests completed successfully with no failures.
 
-2. Implementation
-- Rule implementation file (inferred from test naming and plugin setup):
-  - `src/rules/valid-annotation-format.ts` (or equivalent) is exported through the ESLint plugin and referenced in:
-    - `tests/plugin-default-export-and-configs.test.ts` and `tests/config/eslint-config-validation.test.ts`, which verify:
-      - The plugin exports the `valid-annotation-format` rule.
-      - Recommended/strict configs include the rule with expected severity mapping.
-      - Rule meta.schema defines expected properties (ESLint best practices).
-- Integration with other rules:
-  - Function and branch rules exist and are tested:
-    - `tests/rules/require-story-annotation.test.ts` (Story 003.0-DEV-FUNCTION-ANNOTATIONS)
-    - `tests/rules/require-branch-annotation.test.ts` (Story 004.0-DEV-BRANCH-ANNOTATIONS)
-  - The annotation format rule and these rules are all part of the same plugin and configuration presets, so they work together when the recommended/strict config is used, satisfying the “works with annotations found by function and branch validation rules” criterion at the config level.
+3) Story-specific test coverage
+- Suite: `tests/rules/valid-annotation-format.test.ts`
+  - Top-level describe: `Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)`
+  - All tests in this suite passed in the current run.
+  - Key test cases and their requirement IDs:
+    - `[REQ-PATH-FORMAT] valid story annotation format (single-line)`
+    - `[REQ-REQ-FORMAT] valid req annotation format (single-line)`
+    - `[REQ-FORMAT-SPECIFICATION] valid block annotations (single-line values)`
+    - `[REQ-MULTILINE-SUPPORT] valid multi-line @story annotation value in block comment`
+    - `[REQ-MULTILINE-SUPPORT] valid multi-line @req annotation value in block comment`
+    - `[REQ-FLEXIBLE-PARSING] valid JSDoc-style comment with leading stars and spacing`
+    - `[REQ-CONFIGURABLE-PATTERNS-*]` tests covering custom `storyPathPattern` / `requirementIdPattern` and flat vs nested config
+    - `[REQ-IMPLEMENTS-PARSE]` valid `@supports` forms (single and multiple lines)
+    - `[REQ-MIXED-SUPPORT]` mixed `@story` / `@req` / `@supports` usage in the same block
+    - `[REQ-JSDOC-TAG-COEXISTENCE]` multiple tests confirming traceability tags before/after/mixed with other JSDoc tags
+    - `[REQ-PRESERVE-MULTILINE]` multi-line `@story` before other tags
+    - `[REQ-NO-FALSE-POSITIVES]` ensuring other JSDoc tags don’t pollute requirement IDs
+    - Invalid cases for:
+      - `[REQ-PATH-FORMAT]` missing story path, invalid extension, missing extension, path traversal
+      - `[REQ-REQ-FORMAT]` missing req id, invalid id format, trailing spaces, no identifier
+      - `[REQ-MULTILINE-SUPPORT]` missing/invalid multi-line story and req content
+      - `[REQ-CONFIGURABLE-PATTERNS-EXAMPLES]` ensuring custom examples appear in error messages
+      - `[REQ-CONFIGURABLE-PATTERNS-FALLBACK*]` invalid pattern configs falling back to defaults and reporting config errors
+      - `[REQ-PATTERN-CONFIG]` precedence between nested vs flat config and their examples
+      - `[REQ-EXAMPLE-MESSAGES]` nested examples overriding flat examples in error messages
+      - `[REQ-SUPPORTS-PARSE]` invalid `@supports` with missing values or IDs
+      - `[REQ-FORMAT-VALIDATION]` invalid `@supports` story paths and requirement IDs
+  - This suite directly references Story 005.0 and systematically exercises valid and invalid formats for `@story`, `@req`, and `@supports`, including multiline and JSDoc variations.
 
-3. Requirements coverage against story
+4) Integration and configuration tests
+- `tests/plugin-default-export-and-configs.test.ts` (Story 001.0-DEV-PLUGIN-SETUP)
+  - Confirms plugin exports rules and configs, and that `valid-annotation-format` is included with the expected severity in `recommended` and `strict` configs.
+  - Validates `configs.recommended` and `configs.strict` map severities correctly (rule wired according to ESLint best practices).
+- `tests/config/eslint-config-validation.test.ts` (Story 002.0-DEV-ESLINT-CONFIG)
+  - Verifies the rule’s `meta.schema` and that configuration validation disallows unknown options.
+- `tests/config/flat-config-presets-integration.test.ts` (Story 002.0-DEV-ESLINT-CONFIG)
+  - Verifies that flat-config `recommended` and `strict` presets enable the traceability rules (including `valid-annotation-format`) via the documented presets.
+- Because the function (`require-story-annotation`) and branch (`require-branch-annotation`) rules are part of the same plugin presets and are tested separately (and are passing), the `valid-annotation-format` rule is confirmed to run in the same ESLint configurations and thus integrates with annotations those rules detect.
+
+5) Mapping to story requirements
 - **REQ-FORMAT-SPECIFICATION / REQ-SYNTAX-VALIDATION**:
-  - Tests under `Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)` validate both correct and incorrect syntax for @story/@req, including specific structural expectations. This demonstrates a concrete specification embedded in the rule and enforced via tests.
+  - Tests in `Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)` define and enforce a clear format spec for `@story` and `@req` in single-line and block comments, checking both valid and invalid syntaxes.
 - **REQ-PATH-FORMAT**:
-  - Tests explicitly assert:
-    - Valid `.story.md` paths.
-    - Errors for missing extension, invalid extension, path traversal, and other invalid shapes.
+  - Explicit tests for correct `.story.md` paths and multiple invalid cases: missing extension, wrong extension, missing path, and path traversal.
 - **REQ-REQ-FORMAT**:
-  - Tests cover valid `REQ-*` IDs and multiple invalid forms: missing id, bad format, trailing whitespace, empty values.
+  - Tests validate the expected `REQ-*`-style identifiers and reject various malformed identifiers (empty, partial, bad characters, pure whitespace).
 - **REQ-MULTILINE-SUPPORT**:
-  - Tests confirm handling of annotations split across multiple lines in block comments, both for valid and invalid forms.
+  - Multiple tests exercise valid and invalid multi-line `@story` and `@req` annotations in block comments, including collapsing whitespace.
 - **REQ-FLEXIBLE-PARSING**:
-  - Tests verify acceptance of JSDoc-style comments with varied spacing and leading `*`, and custom pattern configuration for story and requirement formats.
+  - Tests prove support for JSDoc-style comments with leading `*`, varied spacing, and robust parsing, plus configurable regex patterns for both story paths and requirement IDs.
 - **REQ-ERROR-SPECIFICITY**:
-  - Tests under `REQ-CONFIGURABLE-PATTERNS-EXAMPLES`, `REQ-CONFIGURABLE-PATTERNS-FALLBACK`, `REQ-PATTERN-CONFIG`, and `REQ-EXAMPLE-MESSAGES` confirm that error messages include specific examples and distinguish different configuration/error conditions.
+  - Tests under `REQ-CONFIGURABLE-PATTERNS-EXAMPLES`, `REQ-PATTERN-CONFIG`, `REQ-EXAMPLE-MESSAGES`, and related cases assert that error messages include specific, configuration-aware examples and distinguish various configuration and format error modes.
 
-4. Acceptance Criteria mapping
-- **Core Functionality**: Implemented via the `valid-annotation-format` ESLint rule with extensive tests for @story and @req syntax and structure.
-- **Quality Standards**: ESLint rule follows best practices (meta.schema, messageIds, configuration presets) validated by `tests/config/eslint-config-validation.test.ts` and `tests/plugin-default-export-and-configs.test.ts`.
-- **Integration**: Rule is part of the plugin’s recommended/strict configs alongside function and branch rules, verified by flat-config/preset tests; ensures it runs in combination with those rules on the same annotations.
-- **User Experience**: Tests assert specific error messages and examples, including custom pattern examples and override behavior, ensuring clear guidance.
-- **Error Handling**: Invalid/malformed annotations and configuration edge cases are exercised in tests (missing values, malformed multi-line comments, invalid patterns, fallback behavior), confirming graceful handling.
-- **Documentation**: The story itself defines the format with explicit valid/invalid examples. Additional developer documentation is referenced in implementation notes, and the rule’s behavior is exercised and described in tests, satisfying the requirement for a documented format specification.
+6) Mapping to acceptance criteria
+- **Core Functionality (validate @story/@req format and syntax)**
+  - Fully covered by the `valid-annotation-format` rule and its comprehensive test suite of valid/invalid forms (including `@supports`).
+- **Quality Standards (ESLint best practices)**
+  - Confirmed by tests checking `meta.schema`, message IDs, and inclusion in named presets; the rule follows ESLint rule structure conventions.
+- **Integration (with function and branch rules)**
+  - The rule is exported via the plugin and enabled in `recommended`/`strict` configs alongside function and branch rules; config and integration tests show they are used together.
+- **User Experience (clear, specific error messages)**
+  - Tests explicitly assert example text and distinct error conditions for different misconfigurations and format violations, ensuring clarity of feedback.
+- **Error Handling (edge cases, malformed comments)**
+  - Invalid multi-line cases, missing values, malformed configs, and fallback behaviors are all exercised and pass, demonstrating graceful handling.
+- **Documentation (format spec with examples)**
+  - The story file itself documents valid and invalid examples matching the implemented behavior; the tests act as executable documentation of the spec.
 
-Given that:
-- The rule corresponding to this story is implemented and exported.
-- All associated tests (including those explicitly tagged for Story 005.0) pass.
-- The behavior matches all listed requirements and acceptance criteria.
+7) Definition of Done notes
+- The story’s own DoD list marks some items intentionally unchecked (e.g., performance testing, readiness for 006.0). These are forward-looking for later stories and do not contradict the current acceptance criteria, which are all satisfied as evidenced by the passing tests and rule behavior.
 
-The implementation of `docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md` is fully complete and currently passing.
-</evidence>
-  <notes>`docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md` defines the annotation format validation feature, implemented as the `valid-annotation-format` ESLint rule. The test suite `tests/rules/valid-annotation-format.test.ts` is explicitly tied to this story and thoroughly verifies all listed requirements, including path and requirement ID formatting, multiline handling, flexible parsing, and specific error messaging. Additional plugin and config tests confirm ESLint best-practice integration and inclusion in recommended/strict presets. All tests pass under `npm test -- --verbose`, and no gaps were found between the story’s acceptance criteria and the implemented/tested behavior. Status: PASSED.</notes>
+Conclusion: All requirements and acceptance criteria defined in `docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md` are implemented, tested, and currently passing.</evidence>
+  <notes>All tests, including the suite explicitly tied to Story 005.0 (`Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)`), pass successfully. The `valid-annotation-format` rule is implemented, exported, and integrated into the plugin’s recommended/strict ESLint configs. Tests comprehensively cover the specified requirements for format specification, syntax validation, path and requirement ID formats, multiline support, flexible parsing, and specific error messages. The story’s documentation examples align with the implemented behavior. Therefore, this story is fully implemented and passes.</notes>
 </traceability>

@@ -2,20 +2,20 @@
 <traceability>
   <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T08:50:59.995Z</last_validated>
+  <last_validated>2025-12-06T09:20:05.716Z</last_validated>
   <last_modified>2025-12-04T18:45:50.452Z</last_modified>
-  <evidence>1. Story file existence and contents
+  <evidence>1. Story file existence and content
 - Verified file exists: `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`.
-- Contents match the specification provided in the prompt (acceptance criteria and requirements for `@supports` multi-story annotations).
+- Contents (release goal, acceptance criteria, requirements like REQ-SUPPORTS-PARSE, REQ-SUPPORTS-VALIDATE, REQ-REQUIRE-ACCEPTS-SUPPORTS, REQ-BACKWARD-COMPAT, REQ-MIXED-SUPPORT, REQ-ERROR-CONTEXT, REQ-SCOPED-IDS, REQ-FORMAT-VALIDATION, and implementation notes for `@supports`) match the specification provided in the prompt.
 
 2. Tests executed for this assessment
-- Command run: `npm test -- --verbose`
+- Command run in this session: `npm test -- --runInBand --verbose`
 - Result: exit code 0
 - Jest summary:
   - Test Suites: 39 passed, 39 total
-  - Tests: 299 passed, 299 total
-  - Snapshots: 0 total
-- Relevant passing suites from the same run (excerpt from verbose output):
+  - Tests:       300 passed, 300 total
+  - Snapshots:   0 total
+- Relevant passing suites from this run (excerpt from verbose output):
   - `Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)`
   - `Valid Req Reference Rule (Story 010.0-DEV-DEEP-VALIDATION)`
   - `Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)`
@@ -23,140 +23,104 @@
   - `prefer-implements-annotation rule (Story 010.3-DEV-MIGRATE-TO-SUPPORTS)`
 
 3. Direct test traceability to this story
-- `tests/rules/valid-annotation-format.test.ts` contains a JSDoc header (from previous assessment and still present) with:
-  - `@story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`
-  - `@req REQ-SUPPORTS-PARSE`
-  - `@req REQ-FORMAT-VALIDATION`
-  - `@req REQ-MIXED-SUPPORT`
-- `tests/rules/valid-req-reference.test.ts` has test names that explicitly reference this story, e.g. (from the latest test output):
-  - `[REQ-DEEP-IMPLEMENTS] single supports line with multiple requirements in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)`
-  - `[REQ-DEEP-IMPLEMENTS] multi-story supports with shared requirement IDs (see 010.2-DEV-MULTI-STORY-SUPPORT)`
-- `tests/rules/require-story-annotation.test.ts` header includes this story and:
-  - `@req REQ-REQUIRE-ACCEPTS-IMPLEMENTS` (now functionally referring to `@supports` annotations per ADR 011 and this story).
-- `tests/rules/require-req-annotation.test.ts` header also references this story and the same requirement about accepting `@supports`.
-- All of these suites passed in the most recent `npm test -- --verbose` run.
+- `tests/rules/valid-annotation-format.test.ts` (passes in the run above) contains traceability annotations and test names that map directly to 010.2:
+  - Header (from prior inspection, still present):
+    - `@story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`
+    - `@req REQ-SUPPORTS-PARSE`
+    - `@req REQ-FORMAT-VALIDATION`
+    - `@req REQ-MIXED-SUPPORT`
+  - Passing tests shown in the latest output:
+    - `[REQ-IMPLEMENTS-PARSE] valid single @supports with one story and one requirement (default patterns)`
+    - `[REQ-IMPLEMENTS-PARSE] valid multiple @supports lines with different stories and requirements`
+    - `[REQ-MIXED-SUPPORT] valid mixed @story/@req/@supports usage in same block comment`
+    - Multiple `[REQ-FORMAT-VALIDATION]` and `@supports` format error tests.
+- `tests/rules/valid-req-reference.test.ts` (also passing) explicitly references this story in test names:
+  - Valid tests:
+    - `[REQ-DEEP-IMPLEMENTS] single supports line with multiple requirements in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)`
+    - `[REQ-DEEP-IMPLEMENTS] multi-story supports with shared requirement IDs (see 010.2-DEV-MULTI-STORY-SUPPORT)`
+  - Invalid tests:
+    - `[REQ-DEEP-IMPLEMENTS] missing supports requirement in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)`
+    - `[REQ-DEEP-IMPLEMENTS] disallow path traversal in supports story path (see 010.2-DEV-MULTI-STORY-SUPPORT)`
+- `tests/rules/require-story-annotation.test.ts` and `tests/rules/require-req-annotation.test.ts` both:
+  - Include JSDoc `@story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md` in their headers with `@req REQ-REQUIRE-ACCEPTS-IMPLEMENTS` (per ADR 011 this is the `@supports` behavior covered by this story).
+  - Contain passing tests confirming `@supports` satisfies story/requirement rules under `Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)` and `Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)`.
 
 4. Evidence by requirement / acceptance criterion
 
-AC: **Core Functionality** – Support `@supports story-path REQ-ID1 REQ-ID2 ...` format
+AC: **Core Functionality** – Support `@supports story-path REQ-ID1 REQ-ID2 ...` (REQ-SUPPORTS-PARSE)
+- Implementation (from prior inspection, still consistent with tests):
+  - `valid-annotation-format` rule detects `@supports` and delegates parsing to helper utilities.
+  - Helper (in `valid-implements-utils`) splits the annotation value into the first token as `storyPath` and remaining tokens as `reqIds`, enforcing at least two tokens.
+- Tests (all passing in latest run):
+  - `[REQ-IMPLEMENTS-PARSE] valid single @supports with one story and one requirement (default patterns)`
+  - `[REQ-IMPLEMENTS-PARSE] valid multiple @supports lines with different stories and requirements`.
+
+AC: **Validation** – Validate each requirement exists in its specified story file (REQ-SUPPORTS-VALIDATE, REQ-ERROR-CONTEXT, REQ-SCOPED-IDS)
 - Implementation:
-  - `src/rules/valid-annotation-format.ts` detects `@supports` in comments and delegates to helpers:
-    - Uses a regex like `/@supports\b/` to detect the tag.
-    - Extracts the value after `@supports` and passes it to `validateImplementsAnnotation`.
-  - `src/rules/helpers/valid-implements-utils.ts`:
-    - `MIN_IMPLEMENTS_TOKENS = 2` ensures at least `<story-path> <REQ-ID>`.
-    - `parseImplementsTokens` splits the value into `{ storyPath, reqIds }`, where `storyPath` is the first token and `reqIds` are the remaining tokens.
+  - `valid-req-reference` rule parses `@supports` lines, resolves each story file, loads its requirement IDs into a per-story `Set<string>`, and for each `reqId` verifies membership; if missing, it reports `messageId: 'reqMissing'` with `{ reqId, storyPath }`.
 - Tests (all passing):
-  - `tests/rules/valid-annotation-format.test.ts`:
-    - `"[REQ-IMPLEMENTS-PARSE] valid single @supports with one story and one requirement (default patterns)"`
-    - `"[REQ-IMPLEMENTS-PARSE] valid multiple @supports lines with different stories and requirements"`
+  - `Valid Req Reference Rule (Story 010.0-DEV-DEEP-VALIDATION)` contains specific `@supports` tests tied to this story:
+    - Valid multi-story `@supports` cases with a shared requirement ID across files, confirming IDs are scoped per story file (REQ-SCOPED-IDS).
+    - Invalid `@supports` with missing requirement IDs in a specific story, asserting `reqMissing` with the correct `storyPath` and `reqId` (REQ-SUPPORTS-VALIDATE and REQ-ERROR-CONTEXT).
 
-AC / REQ-SUPPORTS-PARSE: **Parse @supports**
-- The above implementation and tests confirm correct parsing of `@supports` into story path and one or more requirement IDs.
-
-AC: **Validation** – Validate each requirement exists in its specified story file
+AC: **Backward Compatibility** – `@story` + `@req` unchanged (REQ-BACKWARD-COMPAT)
 - Implementation:
-  - `src/rules/valid-req-reference.ts` and `src/rules/helpers/valid-req-reference-helpers.ts`:
-    - `parseImplementsLine(line: string)` parses a full `@supports` line into `{ storyPath, reqIds }`.
-    - `validateImplementsLine` calls `resolveStoryAndRequirements` to resolve the path and load all requirement IDs from that story file into a `Set`.
-    - For each `reqId` in `reqIds`, it calls `checkRequirementExists`, which reports `messageId: 'reqMissing'` when the ID is not present.
-- Tests (all passing) from `tests/rules/valid-req-reference.test.ts`:
-  - Valid cases:
-    - `"[REQ-DEEP-IMPLEMENTS] single supports line with multiple requirements in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)"`
-    - `"[REQ-DEEP-IMPLEMENTS] multi-story supports with shared requirement IDs (see 010.2-DEV-MULTI-STORY-SUPPORT)"`
-  - Invalid case:
-    - `"[REQ-DEEP-IMPLEMENTS] missing supports requirement in multi-story fixture (see 010.2-DEV-MULTI-STORY-SUPPORT)"` – asserts `reqMissing` is reported when a requirement ID is absent from the specified story.
-
-AC / REQ-SUPPORTS-VALIDATE: **Validate each requirement** – satisfied by the above.
-
-AC: **Backward Compatibility** – Existing `@story` + `@req` continue working unchanged (REQ-BACKWARD-COMPAT)
-- Implementation:
-  - `valid-annotation-format` continues to support the legacy `@story` and `@req` paths as before; `@supports` behavior is additive and does not alter legacy parsing functions.
-  - `require-story-annotation` and `require-req-annotation` rules detect `@supports` *in addition* to the existing `@story` and `@req` markers, without changing their original semantics.
+  - `valid-annotation-format` continues to support legacy `@story` and `@req` parse/validate logic; `@supports` is additive.
+  - `require-story-annotation` and `require-req-annotation` rules add `@supports` detection but leave existing `@story` + `@req` behavior intact.
 - Tests (all passing):
-  - `tests/rules/valid-annotation-format.test.ts` still contains extensive tests for legacy `@story` and `@req` behavior that are unchanged and passing.
-  - `tests/rules/require-story-annotation.test.ts`:
-    - Includes a BACKCOMPAT invalid test: `"[REQ-ANNOTATION-REQUIRED][BACKCOMPAT] missing @story annotation on function with no @supports"` – still errors exactly as before.
-  - `tests/rules/require-req-annotation.test.ts`:
-    - Multiple tests verify legacy `@req` behavior, including both valid and invalid scenarios; all pass, showing no regression.
+  - Numerous legacy tests in `valid-annotation-format.test.ts` for `@story` and `@req` still pass.
+  - `require-story-annotation.test.ts` includes `BACKCOMPAT`-tagged tests such as `[REQ-ANNOTATION-REQUIRED][BACKCOMPAT] missing @story annotation on function with no @supports` which still behave as before.
+  - `require-req-annotation.test.ts` validates both TS and JS `@req` behavior unchanged.
 
-AC: **Mixed Usage** – Support both annotation styles in the same codebase/file (REQ-MIXED-SUPPORT)
+AC: **Mixed Usage** – both styles in same function/file (REQ-MIXED-SUPPORT)
 - Implementation:
-  - `valid-annotation-format` processes comments line-by-line and supports seeing `@story`, `@req`, and `@supports` tags in the same block without conflict.
-  - `require-story-annotation` and `require-req-annotation` detect any of these tags as satisfying their respective requirements; they do not assume mutual exclusivity.
+  - Comment parsing in `valid-annotation-format` is tolerant of blocks containing `@story`, `@req`, and `@supports` together; each tag type is processed according to its own rules.
 - Tests:
-  - `tests/rules/valid-annotation-format.test.ts`:
-    - `"[REQ-MIXED-SUPPORT] valid mixed @story/@req/@supports usage in same block comment"` – verifies that a single comment containing all three tags is accepted and properly validated.
+  - `valid-annotation-format.test.ts` includes `[REQ-MIXED-SUPPORT] valid mixed @story/@req/@supports usage in same block comment` which passed in the latest run, confirming mixed-style support.
 
-AC: **Error Messages** – Include story path when validation fails (REQ-ERROR-CONTEXT)
+AC: **Error Messages** – indicate story being checked (REQ-ERROR-CONTEXT)
 - Implementation:
-  - In `src/rules/valid-req-reference.ts`:
-    - Message definition: `reqMissing: "Requirement '{{reqId}}' not found in '{{storyPath}}'"`.
-  - `checkRequirementExists` (helper) populates `data` with both `reqId` and `storyPath`.
+  - `valid-req-reference` defines `messages.reqMissing` as: `"Requirement '{{reqId}}' not found in '{{storyPath}}'"`, and the validator passes both values in `data`.
 - Tests:
-  - `tests/rules/valid-req-reference.test.ts` invalid `@supports` cases assert that `reqMissing` is emitted with the correct `storyPath` and `reqId` data.
-  - The verbose Jest output includes these tests under `Valid Req Reference Rule (Story 010.0-DEV-DEEP-VALIDATION)`, all passing.
+  - Invalid `@supports` tests in `valid-req-reference.test.ts` assert that `reqMissing` is reported with correct `storyPath` and `reqId` data, ensuring error context is present.
 
-AC: **Requirement Scoping** – IDs only need to be unique within their story file (REQ-SCOPED-IDS)
+AC: **Requirement Scoping** – IDs unique only within a story (REQ-SCOPED-IDS)
 - Implementation:
-  - `loadAndCacheRequirements(storyPath, cache)` reads each story file and stores a separate `Set<string>` of requirement IDs per resolved story path.
-  - Validation uses the `Set` corresponding to the specific story path, meaning the same REQ ID can appear in multiple files without conflict.
+  - Requirements are stored per-story in a cache keyed by resolved story path; validation only checks membership in that story’s `Set`, allowing the same ID to appear in multiple story files without conflict.
 - Tests:
-  - Fixtures: `tests/fixtures/story_multi_a.md` and `tests/fixtures/story_multi_b.md` each define `REQ-SHARED-ID` and a file-specific ID.
-  - `tests/rules/valid-req-reference.test.ts` valid cases:
-    - One test validates `@supports tests/fixtures/story_multi_a.md REQ-SHARED-ID REQ-ONLY-A`.
-    - Another validates two `@supports` lines, one per story fixture, each referencing `REQ-SHARED-ID` and its own unique ID.
-  - These passing tests confirm requirement IDs are scoped per story file and can be reused across different stories.
+  - Multi-story fixtures and tests under `[REQ-DEEP-IMPLEMENTS]` confirm that a shared requirement ID across two different story files is valid when referenced with the correct story path.
 
-AC / REQ-FORMAT-VALIDATION: **Validate @supports line format**
+AC: **Format Validation** – validate `@supports` line (REQ-FORMAT-VALIDATION)
 - Implementation:
-  - `src/rules/helpers/valid-implements-utils.ts`:
-    - Ensures at least story path + one REQ ID (`MIN_IMPLEMENTS_TOKENS`).
-    - Validates story path against `storyPattern` and provides specific error messages when invalid.
-    - Validates each requirement ID against `reqPattern` and reports `invalidReqFormat` errors when mismatched.
-  - `src/rules/valid-annotation-format.ts` defines `invalidImplementsFormat` and other messages used when format checks fail.
-- Tests (all passing): `tests/rules/valid-annotation-format.test.ts` includes:
-  - `"[REQ-SUPPORTS-PARSE] @supports with no value is invalid"`.
-  - `"[REQ-SUPPORTS-PARSE] @supports with only story path and no requirement IDs is invalid"`.
-  - `"[REQ-FORMAT-VALIDATION] @supports with invalid story path format"`.
-  - `"[REQ-FORMAT-VALIDATION] @supports with invalid requirement ID format"` and `"... where one is invalid"`.
+  - Helper utilities enforce `@supports` having at least story path + 1 requirement.
+  - Story path and requirement IDs are validated against the same configurable regex patterns used for `@story` and `@req`.
+- Tests (passing in latest run):
+  - `valid-annotation-format.test.ts` contains invalid cases for:
+    - `@supports` with no value.
+    - `@supports` with only a story path but no requirement IDs.
+    - `@supports` with invalid story path format.
+    - `@supports` with invalid or partially invalid requirement IDs.
 
-REQ-REQUIRE-ACCEPTS-SUPPORTS: `require-story-annotation` and `require-req-annotation` accept @supports
+REQ-REQUIRE-ACCEPTS-SUPPORTS – `require-story-annotation` and `require-req-annotation` accept `@supports`
 - Implementation:
-  - `src/rules/helpers/require-story-io.ts`:
-    - Functions like `commentContainsStory`, `linesBeforeHasStory`, `parentChainHasStory`, and `fallbackTextBeforeHasStory` treat both `"@story"` and `"@supports"` as satisfying markers.
-  - `src/utils/reqAnnotationDetection.ts`:
-    - Functions `commentContainsReq`, `linesBeforeHasReq`, `parentChainHasReq`, `fallbackTextBeforeHasReq`, and `hasReqInJsdocOrComments` treat both `"@req"` and `"@supports"` as valid requirement markers.
-- Tests (all passing):
-  - `tests/rules/require-story-annotation.test.ts`:
-    - Includes a valid case where only `@supports` is present; the rule accepts it as satisfying the story annotation requirement.
-  - `tests/rules/require-req-annotation.test.ts`:
-    - Includes a valid case where only `@supports` provides the requirement IDs; the rule accepts it as satisfying the requirement annotation requirement.
+  - Story-detection helpers count `@supports` as satisfying the presence of a story annotation.
+  - Req-detection helpers similarly treat `@supports` as satisfying the requirement annotation.
+- Tests:
+  - `require-story-annotation.test.ts` has valid cases showing functions annotated only with `@supports` are accepted.
+  - `require-req-annotation.test.ts` has valid cases using `@supports` to provide requirement IDs.
+  - All such tests passed in the current `npm test` run.
 
-AC: **Quality Standards** – ESLint rule best practices
-- All involved rules (`valid-annotation-format`, `valid-req-reference`, `require-story-annotation`, `require-req-annotation`) follow ESLint best practices:
-  - Each exports `meta` with `docs` and `schema`.
-  - Behavior is broken into small, focused helper modules.
-  - RuleTester-based tests cover valid and invalid cases, including multi-story and mixed-annotation scenarios.
-  - The full test suite passes, providing strong regression protection.
+AC: **Quality Standards & Documentation**
+- ESLint rule best-practice structure is followed (meta information, schemas, clear messages, focused helper modules) across all modified rules.
+- Story 010.2 itself documents:
+  - The `@supports` format with concrete code examples.
+  - Legacy formats and mixed-usage examples.
+  - Parsing/validation behavior and error-message expectations.
+- ADR 011 in `docs/decisions` describes the rename from the experimental `@implements` to `@supports`, aligning the implementation and this story.
 
-AC: **Documentation** – Examples and migration guidance
-- Story file `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md` itself documents:
-  - New `@supports` annotation format with concrete examples.
-  - Legacy `@story` + `@req` format.
-  - Mixed-usage examples combining both.
-  - Parsing and validation logic, including expected error messages.
-- ADR alignment:
-  - `docs/decisions/011-rename-implements-to-supports-annotation.accepted.md` formalizes the rename from `@implements` to `@supports` and clarifies that `@supports` is the canonical multi-story annotation, matching this story’s intent.
+5. Regression/backward-compatibility
+- The same `npm test -- --runInBand --verbose` run exercises earlier stories (001.0, 002.0, 003.0, 005.0, 006.0, 010.0) via their own test suites, all of which pass, giving strong evidence that introduction of `@supports` did not break existing behaviors.
 
-5. Regression / backward-compatibility check via tests
-- Multiple suites that validate behavior from earlier stories (001.0, 002.0, 003.0, 005.0, 006.0, 010.0) all pass in the current run, demonstrating that adding `@supports` did not break existing functionality.
-
-Given that:
-- The story file is unchanged in content from the previous assessment.
-- All targeted tests for `@supports` parsing, validation, multi-story handling, mixed usage, error messaging, and backward compatibility still exist and are passing.
-- Implementation matches the story’s detailed requirements (annotation format, scoping, validation rules, and error messages) and is reinforced by ADR 011.
-
-This story’s implementation is fully present and verified by the current test run.</evidence>
-  <notes>All acceptance criteria and technical requirements in docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md are implemented and verified by passing tests. The plugin supports the @supports annotation format, validates each requirement against its specific story file with per-story ID scoping, preserves legacy @story/@req behavior, allows mixed usage, and provides error messages that include the story path. The relevant rules and helpers follow ESLint best practices and are thoroughly tested. Status: PASSED.</notes>
+Given that the story content matches the prior assessment, all targeted tests still exist and passed in the latest full test run, and the implementation behavior observed via those tests aligns with every requirement and acceptance criterion, the implementation of `docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md` is complete and verified.</evidence>
+  <notes>All acceptance criteria and specific requirements for Story 010.2-DEV-MULTI-STORY-SUPPORT are fully implemented. The plugin parses `@supports` annotations, validates requirements against the correct story files with scoped IDs, supports mixed `@story`/`@req`/`@supports` usage, maintains backward compatibility, and provides error messages that include the story path. Multiple test suites that directly reference this story and its requirements pass in the latest `npm test` run, and earlier-story behavior remains intact. Status: PASSED.</notes>
 </traceability>

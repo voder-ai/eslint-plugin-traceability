@@ -2,190 +2,108 @@
 <traceability>
   <specification>docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T08:51:09.898Z</last_validated>
+  <last_validated>2025-12-06T09:20:01.500Z</last_validated>
   <last_modified>2025-12-04T21:56:14.211Z</last_modified>
   <evidence>1) Story file verification
-- Opened docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md and confirmed its contents match the specification provided in the prompt, including all Acceptance Criteria, Requirements (REQ-TEST-FIX-*), Implementation Notes, and Definition of Done checkboxes.
+- Read docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md and confirmed it matches exactly the specification provided in the prompt, including Acceptance Criteria, Requirements (REQ-TEST-FIX-*), Implementation Notes (template shape, malformed prefix rules, safety constraints), configuration options, and Definition of Done checklist.
 
-2) Implementation check – core rule
+2) Implementation – ESLint rule and helpers
 - File: src/rules/require-test-traceability.ts
-- Confirms existence of the ESLint rule implementing this story:
-  - Rule options type `TestTraceabilityOptions` includes:
+  - Contains the ESLint rule implementing test traceability validation and auto-fix.
+  - `meta.fixable` is set to `"code"`, enabling ESLint `--fix` behavior.
+  - Rule options type includes:
     - `autoFixTestTemplate?: boolean;`
     - `autoFixTestPrefixFormat?: boolean;`
     - `testSupportsTemplate?: string;`
-    matching the story’s Configuration Options.
-  - `meta.fixable` is set to `"code"`, enabling ESLint `--fix` behavior.
-  - JSON schema under `meta.schema` defines:
-    - `autoFixTestTemplate` (boolean, default true)
-    - `autoFixTestPrefixFormat` (boolean, default true)
-    - `testSupportsTemplate` (string)
-  - In `create(context)`:
-    - Options destructured with defaults: `autoFixTestTemplate = true`, `autoFixTestPrefixFormat = true`, `testSupportsTemplate`.
-    - Calls `ensureFileSupportsAnnotation(context, sourceCode, { autoFixTestTemplate, testSupportsTemplate })` to handle file‑level `@supports` template insertion.
-    - Passes `autoFixTestPrefixFormat` and the constructed `describeRegex` into `handleCallExpression` so malformed `[REQ-...]` prefixes are normalized only when configured.
-  - JSDoc traceability annotations for the rule explicitly map it to this story and requirements:
-    - `@supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT REQ-TEST-FIX-SAFE REQ-TEST-FIX-PRESERVE REQ-TEST-FIX-PLACEHOLDER REQ-TEST-FIX-NO-INFERENCE`.
+  - `meta.schema` defines these options with defaults matching the story (autoFix flags default true, optional template string).
+  - In `create(context)`, options are destructured with defaults and passed into helper functions:
+    - `ensureFileSupportsAnnotation(context, sourceCode, { autoFixTestTemplate, testSupportsTemplate })` – controls file-level `@supports` template insertion.
+    - `handleCallExpression` is invoked for `CallExpression` nodes with options including `autoFixTestPrefixFormat`, so malformed `[REQ-...]` prefixes can be normalized when enabled.
+  - JSDoc on the rule includes:
+    - `@supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT REQ-TEST-FIX-SAFE REQ-TEST-FIX-PRESERVE REQ-TEST-FIX-PLACEHOLDER REQ-TEST-FIX-NO-INFERENCE`, directly mapping the rule to this story and its requirements.
 
-3) Implementation check – helper functions for templates and prefix fixes
 - File: src/rules/helpers/require-test-traceability-helpers.ts
+  - `buildSupportsTemplateComment(customTemplate?)`:
+    - Uses the default base template `"@supports docs/stories/XXX.X-STORY-NAME.story.md REQ-XXX-YYY REQ-XXX-ZZZ"` when no custom template is provided.
+    - Produces a multi-line JSDoc block:
+      ```
+      /**
+       * @supports docs/stories/XXX.X-STORY-NAME.story.md REQ-XXX-YYY REQ-XXX-ZZZ
+       * TODO: Replace the placeholder story path and REQ-IDs with real values for this test file.
+       */
+      ```
+    - This matches the story’s template example and satisfies template quality and placeholder clarity (REQ-TEST-FIX-TEMPLATE, REQ-TEST-FIX-PLACEHOLDER).
+  - `insertSupportsTemplate(fixer, sourceCode, customTemplate?)`:
+    - Detects a shebang (`#!`) and inserts the template after it; otherwise inserts at the start of the file.
+    - Uses `fixer.insertTextBeforeRange([insertIndex, insertIndex], templateComment)`, only adding a comment and not modifying code, preserving test semantics (REQ-TEST-FIX-PRESERVE, REQ-TEST-FIX-SAFE).
+  - `ensureFileSupportsAnnotation(context, sourceCode, autoFixOptions)`:
+    - Scans all comments for `@supports`; if present, does nothing (no duplicate templates).
+    - If missing, reports `missingFileSupports` and supplies a fixer *only* when `autoFixTestTemplate` is not false; fixer calls `insertSupportsTemplate(...)`.
+    - Never attempts to infer a real story path or IDs; it always uses a placeholder or user-supplied template string (REQ-TEST-FIX-NO-INFERENCE, REQ-TEST-FIX-SAFE).
+  - `normalizeReqId(raw)` and `normalizeReqPrefixInDescription(description)`:
+    - Only operate when a recognizable `REQ...` token is present.
+    - Normalize case to upper, convert underscores/spaces to hyphens, collapse repeated hyphens, and convert parenthesis/spacing variants into canonical `[REQ-XXX]` form.
+    - Return `null` when there is no REQ-like token, so no fixer is produced in ambiguous cases (REQ-TEST-FIX-PREFIX-FORMAT, REQ-TEST-FIX-SAFE, REQ-TEST-FIX-NO-INFERENCE).
+  - `createUpdatedStringLiteralRaw(originalNode, newValue, sourceCode)` preserves original quoting and escapes only the literal content, not surrounding code or indentation (REQ-TEST-FIX-PRESERVE).
+  - `handleItOrTestCall` respects `autoFixTestPrefixFormat` and only offers a fixer when:
+    - The description has a malformed-but-recognizable REQ prefix that `normalizeReqPrefixInDescription` can fix, and
+    - The description is a literal, and
+    - `autoFixTestPrefixFormat !== false`.
+    - In the case of missing prefixes, it reports an error but provides **no** fix, aligning with REQ-TEST-FIX-NO-INFERENCE.
 
-3.1) File-level `@supports` template insertion (REQ-TEST-FIX-TEMPLATE, REQ-TEST-FIX-PLACEHOLDER, REQ-TEST-FIX-SAFE, REQ-TEST-FIX-PRESERVE, REQ-TEST-FIX-NO-INFERENCE)
-- `buildSupportsTemplateComment(customTemplate?: string)`:
-  - Uses a default `baseTemplate` string when customTemplate is not provided:
-    - `"@supports docs/stories/XXX.X-STORY-NAME.story.md REQ-XXX-YYY REQ-XXX-ZZZ"`.
-  - Builds a multi-line JSDoc comment:
-    ```
+3) Tests for this story
+- File: tests/rules/require-test-traceability.test.ts
+  - File header includes:
+    ```ts
     /**
-     * @supports docs/stories/XXX.X-STORY-NAME.story.md REQ-XXX-YYY REQ-XXX-ZZZ
-     * TODO: Replace the placeholder story path and REQ-IDs with real values for this test file.
+     * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FILE-SUPPORTS REQ-TEST-FRAMEWORK-COMPAT REQ-TEST-PATTERN-DETECT
+     * @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT REQ-TEST-FIX-SAFE REQ-TEST-FIX-PRESERVE REQ-TEST-FIX-PLACEHOLDER REQ-TEST-FIX-NO-INFERENCE
      */
     ```
-  - Provides clear TODO guidance and placeholder story path/REQ IDs, matching the story’s Template Examples and Template Quality / PLACEHOLDER requirements.
+  - Under `require-test-traceability` invalid cases, tests explicitly cover:
+    - Missing file-level `@supports`:
+      - Input has no `@supports` comment and a valid `[REQ-ONE]` test name.
+      - Expected autofix output shows the placeholder JSDoc `@supports` block inserted at the top with the TODO line, and the rest of the file unchanged.
+      - Confirms file-level template insertion and preservation of existing tests (File-Level Template, Template Quality, Quality Standards).
+    - No prefix present:
+      - Input has `it('missing prefix', () => {});` with a valid `@supports` above.
+      - Test expects a `missingReqPrefix` error but **no** autofix output, confirming that the rule does not invent `[REQ-...]` prefixes (REQ-TEST-FIX-NO-INFERENCE, Error Handling).
+    - Malformed prefixes:
+      - `[ REQ-TEST-FIX ]` → `[REQ-TEST-FIX]` (spacing fix).
+      - `[REQ_TEST_FIX]` → `[REQ-TEST-FIX]` (underscore to hyphen).
+      - `[req-lowercase]` → `[REQ-LOWERCASE]` (case normalization).
+      - `(REQ-PAREN)` → `[REQ-PAREN]` (parentheses to brackets).
+      - In each case, only the prefix formatting changes; test names and bodies remain otherwise identical (Format Fixes, Quality Standards, Error Handling).
+  - Valid cases ensure:
+    - A correctly-annotated file with a valid `[REQ-TRACE-123]` test name is left unchanged (no autofix), confirming non-intrusive behavior on compliant code.
 
-- `insertSupportsTemplate(fixer, sourceCode, customTemplate?)`:
-  - Computes an insertion index, defaulting to 0.
-  - If the source text starts with a shebang (`#!`), moves `insertIndex` to just after the first newline, so the shebang remains the first line (preserving executable semantics, satisfying REQ-TEST-FIX-PRESERVE and REQ-TEST-FIX-SAFE).
-  - Uses `fixer.insertTextBeforeRange([insertIndex, insertIndex], templateComment)` to insert the generated JSDoc comment, ensuring only a new comment is added and no code is altered.
-
-- `ensureFileSupportsAnnotation(context, sourceCode, autoFixOptions)`:
-  - Scans `sourceCode.getAllComments()` and checks if any contain `@supports` via regex `/@supports\b/`.
-  - If at least one such comment exists, it does **nothing** – no template is added, avoiding duplicate or conflicting annotations.
-  - If none exist, it reports `messageId: "missingFileSupports"` against a safe node (typically `Program`).
-  - Provides a fixer **only** when `autoFixOptions.autoFixTestTemplate !== false`, returning a function that calls `insertSupportsTemplate(fixer, sourceCode, autoFixOptions.testSupportsTemplate)`.
-  - Never attempts to infer the real story path or REQ IDs; it always uses the generic placeholder template or the user-supplied template string, satisfying REQ-TEST-FIX-NO-INFERENCE.
-
-3.2) REQ prefix format normalization (REQ-TEST-FIX-PREFIX-FORMAT, REQ-TEST-FIX-SAFE, REQ-TEST-FIX-PRESERVE, REQ-TEST-FIX-NO-INFERENCE)
-- `normalizeReqId(raw: string)`:
-  - `raw` is trimmed and uppercased.
-  - Returns `null` unless the string begins with `"REQ"`, ensuring it only acts on recognizable REQ IDs.
-  - Strips leading separators after `REQ` via `rest.replace(/^[-_\s:]+/, "")`.
-  - Converts spaces and underscores to hyphens: `rest.replace(/[\s_]+/g, "-")`.
-  - Collapses multiple hyphens into one: `rest.replace(/-+/g, "-")`.
-  - Returns `"REQ-" + rest` when `rest` is non-empty.
-  - This strictly normalizes an **existing** REQ ID, never creating a new base identifier and never inferring a requirement ID.
-
-- `normalizeReqPrefixInDescription(description: string): string | null`:
-  - If the description already starts with a canonical prefix matching `/^\[REQ-[^\]]+]/`, it returns `null`, leaving correct prefixes unchanged.
-  - Otherwise, attempts a square-bracket match: `/^\[\s*(REQ[^\]]*?)\s*](.*)$/i`.
-    - If matched, it normalizes the captured REQ portion with `normalizeReqId` and reconstructs: `"[" + normalizedId + "]" + rest`.
-  - If that fails, attempts a parenthesis match: `/^\(\s*(REQ[^)]*?)\s*\)(.*)$/i`.
-    - If matched, also normalizes and converts to canonical bracket form: `"[" + normalizedId + "]" + rest`.
-  - Returns `null` when no recognizable REQ‑based prefix is found, so no auto-fix is offered in ambiguous or non-REQ cases.
-
-- `createUpdatedStringLiteralRaw(originalNode, newValue, sourceCode)`:
-  - Reads the original literal text via `sourceCode.getText(originalNode)`.
-  - Preserves the original quote style (single, double, or template literal) and escapes content appropriately.
-  - Ensures only the string **content** is changed while preserving coding style, whitespace outside the literal, and surrounding code, aligning with REQ-TEST-FIX-PRESERVE.
-
-- `handleItOrTestCall(context, node, description, options)` (invoked by rule’s `CallExpression` handler):
-  - Respects the `requireTestReqPrefix` and `autoFixTestPrefixFormat` options.
-  - If the `description` does not start with a canonical `[REQ-...]` prefix, it:
-    - Computes `normalizedDescription = normalizeReqPrefixInDescription(description)` when `autoFixTestPrefixFormat !== false`; else `normalizedDescription = null`.
-    - Always reports `messageId: "missingReqPrefix"` to align with the validation story (020.0).
-    - Supplies a fixer **only when** all are true:
-      - `autoFixTestPrefixFormat !== false`.
-      - `normalizedDescription !== null` (i.e., an actual malformed REQ prefix was recognized and could be normalized safely).
-      - The first argument is a literal string node.
-    - The fixer uses `fixer.replaceText(literalNode, createUpdatedStringLiteralRaw(literalNode, normalizedDescription, sourceCode))`.
-  - This satisfies:
-    - REQ-TEST-FIX-PREFIX-FORMAT (spacing, delimiters, case, parentheses conversion).
-    - REQ-TEST-FIX-SAFE (only fixes clearly-identifiable REQ patterns; no guessing).
-    - REQ-TEST-FIX-PRESERVE (only string literal content is updated; structure and indentation remain unchanged).
-    - REQ-TEST-FIX-NO-INFERENCE (never introduces a new prefix when none exists).
-
-4) Tests for this story
-- File: tests/rules/require-test-traceability.test.ts
-- Header JSDoc:
-  - `@supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FILE-SUPPORTS REQ-TEST-FRAMEWORK-COMPAT REQ-TEST-PATTERN-DETECT`
-  - `@supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT REQ-TEST-FIX-SAFE REQ-TEST-FIX-PRESERVE REQ-TEST-FIX-PLACEHOLDER REQ-TEST-FIX-NO-INFERENCE`
-
-Key test cases (invalid section) directly exercising this story:
-1) Missing `@supports` annotation → insert template (REQ-TEST-FIX-TEMPLATE, REQ-TEST-FIX-PLACEHOLDER, REQ-TEST-FIX-SAFE, REQ-TEST-FIX-PRESERVE, REQ-TEST-FIX-NO-INFERENCE)
-- Input:
-  ```ts
-  describe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', () => { it('[REQ-ONE] works', () => {}); });
-  ```
-- Expected autofix output in RuleTester:
-  ```ts
-  /**
-   * @supports docs/stories/XXX.X-STORY-NAME.story.md REQ-XXX-YYY REQ-XXX-ZZZ
-   * TODO: Replace the placeholder story path and REQ-IDs with real values for this test file.
-   */
-  describe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', () => { it('[REQ-ONE] works', () => {}); });
-  ```
-- Confirms file-level template insertion with placeholders and TODO guidance, without altering the tests themselves.
-
-2) No REQ prefix at all → error only, **no** fix (REQ-TEST-FIX-NO-INFERENCE, Error Handling)
-- Input:
-  ```ts
-  /**
-   * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-IT-REQ-PREFIX
-   */
-  it('missing prefix', () => {});
-  ```
-- The test asserts a `missingReqPrefix` error but does **not** specify an output, meaning no fixer is applied. This confirms the rule does not add or invent `[REQ-XXX]` prefixes when none exist.
-
-3) Malformed prefixes normalized (REQ-TEST-FIX-PREFIX-FORMAT, REQ-TEST-FIX-SAFE, REQ-TEST-FIX-PRESERVE)
-- Extra spaces:
-  - Before: `it('[ REQ-TEST-FIX ] does something', () => {});`
-  - After:  `it('[REQ-TEST-FIX] does something', () => {});`
-- Underscore delimiter:
-  - Before: `it('[REQ_TEST_FIX] does something', () => {});`
-  - After:  `it('[REQ-TEST-FIX] does something', () => {});`
-- Lowercase:
-  - Before: `it('[req-lowercase] bad casing', () => {});`
-  - After:  `it('[REQ-LOWERCASE] bad casing', () => {});`
-- Parentheses:
-  - Before: `it('(REQ-PAREN) with parens', () => {});`
-  - After:  `it('[REQ-PAREN] with parens', () => {});`
-- These align exactly with the Implementation Notes examples for spacing, delimiters, case, and bracket/parenthesis conversions, while preserving the rest of the test name and test body.
-
-4) Already-correct prefix remains unchanged (Quality Standards, User Experience)
-- Valid case:
-  ```ts
-  /**
-   * @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-PREFIX-FORMAT
-   */
-  describe('Story 021.0-DEV-TEST-ANNOTATION-AUTO-FIX', () => {
-    it('[REQ-TRACE-123] behaves correctly', () => {});
-  });
-  ```
-- Marked as valid with no errors or fixes, confirming that the rule does not touch correct prefixes.
-
-5) Tests all passing
-- Ran the full test suite with verbose output:
-  - Command: `npm test -- --verbose`
+4) Test execution
+- Ran the full test suite with verbose Jest output:
+  - Command: `npm test -- --runInBand --verbose`.
   - Result: exit code 0.
-  - Relevant excerpt from output:
+  - Output includes:
     - `PASS tests/rules/require-test-traceability.test.ts`
-      - Shows the valid and invalid cases for `require-test-traceability` rule, including both Story 020.0 and Story 021.0 behaviors.
-  - Overall Jest summary from this run:
+      - Shows both valid and invalid cases for `require-test-traceability`, including cases for malformed prefixes and missing file-level `@supports` for Stories 020.0 and 021.0.
+  - Overall Jest summary:
     - Test Suites: 39 passed, 39 total
-    - Tests: 299 passed, 299 total
-    - Confirms that all tests for this story are present and passing.
+    - Tests:       300 passed, 300 total
+  - Confirms all tests validating this story’s behavior are present and passing.
 
-6) Documentation
-- File: user-docs/api-reference.md (section for `traceability/require-test-traceability`)
-  - Documents that, for Story 021.0, when ESLint is run with `--fix`, the rule:
-    - Inserts a safe, non-semantic file-level `@supports` placeholder template at the top of test files when missing, with explicit TODO guidance for developers.
-    - Normalizes malformed `[REQ-XXX]` prefixes that already contain an identifiable requirement ID, correcting spacing, bracket/parenthesis usage, underscores, and casing while preserving the original ID text.
-  - Documents the configuration options:
-    - `autoFixTestTemplate` (boolean, default true)
-    - `autoFixTestPrefixFormat` (boolean, default true)
-    - `testSupportsTemplate` (string)
-  - This satisfies the Documentation acceptance criterion.
+5) Documentation
+- user-docs (API reference for `traceability/require-test-traceability`) documents:
+  - That when running ESLint with `--fix`, the rule:
+    - Inserts a file-level `@supports` placeholder template at the top of test files when missing, with a TODO line instructing developers to replace placeholders.
+    - Normalizes malformed `[REQ-XXX]` prefixes (spacing, underscores, casing, parentheses) in test names without changing test semantics.
+  - Documents configuration options: `autoFixTestTemplate`, `autoFixTestPrefixFormat`, and `testSupportsTemplate`, matching the story’s configuration section.
 
-7) Acceptance criteria mapping
-- File-Level Template: Implemented via `ensureFileSupportsAnnotation` + `insertSupportsTemplate` and verified by RuleTester cases inserting the placeholder template.
-- Format Fixes: Implemented via `normalizeReqId`, `normalizeReqPrefixInDescription`, and `handleItOrTestCall` with multiple tests covering spacing, underscores, lowercase, and parentheses.
-- Template Quality: Template includes clear placeholder path, placeholder REQ IDs, and an explicit TODO line; documented and tested.
-- Quality Standards: Fixes preserve test structure and behavior (only comments and string literals are modified), and already-correct cases remain unchanged.
-- Integration: Implemented as part of the `require-test-traceability` ESLint rule with `meta.fixable: "code"`, exercised through Jest RuleTester tests; works with ESLint `--fix`.
-- User Experience: Placeholder template and normalization behavior are consistent, deterministic, and documented; tests show straightforward before/after transformations.
-- Error Handling: Fixers are only provided when the situation is unambiguous and safe; in no-prefix scenarios, only errors are reported with no fix.
-- Documentation: API reference documents the auto-fix behavior and options.
-
-Based on all this evidence, all requirements and acceptance criteria for Story 021.0-DEV-TEST-ANNOTATION-AUTO-FIX are fully implemented and verified by passing tests.</evidence>
-  <notes>Story 021.0-DEV-TEST-ANNOTATION-AUTO-FIX is fully implemented. The `require-test-traceability` ESLint rule and its helpers provide safe, non-semantic auto-fixes for missing file-level `@supports` annotations (via a clear placeholder template) and for malformed `[REQ-XXX]` prefixes in test names. These behaviors are configurable through the options specified in the story, thoroughly covered by Jest RuleTester tests, integrated into the ESLint --fix workflow, and documented in the user API reference. Recent test runs confirm all tests for this rule and story pass, so the story’s acceptance criteria and definition of done are satisfied.</notes>
+6) Acceptance criteria coverage
+- File-Level Template: Implemented via `ensureFileSupportsAnnotation` + `insertSupportsTemplate`; verified by RuleTester invalid case output and passing tests.
+- Format Fixes: Implemented via `normalizeReqId`/`normalizeReqPrefixInDescription` and the `handleItOrTestCall` fixer; tests cover the specific malformed examples from the story (spacing, `_` vs `-`, case, parentheses).
+- Template Quality: Template uses an explicit placeholder story path, placeholder REQ IDs, and a clear TODO instruction line; visible in helper implementation and tests.
+- Quality Standards: Only comments and string literals are modified; tests confirm no changes to test implementation code and that already-correct cases are untouched.
+- Integration: Implemented within the existing ESLint rule architecture with `meta.fixable: "code"`, and exercised via Jest RuleTester under the standard ESLint `--fix` semantics.
+- User Experience: Behavior is deterministic and consistent; placeholders and normalized prefixes match the documented examples.
+- Error Handling: Fixers are only offered when normalization is unambiguous; otherwise the rule reports errors without attempting risky fixes.
+- Documentation: API docs describe both the auto-fix behaviors and the configuration options, satisfying the documentation acceptance criterion.</evidence>
+  <notes>The story 021.0-DEV-TEST-ANNOTATION-AUTO-FIX is fully implemented. The `require-test-traceability` rule and its helpers provide safe, non-semantic auto-fixes for missing file-level `@supports` annotations (with clear placeholder templates) and for malformed `[REQ-XXX]` prefixes in test names. The behavior matches the story’s implementation notes, respects all safety and non-inference constraints, and is thoroughly covered by Jest RuleTester tests which are currently all passing. User-facing documentation also describes these auto-fix capabilities and configuration options. Therefore, all acceptance criteria and requirements for this story are satisfied.</notes>
 </traceability>
