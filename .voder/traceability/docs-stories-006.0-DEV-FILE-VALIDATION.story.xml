@@ -2,16 +2,18 @@
 <traceability>
   <specification>docs/stories/006.0-DEV-FILE-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T16:53:02.937Z</last_validated>
+  <last_validated>2025-12-06T17:51:29.498Z</last_validated>
   <last_modified>2025-12-04T18:44:42.520Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and named requirements in docs/stories/006.0-DEV-FILE-VALIDATION.story.md are implemented and verified:
-- Core functionality: `valid-story-reference` validates that @story paths point to existing `.story.md` files, with tests for valid and missing cases.
-- Quality & safety: File system access is synchronous but fully wrapped in try/catch, with a cache to avoid redundant IO, matching the intent of safe, efficient ESLint rule design.
-- Integration: The rule works alongside the annotation-format rule and uses standard ESLint RuleTester/Jest patterns.
-- User experience: Clear, specific messages (`fileMissing`, `invalidExtension`, `invalidPath`, `fileAccessError`) include the offending path and, for fs errors, the underlying error text.
-- Error handling: Filesystem errors are distinguished from missing files and surfaced via `fileAccessError` diagnostics; tests simulate EACCES/EIO and confirm no uncaught exceptions.
-- Documentation: Dedicated rule documentation explains behavior, options, and boundary rules, aligned with the story’s specification.
+  <notes>This story is clearly a detailed technical specification for validating @story file references (not a high-level planning doc), so it is a valid spec for assessment.
 
-Given the passing targeted tests, the aligned implementation, and the supporting documentation, this story is fully implemented.</notes>
+Each acceptance criterion and requirement from docs/stories/006.0-DEV-FILE-VALIDATION.story.md is met:
+- Core functionality & integration: The ESLint rule traceability/valid-story-reference, implemented in src/rules/valid-story-reference.ts together with helpers and storyReferenceUtils, validates that @story annotations point to existing .story.md files, using context.cwd/process.cwd and configurable storyDirectories. It integrates cleanly with the existing annotation format validation (rule valid-annotation-format) by operating on already well-formed @story lines.
+- Quality standards: Implementation follows ESLint best practices (RuleModule with meta/docs/messages/schema, synchronous fs operations wrapped in robust utilities) and centralizes file-system access with error handling and caching.
+- User experience & error handling: Message IDs fileMissing, invalidExtension, invalidPath, and fileAccessError provide clear, specific, and consistent diagnostics that include the offending path and, for fs errors, the underlying error message. Tests explicitly verify these behaviors and that no uncaught exceptions occur even under simulated permission/I/O errors.
+- Security & project boundaries: Helpers enforce both project boundaries and path safety (no traversal outside cwd, constrained use of absolute paths, and invalidation of references resolved outside project root even when storyDirectories are misconfigured). Tests cover traversal, absolute paths, misconfigured directories, and external paths.
+- Performance optimization: storyReferenceUtils implements an explicit caching layer for file-existence checks (fileExistStatusCache, checkSingleCandidate, __resetStoryExistenceCacheForTests), satisfying the requirement for efficient, cached file system access during a lint run.
+- Configurability: Rule schema and implementation support storyDirectories, allowAbsolutePaths, and requireStoryExtension options, with comprehensive tests confirming behavior under different configurations.
+
+All related tests pass in the full Jest run. Based on this concrete implementation and test evidence, the specification in docs/stories/006.0-DEV-FILE-VALIDATION.story.md is fully implemented and functioning as intended.</notes>
 </traceability>

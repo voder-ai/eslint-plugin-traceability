@@ -1,271 +1,257 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: read_file with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md"}
-Used tool: find_files with input: {"pattern":"*catch*","directory":"src"}
-Used tool: find_files with input: {"pattern":"*catch*","directory":"tests"}
-Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-catch-position.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-catch-insert-position.test.ts"}
-Used tool: find_files with input: {"pattern":"*branch-annotation-helpers*","directory":"src"}
-Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts"}
-Used tool: search_file_content with input: {"filePath":"tests","pattern":"Prettier","isRegex":false}
-Used tool: read_file with input: {"filePath":"src/rules/require-branch-annotation.ts"}
-Used tool: find_files with input: {"pattern":"*require-branch-annotation*","directory":"tests"}
-Used tool: search_file_content with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","pattern":"Implementation","isRegex":false}
-Used tool: find_files with input: {"pattern":"*.md","directory":"docs/stories"}
-Used tool: read_file with input: {"filePath":"docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md"}
-Used tool: read_file with input: {"filePath":"docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md"}
-Used tool: find_files with input: {"pattern":"*.ts","directory":"tests"}
-Used tool: search_file_content with input: {"filePath":"tests/rules/require-branch-annotation.test.ts","pattern":"catch","isRegex":false}
-Used tool: read_file with input: {"filePath":"tests/rules/require-branch-annotation.test.ts","startLine":60,"endLine":120}
-Used tool: search_file_content with input: {"filePath":"docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md","pattern":"Implementation Links","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md","pattern":"Implementation","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md","pattern":"Implementation","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","pattern":"## Definition of Done","isRegex":false}
-Used tool: find_files with input: {"pattern":"*Prettier*","directory":"."}
-Used tool: search_file_content with input: {"filePath":"tests/rules/require-branch-annotation.test.ts","pattern":"CatchClause","isRegex":false}
-Used tool: run_command with input: {"command":"grep","args":["-R","catch","user-docs"]}
-Used tool: read_file with input: {"filePath":"user-docs/api-reference.md","startLine":120,"endLine":220}
-Used tool: search_file_content with input: {"filePath":"user-docs/api-reference.md","pattern":"require-branch-annotation","isRegex":false}
-Used tool: read_file with input: {"filePath":"user-docs/api-reference.md","startLine":69,"endLine":120}
-Used tool: search_file_content with input: {"filePath":"user-docs/api-reference.md","pattern":"catch","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests","pattern":"025.0-DEV-CATCH-ANNOTATION-POSITION","isRegex":false}
-Used tool: search_file_content with input: {"filePath":".","pattern":"REQ-DUAL-POSITION-DETECTION","isRegex":false}
-Used tool: search_file_content with input: {"filePath":".","pattern":"REQ-PRETTIER-AUTOFIX","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"REQ-DUAL-POSITION-DETECTION","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests/utils/branch-annotation-catch-position.test.ts","pattern":"Prettier","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests/utils/branch-annotation-catch-position.test.ts","pattern":"Fallback","isRegex":false}
-Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-catch-position.test.ts","startLine":1,"endLine":200}
-Used tool: read_file with input: {"filePath":"docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md"}
-Used tool: run_command with input: {"command":"grep","args":["-R","prettier","tests","src","docs","user-docs"]}
-Used tool: search_file_content with input: {"filePath":"tests","pattern":"catch (error) {","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests","pattern":"Prettier","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs/stories","pattern":"Implementation Links","isRegex":false}
-Used tool: read_file with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md"}
-Used tool: read_file with input: {"filePath":"docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md"}
-Used tool: read_file with input: {"filePath":"docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md"}
-Used tool: run_command with input: {"command":"grep","args":["-R","getCommentsInside","src","tests"]}
-Used tool: search_file_content with input: {"filePath":"tests/rules/require-branch-annotation.test.ts","pattern":"catch (error)","isRegex":false}
-Used tool: read_file with input: {"filePath":"tests/rules/require-branch-annotation.test.ts","startLine":220,"endLine":280}
-Used tool: modify_file with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","instruction":"Update the Acceptance Criteria checklist and Definition of Done checklist to reflect current implementation status:\n- Mark as [x] the criteria that are clearly implemented and tested based on existing src/utils/branch-annotation-helpers.ts, tests/utils/branch-annotation-catch-position.test.ts, tests/utils/branch-annotation-catch-insert-position.test.ts, and tests/rules/require-branch-annotation.test.ts. These include Before-Catch Position, Inside-Catch Position, Position Priority, Auto-Fix Compatibility, and No Regression.\n- For Prettier Compatibility, clarify that behavior is validated indirectly via the inside-catch detection and insert-position logic but does not yet include an explicit end-to-end Prettier integration test; keep this item as [ ] and note its partial coverage in a short parenthetical.\n- In Definition of Done, mark as [x] the items already satisfied (acceptance criteria, gatherBranchCommentText, unit tests, auto-fix, existing tests) and leave the explicit Prettier integration test and any remaining documentation/migration guide updates unchecked, adding brief notes where appropriate.\nPreserve all existing headings and narrative text; only adjust the checkboxes and add short clarifying notes inline where requested."}
-Used tool: search_file_content with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","pattern":"Implementation Links","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests","pattern":"025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"docs/stories","pattern":"025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests/utils/branch-annotation-catch-position.test.ts","pattern":"025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"tests/utils/branch-annotation-catch-insert-position.test.ts","pattern":"025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src/utils/branch-annotation-helpers.ts","pattern":"CatchClause","isRegex":false}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","tests/utils/branch-annotation-catch-position.test.ts","tests/utils/branch-annotation-catch-insert-position.test.ts"]}
-Used tool: modify_file with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","instruction":"After the 'Requirements (Current Implementation or To Be Implemented)' list, add a short 'Implementation Links' subsection that enumerates the key implementation and test locations for this story:\n\n- Add a `## Implementation Links` heading.\n- Under it, add bullet points for:\n  - `src/utils/branch-annotation-helpers.ts` (gatherBranchCommentText and getBranchAnnotationInfo CatchClause handling)\n  - `src/rules/require-branch-annotation.ts` (rule wiring that uses the helpers)\n  - `tests/utils/branch-annotation-catch-position.test.ts` (dual-position detection and fallback tests)\n  - `tests/utils/branch-annotation-catch-insert-position.test.ts` (insert position and auto-fix behavior)\n  - `tests/rules/require-branch-annotation.test.ts` (end-to-end branch-annotation behavior including try/catch cases)\nKeep descriptions concise and factual, referencing only existing files and behaviors already confirmed in this repository."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","tests/utils/branch-annotation-catch-position.test.ts","tests/utils/branch-annotation-catch-insert-position.test.ts","tests/rules/require-branch-annotation.test.ts"]}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src/utils/branch-annotation-helpers.ts","pattern":"025.0-DEV-CATCH-ANNOTATION-POSITION","isRegex":false}
-Used tool: find_files with input: {"pattern":"*.story.md","directory":"docs/stories"}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"@supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","isRegex":false}
-Used tool: run_command with input: {"command":"grep","args":["-R","025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","src","tests"]}
-Used tool: read_file with input: {"filePath":"docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md"}
-Used tool: search_file_content with input: {"filePath":"tests","pattern":"026.0-DEV-ELSE-IF-ANNOTATION-POSITION","isRegex":false}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"ElseIf","isRegex":false}
-Used tool: run_command with input: {"command":"grep","args":["-R","025.0-DEV-CATCH-ANNOTATION-POSITION.story.md","docs"]}
+**Action:** Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts"}
+Used tool: find_files with input: {"pattern":"*reqAnnotationDetection*","directory":"tests"}
+Used tool: list_directory with input: {"dirPath":"tests/utils"}
+Used tool: read_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts"}
+Used tool: read_file with input: {"filePath":"jest.config.js"}
+Used tool: find_files with input: {"pattern":"*coverage-final.json","directory":"."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--coverage","--runInBand","--ci","--","src/utils/reqAnnotationDetection.ts","tests/utils/req-annotation-detection.test.ts"]}
+Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-io.ts","startLine":1,"endLine":140}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-io.ts","startLine":140,"endLine":320}
+Used tool: read_file with input: {"filePath":"package.json","startLine":1,"endLine":200}
+Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":40,"endLine":120}
+Used tool: read_file with input: {"filePath":"scripts/extract-uncovered-branches.js","startLine":1,"endLine":260}
+Used tool: search_file_content with input: {"filePath":"src/utils/reqAnnotationDetection.ts","pattern":"//","isRegex":false}
+Used tool: modify_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts","instruction":"Append additional tests at the end of the file to cover uncovered branches in src/utils/reqAnnotationDetection.ts, including: (1) linesBeforeHasReq returns false when lines is not an array or startLine is not a number; (2) parentChainHasReq returns false when sourceCode.getCommentsBefore is not a function and leadingComments/parent chain lacks req/supports; (3) parentChainHasReq returns true when sourceCode.getCommentsBefore returns comments containing @req; (4) fallbackTextBeforeHasReq returns false when sourceCode.getText is not a function or node.range is not an array; (5) fallbackTextBeforeHasReq returns true when text window contains @req; (6) fallbackTextBeforeHasReq returns false when getText throws; (7) hasReqInAdvancedHeuristics short-circuits and returns false when sourceCode or node is missing; (8) hasReqAnnotation returns true when jsdoc contains @supports and advanced heuristics are false. Use createMockSourceCode helper where helpful, and preserve existing imports and describe block. Keep tests within the existing describe block. Ensure new tests use requirement IDs in names as in existing tests."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--coverage","--runInBand","--ci","--","src/utils/reqAnnotationDetection.ts","tests/utils/req-annotation-detection.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--coverage","--runInBand","--ci"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: get_git_status with input: {}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"docs: align catch annotation story with current implementation"}
-Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
+Used tool: git_commit with input: {"message":"test: add coverage tests for req annotation detection heuristics"}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":19991593463,"timeout":600000}
+Used tool: wait_for_github_workflow with input: {"runId":19991895911,"timeout":600000}
+Used tool: modify_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts","instruction":"Before the final closing `});` of the describe block, insert a new Jest test case that verifies hasReqAnnotation swallows exceptions thrown by context.getSourceCode itself and still falls back to jsdoc/comments. The test name should include the requirement ID like the others. Example structure:\n\n  it(\"[REQ-ANNOTATION-REQ-DETECTION] falls back to jsdoc/comments when context.getSourceCode throws\", () => {\n    const context = {\n      getSourceCode() {\n        throw new Error(\"boom from getSourceCode\");\n      },\n    } as any;\n\n    const jsdoc = { value: \"/** @req REQ-FROM-GETSOURCECODE */\" } as any;\n\n    const has = _hasReqAnnotation(jsdoc, [], context, { parent: {} } as any);\n\n    expect(has).toBe(true);\n  });\n\nKeep indentation consistent with existing tests."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--","tests/utils/req-annotation-detection.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","tests/utils/req-annotation-detection.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check","--","tests/utils/req-annotation-detection.test.ts"]}
+Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":100,"endLine":140}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: get_git_status with input: {}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"test: extend req annotation detection coverage"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: wait_for_github_workflow with input: {"runId":19991953822,"timeout":600000}
 
 **Response:**
 
 ```
-Here’s what I completed for the **##NOW** and **##NEXT** sections.
-
----
-
 ## What I implemented
 
-### 1) Updated Story 025.0 to match current implementation (**NOW**)
+### ✅ NOW
 
-Changes in `docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md`:
+- [x] Design and add focused unit tests that cover the currently uncovered edge-case branches in the req-annotation detection helper so those paths are exercised and verified against their intended behavior.
 
-- **Acceptance Criteria**:
-  - Marked as completed with clear notes:
-    - `[x] Before-Catch Position` – confirmed via helpers and `require-branch-annotation` rule tests.
-    - `[x] Inside-Catch Position` – implemented via `gatherBranchCommentText` CatchClause fallback and verified in `tests/utils/branch-annotation-catch-position.test.ts`.
-    - `[x] Position Priority` – covered by explicit tests preferring before-catch comments.
-    - `[x] Auto-Fix Compatibility` – verified by `tests/utils/branch-annotation-catch-insert-position.test.ts` (insertion inside catch body at first statement).
-    - `[x] No Regression` – validated by the full `require-branch-annotation` rule suite.
-  - Left as **partially open**:
-    - `[ ] Prettier Compatibility` – clarified that behavior is indirectly validated (inside-catch detection & insert-position logic) but there is **no explicit end-to-end Prettier integration test** yet.
-    - `[ ] Documentation` – docs still need an explicit note explaining both valid catch-annotation positions and Prettier compatibility.
+I extended the existing unit tests in:
 
-- **Definition of Done**:
-  - Marked as completed:
-    - `[x] All acceptance criteria met (except explicit Prettier integration test & docs items, called out as still open).`
-    - `[x] gatherBranchCommentText checks both positions for CatchClause nodes.`
-    - `[x] Unit tests added covering all annotation position scenarios.`
-    - `[x] Auto-fix produces Prettier-stable output (via insert-position logic).`
-    - `[x] All existing tests pass (no regressions).`
-  - Left open:
-    - `[ ] Integration test with actual Prettier-formatted code.`
-    - `[ ] Code reviewed and approved` (this is process/out-of-scope for automation).
-    - `[ ] Rule documentation updated with Prettier compatibility notes.`
-    - `[ ] Migration guide updated if needed.`
+- `tests/utils/req-annotation-detection.test.ts`
 
-- **Implementation Links** (new section):
-  - Added a `## Implementation Links` subsection listing actual implementation and test locations:
-    - `src/utils/branch-annotation-helpers.ts` – `gatherBranchCommentText` and `getBranchAnnotationInfo` CatchClause dual-position handling.
-    - `src/rules/require-branch-annotation.ts` – rule wiring using the helpers.
-    - `tests/utils/branch-annotation-catch-position.test.ts` – dual-position detection and fallback tests.
-    - `tests/utils/branch-annotation-catch-insert-position.test.ts` – insert position and auto-fix behavior tests.
-    - `tests/rules/require-branch-annotation.test.ts` – end-to-end rule behavior, including try/catch cases.
+to more fully exercise `src/utils/reqAnnotationDetection.ts`.
 
-This directly satisfies the **NOW** item: the story’s checklists and links are now in sync with the current CatchClause behavior and tests.
+**Behaviors covered by the new tests:**
 
----
+All tests use the existing traceability header:
 
-### 2) Verified CatchClause helpers + tests vs Story 025.0 (**NEXT #1**)
+```ts
+/**
+ * Tests for advanced @req detection heuristics
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+ */
+```
 
-I cross-checked the story’s requirements against implementation and tests:
+and requirement IDs in test names.
 
-- **Dual position detection & fallback**:
-  - `src/utils/branch-annotation-helpers.ts`:
-    - `gatherBranchCommentText`:
-      - For `CatchClause`:
-        - Reads `beforeText` from `sourceCode.getCommentsBefore(node)`.
-        - If `beforeText` already contains `@story`/`@req`, it returns `beforeText` (covers **Before-Catch Position** and **Position Priority**).
-        - Otherwise tries `(sourceCode as any).getCommentsInside(node.body)` and uses those comments if present (covers **Inside-Catch Position** and **Fallback Logic**).
-  - `tests/utils/branch-annotation-catch-position.test.ts`:
-    - Verifies **priority**: when both before-catch and inside-catch annotations exist, before-catch wins.
-    - Verifies **fallback**: when before-catch is empty, inside-catch annotations are used.
-    - Verifies **safety**: if `getCommentsInside` is not available, before-catch text is used.
+1. **`linesBeforeHasReq` edge paths**
 
-- **Auto-fix position for CatchClause**:
-  - `getBranchAnnotationInfo` in `src/utils/branch-annotation-helpers.ts`:
-    - For `CatchClause`:
-      - If there is a first statement inside the catch block, it:
-        - Computes `innerIndent` from that line.
-        - Sets `insertPos` to the start of that first statement.
-      - Else falls back to block start + inner indent.
-  - `tests/utils/branch-annotation-catch-insert-position.test.ts`:
-    - Confirms that:
-      - `reportMissingAnnotations` for a `CatchClause` inserts text **before the first statement inside the catch` body**, at the correct index.
-      - The inserted text starts with the inner indentation of the first statement.
-    - This directly supports **REQ-PRETTIER-AUTOFIX** and the story’s **Auto-Fix Compatibility** criterion.
+   - Returns `false` when `sourceCode.lines` is **not an array**:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] linesBeforeHasReq returns false when lines is not an array", () => { … });
+     ```
+   - Returns `false` when `startLine` is **not a number** (invalid/missing `loc`):
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] linesBeforeHasReq returns false when startLine is not a number", () => { … });
+     ```
 
-- **End-to-end rule behavior / regressions**:
-  - `tests/rules/require-branch-annotation.test.ts`:
-    - Has both:
-      - Valid catch with annotations.
-      - Missing annotations on try-catch blocks (including expected auto-fix output).
-  - All tests for:
-    - `tests/utils/branch-annotation-catch-position.test.ts`
-    - `tests/utils/branch-annotation-catch-insert-position.test.ts`
-    - `tests/rules/require-branch-annotation.test.ts`
-  - Were run together:
-    - `npm test -- --runInBand tests/utils/branch-annotation-catch-position.test.ts tests/utils/branch-annotation-catch-insert-position.test.ts tests/rules/require-branch-annotation.test.ts`
-    - All passed.
+2. **`parentChainHasReq` edge and success paths**
 
-**Conclusion:** For Story 025.0, all acceptance criteria except the **explicit Prettier integration test** and **documentation updates** are fully implemented and tested. No new tests were necessary for missing branches; existing coverage is complete for behavior described in the story.
+   - Returns `false` when `sourceCode.getCommentsBefore` is **not a function** and no parent `leadingComments` contain `@req`/`@supports`:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] parentChainHasReq returns false when getCommentsBefore is not a function and no leadingComments/parents have req", () => { … });
+     ```
+   - Returns `true` when `getCommentsBefore` returns comments containing `@req` on a parent:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] parentChainHasReq returns true when getCommentsBefore returns comments containing @req", () => { … });
+     ```
 
----
+3. **`fallbackTextBeforeHasReq` guard and success paths**
 
-### 3) Traceability and rule-level validation alignment for CatchClause (**NEXT #2**)
+   - Returns `false` when `sourceCode.getText` is **not a function**:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] fallbackTextBeforeHasReq returns false when getText is not a function", () => { … });
+     ```
+   - Returns `false` when `node.range` is **not an array**:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] fallbackTextBeforeHasReq returns false when node.range is not an array", () => { … });
+     ```
+   - Returns `true` when the fallback text window **contains `@req`**:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] fallbackTextBeforeHasReq returns true when text window contains @req", () => { … });
+     ```
+   - Returns `false` when `getText` itself **throws**, exercising the internal `try/catch`:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] fallbackTextBeforeHasReq returns false when getText throws", () => { … });
+     ```
 
-- Code implementing catch behavior:
-  - `src/utils/branch-annotation-helpers.ts`:
-    - Functions and branches are already annotated with:
-      - `@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md` and associated `@req` IDs.
-    - Catch-specific logic lives inside these annotated functions, extending Story 004.0; Story 025.0’s concrete behavior is tied in via tests.
-- Tests for 025.0:
-  - `tests/utils/branch-annotation-catch-position.test.ts`
-  - `tests/utils/branch-annotation-catch-insert-position.test.ts`
-  - Both include:
-    - File-level `@story` and `@supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-...` annotations, mapping explicitly to 025.0 requirements.
-    - Requirement IDs in test names (`[REQ-DUAL-POSITION-DETECTION]`, `[REQ-FALLBACK-LOGIC]`, `[REQ-PRETTIER-AUTOFIX]`, etc.).
+4. **`hasReqInAdvancedHeuristics` short-circuit behavior**
 
-- Automated traceability checks:
-  - Ran `npm run ci-verify:fast`, which includes:
-    - `npm run type-check`
-    - `npm run check:traceability`
-    - `npm run duplication`
-    - Jest rules + maintenance suites
-  - All passed, which confirms:
-    - No missing traceability annotations according to the project’s traceability checker.
-    - The CatchClause-specific helpers and new tests are correctly wired into the traceability model for the relevant stories/requirements.
+   - Short-circuits and returns `false` when `sourceCode` is missing (no `getSourceCode` available):
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] hasReqInAdvancedHeuristics short-circuits and returns false when sourceCode is missing", () => { … });
+     ```
+   - Short-circuits and returns `false` when `node` is missing:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] hasReqInAdvancedHeuristics short-circuits and returns false when node is missing", () => { … });
+     ```
 
-So the CatchClause behavior is **fully covered by rule-level validation and traceability tooling**, with tests explicitly tied back to Story 025.0’s requirement IDs.
+5. **`hasReqAnnotation` fallback behavior and JSDoc handling**
 
----
+   - Confirms that when **advanced heuristics return false**, but JSDoc contains `@supports`, the function still returns `true`:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] hasReqAnnotation returns true when jsdoc contains @supports and advanced heuristics are false", () => { … });
+     ```
+   - New edge case: `context.getSourceCode` itself **throws**, and `hasReqAnnotation` swallows the error and falls back to JSDoc/comments:
+     ```ts
+     it("[REQ-ANNOTATION-REQ-DETECTION] falls back to jsdoc/comments when context.getSourceCode throws", () => { … });
+     ```
 
-### 4) Scan for other partially aligned stories / missing links (**NEXT #3**)
+These tests build on the original ones (missing `sourceCode`/`node`, advanced heuristics throwing via `getCommentsBefore`, and `@supports` in comments) to cover the previously uncovered edge branches around guards and error-handling in the helpers.
 
-I spot-checked the remaining related stories, focusing on potential partial implementation or missing alignment:
+After adding these, I ran:
 
-- **Core branch story** (`docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md`):
-  - Designed as the base story for branch annotation enforcement.
-  - Its acceptance criteria are more general and already satisfied by the current `require-branch-annotation` implementation and tests.
-  - No inconsistencies surfaced in relation to the recent CatchClause enhancements.
+- `npm test -- --coverage --runInBand --ci`
 
-- **Else-if formatter story** (`docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md`):
-  - All acceptance criteria remain unchecked and accurately indicate that the else-if formatter compatibility work is **not yet implemented**.
-  - No tests or code currently claim to implement these else-if-specific behaviors, which matches the unchecked status. No changes were made here.
+Key result for `src/utils/reqAnnotationDetection.ts`:
 
-- **Auto-fix and test-traceability stories**:
-  - `docs/stories/008.0-DEV-AUTO-FIX.story.md` – already has detailed acceptance criteria and requirement mapping, with items checked out to match current auto-fix behavior.
-  - `docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md` and `docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md` – correctly describe and reference the corresponding rules (`require-test-traceability`) and behavior. No misaligned checkboxes or missing implementation links were evident for the existing functionality.
+- Statements: **99.14%**
+- Branches: **96.61%**
+- Functions: **100%**
+- Lines: **99.14%**
 
-- **Multi-story support story** (`docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md`):
-  - Already includes detailed requirement mapping and notes about `@supports`.
-  - Implementation and tests for multi-story behavior are already in place and were previously validated; nothing CatchClause-specific is missing here.
+Only two non-critical lines remain uncovered, and all key branches/guards in the heuristics are now exercised.
 
-Given this scan, the only story that required alignment based on the current implementation status was **025.0-DEV-CATCH-ANNOTATION-POSITION**, which is now updated. All others either:
+A first commit captured this work:
 
-- Accurately describe implemented functionality, or
-- Are clearly marked as not yet implemented (e.g., 026.0 else-if story).
+- `test: add coverage tests for req annotation detection heuristics`
 
-No additional story checkboxes or implementation links needed adjustment.
+
+### ✅ NEXT
+
+- [x] Review updated coverage and confirm that all key branches in the req-annotation detection helper are now covered, adjusting or adding tests if any paths remain untested or mis-specified.
+
+I reviewed the updated Jest coverage summary (full suite) and focused on `src/utils/reqAnnotationDetection.ts`. After the first wave of tests, branch coverage was already high; after the final additions, coverage is as above (≈99% statements / ≈97% branches, 100% functions).
+
+I then added one more targeted test (the `context.getSourceCode` throws scenario) to explicitly exercise the outer `try/catch` in `hasReqAnnotation`, ensuring that:
+
+- Exceptions thrown while obtaining `sourceCode` are swallowed, and
+- JSDoc/comment-based detection still runs.
+
+Re-running the **full** test suite with coverage confirmed:
+
+- Global thresholds all satisfied (per `jest.config.js`: 90/80/90/90),
+- `reqAnnotationDetection.ts` with very high coverage and only minor non-essential uncovered lines remaining.
+
+No mis-specified expectations surfaced; all tests align with the intended behavior described in the function comments and stories.
 
 ---
 
-## Quality checks and CI/CD
+- [x] Ensure the new tests and any touched helper code are correctly annotated with the appropriate story and requirement IDs, keeping traceability aligned with the detection requirements story.
 
-Before and after the documentation change:
+Traceability checks:
 
-- Targeted Jest tests for CatchClause logic:
-  - `npm test -- --runInBand tests/utils/branch-annotation-catch-position.test.ts tests/utils/branch-annotation-catch-insert-position.test.ts tests/rules/require-branch-annotation.test.ts`
-  - All passed.
+- The test file retains and continues to use:
+  ```ts
+  /**
+   * Tests for advanced @req detection heuristics
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+   */
+  ```
+- All new tests include the requirement ID in their names, e.g.:
+  - `"[REQ-ANNOTATION-REQ-DETECTION] linesBeforeHasReq returns false when lines is not an array"`
+  - `"[REQ-ANNOTATION-REQ-DETECTION] falls back to jsdoc/comments when context.getSourceCode throws"`
 
-- Fast CI-style verification:
-  - `npm run ci-verify:fast`
-  - Passed (type-check, traceability, duplication, rules & maintenance tests).
+I did not modify the production helper `src/utils/reqAnnotationDetection.ts`, so no new code-level annotations were needed there.
 
-- Full CI-equivalent checks (via pre-push / CI logs):
-  - `npm run ci-verify:full` (build, tests with coverage, lint, type-check, duplication, format:check, audits, traceability, CI-artifact check).
-  - `npm run security:secrets`
-  - All passed locally; the push was then made.
-
-- GitHub Actions:
-  - Latest “CI/CD Pipeline” run on `main` (ID `19991593463`) completed with conclusion **success**.
-
-A single documentation-only commit was created:
-
-- `docs: align catch annotation story with current implementation`
-
-No source or test code behavior was changed in this cycle.
+`npm run check:traceability` ran (as part of `ci-verify:full` in pre-push and CI) and passed, confirming traceability completeness.
 
 ---
 
-## Updated plan with statuses
+- [x] Briefly review neighboring annotation-detection utilities and tests to spot any similar uncovered edge paths and, where practical, extend tests to close the most important gaps.
+
+Neighboring utilities in `src/utils`:
+
+- `annotation-checker.ts`
+- `branch-annotation-helpers.ts`
+- `storyReferenceUtils.ts`
+
+From the full coverage run:
+
+- `annotation-checker.ts`: 95.93% statements, 80.64% branches
+- `branch-annotation-helpers.ts`: 97.18% statements, 84.78% branches
+- `storyReferenceUtils.ts`: 99.09% statements, 97.05% branches
+
+All three already have strong coverage, with no 0% files or glaring untested regions. The remaining missed branches are localized to a small number of lines and are mostly minor alternative paths rather than entire untested features.
+
+Given this, in this cycle I:
+
+- **Reviewed** the coverage for these neighboring files to ensure there were no obvious holes akin to the earlier `reqAnnotationDetection` gaps.
+- **Did not** add further tests here, as the cost/benefit for the remaining tiny coverage gaps was lower than for the `req` detection helper and the plan only asked to extend tests “where practical.”
+
+This satisfies the requested brief review without introducing unnecessary changes.
+
+---
+
+## Quality checks and CI
+
+Before each push, the Husky **pre-push** hook ran:
+
+- `npm run ci-verify:full`
+- `npm run security:secrets`
+
+This includes build, type-check, lint, duplication, full Jest with coverage, format check, audits, and traceability checks.
+
+Additionally, I ran targeted commands during development:
+
+- `npm test -- --runInBand --ci -- tests/utils/req-annotation-detection.test.ts`
+- `npm run lint -- tests/utils/req-annotation-detection.test.ts`
+- `npm run type-check`
+- `npm run format:check`
+
+All passed.
+
+After each push, the **CI/CD Pipeline** workflow on GitHub Actions was automatically triggered for `main`. I monitored the latest runs:
+
+- Run ID `19991895911`: **success**
+- Run ID `19991953822`: **success**
+
+No CI steps failed; semantic-release evaluated commits and (as expected for `test:` changes) did not publish a new release.
+
+---
+
+## Updated plan
 
 ### NOW
 
-- [x] Review the Story 025.0 catch-annotation-position story and update its acceptance criteria, definition of done, and implementation links so they accurately reflect the current CatchClause annotation behavior and tests that were recently added.
+- [x] Design and add focused unit tests that cover the currently uncovered edge-case branches in the req-annotation detection helper so those paths are exercised and verified against their intended behavior.
 
 ### NEXT
 
-- [x] Confirm that the existing CatchClause annotation helpers and tests fully cover all acceptance criteria in Story 025.0, and add or adjust tests if any edge cases or branches are still unverified.
-- [x] Run the existing traceability and rule-level validation logic conceptually against the CatchClause helpers to ensure all new code paths are correctly annotated with the right story and requirement IDs.
-- [x] Scan the remaining story files for any other items that might still be partially implemented or lacking implementation links, and align their status and references with the current code and tests.
-
-If you’d like, the next iteration can tackle Story 026.0 (else-if Prettier compatibility) and the remaining docs / migration-guide updates referenced in 025.0.
+- [x] Review updated coverage and confirm that all key branches in the req-annotation detection helper are now covered, adjusting or adding tests if any paths remain untested or mis-specified.
+- [x] Ensure the new tests and any touched helper code are correctly annotated with the appropriate story and requirement IDs, keeping traceability aligned with the detection requirements story.
+- [x] Briefly review neighboring annotation-detection utilities and tests to spot any similar uncovered edge paths and, where practical, extend tests to close the most important gaps.
 ```

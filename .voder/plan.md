@@ -1,16 +1,17 @@
 ## NOW
 
-- [ ] Design and add focused unit tests that cover the currently uncovered edge-case branches in the req-annotation detection helper so those paths are exercised and verified against their intended behavior.
+- [ ] Review the annotation validation story’s acceptance criteria to identify which specific behaviors and edge cases in that story are still unimplemented or insufficiently covered by existing annotation-validation rules and tests.
 
 ## NEXT
 
-- [ ] Review updated coverage and confirm that all key branches in the req-annotation detection helper are now covered, adjusting or adding tests if any paths remain untested or mis-specified.
-- [ ] Ensure the new tests and any touched helper code are correctly annotated with the appropriate story and requirement IDs, keeping traceability aligned with the detection requirements story.
-- [ ] Briefly review neighboring annotation-detection utilities and tests to spot any similar uncovered edge paths and, where practical, extend tests to close the most important gaps.
+- [ ] Map each uncovered or incomplete acceptance criterion from the annotation validation story to the existing rules and helpers, deciding whether they need new logic, configuration, or only additional tests.
+- [ ] Implement any missing or incomplete validation behavior in the relevant annotation-validation rule helpers so they fully satisfy the story’s specified requirements and edge cases.
+- [ ] Extend or adjust the unit and integration tests for the annotation-validation rules so that each acceptance criterion from the story is explicitly exercised and verified.
+- [ ] Update traceability annotations in the affected source and test files to reference the annotation validation story and its requirement IDs, ensuring the new or changed behavior is clearly linked to the documented requirements.
+- [ ] Revise the annotation validation story document to mark the now-completed acceptance criteria and definition-of-done items as satisfied, adding implementation links to the relevant code and test files.
 
 ## LATER
 
-- [ ] Refine the deprecation messaging and user-facing guidance around the prefer-implements-annotation alias so documentation clearly explains the migration path to prefer-supports-annotation and the expected sunset behavior.
-- [ ] Add a concise migration example to the user documentation showing how a real project can move from prefer-implements-annotation to prefer-supports-annotation while relying on the alias during the transition.
-- [ ] Review other rules and stories for any similar aliasing or naming-evolution requirements to keep deprecation patterns and backward-compatible rule names consistent across the plugin.
-- [ ] Plan and implement the else-if annotation position behavior described in the corresponding story, including helpers, rule wiring, tests, and story updates once the catch-annotation work is fully settled.
+- [ ] Perform a cross-story review of all annotation-related stories to ensure their validation behaviors are consistent and no conflicting requirements exist between them.
+- [ ] Add higher-level integration tests that run the full set of annotation-validation rules together on representative example projects to detect any unexpected interactions or gaps.
+- [ ] Consider adding developer-facing documentation that explains how the various annotation-validation rules work together, including examples that align directly with the annotation validation story’s requirements.

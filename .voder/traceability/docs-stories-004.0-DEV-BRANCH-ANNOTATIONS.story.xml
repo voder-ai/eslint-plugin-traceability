@@ -2,14 +2,18 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T16:56:07.774Z</last_validated>
+  <last_validated>2025-12-06T17:51:28.089Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria for story 004.0-DEV-BRANCH-ANNOTATIONS are satisfied with concrete implementation and passing tests:
-- Core Functionality: `require-branch-annotation` is implemented to visit all significant branch node types (if, switch cases, loops, try/catch, catch clauses) and report missing @story/@req annotations, with autofixes where appropriate. This is verified by extensive RuleTester suites in `tests/rules/require-branch-annotation.test.ts`.
-- Quality Standards and Performance: The rule uses standard ESLint RuleModule structure with schema, messages, and fixers, and a dedicated performance test in `tests/perf/require-branch-annotation-large-file.test.ts` confirms it scales to large nested-branch files within a defined time budget.
-- Integration and Nested Handling: The helper utilities manage complex branch comment association, including switch-case and catch-clause specifics; tests cover nested if-structures and multiple branch types, demonstrating robust handling of complex control flow.
-- User Experience and Error Handling: Error messages clearly indicate which annotation type is missing and, for invalid configuration, list allowed branch types. Catch-related edge cases, blank-line spacing before switch cases, and inner-catch insertion behavior are all handled gracefully with dedicated tests.
-- Documentation & Preset Integration: The rule has its own documentation page with examples and configuration guidance, is referenced from the README, and is included in both recommended and strict plugin presets with tests verifying these configurations. Given the implementation, test coverage, performance test, and documentation, this story is fully implemented.
-</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All aspects of story 004.0-DEV-BRANCH-ANNOTATIONS are implemented and verified.
+
+Mapping to Acceptance Criteria:
+- Core Functionality: The `require-branch-annotation` rule, together with `branch-annotation-helpers`, detects missing @story/@req annotations on all specified significant branch types (if/else, try/catch, switch cases, loops). Jest RuleTester cases cover both positive and negative scenarios across these constructs.
+- Quality Standards: The rule follows ESLint best practices (RuleModule with meta.schema, messages, and clean visitors) and is decomposed into reusable helpers. Schema-based config plus explicit validation via `validateBranchTypes` handle misconfigurations robustly.
+- Integration: Tests cover nested ifs, try/catch with separate branches, switches (including default case handling), and multiple loop types. The rule is integrated into the plugin’s dynamic loader and flat-config presets, and is listed in the README.
+- User Experience: Error messages use `missingAnnotation` with `{{missing}}` to state clearly which annotation (@story or @req) is missing. Tests assert both the messageId and data, and autofix behavior inserts readable placeholder annotations in intuitive positions, including within catch bodies.
+- Error Handling: Invalid `branchTypes` configurations are turned into ESLint config errors with clear messages. Comment association logic has dedicated tests for tricky CatchClause cases and blank-line switch cases. Nested-branch tests ensure inner branches are enforced independently of outer annotations.
+- Documentation: A dedicated rule doc (`docs/rules/require-branch-annotation.md`) plus README entries document purpose, configuration (including invalid config behavior), and annotated examples, matching the story’s documentation requirements.
+
+Given the passing, targeted tests and aligned documentation and implementation, this story is fully satisfied.</notes>
 </traceability>
