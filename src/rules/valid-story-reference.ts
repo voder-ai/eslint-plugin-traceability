@@ -1,6 +1,6 @@
 /* eslint-env node */
 /**
- * Rule to validate @story annotation references refer to existing story files
+ * This rule validates that @story annotation references refer to existing story files.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
@@ -41,7 +41,7 @@ function reportInvalidPath(opts: {
 }
 
 /**
- * Extract the story path from the annotation line and delegate validation.
+ * Extracts the story path from the annotation line and delegates validation.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-ANNOTATION-VALIDATION - Ensure each annotation line is parsed
  */
@@ -78,7 +78,7 @@ function validateStoryPath(opts: {
 }
 
 /**
- * Handle existence status and report appropriate diagnostics for missing
+ * Handles existence status and reports appropriate diagnostics for missing
  * or filesystem-error conditions, assuming project-boundary checks have
  * already been applied.
  *
@@ -129,7 +129,7 @@ function reportExistenceStatus(
 }
 
 /**
- * Report any problems related to the existence or accessibility of the
+ * Reports any problems related to the existence or accessibility of the
  * referenced story file. Filesystem and I/O errors are surfaced with a
  * dedicated diagnostic that differentiates them from missing files.
  *
@@ -171,7 +171,7 @@ function reportExistenceProblems(opts: {
 }
 
 /**
- * Process and validate the story path for security, extension, and existence.
+ * Processes and validates the story path for security, extension, and existence.
  * Filesystem and I/O errors are handled inside the underlying utilities
  * (e.g. storyExists) and surfaced as missing-file or filesystem-error
  * diagnostics where appropriate.
@@ -225,9 +225,9 @@ function processStoryPath(opts: {
   }
 
   /**
-   * Existence check:
-   * - Distinguish between missing files and filesystem errors.
-   * - Filesystem and I/O errors are surfaced with a dedicated diagnostic.
+   * Performs the existence check:
+   * - Distinguishes between missing files and filesystem errors.
+   * - Surfaces filesystem and I/O errors with a dedicated diagnostic.
    *
    * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
    * @req REQ-FILE-EXISTENCE - Ensure referenced files exist
@@ -243,7 +243,8 @@ function processStoryPath(opts: {
 }
 
 /**
- * Handle a single comment node by processing its lines.
+ * Handles a single comment node by processing its lines and looking for
+ * @story annotations that should be validated.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-ANNOTATION-VALIDATION - Ensure each annotation line is parsed
  */
@@ -260,6 +261,7 @@ function handleComment(opts: {
   const lines = commentNode.value
     .split(/\r?\n/)
     /**
+     * Processes each line of the comment to extract and normalize @story annotations.
      * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
      * @req REQ-ANNOTATION-VALIDATION - Ensure each annotation line is parsed
      */
@@ -289,6 +291,7 @@ export default {
     },
     messages: {
       /**
+       * Reports that a referenced story file could not be found.
        * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
        * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
        * @req REQ-ERROR-SPECIFIC - Provide specific diagnostics when a referenced story file cannot be found
@@ -297,15 +300,18 @@ export default {
        */
       fileMissing: "Story file '{{path}}' not found",
       /**
+       * Reports that the provided story file path has an invalid extension.
        * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
        * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
        * @req REQ-ERROR-SPECIFIC - Indicate that the story file extension is invalid and what is expected
        * @req REQ-ERROR-CONTEXT - Include the provided path so developers can see which reference is wrong
-       * @req REQ-ERROR-CONSISTENCY - Reuse the same pattern of "{{path}}" placeholder across file validation messages
+       * @req REQ-ERROR-CONSISTENCY - Reuse the same pattern of '{{path}}' placeholder across file validation messages
        */
       invalidExtension:
         "Invalid story file extension for '{{path}}', expected '.story.md'",
       /**
+       * Reports that the referenced story path is invalid due to being absolute
+       * or containing unsafe traversal.
        * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
        * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
        * @req REQ-ERROR-SPECIFIC - Explain that the story path is invalid due to absolute or unsafe traversal
@@ -314,6 +320,7 @@ export default {
        */
       invalidPath: "Invalid story path '{{path}}'",
       /**
+       * Reports a filesystem error that occurred while validating the story file.
        * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
        * @req REQ-ERROR-HANDLING - Provide clear diagnostics for filesystem errors
        */
@@ -346,7 +353,7 @@ export default {
     const requireExt = opts?.requireStoryExtension !== false;
     return {
       /**
-       * Program-level handler: iterate comments and validate @story annotations.
+       * Program-level handler: iterates comments and validates @story annotations.
        * Filesystem and I/O errors are handled by underlying utilities and
        * surfaced as missing-file or filesystem-error diagnostics where appropriate.
        *

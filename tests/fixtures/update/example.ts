@@ -1,2 +1,2 @@
 // Sample code with annotation to update
-// @story old.md
+// @story docs/stories/old.story.md

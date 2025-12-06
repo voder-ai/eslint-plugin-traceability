@@ -128,7 +128,7 @@ export function gatherBranchCommentText(
 }
 
 /**
- * Report missing @story annotation on a branch node.
+ * Report missing @story annotation tag on a branch node when that branch lacks a corresponding @story reference in its comments.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
  */
@@ -149,7 +149,7 @@ export function reportMissingStory(
    */
   if (storyFixCountRef.count === 0) {
     /**
-     * Fixer that inserts a default @story annotation above the branch.
+     * Fixer that inserts a default @story tag above the branch.
      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
      * @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer function used to insert missing @story
      */
@@ -177,7 +177,7 @@ export function reportMissingStory(
 }
 
 /**
- * Report missing @req annotation on a branch node.
+ * Report missing @req annotation tag on a branch node when that branch has no linked requirement identifier in its associated comments.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
  */
@@ -194,7 +194,7 @@ export function reportMissingReq(
    */
   if (!missingStory) {
     /**
-     * Fixer that inserts a default @req annotation above the branch.
+     * Fixer that inserts a default @req tag above the branch.
      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
      * @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer function used to insert missing @req
      */

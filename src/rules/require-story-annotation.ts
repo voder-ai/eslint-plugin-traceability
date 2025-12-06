@@ -3,6 +3,8 @@
  *
  * This file implements the ESLint rule that requires @story annotations
  * on functions and methods according to configured scope and export priority.
+ * Example: see docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md for function annotations,
+ * and docs/stories/008.0-DEV-AUTO-FIX.story.md for auto-fix behavior.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -52,7 +54,7 @@ const rule: Rule.RuleModule = {
     fixable: "code",
     messages: {
       missingStory:
-        "Function '{{name}}' must have an explicit @story annotation. Add a JSDoc or line comment with @story that points to the implementing story file (for example, docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md).",
+        "Function '{{name}}' must have an explicit @story annotation. Add a JSDoc or line comment with @story that points to the implementing story file, such as docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md.",
     },
     schema: [
       {

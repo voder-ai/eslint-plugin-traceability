@@ -175,15 +175,15 @@ function applyImplementsReplacement(
  * preserving the original comment formatting.
  *
  * The fixer is intentionally conservative and only activates when:
- * - There is exactly one distinct `@story` path.
- * - Exactly one `@story` line is present.
- * - At least one `@req` line is present.
- * - Each `@req` line has the simple form `@req <REQ-ID>` (no extra tokens).
+ * This rule requires that there is exactly one distinct `@story` path.
+ * It also requires that exactly one `@story` line is present.
+ * It requires that at least one `@req` line is present.
+ * It also requires that each `@req` line has the simple form `@req <REQ-ID>` (no extra tokens).
  *
  * When applicable, the fix:
- * - Removes the original `@story` and `@req` lines.
- * - Inserts a single `@supports` line in their place, preserving the
- *   original leading comment prefix (indentation and `*` markers).
+ * It removes the original `@story` and `@req` lines.
+ * It then inserts a single `@supports` line in their place, preserving the
+ * original leading comment prefix (indentation and `*` markers).
  *
  * More complex patterns remain diagnostics-only with no fix to avoid
  * producing invalid or ambiguous output.

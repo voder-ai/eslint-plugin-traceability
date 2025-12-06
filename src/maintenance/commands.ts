@@ -2,7 +2,7 @@
  * Subcommand handlers for the traceability-maint CLI.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-DETECT - CLI support for detection of stale annotations
+ * @req REQ-MAINT-DETECT - CLI support for detection of stale annotations.
  * @req REQ-MAINT-VERIFY - CLI support for verification of annotations
  * @req REQ-MAINT-REPORT - CLI support for human-readable reports
  * @req REQ-MAINT-UPDATE - CLI support for updating annotation references
@@ -30,8 +30,7 @@ export function handleDetect(normalized: NormalizedCliArgs): number {
   const stale = detectStaleAnnotations(root);
 
   if (flags.json) {
-    // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-    // @req REQ-MAINT-REPORT - JSON-friendly output for tooling integration
+    // Emit JSON output to support consumption by external tools and scripts.
     console.log(JSON.stringify({ root, stale }));
   } else if (stale.length === 0) {
     console.log("No stale @story annotations found.");

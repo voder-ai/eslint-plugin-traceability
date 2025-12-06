@@ -1,14 +1,17 @@
 /**
  * Internal helpers and types for the valid-annotation-format rule.
  *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-MULTILINE-SUPPORT - Handle annotations split across multiple lines
- * @req REQ-FLEXIBLE-PARSING - Support reasonable variations in whitespace and formatting
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-SUPPORTS-PARSE - Parse @supports annotations without affecting @story/@req
- * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+ * This logic is validated against multiple documentation stories focused on:
+ * - This rule covers DEV annotation validation
+ * - This rule covers DEV auto-fix behavior
+ * - This rule covers DEV multi-story support
+ *
+ * Requirements covered:
+ * - This helper supports REQ-MULTILINE-SUPPORT: Handle annotations split across multiple lines
+ * - This helper supports REQ-FLEXIBLE-PARSING: Support reasonable variations in whitespace and formatting
+ * - This helper supports REQ-AUTOFIX-FORMAT: Provide safe, minimal automatic fixes for common format issues
+ * - This helper supports REQ-SUPPORTS-PARSE: Parse @supports annotations without affecting @story/@req
+ * - This helper supports REQ-MIXED-SUPPORT: Support mixed @story/@req/@implements usage in comments
  */
 
 /**
@@ -50,9 +53,13 @@ export function normalizeCommentLine(rawLine: string): string {
  * This is used to distinguish regular JSDoc tags (e.g. @param, @returns) from
  * traceability-related annotations such as @story, @req, and @supports.
  *
- * @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
- * @req REQ-JSDOC-BOUNDARY-DETECTION
- * @req REQ-JSDOC-TAG-COEXISTENCE
+ * Supports coexistence with JSDoc by:
+ * - Detecting boundaries between traceability tags and other tags
+ * - Allowing regular JSDoc tags to live alongside traceability annotations
+ *
+ * Related requirements:
+ * - REQ-JSDOC-BOUNDARY-DETECTION
+ * - REQ-JSDOC-TAG-COEXISTENCE
  */
 export function isNonTraceabilityJSDocTagLine(normalized: string): boolean {
   const trimmed = normalized.trimStart();

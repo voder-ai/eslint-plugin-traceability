@@ -1,7 +1,7 @@
 /**
  * Compute the insertion start offset for inserting annotations before a node.
- * Ensures we insert before any export wrapper when present, while remaining
- * resilient to malformed or unexpected AST structures.
+ * This helper ensures we insert before any export wrapper when present, while
+ * remaining resilient to malformed or unexpected AST structures.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX
  * @req REQ-AUTOFIX-SAFE
@@ -34,12 +34,15 @@ function getInsertionStart(candidate: any): number {
 
 /**
  * Create a fixer function that inserts a @story annotation before the target node.
+ * This fixer is responsible for placing the annotation immediately before the
+ * resolved target node in the source code.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Provide automatic fix function for missing @story annotations
  */
 export function createAddStoryFix(target: any, annotationTemplate: string) {
   /**
    * Fixer that inserts a @story annotation before the target node.
+   * This inner fixer is used by ESLint to apply the actual code modification.
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-AUTOFIX - Provide automatic fix function for missing @story annotations
    */
@@ -56,12 +59,16 @@ export function createAddStoryFix(target: any, annotationTemplate: string) {
 
 /**
  * Create a fixer function for class method annotations.
+ * This helper ensures that the @story annotation is inserted with appropriate
+ * indentation and placement before a class method declaration.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
  */
 export function createMethodFix(node: any, annotationTemplate: string) {
   /**
    * Fixer that inserts a @story annotation before a method node.
+   * This inner fixer handles inserting the annotation with method-friendly
+   * formatting and spacing.
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
    */
@@ -78,6 +85,8 @@ export function createMethodFix(node: any, annotationTemplate: string) {
 
 /**
  * Default set of node types to check for missing @story annotations.
+ * This default scope covers common function-like declarations used in typical
+ * TypeScript and JavaScript codebases.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Provide sensible default scope for rule checks
  */
@@ -91,6 +100,8 @@ export const DEFAULT_SCOPE: string[] = [
 
 /**
  * Path to the story file for function-annotation helpers.
+ * This constant centralizes the reference to the canonical documentation story
+ * used by these helpers.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Provide a single source of truth for the canonical story path used by helper modules
  */
@@ -131,8 +142,8 @@ type ReportDeps = {
 
 /**
  * Core helper to report a missing @story annotation for a function-like node.
- * Delegates actual behavior to injected dependencies so higher-level helpers
- * can remain small while sharing error-reporting behavior.
+ * This reporting utility delegates behavior to injected dependencies so that
+ * higher-level helpers can stay small while sharing error-reporting logic.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -193,8 +204,8 @@ export function coreReportMissing(
 
 /**
  * Core helper to report a missing @story annotation for a method-like node.
- * Delegates actual behavior to injected dependencies while keeping this
- * module focused on core error-reporting behavior.
+ * This method-focused reporting utility uses injected dependencies while
+ * keeping this module centered on core error-reporting behavior.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md

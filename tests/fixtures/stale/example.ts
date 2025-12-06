@@ -1,2 +1,2 @@
 // Sample code with stale annotation
-// @story non-existent.md
+// @story docs/stories/non-existent.story.md

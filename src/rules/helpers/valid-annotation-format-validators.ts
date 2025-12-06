@@ -2,9 +2,15 @@
  * Validators and helper functions for the valid-annotation-format rule.
  *
  * This module contains the core validation logic that was originally
- * embedded in src/rules/valid-annotation-format.ts. It is extracted
- * here to keep the main rule module smaller and easier to read while
- * preserving existing behavior.
+ * embedded in src/rules/valid-annotation-format.ts. The logic is extracted
+ * into this helper to keep the main rule implementation smaller and easier
+ * to read while still preserving all existing behavior.
+ *
+ * The implementation in this module supports:
+ * - validation of @story annotations
+ * - validation of @req annotations
+ * - validation of @implements/@supports-style annotations
+ * - safe, minimal auto-fixes for certain invalid formats
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
@@ -46,6 +52,8 @@ import { getResolvedDefaults } from "./valid-annotation-options";
 
 /**
  * Report an invalid @story annotation without applying a fix.
+ *
+ * The invalid @story annotation is detected and reported but left unchanged.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -123,6 +131,9 @@ export function createStoryFix(
  * for common path suffix issues by locating and replacing the path text
  * within the original comment.
  *
+ * Reporting includes both the original invalid value and, where applicable,
+ * a suggested corrected story path that only adjusts the suffix.
+ *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
@@ -167,6 +178,12 @@ export function reportInvalidStoryFormatWithFix(
 /**
  * Validate a @story annotation value and report detailed errors when needed.
  * Where safe and unambiguous, apply an automatic fix for missing suffixes.
+ *
+ * Processing of @story values includes:
+ *   - trimming whitespace,
+ *   - collapsing multi-line text,
+ *   - matching against the configured story regex,
+ *   - and attempting a conservative suffix-only correction when possible.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -231,6 +248,11 @@ export function validateStoryAnnotation(
 
 /**
  * Validate a @req annotation value and report detailed errors when needed.
+ *
+ * This behavior covers:
+ *   - detecting missing identifiers,
+ *   - collapsing multi-line requirement identifiers,
+ *   - and validating the final identifier against the configured regex.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -314,6 +336,10 @@ export function validateImplementsAnnotation(
 
 /**
  * Finalize and validate the currently pending annotation, if any.
+ *
+ * Pending annotation state is produced by earlier parsing of multi-line
+ * comments. This function dispatches that accumulated value to the
+ * appropriate validator and then clears the pending state.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md

@@ -19,7 +19,7 @@ import {
 } from "./maintenance";
 
 /**
- * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
+ * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
  * @req REQ-RULE-LIST - Enumerate supported rule file names for plugin discovery
  */
 const RULE_NAMES = [
@@ -39,18 +39,18 @@ const rules: Record<RuleName, Rule.RuleModule> = {} as any;
 
 RULE_NAMES.forEach(
   /**
-   * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
+   * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
    * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
    * @param {RuleName} name - Rule file base name used to discover and load rule module
    */
   (name) => {
     /**
-     * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
+     * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
      * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
      */
     try {
       /**
-       * @story docs/stories/002.0-DYNAMIC-RULE-LOADING.story.md
+       * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
        * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
        */
       // Dynamically require rule module
@@ -59,11 +59,11 @@ RULE_NAMES.forEach(
       rules[name] = mod.default ?? mod;
     } catch (error: any) {
       /**
-       * @story docs/stories/003.0-RULE-LOAD-ERROR-HANDLING.story.md
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
        * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
        */
       /**
-       * @story docs/stories/003.0-RULE-LOAD-ERROR-HANDLING.story.md
+       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
        * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
        */
       console.error(

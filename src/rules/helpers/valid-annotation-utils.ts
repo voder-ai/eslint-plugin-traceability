@@ -53,19 +53,19 @@ export function collapseAnnotationValue(value: string): string {
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
  * @story docs/stories/010.2-REQ-STORY-PATH-AUTOFIX.story.md
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  * @req REQ-AUTOFIX-SAFE - Auto-fix must be conservative and never broaden the referenced path
  * @req REQ-AUTOFIX-PRESERVE - Preserve surrounding formatting when normalizing story path suffixes
  */
 export function getFixedStoryPath(original: string): string | null {
-  // @story docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md | REQ-AUTOFIX-SAFE - Reject auto-fix when the path contains ".." traversal segments to avoid broadening the reference.
+  // @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md | REQ-AUTOFIX-SAFE - Reject auto-fix when the path contains ".." traversal segments to avoid broadening the reference.
   // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY - Enforces correctness of the story identifier by rejecting paths that use unsafe traversal segments.
   if (original.includes("..")) {
     // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT
     // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE
-    // @supports docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md REQ-AUTOFIX-SAFE
+    // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-AUTOFIX-SAFE
     return null;
   }
 
@@ -74,7 +74,7 @@ export function getFixedStoryPath(original: string): string | null {
   if (/\.story\.md$/.test(original)) {
     // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT
     // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
-    // @supports docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md REQ-AUTOFIX-FORMAT
+    // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-AUTOFIX-FORMAT
     return null;
   }
 
@@ -109,7 +109,7 @@ export function getFixedStoryPath(original: string): string | null {
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
@@ -124,12 +124,12 @@ export function buildStoryErrorMessage(
   // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY - Enforces presence of the story identifier by emitting a targeted message when the @story value is absent.
   if (kind === "missing") {
     // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-ERROR-SPECIFICITY
-    // @supports docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md REQ-ERROR-SPECIFICITY
+    // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-ERROR-SPECIFICITY
     return `Missing story path for @story annotation. Expected a path like "${example}".`;
   }
 
   // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-ERROR-SPECIFICITY
-  // @supports docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md REQ-ERROR-SPECIFICITY
+  // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-ERROR-SPECIFICITY
   return `Invalid story path "${value ?? ""}" for @story annotation. Expected a path like "${example}".`;
 }
 
@@ -138,7 +138,7 @@ export function buildStoryErrorMessage(
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
  * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
  * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
  */
@@ -153,11 +153,11 @@ export function buildReqErrorMessage(
   // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY - Enforces presence of the requirement identifier by emitting a specific message when the @req value is missing.
   if (kind === "missing") {
     // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-ERROR-SPECIFICITY
-    // @supports docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md REQ-ERROR-SPECIFICITY
+    // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-ERROR-SPECIFICITY
     return `Missing requirement ID for @req annotation. Expected an identifier like "${example}".`;
   }
 
   // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-ERROR-SPECIFICITY
-  // @supports docs/stories/010.1-REQ-STORY-PATH-STRICTNESS.story.md REQ-ERROR-SPECIFICITY
+  // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-ERROR-SPECIFICITY
   return `Invalid requirement ID "${value ?? ""}" for @req annotation. Expected an identifier like "${example}" (uppercase letters, numbers, and dashes only).`;
 }
