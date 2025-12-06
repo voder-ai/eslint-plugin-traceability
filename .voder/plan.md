@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Design and add focused unit tests for the catch-annotation position helper so that all currently uncovered branches around CatchClause detection and position priority are executed and their behavior is verified against the Story 025 requirements.
+- [ ] Analyze the existing test tooling stack and the Jest startup error under the latest supported Node version to decide whether to resolve the issue by upgrading Jest and its related tooling or by narrowing the officially supported Node engine range.
 
 ## NEXT
 
-- [ ] Review the new catch-annotation position tests to ensure they clearly express the intended CatchClause behavior, include the correct story and requirement traceability annotations, and follow the existing test naming and structure conventions.
-- [ ] Compare the actual behavior exercised by the new tests with the acceptance criteria in the CatchClause story and, if any mismatches are found, refine the helper implementation to align with the dual-position and fallback rules without breaking existing branch-annotation behavior.
-- [ ] Re-run the broader branch-annotation rule tests conceptually to confirm that the updated helper and tests preserve existing semantics for other branch types while improving CatchClause support.
+- [ ] Implement the chosen fix for the Jest and Node compatibility issue, either by updating the Jest and ts-jest dependency chain and adjusting configuration or by tightening the Node engines field to match the versions where the tests are known to run successfully.
+- [ ] Align the continuous integration configuration with the final supported Node versions so that the test matrix explicitly covers all declared supported versions and reliably detects any future environment-specific test failures.
+- [ ] Review the testing and contribution documentation to ensure they clearly state the supported Node versions and any relevant notes about running the test suite locally, reflecting the changes made to the tooling or engine constraints.
 
 ## LATER
 
-- [ ] Extend or update the branch-annotation rule documentation to describe the supported CatchClause annotation positions, including how they interact with formatters like Prettier, and link to the new tests as implementation references in the story file.
-- [ ] Identify any remaining low-coverage or untested edge cases in the catch-annotation position helper and related branch-annotation utilities and add small, focused tests to cover them.
-- [ ] Once the implementation and tests are stable, update the CatchClause story’s acceptance criteria and Definition of Done sections to mark them as satisfied and to document the relevant helper and test files.
+- [ ] Evaluate whether any remaining performance-heavy tests should be separated into a dedicated performance test script to keep the standard test run fast while still preserving coverage in CI.
+- [ ] Periodically reassess Jest and related tooling versions as new Node releases appear to ensure that the supported Node matrix and dependency versions remain in sync without introducing environment-specific test failures.
+- [ ] Consider adding a small automated check or badge that summarizes the currently supported Node versions based on the engines field and CI matrix, to make compatibility more visible to contributors and users.

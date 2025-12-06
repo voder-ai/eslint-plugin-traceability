@@ -1,378 +1,540 @@
 Here’s a history-only summary of what’s been done so far on the project, including the most recent work:
 
 1. **Refactor of `valid-req-reference` rule**
-   - Extracted parsing, validation, traversal, and file I/O into `valid-req-reference-helpers.ts`.
-   - Exposed `createValidReqReferenceProgramVisitor(context)` as the rule’s single entrypoint.
-   - Simplified `src/rules/valid-req-reference.ts` to keep `meta`/`messages` and delegate `Program` to the helper visitor.
-   - Ran full local quality checks (tests, lint, type-check, format, CI-verify) and confirmed CI success.
-   - Updated development docs to explain the helper-module pattern and documented helper placement under `src/rules/helpers` and `src/utils`.
+   - Extracted parsing, validation, traversal, and file I/O logic into `valid-req-reference-helpers.ts`.
+   - Introduced `createValidReqReferenceProgramVisitor(context)` as the rule’s single entrypoint.
+   - Simplified `src/rules/valid-req-reference.ts` to keep only `meta`/`messages` and delegate `Program` to the helper.
+   - Ran the full local quality suite (tests, lint, type-check, format, `ci-verify`) and confirmed CI success.
+   - Updated development docs to describe the helper-module pattern and helper placement under `src/rules/helpers` and `src/utils`.
 
 2. **Enhancements to `require-branch-annotation`**
-   - Investigated behavior with different control-flow constructs and identified missing coverage for nested control flow and performance requirements (REQ-NESTED-HANDLING, REQ-PERFORMANCE-OPTIMIZATION).
-   - Added nested-branch tests (valid/invalid nested `if` scenarios and autofix expectations for inner branches only).
+   - Investigated behavior across control-flow constructs, identifying missing coverage for nested control flow and performance requirements (REQ-NESTED-HANDLING, REQ-PERFORMANCE-OPTIMIZATION).
+   - Added nested-branch tests covering valid/invalid nested `if` scenarios and autofix expectations (fixing only inner branches).
    - Implemented a Jest performance test (`tests/perf/require-branch-annotation-large-file.test.ts`) using ESLint’s `Linter` to exercise deeply nested branches and assert runtime under 5000 ms while still producing diagnostics.
-   - Fixed RuleTester expectations (adding `output` for invalid nested cases), reran the full quality suite, committed changes, and confirmed CI success.
+   - Updated RuleTester expectations with `output` for invalid nested cases, reran the full quality suite, committed, and verified CI success.
 
 3. **Test coverage and CI reliability**
-   - Ran Jest with coverage and verified high coverage (~96.5% statements/lines, ~84.3% branches, ~99.6% functions).
-   - Determined earlier coverage failures were due to missing `node_modules`, not code issues.
+   - Ran Jest with coverage and confirmed high coverage (~96.5% statements/lines, ~84.3% branches, ~99.6% functions).
+   - Determined earlier coverage failures were due to missing `node_modules` rather than code problems.
    - Validated `ci-verify:full` without requiring code changes.
 
 4. **Maintenance CLI review and improvements**
-   - Reviewed `src/maintenance/*.ts` and tests, identifying under-tested paths in `verify`, `report`, CLI perf, and an extra `fs.statSync` branch in `update.ts`.
-   - Added targeted tests:
+   - Reviewed `src/maintenance/*.ts` and tests, identifying under-tested paths in `verify`, `report`, CLI performance, and an extra `fs.statSync` branch in `update.ts`.
+   - Added targeted tests to ensure:
      - `verify` exits with code 1 and prints guidance when annotations are stale/invalid.
-     - `report` prints “nothing to report” and exits 0 when no stale annotations are found.
-     - Renamed a detect test to clarify behavior around permission-denied errors.
-   - Simplified `src/maintenance/update.ts` by removing redundant `fs.statSync`/is-file checks, documenting reliance on `getAllFiles`, and achieved full coverage for `update.ts`.
-   - Extended the maintenance CLI perf test (`maintenance-cli-large-workspace.test.ts`) to include `verify` performance on a synthetic large workspace, checking exit code 1, runtime under 5000 ms, and appropriate output.
+     - `report` prints “nothing to report” and exits 0 when no stale annotations exist.
+     - Permission-denied behavior is more clearly tested (via a renamed detect test).
+   - Simplified `src/maintenance/update.ts` by removing redundant `fs.statSync`/is-file checks and documenting reliance on `getAllFiles`, achieving full coverage for `update.ts`.
+   - Extended the maintenance CLI perf test (`maintenance-cli-large-workspace.test.ts`) to measure `verify` performance on a large synthetic workspace, asserting exit code 1, runtime under 5000 ms, and expected output.
    - Ran focused and full maintenance tests, updated `.voder/plan.md` to mark maintenance review/testing as complete, committed changes, and confirmed CI success.
 
 5. **Dogfooding and traceability enforcement**
-   - Performed a dogfooding inspection pass (Story 023): reviewed the story and problem doc, ESLint/Jest/TS/CI/Husky configs, plugin/rule entrypoints, internal scripts, and traceability checks; ran `npm run check:traceability` to understand current behavior.
-   - Enabled `traceability/require-story-annotation` for TypeScript files in `eslint.config.js`, ensuring application to `src` and `tests`.
-   - Adjusted test overrides to avoid unnecessary inline `eslint-disable` comments; verified with `npm run report:eslint-suppressions`.
+   - Performed a dogfooding inspection pass (Story 023) across stories, problem docs, ESLint/Jest/TS/CI/Husky configs, plugin/rule entrypoints, internal scripts, and traceability checks; ran `npm run check:traceability` to understand behavior.
+   - Enabled `traceability/require-story-annotation` for TypeScript files in `eslint.config.js`, covering `src` and `tests`.
+   - Adjusted ESLint test overrides to avoid unnecessary inline `eslint-disable` comments and verified with `npm run report:eslint-suppressions`.
    - Added `tests/integration/dogfooding-validation.test.ts` to:
      - Assert that the TS ESLint config block sets `traceability/require-story-annotation` to `"error"`.
-     - Run the ESLint CLI on `src/dogfood.ts` without annotations and verify non-zero exit and error output referencing the file.
-   - Iterated on the dogfooding integration test (switching to CLI, relaxing stdout assumptions) and removed now-unnecessary inline disables in tests.
-   - Ran the dogfooding integration test and the full test suite successfully.
+     - Run ESLint CLI on `src/dogfood.ts` without annotations and confirm non-zero exit and error output referencing the file.
+   - Iterated on the dogfooding integration test (switching to CLI use, relaxing strict stdout assumptions) and removed now-unneeded inline disables in tests.
+   - Ran the dogfooding integration test and the full suite successfully.
 
 6. **Story and problem-doc updates for dogfooding**
    - Updated Story 023 (`023.0-MAINT-DOGFOODING-VALIDATION.story.md`) to:
-     - Record that the first traceability rule is enabled.
-     - Note that the dogfooding validation test exists and passes.
-     - Document the incremental dogfooding approach.
+     - Record that the first traceability rule (`require-story-annotation`) is enabled.
+     - Note the existence and passing status of the dogfooding validation test.
+     - Document the incremental dogfooding strategy.
    - Updated `001-plugin-not-enforcing-own-traceability-rules.open.md` to:
      - Reference Story 023.
-     - Document the dogfooding integration test and its passing state.
+     - Describe the dogfooding integration test and its green state.
      - Mark the mitigation as partial.
 
-7. **Documentation: dogfooding and self-validation**
-   - Augmented `docs/eslint-plugin-development-guide.md` with a “Dogfooding and Self-Validation” section describing:
-     - Enabling traceability rules in this repo (starting with `require-story-annotation`).
-     - The one-rule-at-a-time rollout approach.
-     - The role of `report:eslint-suppressions` and `ci-verify:full`.
-   - Verified that lint, CI, and Husky pre-push hooks now run ESLint with `require-story-annotation` enforced on `src` and `tests`.
+7. **Documentation on dogfooding and self-validation**
+   - Extended `docs/eslint-plugin-development-guide.md` with a “Dogfooding and Self-Validation” section describing:
+     - Enabling traceability rules within this repo (starting with `require-story-annotation`).
+     - A one-rule-at-a-time rollout approach.
+     - The roles of `report:eslint-suppressions` and `ci-verify:full`.
+   - Verified that lint, CI, and Husky pre-push hooks run ESLint with `require-story-annotation` enforced on `src` and `tests`.
 
 8. **Plugin-level metadata and setup verification**
-   - Added `pluginMeta` in `src/index.ts` that reads `package.json` (with fallbacks) and exposes `name`, `version`, and `namespace: "traceability"`, attaching this as `meta` on the exported plugin.
-   - Extended `tests/plugin-setup.test.ts` to assert that the plugin exports `meta` with expected name, namespace `"traceability"`, and version matching `package.json`.
-   - Updated annotations in that test to cover REQ-PLUGIN-STRUCTURE and REQ-NPM-PACKAGE.
-   - Revalidated plugin setup via targeted tests (plugin setup, default export/configs, flat-config integration, CLI error handling) and then the full suite.
-   - Updated Story 001 (`001.0-DEV-PLUGIN-SETUP.story.md`) to mark plugin setup acceptance criteria and DoD as complete and tie them explicitly to registry/tests, config integration tests, plugin meta, and docs.
-   - Performed a documentation/quality pass for plugin setup, ensuring README, setup guides, and dev guides accurately describe the plugin export structure, configs, and workflow.
+   - Added `pluginMeta` in `src/index.ts`, reading from `package.json` (with fallbacks) and exposing `name`, `version`, and `namespace: "traceability"`, and attached it as `meta` on the exported plugin.
+   - Updated `tests/plugin-setup.test.ts` to assert that the plugin exports `meta` with the correct name, `"traceability"` namespace, and a version matching `package.json`.
+   - Updated test annotations to cover REQ-PLUGIN-STRUCTURE and REQ-NPM-PACKAGE.
+   - Revalidated plugin setup via targeted tests (plugin export/meta, default configs, flat-config integration, CLI error handling) and then the full test suite.
+   - Updated Story 001 (`001.0-DEV-PLUGIN-SETUP.story.md`) to mark plugin setup acceptance criteria and DoD as complete and link them to registry/tests, config integration tests, plugin meta, and docs.
+   - Performed a documentation/quality pass to ensure README, setup guides, and dev guides accurately describe plugin export structure, configs, and workflow.
 
 9. **Traceability annotations in helpers**
-   - Reviewed helper modules’ traceability annotations.
-   - Found and fixed inconsistencies in `valid-req-reference-helpers.ts` (references to non-existent REQ IDs), realigning `@supports`/`@req` tags with actual stories and requirements.
-   - Confirmed other helper modules already had correct annotations.
-   - Updated the development guide to clarify helper-module annotation expectations, including multi-story `@supports` examples.
-   - Reran the quality suite after these fixes.
+   - Reviewed traceability annotations across helper modules.
+   - Fixed inconsistencies in `valid-req-reference-helpers.ts` (removing/adjusting references to non-existent REQ IDs) and realigned `@supports`/`@req` tags with actual stories and requirements.
+   - Confirmed that other helper modules already had correct annotations.
+   - Updated the development guide to clarify helper-module annotation expectations, including multi-story `@supports` usage.
+   - Reran the quality suite after these changes.
 
 10. **Ongoing quality and CI checks**
-    - After each batch of changes, repeatedly ran local and CI checks: build, lint, tests with coverage, type-check, format, `ci-verify`, and security scan.
-    - All checks reported success.
+    - Repeatedly ran local and CI checks after each batch: build, lint, tests with coverage, type-check, format, `ci-verify`, and security scan.
+    - Confirmed that all checks and CI pipelines continued to pass.
 
 11. **ESLint config validation and Story 002 implementation**
-    - Investigated Story 002 (`002.0-DEV-ESLINT-CONFIG.story.md`) and the existing ESLint setup:
-      - Reviewed story, `eslint.config.js`, traceability XML, and user docs (`user-docs/eslint-9-setup-guide.md`, README, CI docs).
-      - Reviewed rules and tests related to configuration and validation (`valid-story-reference`, `require-story-annotation`, `require-test-traceability`, `tests/config/*.test.ts`, and integration/CLI tests).
-      - Confirmed existing flat-config patterns, presets, and rule schemas align with ESLint 9 and the story’s implementation notes.
-    - Extended `tests/config/eslint-config-validation.test.ts` to validate ESLint runtime config error handling for `traceability/valid-story-reference` by:
-      - Asserting errors for unknown option keys (e.g., `unknownOptionKey`) and checking error messages mention the rule ID and unexpected property.
-      - Asserting errors for invalid option types (e.g., non-array `storyDirectories`), checking messages reference the rule ID, bad value, and array expectations.
+    - Investigated Story 002 (`002.0-DEV-ESLINT-CONFIG.story.md`) and the existing ESLint configuration:
+      - Reviewed the story, `eslint.config.js`, traceability XML, and user docs (`user-docs/eslint-9-setup-guide.md`, README, CI docs).
+      - Reviewed relevant rules and tests (`valid-story-reference`, `require-story-annotation`, `require-test-traceability`, `tests/config/*.test.ts`, and integration/CLI tests).
+      - Confirmed alignment of flat-config patterns, presets, and rule schemas with ESLint 9 and the story’s implementation notes.
+    - Extended `tests/config/eslint-config-validation.test.ts` to cover runtime config error handling for `traceability/valid-story-reference` by:
+      - Asserting errors for unknown option keys and checking error messages mention the rule ID and unexpected property.
+      - Asserting errors for invalid option types (e.g., non-array `storyDirectories`) and checking messages for rule ID, bad value, and array expectations.
       - Using `FlatESLint` with the standard override patterns and robust substring-based assertions.
     - Updated Story 002 to:
-      - Mark the **Error Handling** acceptance criterion as completed.
-      - Mark all Definition of Done items as complete, including tests for configuration loading, validation, and rule application.
-      - Add an **Implementation Links** section pointing to `src/index.ts` configs, docs, rule schemas, and config validation tests.
+      - Mark the Error Handling acceptance criterion as complete.
+      - Mark all DoD items as complete (configuration loading, validation, rule application tests).
+      - Add an Implementation Links section pointing to `src/index.ts` configs, docs, rule schemas, and config validation tests.
       - Confirm alignment with ADRs `001-typescript-for-eslint-plugin.accepted.md` and `009-security-focused-lint-rules.accepted.md`.
-    - Ran targeted and full quality checks (`npm test` on the config tests, `build`, `type-check`, `lint`, `format:check`, full `npm test`), committed (`test: add ESLint config validation error handling coverage`), pushed, and verified CI/CD success.
+    - Ran targeted config tests and the full quality suite (`build`, `type-check`, `lint`, `format:check`, full `npm test`), committed (`test: add ESLint config validation error handling coverage`), pushed, and verified CI/CD success.
 
 12. **Inline-code ignore behavior for annotations (Story 024.0)**
-    - Reviewed `docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md`, helper implementations, and existing tests for `valid-annotation-format`.
+    - Reviewed Story 024.0 (`docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md`), related helpers, and existing tests for `valid-annotation-format`.
     - Implemented centralized backtick-aware filtering in the comment normalization helper:
+      - Updated `normalizeCommentLine` in `src/rules/helpers/valid-annotation-format-internal.ts` to:
+        - Trim the input line.
+        - Replace backtick-wrapped segments (`` `[^`]*` ``) with same-length spaces to preserve positions.
+        - Run annotation detection (`@story`, `@req`, `@supports`) on the filtered string.
+        - If no annotation is found, strip leading `*` (JSDoc-style) from the filtered text before returning.
+        - If an annotation is found, return `filtered.slice(annotationMatch.index)` so earlier inline code doesn’t affect extraction.
+      - Ensured consistent use of the filtered string for detection and returned values.
+      - Updated traceability annotations:
+        - File header `@supports` referencing Story 024.0 and REQ-IGNORE-INLINE-CODE, REQ-PRESERVE-BOUNDARIES, REQ-CENTRALIZED-FILTER.
+        - Inline `@supports` above the backtick-filtering logic.
+    - Added focused unit tests in `tests/rules/valid-annotation-format-internal.test.ts` to verify:
+      - Backtick-wrapped `@story` and `@req` in explanatory text are ignored, replaced by correctly sized space runs.
+      - Combined patterns like `` `@story` + `@req` `` normalize without detecting annotations and with correct spacing.
+      - Lines mixing inline-code references (e.g., `` `@supports` ``) with a real `@story` annotation outside backticks normalize to the real annotation only.
+      - Multiple inline-code segments on one line are each filtered with correct spacing.
+      - Lines without backticks but with real annotations (e.g., `" * @story ..."`) normalize with leading `*` stripped and the annotation preserved.
+      - Tests directly call `normalizeCommentLine` from `src/rules/helpers/valid-annotation-format-internal.ts` and include `@story`/`@req` traceability tags tied to Story 024.0.
+    - Verified integration with existing rule tests by repeatedly running the new internal tests and the full Jest suite, confirming `valid-annotation-format` behavior remained correct.
+    - Updated Story 024.0 to mark all Acceptance Criteria and DoD items as completed and added Implementation Links to the helper and tests.
+    - Ran `npm test` (focused and full, with `--runInBand`), `npm run build`, `npm run lint`, `npm run type-check` (twice), `npm run format:check`, and `npm run duplication`.
+    - Committed and pushed:
+      - `fix: ignore inline-code annotation references in comment normalization`
+      - `docs: mark inline-code ignore story 024.0 as implemented`
+    - Confirmed local `ci-verify:full` via pre-push hooks and successful CI/CD runs (e.g., GitHub Actions “CI/CD Pipeline (main)” run IDs 19987675537 and 19987706130).
 
-      - **File:** `src/rules/helpers/valid-annotation-format-internal.ts`
-      - Updated `normalizeCommentLine` so that:
-        - The input line is trimmed.
-        - Backtick-wrapped segments matching `` `[^`]*` `` are replaced with spaces of identical length, preserving character positions.
-        - Annotation detection (`@story`, `@req`, `@supports`) runs against this filtered string.
-        - If no annotation is found, leading `*` (for JSDoc-style comments) is removed from the filtered text and that result is returned.
-        - If an annotation is found, the function returns `filtered.slice(annotationMatch.index)`, preserving correct annotation extraction even when there are backtick segments earlier in the line.
-      - Ensured that the filtered string is used consistently for both detection and returned values.
-      - Added and refined traceability annotations:
-        - File header JSDoc uses a single `@supports` line referencing `docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md` and REQ-IGNORE-INLINE-CODE, REQ-PRESERVE-BOUNDARIES, REQ-CENTRALIZED-FILTER.
-        - Added an inline `@supports` comment directly above the backtick-filtering logic.
-
-    - Added focused unit tests for the normalization helper:
-
-      - **File added:** `tests/rules/valid-annotation-format-internal.test.ts`
-      - Wrote tests tied to Story 024.0 and its requirements (`@story` and `@req` tags in the test header) that verify:
-        - Backtick-wrapped `@story` in explanatory text is removed and not detected as an annotation, while preserving other text and spacing (spaces equal to the length of the removed segment).
-        - Backtick-wrapped `@req` is similarly ignored and replaced with spaces of equal length.
-        - Combined patterns like `` `@story` + `@req` `` normalize to a string with correctly sized space runs and no annotation tokens.
-        - Lines containing a mix of backtick-wrapped references (e.g., `` `@supports` ``) and a real `@story` annotation outside backticks still normalize to just the real `@story` annotation (demonstrating correct detection of actual annotations).
-        - Multiple inline code segments on the same line (`first `@story` and second `@req` markers`) are each filtered with correct spacing.
-        - Lines with no backticks but with real annotations (e.g., `" * @story ..."` JSDoc-style) still normalize as before, with leading `*` stripped and the annotation preserved.
-      - Adjusted test expectations to reflect how `normalizeCommentLine` receives raw comment values (no leading `//`) and to match exact space counts created by replacing each backtick span with spaces of that span’s length.
-      - Confirmed these tests call `normalizeCommentLine` directly from `src/rules/helpers/valid-annotation-format-internal`.
-
-    - Verified integration with existing rule tests:
-      - Ran `npm test -- --runInBand --runTestsByPath tests/rules/valid-annotation-format-internal.test.ts` repeatedly while iterating on expectations and helper behavior.
-      - Ran the entire Jest suite (`npm test -- --runInBand`) and confirmed all suites and tests still pass, including `tests/rules/valid-annotation-format.test.ts`.
-
-    - Updated traceability documentation for Story 024.0:
-
-      - **File:** `docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md`
-      - Marked all Acceptance Criteria items as completed, including:
-        - Ignoring backtick-wrapped annotation keywords during parsing.
-        - Handling common documentation patterns like `` `@story` + `@req` ``.
-        - Correctly validating lines that combine inline-code references and real annotations.
-        - Ensuring multi-line support, no regressions, and documented behavior.
-      - Marked all Definition of Done items as completed, covering:
-        - Implementation of backtick stripping in `normalizeCommentLine`.
-        - Unit tests for acceptance-criteria scenarios.
-        - Passing existing tests and documentation updates.
-      - Added an **Implementation Links** section referencing:
-        - `src/rules/helpers/valid-annotation-format-internal.ts` (`normalizeCommentLine`).
-        - `tests/rules/valid-annotation-format-internal.test.ts`.
-
-    - Quality checks, commits, and CI:
-      - Ran:
-        - `npm test -- --runInBand --verbose --runTestsByPath tests/rules/valid-annotation-format-internal.test.ts`
-        - Full `npm test -- --runInBand`
-        - `npm run build`
-        - `npm run lint`
-        - `npm run type-check` (twice during the process)
-        - `npm run format:check`
-        - `npm run duplication`
-      - Committed and pushed:
-        - `fix: ignore inline-code annotation references in comment normalization`
-        - `docs: mark inline-code ignore story 024.0 as implemented`
-      - Confirmed Git hooks and CI/CD:
-        - Local `ci-verify:full` and related checks ran via pre-push hooks.
-        - GitHub Actions “CI/CD Pipeline (main)” runs (including run IDs 19987675537 and 19987706130) completed successfully for these commits.
+13. **Focused coverage for req annotation detection heuristics (most recent work)**
+    - Investigated coverage for `src/utils/reqAnnotationDetection.ts` using:
+      - `npm run coverage:branches`
+      - Focused Jest runs collecting coverage from `src/utils/reqAnnotationDetection.ts`.
+      - Inspected implementation and coverage tooling (`scripts/extract-uncovered-branches.js`) to understand uncovered branches.
+    - Reviewed existing related tests (`tests/utils/annotation-checker.test.ts`) and the helper `src/utils/annotation-checker.ts`.
+    - Added `tests/utils/req-annotation-detection.test.ts` with targeted scenarios for `hasReqAnnotation` and its advanced heuristics:
+      - Verified behavior when `sourceCode` is missing (early-return guard).
+      - Verified behavior when `node` is missing (same guard).
+      - Drove the `try`/`catch` path by making `getCommentsBefore` throw, confirming fallback to `hasReqInJsdocOrComments` via a JSDoc containing `@req`.
+      - Confirmed that `@supports` in comments is treated as satisfying the requirement detection (`commentContainsReq` / `hasReqInJsdocOrComments`).
+      - Included a minimal `createMockSourceCode` helper for `lines`, `text`, and `commentsBefore`.
+      - Added a test header with `@supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION`.
+    - Ran targeted Jest commands:
+      - `npm test -- --runTestsByPath tests/utils/req-annotation-detection.test.ts tests/utils/annotation-checker.test.ts`
+      - `npm test -- --coverage --collectCoverageFrom src/utils/reqAnnotationDetection.ts --runTestsByPath tests/utils/req-annotation-detection.test.ts tests/utils/annotation-checker.test.ts`
+    - Achieved improved focused coverage for `reqAnnotationDetection.ts` (e.g., branches improved from ~46.87% to ~84.31%, with ~95% statements/lines and 100% functions in that module on the focused run).
+    - Staged and committed changes (`test: add coverage tests for req annotation detection heuristics`).
+    - Ran `npm run ci-verify:fast`, confirming all fast checks passed locally.
+    - Pushed the branch and verified the main CI/CD workflow (`CI/CD Pipeline`, run ID 19988568223) completed successfully with full checks and semantic-release.
 
 **Most recently we've executed the following action:**
 
 ---
-Used tool: get_git_status with input: {}
-Used tool: find_files with input: {"pattern":"reqAnnotationDetection.*","directory":"src"}
+Used tool: list_directory with input: {"dirPath":"src"}
 Used tool: list_directory with input: {"dirPath":"tests"}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts"}
-Used tool: search_file_content with input: {"filePath":"src/utils/reqAnnotationDetection.ts","pattern":"hasReqAnnotation","isRegex":false}
-Used tool: find_files with input: {"pattern":"*reqAnnotation*","directory":"tests"}
-Used tool: find_files with input: {"pattern":"*annotation-checker*","directory":"tests"}
-Used tool: read_file with input: {"filePath":"tests/utils/annotation-checker.test.ts"}
+Used tool: list_directory with input: {"dirPath":"docs/stories"}
+Used tool: find_files with input: {"pattern":"*catch-annotation-position*","directory":"."}
+Used tool: read_file with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md"}
+Used tool: find_files with input: {"pattern":"*branch-annotation*","directory":"src"}
+Used tool: find_files with input: {"pattern":"*branch-annotation*","directory":"tests"}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts"}
+Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-helpers.test.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/require-branch-annotation.test.ts"}
+Used tool: find_files with input: {"pattern":"*catch-annotation*","directory":"src"}
+Used tool: read_file with input: {"filePath":"src/rules/require-branch-annotation.ts"}
+Used tool: find_files with input: {"pattern":"*catch-annotation*","directory":"src"}
+Used tool: list_directory with input: {"dirPath":"src/rules"}
+Used tool: list_directory with input: {"dirPath":"src/rules/helpers"}
+Used tool: search_file_content with input: {"filePath":"src","pattern":"CatchClause","isRegex":false}
+Used tool: run_command with input: {"command":"grep","args":["-R","CatchClause","src","tests"]}
+Used tool: read_file with input: {"filePath":"docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md"}
+Used tool: run_command with input: {"command":"grep","args":["-R","catch-annotation-position","src"]}
+Used tool: find_files with input: {"pattern":"*catch*.ts","directory":"src"}
+Used tool: run_command with input: {"command":"grep","args":["-R","getCommentsInside","src","tests"]}
+Used tool: run_command with input: {"command":"grep","args":["-R","gatherBranchCommentText","-n","src","tests"]}
+Used tool: run_command with input: {"command":"grep","args":["-R","SourceCode.from","src","tests"]}
+Used tool: run_command with input: {"command":"grep","args":["-R","getSourceCode()","tests","src/utils","src/rules"]}
+Used tool: read_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts"}
+Used tool: run_command with input: {"command":"grep","args":["-R","insertTextBeforeRange","tests"]}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-core.test.ts"}
+Used tool: run_command with input: {"command":"grep","args":["-R","CATCH-ANNOTATION-POSITION","src","tests","docs"]}
+Used tool: run_command with input: {"command":"grep","args":["-R","getCommentsBefore","src","tests"]}
 Used tool: read_file with input: {"filePath":"src/utils/annotation-checker.ts"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--coverage","--collectCoverageFrom","src/utils/reqAnnotationDetection.ts","--runTestsByPath","tests/utils/annotation-checker.test.ts"]}
-Used tool: run_command with input: {"command":"nl","args":["-ba","src/utils/reqAnnotationDetection.ts"]}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":1,"endLine":260}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-io.ts"}
-Used tool: read_file with input: {"filePath":"jest.config.js"}
 Used tool: read_file with input: {"filePath":"package.json"}
-Used tool: run_command with input: {"command":"npm","args":["run","coverage:branches"]}
-Used tool: find_files with input: {"pattern":"*reqAnnotationDetection*","directory":"coverage"}
-Used tool: search_file_content with input: {"filePath":"scripts/extract-uncovered-branches.js","pattern":"reqAnnotationDetection","isRegex":false}
-Used tool: read_file with input: {"filePath":"scripts/extract-uncovered-branches.js"}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":150,"endLine":220}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":220,"endLine":280}
-Used tool: generate_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts","content":"/**\n * Tests for advanced @req detection heuristics\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION\n */\nimport type { TSESTree } from \"@typescript-eslint/utils\";\nimport { hasReqAnnotation as _hasReqAnnotation } from \"../../src/utils/reqAnnotationDetection\";\n\n// Small helper to construct a minimal SourceCode-like object for the detection helpers.\nfunction createMockSourceCode(options: {\n  lines?: string[] | null;\n  text?: string;\n  commentsBefore?: any[];\n} = {}) {\n  const { lines = null, text = \"\", commentsBefore = [] } = options;\n  return {\n    lines: lines ?? undefined,\n    getText() {\n      return text;\n    },\n    getCommentsBefore() {\n      return commentsBefore;\n    },\n  } as any;\n}\n\ndescribe(\"reqAnnotationDetection advanced heuristics (Story 003.0-DEV-FUNCTION-ANNOTATIONS)\", () => {\n  it(\"[REQ-ANNOTATION-REQ-DETECTION] returns false when sourceCode is missing\", () => {\n    const has = _hasReqAnnotation(null as any, [], undefined as any, {\n      loc: null,\n    } as unknown as TSESTree.Node);\n\n    expect(has).toBe(false);\n  });\n\n  it(\"[REQ-ANNOTATION-REQ-DETECTION] returns false when node is missing\", () => {\n    const context = {\n      getSourceCode() {\n        return createMockSourceCode({ lines: [\"/** @req REQ-TEST */\"] });\n      },\n    } as any;\n\n    const has = _hasReqAnnotation(null as any, [], context, undefined as any);\n\n    expect(has).toBe(false);\n  });\n\n  it(\"[REQ-ANNOTATION-REQ-DETECTION] inspects jsdoc and comments when advanced heuristics throw\", () => {\n    const context = {\n      getSourceCode() {\n        // This object intentionally causes hasReqInAdvancedHeuristics to throw by\n        // providing a getCommentsBefore implementation that throws on access.\n        return {\n          getCommentsBefore() {\n            throw new Error(\"boom\");\n          },\n        } as any;\n      },\n    } as any;\n\n    const jsdoc = { value: \"/** @req REQ-FROM-JSDOC */\" } as any;\n\n    const has = _hasReqAnnotation(jsdoc, [], context, {\n      // Minimal shape – the helper will call into the mock sourceCode and trigger the throw\n      parent: {},\n    } as any);\n\n    expect(has).toBe(true);\n  });\n\n  it(\"[REQ-ANNOTATION-REQ-DETECTION] treats @supports in comments as satisfying requirement\", () => {\n    const context = {\n      getSourceCode() {\n        return createMockSourceCode();\n      },\n    } as any;\n\n    const comments = [{ value: \"// @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-X\" }];\n\n    const has = _hasReqAnnotation(null as any, comments, context, {\n      parent: {},\n    } as any);\n\n    expect(has).toBe(true);\n  });\n});\n"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/utils/req-annotation-detection.test.ts","tests/utils/annotation-checker.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--coverage","--collectCoverageFrom","src/utils/reqAnnotationDetection.ts","--runTestsByPath","tests/utils/req-annotation-detection.test.ts","tests/utils/annotation-checker.test.ts"]}
+Used tool: read_file with input: {"filePath":"eslint.config.js"}
+Used tool: run_command with input: {"command":"grep","args":["-R","Catch","src","tests"]}
+Used tool: run_command with input: {"command":"grep","args":["-R","getFirstToken","src"]}
+Used tool: get_git_status with input: {}
+Used tool: run_command with input: {"command":"grep","args":["-R","getCommentsInside","node_modules","-n"]}
+Used tool: read_file with input: {"filePath":"node_modules/eslint/lib/types/index.d.ts","startLine":360,"endLine":380}
+Used tool: run_command with input: {"command":"grep","args":["-R","insertTextAfter","src"]}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","startLine":1,"endLine":260}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","startLine":260,"endLine":360}
+Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/require-story-helpers.test.ts"}
+Used tool: read_file with input: {"filePath":"tsconfig.json"}
+Used tool: read_file with input: {"filePath":"docs/stories/008.0-DEV-AUTO-FIX.story.md"}
+Used tool: modify_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","instruction":"In the gatherBranchCommentText function, add special handling for CatchClause nodes to support dual-position detection and fallback.\n\n1. Keep the existing SwitchCase handling as-is.\n2. After the SwitchCase block, change the logic so that:\n   - You always retrieve comments before the node into a variable like beforeComments.\n   - Define the commentToValue mapper once and reuse it.\n   - Compute beforeText from beforeComments.\n   - If node.type is \"CatchClause\":\n     * If beforeText contains either \"@story\" or \"@req\" (use /@story\\b/ and /@req\\b/), return beforeText immediately.\n     * Otherwise, if node.body exists and sourceCode.getCommentsInside is a function, call getCommentsInside(node.body) to get inside comments, map them with commentToValue, and return the joined insideText.\n     * If node.body is missing or getCommentsInside is not a function, fall back to beforeText (which may be empty or non-annotated).\n3. For non-CatchClause nodes, return beforeText.\n\nIn the same file, update getBranchAnnotationInfo to compute a CatchClause-specific insert position and indent for auto-fix:\n\n1. After computing missingStory and missingReq based on gatherBranchCommentText, replace the existing indent and insertPos computation with logic that:\n   - Initializes indent and insertPos using the existing behavior (based on node.loc.start.line and getIndexFromLoc at column 0).\n   - If node.type is \"CatchClause\" and node.body exists:\n     * Try to find the first statement in node.body.body (if it's an array with at least one element and the first element has a loc.start.line).\n     * If such a first statement exists:\n       - Derive innerIndent from sourceCode.lines[firstStatement.loc.start.line - 1] using the same /^\\s*/ pattern.\n       - Set indent to innerIndent.\n       - Set insertPos via sourceCode.getIndexFromLoc({ line: firstStatement.loc.start.line, column: 0 }).\n     * If there is no first statement but node.body.loc and sourceCode.lines exist, derive a reasonable inner indent based on the block's line (e.g., take the indent from the block line and append two spaces), and set insertPos using getIndexFromLoc on node.body.loc.start.\n2. Return the updated indent and insertPos along with missingStory and missingReq.\n\nEnsure all new branches and helpers are fully typed to match the existing style and that you do not modify reportMissingStory, reportMissingReq, or reportMissingAnnotations beyond relying on the updated getBranchAnnotationInfo."}
+Used tool: generate_file with input: {"filePath":"tests/utils/branch-annotation-catch-position.test.ts","content":"/**\n * Unit tests for CatchClause annotation gathering and insert position logic.\n * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md\n * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md\n * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC REQ-POSITION-PRIORITY REQ-PRETTIER-AUTOFIX\n */\nimport type { Rule } from \"eslint\";\nimport { gatherBranchCommentText } from \"../../src/utils/branch-annotation-helpers\";\n\nfunction createMockSourceCode(options: {\n  lines?: string[];\n  commentsBefore?: Array<{ value: string }>;\n  commentsInside?: Array<{ value: string }>;\n}): ReturnType<Rule.RuleContext[\"getSourceCode\"]> {\n  const { lines = [], commentsBefore = [], commentsInside = [] } = options;\n\n  return {\n    lines,\n    getCommentsBefore() {\n      return commentsBefore;\n    },\n    getCommentsInside(node: any) {\n      // exercise the code path that passes node.body into getCommentsInside\n      if (node && node.type === \"BlockStatement\") {\n        return commentsInside;\n      }\n      return [];\n    },\n  } as any;\n}\n\ndescribe(\"gatherBranchCommentText CatchClause behavior (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)\", () => {\n  it(\"[REQ-DUAL-POSITION-DETECTION] prefers before-catch annotations when present\", () => {\n    const sourceCode = createMockSourceCode({\n      commentsBefore: [\n        { value: \"@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md\" },\n        { value: \"@req REQ-BRANCH-DETECTION\" },\n      ],\n      commentsInside: [\n        { value: \"@story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md\" },\n      ],\n    });\n\n    const node: any = {\n      type: \"CatchClause\",\n      loc: { start: { line: 5 } },\n      body: { type: \"BlockStatement\" },\n    };\n\n    const text = gatherBranchCommentText(sourceCode, node);\n    expect(text).toContain(\"@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md\");\n    expect(text).toContain(\"@req REQ-BRANCH-DETECTION\");\n  });\n\n  it(\"[REQ-FALLBACK-LOGIC] falls back to inside-catch annotations when before-catch is missing\", () => {\n    const sourceCode = createMockSourceCode({\n      commentsBefore: [],\n      commentsInside: [\n        { value: \"@story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md\" },\n        { value: \"@req REQ-CATCH-PATH\" },\n      ],\n    });\n\n    const node: any = {\n      type: \"CatchClause\",\n      loc: { start: { line: 10 } },\n      body: { type: \"BlockStatement\" },\n    };\n\n    const text = gatherBranchCommentText(sourceCode, node);\n    expect(text).toContain(\"@story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md\");\n    expect(text).toContain(\"@req REQ-CATCH-PATH\");\n  });\n\n  it(\"[REQ-FALLBACK-LOGIC] returns before-catch text when getCommentsInside is not available\", () => {\n    const lines = [\n      \"try {\",\n      \"  doSomething();\",\n      \"}\",\n      \"catch (error) {\",\n      \"  // body\", \n      \"}\",\n    ];\n\n    const sourceCode: any = {\n      lines,\n      getCommentsBefore() {\n        return [\n          { value: \"@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md\" },\n          { value: \"@req REQ-BRANCH-DETECTION\" },\n        ];\n      },\n      // intentionally omit getCommentsInside so that the CatchClause path\n      // falls back to the before-catch comments.\n    };\n\n    const node: any = {\n      type: \"CatchClause\",\n      loc: { start: { line: 4 } },\n      body: { type: \"BlockStatement\" },\n    };\n\n    const text = gatherBranchCommentText(sourceCode, node);\n    expect(text).toContain(\"@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md\");\n    expect(text).toContain(\"@req REQ-BRANCH-DETECTION\");\n  });\n});\n"}
+Used tool: generate_file with input: {"filePath":"tests/utils/branch-annotation-catch-insert-position.test.ts","content":"/**\n * Unit tests for CatchClause insert position calculation.\n * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md\n * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md\n * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-PRETTIER-AUTOFIX\n */\nimport type { Rule } from \"eslint\";\nimport { reportMissingAnnotations } from \"../../src/utils/branch-annotation-helpers\";\n\ndescribe(\"CatchClause insert position (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)\", () => {\n  it(\"[REQ-PRETTIER-AUTOFIX] inserts annotations at the first statement inside the catch body\", () => {\n    const lines = [\n      \"try {\",\n      \"  doSomething();\",\n      \"}\",\n      \"catch (error) {\",\n      \"  handleError(error);\",\n      \"}\",\n    ];\n\n    const fixer = {\n      insertTextBeforeRange: jest.fn((r: [number, number], t: string) => ({ r, t })),\n    } as any;\n\n    const context: any = {\n      getSourceCode() {\n        return {\n          lines,\n          getCommentsBefore() {\n            return [];\n          },\n          getIndexFromLoc({ line, column }: { line: number; column: number }) {\n            // simple line/column to index mapping for the test: assume each line ends with \"\\n\"\n            const prefix = lines.slice(0, line - 1).join(\"\\n\");\n            return prefix.length + (line > 1 ? 1 : 0) + column;\n          },\n        } as ReturnType<Rule.RuleContext[\"getSourceCode\"]>;\n      },\n      report({ fix }: { fix: (f: any) => any }) {\n        // immediately invoke the fixer to exercise the insert position\n        if (typeof fix === \"function\") {\n          fix(fixer);\n        }\n      },\n    };\n\n    const node: any = {\n      type: \"CatchClause\",\n      loc: { start: { line: 4 } },\n      body: {\n        type: \"BlockStatement\",\n        loc: { start: { line: 4 } },\n        body: [\n          {\n            type: \"ExpressionStatement\",\n            loc: { start: { line: 5 } },\n          },\n        ],\n      },\n    };\n\n    const storyFixCountRef = { count: 0 };\n\n    reportMissingAnnotations(context as any, node, storyFixCountRef);\n\n    expect(fixer.insertTextBeforeRange).toHaveBeenCalledTimes(1);\n    const [range, text] = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];\n\n    // ensure we are inserting before the first statement in the catch body (line 5)\n    const expectedIndex = context.getSourceCode().getIndexFromLoc({ line: 5, column: 0 });\n    expect(range).toEqual([expectedIndex, expectedIndex]);\n    // and that the inserted text is prefixed with the inner indentation from line 5\n    expect(text.startsWith(\"  \")).toBe(true);\n  });\n});\n"}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/utils/branch-annotation-catch-position.test.ts","tests/utils/branch-annotation-catch-insert-position.test.ts","--ci","--bail"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: modify_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","instruction":"In gatherBranchCommentText, update the commentToValue mapper signature to mark the parameter as intentionally unused to satisfy the no-unused-vars rule. Rename the parameter from `c` to `_c` and keep the implementation the same."}
+Used tool: modify_file with input: {"filePath":"tests/utils/branch-annotation-catch-insert-position.test.ts","instruction":"In the context.report implementation, mark the fixer callback parameter as intentionally unused by renaming it from `f` to `_f` in the destructured type annotation and parameter list of the report function, keeping the rest of the function body the same."}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","startLine":130,"endLine":150}
+Used tool: modify_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","instruction":"In gatherBranchCommentText, update the explicit function type for getCommentsInside so that the parameter name in the function type uses a leading underscore to avoid the no-unused-vars rule: change `(n: any) => any[]` to `(_node: any) => any[]` while keeping the behavior identical."}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-branch-annotation.test.ts","--ci","--bail"]}
+Used tool: modify_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","instruction":"In gatherBranchCommentText, make the CatchClause handling tolerant of sourceCode.getCommentsInside throwing errors.\n\nWithin the `if (node.type === \"CatchClause\")` block, in the branch where `node.body && typeof getCommentsInside === \"function\"`, wrap the call to getCommentsInside(node.body) and the mapping to insideText in a try/catch. If the call or mapping throws, catch the error and fall back to returning beforeText, without rethrowing. If insideText is computed successfully, continue to return insideText || beforeText as before.\n\nDo not change behavior for other node types."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runTestsByPath","tests/rules/require-branch-annotation.test.ts","--ci","--bail"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--ci","--bail"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: modify_file with input: {"filePath":"tests/utils/branch-annotation-catch-insert-position.test.ts","instruction":"Adjust the getSourceCode implementation to avoid an unsafe type assertion to SourceCode.\n\nInside getSourceCode, return the mock object with an explicit `as any` cast rather than `as ReturnType<Rule.RuleContext[\"getSourceCode\"]>`. Remove the ReturnType-based assertion so the object is just typed as any when returned.\n\nDo not change the behavior of getSourceCode or the structure of the returned object."}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format","--","src/utils/branch-annotation-helpers.ts","tests/utils/branch-annotation-catch-position.test.ts","tests/utils/branch-annotation-catch-insert-position.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: get_git_status with input: {}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: add coverage tests for req annotation detection heuristics"}
-Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
+Used tool: git_commit with input: {"message":"test: add CatchClause annotation position helper tests"}
+Used tool: modify_file with input: {"filePath":"tests/utils/branch-annotation-catch-insert-position.test.ts","instruction":"At the top of the file, remove the unused import of `Rule` from eslint, since the type is no longer used. Delete the line `import type { Rule } from \"eslint\";` and keep the remaining imports intact."}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"test: add CatchClause annotation position helper tests"}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--ci","--bail"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":19988568223,"timeout":600000}
+Used tool: wait_for_github_workflow with input: {"runId":19990071286}
 ---
 
 **This was the result:**
 ---
-Here’s what I implemented and how it maps to your plan.
+Here’s what I implemented for the **##NOW** and **##NEXT** sections, plus the updated plan with checkboxes.
 
-## Work performed
+---
 
-### New focused tests for req annotation detection heuristics
+## Work Completed
 
-Created `tests/utils/req-annotation-detection.test.ts` with targeted cases for `hasReqAnnotation` and its helpers in `src/utils/reqAnnotationDetection.ts`.
+### 1) CatchClause helper behavior and tests
 
-Header + traceability:
+#### Helper changes (`src/utils/branch-annotation-helpers.ts`)
+
+I extended the existing branch helpers to support Story **025.0-DEV-CATCH-ANNOTATION-POSITION**:
+
+**a. Dual-position detection & fallback (`gatherBranchCommentText`)**
+
+- Kept existing `SwitchCase` special case unchanged.
+- For all other nodes, we still compute `beforeText` from `sourceCode.getCommentsBefore(node)`:
 
 ```ts
-/**
- * Tests for advanced @req detection heuristics
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
- */
+const beforeComments = sourceCode.getCommentsBefore(node) || [];
+
+function commentToValue(_c: any) {
+  return _c.value;
+}
+
+const beforeText = beforeComments.map(commentToValue).join(" ");
 ```
 
-Key scenarios covered:
-
-1. **Guard when `sourceCode` is missing**  
-   Exercises the `if (!sourceCode || !node)` early-return in `hasReqInAdvancedHeuristics` and the `try`/`catch` path in `hasReqAnnotation`:
-
-   ```ts
-   it("[REQ-ANNOTATION-REQ-DETECTION] returns false when sourceCode is missing", () => {
-     const has = _hasReqAnnotation(null as any, [], undefined as any, {
-       loc: null,
-     } as unknown as TSESTree.Node);
-
-     expect(has).toBe(false);
-   });
-   ```
-
-2. **Guard when `node` is missing**  
-   Ensures the same guard is hit when `node` is `undefined` (so advanced heuristics short‑circuit and we don’t blow up on node metadata):
-
-   ```ts
-   it("[REQ-ANNOTATION-REQ-DETECTION] returns false when node is missing", () => {
-     const context = {
-       getSourceCode() {
-         return createMockSourceCode({ lines: ["/** @req REQ-TEST */"] });
-       },
-     } as any;
-
-     const has = _hasReqAnnotation(null as any, [], context, undefined as any);
-
-     expect(has).toBe(false);
-   });
-   ```
-
-3. **Advanced heuristics throw → fall back to jsdoc/comments**  
-   Explicitly drives the `try`/`catch` in `hasReqAnnotation` and the fallback to `hasReqInJsdocOrComments` by making `getCommentsBefore` throw:
-
-   ```ts
-   it("[REQ-ANNOTATION-REQ-DETECTION] inspects jsdoc and comments when advanced heuristics throw", () => {
-     const context = {
-       getSourceCode() {
-         return {
-           getCommentsBefore() {
-             throw new Error("boom");
-           },
-         } as any;
-       },
-     } as any;
-
-     const jsdoc = { value: "/** @req REQ-FROM-JSDOC */" } as any;
-
-     const has = _hasReqAnnotation(jsdoc, [], context, {
-       parent: {},
-     } as any);
-
-     expect(has).toBe(true);
-   });
-   ```
-
-4. **`@supports` in comments satisfies requirement detection**  
-   Ensures `commentContainsReq` and `hasReqInJsdocOrComments` treat `@supports` as equivalent to `@req`:
-
-   ```ts
-   it("[REQ-ANNOTATION-REQ-DETECTION] treats @supports in comments as satisfying requirement", () => {
-     const context = {
-       getSourceCode() {
-         return createMockSourceCode();
-       },
-     } as any;
-
-     const comments = [
-       {
-         value:
-           "// @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-X",
-       },
-     ];
-
-     const has = _hasReqAnnotation(null as any, comments, context, {
-       parent: {},
-     } as any);
-
-     expect(has).toBe(true);
-   });
-   ```
-
-Helper used to simulate a minimal `SourceCode` object:
+- New **CatchClause-only** logic:
 
 ```ts
-function createMockSourceCode(options: {
-  lines?: string[] | null;
-  text?: string;
-  commentsBefore?: any[];
-} = {}) {
-  const { lines = null, text = "", commentsBefore = [] } = options;
-  return {
-    lines: lines ?? undefined,
-    getText() {
-      return text;
-    },
-    getCommentsBefore() {
-      return commentsBefore;
-    },
-  } as any;
+if (node.type === "CatchClause") {
+  // REQ-POSITION-PRIORITY: prefer before-catch when it has annotations
+  if (/@story\b/.test(beforeText) || /@req\b/.test(beforeText)) {
+    return beforeText;
+  }
+
+  const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
+  if (node.body && typeof getCommentsInside === "function") {
+    try {
+      const insideComments =
+        (getCommentsInside as (_node: any) => any[])(node.body) || [];
+      const insideText = insideComments.map(commentToValue).join(" ");
+      // REQ-FALLBACK-LOGIC: use inside comments when before-catch is unannotated
+      return insideText || beforeText;
+    } catch {
+      // Be robust if getCommentsInside throws – treat as no inside comments
+      return beforeText;
+    }
+  }
+
+  return beforeText;
 }
 ```
 
-### Quality and coverage checks
+This satisfies:
 
-Targeted tests:
+- **REQ-DUAL-POSITION-DETECTION**: looks at comments **before** the `catch` *and* comments **inside** its body.
+- **REQ-POSITION-PRIORITY**: if before-catch text already has `@story`/`@req`, we never inspect the inside.
+- **REQ-FALLBACK-LOGIC**: only when before-catch text lacks annotations do we inspect inside comments. If inside throws or is empty, we fall back to `beforeText`.
 
-```bash
-npm test -- --runTestsByPath tests/utils/req-annotation-detection.test.ts tests/utils/annotation-checker.test.ts
+Other branch types still use the original “before-node comments only” behavior.
+
+**b. CatchClause-specific auto-fix position (`getBranchAnnotationInfo`)**
+
+To make auto-fix Prettier-friendly, I updated the insert position for CatchClauses:
+
+```ts
+const text = gatherBranchCommentText(sourceCode, node);
+const missingStory = !/@story\b/.test(text);
+const missingReq = !/@req\b/.test(text);
+
+let indent =
+  sourceCode.lines[node.loc.start.line - 1].match(/^(\s*)/)?.[1] || "";
+let insertPos = sourceCode.getIndexFromLoc({
+  line: node.loc.start.line,
+  column: 0,
+});
+
+if (node.type === "CatchClause" && node.body) {
+  const bodyNode: any = node.body;
+  const bodyStatements: any[] | undefined = Array.isArray(bodyNode.body)
+    ? bodyNode.body
+    : undefined;
+  const firstStatement: any | undefined =
+    bodyStatements && bodyStatements.length > 0
+      ? bodyStatements[0]
+      : undefined;
+
+  if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
+    const firstLine = firstStatement.loc.start.line;
+    const innerIndent =
+      sourceCode.lines[firstLine - 1].match(/^(\s*)/)?.[1] || "";
+    indent = innerIndent;
+    insertPos = sourceCode.getIndexFromLoc({
+      line: firstLine,
+      column: 0,
+    });
+  } else if (bodyNode.loc && bodyNode.loc.start) {
+    const blockLine = bodyNode.loc.start.line;
+    const blockIndent =
+      sourceCode.lines[blockLine - 1].match(/^(\s*)/)?.[1] || "";
+    const innerIndent = `${blockIndent}  `;
+    indent = innerIndent;
+    insertPos = sourceCode.getIndexFromLoc({
+      line: blockLine,
+      column: 0,
+    });
+  }
+}
 ```
 
-with coverage focused on `reqAnnotationDetection.ts`:
+Effects:
 
-```bash
-npm test -- --coverage --collectCoverageFrom src/utils/reqAnnotationDetection.ts --runTestsByPath tests/utils/req-annotation-detection.test.ts tests/utils/annotation-checker.test.ts
+- Non-`CatchClause` branch types keep the original behavior (insert above the branch line).
+- For `CatchClause`:
+  - If the body has at least one statement, we:
+    - Use the first statement’s line as the insert location.
+    - Derive `indent` from that line.
+    - Set `insertPos` to the start of that line.
+  - If the body is empty but has a `loc`, we:
+    - Use the block’s line and derive an inner indent (`blockIndent + "  "`).
+    - Insert at the block’s start line.
+
+Because `reportMissingStory` and `reportMissingReq` both insert at `[insertPos, insertPos]` with `indent`-prefixed comments, this yields autofixes like:
+
+```ts
+try {
+  doSomething();
+}
+catch (error) {
+  // @story <story-file>.story.md
+  // @req <REQ-ID>
+  handleError(error);
+}
 ```
 
-Result for `reqAnnotationDetection.ts` (focused run):
+which Prettier leaves in place. This addresses **REQ-PRETTIER-AUTOFIX**.
 
-- Statements: 95.27%
-- Branches: 84.31% (improved from 46.87% in the initial focused run)
-- Functions: 100%
-- Lines: 95.27%
+### 2) New focused tests for CatchClause behavior
 
-Full CI-equivalent fast verification:
+#### a. Comment detection tests  
+`tests/utils/branch-annotation-catch-position.test.ts`
 
-```bash
-npm run ci-verify:fast
+- File-level traceability:
+
+```ts
+/**
+ * Unit tests for CatchClause annotation gathering and insert position logic.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC REQ-POSITION-PRIORITY REQ-PRETTIER-AUTOFIX
+ */
 ```
 
-passed, and then I pushed. The main CI/CD workflow (`CI/CD Pipeline`) for run `19988568223` completed successfully (semantic-release + full checks), so the change is green end-to-end.
+- Uses a small mock `SourceCode` that supports:
 
-Commit:
-
-```text
-test: add coverage tests for req annotation detection heuristics
+```ts
+function createMockSourceCode(options: {
+  lines?: string[];
+  commentsBefore?: Array<{ value: string }>;
+  commentsInside?: Array<{ value: string }>;
+})
 ```
 
-## Updated plan with status
+- Tests:
 
-## NOW
+1. **Before-catch preferred when present**  
+   `[REQ-DUAL-POSITION-DETECTION] prefers before-catch annotations when present`
 
-- [x] Design and add focused tests that exercise the currently uncovered conditional branches in the req-annotation detection utility so those specific paths in its logic are executed and verified.
+   - `commentsBefore` includes both `@story` and `@req`.
+   - `commentsInside` also has an inside `@story`.
+   - Asserts `gatherBranchCommentText` returns the before-catch annotations, proving priority.
 
-(Implemented via `tests/utils/req-annotation-detection.test.ts`, targeting the guards and error-handling branches in `hasReqAnnotation`/advanced heuristics and verifying `@supports` handling.)
+2. **Inside-catch fallback when before-catch missing**  
+   `[REQ-FALLBACK-LOGIC] falls back to inside-catch annotations when before-catch is missing`
 
-## NEXT
+   - `commentsBefore` empty, `commentsInside` has `@story` + `@req`.
+   - Asserts text contains those inside annotations.
 
-- [x] Review the new tests to ensure they clearly document the intended behavior of those branches, include proper story and requirement traceability annotations, and fit the existing test structure and naming conventions.
+3. **Fallback when `getCommentsInside` is unavailable**  
+   `[REQ-FALLBACK-LOGIC] returns before-catch text when getCommentsInside is not available`
 
-  - Tests include a `@supports` header referencing `docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md` and requirement `REQ-ANNOTATION-REQ-DETECTION`.
-  - Test names follow the existing `[REQ-...]` prefix convention and the describe block names the story.
-  - Structure (plain Jest `describe`/`it`, small helper for mocks) matches existing utils tests.
+   - `SourceCode` only implements `getCommentsBefore`.
+   - Ensures CatchClause still behaves like the original “before comments” behavior when inside-comments API is missing.
 
-- [x] Run the surrounding higher-level tests that rely on req-annotation detection to confirm that the added coverage did not change observable behavior and that the new tests meaningfully increase branch coverage for that module.
+These tests directly hit the new CatchClause branches in `gatherBranchCommentText` and line up with **REQ-DUAL-POSITION-DETECTION**, **REQ-FALLBACK-LOGIC**, and **REQ-POSITION-PRIORITY**.
 
-  - `npm run ci-verify:fast` (type-check, traceability check, duplication, and all rules/maintenance tests) passed.
-  - Full `npm test -- --coverage` (as part of the CI pipeline after push) passed with global thresholds met.
-  - No regressions in rules or maintenance behavior; coverage for `src/utils/reqAnnotationDetection.ts` is now substantially higher, and overall project coverage remains above configured thresholds.
+#### b. Insert-position test  
+`tests/utils/branch-annotation-catch-insert-position.test.ts`
 
-## LATER
+- File-level traceability:
 
-- [ ] Identify any remaining low-coverage conditions in the annotation-detection utilities and add small, focused tests for them to further strengthen confidence in edge-case handling.
-- [ ] Revisit the story and decision documents that define req-annotation behavior to ensure they explicitly reference these edge-case branches and, if helpful, add implementation links to the new tests.
+```ts
+/**
+ * Unit tests for CatchClause insert position calculation.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-PRETTIER-AUTOFIX
+ */
+```
+
+- Test:
+
+`[REQ-PRETTIER-AUTOFIX] inserts annotations at the first statement inside the catch body`
+
+- Constructs synthetic lines:
+
+```ts
+const lines = [
+  "try {",
+  "  doSomething();",
+  "}",
+  "catch (error) {",
+  "  handleError(error);",
+  "}",
+];
+```
+
+- Mocks:
+
+  - `getSourceCode()` returns an object with `lines`, `getCommentsBefore()` (empty), and a simple `getIndexFromLoc` to compute indices from `{ line, column }`.
+  - `context.report` immediately invokes the `fix` function to exercise the fixer path.
+
+- Node:
+
+```ts
+const node: any = {
+  type: "CatchClause",
+  loc: { start: { line: 4 } },
+  body: {
+    type: "BlockStatement",
+    loc: { start: { line: 4 } },
+    body: [
+      {
+        type: "ExpressionStatement",
+        loc: { start: { line: 5 } },
+      },
+    ],
+  },
+};
+```
+
+- Assertions:
+
+  - `fixer.insertTextBeforeRange` is called exactly once.
+  - The range matches the index of `line: 5, column: 0`, confirming we insert before the body’s first statement.
+  - The inserted text starts with `"  "`, i.e., matches the inner indentation of line 5.
+
+This concretely verifies the CatchClause branch of `getBranchAnnotationInfo` behaves as required for **formatter-safe auto-fix**.
+
+### 3) Broader rule and project checks
+
+- Ran rule-specific and full test suites:
+
+  - `npm test -- --runTestsByPath tests/rules/require-branch-annotation.test.ts --ci --bail`
+  - `npm test -- --ci --bail`
+
+  All 44 suites / 318 tests pass, including the new ones.
+
+- Lint and formatting:
+
+  - `npm run lint -- --max-warnings=0`
+  - `npm run format`
+  - `npm run format:check`
+
+- Type-check:
+
+  - `npm run type-check` (fixed an initial test-only typing issue by loosening the mock type to `any` and removing an unused `Rule` import).
+
+- Duplication and build:
+
+  - `npm run duplication`
+  - `npm run build`
+
+- Pre-push CI-equivalent + secrets:
+
+  - Hooks ran `npm run ci-verify:full` and `npm run security:secrets` successfully.
+  - GitHub Actions **CI/CD Pipeline** run `19990071286` on `main` completed with conclusion `success`.
+
+All checks are green and there are no regressions in other branch types.
+
+---
+
+## Updated Plan with Status
+
+### NOW
+
+- [x] Design and add focused unit tests for the catch-annotation position helper so that all currently uncovered branches around CatchClause detection and position priority are executed and their behavior is verified against the Story 025 requirements.
+
+  - Implemented `tests/utils/branch-annotation-catch-position.test.ts` for dual-position detection and fallback.
+  - Implemented `tests/utils/branch-annotation-catch-insert-position.test.ts` for insert position / auto-fix behavior.
+
+### NEXT
+
+- [x] Review the new catch-annotation position tests to ensure they clearly express the intended CatchClause behavior, include the correct story and requirement traceability annotations, and follow the existing test naming and structure conventions.
+
+  - Both new test files include `@story` and `@supports` references to `docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md` and use `[REQ-...]` tags in test names.
+  - Naming, describe blocks, and structure are consistent with existing utils/rules tests.
+
+- [x] Compare the actual behavior exercised by the new tests with the acceptance criteria in the CatchClause story and, if any mismatches are found, refine the helper implementation to align with the dual-position and fallback rules without breaking existing branch-annotation behavior.
+
+  - `gatherBranchCommentText` now:
+    - Prefers before-catch annotations when present.
+    - Falls back to inside-catch comments via `getCommentsInside(node.body)` when before-catch is unannotated.
+    - Catches any `getCommentsInside` errors and falls back safely to before-catch behavior.
+  - `getBranchAnnotationInfo` now:
+    - Chooses the first statement inside the catch body as the insertion point (or a reasonable inner indent at the block line if empty), aligning auto-fix with Prettier behavior.
+  - Existing `require-branch-annotation` tests (all branch types) still pass unchanged, confirming no regression.
+
+- [x] Re-run the broader branch-annotation rule tests conceptually to confirm that the updated helper and tests preserve existing semantics for other branch types while improving CatchClause support.
+
+  - `tests/rules/require-branch-annotation.test.ts` passes with the new helper behavior.
+  - Other branch types (if/switch/loops/try) retain the original “before-node comments” semantics and are unaffected by the CatchClause-specific branches.
 ---
