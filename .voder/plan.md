@@ -1,13 +1,15 @@
 ## NOW
 
-- [ ] Design and add focused tests that exercise the currently uncovered conditional branches in the req-annotation detection utility so those specific paths in its logic are executed and verified.
+- [ ] Design and add focused unit tests for the catch-annotation position helper so that all currently uncovered branches around CatchClause detection and position priority are executed and their behavior is verified against the Story 025 requirements.
 
 ## NEXT
 
-- [ ] Review the new tests to ensure they clearly document the intended behavior of those branches, include proper story and requirement traceability annotations, and fit the existing test structure and naming conventions.
-- [ ] Run the surrounding higher-level tests that rely on req-annotation detection to confirm that the added coverage did not change observable behavior and that the new tests meaningfully increase branch coverage for that module.
+- [ ] Review the new catch-annotation position tests to ensure they clearly express the intended CatchClause behavior, include the correct story and requirement traceability annotations, and follow the existing test naming and structure conventions.
+- [ ] Compare the actual behavior exercised by the new tests with the acceptance criteria in the CatchClause story and, if any mismatches are found, refine the helper implementation to align with the dual-position and fallback rules without breaking existing branch-annotation behavior.
+- [ ] Re-run the broader branch-annotation rule tests conceptually to confirm that the updated helper and tests preserve existing semantics for other branch types while improving CatchClause support.
 
 ## LATER
 
-- [ ] Identify any remaining low-coverage conditions in the annotation-detection utilities and add small, focused tests for them to further strengthen confidence in edge-case handling.
-- [ ] Revisit the story and decision documents that define req-annotation behavior to ensure they explicitly reference these edge-case branches and, if helpful, add implementation links to the new tests.
+- [ ] Extend or update the branch-annotation rule documentation to describe the supported CatchClause annotation positions, including how they interact with formatters like Prettier, and link to the new tests as implementation references in the story file.
+- [ ] Identify any remaining low-coverage or untested edge cases in the catch-annotation position helper and related branch-annotation utilities and add small, focused tests to cover them.
+- [ ] Once the implementation and tests are stable, update the CatchClause story’s acceptance criteria and Definition of Done sections to mark them as satisfied and to document the relevant helper and test files.

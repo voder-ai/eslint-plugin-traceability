@@ -113,18 +113,41 @@ export function gatherBranchCommentText(
     }
     return comments.join(" ");
   }
-  const comments = sourceCode.getCommentsBefore(node) || [];
+
+  const beforeComments = sourceCode.getCommentsBefore(node) || [];
 
   /**
    * Mapper to extract the text value from a comment node.
    * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
    * @req REQ-TRACEABILITY-MAP-CALLBACK - Trace mapping of comment nodes to their text values
    */
-  function commentToValue(c: any) {
-    return c.value;
+  function commentToValue(_c: any) {
+    return _c.value;
   }
 
-  return comments.map(commentToValue).join(" ");
+  const beforeText = beforeComments.map(commentToValue).join(" ");
+
+  if (node.type === "CatchClause") {
+    if (/@story\b/.test(beforeText) || /@req\b/.test(beforeText)) {
+      return beforeText;
+    }
+
+    const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
+    if (node.body && typeof getCommentsInside === "function") {
+      try {
+        const insideComments =
+          (getCommentsInside as (_node: any) => any[])(node.body) || [];
+        const insideText = insideComments.map(commentToValue).join(" ");
+        return insideText || beforeText;
+      } catch {
+        return beforeText;
+      }
+    }
+
+    return beforeText;
+  }
+
+  return beforeText;
 }
 
 /**
@@ -237,12 +260,45 @@ function getBranchAnnotationInfo(
   const text = gatherBranchCommentText(sourceCode, node);
   const missingStory = !/@story\b/.test(text);
   const missingReq = !/@req\b/.test(text);
-  const indent =
+
+  let indent =
     sourceCode.lines[node.loc.start.line - 1].match(/^(\s*)/)?.[1] || "";
-  const insertPos = sourceCode.getIndexFromLoc({
+  let insertPos = sourceCode.getIndexFromLoc({
     line: node.loc.start.line,
     column: 0,
   });
+
+  if (node.type === "CatchClause" && node.body) {
+    const bodyNode: any = node.body;
+    const bodyStatements: any[] | undefined = Array.isArray(bodyNode.body)
+      ? bodyNode.body
+      : undefined;
+    const firstStatement: any | undefined =
+      bodyStatements && bodyStatements.length > 0
+        ? bodyStatements[0]
+        : undefined;
+
+    if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
+      const firstLine = firstStatement.loc.start.line;
+      const innerIndent =
+        sourceCode.lines[firstLine - 1].match(/^(\s*)/)?.[1] || "";
+      indent = innerIndent;
+      insertPos = sourceCode.getIndexFromLoc({
+        line: firstLine,
+        column: 0,
+      });
+    } else if (bodyNode.loc && bodyNode.loc.start) {
+      const blockLine = bodyNode.loc.start.line;
+      const blockIndent =
+        sourceCode.lines[blockLine - 1].match(/^(\s*)/)?.[1] || "";
+      const innerIndent = `${blockIndent}  `;
+      indent = innerIndent;
+      insertPos = sourceCode.getIndexFromLoc({
+        line: blockLine,
+        column: 0,
+      });
+    }
+  }
 
   return { missingStory, missingReq, indent, insertPos };
 }

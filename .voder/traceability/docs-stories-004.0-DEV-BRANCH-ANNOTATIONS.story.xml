@@ -2,18 +2,8 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T12:04:12.225Z</last_validated>
+  <last_validated>2025-12-06T12:51:15.587Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story `004.0-DEV-BRANCH-ANNOTATIONS` is fully implemented.
-
-All acceptance criteria are met:
-- **Core Functionality**: `traceability/require-branch-annotation` detects missing `@story`/`@req` on all defined significant branches (ifs, loops, switch cases, try/catch) and provides targeted auto-fixes with placeholder comments. Unit tests cover all these structures.
-- **Quality Standards**: Rule follows ESLint best practices (proper meta, schema, configuration validation) and uses efficient helpers. A dedicated performance test ensures it handles large, deeply nested files within a 5-second guardrail.
-- **Integration**: The rule is wired into the plugin’s recommended/strict presets via `TRACEABILITY_RULE_SEVERITIES` and documented as part of the core rules; Jest integration tests for plugin configs also pass.
-- **User Experience**: Error message `"Branch is missing required annotation: {{missing}}."` clearly states what is missing (`@story` or `@req`), and auto-fix behavior inserts intuitive placeholder comments at correct locations.
-- **Error Handling**: Nested branches are handled correctly (inner branches still require their own annotations even when outer ones are annotated), SwitchCase comment association handles blank lines and inline comments, and invalid `branchTypes` configuration is reported with clear messages.
-- **Documentation**: `user-docs/api-reference.md` contains a dedicated section for `traceability/require-branch-annotation` with description, options, defaults, and a concrete annotated-branch example; the README briefly references the rule and points to user docs.
-
-All technical requirements (REQ-BRANCH-DETECTION, REQ-COMMENT-ASSOCIATION, REQ-ANNOTATION-PARSING, REQ-SIGNIFICANCE-CRITERIA, REQ-NESTED-HANDLING, REQ-CONFIGURABLE-SCOPE, REQ-PERFORMANCE-OPTIMIZATION) are implemented and validated by passing tests. Therefore, this story is assessed as PASSED.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md describes an ESLint rule that enforces @story and @req annotations on significant code branches, with configurable scope, nested-branch handling, clear error messages, and performance considerations. The implementation provides the rule (src/rules/require-branch-annotation.ts) and supporting helpers (src/utils/branch-annotation-helpers.ts) that detect branches across all specified control-flow constructs, associate nearby comments to branches, parse @story/@req annotations, and define explicit significance criteria (DEFAULT_BRANCH_TYPES plus a special case to allow unannotated default switch cases). Configuration via `branchTypes` is fully supported and validated; invalid values produce configuration-time ESLint errors as specified. User-facing error messages clearly state which annotation type is missing and offer auto-fixes that insert template @story and @req lines. Tests in tests/rules/require-branch-annotation.test.ts, tests/utils/branch-annotation-helpers.test.ts, and tests/perf/require-branch-annotation-large-file.test.ts collectively validate core functionality, configuration behavior, nested-branch handling, and performance on large nested files. Documentation in docs/rules/require-branch-annotation.md explains usage, configuration, and provides examples. The rule is integrated into the plugin’s exported rules and both recommended/strict presets (src/index.ts). All tests pass in the current test run. Together, this provides strong, concrete evidence that all acceptance criteria and the listed requirements for Story 004.0 are fully implemented and working as intended.</notes>
 </traceability>

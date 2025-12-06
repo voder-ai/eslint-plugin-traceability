@@ -2,8 +2,23 @@
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T12:07:24.812Z</last_validated>
+  <last_validated>2025-12-06T12:53:10.901Z</last_validated>
   <last_modified>2025-12-06T01:54:53.759Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story `docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md` is fully implemented. All functional requirements (REQ-MAINT-DETECT, REQ-MAINT-UPDATE, REQ-MAINT-BATCH, REQ-MAINT-VERIFY, REQ-MAINT-REPORT, REQ-MAINT-SAFE) have concrete implementations in `src/maintenance/*` and are thoroughly covered by unit, CLI, integration, and performance tests that explicitly reference this story. The `traceability-maint` CLI and the maintenance API integrate cleanly with the plugin, provide clear user feedback, and handle error/edge cases as specified. Documentation in README and `user-docs/api-reference.md` describes both API and CLI usage with examples. All tests currently pass, so the acceptance criteria and definition of done for this story are satisfied.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>Story 009.0-DEV-MAINTENANCE-TOOLS is fully implemented and validated.
+
+All specified maintenance capabilities are present:
+- Core maintenance API functions (`detectStaleAnnotations`, `updateAnnotationReferences`, `batchUpdateAnnotations`, `verifyAnnotations`, `generateMaintenanceReport`) are implemented under `src/maintenance/` with strong traceability annotations and safe filesystem behavior.
+- These helpers are exported through `src/maintenance/index.ts` and surfaced on the main plugin export as `maintenance` from `src/index.ts`, fulfilling the integration requirement with the ESLint plugin.
+- A dedicated CLI (`traceability-maint`) is wired via `package.json` and implemented in `src/maintenance/cli.ts` + `commands.ts` + `flags.ts`, providing `detect`, `verify`, `report`, and `update` subcommands with well-defined options, JSON modes, exit codes, and clear user-facing messages.
+
+The acceptance criteria are met:
+- **Core Functionality**: Detection and update flows are implemented and tested both at API and CLI levels, including batch updates and verification (`batchUpdateAnnotations`, `verifyAnnotations`, CLI `update` and `verify`).
+- **Quality Standards**: Operations preserve code structure by limiting modifications to `@story` path substrings, only writing files when content actually changes, and are validated on large synthetic workspaces via performance tests that enforce reasonable time bounds.
+- **Integration**: Maintenance tools integrate with the existing plugin infrastructure via the exported `maintenance` object and documented CLI binary; tests confirm correct exports.
+- **User Experience**: CLI commands provide clear, human-readable messages and structured JSON output where appropriate, with guidance strings for next steps; tests assert on these messages and exit codes.
+- **Error Handling**: The CLI validates arguments, exposes distinct exit codes (0/1/2), and wraps operations in a catch-all handler that prints concise diagnostics for unexpected errors. Detection and traversal logic safely handle missing roots, out-of-project paths, and malformed story paths, and there are explicit tests for permission errors and invalid CLI flags.
+- **Documentation**: The Maintenance CLI is documented in `README.md`, and the `user-docs/api-reference.md` contains detailed API and CLI documentation with usage examples and behavior notes. Additional internal docs (ADR and performance-tests doc) reinforce design and testing strategy.
+
+All Jest tests, including unit, integration, and performance suites associated with this story, pass successfully (`npm test -- --verbose`), providing strong evidence that the implementation satisfies the story’s requirements end-to-end.</notes>
 </traceability>

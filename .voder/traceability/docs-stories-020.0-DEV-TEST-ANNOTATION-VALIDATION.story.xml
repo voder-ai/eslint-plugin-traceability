@@ -2,111 +2,148 @@
 <traceability>
   <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T12:01:50.186Z</last_validated>
+  <last_validated>2025-12-06T12:51:16.807Z</last_validated>
   <last_modified>2025-12-04T21:56:14.194Z</last_modified>
-  <evidence>Story file exists and matches the provided specification:
-  - docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
-    (content exactly as in the user prompt).,ESLint rule implementation for this story:
-  - src/rules/require-test-traceability.ts (file exists)
-    - meta:
-      - type: "problem"
-      - docs.description: "Enforce traceability annotations and naming conventions in test files"
-      - docs.recommended: "error"
-      - fixable: "code"
-      - schema: single options object with properties:
-        - testFilePatterns?: string[] (default ["/tests/", "/test/", "/__tests__", ".test.", ".spec."])
-        - requireDescribeStory?: boolean (default true)
-        - requireTestReqPrefix?: boolean (default true)
-        - describePattern?: string (default "Story [0-9]+\\.[0-9]+-")
-        - autoFixTestTemplate?: boolean (default true)
-        - autoFixTestPrefixFormat?: boolean (default true)
-        - testSupportsTemplate?: string
-      - messages:
-        - missingFileSupports: "Test file must have @supports annotation listing tested requirements."
-        - missingDescribeStory: "describe() block should reference story (e.g., 'Story 009.0-DEV-...')."
-        - missingReqPrefix: "Test name should start with requirement ID (e.g., '[REQ-MAINT-DETECT] ...')."
-    - create(context):
-      - Determines test files via determineIsTestFile(filename, testFilePatterns) so only test files are validated (REQ-TEST-PATTERN-DETECT).
-      - Calls ensureFileSupportsAnnotation(context, sourceCode, { autoFixTestTemplate, testSupportsTemplate }) to enforce file-level @supports (REQ-TEST-FILE-SUPPORTS, REQ-TEST-SUPPORTS-VALID).
-      - Builds describeRegex from describePattern and enforces story references in describe when requireDescribeStory is true (REQ-TEST-DESCRIBE-STORY).
-      - For CallExpression, uses handleCallExpression(...) to:
-        - detect describe/it/test/context (framework compatibility; REQ-TEST-FRAMEWORK-COMPAT),
-        - validate describe descriptions against describeRegex,
-        - validate it/test names start with "[REQ-" and optionally normalize malformed prefixes when autoFixTestPrefixFormat is true (REQ-TEST-IT-REQ-PREFIX, REQ-TEST-ERROR-CONTEXT).
-    - Traceability annotations on the rule (per previous assessment and still present):
-      - @story docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
-      - @req REQ-TEST-FILE-SUPPORTS REQ-TEST-DESCRIBE-STORY REQ-TEST-IT-REQ-PREFIX REQ-TEST-SUPPORTS-VALID REQ-TEST-PATTERN-DETECT REQ-TEST-FRAMEWORK-COMPAT REQ-TEST-NESTED-DESCRIBE REQ-TEST-ERROR-CONTEXT
-      - Additional @supports for Story 021.0 auto-fix requirements.,Helper implementation backing the rule:
-  - src/rules/helpers/require-test-traceability-helpers.ts (file exists)
-    - determineIsTestFile(filename, rawPatterns?):
-      - Defaults rawPatterns to ["/tests/", "/test/", "/__tests__", ".test.", ".spec."] and returns true when normalized filename contains any pattern substring, satisfying the Test File Detection notes and REQ-TEST-PATTERN-DETECT.
-    - ensureFileSupportsAnnotation(context, sourceCode, { autoFixTestTemplate, testSupportsTemplate }):
-      - Uses sourceCode.getAllComments() to check for any comment containing /@supports\b/.
-      - If missing and file is a test file, reports messageId "missingFileSupports" with a fixer that inserts a JSDoc @supports template at the top of the file (after shebang when present), fulfilling REQ-TEST-FILE-SUPPORTS and participating in REQ-TEST-SUPPORTS-VALID.
-      - The default template is a safe placeholder with TODO guidance, as described in the story and user-docs.
-    - isTestCallName(name) returns true for "describe", "it", "test", "context" (REQ-TEST-FRAMEWORK-COMPAT).
-    - getCalleeName supports Identifier and MemberExpression (e.g., describe.each), meeting the "Jest's describe.each" compatibility note.
-    - handleCallExpression distinguishes describe vs it/test, enforces describePattern and [REQ-...] prefixes, and provides contextual error reporting (REQ-TEST-DESCRIBE-STORY, REQ-TEST-IT-REQ-PREFIX, REQ-TEST-NESTED-DESCRIBE, REQ-TEST-ERROR-CONTEXT).,Plugin integration and configuration:
-  - src/index.ts
-    - RULE_NAMES includes "require-test-traceability", so the rule is dynamically loaded with other rules.
-    - TRACEABILITY_RULE_SEVERITIES includes:
-      - "traceability/require-test-traceability": "error"
-      satisfying the Acceptance Criteria for Quality Standards, Integration, and default severity.
-    - createTraceabilityFlatConfig() returns a flat config whose rules spread TRACEABILITY_RULE_SEVERITIES, so require-test-traceability is enabled in both presets.
-    - configs = { recommended: [createTraceabilityFlatConfig()], strict: [createTraceabilityFlatConfig()] } and assigned to plugin.configs, meaning both recommended and strict presets include this rule at error severity as required by the Definition of Done.,User-facing documentation for this rule:
-  - user-docs/api-reference.md (excerpt):
-    - Section "traceability/require-test-traceability" states the rule:
-      - Requires a file-level @supports annotation in test files.
-      - Requires story references in top-level describe blocks.
-      - Requires [REQ-XXX] requirement identifiers in it/test names.
-    - Documents options exactly as described in the story: testFilePatterns, requireDescribeStory, requireTestReqPrefix, describePattern, autoFixTestTemplate, autoFixTestPrefixFormat, testSupportsTemplate.
-    - Explains behavior and auto-fix semantics for file-level @supports placeholders and [REQ-...] prefix normalization, providing clear guidance and examples.
-    - Lists this rule as part of the core rules enabled by recommended and strict presets.
-    - This satisfies the "Documentation" acceptance criterion and config options described in Implementation Notes.,Cross-rule dependency coverage for REQ-TEST-SUPPORTS-VALID and deep validation:
-  - valid-story-reference rule (src/rules/valid-story-reference.ts, tested by tests/rules/valid-story-reference.test.ts) validates that story paths (including those in @supports) point to existing files and respect project boundaries (dependencies 005.0 & 006.0).
-  - valid-req-reference rule (src/rules/valid-req-reference.ts, tested by tests/rules/valid-req-reference.test.ts) validates requirement IDs used in @req and @supports against documented requirements (dependency 010.0, 010.2).
-  - Both rules are core and enabled by the same presets, so test-file @supports annotations inserted or required by require-test-traceability are further validated for existence and correctness as required by REQ-TEST-SUPPORTS-VALID.,Dedicated rule tests for this story:
-  - tests/rules/require-test-traceability.test.ts (file exists)
-    - File header includes:
-      - @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FILE-SUPPORTS REQ-TEST-DESCRIBE-STORY REQ-TEST-IT-REQ-PREFIX REQ-TEST-FRAMEWORK-COMPAT REQ-TEST-PATTERN-DETECT
-      - @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT REQ-TEST-FIX-SAFE REQ-TEST-FIX-PRESERVE REQ-TEST-FIX-PLACEHOLDER REQ-TEST-FIX-NO-INFERENCE
-    - Uses ESLint RuleTester to exercise the "require-test-traceability" rule.
-    - Valid cases cover:
-      1) REQ-TEST-FILE-SUPPORTS: file-level @supports for Story 020.0, describe("Story 020.0-DEV-..."), it("[REQ-EXAMPLE] ..."), filename under tests/, proving file-level annotations + describe story + REQ prefix work together.
-      2) REQ-TEST-FRAMEWORK-COMPAT: context("Story 020.0-...", ...) in a test file, confirming Mocha-style context() is treated correctly.
-      3) REQ-TEST-PATTERN-DETECT: same describe code in a non-test filename (src/not-a-test-file.ts) verifying non-test files are ignored even if they look like tests.
-      4) REQ-TEST-FIX-PREFIX-FORMAT (positive): correctly formatted [REQ-TRACE-123] prefix is accepted.
-    - Invalid cases cover:
-      1) Missing file-level @supports: no comment; expect messageId "missingFileSupports" and auto-inserted @supports template at file top (REQ-TEST-FILE-SUPPORTS, auto-fix behavior).
-      2) REQ-TEST-DESCRIBE-STORY: has @supports but describe('no story reference here', ...) → messageId "missingDescribeStory".
-      3) REQ-TEST-IT-REQ-PREFIX & REQ-TEST-FIX-NO-INFERENCE: has @supports but it('missing prefix', ...) → messageId "missingReqPrefix" with no fix, confirming conservative behavior when no recognizable ID.
-      4–7) REQ-TEST-FIX-PREFIX-FORMAT variants: malformed prefixes like '[ REQ-TEST-FIX ]', '[REQ_TEST_FIX]', '[req-lowercase]', '(REQ-PAREN)' are all reported as "missingReqPrefix" with output auto-fixed to canonical '[REQ-TEST-FIX]...' or '[REQ-LOWERCASE]...', demonstrating safe normalization described in the story and in Story 021.0.
-    - These tests collectively satisfy REQ-TEST-FILE-SUPPORTS, REQ-TEST-DESCRIBE-STORY, REQ-TEST-IT-REQ-PREFIX, REQ-TEST-PATTERN-DETECT, REQ-TEST-FRAMEWORK-COMPAT, and error-context expectations.,Targeted test run for this rule (re-run in this assessment):
-  - Command: npm test -- --runInBand --verbose --testPathPatterns tests/rules/require-test-traceability.test.ts
-  - Result:
-    - PASS tests/rules/require-test-traceability.test.ts
-      - Suite: "require-test-traceability rule (Stories 020.0 and 021.0)"
-        - All 4 valid and 7 invalid cases passed.
-    - Test Suites: 1 passed / 1 total
-    - Tests: 11 passed / 11 total
-    - Confirms the rule’s behavior remains correct and aligns with Story 020.0’s requirements.,Global test suite (run earlier in this session):
-  - Command: npm test -- --verbose
-  - Result:
-    - All 41 test suites passed, 310 tests total.
-    - Includes tests for valid-story-reference, valid-req-reference, configuration, integration, performance, and other rules this story depends on.
-    - Confirms overall plugin integration, performance characteristics, and cross-rule behavior.,Framework support evidence:
-  - Helper isTestCallName supports: "describe", "it", "test", "context" (covers Jest, Mocha, and similar BDD APIs), addressing REQ-TEST-FRAMEWORK-COMPAT.
-  - getCalleeName handles MemberExpression callee shapes (e.g., describe.each, test.each), matching the "Jest's describe.each" compatibility detail in the story.
-  - tests/rules/require-test-traceability.test.ts explicitly includes a context(...) valid case, demonstrating Mocha-style compatibility.,Documentation & presets alignment (from user-docs/api-reference.md):
-  - The traceability/require-test-traceability section explicitly describes the same behaviors and options as implemented in the rule.
-  - Under "Configuration Presets", recommended and strict both list `traceability/require-test-traceability: error` among the core rules, matching src/index.ts and fulfilling the "Rule added to recommended configuration" and "Integration" parts of the Definition of Done.</evidence>
-  <notes>All acceptance criteria and detailed requirements for Story 020.0-DEV-TEST-ANNOTATION-VALIDATION are implemented and verified:
-- File-level @supports annotations are required in test files and auto-templated when missing.
-- describe/context blocks in test files must include a story reference matching a configurable pattern.
-- it/test names must start with a [REQ-XXX] requirement prefix, with safe normalization auto-fixes for malformed but recognizable prefixes.
-- Test file detection, multi-framework support (Jest, Mocha-style context), and deep story/requirement validation are implemented via dedicated helpers and existing core rules.
-- The rule is registered in the plugin, enabled in both recommended and strict presets at error severity, and documented in user-docs with behavior, options, and examples.
-- Dedicated RuleTester coverage plus the full Jest test run confirm correct behavior, integration, and performance.
+  <evidence>Story file matches the provided specification:
+- docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md content exactly matches the story in the prompt.
 
-Based on the current code, tests, and documentation, this story is fully implemented and passes.</notes>
+Rule implementation:
+- src/rules/require-test-traceability.ts
+  - Defines a RuleModule with:
+    - meta.type: "problem" and fixable: "code".
+    - docs.description: "Enforce traceability annotations and naming conventions in test files".
+    - docs.recommended: "error" (meets Quality Standards & Integration criteria).
+    - schema: one options object with properties exactly as in the story:
+      - testFilePatterns?: string[] (default ["/tests/", "/test/", "/__tests__", ".test.", ".spec."])
+      - requireDescribeStory?: boolean (default true)
+      - requireTestReqPrefix?: boolean (default true)
+      - describePattern?: string (default "Story [0-9]+\\.[0-9]+-")
+      - autoFixTestTemplate?: boolean (default true)
+      - autoFixTestPrefixFormat?: boolean (default true)
+      - testSupportsTemplate?: string
+      - additionalProperties: false.
+    - messages:
+      - missingFileSupports: "Test file must have @supports annotation listing tested requirements."
+      - missingDescribeStory: "describe() block should reference story (e.g., 'Story 009.0-DEV-...')."
+      - missingReqPrefix: "Test name should start with requirement ID (e.g., '[REQ-MAINT-DETECT] ...')."
+      (These match the story’s example error messages.)
+  - create(context):
+    - Reads options with the documented defaults.
+    - Uses determineIsTestFile(filename, testFilePatterns) to decide if a file is a test file (REQ-TEST-PATTERN-DETECT).
+    - Returns {} (no visitors) for non-test files, so production code is unaffected.
+    - For test files:
+      - Gets sourceCode and calls ensureFileSupportsAnnotation(context, sourceCode, { autoFixTestTemplate, testSupportsTemplate }) to enforce file-level @supports (REQ-TEST-FILE-SUPPORTS, REQ-TEST-SUPPORTS-VALID in combination with other rules).
+      - Builds describeRegex from describePattern.
+      - Returns visitors:
+        - CallExpression: handleCallExpression(context, { sourceCode, describeRegex, requireDescribeStory, requireTestReqPrefix, autoFixTestPrefixFormat }).
+      - This implements validation of describe() story references and it()/test() [REQ-...] prefixes, for all (including nested) describes in the file (REQ-TEST-DESCRIBE-STORY, REQ-TEST-IT-REQ-PREFIX, REQ-TEST-NESTED-DESCRIBE, REQ-TEST-ERROR-CONTEXT).
+  - Traceability annotations:
+    - @story docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
+    - @req REQ-TEST-FILE-SUPPORTS REQ-TEST-DESCRIBE-STORY REQ-TEST-IT-REQ-PREFIX REQ-TEST-SUPPORTS-VALID REQ-TEST-PATTERN-DETECT REQ-TEST-FRAMEWORK-COMPAT REQ-TEST-NESTED-DESCRIBE REQ-TEST-ERROR-CONTEXT
+    - @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT REQ-TEST-FIX-SAFE REQ-TEST-FIX-PRESERVE REQ-TEST-FIX-PLACEHOLDER REQ-TEST-FIX-NO-INFERENCE.
+
+Helper implementation:
+- src/rules/helpers/require-test-traceability-helpers.ts
+  - determineIsTestFile(filename, rawPatterns?):
+    - Defaults patterns to ["/tests/", "/test/", "/__tests__", ".test.", ".spec."] and returns true if any substring occurs in filename (REQ-TEST-PATTERN-DETECT; matches Implementation Notes patterns, and is configurable via rule options).
+  - ensureFileSupportsAnnotation(context, sourceCode, autoFixOptions):
+    - Checks sourceCode.getAllComments() for any comment whose value matches /@supports\b/.
+    - If missing:
+      - Reports messageId: "missingFileSupports" on the first comment or AST root.
+      - If autoFixTestTemplate !== false, fixer inserts a JSDoc @supports template at the top using insertSupportsTemplate.
+    - insertSupportsTemplate preserves shebang lines and inserts the template right after (REQ-TEST-FILE-SUPPORTS, REQ-TEST-SUPPORTS-VALID, and auto-fix behavior described in Implementation Notes).
+  - buildSupportsTemplateComment(customTemplate?):
+    - Default template line: "@supports docs/stories/XXX.X-STORY-NAME.story.md REQ-XXX-YYY REQ-XXX-ZZZ" followed by a TODO comment, as in the story.
+  - isTestCallName(name):
+    - Returns true for "describe", "it", "test", "context" (REQ-TEST-FRAMEWORK-COMPAT and matches Test Framework Compatibility section).
+  - getCalleeName(node):
+    - Supports Identifier and MemberExpression with Identifier object name, so describe.each/test.each work as intended.
+  - handleDescribeCall(context, node, description, { describeRegex, requireDescribeStory }):
+    - If requireDescribeStory and description does not match regex, reports messageId: "missingDescribeStory" (REQ-TEST-DESCRIBE-STORY).
+  - handleItOrTestCall(context, node, description, options):
+    - If requireTestReqPrefix is true and description does not match /^\[REQ-[^\]]+]/, reports messageId: "missingReqPrefix".
+    - When autoFixTestPrefixFormat !== false and normalizeReqPrefixInDescription returns a normalized value and the first argument is a string Literal, attaches a fixer that replaces the literal text with a canonical [REQ-...] prefix while preserving quoting (via createUpdatedStringLiteralRaw).
+    - Implements REQ-TEST-IT-REQ-PREFIX and safe normalization (details extended in Story 021.0 but required for good error context and auto-fix examples).
+  - handleCallExpression(context, options):
+    - Visitor factory for CallExpression:
+      - Gets calleeName via getCalleeName, filters to test functions via isTestCallName.
+      - Extracts first argument literal as description.
+      - For "describe", invokes handleDescribeCall (enforcing story reference). For "it"/"test", invokes handleItOrTestCall.
+    - Applies to all describes in test files (including nested), fulfilling REQ-TEST-NESTED-DESCRIBE.
+  - All key helpers are annotated with @supports referencing Story 020.0 and 021.0 with the correct requirement IDs.
+
+Plugin integration:
+- src/index.ts
+  - RULE_NAMES includes "require-test-traceability", so the rule is dynamically required and exposed under plugin.rules.
+  - TRACEABILITY_RULE_SEVERITIES maps "traceability/require-test-traceability" to "error".
+  - createTraceabilityFlatConfig() returns a config with rules: { ...TRACEABILITY_RULE_SEVERITIES }.
+  - configs = { recommended: [createTraceabilityFlatConfig()], strict: [createTraceabilityFlatConfig()] } and assigned to plugin.configs.
+  - This ensures the rule is enabled by default in both recommended and strict presets at error severity, satisfying "Integration" and "Rule added to recommended configuration" in Definition of Done.
+
+Documentation:
+- user-docs/api-reference.md
+  - Contains heading: "### traceability/require-test-traceability".
+  - Under configuration presets, lists: "- `traceability/require-test-traceability`: `error`".
+  - Prior validated content (file unchanged in this assessment) documents:
+    - Requirement for file-level @supports annotations in test files.
+    - Requirement for story references in top-level describe blocks.
+    - Requirement for [REQ-XXX] prefixes in it/test names.
+    - Options: testFilePatterns, requireDescribeStory, requireTestReqPrefix, describePattern, autoFixTestTemplate, autoFixTestPrefixFormat, testSupportsTemplate.
+  - This matches the story’s Implementation Notes under Configuration Options and fulfills the "Documentation" acceptance criterion.
+
+Tests for the rule:
+- tests/rules/require-test-traceability.test.ts
+  - File header includes @supports mapping Story 020.0 and its requirements plus Story 021.0 auto-fix requirements.
+  - Uses RuleTester with ECMAScript 2020 module settings.
+  - Valid cases:
+    1) File-level @supports present; describe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', ...); it('[REQ-EXAMPLE] ...') in a tests/ filename → passes, confirming that when all patterns (file-level, describe story, REQ prefix) are satisfied, no errors are reported (REQ-TEST-FILE-SUPPORTS, REQ-TEST-DESCRIBE-STORY, REQ-TEST-IT-REQ-PREFIX).
+    2) context('Story 020.0-...') in a test file with @supports → accepted, confirming Mocha-style context() support and framework compatibility (REQ-TEST-FRAMEWORK-COMPAT).
+    3) describe('Story 020.0-...', ...) in a non-test filename ("src/not-a-test-file.ts") with @supports → no errors, verifying that non-test files are ignored even if they look like tests (REQ-TEST-PATTERN-DETECT).
+    4) A correctly formatted [REQ-TRACE-123] prefix in test name is accepted unchanged, proving that the rule does not over-fix already-correct prefixes (REQ-TEST-IT-REQ-PREFIX, REQ-TEST-FIX-PREFIX-FORMAT consistency).
+  - Invalid cases:
+    1) Missing @supports in a test file:
+       - Code: only describe + it with a REQ prefix; filename in tests/.
+       - Expected error: messageId "missingFileSupports".
+       - Expected output: file with a prepended @supports JSDoc template and TODO line, exactly matching the helper’s buildSupportsTemplateComment output.
+       - Verifies file-level validation and auto-fix (REQ-TEST-FILE-SUPPORTS).
+    2) Bad describe story reference:
+       - Has @supports but describe('no story reference here', ...).
+       - filename under tests/.
+       - Expected error: messageId "missingDescribeStory" (REQ-TEST-DESCRIBE-STORY).
+    3) Missing REQ prefix in test name:
+       - Has @supports but it('missing prefix', () => {}).
+       - Expected error: messageId "missingReqPrefix" with no output fix, confirming conservative behavior when no REQ ID is present (REQ-TEST-IT-REQ-PREFIX, REQ-TEST-ERROR-CONTEXT & no inference requirement).
+    4–7) Malformed REQ prefixes:
+       - Variants: '[ REQ-TEST-FIX ]', '[REQ_TEST_FIX]', '[req-lowercase]', '(REQ-PAREN) with parens'.
+       - Each has @supports and is in a tests/ filename.
+       - Expected errors: messageId "missingReqPrefix" with fixed output that normalizes these into '[REQ-TEST-FIX] ...' or '[REQ-LOWERCASE] ...'.
+       - Confirms safe normalization, format enforcement, and fix behavior described under REQ-TEST-IT-REQ-PREFIX and Implementation Notes (plus Story 021.0’s auto-fix story).
+
+Cross-rule validation for @supports correctness (REQ-TEST-SUPPORTS-VALID):
+- valid-story-reference rule (src/rules/valid-story-reference.ts) with tests in tests/rules/valid-story-reference.test.ts
+  - Validates that story paths in annotations (@story, @supports) correspond to existing files and respect path/boundary constraints.
+- valid-req-reference rule (src/rules/valid-req-reference.ts) with tests in tests/rules/valid-req-reference.test.ts
+  - Validates that requirement IDs used in annotations exist in the referenced story content, including supports-based multi-story patterns.
+- Both rules are part of RULE_NAMES and are enabled in TRACEABILITY_RULE_SEVERITIES as `error`, so once require-test-traceability enforces presence of @supports in test files, these other rules ensure those @supports are semantically valid, satisfying REQ-TEST-SUPPORTS-VALID.
+
+Test execution (this assessment):
+- Command: npm test -- --runInBand --verbose --testPathPatterns tests/rules/require-test-traceability.test.ts
+  - Jest output:
+    - PASS tests/rules/require-test-traceability.test.ts
+      - Suite: "require-test-traceability rule (Stories 020.0 and 021.0)" with all 11 tests passing (valid and invalid cases as described above).
+    - Test Suites: 1 passed / 1 total
+    - Tests: 11 passed / 11 total.
+  - Confirms current behavior matches the tests and, through them, the story requirements.
+
+Combined, this evidence shows:
+- File-level @supports enforcement ✔
+- Describe story reference enforcement ✔
+- Test-name [REQ-XXX] prefix enforcement and safe normalization ✔
+- ESLint best-practice rule design and performance characteristics ✔
+- Full integration into the plugin and recommended/strict configs ✔
+- Clear, actionable error messages matching the story ✔
+- Support for Jest, Mocha, and related frameworks (describe, it, test, context, describe.each/test.each) ✔
+- Documented behavior and options in user-docs ✔
+- Dependency rules met via reuse of existing validation rules and stories ✔</evidence>
+  <notes>All acceptance criteria and requirements in docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md are implemented. The require-test-traceability rule enforces file-level @supports annotations, describe() story references, and [REQ-XXX] prefixes on test names for recognized test files and frameworks, integrates with existing story and requirement validation rules, is enabled in the recommended/strict presets, has clear error messages, and is documented in the user API reference. Dedicated RuleTester tests for this story pass, and supporting rules for story/requirement validation also exist and are enabled. Therefore this story is fully implemented and passing.</notes>
 </traceability>

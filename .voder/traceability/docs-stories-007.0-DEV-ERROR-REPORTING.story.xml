@@ -2,22 +2,16 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T12:03:36.633Z</last_validated>
+  <last_validated>2025-12-06T12:51:48.886Z</last_validated>
   <last_modified>2025-12-04T18:44:42.517Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and requirements for Story 007.0-DEV-ERROR-REPORTING are satisfied.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and detailed requirements of docs/stories/007.0-DEV-ERROR-REPORTING.story.md are implemented and verified:
 
-• Core functionality & specificity (REQ-ERROR-SPECIFIC): Each validation rule defines focused, descriptive meta.messages entries using ESLint’s messageId mechanism. Dedicated tests in tests/rules/*.test.ts verify specific messages for missing annotations, invalid formats, missing files, and missing requirement IDs.
+- Core functionality: All relevant rules define specific, template-based messages in meta.messages with clear placeholders and rich context instead of generic errors. Tests assert the presence and content of these messages.
+- Error message conventions: Function, branch, format, and file/reference messages follow the patterns described in the story (`{{functionName}}`/`{{name}}` with functionName in data, `{{missing}}`, `{{details}}`, and file/req placeholders). JSDoc tags in rule modules explicitly reference this story and its REQ-ERROR-* IDs, demonstrating intentional alignment.
+- Integration and user experience: Rules report via context.report with appropriate `node` anchors (identifiers when possible) and `data` fields, and are wired through ESLint configs and integration tests, ensuring correct behavior in CLI and editor environments. Suggestions are provided for at least the key rule (require-story-annotation), giving explicit fix guidance.
+- Error handling: valid-story-reference and its helpers carefully distinguish missing files from filesystem errors and security boundary issues, with separate messages (`fileMissing`, `fileAccessError`, `invalidPath`). Similar defensive handling exists in deep validation helpers for requirement references.
+- Severity: Config tests confirm missing annotations and invalid references are errors, while format issues are warnings, exactly as specified.
 
-• Location & context (REQ-ERROR-LOCATION, REQ-ERROR-CONTEXT): Messages use placeholders like {{name}}, {{functionName}}, {{missing}}, {{details}}, {{path}}, {{reqId}}, and {{storyPath}}, and rule implementations report on the appropriate AST node so ESLint surfaces precise locations. The error-reporting test explicitly asserts correct data payload ({ name: 'bar', functionName: 'bar' }).
-
-• Suggestions (REQ-ERROR-SUGGESTION): require-story-annotation sets hasSuggestions: true and the error-reporting.test.ts suite confirms that suggestions are produced with a concrete, example-based description and a fix function, giving clear, actionable remediation steps.
-
-• Consistency across rules (REQ-ERROR-CONSISTENCY): Message templates align with the conventions described in the story: function errors mention the function name; branch errors use "Branch is missing required annotation: {{missing}}."; format errors share "Invalid annotation format: {{details}}."; file and requirement reference errors consistently include the relevant path/ID placeholders.
-
-• Error handling (edge cases): valid-story-reference differentiates missing files from filesystem errors (fileMissing vs fileAccessError) and enforces project boundaries; valid-annotation-format reports configuration errors via invalidRuleConfiguration without aborting validation, satisfying robustness expectations.
-
-• Severity configuration (REQ-ERROR-SEVERITY): src/index.ts encodes the error vs warning mapping, and tests/plugin-default-export-and-configs.test.ts includes [REQ-ERROR-SEVERITY] checks, confirming that ESLint configs apply the intended severities.
-
-All related tests, including the dedicated error-reporting suite and config/structure tests, pass in the latest Jest run. No contradictions with the story were found, so the story is fully implemented and verified.</notes>
+Given the passing, story-linked tests and exact correspondence between the story’s described behavior and the current implementations, this story is fully implemented and passes.</notes>
 </traceability>
