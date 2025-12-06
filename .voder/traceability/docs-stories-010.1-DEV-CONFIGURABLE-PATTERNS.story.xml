@@ -2,134 +2,19 @@
 <traceability>
   <specification>docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T16:57:46.206Z</last_validated>
+  <last_validated>2025-12-06T03:58:19.704Z</last_validated>
   <last_modified>2025-12-04T18:44:42.530Z</last_modified>
-  <evidence>Story file exists and matches provided spec: docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md,Core rule implementation for configurable patterns is in src/rules/helpers/valid-annotation-options.ts:
-- AnnotationRuleOptions includes custom pattern and example fields:
-  - story.pattern, story.example
-  - req.pattern, req.example
-  - storyPathPattern, storyPathExample
-  - requirementIdPattern, requirementIdExample
-- Defaults implemented:
-  - getDefaultStoryPattern() → /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/
-  - getDefaultStoryExample() → "docs/stories/005.0-DEV-EXAMPLE.story.md"
-  - getDefaultReqPattern() → /^REQ-[A-Z0-9-]+$/
-  - getDefaultReqExample() → "REQ-EXAMPLE"
-- Backward compatibility:
-  - resolvePattern() returns defaultPattern when no user pattern provided
-  - resolveOptionsInternal() uses defaults when options are undefined
-- Pattern validation:
-  - resolvePattern() tries `new RegExp(effective.value)` and on error pushes message via buildInvalidRegexError(field, pattern) to global optionErrors
-- Example text resolution:
-  - resolveExample(nestedExample, flatExample, defaultExample) prefers nested, then flat, then default
-- JSON Schema for options:
-  - getRuleSchema() returns a schema array with type: "object" and properties: story, req, storyPathPattern, storyPathExample, requirementIdPattern, requirementIdExample, autoFix; additionalProperties: false
-- Global option error handling:
-  - optionErrors array and getOptionErrors() provide collected configuration errors to the rule,valid-annotation-format rule uses the shared options and exposes schema:
-- src/rules/valid-annotation-format.ts
-  - meta.schema: getRuleSchema() (ties JSON schema into ESLint rule system)  [REQ-SCHEMA-VALIDATION]
-  - meta.messages.invalidRuleConfiguration used for regex config errors with text: "Invalid configuration for valid-annotation-format: {{details}}"  [REQ-REGEX-VALIDATION]
-  - create(context):
-    - const options = resolveOptions(context.options || []);
-    - const optionErrors = getOptionErrors();
-    - In Program(node): if optionErrors.length > 0, reports each via messageId: "invalidRuleConfiguration" and data.details
-    - Then iterates all comments, passing `options` (resolved patterns/examples) into processComment()
-- processComment()/validators in src/rules/helpers/valid-annotation-format-validators.ts use ResolvedAnnotationOptions:
-  - validateStoryAnnotation() uses `options.storyPattern` and example text via buildStoryErrorMessage, honoring configured patterns and examples and autoFix flag
-  - validateReqAnnotation() uses `options.reqPattern` and example text via buildReqErrorMessage
-  - Both functions rely on the configured patterns/examples, satisfying REQ-PATTERN-CONFIG, REQ-REGEX-VALIDATION, REQ-BACKWARD-COMPAT, REQ-EXAMPLE-MESSAGES,Direct traceability to story 010.1 and its requirements is present in implementation:
-- src/rules/helpers/valid-annotation-options.ts header:
-  - @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
-  - @req REQ-PATTERN-CONFIG, REQ-REGEX-VALIDATION, REQ-BACKWARD-COMPAT, REQ-EXAMPLE-MESSAGES, REQ-SCHEMA-VALIDATION
-- resolvePattern(), resolveExample(), normalizeUserOptions() JSDoc blocks all reference Story 010.1 and its REQ-* items
-- src/rules/valid-annotation-format.ts meta.messages.invalidRuleConfiguration has:
-  - @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
-  - @req REQ-REGEX-VALIDATION, REQ-BACKWARD-COMP
-- create(context) and Program visitor also include @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md and REQ-REGEX-VALIDATION / REQ-BACKWARD-COMP in their annotations
-- src/rules/helpers/valid-annotation-format-validators.ts references 010.1 in module header with REQ-REGEX-VALIDATION and REQ-BACKWARD-COMP,Unit tests explicitly cover Story 010.1 and its requirements:
-- tests/rules/valid-annotation-format.test.ts header:
-  - "Tests for: docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md"
-  - @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
-  - @req REQ-CONFIGURABLE-PATTERNS-STORY, REQ-CONFIGURABLE-PATTERNS-REQ, REQ-CONFIGURABLE-PATTERNS-EXAMPLES, REQ-CONFIGURABLE-PATTERNS-FALLBACK
-- Valid cases for custom patterns and examples:
-  - [REQ-CONFIGURABLE-PATTERNS-STORY] custom storyPathPattern accepts alternate extension:
-    - code: `// @story stories/feature-010.1-CUSTOM.story.mdx`
-    - options: story.pattern = "^stories\\/[^\\s]+\\.story\\.mdx$", story.example = "stories/example-010.1-CUSTOM.story.mdx"
-  - [REQ-CONFIGURABLE-PATTERNS-REQ] custom requirementIdPattern accepts PROJECT-123 IDs:
-    - code: `// @req PROJECT-123`
-    - options: req.pattern = "^[A-Z]+-[0-9]+$", req.example = "PROJECT-123"
-  - [REQ-CONFIGURABLE-PATTERNS-BOTH] combined custom story + req shapes (nested story/req)
-  - [REQ-CONFIGURABLE-PATTERNS-STORY-FLAT] flat storyPathPattern and storyPathExample accepted when nested not provided
-  - [REQ-CONFIGURABLE-PATTERNS-REQ-FLAT] flat requirementIdPattern and requirementIdExample accepted when nested not provided
-  - [REQ-CONFIGURABLE-PATTERNS-BOTH-FLAT] flat patterns for both story and req
-- Error message example coverage:
-  - ["[REQ-CONFIGURABLE-PATTERNS-EXAMPLES] custom story example appears in error message"]
-    - code: `// @story invalid/path.txt`
-    - options.story.example = "stories/example-010.1-CUSTOM.story.mdx"
-    - asserts details string contains that example
-  - ["[REQ-CONFIGURABLE-PATTERNS-EXAMPLES] custom requirement example appears in error message"]
-    - code: `// @req not-matching`
-    - options.req.example = "PROJECT-123"
-    - asserts details string contains that example
-- Flat vs nested precedence and example override:
-  - [REQ-PATTERN-CONFIG] nested story.pattern takes precedence over flat storyPathPattern and its example
-  - [REQ-PATTERN-CONFIG] nested req.pattern takes precedence over flat requirementIdPattern and its example
-  - [REQ-EXAMPLE-MESSAGES] nested story example text overrides flat storyPathExample in error messages
-  - [REQ-EXAMPLE-MESSAGES] nested req example text overrides flat requirementIdExample in error messages
-- Invalid regex pattern handling (pattern validation + backward compatibility):
-  - [REQ-CONFIGURABLE-PATTERNS-FALLBACK] invalid story.pattern "[unclosed" →
-    - errors: invalidRuleConfiguration with details 'Invalid regular expression for option "story.pattern": "[unclosed"'
-    - still reports invalidStoryFormat using default example, and auto-fix still works (output with .story.md)
-  - [REQ-CONFIGURABLE-PATTERNS-FALLBACK] invalid req.pattern "(unclosed" → similar behavior for req
-  - [REQ-CONFIGURABLE-PATTERNS-FALLBACK-FLAT] invalid flat storyPathPattern and requirementIdPattern test the flat fields
-    - confirm separate invalidRuleConfiguration messages for storyPathPattern / requirementIdPattern
-    - confirm fall back to defaults for actual validation
-- These tests directly exercise REQ-PATTERN-CONFIG, REQ-REGEX-VALIDATION, REQ-BACKWARD-COMPAT, REQ-EXAMPLE-MESSAGES and the nested vs flat behavior described in the story,Rule documentation updated with configurable pattern options and examples:
-- docs/rules/valid-annotation-format.md
-  - Includes @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md in header
-  - "Validated patterns (configurable)" section describes configurable story and requirement patterns
-  - Options section shows canonical nested config and flat shorthand:
-    - story.pattern / story.example, req.pattern / req.example
-    - storyPathPattern, storyPathExample, requirementIdPattern, requirementIdExample
-  - Provides concrete nested example:
-    ```jsonc
-    "valid-annotation-format": [
-      "error",
-      {
-        "story": {
-          "pattern": "^docs/stories/[0-9]+\\.[0-9]+-DEV-[\\w-]+\\.story\\.md$",
-          "example": "docs/stories/005.0-DEV-EXAMPLE.story.md"
-        },
-        "req": {
-          "pattern": "^REQ-[A-Z0-9-]+$",
-          "example": "REQ-EXAMPLE"
-        }
-      }
-    ]
-    ```
-  - Provides flat shorthand example matching the story’s described schema
-  - Explicitly documents behavior on invalid configuration: rule reports invalidRuleConfiguration and falls back to built-in defaults
-  - Documents that nested configuration takes precedence over flat shorthand, matching tests
-  - These docs satisfy the story’s documentation acceptance criterion for custom pattern configuration and example usage,Integration with valid-story-reference and consistency of configuration:
-- valid-annotation-format default story pattern: /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/
-  - Matches the .story.md paths validated by src/rules/valid-story-reference.ts (which uses defaultStoryDirs ["docs/stories", "stories"] and checks .story.md extension by default)
-- valid-story-reference supports configurable storyDirectories, allowAbsolutePaths, and requireStoryExtension, with extensive tests in tests/rules/valid-story-reference.test.ts
-- Both rules run independently but share the same conceptual model of story paths:
-  - One validates format via regex (010.1)
-  - The other validates existence and filesystem constraints (006.0)
-- Full test suite (including both rules) passes, demonstrating that enabling configurable patterns on valid-annotation-format does not conflict with valid-story-reference configuration
-  - From `npm test -- --ci --no-watch --runInBand --verbose` output:
-    - PASS tests/rules/valid-annotation-format.test.ts
-    - PASS tests/rules/valid-story-reference.test.ts
-    - All 39 test suites, 299 tests passed without integration issues</evidence>
-  <notes>All acceptance criteria for Story 010.1-DEV-CONFIGURABLE-PATTERNS are implemented and verified:
-- Core functionality: valid-annotation-format now accepts both nested (story.pattern/req.pattern) and flat (storyPathPattern/requirementIdPattern) configuration for story paths and requirement IDs.
-- Backward compatibility: when no patterns are configured, the rule uses the previous hardcoded defaults; when invalid patterns are provided, it reports configuration errors and safely falls back to defaults while still validating annotations.
-- Pattern validation: custom patterns are compiled into RegExp with robust error handling; invalid regex sources generate precise "invalidRuleConfiguration" diagnostics.
-- Error messages: optional example strings (nested and flat) are respected and appear in diagnostics; nested examples override flat ones as documented.
-- Quality/schema: rule meta.schema is driven by a dedicated JSON Schema builder that constrains all new options and disallows unknown fields, aligning with ESLint best practices.
-- Integration: configurable pattern behavior coexists with valid-story-reference’s storyDirectories-based path resolution; defaults are aligned and the full suite (including both rules) passes, indicating no integration regressions.
-- Documentation: the valid-annotation-format rule documentation has been updated with clear examples and explanations for both nested and flat configuration forms, matching the story’s described use cases.
+  <evidence>[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and detailed requirements of Story 010.1-DEV-CONFIGURABLE-PATTERNS are implemented and verified by passing tests.
 
-On this basis, the story is fully implemented and verified by tests and documentation, so the status is PASSED.</notes>
+Specifically:
+- **Core Functionality (storyPathPattern / requirementIdPattern)** is implemented via `AnnotationRuleOptions` and `resolvePattern`, with both nested (`story.pattern`, `req.pattern`) and flat (`storyPathPattern`, `requirementIdPattern`) shapes and precedence rules; tests cover both forms.
+- **Backward Compatibility** is maintained by default regexes and examples when no options are provided, and by falling back to these defaults when a user-supplied regex is invalid (tested via REQ-CONFIGURABLE-PATTERNS-FALLBACK and -FALLBACK-FLAT cases).
+- **Pattern Validation** is done by compiling patterns with `new RegExp(...)` and reporting configuration errors through `invalidRuleConfiguration` while still continuing validation with defaults, exactly as required.
+- **Error Message Examples** are configurable via nested/flat example fields and are correctly surfaced in error messages; tests assert that both nested examples and precedence over flat examples appear as expected.
+- **Quality Standards / Schema Validation** are satisfied by exposing a JSON Schema for all new options through `meta.schema = getRuleSchema()`, with type-checked fields and `additionalProperties: false`.
+- **Integration & Consistency with valid-story-reference** are ensured by aligned defaults (`docs/stories` and `.story.md`) and non-conflicting responsibilities between the two rules; the configurable patterns layer on top of the format rule without interfering with `storyDirectories` or existence checks.
+- **Documentation** in `user-docs/api-reference.md` clearly explains both nested and flat pattern/example options and how to use them, matching the configuration shapes defined in code.
+
+Given the direct story references in both code and tests, plus the comprehensive passing test suite that exercises the new configuration options, regex validation, fallback behavior, and example messages, this story is fully implemented and passes.</notes>
 </traceability>

@@ -1,16 +1,18 @@
 ## NOW
 
-- [ ] Identify and clearly describe in an internal development document the minimal set of core source and test directories that should be the primary focus for code-quality review, so future assessments can concentrate on that smaller, high-value slice of the codebase instead of the entire repository at once.
+- [ ] Review the dogfooding validation story and the existing ESLint configuration, maintenance tooling, and tests in this repo to produce a concrete checklist of what is missing to fully satisfy docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md.
 
 ## NEXT
 
-- [ ] Enhance the new internal document with concise guidance on which large or auxiliary directories and files (such as logs, CI artifacts, or system metadata) can usually be excluded from code-quality review because they are not part of the core implementation.
-- [ ] Review the main core source directories identified in the document for any unusually large or complex single files and, where appropriate, outline small, incremental refactor opportunities that would make those files easier to assess without changing behavior.
-- [ ] Cross-check existing linting, formatting, and duplication-detection configurations against the documented core directories to ensure they already provide strong, automated code-quality signals for that focused area.
-- [ ] Update any existing internal “how to review this codebase” or contributor guides to reference the new code-quality focus document, so both human reviewers and automated assessors can easily discover the scoping guidance.
+- [ ] Adjust the project’s ESLint configuration so that this repository actively dogfoods its own traceability rules or recommended configuration in a way that matches the dogfooding story’s requirements, while identifying any code locations that will initially require suppressions.
+- [ ] Design and implement the minimal additional dogfooding validation behavior described by the story, such as a focused validation script or workflow that runs the plugin against this codebase (or a representative workspace) and clearly fails on traceability regressions.
+- [ ] Create or extend end-to-end tests that exercise the new dogfooding validation behavior, ensuring they cover both passing and failing scenarios and explicitly reference Story 023.0 and its requirement IDs.
+- [ ] Integrate the dogfooding validation into the existing automation flow so it runs at appropriate times (for example via a dedicated npm script invoked from CI and pre-push hooks) without significantly impacting pipeline duration.
+- [ ] Update the relevant development and security documentation to describe how dogfooding validation works, how it is enforced in local workflows and CI, and how it fulfills the requirements of Story 023.0, including explicit cross-references to that story file.
+- [ ] Re-assess Story 023.0 against the implemented behavior, tests, and documentation to confirm that all of its acceptance criteria are now met and that the story can be considered complete.
 
 ## LATER
 
-- [ ] Apply the same scoping and documentation approach to any additional subsystems introduced in the future, keeping the core review surface well defined as the project grows.
-- [ ] Consider introducing or refining lightweight module entrypoints (public API index files) that summarize important surfaces for each subsystem, helping assessors focus on those instead of deep implementation details when running targeted code-quality reviews.
-- [ ] Periodically revisit and adjust the documented core-review directories and refactor opportunities as the codebase evolves, ensuring the guidance stays aligned with the actual areas of highest complexity and risk.
+- [ ] Extend dogfooding validation to cover additional realistic or synthetic workspaces that exercise different combinations of the plugin’s rules and maintenance commands beyond this repository itself.
+- [ ] Improve the reporting and error messages produced by the dogfooding validation flow so that any failures clearly point maintainers to the offending files, rules, and requirements, making regressions easy to diagnose and fix.
+- [ ] Capture key design and operational decisions about dogfooding validation in an architecture decision record, including why certain rules or presets are enforced on this repo, how suppressions are handled, and how the validation should evolve as new stories and rules are added.

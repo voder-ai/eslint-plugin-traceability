@@ -2,18 +2,18 @@
 <traceability>
   <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-05T17:02:52.441Z</last_validated>
+  <last_validated>2025-12-06T04:00:07.640Z</last_validated>
   <last_modified>2025-12-04T18:45:50.452Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and technical requirements in docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md are implemented and validated by passing tests.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All functional acceptance criteria and technical requirements from docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md are implemented and verified by passing tests:
 
-Specifically:
-- `@supports story-path REQ-ID...` format is parsed and validated at the syntax level (valid-annotation-format + valid-implements-utils) and at the deep requirement level (valid-req-reference-helpers), including appropriate error messages that mention the concrete storyPath and reqId when validation fails.
-- Deep validation confirms that each requirement in an @supports line exists in the referenced story file, and multi-story scenarios with shared requirement IDs are supported by scoping IDs per story file.
-- Core rules `require-story-annotation` and `require-req-annotation` treat @supports as satisfying their respective presence checks, while keeping legacy @story and @req behavior unchanged and well-tested.
-- Mixed usage of @story, @req, and @supports in the same comment and across codebases is explicitly supported and covered by tests.
-- Error messages for missing or invalid requirements include storyPath context, satisfying the error-context requirement and user-facing acceptance criteria.
-- User documentation (API Reference, Migration Guide, README) describes @supports, multi-story behavior, and migration patterns, satisfying the documentation acceptance criterion.
+- **Core @supports format** is parsed and validated by the `valid-annotation-format` rule and its helpers, with comprehensive tests for valid and invalid formats.
+- **Deep requirement validation for @supports** is integrated into `valid-req-reference`, ensuring each requirement ID listed in a @supports line exists in the referenced story file, with errors that include both reqId and storyPath (satisfying REQ-SUPPORTS-VALIDATE, REQ-ERROR-CONTEXT, and REQ-SCOPED-IDS).
+- **require-story-annotation** and **require-req-annotation** treat well-formed @supports annotations as satisfying the presence requirements, while preserving the legacy behavior for @story and @req (backward compatibility). Detection heuristics for nearby comments and parent chains are updated to accept @supports.
+- **Mixed usage** of @story, @req, and @supports in the same comment/file is explicitly supported and covered by tests.
+- **Requirement ID scoping** is implemented via a per-story-file cache of requirement IDs, which allows the same REQ ID to exist in multiple stories simultaneously without conflict.
+- **Error messages** for missing requirements always include the story path and requirement ID, validated by tests.
+- **Documentation** includes story-level explanation, user-facing migration guidance, and references in README to @supports-based workflows.
 
-Given the comprehensive test coverage tied directly to this story file and the implementation details above, this story is fully implemented and passes.</notes>
+There are still some legacy textual references to `@implements` in comments and older docs, but these do not affect runtime behavior: the plugin no longer recognises `@implements` in user code and all current parsing/validation uses `@supports`. Given the test coverage and implementation behavior, this story is fully implemented and passes.</notes>
 </traceability>
