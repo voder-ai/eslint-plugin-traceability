@@ -57,18 +57,22 @@ function integrate() {}
 
 You **do not** need to change existing, single-story annotations that already use `@story` and `@req`. Migration to `@supports` is only recommended when a function or module genuinely implements requirements from more than one story file.
 
-#### Optional `prefer-implements-annotation` migration rule
+#### Optional `prefer-supports-annotation` migration rule
 
-For teams that want to gradually migrate from `@story` + `@req` to `@supports`, the plugin provides an optional rule: `traceability/prefer-implements-annotation`.
+For teams that want to gradually migrate from `@story` + `@req` to `@supports`, the plugin provides an optional rule: `traceability/prefer-supports-annotation`.
 
-- This rule is **disabled by default** and is **not** included in any built-in presets.
+- This is the canonical rule name starting in v1.x.
+- The legacy key `traceability/prefer-implements-annotation` remains supported as a **deprecated alias** for backward compatibility, but should not be used in new configurations.
+
+- This rule is **disabled by default** and is **not** included in any built-in presets (the deprecated alias is also not enabled by any presets).
 - You can enable it with any standard ESLint severity (`"off"`, `"warn"`, or `"error"`) in your config, for example:
 
   ```js
   // excerpt from eslint.config.js
   {
     rules: {
-      "traceability/prefer-implements-annotation": "warn",
+      "traceability/prefer-supports-annotation": "warn",
+      // "traceability/prefer-implements-annotation": "warn", // deprecated alias
     },
   }
   ```
@@ -101,7 +105,7 @@ Aligned with the internal rule behavior, the key cases are:
   - Comments that contain only `@supports` lines, and
   - Line comments such as `// @story ...`.
 
-  These forms are still supported by the plugin and are not modified by `traceability/prefer-implements-annotation`.
+  These forms are still supported by the plugin and are not modified by `traceability/prefer-supports-annotation`.
 
 A typical migration path is:
 

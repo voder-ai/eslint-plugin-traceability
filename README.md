@@ -55,7 +55,7 @@ export default [
 - `traceability/valid-story-reference` Validates that `@story` references point to existing story files. (See the rule documentation in the plugin's user guide.)
 - `traceability/valid-req-reference` Validates that `@req` references point to existing requirement IDs. (See the rule documentation in the plugin's user guide.)
 - `traceability/require-test-traceability` Enforces traceability conventions in test files by requiring file-level `@supports` annotations, story references in `describe` blocks, and `[REQ-...]` prefixes in `it`/`test` names. (See the rule documentation in the plugin's user guide.)
-- `traceability/prefer-implements-annotation` Recommends migration from legacy `@story`/`@req` annotations to `@supports` (opt-in; disabled by default in the presets and must be explicitly enabled). (See the rule documentation in the plugin's user guide.)
+- `traceability/prefer-supports-annotation` Recommends migration from legacy `@story`/`@req` annotations to `@supports` (opt-in; disabled by default in the presets and must be explicitly enabled). The legacy rule name `traceability/prefer-implements-annotation` remains available as a deprecated alias. (See the rule documentation in the plugin's user guide.)
 
 Configuration options: For detailed per-rule options (such as scopes, branch types, and story directory settings), see the individual rule docs in the plugin's user guide and the consolidated [API Reference](user-docs/api-reference.md).
 

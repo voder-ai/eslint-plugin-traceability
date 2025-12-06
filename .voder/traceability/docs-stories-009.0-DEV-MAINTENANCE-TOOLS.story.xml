@@ -2,23 +2,51 @@
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T12:53:10.901Z</last_validated>
+  <last_validated>2025-12-06T16:08:19.746Z</last_validated>
   <last_modified>2025-12-06T01:54:53.759Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>Story 009.0-DEV-MAINTENANCE-TOOLS is fully implemented and validated.
+  <evidence>[object Object]</evidence>
+  <notes>The 009.0-DEV-MAINTENANCE-TOOLS story is fully implemented and verified.
 
-All specified maintenance capabilities are present:
-- Core maintenance API functions (`detectStaleAnnotations`, `updateAnnotationReferences`, `batchUpdateAnnotations`, `verifyAnnotations`, `generateMaintenanceReport`) are implemented under `src/maintenance/` with strong traceability annotations and safe filesystem behavior.
-- These helpers are exported through `src/maintenance/index.ts` and surfaced on the main plugin export as `maintenance` from `src/index.ts`, fulfilling the integration requirement with the ESLint plugin.
-- A dedicated CLI (`traceability-maint`) is wired via `package.json` and implemented in `src/maintenance/cli.ts` + `commands.ts` + `flags.ts`, providing `detect`, `verify`, `report`, and `update` subcommands with well-defined options, JSON modes, exit codes, and clear user-facing messages.
+Mapping to acceptance criteria:
 
-The acceptance criteria are met:
-- **Core Functionality**: Detection and update flows are implemented and tested both at API and CLI levels, including batch updates and verification (`batchUpdateAnnotations`, `verifyAnnotations`, CLI `update` and `verify`).
-- **Quality Standards**: Operations preserve code structure by limiting modifications to `@story` path substrings, only writing files when content actually changes, and are validated on large synthetic workspaces via performance tests that enforce reasonable time bounds.
-- **Integration**: Maintenance tools integrate with the existing plugin infrastructure via the exported `maintenance` object and documented CLI binary; tests confirm correct exports.
-- **User Experience**: CLI commands provide clear, human-readable messages and structured JSON output where appropriate, with guidance strings for next steps; tests assert on these messages and exit codes.
-- **Error Handling**: The CLI validates arguments, exposes distinct exit codes (0/1/2), and wraps operations in a catch-all handler that prints concise diagnostics for unexpected errors. Detection and traversal logic safely handle missing roots, out-of-project paths, and malformed story paths, and there are explicit tests for permission errors and invalid CLI flags.
-- **Documentation**: The Maintenance CLI is documented in `README.md`, and the `user-docs/api-reference.md` contains detailed API and CLI documentation with usage examples and behavior notes. Additional internal docs (ADR and performance-tests doc) reinforce design and testing strategy.
+1) Core Functionality – detect and update references:
+- Detection: `detectStaleAnnotations` walks the workspace, extracts `@story` paths from file content, validates them for safety and project boundaries, and records those whose candidate files do not exist. Tests in `tests/maintenance/detect.test.ts` and `tests/maintenance/detect-isolated.test.ts` verify behavior for no-stale, single/multiple stale references, nonexistent roots, nested directories, and security constraints.
+- Update: `updateAnnotationReferences` uses a targeted regex against `@story <oldPath>` and replaces only the path portion. Isolated and CLI-level tests (`tests/maintenance/update-isolated.test.ts`, `tests/maintenance/cli.test.ts`) confirm that references change from `old.path.md` to `new.path.md` and count is correctly reported.
+- Batch: `batchUpdateAnnotations` wraps multiple updates; verified by `tests/maintenance/batch.test.ts` and large workspace perf tests.
+- Verify: `verifyAnnotations` uses `detectStaleAnnotations` and returns a boolean, tested both in isolation and via the CLI.
 
-All Jest tests, including unit, integration, and performance suites associated with this story, pass successfully (`npm test -- --verbose`), providing strong evidence that the implementation satisfies the story’s requirements end-to-end.</notes>
+2) Quality Standards – preserve functionality/formatting:
+- Update logic only modifies the specific `@story` path segment (captures the `@story` plus whitespace prefix and reuses it in replacement), leaving the rest of the file untouched. No AST rewrite is performed; operations are simple string substitutions constrained by the regex. Tests ensure updated files still contain expected code surrounding modified annotations; there are no tests showing unintended modifications.
+- Recursively collected files come only from real files (`stat.isFile()` check in `getAllFiles`), avoiding directories and special entries.
+
+3) Integration – works with project structure/ESLint config:
+- `src/maintenance/index.ts` exposes the maintenance API as named exports, and `src/index.ts` attaches these as `plugin.maintenance`, making them available alongside rules and configs.
+- `tests/maintenance/index.test.ts` asserts that all maintenance functions are exported as functions from the main maintenance module, and plugin tests validate overall plugin structure.
+- The CLI entrypoint (`src/maintenance/cli.ts`) is wired via `package.json` bin `"traceability-maint": "lib/src/maintenance/cli.js"`, and README documents usage from a consumer’s perspective.
+
+4) User Experience – clear feedback:
+- CLI handlers emit clear, contextual messages and proper exit codes:
+  - `detect`: prints either a simple no-stale message, or a list of stale paths + summary + hint to run report; JSON mode returns `{"root","stale"}`.
+  - `verify`: prints either success or a guidance message naming the root and suggesting `detect`/`report`.
+  - `report`: prints a heading and 'Stale story references:' section for text mode, or a JSON object `{ root, report }` for automation.
+  - `update`: enforces `--from` and `--to`, provides clear error when missing, prints a descriptive summary including counts and paths, and has a dry-run mode with human-readable and JSON summaries.
+- All of these behaviors are asserted in `tests/maintenance/cli.test.ts` and `tests/perf/maintenance-cli-large-workspace.test.ts`.
+
+5) Error Handling – edge cases, missing files, invalid input:
+- Nonexistent roots and directories result in safe no-op/empty results (`detectStaleAnnotations` and `updateAnnotationReferences` both return empty results when the directory does not exist), covered by tests.
+- `detectStaleAnnotations` guards against unsafe paths and enforces a project boundary, and its security behavior is validated in `tests/maintenance/detect-isolated.test.ts` (no FS checks on malicious or out-of-project paths).
+- CLI error handling:
+  - Invalid `--format` triggers a thrown error from `parseFlags`, which the CLI-level try/catch turns into a `traceability-maint failed: ...` message and exit code 2; tested in `cli.test.ts`.
+  - Missing `--from` / `--to` lead to explicit error messages and EXIT_USAGE (2).
+  - Permission errors in `fs.statSync` are simulated and result in prefixed diagnostic messages and exit code 2 as verified by `cli.test.ts`.
+  - Unknown commands and empty subcommands both route to safe help output without crashes.
+
+6) Documentation – usage & best practices:
+- README has a dedicated **Maintenance CLI** section describing:
+  - What `traceability-maint` does (maintain/audit `@story` annotations, stale references, safe batch updates).
+  - Summary for each command (detect, verify, report, update).
+  - Concrete example invocations for each, including JSON reporting for CI and a realistic update scenario when story files are renamed.
+- It also links to `user-docs/api-reference.md#maintenance-api-and-cli` for deeper API/CLI documentation, satisfying the requirement for documented usage and best practices.
+
+All tests referencing `docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md` (unit, integration, and performance) are passing in the latest `npm test -- --runInBand --verbose` run. The implementation, CLI UX, exports, error handling, and documentation together satisfy all the story’s acceptance criteria and named requirements, so the story is assessed as fully implemented.</notes>
 </traceability>

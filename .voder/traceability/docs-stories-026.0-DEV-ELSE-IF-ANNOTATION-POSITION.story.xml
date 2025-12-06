@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traceability>
+  <specification>docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md</specification>
+  <status>FAILED</status>
+  <last_validated>2025-12-06T16:08:23.696Z</last_validated>
+  <last_modified>2025-12-06T13:26:12.165Z</last_modified>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md defines explicit new behavior for require-branch-annotation on else-if statements: dual-position detection (before else and between else-if condition and body), fallback logic favoring the new position when the first is missing, position priority when both exist, Prettier-compatible auto-fix insertion for wrapped else-if lines, corresponding unit/integration tests, and updated rule documentation.
+
+Current implementation of branch annotation helpers only has special dual-position handling for CatchClause (Story 025.0): gatherBranchCommentText checks comments before the catch, then optionally inside the catch body via getCommentsInside; getBranchAnnotationInfo also adjusts indent and insert position to place auto-fix comments inside the catch block. There is no analogous logic for IfStatement nodes that represent else-if branches (parent.alternate === node), and no code reads comments between an else-if condition and its body. Auto-fix insertion for IfStatement branches still uses the generic behavior of inserting above the branch line, not between condition and body as required by REQ-PRETTIER-AUTOFIX-ELSE-IF.
+
+On the testing side, there are comprehensive tests for generic branch annotations and for catch-clause Prettier compatibility (Story 025.0), but no tests reference Story 026.0 or its requirements; there are also no `else if` scenarios in the require-branch-annotation tests or utils tests. Documentation for require-branch-annotation does not mention the new allowed else-if annotation position or Prettier-specific behavior.
+
+Therefore, multiple acceptance criteria are not met: After-Condition Position detection, Position Priority for else-if, Prettier-compatible auto-fix for else-if, specific tests and integration coverage, and documentation updates. Only the pre-existing generic behavior (before-branch comments) is present. This story is a valid specification but is not yet fully implemented, so the assessment status is FAILED.</notes>
+</traceability>

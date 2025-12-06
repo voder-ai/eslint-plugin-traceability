@@ -2,17 +2,17 @@
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T12:50:01.915Z</last_validated>
+  <last_validated>2025-12-06T16:09:02.124Z</last_validated>
   <last_modified>2025-12-04T18:44:42.514Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria for 010.0-DEV-DEEP-VALIDATION are satisfied based on current code, tests, and docs:
+  <notes>All acceptance criteria for 010.0-DEV-DEEP-VALIDATION are satisfied by the current implementation:
 
-- Core Functionality: Implemented via the `valid-req-reference` rule and its helpers, which resolve story paths, parse story markdown for `REQ-...` identifiers, and ensure every @req/@supports requirement ID exists in the target story file. Tests explicitly cover successful and failing lookups.
-- Quality Standards: The parser uses a regex over the full story markdown, so it supports requirements appearing in any section or structure. Tests exercise standard stories, bullet-list fixtures, and multi-story fixtures, demonstrating robustness across formats and structures.
-- Integration: The helper module is wired as a Program visitor through `valid-req-reference`, the rule is dynamically loaded and included in the plugin’s flat-config presets at severity `error`. Path-validation semantics align with the existing file-validation story (rejecting traversal and absolute paths), and the rule cooperates with existing @story/@req/@supports annotation patterns.
-- User Experience: Error messages `reqMissing` and `invalidPath` include the missing requirement ID and story path, and are tied via tests to specific scenarios (missing requirements, invalid paths), providing clear, consistent diagnostics.
-- Error Handling: Story file reading is wrapped in try/catch; failures result in an empty requirement set rather than crashes, and invalid paths are reported with explicit diagnostics. This behavior is covered by tests for path traversal, absolute paths, and missing requirements, satisfying the requirement to handle malformed or inaccessible story files gracefully.
-- Documentation: docs/rules/valid-req-reference.md documents the rule’s behavior, its relationship to this story, and includes multiple examples of correct/incorrect usage for @req, @supports, and path issues. This meets the documentation acceptance criterion.
+- **Core Functionality**: The `valid-req-reference` rule reads referenced story files, extracts requirement IDs, and validates that each `@req` and `@supports` requirement exists in the target file. Tests explicitly exercise both matching and missing cases.
+- **Quality Standards**: Requirement IDs are detected via a generic `REQ-[A-Z0-9-]+` regex across entire markdown files, allowing them to appear in bullets, numbered lists, checkboxes, or any section. Fixtures and tests cover at least bullet lists and multi-story structures, and the implementation is structurally agnostic to story layout.
+- **Integration**: The rule is registered in `src/index.ts`, enabled in the recommended/strict configs, and runs alongside existing annotation-format and file-validation rules. Tests for flat-config presets confirm it is part of the normal plugin setup.
+- **User Experience**: Clear, specific error messages are provided (`Requirement '{{reqId}}' not found in '{{storyPath}}'` and `Invalid story path '{{storyPath}}'`), with tests verifying the correct `messageId` and data payload, matching the story’s emphasis on diagnosable errors.
+- **Error Handling**: Path traversal and absolute paths are detected and reported as `invalidPath`. Filesystem read errors are caught and handled by treating the file as having no requirements, preventing crashes on malformed or unreadable story files while still surfacing missing requirements as `reqMissing` where appropriate.
+- **Documentation**: docs/rules/valid-req-reference.md provides detailed documentation and examples for requirement validation behavior, including both correct and incorrect usage and interaction between `@story`/`@req` and `@supports`.
 
-Given the direct mapping between implementation helpers and the story’s REQ-DEEP-* requirements, the comprehensive Jest tests tied to this story, and the passing test run in this session, the story is fully implemented and verified.</notes>
+Based on the code, tests, and documentation, the deep requirement content validation described in docs/stories/010.0-DEV-DEEP-VALIDATION.story.md is fully implemented and working, so the story is assessed as PASSED.</notes>
 </traceability>

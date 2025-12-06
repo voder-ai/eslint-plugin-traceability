@@ -26,6 +26,7 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
       "valid-req-reference",
       "prefer-implements-annotation",
       "require-test-traceability",
+      "prefer-supports-annotation",
     ];
     // Act: get actual rule names from plugin
     const actual = Object.keys(rules);

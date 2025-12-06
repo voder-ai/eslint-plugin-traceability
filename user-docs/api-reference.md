@@ -15,7 +15,7 @@ In addition to the core `@story` and `@req` annotations, the plugin also underst
 `@supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`
 to indicate that a given function supports a particular requirement from a payments story document within that project’s own `docs/stories` tree. For a detailed explanation of `@supports` behavior and validation, see [Migration Guide](migration-guide.md) (section **3.1 Multi-story @supports annotations**). Additional background on multi-story semantics is available in the project’s internal rule documentation, which is intended for maintainers rather than end users.
 
-The `prefer-implements-annotation` rule is an **opt-in migration helper** that is disabled by default and **not** part of any built-in preset. It can be enabled and given a severity like `"warn"` or `"error"` using normal ESLint rule configuration when you want to gradually encourage multi-story `@supports` usage. Detailed behavior and migration guidance are documented in the project’s internal rule documentation, which is targeted at maintainers; typical end users can rely on the high-level guidance in this API reference and the [Migration Guide](migration-guide.md).
+The `prefer-supports-annotation` rule is an **opt-in migration helper** that is disabled by default and **not** part of any built-in preset. It can be enabled and given a severity like `"warn"` or `"error"` using normal ESLint rule configuration when you want to gradually encourage multi-story `@supports` usage. The legacy rule key `traceability/prefer-implements-annotation` remains available as a **deprecated alias** for backward compatibility, but new configurations should prefer `traceability/prefer-supports-annotation`. Detailed behavior and migration guidance are documented in the project’s internal rule documentation, which is targeted at maintainers; typical end users can rely on the high-level guidance in this API reference and the [Migration Guide](migration-guide.md).
 
 ### traceability/require-story-annotation
 
@@ -246,9 +246,9 @@ describe("Refunds flow docs/stories/010.0-PAYMENTS.story.md", () => {
 });
 ```
 
-### traceability/prefer-implements-annotation
+### traceability/prefer-supports-annotation
 
-Description: An optional, opt-in migration helper that encourages converting legacy single‑story `@story` + `@req` JSDoc blocks into the newer multi‑story `@supports` format. The rule is **disabled by default** and is **not included in any built‑in preset**; you enable it explicitly and control its behavior entirely via ESLint severity (`"off" | "warn" | "error"`). It does not change what the core rules consider valid—it only adds migration recommendations and safe auto‑fixes on top of existing validation.
+Description: An optional, opt-in migration helper that encourages converting legacy single‑story `@story` + `@req` JSDoc blocks into the newer multi‑story `@supports` format. The rule is **disabled by default** and is **not included in any built‑in preset**; you enable it explicitly and control its behavior entirely via ESLint severity (`"off" | "warn" | "error"`). It does not change what the core rules consider valid—it only adds migration recommendations and safe auto‑fixes on top of existing validation. The legacy rule key `traceability/prefer-implements-annotation` is still recognized as a **deprecated alias** for `traceability/prefer-supports-annotation` so that existing configurations continue to work unchanged.
 
 Options: None – this rule does not accept a configuration object. All tuning is done via the ESLint rule level (`"off"`, `"warn"`, `"error"`).
 
@@ -318,7 +318,7 @@ function issueRefund() {
 }
 ```
 
-With `traceability/prefer-implements-annotation` enabled and ESLint run with `--fix`, the rule rewrites it to:
+With `traceability/prefer-supports-annotation` enabled (or its deprecated alias `traceability/prefer-implements-annotation`) and ESLint run with `--fix`, the rule rewrites it to:
 
 ```js
 /**
@@ -343,7 +343,9 @@ export default [
   traceability.configs.recommended,
   {
     rules: {
-      "traceability/prefer-implements-annotation": "warn",
+      "traceability/prefer-supports-annotation": "warn",
+      // The deprecated alias is still honored if you prefer:
+      // "traceability/prefer-implements-annotation": "warn",
     },
   },
 ];
@@ -358,7 +360,7 @@ The plugin provides two built-in presets for easy configuration:
 Enables the **six core traceability rules** with severities tuned for common usage (most at `error`, with
 `traceability/valid-annotation-format` at `warn` to reduce noise). This `warn` level for `traceability/valid-annotation-format` is intentional to keep early adoption noise low, but you can safely raise it to `error` in projects that want strict enforcement of annotation formatting.
 
-The `prefer-implements-annotation` migration rule is **not included** in this (or any) preset and remains disabled by default. If you want to encourage or enforce multi-story `@supports` annotations, you must enable `traceability/prefer-implements-annotation` explicitly in your ESLint configuration and choose an appropriate severity (for example, `"warn"` during migration or `"error"` once fully adopted).
+The `prefer-supports-annotation` migration rule (and its deprecated alias key `traceability/prefer-implements-annotation`) is **not included** in this (or any) preset and remains disabled by default. If you want to encourage or enforce multi-story `@supports` annotations, you must enable `traceability/prefer-supports-annotation` explicitly in your ESLint configuration and choose an appropriate severity (for example, `"warn"` during migration or `"error"` once fully adopted).
 
 Core rules enabled by the `recommended` preset:
 
@@ -381,7 +383,7 @@ export default [js.configs.recommended, traceability.configs.recommended];
 
 ### strict
 
-Currently mirrors the **recommended** preset, reserved for future stricter policies. As with the `recommended` preset, the `traceability/prefer-implements-annotation` rule is **not** enabled here by default and must be configured manually if desired.
+Currently mirrors the **recommended** preset, reserved for future stricter policies. As with the `recommended` preset, the `traceability/prefer-supports-annotation` rule is **not** enabled here by default, and the deprecated alias key `traceability/prefer-implements-annotation` continues to be honored only when you opt into it manually in your own configuration.
 
 Usage:
 

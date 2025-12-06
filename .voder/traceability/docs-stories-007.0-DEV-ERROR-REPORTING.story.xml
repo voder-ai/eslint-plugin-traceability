@@ -2,16 +2,18 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T12:51:48.886Z</last_validated>
+  <last_validated>2025-12-06T16:07:30.895Z</last_validated>
   <last_modified>2025-12-04T18:44:42.517Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and detailed requirements of docs/stories/007.0-DEV-ERROR-REPORTING.story.md are implemented and verified:
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story docs/stories/007.0-DEV-ERROR-REPORTING.story.md defines requirements for clear, specific, and consistent error reporting across all traceability-related ESLint rules, including error specificity, location/context, suggestions, consistency, severity, and error handling.
 
-- Core functionality: All relevant rules define specific, template-based messages in meta.messages with clear placeholders and rich context instead of generic errors. Tests assert the presence and content of these messages.
-- Error message conventions: Function, branch, format, and file/reference messages follow the patterns described in the story (`{{functionName}}`/`{{name}}` with functionName in data, `{{missing}}`, `{{details}}`, and file/req placeholders). JSDoc tags in rule modules explicitly reference this story and its REQ-ERROR-* IDs, demonstrating intentional alignment.
-- Integration and user experience: Rules report via context.report with appropriate `node` anchors (identifiers when possible) and `data` fields, and are wired through ESLint configs and integration tests, ensuring correct behavior in CLI and editor environments. Suggestions are provided for at least the key rule (require-story-annotation), giving explicit fix guidance.
-- Error handling: valid-story-reference and its helpers carefully distinguish missing files from filesystem errors and security boundary issues, with separate messages (`fileMissing`, `fileAccessError`, `invalidPath`). Similar defensive handling exists in deep validation helpers for requirement references.
-- Severity: Config tests confirm missing annotations and invalid references are errors, while format issues are warnings, exactly as specified.
+Implementation and tests confirm the following:
+- Core Functionality & Quality Standards: All listed rules (require-story-annotation, require-req-annotation, require-branch-annotation, valid-annotation-format, valid-story-reference, valid-req-reference) define explicit meta.messages entries that match the patterns described in the story: function errors include the function name and remediation; branch errors use a generic template with {{missing}}; format errors use the shared "Invalid annotation format: {{details}}." pattern; file and requirement reference errors include filePath/reqId/storyPath placeholders.
+- Integration & User Experience: Rules use ESLint’s context.report with messageIds and data placeholders; the error-reporting.test.ts suite and other rule tests explicitly validate that message templates exist, contain the expected placeholders, and that report descriptors wire the correct messageId and data (e.g., both name and functionName), as well as ESLint suggestions for auto-fix where appropriate (notably require-story-annotation).
+- Error Handling: valid-story-reference implements differentiated handling for missing files vs filesystem errors with fileAccessError, and its tests cover these paths. valid-annotation-format includes an invalidRuleConfiguration message and logic to surface config regex errors without breaking validation, which is also covered by tests. This satisfies the requirement to gracefully handle incomplete or problematic context.
+- Error Context & Consistency: Messages across rules reference the story via JSDoc @story/@req annotations and consistently reuse placeholders like {{name}}, {{functionName}}, {{missing}}, {{details}}, {{path}}, {{reqId}}, and {{storyPath}}. Helper functions (e.g., reportInvalidPath, reportExistenceStatus) centralize reporting to keep wording consistent. Tests for each rule validate the presence and use of these messages.
+- Severity: While individual rules mark meta.recommended='error', the exported ESLint configs adjust severities so that missing annotations are errors and format issues are warnings, matching the story’s REQ-ERROR-SEVERITY. This is explicitly asserted in tests/plugin-default-export-and-configs.test.ts.
+- Documentation: The story itself documents error conventions, and each rule’s meta.messages block is annotated with traceability comments back to this story and its REQ-ERROR-* requirements, providing consistent documentation for error formats.
 
-Given the passing, story-linked tests and exact correspondence between the story’s described behavior and the current implementations, this story is fully implemented and passes.</notes>
+All acceptance criteria and detailed requirements in 007.0-DEV-ERROR-REPORTING are implemented and verified via the current rule implementations and passing automated tests, so this story is fully satisfied.</notes>
 </traceability>

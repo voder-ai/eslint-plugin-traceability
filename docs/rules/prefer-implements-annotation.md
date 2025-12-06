@@ -1,4 +1,4 @@
-# prefer-implements-annotation
+# prefer-supports-annotation
 
 Optional migration rule that recommends converting legacy `@story` + `@req` annotations to the newer `@supports` format.
 
@@ -11,11 +11,13 @@ Optional migration rule that recommends converting legacy `@story` + `@req` anno
 @req REQ-VALID-OUTPUT - Ensure auto-fixed output always passes existing validation rules
 @req REQ-BACKWARDS-COMPAT-VALIDATION - Ensure legacy @story/@req annotations remain valid when the rule is disabled
 
+> Deprecated Alias: `traceability/prefer-implements-annotation` is a deprecated alias for `traceability/prefer-supports-annotation` and will continue to work for backward compatibility, but new configurations should use the new name.
+
 > Note: Auto-fix is intentionally conservative and only applies to simple, clearly single-story legacy blocks. More complex patterns (multi-story, mixed `@supports`, or unusual formatting) are detected but **not** auto-fixed and will still require manual migration.
 
 ## Rule Details
 
-This rule is designed as an **opt-in migration aid** for teams that want to gradually standardize on the `@supports` annotation while keeping existing `@story` + `@req` annotations fully supported.
+This rule (`prefer-supports-annotation`) is designed as an **opt-in migration aid** for teams that want to gradually standardize on the `@supports` annotation while keeping existing `@story` + `@req` annotations fully supported.
 
 When enabled, it scans block/JSDoc comments and:
 
@@ -45,13 +47,16 @@ export default [
   {
     rules: {
       // Default: off (no recommendations)
-      "traceability/prefer-implements-annotation": "off",
+      "traceability/prefer-supports-annotation": "off",
 
       // Or enable as warnings
-      // "traceability/prefer-implements-annotation": "warn",
+      // "traceability/prefer-supports-annotation": "warn",
 
       // Or enforce as errors
-      // "traceability/prefer-implements-annotation": "error",
+      // "traceability/prefer-supports-annotation": "error",
+
+      // Deprecated alias (still supported for backward compatibility)
+      // "traceability/prefer-implements-annotation": "warn",
     },
   },
 ];
@@ -60,6 +65,8 @@ export default [
 - `"off"` (default) – rule is disabled; no additional diagnostics
 - `"warn"` – surfaces recommendations without failing builds
 - `"error"` – treats recommendations as errors for strict migration phases
+
+The legacy rule key `traceability/prefer-implements-annotation` can still be used, but is deprecated and may be removed in a future major version.
 
 ## Behavior
 
@@ -211,9 +218,11 @@ function multiStory() {}
 
 ## Relationship to other rules
 
-- Use `prefer-implements-annotation` to **guide migration** from legacy annotations to `@supports`.
+- Use `prefer-supports-annotation` to **guide migration** from legacy annotations to `@supports`.
 - Use `valid-annotation-format` to enforce syntax and format for `@story`, `@req`, and `@supports`.
 - Use `valid-req-reference` to validate that each `@req` and `@supports` requirement ID exists in the referenced story file.
 - Keep `require-story-annotation` and `require-req-annotation` enabled to ensure functions remain fully annotated during and after migration.
+
+The legacy alias `prefer-implements-annotation` remains available for backward compatibility but should be phased out in favor of `prefer-supports-annotation`.
 
 Together, these rules support a smooth, incremental transition from purely `@story` + `@req` annotations to richer, multi-story `@supports` annotations without breaking existing projects.

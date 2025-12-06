@@ -33,9 +33,7 @@ const RULE_NAMES = [
   "require-test-traceability",
 ] as const;
 
-type RuleName = (typeof RULE_NAMES)[number];
-
-const rules: Record<RuleName, Rule.RuleModule> = {} as any;
+const rules: Record<string, Rule.RuleModule> = {} as any;
 
 RULE_NAMES.forEach(
   /**
@@ -91,6 +89,43 @@ RULE_NAMES.forEach(
     }
   },
 );
+
+/**
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-RULE-NAME
+ * Wire up traceability/prefer-supports-annotation as the primary rule name and
+ * traceability/prefer-implements-annotation as its deprecated alias.
+ */
+{
+  const implementsRule = rules["prefer-implements-annotation"] as
+    | Rule.RuleModule
+    | undefined;
+
+  if (implementsRule) {
+    const originalMeta = (implementsRule as any).meta ?? {};
+    const preferSupportsRule: Rule.RuleModule = {
+      ...(implementsRule as any),
+      meta: {
+        ...originalMeta,
+        deprecated: false,
+      },
+    };
+
+    rules["prefer-supports-annotation"] = preferSupportsRule;
+
+    const implementsMeta = ((implementsRule as any).meta =
+      (implementsRule as any).meta ?? {});
+    implementsMeta.deprecated = true;
+    implementsMeta.replacedBy = ["prefer-supports-annotation"];
+
+    if (
+      implementsMeta.docs &&
+      typeof implementsMeta.docs.description === "string"
+    ) {
+      implementsMeta.docs.description +=
+        " (deprecated alias: use traceability/prefer-supports-annotation instead)";
+    }
+  }
+}
 
 /**
  * Plugin metadata used by ESLint for debugging and caching.

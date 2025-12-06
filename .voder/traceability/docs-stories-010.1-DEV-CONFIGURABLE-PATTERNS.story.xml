@@ -2,16 +2,18 @@
 <traceability>
   <specification>docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T12:53:12.913Z</last_validated>
+  <last_validated>2025-12-06T16:10:14.264Z</last_validated>
   <last_modified>2025-12-04T18:44:42.530Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria for 010.1-DEV-CONFIGURABLE-PATTERNS are implemented and verified:
-- Core functionality: `valid-annotation-format` supports configurable patterns via nested `story.pattern`/`req.pattern` and flat shorthand `storyPathPattern`/`requirementIdPattern`, plus corresponding example fields.
-- Backward compatibility: When options are omitted or invalid, the rule falls back to its original hardcoded patterns and examples, preserving prior behavior while reporting configuration errors where appropriate.
-- Pattern validation: Custom patterns are compiled as regular expressions; invalid patterns generate stable configuration error messages via `invalidRuleConfiguration` and do not break validation.
-- Error messages: Optional example strings feed directly into error messages for both story paths and requirement IDs; tests confirm custom and nested-over-flat precedence.
-- Quality and schema: Options are defined and validated using a JSON Schema attached to the rule’s meta, with `additionalProperties: false` and documented nested/flat forms in user docs.
-- Integration consistency: Default patterns and examples align with the `valid-story-reference` rule’s default directories and extension requirements, so the two rules can be used together without conflict.
-- Tests and documentation: Dedicated tests in tests/rules/valid-annotation-format.test.ts cover all the REQ-* items for this story and pass, and user-docs/api-reference.md provides clear, user-facing configuration guidance.
-Given the concrete implementation and passing targeted tests, this story is fully satisfied.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and requirements in docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md are implemented and verified:
+
+- Core functionality: The `valid-annotation-format` rule supports configurable patterns via both nested (`story.pattern`, `req.pattern`) and flat (`storyPathPattern`, `requirementIdPattern`) options, wired through `ResolvedAnnotationOptions` and used by the validators.
+- Backward compatibility: When no options are supplied or patterns/examples are omitted, the rule falls back to the original hardcoded defaults (`docs/stories/... .story.md` and `REQ-...`), and pre-existing tests for Story 005.0 continue to pass.
+- Pattern validation: Regex patterns are compiled with protection against invalid sources; configuration errors are recorded via `buildInvalidRegexError(...)`, surfaced as `invalidRuleConfiguration` diagnostics, and default patterns remain in effect. Tests explicitly assert both the error messages and continued validation behavior.
+- Error messages & examples: Optional `story.example`/`storyPathExample` and `req.example`/`requirementIdExample` are resolved with correct precedence and injected into `buildStoryErrorMessage` / `buildReqErrorMessage`. Tests cover both custom examples and nested-over-flat precedence, and user docs describe these options clearly.
+- Schema & quality standards: `getRuleSchema()` defines a strict JSON schema for the rule’s options, with typed properties and `additionalProperties: false` at all levels, and it is attached to `meta.schema`, matching ESLint best practices.
+- Integration consistency: Default story patterns (`docs/stories/... .story.md`) align with the `valid-story-reference` rule’s default `storyDirectories` and extension handling. Custom patterns affect only format validation; `valid-story-reference` continues to use its own `storyDirectories` configuration, so the rules operate together without conflict.
+- Documentation: The user-facing API reference documents `storyPathPattern`, `requirementIdPattern`, `storyPathExample`, and `requirementIdExample`, explains defaults, precedence, error behavior, and typical customization scenarios (alternate directories, different ID schemes). Combined with the internal story examples and comprehensive tests, the configuration usage is clearly communicated.
+
+Given the concrete implementation, targeted tests tied to this story, passing full test suite, and aligned documentation, this story is fully implemented and validated.</notes>
 </traceability>

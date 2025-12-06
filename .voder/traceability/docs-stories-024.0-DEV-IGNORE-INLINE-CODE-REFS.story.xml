@@ -2,8 +2,28 @@
 <traceability>
   <specification>docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T12:49:08.974Z</last_validated>
-  <last_modified>2025-12-06T11:15:20.706Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria for 024.0-DEV-IGNORE-INLINE-CODE-REFS are met. normalizeCommentLine now strips backtick-wrapped content using a centralized regex-based filter, replacing matches with spaces to preserve character boundaries. Unit tests in tests/rules/valid-annotation-format-internal.test.ts cover ignoring inline-code references, preserving spacing, handling multiple backtick segments, correctly detecting real annotations outside backticks, and leaving non-backtick lines unchanged. The helper’s JSDoc documents the inline-code filtering behavior, and a full Jest run shows all 42 suites (including these new tests) passing, satisfying the no-regression requirement.</notes>
+  <last_validated>2025-12-06T16:08:04.482Z</last_validated>
+  <last_modified>2025-12-06T14:46:37.163Z</last_modified>
+  <evidence>[object Object]</evidence>
+  <notes>All requirements and acceptance criteria of story 024.0-DEV-IGNORE-INLINE-CODE-REFS are implemented and verified:
+
+- **Core Functionality (ignore backtick-wrapped keywords)** – `normalizeCommentLine` removes *all* backtick-wrapped segments via `/`[^`]*`/g`, replacing them with spaces. This is generic and therefore covers `` `@story` ``, `` `@req` ``, `` `@supports` ``. Tests explicitly verify that lines with inline `` `@story` `` and `` `@req` `` produce normalized strings with no @story/@req/@supports tokens.
+
+- **Common Patterns** – The test `"`@story` + `@req` docs"` confirms documentation patterns like `` `@story` + `@req` `` are stripped and do not leave annotation tokens behind. For `@supports`, the test with `"using `@supports` and real @story ..."` shows the inline `@supports` is removed while the real `@story` annotation remains, demonstrating that documentation about `@supports` itself is ignored while real annotations are still detected.
+
+- **Real Annotations Detected** – The same test asserts that when there is a real `@story` outside backticks, `normalizeCommentLine` returns a string beginning with that `@story` annotation, ensuring detection continues to work correctly in mixed lines.
+
+- **Multi-Line Support** – `processComment` splits each comment into `rawLines` with `split(/\r?\n/)` and calls `normalizeCommentLine` on every line. Since the backtick filtering is per-line and independent of position, backtick-wrapped keywords are filtered on any line of a multi-line comment. (The regex is content-agnostic; it strips any backtick span on each processed line.)
+
+- **No Regression** – The full Jest test suite (44 suites / 318 tests) passes, including all existing rules and integration tests. This confirms the normalization change did not break prior behavior.
+
+- **Documentation** – The JSDoc on `normalizeCommentLine` explicitly documents the new behavior: it explains that inline code spans wrapped in backticks are stripped and replaced with spaces of equal length to preserve character boundaries, and that this feeds annotation detection. The story file itself also documents the behavior.
+
+- **Requirements coverage**:
+  - **REQ-IGNORE-INLINE-CODE** – Implemented via the `/`[^`]*`/g` replacement; tested by cases that ensure no @story/@req/@supports remain when only mentioned inside backticks.
+  - **REQ-PRESERVE-BOUNDARIES** – Implemented by `" ".repeat(match.length)`; tests assert exact output strings with spaces where backtick segments were, preserving alignment.
+  - **REQ-CENTRALIZED-FILTER** – Implemented inside `normalizeCommentLine` and used by `valid-annotation-format`’s `processComment`, which is the central annotation-format rule; any rule using this helper benefits from the filter.
+  - **IMPL-NORMALIZE-COMMENT** – The existing `normalizeCommentLine` function was extended as specified and is the single, centralized place where comment normalization (including inline code filtering) occurs.
+
+Given the implemented code, targeted tests tied to this story, and the passing full test suite, this story is fully and correctly implemented.</notes>
 </traceability>
