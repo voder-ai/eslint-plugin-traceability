@@ -2,20 +2,16 @@
 <traceability>
   <specification>docs/stories/006.0-DEV-FILE-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T16:04:58.887Z</last_validated>
+  <last_validated>2025-12-06T16:53:02.937Z</last_validated>
   <last_modified>2025-12-04T18:44:42.520Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story 006.0-DEV-FILE-VALIDATION defines a single ESLint rule that must validate @story annotations against real .story.md files, with robust path resolution, security, configuration, performance optimization, and clear errors.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and named requirements in docs/stories/006.0-DEV-FILE-VALIDATION.story.md are implemented and verified:
+- Core functionality: `valid-story-reference` validates that @story paths point to existing `.story.md` files, with tests for valid and missing cases.
+- Quality & safety: File system access is synchronous but fully wrapped in try/catch, with a cache to avoid redundant IO, matching the intent of safe, efficient ESLint rule design.
+- Integration: The rule works alongside the annotation-format rule and uses standard ESLint RuleTester/Jest patterns.
+- User experience: Clear, specific messages (`fileMissing`, `invalidExtension`, `invalidPath`, `fileAccessError`) include the offending path and, for fs errors, the underlying error text.
+- Error handling: Filesystem errors are distinguished from missing files and surfaced via `fileAccessError` diagnostics; tests simulate EACCES/EIO and confirm no uncaught exceptions.
+- Documentation: Dedicated rule documentation explains behavior, options, and boundary rules, aligned with the story’s specification.
 
-The current implementation provides the traceability/valid-story-reference rule, supporting:
-- Existence checks for .story.md files and correct extension (REQ-FILE-EXISTENCE, Core Functionality).
-- Safe, cached filesystem access and robust error handling mapped to fileAccessError diagnostics (REQ-ERROR-HANDLING, Quality Standards).
-- Extraction and validation of @story annotation lines from comments (REQ-ANNOTATION-VALIDATION, integrated with the prior format-validation story 005.0).
-- Path resolution using ESLint context.cwd with fallback to process.cwd, plus storyDirectories handling for relative and bare paths (REQ-PATH-RESOLUTION, REQ-CONFIGURABLE-PATHS, Integration criterion).
-- Security validation for path traversal, absolute paths, and enforcement that resolved files remain within project boundaries (REQ-SECURITY-VALIDATION, REQ-PROJECT-BOUNDARY, Security-related DoD items).
-- Caching of file existence results per lint run to avoid repeated IO (REQ-PERFORMANCE-OPTIMIZATION).
-
-These behaviors are directly and thoroughly exercised by tests/rules/valid-story-reference.test.ts, which is explicitly tied to this story and its requirement IDs, and all such tests pass both in isolation and as part of the full test suite. Documentation in docs/rules/valid-story-reference.md matches the specified behavior and configuration options.
-
-Given the matching story content, the presence of the expected implementation and docs, the direct requirement-to-test traceability, and passing targeted and full test runs, all acceptance criteria and listed requirements for docs/stories/006.0-DEV-FILE-VALIDATION.story.md are fully implemented and verified.</notes>
+Given the passing targeted tests, the aligned implementation, and the supporting documentation, this story is fully implemented.</notes>
 </traceability>

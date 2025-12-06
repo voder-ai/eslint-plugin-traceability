@@ -2,28 +2,15 @@
 <traceability>
   <specification>docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T16:08:04.482Z</last_validated>
+  <last_validated>2025-12-06T16:51:41.708Z</last_validated>
   <last_modified>2025-12-06T14:46:37.163Z</last_modified>
   <evidence>[object Object]</evidence>
-  <notes>All requirements and acceptance criteria of story 024.0-DEV-IGNORE-INLINE-CODE-REFS are implemented and verified:
-
-- **Core Functionality (ignore backtick-wrapped keywords)** – `normalizeCommentLine` removes *all* backtick-wrapped segments via `/`[^`]*`/g`, replacing them with spaces. This is generic and therefore covers `` `@story` ``, `` `@req` ``, `` `@supports` ``. Tests explicitly verify that lines with inline `` `@story` `` and `` `@req` `` produce normalized strings with no @story/@req/@supports tokens.
-
-- **Common Patterns** – The test `"`@story` + `@req` docs"` confirms documentation patterns like `` `@story` + `@req` `` are stripped and do not leave annotation tokens behind. For `@supports`, the test with `"using `@supports` and real @story ..."` shows the inline `@supports` is removed while the real `@story` annotation remains, demonstrating that documentation about `@supports` itself is ignored while real annotations are still detected.
-
-- **Real Annotations Detected** – The same test asserts that when there is a real `@story` outside backticks, `normalizeCommentLine` returns a string beginning with that `@story` annotation, ensuring detection continues to work correctly in mixed lines.
-
-- **Multi-Line Support** – `processComment` splits each comment into `rawLines` with `split(/\r?\n/)` and calls `normalizeCommentLine` on every line. Since the backtick filtering is per-line and independent of position, backtick-wrapped keywords are filtered on any line of a multi-line comment. (The regex is content-agnostic; it strips any backtick span on each processed line.)
-
-- **No Regression** – The full Jest test suite (44 suites / 318 tests) passes, including all existing rules and integration tests. This confirms the normalization change did not break prior behavior.
-
-- **Documentation** – The JSDoc on `normalizeCommentLine` explicitly documents the new behavior: it explains that inline code spans wrapped in backticks are stripped and replaced with spaces of equal length to preserve character boundaries, and that this feeds annotation detection. The story file itself also documents the behavior.
-
-- **Requirements coverage**:
-  - **REQ-IGNORE-INLINE-CODE** – Implemented via the `/`[^`]*`/g` replacement; tested by cases that ensure no @story/@req/@supports remain when only mentioned inside backticks.
-  - **REQ-PRESERVE-BOUNDARIES** – Implemented by `" ".repeat(match.length)`; tests assert exact output strings with spaces where backtick segments were, preserving alignment.
-  - **REQ-CENTRALIZED-FILTER** – Implemented inside `normalizeCommentLine` and used by `valid-annotation-format`’s `processComment`, which is the central annotation-format rule; any rule using this helper benefits from the filter.
-  - **IMPL-NORMALIZE-COMMENT** – The existing `normalizeCommentLine` function was extended as specified and is the single, centralized place where comment normalization (including inline code filtering) occurs.
-
-Given the implemented code, targeted tests tied to this story, and the passing full test suite, this story is fully and correctly implemented.</notes>
+  <notes>All acceptance criteria for 024.0-DEV-IGNORE-INLINE-CODE-REFS are met:
+- REQ-IGNORE-INLINE-CODE: normalizeCommentLine removes backtick-wrapped segments using /`[^`]*`/g and tests confirm @story/@req/@supports inside backticks are ignored.
+- REQ-PRESERVE-BOUNDARIES: removed segments are replaced with spaces of equal length; tests assert exact expected strings with preserved spacing.
+- REQ-CENTRALIZED-FILTER & IMPL-NORMALIZE-COMMENT: filtering is implemented in the shared helper normalizeCommentLine in valid-annotation-format-internal.ts, which is used by the rule logic.
+- Common documentation patterns (e.g. '`@story` + `@req`', 'using `@supports`') do not produce detectable annotations in tests.
+- Real annotations outside backticks are still detected and normalized to begin at the @story token.
+- Behavior applies per-line and integrates with existing multi-line comment handling; no regressions are indicated, as the full Jest suite (44 suites, 330 tests) passes.
+- Documentation describing inline-code filtering is present in the JSDoc for normalizeCommentLine and the story file, and tests are explicitly linked to this story and its requirements.</notes>
 </traceability>

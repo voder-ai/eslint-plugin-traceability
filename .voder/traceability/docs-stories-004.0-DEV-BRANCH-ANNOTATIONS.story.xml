@@ -2,21 +2,14 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T16:07:59.974Z</last_validated>
+  <last_validated>2025-12-06T16:56:07.774Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and requirements in docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md are satisfied:
-
-- Core Functionality: The `traceability/require-branch-annotation` rule exists, is exported, and enforces presence of `@story` and `@req` on significant branch node types (IfStatement, SwitchCase, TryStatement, CatchClause, For*/While*/DoWhile*). The rule handlers delegate to helpers that parse comments and emit diagnostics and auto-fixes. Unit tests explicitly cover valid and invalid cases for all these branch types.
-
-- Quality Standards & Performance: The rule uses ESLint’s recommended RuleModule structure, defines meta, schema, and messages, and delegates complexity to focused helpers. A dedicated performance test (`tests/perf/require-branch-annotation-large-file.test.ts`) verifies that analyzing a large file with many nested branches completes well under an explicit 5-second guardrail on CI, demonstrating attention to performance.
-
-- Integration & Nested Handling: The rule is wired into the plugin’s dynamic rule loading and into both recommended and strict configs. Tests exercise complex nested structures (nested if-statements inside annotated blocks, try/catch with separate branch annotations) and confirm correct behavior both when annotations are present and when they are missing. Helper tests and catch-specific utilities verify that edge behaviors for CatchClause are handled robustly without crashes.
-
-- User Experience & Error Handling: End-user messages include a clear, parameterized `missingAnnotation` message that indicates which annotation (`@story` or `@req`) is missing. Config errors for invalid `branchTypes` produce descriptive messages listing allowed values, and tests assert those messages. Catch-specific logic falls back gracefully if `getCommentsInside` is missing or throws, and nested branches are handled without duplicate or spurious errors. Autofix behavior respects indentation and inserts comments at intuitive locations (e.g., before the first statement in a catch body).
-
-- Documentation: README lists the rule among available rules, and `user-docs/api-reference.md` includes a dedicated section describing the rule, its purpose, its `branchTypes` option (including allowed values and default), default severity, and an example annotated branch that references this story. This satisfies the story’s documentation acceptance criterion.
-
-Given the concrete implementation, thorough automated test coverage (behavioral, configuration, and performance), successful targeted and full test runs, and appropriate user-facing documentation, this story is fully implemented.
+  <notes>All acceptance criteria for story 004.0-DEV-BRANCH-ANNOTATIONS are satisfied with concrete implementation and passing tests:
+- Core Functionality: `require-branch-annotation` is implemented to visit all significant branch node types (if, switch cases, loops, try/catch, catch clauses) and report missing @story/@req annotations, with autofixes where appropriate. This is verified by extensive RuleTester suites in `tests/rules/require-branch-annotation.test.ts`.
+- Quality Standards and Performance: The rule uses standard ESLint RuleModule structure with schema, messages, and fixers, and a dedicated performance test in `tests/perf/require-branch-annotation-large-file.test.ts` confirms it scales to large nested-branch files within a defined time budget.
+- Integration and Nested Handling: The helper utilities manage complex branch comment association, including switch-case and catch-clause specifics; tests cover nested if-structures and multiple branch types, demonstrating robust handling of complex control flow.
+- User Experience and Error Handling: Error messages clearly indicate which annotation type is missing and, for invalid configuration, list allowed branch types. Catch-related edge cases, blank-line spacing before switch cases, and inner-catch insertion behavior are all handled gracefully with dedicated tests.
+- Documentation & Preset Integration: The rule has its own documentation page with examples and configuration guidance, is referenced from the README, and is included in both recommended and strict plugin presets with tests verifying these configurations. Given the implementation, test coverage, performance test, and documentation, this story is fully implemented.
 </notes>
 </traceability>
