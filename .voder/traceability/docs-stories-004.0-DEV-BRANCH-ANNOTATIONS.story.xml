@@ -2,19 +2,18 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T10:50:12.719Z</last_validated>
+  <last_validated>2025-12-06T12:04:12.225Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story is a concrete specification for the ESLint rule `traceability/require-branch-annotation`, not a broad planning doc, so it qualifies as a spec to assess.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story `004.0-DEV-BRANCH-ANNOTATIONS` is fully implemented.
 
-All acceptance criteria are satisfied with concrete, passing tests:
-- **Core Functionality / REQ-BRANCH-DETECTION, REQ-ANNOTATION-PARSING, REQ-COMMENT-ASSOCIATION, REQ-SIGNIFICANCE-CRITERIA**: `tests/rules/require-branch-annotation.test.ts` covers detection of missing @story/@req on all specified branch types (if/else, switch, all main loop forms, try/catch/finally). Valid tests show properly annotated branches are accepted; invalid tests show missing or partial annotations are reported.
-- **Integration / REQ-NESTED-HANDLING**: Same test file has explicit nested-branch cases, both valid and invalid, demonstrating correct handling of nested control flow.
-- **Config Behavior / REQ-CONFIGURABLE-SCOPE**: Rule tests and `validateBranchTypes` helper tests show `branchTypes` config is honored (only listed branch types enforced), unlisted types ignored, and invalid branch types reported as configuration errors, matching the story’s invalid configuration behavior description.
-- **Performance / REQ-PERFORMANCE-OPTIMIZATION**: Dedicated performance test in `tests/perf/require-branch-annotation-large-file.test.ts` validates the rule performs acceptably on a large file with many nested branches.
-- **Quality Standards & User Experience**: The rule is implemented and tested using standard ESLint RuleTester-style patterns with clear separation of valid/invalid scenarios and specific requirement IDs, aligning with ESLint best practices. Config error tests confirm that misconfiguration produces explicit errors instead of silent failure.
-- **Error Handling**: Nested structures and misconfigurations are explicitly tested, showing the rule behaves predictably and robustly in edge cases.
-- **Documentation & Integration**: While this assessment did not re-open the docs, previous evidence (unchanged story and passing integration tests for plugin exports/configs) plus the presence of a dedicated story file and rule name consistent with the docs indicate the rule is documented and integrated into the plugin presets as required by the story’s Definition of Done.
+All acceptance criteria are met:
+- **Core Functionality**: `traceability/require-branch-annotation` detects missing `@story`/`@req` on all defined significant branches (ifs, loops, switch cases, try/catch) and provides targeted auto-fixes with placeholder comments. Unit tests cover all these structures.
+- **Quality Standards**: Rule follows ESLint best practices (proper meta, schema, configuration validation) and uses efficient helpers. A dedicated performance test ensures it handles large, deeply nested files within a 5-second guardrail.
+- **Integration**: The rule is wired into the plugin’s recommended/strict presets via `TRACEABILITY_RULE_SEVERITIES` and documented as part of the core rules; Jest integration tests for plugin configs also pass.
+- **User Experience**: Error message `"Branch is missing required annotation: {{missing}}."` clearly states what is missing (`@story` or `@req`), and auto-fix behavior inserts intuitive placeholder comments at correct locations.
+- **Error Handling**: Nested branches are handled correctly (inner branches still require their own annotations even when outer ones are annotated), SwitchCase comment association handles blank lines and inline comments, and invalid `branchTypes` configuration is reported with clear messages.
+- **Documentation**: `user-docs/api-reference.md` contains a dedicated section for `traceability/require-branch-annotation` with description, options, defaults, and a concrete annotated-branch example; the README briefly references the rule and points to user docs.
 
-Given the unchanged story text, existence of focused tests explicitly tied to `Story 004.0-DEV-BRANCH-ANNOTATIONS`, and a fully passing test run, the implementation of this story is complete and currently working as specified.</notes>
+All technical requirements (REQ-BRANCH-DETECTION, REQ-COMMENT-ASSOCIATION, REQ-ANNOTATION-PARSING, REQ-SIGNIFICANCE-CRITERIA, REQ-NESTED-HANDLING, REQ-CONFIGURABLE-SCOPE, REQ-PERFORMANCE-OPTIMIZATION) are implemented and validated by passing tests. Therefore, this story is assessed as PASSED.</notes>
 </traceability>

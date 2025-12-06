@@ -2,19 +2,14 @@
 <traceability>
   <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T10:51:42.067Z</last_validated>
+  <last_validated>2025-12-06T12:10:13.323Z</last_validated>
   <last_modified>2025-12-04T18:45:50.452Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and technical requirements in docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md are implemented and verified by passing tests.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and listed requirements for Story 010.2-DEV-MULTI-STORY-SUPPORT are fully implemented and verified by tests.
 
-Mapping to requirements:
-- REQ-SUPPORTS-PARSE and REQ-FORMAT-VALIDATION are covered by valid/invalid @supports tests in tests/rules/valid-annotation-format.test.ts (including missing values, missing IDs, invalid story paths, and invalid requirement IDs), all passing.
-- REQ-SUPPORTS-VALIDATE, REQ-ERROR-CONTEXT, and REQ-SCOPED-IDS are covered by multi-story @supports cases in tests/rules/valid-req-reference.test.ts, which validate that each requirement is checked against its story file, that errors mention the story path, and that the same requirement ID can appear in multiple stories without conflict.
-- REQ-REQUIRE-ACCEPTS-SUPPORTS is exercised for story enforcement in tests/rules/require-story-annotation.test.ts and for requirement enforcement in tests/rules/require-req-annotation.test.ts, both treating @supports-alone annotations as valid while still flagging plain unannotated functions.
-- REQ-BACKWARD-COMPAT is validated by numerous tests that confirm legacy @story/@req behavior (valid and error cases) remains unchanged, including explicit BACKCOMPAT-named tests.
-- REQ-MIXED-SUPPORT is directly tested by a passing mixed-usage case in valid-annotation-format.test.ts and by the co-existence of both styles across the rule tests.
-- Quality Standards are supported by the broader ESLint rule configuration and plugin tests (config schemas, presets, plugin export tests) all passing, indicating the @supports-related changes align with existing ESLint best practices.
-- Documentation acceptance criteria are satisfied by the story’s own examples and migration section.
+Core @supports functionality and format/parse rules are implemented in the valid-annotation-format rule and helpers, with explicit support for @supports lines and mixed @story/@req/@supports usage. Deep validation that each requirement ID exists in its specified story file is implemented in valid-req-reference helpers, including multi-story scenarios and requirement ID scoping per story. Error messages include the storyPath for missing requirements.
 
-Given the story file contents match the specification, all relevant tests referencing this story pass, and they explicitly cover each behavioral requirement, the story is fully implemented and verified.</notes>
+Backward compatibility is preserved: all legacy @story and @req behaviors remain, and tests explicitly confirm that unannotated functions still fail while functions annotated only with @supports satisfy both require-story-annotation and require-req-annotation. Mixed usage of both styles in the same file/comment is supported and tested. Documentation and ADRs describe @supports as the canonical annotation and match the implemented behavior.
+
+Given the direct traceability annotations in code and tests referencing this story, plus a passing Jest run covering all relevant suites, this story is fully implemented and passes.</notes>
 </traceability>

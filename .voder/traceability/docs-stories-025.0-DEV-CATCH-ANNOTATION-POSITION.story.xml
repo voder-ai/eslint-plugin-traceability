@@ -2,8 +2,96 @@
 <traceability>
   <specification>docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-12-06T10:51:08.699Z</last_validated>
+  <last_validated>2025-12-06T12:04:28.345Z</last_validated>
   <last_modified>2025-12-06T08:28:13.364Z</last_modified>
-  <evidence>Assessment error: 400 Input tokens exceed the configured limit of 272000 tokens. Your messages resulted in 3181894 tokens. Please reduce the length of the messages.</evidence>
-  <notes>Technical error during assessment</notes>
+  <evidence>Story file exists: docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md,Search for story ID in code/tests shows only references in documentation, not implementation or tests:
+- grep -R 025.0-DEV-CATCH-ANNOTATION-POSITION -n src tests docs
+  -> docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
+  -> docs/stories/plugin-developer-story.map.md
+(no references in src/ or tests/),Branch annotation helper still only considers comments BEFORE the node, with a special case only for SwitchCase, not CatchClause:
+- src/utils/branch-annotation-helpers.ts:
+  export function gatherBranchCommentText(sourceCode, node): string {
+    if (node.type === "SwitchCase") {
+      const lines = sourceCode.lines;
+      const startLine = node.loc.start.line;
+      let i = startLine - PRE_COMMENT_OFFSET;
+      const comments: string[] = [];
+      while (i >= 0 && /^\s*(\/\/|\/\*)/.test(lines[i])) {
+        comments.unshift(lines[i].trim());
+        i--;
+      }
+      return comments.join(" ");
+    }
+    const comments = sourceCode.getCommentsBefore(node) || [];
+    function commentToValue(c: any) { return c.value; }
+    return comments.map(commentToValue).join(" ");
+  }
+- No logic to examine comments inside CatchClause bodies; CatchClause appears only in DEFAULT_BRANCH_TYPES.,Branch annotation info and auto-fix still use only before-node position (no CatchClause-specific handling, no inside-body insert position):
+- src/utils/branch-annotation-helpers.ts:
+  function getBranchAnnotationInfo(sourceCode, node) {
+    const text = gatherBranchCommentText(sourceCode, node);
+    const missingStory = !/@story\b/.test(text);
+    const missingReq = !/@req\b/.test(text);
+    const indent = sourceCode.lines[node.loc.start.line - 1].match(/^(\s*)/)?.[1] || "";
+    const insertPos = sourceCode.getIndexFromLoc({ line: node.loc.start.line, column: 0 });
+    return { missingStory, missingReq, indent, insertPos };
+  }
+  export function reportMissingStory(context, node, { indent, insertPos, storyFixCountRef }) {
+    if (storyFixCountRef.count === 0) {
+      function insertStoryFixer(fixer: any) {
+        return fixer.insertTextBeforeRange([insertPos, insertPos], `${indent}// @story <story-file>.story.md\n`);
+      }
+      context.report({ node, messageId: "missingAnnotation", data: { missing: "@story" }, fix: insertStoryFixer });
+      storyFixCountRef.count++;
+    } else {
+      context.report({ node, messageId: "missingAnnotation", data: { missing: "@story" } });
+    }
+  }
+  export function reportMissingReq(...) {
+    if (!missingStory) {
+      function insertReqFixer(fixer: any) {
+        return fixer.insertTextBeforeRange([insertPos, insertPos], `${indent}// @req <REQ-ID>\n`);
+      }
+      context.report({ node, messageId: "missingAnnotation", data: { missing: "@req" }, fix: insertReqFixer });
+    } else { ... }
+  }
+- For CatchClause, this still inserts comments BEFORE the catch line, not as first lines inside the catch block body.,Existing tests for require-branch-annotation only validate before-catch comments and standard auto-fix; they do NOT test inside-catch-body annotations or Prettier-formatted code:
+- tests/rules/require-branch-annotation.test.ts valid catch case (only comments before catch):
+  name: "[REQ-BRANCH-DETECTION] valid catch with annotations",
+  code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
+/* @req REQ-BRANCH-DETECTION */
+try {
+  doSomething();
+}
+/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
+/* @req REQ-BRANCH-DETECTION */
+catch (error) {
+  handleError(error);
+}`,
+- Missing-annotations auto-fix for try/catch inserts annotation only before the try, not catch-specific and not inside body:
+  name: "[REQ-BRANCH-DETECTION] missing annotations on try-catch blocks",
+  code: `try {
+  doSomething();
+} catch (error) {
+  handleError(error);
+}`,
+  output: `// @story <story-file>.story.md
+try {
+  doSomething();
+} catch (error) {
+  handleError(error);
+}`,
+- No tests where @story/@req comments appear as the first comments inside the catch block body.
+- No tests mention Prettier or verify Prettier-formatted catch blocks.,Rule documentation for require-branch-annotation has not been updated to describe dual valid positions for catch annotations or Prettier compatibility:
+- docs/rules/require-branch-annotation.md only states: "This rule checks for JSDoc or inline comments immediately preceding significant code branches" and does not mention special behavior for catch clauses or formatter compatibility.,Search for Prettier references in src/ and tests/ shows none:
+- grep -R Prettier -n tests src -> exit code 1, no matches.
+- All Prettier mentions are in high-level docs and the 025.0 story file itself, not in implementation or tests.,There is no integration test exercising actual Prettier-formatted code for catch clauses:
+- find_files did not reveal any test or fixture named for Prettier or formatter behavior.
+- Jest verbose run (npm test -- --verbose) shows no suite mentioning story 025.0 or Prettier; require-branch-annotation suites are tied to story 004.0 only.,DEFAULT_BRANCH_TYPES already includes "CatchClause" but there is no special handling aligned with story requirements beyond that:
+- src/utils/branch-annotation-helpers.ts:
+  export const DEFAULT_BRANCH_TYPES = [
+    "IfStatement", "SwitchCase", "TryStatement", "CatchClause", "ForStatement", "ForOfStatement", "ForInStatement", "WhileStatement", "DoWhileStatement",
+  ] as const;
+- No additional logic referencing CatchClause elsewhere in that file or in tests.,All Jest tests currently pass (npm test -- --verbose) but they validate only the pre-existing behavior (annotations before catch, generic auto-fix). They do not demonstrate the new dual-position detection, fallback logic, priority rules, or Prettier-focused auto-fix required by this story.</evidence>
+  <notes>The story 025.0-DEV-CATCH-ANNOTATION-POSITION is not fully implemented. Current implementation of require-branch-annotation and its helpers only look at comments immediately before the branch node (with a special case for SwitchCase) and do not add any fallback to inspect comments inside CatchClause bodies. Auto-fix still inserts annotations before the branch line for all branch types, including CatchClause, and does not insert them as first lines inside the catch block body as required for Prettier compatibility. Tests only cover annotations before the catch keyword and generic auto-fix behavior; there are no tests for annotations inside the catch body, no Prettier-formatted scenarios, and no tests referencing this story. Documentation for the rule has not been updated to describe dual valid catch annotation positions or Prettier compatibility. Therefore multiple acceptance criteria (dual-position detection, fallback logic, position priority, Prettier/autofix compatibility, updated documentation, and specific tests) are not satisfied, so the status is FAILED.</notes>
 </traceability>

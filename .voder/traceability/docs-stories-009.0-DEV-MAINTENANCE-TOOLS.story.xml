@@ -2,25 +2,8 @@
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T10:51:30.977Z</last_validated>
+  <last_validated>2025-12-06T12:07:24.812Z</last_validated>
   <last_modified>2025-12-06T01:54:53.759Z</last_modified>
-  <evidence>[object Object]</evidence>
-  <notes>The story 009.0-DEV-MAINTENANCE-TOOLS is fully implemented and comprehensively tested. All specified requirements are covered:
-
-- REQ-MAINT-DETECT: Implemented by detectStaleAnnotations with tests for normal, nested, non-existent-directory, permission-error, and unsafe-path scenarios, plus performance tests and CLI detect behavior (including JSON output and non-existent --root handling).
-- REQ-MAINT-UPDATE: Implemented by updateAnnotationReferences with tests for performing updates, no-op behavior, non-existent directories, and tractable performance on large workspaces; the CLI update command is also tested for correct exit codes and safe behavior.
-- REQ-MAINT-BATCH: Implemented by batchUpdateAnnotations with tests confirming batch behavior and safe no-op when no mappings apply, and covered by large-workspace performance tests.
-- REQ-MAINT-VERIFY: Implemented by verifyAnnotations with unit tests, CLI verify behavior (including exit codes 0/1 and guidance when stale/invalid), and performance tests on large workspaces and via the CLI.
-- REQ-MAINT-REPORT: Implemented by generateMaintenanceReport and the CLI report command, with tests checking empty and non-empty reports, human-readable summaries, JSON output, and performance on large workspaces.
-- REQ-MAINT-SAFE: Safety is validated via CLI tests (dry-run does not modify files, clear help output, argument validation for --from/--to and --format, explicit handling of permission errors with exit code 2) and library-level behavior (no-op returns, non-destructive defaults). Formatting and code semantics are preserved by targeting only `@story` paths.
-
-All acceptance criteria are satisfied:
-- Core Functionality: Detection and update of stale/moved/renamed story references via detect/update/batch/verify/report and the `traceability-maint` CLI.
-- Quality Standards: Operations are limited to story-annotation paths, with explicit no-op paths and dry-run behavior ensuring code and formatting are preserved.
-- Integration: Maintenance tools are exported from the maintenance index, wired into the main package API, and exposed via the documented `traceability-maint` CLI.
-- User Experience: The CLI provides clear commands, messages, summaries, JSON output, and distinct exit codes, all verified by tests and documented in README usage examples.
-- Error Handling: Non-existent directories, missing roots, invalid options, permission errors, and unsafe paths are handled gracefully with predictable results and exit codes.
-- Documentation: The README includes a dedicated “Maintenance CLI” section with commands and usage examples, and links to the API reference for detailed Maintenance API/CLI documentation.
-
-All relevant tests referencing this story and its REQ-* identifiers passed in the latest Jest run, confirming the implementation is complete and stable.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story `docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md` is fully implemented. All functional requirements (REQ-MAINT-DETECT, REQ-MAINT-UPDATE, REQ-MAINT-BATCH, REQ-MAINT-VERIFY, REQ-MAINT-REPORT, REQ-MAINT-SAFE) have concrete implementations in `src/maintenance/*` and are thoroughly covered by unit, CLI, integration, and performance tests that explicitly reference this story. The `traceability-maint` CLI and the maintenance API integrate cleanly with the plugin, provide clear user feedback, and handle error/edge cases as specified. Documentation in README and `user-docs/api-reference.md` describes both API and CLI usage with examples. All tests currently pass, so the acceptance criteria and definition of done for this story are satisfied.</notes>
 </traceability>
