@@ -14,6 +14,8 @@ If you encounter a bug or have a feature request:
    - `eslint` version: `npx eslint -v`
    - Operating system and shell.
 
+This project officially supports Node.js 18.18.x, 20.x, 22.14.x, and 24.x, matching the test matrix and Jest/ts-jest compatibility.
+
 ## Pull Request Process
 
 This project uses **trunk-based development** with a single integration branch: `main`.
