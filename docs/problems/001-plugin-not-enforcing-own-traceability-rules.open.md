@@ -382,6 +382,10 @@ describe("Dogfooding Validation", () => {
 
 ---
 
+### Current Mitigations
+
+As of 2025-12-06, the `traceability/require-story-annotation` rule is enabled for this repository's TypeScript sources via `eslint.config.js`. An automated integration test at `tests/integration/dogfooding-validation.test.ts` verifies both the ESLint configuration and CLI behavior for this rule, and this test runs in CI as part of `npm run ci-verify:full`. Other traceability rules are not yet enforced, and the overall problem remains open until the full dogfooding story is complete.
+
 ## Notes
 
 This problem represents a significant gap in the project's quality assurance and dogfooding practices. The plugin provides comprehensive traceability validation features but doesn't use them on its own codebase, which undermines credibility and misses opportunities to catch annotation errors early.
