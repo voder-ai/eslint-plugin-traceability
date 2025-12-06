@@ -41,7 +41,7 @@
     "safety:deps": "node scripts/ci-safety-deps.js",
     "audit:ci": "node scripts/ci-audit.js",
     "check:ci-artifacts": "node scripts/check-no-tracked-ci-artifacts.js",
-    "security:secrets": "secretlint \"**/*\" --no-color",
+    "security:secrets": "secretlint \"**/*\"",
     "smoke-test": "./scripts/smoke-test.sh",
     "debug:cli": "node scripts/cli-debug.js",
     "debug:require-story": "node scripts/debug-require-story.js",
