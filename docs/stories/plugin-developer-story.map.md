@@ -2,11 +2,11 @@
 
 ## Journey Steps (Columns)
 
-| **Setup Dev Environment** | **Develop Features** | **Validate Quality** | **Deploy** | **Maintain** |
-|---------------------------|---------------------|---------------------|-----------|-------------|
+| **Setup Dev Environment**                                          | **Develop Features**                              | **Validate Quality**                          | **Deploy**                    | **Maintain**                         |
+| ------------------------------------------------------------------ | ------------------------------------------------- | --------------------------------------------- | ----------------------------- | ------------------------------------ |
 | _Set up local development environment to contribute to the plugin_ | _Implement new rules, features, and improvements_ | _Ensure code quality meets project standards_ | _Release new versions to npm_ | _Keep plugin healthy and up-to-date_ |
-| **Clone & Install** | **Rule Development** | **Dogfooding** | **Publishing** | **Dependency Health** |
-| **Dev Tools Setup** | **Feature Implementation** | **Testing** | **Versioning** | **Issue Triage** |
+| **Clone & Install**                                                | **Rule Development**                              | **Dogfooding**                                | **Publishing**                | **Dependency Health**                |
+| **Dev Tools Setup**                                                | **Feature Implementation**                        | **Testing**                                   | **Versioning**                | **Issue Triage**                     |
 
 ## Personas
 
@@ -18,15 +18,19 @@
 
 # User Story Map with Releases
 
-| **Release 0.5 (Quality Foundation)** (Current) | **Setup Dev Environment** | **Develop Features** | **Validate Quality** | **Deploy** | **Maintain** |
-|-----------------------------------------------|---------------------------|---------------------|---------------------|-----------|-------------|
-| **Core Fixes** | - | 024.0-DEV-IGNORE-INLINE-CODE-REFS | - | - | - |
+| **Release 0.5 (Quality Foundation)**     | **Setup Dev Environment** | **Develop Features**              | **Validate Quality** | **Deploy** | **Maintain** |
+| ---------------------------------------- | ------------------------- | --------------------------------- | -------------------- | ---------- | ------------ |
+| **Core Fixes**                           | -                         | 024.0-DEV-IGNORE-INLINE-CODE-REFS | -                    | -          | -            |
+
+| **Release 0.6 (Formatter Compatibility)** (Current) | **Setup Dev Environment** | **Develop Features**                    | **Validate Quality** | **Deploy** | **Maintain** |
+| --------------------------------------------------- | ------------------------- | --------------------------------------- | -------------------- | ---------- | ------------ |
+| **Rule Enhancements**                               | -                         | 025.0-DEV-CATCH-ANNOTATION-POSITION     | -                    | -          | -            |
 
 ---
 
 ## Release Details
 
-### Release 0.5: Quality Foundation (Current)
+### Release 0.5: Quality Foundation
 
 **Goal**: Ensure the plugin itself follows its own traceability standards, validating that all 1,737+ annotations in the codebase are properly formatted and enforceable.
 **Success Metric**: ESLint runs on the plugin's own codebase with traceability rules enabled, catching any missing or invalid annotations during development.
@@ -39,6 +43,20 @@
 **Total**: 1 story covering annotation detection accuracy
 
 **Note**: This is foundational work to ensure plugin developers maintain the same standards they enforce for users. Uses incremental fix strategy to avoid blocking development while violations are cleaned up.
+
+### Release 0.6: Formatter Compatibility (Current)
+
+**Goal**: Ensure the plugin works seamlessly with popular code formatters (Prettier) without creating linting/formatting conflicts that force developers to choose between code quality and traceability.
+**Success Metric**: Codebases using both Prettier and eslint-plugin-traceability can maintain 100% traceability compliance without suppressions, manual formatting fights, or disabling either tool.
+**Scope**: Enhance annotation detection to support formatter-preferred positions while maintaining strict traceability requirements.
+
+**Stories by Category:**
+
+- **Rule Enhancements**: 025.0-DEV-CATCH-ANNOTATION-POSITION (support annotations inside catch blocks for Prettier compatibility)
+
+**Total**: 1 story resolving Prettier formatting conflicts with catch clause annotations
+
+**Note**: Addresses GitHub issue #4 - the chicken-and-egg problem where Prettier moves catch annotations inside the block but the rule expects them before the catch keyword.
 
 ---
 
