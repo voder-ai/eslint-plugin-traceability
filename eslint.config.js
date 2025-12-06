@@ -109,6 +109,7 @@ module.exports = [
       "no-undef": "off",
       "no-console": "off",
       "no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "traceability/require-story-annotation": "error",
     },
   },
   {
@@ -166,6 +167,7 @@ module.exports = [
       // Disable magic numbers and max params in tests
       "no-magic-numbers": "off",
       "max-params": "off",
+      "@typescript-eslint/no-var-requires": "off",
     },
   },
   {

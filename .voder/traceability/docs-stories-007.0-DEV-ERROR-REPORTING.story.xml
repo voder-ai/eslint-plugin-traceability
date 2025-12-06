@@ -2,77 +2,17 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T03:57:55.524Z</last_validated>
+  <last_validated>2025-12-06T04:42:52.985Z</last_validated>
   <last_modified>2025-12-04T18:44:42.517Z</last_modified>
-  <evidence>1) Story file presence and traceability:
-- docs/stories/007.0-DEV-ERROR-REPORTING.story.md exists and is referenced via @story/@supports by multiple rule and test files (e.g., src/rules/require-story-annotation.ts, src/rules/require-req-annotation.ts, src/rules/require-branch-annotation.ts, src/rules/valid-annotation-format.ts, src/rules/valid-story-reference.ts, src/rules/valid-req-reference.ts, tests/rules/error-reporting.test.ts, tests/rules/valid-annotation-format.test.ts, tests/rules/valid-story-reference.test.ts, tests/rules/valid-req-reference.test.ts, tests/rules/require-branch-annotation.test.ts, tests/rules/require-req-annotation.test.ts).
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The specification docs/stories/007.0-DEV-ERROR-REPORTING.story.md describes clear, specific, and consistent error messages across all core traceability rules, plus appropriate severity levels.
 
-2) Tests explicitly for this story:
-- tests/rules/error-reporting.test.ts:
-  - Header: "Tests for: docs/stories/007.0-DEV-ERROR-REPORTING.story.md" with @supports for REQ-ERROR-SPECIFIC, REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-LOCATION.
-  - Manually invokes require-story-annotation.create(context) on a synthetic AST and asserts:
-    - rule.meta.messages.missingStory is a non-empty string containing the {{name}} placeholder.
-    - The reported descriptor has messageId "missingStory" and data { name: "bar", functionName: "bar" }.
-    - error.suggest is a non-empty array; first suggestion has a descriptive desc and a defined fix function.
-- Jest run (npm test -- --runInBand --verbose) shows this suite passing:
-  - "PASS tests/rules/error-reporting.test.ts" with all tests green.
+Concrete implementation evidence:
+- Each listed rule (require-story-annotation, require-req-annotation, require-branch-annotation, valid-annotation-format, valid-story-reference, valid-req-reference) defines explicit meta.messages templates using ESLint best practices and shared conventions (functionName, details, path/storyPath/reqId).
+- Error-reporting helpers (coreReportMissing, annotation-checker, valid-annotation-format validators, valid-story-reference helpers, valid-req-reference helpers) wire these message templates into context.report with precise node locations and rich data payloads.
+- Auto-fixes and suggestions are provided where appropriate: require-story-annotation uses ESLint suggestions with descriptive text; branch and format rules offer safe fixers that insert or normalize annotations while tests assert expected fixed code.
+- Error handling is defensive: helpers catch internal errors and either swallow them (with optional debug logging) or convert filesystem/configuration failures into explicit diagnostics (fileAccessError, invalidRuleConfiguration), verified by dedicated tests.
+- Plugin-level configs (recommended and strict) centralize severity mapping so missing annotations/references are errors and format issues are warnings, with tests confirming this behavior.
 
-3) Rule implementations matching the story’s conventions:
-- src/rules/require-story-annotation.ts:
-  - meta.messages.missingStory = "Function '{{name}}' must have an explicit @story annotation. Add a JSDoc or line comment with @story that points to the implementing story file (for example, docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md)." — specific, actionable guidance.
-  - meta.hasSuggestions = true and fixable: "code".
-  - JSDoc includes @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md and requirements about error message content, placeholder usage, and actionability.
-- src/utils/annotation-checker.ts (for @req errors):
-  - reportMissing(context, node, enableFix) computes name and nameNode via getReportedName/getNameNodeForReqReport, then calls context.report({ node: nameNode, messageId: "missingReq", data: { name, functionName: name } }).
-  - When enableFix is true, attaches fix: createMissingReqFix(node), inserting "/** @req <REQ-ID> */\n" before the correct node.
-  - JSDoc references docs/stories/007.0-DEV-ERROR-REPORTING.story.md and REQ-ERROR-SPECIFIC / REQ-ERROR-LOCATION / REQ-ERROR-SUGGESTION / REQ-ERROR-CONTEXT.
-- src/rules/require-req-annotation.ts:
-  - meta.messages.missingReq = "Function '{{functionName}}' is missing a required @req annotation. Add a JSDoc or line comment with @req (for example, '@req REQ-EXAMPLE') referencing the appropriate requirement from the story file." (uses {{functionName}} placeholder).
-  - JSDoc on messages.missingReq cites story 007 and REQ-ERROR-* requirements including REQ-ERROR-SEVERITY.
-  - Tests in tests/rules/require-req-annotation.test.ts use a helper missingReq(name) that expects errors: { messageId: 'missingReq', data: { name, functionName: name } } – confirming correct wiring.
-- src/rules/require-branch-annotation.ts + src/utils/branch-annotation-helpers.ts:
-  - meta.messages.missingAnnotation = "Branch is missing required annotation: {{missing}}." with JSDoc referencing story 007 and REQ-ERROR-CONSISTENCY.
-  - reportMissingStory/reportMissingReq in branch-annotation-helpers.ts report with messageId "missingAnnotation" and data { missing: "@story" | "@req" }, and when eligible attach a fix inserting "// @story <story-file>.story.md\n" or "// @req <REQ-ID>\n" before the branch.
-  - tests/rules/require-branch-annotation.test.ts asserts messageId "missingAnnotation" and corresponding data, and checks that output includes inserted @story/@req lines.
-- src/rules/valid-annotation-format.ts:
-  - meta.messages.invalidStoryFormat / invalidReqFormat / invalidImplementsFormat all equal "Invalid annotation format: {{details}}.", matching the story’s shared pattern and using {{details}} for context.
-  - JSDoc for these messages includes story 007 and REQ-ERROR-SPECIFIC, REQ-ERROR-CONTEXT, REQ-ERROR-CONSISTENCY.
-  - tests/rules/valid-annotation-format.test.ts (header refers to story 007) systematically build invalid cases with expected { messageId, data: { details } }, ensuring the error message template is used consistently and includes offending identifiers/paths in details.
-- src/rules/valid-story-reference.ts:
-  - meta.messages:
-    - fileMissing: "Story file '{{path}}' not found"
-    - invalidExtension: "Invalid story file extension for '{{path}}', expected '.story.md'"
-    - invalidPath: "Invalid story path '{{path}}'"
-    - fileAccessError: "Could not validate story file '{{path}}' due to a filesystem error: {{error}}. Please check file existence and permissions."
-  - reportExistenceStatus() distinguishes existenceResult.status === 'missing' vs 'fs-error' and reports fileMissing or fileAccessError accordingly, constructing error text from raw Error or other values.
-  - Tests in tests/rules/valid-story-reference.test.ts assert specific messageIds and data.path values for missing-file, invalid-extension, traversal, and absolute-path cases, plus error-handling behavior with mocked filesystem errors.
-- src/rules/valid-req-reference.ts:
-  - meta.messages.reqMissing = "Requirement '{{reqId}}' not found in '{{storyPath}}'"; invalidPath = "Invalid story path '{{storyPath}}'".
-  - JSDoc references docs/stories/007.0-DEV-ERROR-REPORTING.story.md alongside 010.0.
-  - Tests in tests/rules/valid-req-reference.test.ts verify that invalid cases produce these messageIds and that data includes both reqId and storyPath.
-
-4) Severity mapping per story conventions:
-- src/index.ts defines TRACEABILITY_RULE_SEVERITIES with severities:
-  - require-story-annotation, require-req-annotation, require-branch-annotation, valid-story-reference, valid-req-reference, require-test-traceability -> 'error'.
-  - valid-annotation-format -> 'warn'.
-- configs.recommended and configs.strict are constructed from createTraceabilityFlatConfig(), so they apply these severities.
-- plugin-default-export-and-configs.test.ts (shown in test output) contains:
-  - "[REQ-ERROR-SEVERITY] configs.recommended maps valid-annotation-format to warn and others to error"
-  - "[REQ-ERROR-SEVERITY] configs.strict uses same severity mapping as recommended" – confirming REQ-ERROR-SEVERITY.
-
-5) Overall test run:
-- npm test -- --runInBand --verbose:
-  - Test Suites: 39 passed, 39 total.
-  - Tests: 299 passed, 299 total.
-  - All suites covering rules and error reporting (including tests/rules/error-reporting.test.ts, valid-annotation-format.test.ts, valid-story-reference.test.ts, valid-req-reference.test.ts, require-branch-annotation.test.ts, require-req-annotation.test.ts, plugin-default-export-and-configs.test.ts) passed, providing automated verification for the story’s requirements.</evidence>
-  <notes>Based on the concrete implementation and passing tests, Story 007.0-DEV-ERROR-REPORTING is fully implemented:
-
-- All core rules emit specific, actionable error messages instead of generic failures: messages include clear descriptions of what is missing or invalid, and many embed guidance or examples (e.g., which @story file to reference or example @req IDs).
-- Error messages follow ESLint best practices: templates are defined in meta.messages, use named placeholders ({{functionName}}, {{missing}}, {{details}}, {{path}}, {{reqId}}, {{storyPath}}), and are reported via context.report with appropriate messageId and data.
-- Integration with validation logic and ESLint reporting is sound: rules are standard ESLint RuleModules, tests use RuleTester and manual invocation to confirm that listeners, messageIds, data, and suggestions are wired correctly.
-- User experience requirements are met: function-related errors identify the function by name and position; branch-related errors clearly state which annotation is missing; format and file/reference errors echo the exact offending paths/IDs and provide additional detail via the details or error fields. Suggestions and auto-fixes are provided where appropriate (require-story-annotation, require-req-annotation via helpers, branch annotations, valid-annotation-format suffix fixes).
-- Error handling edge cases are covered: valid-story-reference distinguishes missing files from filesystem errors and path-security violations; annotation-checker provides reasonable fallbacks for anonymous functions and missing errors; branch configuration validation produces diagnostics instead of throwing.
-- Severity conventions match the story: missing annotations and unresolved references are configured as errors; annotation-format issues are warnings in the plugin’s recommended/strict configs, as verified by dedicated tests.
-
-Given the direct alignment between the story’s described conventions and the implemented rules, plus comprehensive, passing automated tests tied to this story, the specification is fully satisfied.</notes>
+All Story 007.0 acceptance criteria and named requirements (REQ-ERROR-SPECIFIC, LOCATION, SUGGESTION, CONTEXT, CONSISTENCY, SEVERITY, HANDLING) are covered by targeted, passing tests that explicitly reference this story file. Based on this concrete code and test evidence, the story is fully implemented and verified.</notes>
 </traceability>

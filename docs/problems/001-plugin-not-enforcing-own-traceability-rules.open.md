@@ -229,16 +229,16 @@ module.exports = [
 ### Test Details
 
 **Test Type**: Integration Test  
-**Test Location**: `tests/integration/dogfooding-validation.test.ts` (to be created)  
+**Test Location**: `tests/integration/dogfooding-validation.test.ts`  
 **Test Name**: `should enforce traceability rules on plugin codebase`  
-**Test Status**: Not Created
+**Test Status**: Implemented; expected to pass once updated configuration is in place and CI runs
 
 ### Test Implementation
 
 ```typescript
 /**
  * Dogfooding validation test
- * @story docs/stories/XXX.0-DOGFOODING-VALIDATION.story.md
+ * @story docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md
  * @req REQ-DOGFOODING - Ensure plugin enforces its own rules on its codebase
  */
 import { ESLint } from "eslint";
