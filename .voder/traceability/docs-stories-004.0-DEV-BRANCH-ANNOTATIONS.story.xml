@@ -2,118 +2,19 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T09:50:13.482Z</last_validated>
+  <last_validated>2025-12-06T10:50:12.719Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
-  <evidence>1) Story file presence and stability
-- Verified that `docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md` exists and its contents exactly match the story text provided in the prompt (including all acceptance criteria and requirements REQ-BRANCH-DETECTION, REQ-COMMENT-ASSOCIATION, REQ-ANNOTATION-PARSING, REQ-SIGNIFICANCE-CRITERIA, REQ-NESTED-HANDLING, REQ-CONFIGURABLE-SCOPE, REQ-PERFORMANCE-OPTIMIZATION, and the invalid configuration behavior description). No changes from the version used in the previous assessment.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story is a concrete specification for the ESLint rule `traceability/require-branch-annotation`, not a broad planning doc, so it qualifies as a spec to assess.
 
-2) Current test run for this repo
-- Command executed: `npm test -- --verbose`
-- Result: exit code 0
-- Summary:
-  - Test Suites: 40 passed, 40 total
-  - Tests:       302 passed, 302 total
-  - Snapshots:   0 total
-- This confirms the entire test suite (including all tests tied to this story) currently passes.
+All acceptance criteria are satisfied with concrete, passing tests:
+- **Core Functionality / REQ-BRANCH-DETECTION, REQ-ANNOTATION-PARSING, REQ-COMMENT-ASSOCIATION, REQ-SIGNIFICANCE-CRITERIA**: `tests/rules/require-branch-annotation.test.ts` covers detection of missing @story/@req on all specified branch types (if/else, switch, all main loop forms, try/catch/finally). Valid tests show properly annotated branches are accepted; invalid tests show missing or partial annotations are reported.
+- **Integration / REQ-NESTED-HANDLING**: Same test file has explicit nested-branch cases, both valid and invalid, demonstrating correct handling of nested control flow.
+- **Config Behavior / REQ-CONFIGURABLE-SCOPE**: Rule tests and `validateBranchTypes` helper tests show `branchTypes` config is honored (only listed branch types enforced), unlisted types ignored, and invalid branch types reported as configuration errors, matching the story’s invalid configuration behavior description.
+- **Performance / REQ-PERFORMANCE-OPTIMIZATION**: Dedicated performance test in `tests/perf/require-branch-annotation-large-file.test.ts` validates the rule performs acceptably on a large file with many nested branches.
+- **Quality Standards & User Experience**: The rule is implemented and tested using standard ESLint RuleTester-style patterns with clear separation of valid/invalid scenarios and specific requirement IDs, aligning with ESLint best practices. Config error tests confirm that misconfiguration produces explicit errors instead of silent failure.
+- **Error Handling**: Nested structures and misconfigurations are explicitly tested, showing the rule behaves predictably and robustly in edge cases.
+- **Documentation & Integration**: While this assessment did not re-open the docs, previous evidence (unchanged story and passing integration tests for plugin exports/configs) plus the presence of a dedicated story file and rule name consistent with the docs indicate the rule is documented and integrated into the plugin presets as required by the story’s Definition of Done.
 
-3) Test suites explicitly tied to this story
-From the verbose Jest output:
-- `tests/rules/require-branch-annotation.test.ts`
-  - Suite: `Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)`
-    - Valid cases (annotated branches):
-      - ✓ `[REQ-BRANCH-DETECTION] valid fallback scanning comment detection`
-      - ✓ `[REQ-BRANCH-DETECTION] valid if-statement with annotations`
-      - ✓ `[REQ-BRANCH-DETECTION] valid for loop with block comment annotations`
-      - ✓ `[REQ-BRANCH-DETECTION] valid switch-case with annotations`
-      - ✓ `[REQ-BRANCH-DETECTION] valid try-finally with annotations`
-      - ✓ `[REQ-BRANCH-DETECTION] valid catch with annotations`
-      - ✓ `[REQ-BRANCH-DETECTION] valid do-while loop with annotations`
-      - ✓ `[REQ-BRANCH-DETECTION] valid for-of loop with annotations`
-      - ✓ `[REQ-BRANCH-DETECTION] valid for-in loop with annotations`
-      - ✓ `[REQ-BRANCH-DETECTION] valid while loop with annotations`
-      - ✓ `[REQ-NESTED-HANDLING] nested if-statements with annotations on outer and inner branches`
-      - ✓ `[REQ-CONFIGURABLE-SCOPE] custom branchTypes ignores unlisted branch types`
-      - ✓ `[REQ-CONFIGURABLE-SCOPE] custom branchTypes only enforce listed types`
-    - Invalid cases (missing/incorrect annotations and config errors):
-      - ✓ `[REQ-BRANCH-DETECTION] missing annotations on if-statement`
-      - ✓ `[REQ-BRANCH-DETECTION] missing @req on for loop when only story present`
-      - ✓ `[REQ-BRANCH-DETECTION] missing @story on while loop when only req present`
-      - ✓ `[REQ-BRANCH-DETECTION] missing annotations on switch-case`
-      - ✓ `[REQ-BRANCH-DETECTION] missing annotations on do-while loop`
-      - ✓ `[REQ-BRANCH-DETECTION] missing annotations on for-of loop`
-      - ✓ `[REQ-BRANCH-DETECTION] missing annotations on for-in loop`
-      - ✓ `[REQ-BRANCH-DETECTION] missing annotations on try-catch blocks`
-      - ✓ `[REQ-BRANCH-DETECTION] missing annotations on switch-case with blank line`
-      - ✓ `[REQ-NESTED-HANDLING] missing annotations on nested if-statement inside annotated outer branch`
-      - ✓ `[REQ-CONFIGURABLE-SCOPE] missing annotations on configured branch type ForStatement`
-      - ✓ `[REQ-CONFIGURABLE-SCOPE] invalid branchTypes option should error schema`
-
-- `tests/utils/branch-annotation-helpers.test.ts`
-  - Suite: `validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)`
-    - ✓ `should return default branch types when no options provided`
-    - ✓ `should return custom branch types when valid options provided`
-    - ✓ `should return listener when invalid branch types provided and report errors`
-
-- `tests/perf/require-branch-annotation-large-file.test.ts`
-  - Suite: `require-branch-annotation performance on large nested-branch files (Story 004.0-DEV-BRANCH-ANNOTATIONS)`
-    - ✓ `[REQ-PERFORMANCE-OPTIMIZATION] analyzes a large nested-branch file within a generous time budget`
-
-All these suites passed in the latest run, providing current evidence that the behavior required by this story is implemented and working.
-
-4) Acceptance Criteria vs. evidence
-
-AC: Core Functionality – ESLint rule detects significant code branches missing @story/@req
-- Implemented by the `traceability/require-branch-annotation` ESLint rule (as exercised in `tests/rules/require-branch-annotation.test.ts`).
-- Valid tests show that branches with proper `@story` and `@req` comments are accepted across control-flow constructs (if, loops, switch, try/catch/finally).
-- Invalid tests show that branches missing either or both annotations are reported.
-- This directly satisfies **REQ-BRANCH-DETECTION**, **REQ-ANNOTATION-PARSING**, and the “Core Functionality” acceptance criterion.
-
-AC: Quality Standards – ESLint best practices & performance
-- The rule is tested via standard ESLint RuleTester-style tests (valid/invalid blocks with options) in `tests/rules/require-branch-annotation.test.ts`, matching ESLint best-practice patterns.
-- Performance requirement (**REQ-PERFORMANCE-OPTIMIZATION**) is explicitly tested in `tests/perf/require-branch-annotation-large-file.test.ts`:
-  - ✓ `[REQ-PERFORMANCE-OPTIMIZATION] analyzes a large nested-branch file within a generous time budget`
-- The separate `validateBranchTypes` helper and its tests show cleanly factored configuration logic, consistent with ESLint guidelines.
-
-AC: Integration – Complex nested structures and programming patterns
-- Nested and complex branch structures are explicitly covered:
-  - Valid: ✓ `[REQ-NESTED-HANDLING] nested if-statements with annotations on outer and inner branches`
-  - Invalid: ✓ `[REQ-NESTED-HANDLING] missing annotations on nested if-statement inside annotated outer branch`
-- Multiple control-flow constructs are supported and tested (IfStatement, SwitchStatement, ForStatement, WhileStatement, DoWhileStatement, ForOfStatement, ForInStatement, TryStatement), demonstrating integration with various patterns.
-
-AC: User Experience – Clear error messages indicating which branch needs annotation and why
-- While the verbose test output doesn’t print the full error text, the diversity of invalid cases (missing @story vs missing @req vs fully missing annotations vs invalid configuration) and the explicit requirement IDs show that the rule distinguishes between these cases and reports them separately.
-- Config error behavior is covered:
-  - ✓ `[REQ-CONFIGURABLE-SCOPE] invalid branchTypes option should error schema` (rule-level test)
-  - ✓ `should return listener when invalid branch types provided and report errors` (helper-level test)
-- This matches the story’s description of clear config error messages for unsupported branch types.
-
-AC: Error Handling – Edge cases, nested branches, complex conditionals
-- Nested-branch behavior is tested explicitly (see REQ-NESTED-HANDLING tests above).
-- Configuration edge cases (invalid `branchTypes`, absence of options, custom types) are covered in both rule and helper tests, showing the rule reports errors rather than failing unexpectedly.
-
-AC: Documentation – Rule docs and configuration examples
-- The previous assessment verified that the user-facing documentation includes the `traceability/require-branch-annotation` rule, with examples of annotated branches and `branchTypes` configuration consistent with this story.
-- No changes in the code or tests since then indicate any regression or removal; the rule and its tests are still present, and the rule is still integrated into the plugin’s rule set (confirmed by the passing `plugin-default-export-and-configs` tests from the same test run).
-
-5) Requirements mapping
-- **REQ-BRANCH-DETECTION**: Valid/invalid branch tests across all major control-flow constructs in `tests/rules/require-branch-annotation.test.ts`.
-- **REQ-COMMENT-ASSOCIATION**: Tests such as `valid fallback scanning comment detection` and loop/switch tests that rely on comments immediately preceding the branch confirm the rule associates the correct comments with each branch.
-- **REQ-ANNOTATION-PARSING**: Tests where only `@story` or only `@req` are present and are treated as invalid (e.g., `missing @req on for loop when only story present`, `missing @story on while loop when only req present`) prove that both annotations are parsed and required.
-- **REQ-SIGNIFICANCE-CRITERIA**: By default, the rule enforces annotations on if/switch/loops/try-catch branches (exact constructs named in the story), and this default behavior is exercised in the tests.
-- **REQ-NESTED-HANDLING**: `REQ-NESTED-HANDLING` tests validate nested-branch behavior for both annotated and unannotated inner branches.
-- **REQ-CONFIGURABLE-SCOPE**: Rule and helper tests together show:
-  - Custom `branchTypes` limit enforcement to listed node types.
-  - Unlisted node types are ignored when not in `branchTypes`.
-  - Invalid `branchTypes` values produce configuration errors.
-- **REQ-PERFORMANCE-OPTIMIZATION**: Dedicated performance test confirms acceptable performance on large files.
-
-6) Definition of Done items covered
-- All acceptance criteria are satisfied by the tests and behavior above.
-- Tests are present, comprehensive for branch patterns, and all passing in the latest run.
-- The rule is part of the plugin and its configs (as exercised by other passing suites like `plugin-default-export-and-configs.test.ts`).
-- Performance is explicitly tested for large files.
-
-Given that the story text is unchanged, all related tests still exist and pass, and each acceptance criterion and requirement has concrete passing test coverage, the story `docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md` is fully implemented under the current codebase.
-</evidence>
-  <notes>`docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md` is a real implementation specification. The associated ESLint rule `traceability/require-branch-annotation`, its configuration helper, and a performance test suite all exist and are exercised by tests that explicitly reference this story and its requirements (REQ-BRANCH-DETECTION, REQ-NESTED-HANDLING, REQ-CONFIGURABLE-SCOPE, REQ-PERFORMANCE-OPTIMIZATION, etc.). A fresh `npm test -- --verbose` run shows all 40 test suites and 302 tests passing, including three suites dedicated to this story. The tests demonstrate correct detection of missing annotations across all significant branch types, proper handling of nested branches and configuration (including invalid configurations), and acceptable performance on large files. Documentation and preset integration were validated in a prior assessment and the underlying code/tests remain present and passing. Therefore, all acceptance criteria and requirements for this story are currently satisfied, and the story is assessed as PASSED.</notes>
+Given the unchanged story text, existence of focused tests explicitly tied to `Story 004.0-DEV-BRANCH-ANNOTATIONS`, and a fully passing test run, the implementation of this story is complete and currently working as specified.</notes>
 </traceability>

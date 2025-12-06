@@ -1,17 +1,14 @@
 ## NOW
 
-- [ ] Align the existing ESLint configuration with the first explicit step in the Implementation Notes of the 002.0-DEV-ESLINT-CONFIG story so that the config structure and options fully satisfy that initial requirement.
+- [ ] Implement backtick-aware filtering in the shared comment normalization function so that inline code segments wrapped in backticks are stripped and replaced with spaces before annotation detection, as required by the inline-code ignore story.
 
 ## NEXT
 
-- [ ] Review the remaining acceptance criteria and Implementation Notes in the 002.0-DEV-ESLINT-CONFIG story to identify which aspects of the ESLint configuration are still missing or partially implemented compared to the current eslint.config.js and related tooling.
-- [ ] Implement any additional ESLint configuration changes required by the 002.0-DEV-ESLINT-CONFIG story (such as presets, overrides, or rule groups) so that all of its configuration-related requirements are met without regressing existing behavior.
-- [ ] Add or refine automated tests that validate the ESLint configuration against the 002.0-DEV-ESLINT-CONFIG story requirements, including both unit-level config validation tests and, if applicable, integration tests that exercise ESLint using the configured setup.
-- [ ] Update the 002.0-DEV-ESLINT-CONFIG story document to mark the now-satisfied acceptance criteria as complete and link them to the concrete configuration and test artifacts that implement them.
-- [ ] Review any related ADRs or internal documentation that describe ESLint configuration decisions and adjust them so they accurately reflect the finalized configuration and its alignment with the 002.0-DEV-ESLINT-CONFIG story.
+- [ ] Create focused unit tests for the comment normalization helper that cover backtick-wrapped annotation tokens, mixed inline-code and real annotations, and multi-line comment scenarios, and annotate these tests with the inline-code ignore story and requirement IDs.
+- [ ] Run the existing rule-level tests for annotation parsing and, if necessary, extend them to verify that backtick-wrapped @story/@req/@supports references are ignored while real annotations without backticks are still detected correctly.
+- [ ] Update the inline-code ignore story document to mark the relevant acceptance criteria and Definition of Done items as complete, and add a short implementation links section pointing to the normalization helper and its tests.
 
 ## LATER
 
-- [ ] Extend the ESLint configuration to cover any additional file types, test patterns, or future rule sets that are out of scope for the 002.0-DEV-ESLINT-CONFIG story but align with the project’s longer-term linting strategy.
-- [ ] Look for opportunities to simplify or refactor eslint.config.js and its associated helper scripts or presets while preserving all behavior required by both the ESLint configuration story and the dogfooding validation story.
-- [ ] Align the dogfooding plan for enabling additional traceability rules with the finalized ESLint configuration so that future rule enablement steps build cleanly on top of the completed 002.0-DEV-ESLINT-CONFIG work.
+- [ ] Review related user and developer documentation to decide whether to mention inline-code/backtick filtering behavior explicitly and, if so, add a brief explanation and example that matches the implemented behavior.
+- [ ] Consider additional edge cases for inline-code handling (such as multiple backtick segments on one line or unusual spacing) and, if they are in scope for the story, extend the normalization logic and tests accordingly.

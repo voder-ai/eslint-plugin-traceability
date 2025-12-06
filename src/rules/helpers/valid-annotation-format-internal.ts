@@ -1,17 +1,7 @@
 /**
  * Internal helpers and types for the valid-annotation-format rule.
  *
- * This logic is validated against multiple documentation stories focused on:
- * - This rule covers DEV annotation validation
- * - This rule covers DEV auto-fix behavior
- * - This rule covers DEV multi-story support
- *
- * Requirements covered:
- * - This helper supports REQ-MULTILINE-SUPPORT: Handle annotations split across multiple lines
- * - This helper supports REQ-FLEXIBLE-PARSING: Support reasonable variations in whitespace and formatting
- * - This helper supports REQ-AUTOFIX-FORMAT: Provide safe, minimal automatic fixes for common format issues
- * - This helper supports REQ-SUPPORTS-PARSE: Parse @supports annotations without affecting @story/@req
- * - This helper supports REQ-MIXED-SUPPORT: Support mixed @story/@req/@implements usage in comments
+ * @supports docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md REQ-IGNORE-INLINE-CODE REQ-PRESERVE-BOUNDARIES REQ-CENTRALIZED-FILTER
  */
 
 /**
@@ -26,8 +16,10 @@ export interface PendingAnnotation {
 /**
  * Normalize a raw comment line to make annotation parsing more robust.
  *
- * This function trims whitespace, keeps any annotation tags that appear
- * later in the line, and supports common JSDoc styles such as leading "*".
+ * This function trims whitespace, strips any inline code spans wrapped in
+ * backticks (replacing them with spaces of equal length to preserve character
+ * boundaries), keeps any annotation tags that appear later in the line, and
+ * supports common JSDoc styles such as leading "*".
  *
  * It detects @story, @req, and @supports tags while preserving the rest
  * of the line for downstream logic.
@@ -38,13 +30,22 @@ export function normalizeCommentLine(rawLine: string): string {
     return "";
   }
 
-  const annotationMatch = trimmed.match(/@story\b|@req\b|@supports\b/);
+  // @supports docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md REQ-IGNORE-INLINE-CODE REQ-PRESERVE-BOUNDARIES REQ-CENTRALIZED-FILTER
+  // Strip backtick-wrapped content while preserving character positions by
+  // replacing each matched segment with spaces of the same length.
+  // This ensures annotations that appear outside code spans are still
+  // detected at their original indices.
+  const filtered = trimmed.replace(/`[^`]*`/g, (match) =>
+    " ".repeat(match.length),
+  );
+
+  const annotationMatch = filtered.match(/@story\b|@req\b|@supports\b/);
   if (!annotationMatch || annotationMatch.index === undefined) {
-    const withoutLeadingStar = trimmed.replace(/^\*\s?/, "");
+    const withoutLeadingStar = filtered.replace(/^\*\s?/, "");
     return withoutLeadingStar;
   }
 
-  return trimmed.slice(annotationMatch.index);
+  return filtered.slice(annotationMatch.index);
 }
 
 /**
