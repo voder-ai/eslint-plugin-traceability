@@ -2,22 +2,8 @@
 <traceability>
   <specification>docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T12:47:21.270Z</last_validated>
+  <last_validated>2025-12-07T13:24:51.268Z</last_validated>
   <last_modified>2025-12-06T01:54:53.759Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All requirements and acceptance criteria in docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md are fully implemented and verified.
-
-• Core Functionality (detect & update on moved/renamed stories): Implemented via src/maintenance/detect.ts (detectStaleAnnotations) and src/maintenance/update.ts (updateAnnotationReferences), plus src/maintenance/batch.ts (batchUpdateAnnotations, verifyAnnotations) and src/maintenance/report.ts (generateMaintenanceReport). Tests in tests/maintenance/detect*.test.ts, update*.test.ts, batch.test.ts, report.test.ts, and index.test.ts verify detection of stale references, single and batch updates, verification logic, and reporting behavior.
-
-• Quality Standards (preserve functionality/formatting): updateAnnotationReferences and batchUpdateAnnotations perform targeted replacements of @story path strings, only writing files when changes are needed, which preserves surrounding code and formatting. The entire Jest maintenance test suite passes, and no tests or code paths indicate broader reformatting.
-
-• Integration (project structure & ESLint config): src/maintenance/index.ts exports all maintenance helpers and is validated by tests/maintenance/index.test.ts. The CLI entrypoint src/maintenance/cli.ts is wired via the package.json bin "traceability-maint" and exercised end-to-end by tests/maintenance/cli.test.ts. README and API reference show how to integrate the tools programmatically and via CLI.
-
-• User Experience (clear feedback): CLI tests confirm human-readable messages, appropriate exit codes (0 for success/no-op, 1 for stale annotations, 2 for usage or system errors), support for --json and format selection, and helpful guidance when issues are found (e.g., verify printing guidance when annotations are stale, report providing summaries, update requiring explicit --from/--to). README includes concrete usage examples, including the common rename scenario.
-
-• Error Handling (edge cases, missing files, safety): Library and CLI tests cover non-existent roots, nested directories, permission-denied filesystem errors, invalid --format values, missing required flags, and unsafe/invalid story paths (security validations to avoid stat’ing outside the workspace). Behavior in all these cases is graceful: functions return safe defaults ([], 0, false) and CLI exits with non-zero status plus clear error messages without crashing. This satisfies REQ-MAINT-SAFE and the Error Handling acceptance criterion.
-
-• Documentation: The Maintenance CLI is documented in README.md with commands and examples, and further details are referenced via the "Maintenance API and CLI" section in user-docs/api-reference.md. This fulfills the Documentation acceptance criterion.
-
-Given that the story content matches the previously assessed version, the targeted maintenance tests were re-run and all passed, and the implementation and documentation align with each requirement, this story is assessed as PASSED.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All defined requirements and acceptance criteria in docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md are fully implemented. There is a complete maintenance module (detect/update/batch/verify/report + CLI + flag parsing + utilities), extensive unit/integration/performance tests explicitly tied to this story, passing Jest runs, and user-facing documentation for the Maintenance CLI. Optional implementation notes (like file system watching or broader migration tooling) are treated as guidance rather than strict requirements, and their absence does not conflict with any stated acceptance criteria. Therefore this story is fully satisfied.</notes>
 </traceability>

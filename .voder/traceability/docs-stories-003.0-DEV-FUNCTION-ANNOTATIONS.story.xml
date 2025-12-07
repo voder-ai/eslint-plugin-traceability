@@ -2,8 +2,18 @@
 <traceability>
   <specification>docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T12:50:12.690Z</last_validated>
+  <last_validated>2025-12-07T13:25:04.578Z</last_validated>
   <last_modified>2025-12-04T18:44:42.546Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and detailed requirements in docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md are implemented and verified. The ESLint rules require-story-annotation and require-req-annotation share a common detection scope (FunctionDeclaration, FunctionExpression, MethodDefinition, TSDeclareFunction, TSMethodSignature) with arrow functions excluded by default; they use consistent configuration (scope and exportPriority) and shared helper logic for scoping and TypeScript support. JSDoc and comment parsing for @story and @req are robust, handle edge cases, and are backed by extensive tests. Error messages are clear and anchored at or near the function name, with autofix/suggestions where appropriate. Documentation for both rules exists and matches the implemented behavior. All related Jest test suites pass, confirming the story’s functionality is fully delivered and stable.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and technical requirements in docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md are implemented and verified.
+
+Both rules `require-story-annotation` and `require-req-annotation` operate over the same set of function-like constructs (FunctionDeclaration, FunctionExpression, MethodDefinition, TSDeclareFunction, TSMethodSignature). This set is centralized in DEFAULT_SCOPE in require-story-core.ts and enforced by shared helper shouldProcessNode, satisfying REQ-FUNCTION-DETECTION and the Core Functionality acceptance criterion. Arrow functions are explicitly excluded by default because ArrowFunctionExpression is not in DEFAULT_SCOPE, and tests confirm unannotated arrow functions are allowed by default.
+
+JSDoc parsing and annotation detection are implemented via shared helpers: for @story, hasStoryAnnotation combines JSDoc, leading comments, commentsBefore, and line/parent-based heuristics; for @req, checkReqAnnotation and hasReqAnnotation (tested in req-annotation-detection tests) perform analogous logic. Both rules require their respective annotations when functions are in scope, with tests covering valid and invalid cases, fulfilling REQ-JSDOC-PARSING and REQ-ANNOTATION-REQUIRED.
+
+Configurable scope and export priority are supported consistently in both rules through the same options (scope, exportPriority) and shared shouldProcessNode implementation. Tests in both require-story-annotation.test.ts and require-req-annotation.test.ts exercise these options thoroughly (e.g., restricting to FunctionDeclaration, prioritizing exported vs non-exported), fulfilling REQ-CONFIGURABLE-SCOPE and REQ-EXPORT-PRIORITY.
+
+Error location and user experience requirements are met: both rules compute a precise function name and identifier node for reporting (getNameNodeForReport and getNameNodeForReqReport), and error messages clearly instruct the user what annotation to add with examples. Suggestions and autofix behaviors for @story and @req are implemented and verified by tests, and core helpers catch and log internal errors only under TRACEABILITY_DEBUG to avoid breaking lint runs, satisfying the Error Handling and User Experience criteria.
+
+Finally, user-facing documentation exists for both rules under docs/rules/, documenting supported constructs, options, TypeScript integration, and examples, aligning with the Documentation acceptance criterion. All relevant Jest tests for this story pass, confirming the implementation is complete and correct for Story 003.0.</notes>
 </traceability>
