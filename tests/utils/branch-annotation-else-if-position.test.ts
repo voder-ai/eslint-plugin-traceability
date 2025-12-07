@@ -2,7 +2,7 @@
  * Unit tests for else-if annotation gathering and position priority.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF REQ-POSITION-PRIORITY-ELSE-IF
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF REQ-POSITION-PRIORITY-ELSE-IF REQ-SINGLE-LINE-ELSE-IF-SUPPORT
  */
 import type { Rule } from "eslint";
 import { gatherBranchCommentText } from "../../src/utils/branch-annotation-helpers";
@@ -138,5 +138,52 @@ describe("gatherBranchCommentText else-if behavior (Story 026.0-DEV-ELSE-IF-ANNO
     );
     expect(text).toContain("@req REQ-POSITION-PRIORITY-ELSE-IF");
     expect(text).not.toContain("REQ-POSITION-PRIORITY-ELSE-IF-BETWEEN");
+  });
+
+  it("[REQ-SINGLE-LINE-ELSE-IF-SUPPORT] detects annotations on single-line else-if without braces when placed before the else-if keyword", () => {
+    const lines = [
+      "let suggestion;",
+      "// @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md",
+      "// @req REQ-SINGLE-LINE-ELSE-IF-SUPPORT",
+      "if (arg === \"--json\") suggestion = \"--format=json\";",
+      "// @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md",
+      "// @req REQ-SINGLE-LINE-ELSE-IF-SUPPORT",
+      "else if (arg.startsWith(\"--format\")) suggestion = \"--format\";",
+    ];
+
+    const sourceCode = createMockSourceCode({
+      commentsBefore: [
+        {
+          value:
+            "@story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md",
+        },
+        { value: "@req REQ-SINGLE-LINE-ELSE-IF-SUPPORT" },
+      ],
+      lines,
+    });
+
+    const node: any = {
+      type: "IfStatement",
+      loc: { start: { line: 7 } },
+      test: { loc: { end: { line: 7 } } },
+      consequent: {
+        // single-line consequent without BlockStatement braces in the real-world source;
+        // for this helper-level test we only care that loc values exist and are consistent.
+        type: "ExpressionStatement",
+        loc: { start: { line: 7 } },
+      },
+    };
+
+    const parent: any = {
+      type: "IfStatement",
+      alternate: node,
+    };
+
+    const text = gatherBranchCommentText(sourceCode, node, parent);
+
+    expect(text).toContain(
+      "@story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md",
+    );
+    expect(text).toContain("@req REQ-SINGLE-LINE-ELSE-IF-SUPPORT");
   });
 });

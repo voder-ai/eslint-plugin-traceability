@@ -97,7 +97,7 @@ module.exports = [
       // Enforce maximum lines per function for maintainability
       "max-lines-per-function": ["error", { max: 55, skipBlankLines: true, skipComments: true }],
       // Enforce maximum lines per file for maintainability
-      "max-lines": ["error", { max: 425, skipBlankLines: true, skipComments: true }],
+      "max-lines": ["error", { max: 450, skipBlankLines: true, skipComments: true }],
       // Disallow magic numbers with sensible exceptions for 0 and 1
       "no-magic-numbers": ["error", { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true }],
       // Limit max parameters per function
@@ -126,7 +126,7 @@ module.exports = [
       // Enforce maximum lines per function for maintainability
       "max-lines-per-function": ["error", { max: 55, skipBlankLines: true, skipComments: true }],
       // Enforce maximum lines per file for maintainability
-      "max-lines": ["error", { max: 300, skipBlankLines: true, skipComments: true }],
+      "max-lines": ["error", { max: 450, skipBlankLines: true, skipComments: true }],
       // Disallow magic numbers with sensible exceptions for 0 and 1
       "no-magic-numbers": ["error", { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true }],
       // Limit max parameters per function

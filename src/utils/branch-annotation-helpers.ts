@@ -187,7 +187,6 @@ function isElseIfBranch(node: any, parent: any | undefined): boolean {
     parent.alternate === node
   );
 }
-
 /**
  * Gather annotation text for CatchClause nodes, supporting both before-catch and inside-catch positions.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
@@ -338,7 +337,12 @@ function gatherElseIfCommentText(
   parent: any | undefined,
   beforeText: string,
 ): string {
-  if (/@story\b/.test(beforeText) || /@req\b/.test(beforeText)) {
+  if (
+    beforeText &&
+    (/@story\b/.test(beforeText) ||
+      /@req\b/.test(beforeText) ||
+      /@supports\b/.test(beforeText))
+  ) {
     return beforeText;
   }
 
@@ -349,7 +353,9 @@ function gatherElseIfCommentText(
   const beforeElseText = scanElseIfPrecedingComments(sourceCode, node);
   if (
     beforeElseText &&
-    (/@story\b/.test(beforeElseText) || /@req\b/.test(beforeElseText))
+    (/@story\b/.test(beforeElseText) ||
+      /@req\b/.test(beforeElseText) ||
+      /@supports\b/.test(beforeElseText))
   ) {
     return beforeElseText;
   }

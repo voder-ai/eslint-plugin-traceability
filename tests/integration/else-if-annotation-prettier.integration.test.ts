@@ -62,9 +62,8 @@ describe("Else-if annotations with Prettier (Story 026.0-DEV-ELSE-IF-ANNOTATION-
     return result.stdout;
   }
 
-  if (process.env.TRACEABILITY_EXPERIMENTAL_ELSE_IF === "1") {
-    it("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-BEFORE] accepts code where annotations start before else-if but are moved between condition and body by Prettier", () => {
-      const original = `
+  it("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-BEFORE] accepts code where annotations start before else-if but are moved between condition and body by Prettier", () => {
+    const original = `
 function doA() {
   return 1;
 }
@@ -85,22 +84,22 @@ else if (anotherVeryLongConditionThatForcesWrapping && someOtherCondition) {
 }
 `;
 
-      const formatted = formatWithPrettier(original);
+    const formatted = formatWithPrettier(original);
 
-      // Sanity checks: Prettier should keep both the else-if branch and the associated story annotation,
-      // but the exact layout and comment movement may vary between versions.
-      expect(formatted).toContain("else if");
-      expect(formatted).toContain(
-        "@story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md",
-      );
+    // Sanity checks: Prettier should keep both the else-if branch and the associated story annotation,
+    // but the exact layout and comment movement may vary between versions.
+    expect(formatted).toContain("else if");
+    expect(formatted).toContain(
+      "@story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md",
+    );
 
-      const result = runEslintWithRequireBranchAnnotation(formatted);
+    const result = runEslintWithRequireBranchAnnotation(formatted);
 
-      expect(result.status).toBe(0);
-    });
+    expect(result.status).toBe(0);
+  });
 
-    it("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-INSIDE] accepts code where annotations start between condition and body and are preserved by Prettier", () => {
-      const original = `
+  it("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-INSIDE] accepts code where annotations start between condition and body and are preserved by Prettier", () => {
+    const original = `
 function doA() {
   return 1;
 }
@@ -122,81 +121,12 @@ if (aVeryLongConditionThatForcesPrettierToWrapTheElseIfBranch && anotherConditio
 }
 `;
 
-      const formatted = formatWithPrettier(original);
-      // Note: Prettier's exact layout of the else-if and its comments may differ between versions;
-      // the rule should accept any of the supported annotation positions regardless of formatting.
+    const formatted = formatWithPrettier(original);
+    // Note: Prettier's exact layout of the else-if and its comments may differ between versions;
+    // the rule should accept any of the supported annotation positions regardless of formatting.
 
-      const result = runEslintWithRequireBranchAnnotation(formatted);
+    const result = runEslintWithRequireBranchAnnotation(formatted);
 
-      expect(result.status).toBe(0);
-    });
-  } else {
-    it.skip("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-BEFORE] accepts code where annotations start before else-if but are moved between condition and body by Prettier", () => {
-      const original = `
-function doA() {
-  return 1;
-}
-
-function doB() {
-  return 2;
-}
-
-// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-DETECTION
-if (aVeryLongConditionThatForcesPrettierToWrapTheElseIfBranch && anotherCondition) {
-  doA();
-}
-// @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
-// @req REQ-DUAL-POSITION-DETECTION-ELSE-IF
-else if (anotherVeryLongConditionThatForcesWrapping && someOtherCondition) {
-  doB();
-}
-`;
-
-      const formatted = formatWithPrettier(original);
-
-      // Sanity checks: Prettier should keep both the else-if branch and the associated story annotation,
-      // but the exact layout and comment movement may vary between versions.
-      expect(formatted).toContain("else if");
-      expect(formatted).toContain(
-        "@story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md",
-      );
-
-      const result = runEslintWithRequireBranchAnnotation(formatted);
-
-      expect(result.status).toBe(0);
-    });
-
-    it.skip("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-INSIDE] accepts code where annotations start between condition and body and are preserved by Prettier", () => {
-      const original = `
-function doA() {
-  return 1;
-}
-
-function doB() {
-  return 2;
-}
-
-// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-DETECTION
-if (aVeryLongConditionThatForcesPrettierToWrapTheElseIfBranch && anotherCondition) {
-  doA();
-} else if (
-  anotherVeryLongConditionThatForcesWrapping && someOtherCondition
-) {
-  // @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
-  // @req REQ-DUAL-POSITION-DETECTION-ELSE-IF
-  doB();
-}
-`;
-
-      const formatted = formatWithPrettier(original);
-      // Note: Prettier's exact layout of the else-if and its comments may differ between versions;
-      // the rule should accept any of the supported annotation positions regardless of formatting.
-
-      const result = runEslintWithRequireBranchAnnotation(formatted);
-
-      expect(result.status).toBe(0);
-    });
-  }
+    expect(result.status).toBe(0);
+  });
 });
