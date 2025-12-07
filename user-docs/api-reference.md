@@ -68,7 +68,9 @@ function initAuth() {
 
 ### traceability/require-branch-annotation
 
-Description: Ensures significant code branches (if/else chains, loops, switch cases, try/catch) have both `@story` and `@req` annotations in nearby comments. For most branches, the rule looks for annotations in comments immediately preceding the branch keyword (for example, the line above an `if` or `for` statement). For `catch` clauses and `else if` branches, the rule is formatter-aware and accepts annotations in additional positions that common formatters like Prettier use when they reflow code.
+Description: Ensures significant code branches (if/else chains, loops, switch cases, try/catch) have both `@story` and `@req` annotations in nearby comments. When you adopt multi-story `@supports` annotations, a single `@supports <storyPath> <REQ-ID>...` line placed in any of the valid branch comment locations is treated as satisfying both the story and requirement presence checks for that branch, while detailed format validation of the `@supports` value (including story paths and requirement IDs) continues to be handled by `traceability/valid-annotation-format`, `traceability/valid-story-reference`, and `traceability/valid-req-reference`.
+
+For most branches, the rule looks for annotations in comments immediately preceding the branch keyword (for example, the line above an `if` or `for` statement). For `catch` clauses and `else if` branches, the rule is formatter-aware and accepts annotations in additional positions that common formatters like Prettier use when they reflow code.
 
 Options:
 
@@ -77,7 +79,7 @@ Options:
 Behavior notes:
 
 - **Catch clauses**:
-  - Valid locations for `@story` / `@req` annotations are either immediately before the `catch` keyword or on the first comment-only lines inside the catch block (before any executable statements).
+  - Valid locations for `@story` / `@req` annotations are either immediately before the `catch` keyword or on the first comment-only lines inside the catch block (before any executable statements). A single `@supports` annotation in either of these locations is also accepted as covering both story and requirement presence for the catch branch.
   - If annotations exist in both locations, the comments immediately before `catch` take precedence for validation and reporting.
   - When auto-fixing missing annotations on a catch clause, the rule inserts placeholder comments inside the catch block body so that formatters like Prettier keep them attached to the branch.
 
@@ -87,7 +89,7 @@ Behavior notes:
     - Comment-only lines between the `else if (condition)` and the opening `{` of the consequent block (for styles where the condition and block are on separate lines).
     - The first comment-only lines inside the consequent block body, which is where formatters like Prettier often move comments when they wrap long `else if` conditions. For a concrete before/after example of this formatter-aware behavior, see [user-docs/examples.md](examples.md) (section **6. Branch annotations with if/else/else-if and Prettier**).
   - When annotations appear in more than one of these locations, the rule prefers the comments immediately before the `else if` line, then comments between the condition and the block, and finally comments inside the block body. This precedence is designed to closely mirror real-world formatter behavior and matches the formatter-aware scenarios described in stories 025.0 and 026.0.
-  - When auto-fixing missing annotations on an `else if` branch, the rule inserts placeholder comments as the first comment-only line inside the consequent block body (just after the opening `{`), which is a stable location under Prettier and similar formatters.
+  - When auto-fixing missing annotations on an `else if` branch, the rule inserts placeholder comments as the first comment-only line inside the consequent block body (just after the opening `{`), which is a stable location under Prettier and similar formatters. As with catch clauses, a single `@supports` annotation placed in any of these accepted locations is treated as equivalent to having both `@story` and `@req` comments for that branch, with deep format and existence checks delegated to the other validation rules.
 
 For a concrete illustration of how these rules interact with Prettier, see the formatter-aware if/else/else-if example in [user-docs/examples.md](examples.md) (section **6. Branch annotations with if/else/else-if and Prettier**), which shows both the hand-written and formatted code that the rule considers valid.
 

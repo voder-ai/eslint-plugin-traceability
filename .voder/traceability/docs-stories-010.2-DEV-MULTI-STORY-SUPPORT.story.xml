@@ -2,17 +2,8 @@
 <traceability>
   <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T03:02:43.675Z</last_validated>
+  <last_validated>2025-12-07T06:21:24.995Z</last_validated>
   <last_modified>2025-12-04T18:45:50.452Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and technical requirements for Story 010.2-DEV-MULTI-STORY-SUPPORT are fully implemented and verified:
-- The `@supports story-path REQ-ID1 REQ-ID2 ...` annotation is parsed and format-validated by the `valid-annotation-format` rule and its helpers, with explicit tests for valid and invalid cases (REQ-SUPPORTS-PARSE, REQ-FORMAT-VALIDATION).
-- Deep requirement validation for @supports is implemented in `valid-req-reference` helpers, ensuring each requirement ID exists in the specified story file and allowing the same ID in multiple stories via per-file caches (REQ-SUPPORTS-VALIDATE, REQ-SCOPED-IDS, REQ-ERROR-CONTEXT), with tests using the `story_multi_a` and `story_multi_b` fixtures.
-- The function-level rules `require-story-annotation` and `require-req-annotation` accept @supports-only annotations as satisfying their respective requirements while preserving legacy behavior for @story/@req-only annotations and unannotated functions (REQ-REQUIRE-ACCEPTS-SUPPORTS, REQ-BACKWARD-COMPAT, REQ-MIXED-SUPPORT).
-- Mixed usage of @story, @req, and @supports within the same comment/file is explicitly supported in both formatting and deep validation rules, and is covered by targeted tests.
-- Error messages for both format errors and deep requirement-missing errors clearly identify the relevant story path, aligning with REQ-ERROR-CONTEXT.
-- User documentation in `user-docs/migration-guide.md` explains @supports semantics, shows concrete examples of both annotation styles, and provides a migration strategy, satisfying the documentation acceptance criterion.
-- The entire Jest suite, including all tests tagged for this story, passes, providing strong, concrete evidence that the implementation is correct and stable.
-
-Therefore the story is assessed as PASSED.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and technical requirements in docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md are implemented and verified by tests. The codebase provides robust parsing and format validation for @supports, deep requirement validation against specific story files with scoped IDs, and updates to require-story-annotation and require-req-annotation so that @supports satisfies both story and requirement presence checks while preserving full backward compatibility for @story/@req. Mixed usage of both styles in the same file/comment is supported and tested, and error messages clearly indicate which story path was used when requirements are missing. Dedicated tests reference this story file explicitly and all relevant suites pass, and user-facing migration documentation for @supports is present. Therefore, the story is fully implemented.</notes>
 </traceability>

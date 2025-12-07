@@ -1,262 +1,294 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: get_git_status with input: {}
-Used tool: find_files with input: {"pattern":"*reqAnnotationDetection*","directory":"src"}
-Used tool: find_files with input: {"pattern":"*req-annotation*","directory":"tests"}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts"}
-Used tool: read_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/require-req-annotation.test.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-io.ts"}
-Used tool: read_file with input: {"filePath":"package.json"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--coverage","--testPathPattern","tests/utils/req-annotation-detection.test.ts"]}
-Used tool: find_files with input: {"pattern":"jest.config.*","directory":"."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--testPathPatterns","tests/utils/req-annotation-detection.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--coverage","--testPathPatterns","tests/utils/req-annotation-detection.test.ts"]}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":1,"endLine":260}
-Used tool: modify_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts","instruction":"Append three additional test cases near the end of the existing describe block, just before the closing `});`. The new tests should cover: (1) a positive detection path where `linesBeforeHasReq` detects an `@req` marker in preceding lines; (2) a positive detection path where `parentChainHasReq` detects an `@supports` marker in `leadingComments` when `getCommentsBefore` is not usable; and (3) a sanity check that `hasReqAnnotation` still returns true when there is a `@req` in JSDoc but the `context` argument is `undefined` (so advanced heuristics are skipped). Use the existing `createMockSourceCode` helper where convenient. Name each test with the appropriate `[REQ-...]` tags and keep the style consistent with the rest of the file."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--testPathPatterns","tests/utils/req-annotation-detection.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--testPathPatterns","tests/rules/require-req-annotation.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
+**Action:** Used tool: list_directory with input: {"dirPath":"."}
+Used tool: find_files with input: {"pattern":"*branch-annotation-helpers*","directory":"."}
+Used tool: get_git_status with input: {}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts"}
+Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-helpers.test.ts"}
+Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
+Used tool: read_file with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md"}
+Used tool: read_file with input: {"filePath":"docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md"}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","startLine":210,"endLine":270}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","startLine":60,"endLine":210}
+Used tool: modify_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","instruction":"1) After the existing `function extractCommentValue(_c: any): string {` definition, insert a new helper function:\n\n```ts\n/**\n * Collect a single contiguous comment line at the given index, appending its\n * trimmed text to the accumulator. Returns true when a valid comment was\n * collected and false when scanning should stop (blank or non-comment line).\n * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION\n * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC\n * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF\n */\nfunction collectCommentLine(\n  lines: string[],\n  index: number,\n  comments: string[],\n): boolean {\n  const line = lines[index];\n  if (!line || !line.trim()) {\n    return false;\n  }\n  if (!/^\\s*(\\/\\/|\\/\\*)/.test(line)) {\n    return false;\n  }\n\n  comments.push(line.trim());\n  return true;\n}\n```\n\n2) In `gatherCatchClauseCommentText`, replace the while-loop that scans inside `node.body` using explicit line checks with a call to the new helper. Replace:\n\n```ts\n    while (i <= endIndex) {\n      const line = lines[i];\n      if (!line || !line.trim()) {\n        break;\n      }\n      if (!/^\\s*(\\/\\/|\\/\\*)/.test(line)) {\n        break;\n      }\n      comments.push(line.trim());\n      i++;\n    }\n```\n\nwith:\n\n```ts\n    while (i <= endIndex) {\n      if (!collectCommentLine(lines, i, comments)) {\n        break;\n      }\n      i++;\n    }\n```\n\n3) In `scanElseIfBetweenConditionAndBody`, replace the for-loop body that duplicates the same line/comment checks. Replace:\n\n```ts\n  const comments: string[] = [];\n  for (\n    let lineIndex = conditionEndLine;\n    lineIndex < consequentStartLine - 1;\n    lineIndex++\n  ) {\n    const line = lines[lineIndex];\n    if (!line || !line.trim()) {\n      break;\n    }\n    if (!/^\\s*(\\/\\/|\\/\\*)/.test(line)) {\n      break;\n    }\n    comments.push(line.trim());\n  }\n```\n\nwith:\n\n```ts\n  const comments: string[] = [];\n  for (\n    let lineIndex = conditionEndLine;\n    lineIndex < consequentStartLine - 1;\n    lineIndex++\n  ) {\n    if (!collectCommentLine(lines, lineIndex, comments)) {\n      break;\n    }\n  }\n```\n\n4) In `scanElseIfInsideBlockComments`, replace the while-loop body that duplicates the same line/comment checks. Replace:\n\n```ts\n  const comments: string[] = [];\n  let lineIndex = consequentStartLine;\n\n  while (lineIndex < lines.length) {\n    const line = lines[lineIndex];\n    if (!line || !line.trim()) {\n      break;\n    }\n    if (!/^\\s*(\\/\\/|\\/\\*)/.test(line)) {\n      break;\n    }\n    comments.push(line.trim());\n    lineIndex++;\n  }\n```\n\nwith:\n\n```ts\n  const comments: string[] = [];\n  let lineIndex = consequentStartLine;\n\n  while (lineIndex < lines.length) {\n    if (!collectCommentLine(lines, lineIndex, comments)) {\n      break;\n    }\n    lineIndex++;\n  }\n```"}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format","--","src/utils/branch-annotation-helpers.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: extend req annotation detection coverage for advanced heuristics"}
+Used tool: git_commit with input: {"message":"refactor: deduplicate branch comment scanning helpers"}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":19997900404,"timeout":600000}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":70,"endLine":120}
+Used tool: wait_for_github_workflow with input: {"runId":19998105848,"timeout":600000}
 
 **Response:**
 
 ```
-Here’s what I implemented for the ##NOW and ##NEXT items and how they map to concrete changes.
+Here’s what I implemented for the ##NOW and ##NEXT items and their current status.
 
----
+## What I changed
 
-## Work completed
+### 1) Reviewed duplicated logic in branch-annotation helper (NOW)
+
+I inspected:
+
+- `src/utils/branch-annotation-helpers.ts` (especially lines 60–270)
+- `tests/utils/branch-annotation-helpers.test.ts`
+- Latest `jscpd` output via `npm run duplication`
+
+From `jscpd`, there was a clone:
+
+- `src/utils/branch-annotation-helpers.ts [252:7 - 261:10]`
+- `src/utils/branch-annotation-helpers.ts [227:3 - 236:2]`
+
+In the file, I confirmed three places all duplicated the same pattern of “scan consecutive comment lines until non-comment/blank”:
+
+- Inside `gatherCatchClauseCommentText` (line-based fallback in catch bodies)
+- `scanElseIfBetweenConditionAndBody`
+- `scanElseIfInsideBlockComments`
+
+These all used the same:
+
+```ts
+const line = lines[i]; // or lines[lineIndex]
+if (!line || !line.trim()) break;
+if (!/^\s*(\/\/|\/\*)/.test(line)) break;
+comments.push(line.trim());
+```
+
+This was the duplication the plan referenced.
+
+### 2) Introduced a shared helper and refactored call sites (NEXT)
+
+I extracted the common logic into a single helper function and wired all the duplicated sites to use it, preserving behavior.
+
+#### New helper: `collectCommentLine`
+
+Added directly after `extractCommentValue`:
+
+```ts
+/**
+ * Collect a single contiguous comment line at the given index, appending its
+ * trimmed text to the accumulator. Returns true when a valid comment was
+ * collected and false when scanning should stop (blank or non-comment line).
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF
+ */
+function collectCommentLine(
+  lines: string[],
+  index: number,
+  comments: string[],
+): boolean {
+  const line = lines[index];
+  if (!line || !line.trim()) {
+    return false;
+  }
+  if (!/^\s*(\/\/|\/\*)/.test(line)) {
+    return false;
+  }
+
+  comments.push(line.trim());
+  return true;
+}
+```
+
+This captures the exact behavior of the duplicated comment-scanning blocks and includes traceability annotations tying it to the relevant stories and requirements.
+
+#### Updated `gatherCatchClauseCommentText` fallback
+
+Replaced the manual `while` loop that scanned inside the catch body:
+
+**Before:**
+
+```ts
+while (i <= endIndex) {
+  const line = lines[i];
+  if (!line || !line.trim()) {
+    break;
+  }
+  if (!/^\s*(\/\/|\/\*)/.test(line)) {
+    break;
+  }
+  comments.push(line.trim());
+  i++;
+}
+```
+
+**After:**
+
+```ts
+while (i <= endIndex) {
+  if (!collectCommentLine(lines, i, comments)) {
+    break;
+  }
+  i++;
+}
+```
+
+Behavior is identical: as soon as a non-comment or blank line is encountered, `collectCommentLine` returns `false` and the loop breaks.
+
+#### Updated `scanElseIfBetweenConditionAndBody`
+
+**Before:**
+
+```ts
+const comments: string[] = [];
+for (
+  let lineIndex = conditionEndLine;
+  lineIndex < consequentStartLine - 1;
+  lineIndex++
+) {
+  const line = lines[lineIndex];
+  if (!line || !line.trim()) {
+    break;
+  }
+  if (!/^\s*(\/\/|\/\*)/.test(line)) {
+    break;
+  }
+  comments.push(line.trim());
+}
+```
+
+**After:**
+
+```ts
+const comments: string[] = [];
+for (
+  let lineIndex = conditionEndLine;
+  lineIndex < consequentStartLine - 1;
+  lineIndex++
+) {
+  if (!collectCommentLine(lines, lineIndex, comments)) {
+    break;
+  }
+}
+```
+
+Loop bounds and stopping conditions remain the same; only the duplicated logic is centralized.
+
+#### Updated `scanElseIfInsideBlockComments`
+
+**Before:**
+
+```ts
+const comments: string[] = [];
+let lineIndex = consequentStartLine;
+
+while (lineIndex < lines.length) {
+  const line = lines[lineIndex];
+  if (!line || !line.trim()) {
+    break;
+  }
+  if (!/^\s*(\/\/|\/\*)/.test(line)) {
+    break;
+  }
+  comments.push(line.trim());
+  lineIndex++;
+}
+```
+
+**After:**
+
+```ts
+const comments: string[] = [];
+let lineIndex = consequentStartLine;
+
+while (lineIndex < lines.length) {
+  if (!collectCommentLine(lines, lineIndex, comments)) {
+    break;
+  }
+  lineIndex++;
+}
+```
+
+Again, behavior is unchanged; we just factor the comment-line decision into the helper.
+
+### 3) Verified behavior and tests (NEXT)
+
+I ran the full quality suite:
+
+- `npm run lint -- --max-warnings=0` ✅
+- `npm test -- --runInBand` ✅
+- `npm run type-check` ✅
+- `npm run build` ✅
+- `npm run format:check` (initially failed on the updated file)  
+  - Fixed style via `npm run format -- src/utils/branch-annotation-helpers.ts`
+  - Re-ran `npm run format:check` ✅
+
+Then re-ran full CI-equivalent locally after commit:
+
+- `npm run build` ✅
+- `npm test -- --runInBand` ✅
+- `npm run lint -- --max-warnings=0` ✅
+- `npm run type-check` ✅
+- `npm run format:check` ✅
+
+I also checked duplication:
+
+- `npm run duplication` (run as part of `ci-verify:full` and visible in `git push` output)
+
+Previously:
+
+- 29 clones; one of them was in `src/utils/branch-annotation-helpers.ts`.
+
+Now:
+
+- 28 clones.
+- No clone entries reference `src/utils/branch-annotation-helpers.ts`.
+- Overall duplicated lines dropped from 362 (2.53%) to 353 (2.47%).
+
+This confirms that the targeted duplication in `branch-annotation-helpers.ts` was eliminated without introducing new clones and with all tests still passing.
+
+No new tests were necessary; existing catch and else-if position tests already cover:
+
+- `gatherCatchClauseCommentText` behavior and insert positions
+- else-if comment positioning and insert positions
+- Prettier integration for catch and else-if via the existing integration tests
+
+### 4) Git + CI
+
+- Staged all changes: `src/utils/branch-annotation-helpers.ts` and auto-formatted docs/user-docs touched by Prettier.
+- Commit:
+
+  ```bash
+  refactor: deduplicate branch comment scanning helpers
+  ```
+
+- Pushed to `main`.
+
+Push triggered the CI/CD GitHub Actions workflow:
+
+- Most recent run: `CI/CD Pipeline (main)` with ID `19998105848`.
+- I waited for it via `wait_for_github_workflow` and it completed with `conclusion: success`.
+
+The CI run includes:
+
+- `npm run ci-verify:full` (build, test with coverage, lint, type-check, duplication, audits, traceability, artifact checks)
+- `npm run security:secrets`
+- `semantic-release` and post-publish smoke test on the Node 22.14.0 job, as usual
+
+Everything passed.
+
+## Updated Plan with Status
 
 ### NOW
 
-- [x] Perform a focused review of the entire req-annotation detection utility to identify any remaining subtle edge cases or conditional paths that may not be clearly covered by existing tests.
-
-What I did:
-
-- Reviewed `src/utils/reqAnnotationDetection.ts` end-to-end, focusing on:
-  - Guard branches and early returns in:
-    - `linesBeforeHasReq`
-    - `parentChainHasReq`
-    - `fallbackTextBeforeHasReq`
-    - `hasReqInAdvancedHeuristics`
-    - `hasReqInJsdocOrComments`
-    - `hasReqAnnotation`
-  - The different “positive” detection sources:
-    - Preceding source lines (`linesBeforeHasReq`)
-    - Parent chain comments/leadingComments (`parentChainHasReq`)
-    - Fallback text window (`fallbackTextBeforeHasReq`)
-    - JSDoc and nearby comments (`hasReqInJsdocOrComments`)
-  - Handling of `@supports` alongside `@req` in all of the above.
-- Cross‑checked current tests in:
-  - `tests/utils/req-annotation-detection.test.ts`
-  - `tests/rules/require-req-annotation.test.ts`
-- From that comparison, identified three subtle but important scenarios that were either not covered or not covered explicitly enough:
-  1. Positive detection through `linesBeforeHasReq` (preceeding source lines containing an `@req` marker).
-  2. Positive detection through `parentChainHasReq` when:
-     - `sourceCode.getCommentsBefore` is *present but unusable* (non-function),
-     - and `leadingComments` on a parent contain an `@supports` marker.
-  3. JSDoc-only detection when `context` is `undefined`, i.e., `hasReqAnnotation` falls back to JSDoc/comments without any `context.getSourceCode`.
-
-This completes the focused review and identifies the missing/under‑tested branches.
-
----
+- [x] Review the duplicated logic in the branch-annotation helper module around the catch and else-if comment-gathering functions to understand exactly which behaviors are repeated and which are safe candidates for extraction into a shared helper.
 
 ### NEXT
 
-- [x] List any newly identified edge cases or branch scenarios from the req-annotation detection utility review and map each one to a concrete example that should be tested.
-- [x] Extend the existing req-annotation detection test suite with additional test cases that exercise the newly identified scenarios, ensuring each test is clearly named and tied to the relevant story and requirement annotations.
-- [x] Re-evaluate the utility’s behavior against the strengthened tests to confirm that all important branches are now exercised and that the observable behavior remains correct and consistent.
+- [x] Identify a minimal, behavior-preserving helper or small set of helpers that can replace the duplicated logic while keeping the existing catch and else-if annotation semantics intact, and sketch how call sites would use them.
+- [x] Refactor the branch-annotation helper module to introduce the new shared helper functionality and update all relevant callers so that the previous duplicated code paths are removed without changing external behavior.
+- [x] Verify that the existing unit, rule, and formatter-integration tests for catch and else-if branch annotations still fully pass and, if needed, add a focused test to cover any subtle branch that was previously only exercised through the duplicated code paths.
+- [x] Confirm that the overall duplication level reported for the helpers has decreased and that the resulting code remains readable and easy to maintain.
 
-#### Newly identified edge cases and their concrete examples
-
-1. **Detection via preceding lines (`linesBeforeHasReq`)**
-   - Scenario: A function has no JSDoc, but one of the last few physical lines before the function contains an `@req` annotation.
-   - Concrete example (implemented test):
-     - Source lines:
-       ```ts
-       "// some header",
-       "/** @req REQ-LINE-BEFORE */",
-       "function foo() {}",
-       ```
-     - Node location: `loc.start.line === 3` so line 2 is scanned.
-     - Expectation: `hasReqAnnotation` returns `true`.
-   - Coverage: Ensures the positive path of `linesBeforeHasReq` is explicitly validated.
-
-2. **Detection via parent leadingComments when `getCommentsBefore` is unusable**
-   - Scenario: `sourceCode.getCommentsBefore` exists but is not a function (e.g. a non-callable value), and requirement annotations live in `leadingComments` on a parent node with an `@supports` marker.
-   - Concrete example (implemented test):
-     - `context.getSourceCode()` returns:
-       ```ts
-       { getCommentsBefore: 42 } // non-function
-       ```
-     - Node:
-       ```ts
-       {
-         parent: {
-           leadingComments: [
-             { value: "some other comment" },
-             {
-               value: "@supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FROM-LEADING-COMMENT",
-             },
-           ],
-           parent: {},
-         },
-       }
-       ```
-     - Expectation: `hasReqAnnotation` returns `true`.
-   - Coverage: Explicitly exercises the branch in `parentChainHasReq` that:
-     - Skips `getCommentsBefore` due to it not being a function.
-     - Finds `@supports` in `leadingComments`.
-
-3. **JSDoc-only detection when `context` is `undefined`**
-   - Scenario: Callers have a valid JSDoc with `@req`, but no ESLint rule context is available. `hasReqAnnotation` must still correctly report requirement coverage.
-   - Concrete example (implemented test):
-     - `jsdoc`:
-       ```ts
-       { value: "/** @req REQ-JSDOC-NO-CONTEXT */" }
-       ```
-     - `context`: `undefined`
-     - `node`: `{ parent: {} }`
-     - Expectation: `hasReqAnnotation` returns `true`.
-   - Coverage: Ensures:
-     - The `context && typeof context.getSourceCode === "function"` guard behaves correctly.
-     - `hasReqAnnotation` still uses `hasReqInJsdocOrComments` when no context is provided.
-
-#### Test suite extensions
-
-File updated:
-
-- `tests/utils/req-annotation-detection.test.ts`
-
-New tests added at the end of the existing `describe` block:
-
-1. **Preceding lines `@req` path**
-   ```ts
-   it("[REQ-ANNOTATION-REQ-DETECTION] linesBeforeHasReq returns true when preceding lines contain @req marker", () => {
-     const context = {
-       getSourceCode() {
-         return createMockSourceCode({
-           lines: [
-             "// some header",
-             "/** @req REQ-LINE-BEFORE */",
-             "function foo() {}",
-           ],
-         });
-       },
-     } as any;
-
-     const node = {
-       // Node starts on line 3 (1-based), so line 2 is inspected by linesBeforeHasReq
-       loc: { start: { line: 3 } },
-       parent: {},
-     } as any;
-
-     const has = _hasReqAnnotation(null as any, [], context, node);
-
-     expect(has).toBe(true);
-   });
-   ```
-
-2. **Parent leadingComments `@supports` path with unusable `getCommentsBefore`**
-   ```ts
-   it("[REQ-ANNOTATION-REQ-DETECTION] parentChainHasReq returns true when leadingComments contain @supports and getCommentsBefore is unusable", () => {
-     const context = {
-       getSourceCode() {
-         return {
-           // Not a callable function; forces parentChainHasReq to rely on leadingComments
-           getCommentsBefore: 42,
-         } as any;
-       },
-     } as any;
-
-     const node = {
-       parent: {
-         leadingComments: [
-           { value: "some other comment" },
-           {
-             value:
-               "@supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FROM-LEADING-COMMENT",
-           },
-         ],
-         parent: {},
-       },
-     } as any;
-
-     const has = _hasReqAnnotation(null as any, [], context, node);
-
-     expect(has).toBe(true);
-   });
-   ```
-
-3. **JSDoc-only `@req` when context is undefined**
-   ```ts
-   it("[REQ-ANNOTATION-REQ-DETECTION] returns true when jsdoc has @req even if context is undefined", () => {
-     const jsdoc = { value: "/** @req REQ-JSDOC-NO-CONTEXT */" } as any;
-
-     const node = {
-       parent: {},
-     } as any;
-
-     const has = _hasReqAnnotation(jsdoc, [], undefined as any, node);
-
-     expect(has).toBe(true);
-   });
-   ```
-
-Traceability:
-
-- File header already includes:
-  ```ts
-  /**
-   * Tests for advanced @req detection heuristics
-   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
-   */
-  ```
-- New tests all keep the `[REQ-ANNOTATION-REQ-DETECTION]` tag in their names, aligning with the story and requirement.
-
-#### Re-evaluation and quality checks
-
-- Targeted tests:
-  - `npm test -- --runInBand --ci --testPathPatterns tests/utils/req-annotation-detection.test.ts`
-  - `npm test -- --runInBand --ci --testPathPatterns tests/rules/require-req-annotation.test.ts`
-- Aggregate fast CI-style checks:
-  - `npm run ci-verify:fast`
-- Pre-push hook and full CI/CD:
-  - Changes were committed as:
-    - `test: extend req annotation detection coverage for advanced heuristics`
-  - `git push` triggered the `CI/CD Pipeline` on GitHub.
-  - The latest run (`runId: 19997900404`) completed with conclusion: `success`.
-- Coverage confirmation:
-  - From the full `ci-verify:full` run after push:
-    - `src/utils/reqAnnotationDetection.ts` now reports:
-      - Statements: 100%
-      - Branches: 98.3%
-      - Functions: 100%
-      - Lines: 100%
-  - This indicates all critical branches and guard paths in the req-detection utility are now exercised by tests.
-
-Behavioral check:
-
-- No changes were made to `src/utils/reqAnnotationDetection.ts` itself—only tests were extended.
-- All rule and maintenance tests still pass, confirming no regressions in user-visible behavior.
-
----
-
-## Updated Plan
-
-## NOW
-
-- [x] Perform a focused review of the entire req-annotation detection utility to identify any remaining subtle edge cases or conditional paths that may not be clearly covered by existing tests.
-
-## NEXT
-
-- [x] List any newly identified edge cases or branch scenarios from the req-annotation detection utility review and map each one to a concrete example that should be tested.
-- [x] Extend the existing req-annotation detection test suite with additional test cases that exercise the newly identified scenarios, ensuring each test is clearly named and tied to the relevant story and requirement annotations.
-- [x] Re-evaluate the utility’s behavior against the strengthened tests to confirm that all important branches are now exercised and that the observable behavior remains correct and consistent.
+If you’d like, I can next apply the same style of micro-extraction to the small duplication blocks in `require-story-visitors.ts` and `require-story-core.ts` under the LATER section, one helper at a time.
 ```

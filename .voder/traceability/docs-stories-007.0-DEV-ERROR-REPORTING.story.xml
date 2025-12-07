@@ -2,8 +2,18 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T02:59:29.618Z</last_validated>
+  <last_validated>2025-12-07T06:21:08.769Z</last_validated>
   <last_modified>2025-12-04T18:44:42.517Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All aspects of story 007.0-DEV-ERROR-REPORTING are implemented and verified. Each relevant rule (require-story-annotation, require-req-annotation, require-branch-annotation, valid-annotation-format, valid-story-reference, valid-req-reference) defines specific, contextual error messages using ESLint meta.messages with the placeholders and patterns described in the story. Error severities are configured so that missing annotations and invalid references are errors while format issues are warnings, as confirmed by tests/plugin-default-export-and-configs.test.ts. The dedicated suite tests/rules/error-reporting.test.ts directly validates REQ-ERROR-SPECIFIC, REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, and REQ-ERROR-LOCATION for require-story-annotation, including suggestion wiring. Additional rule tests confirm correct behavior and error handling for edge cases (filesystem errors, invalid paths, malformed annotations). A fresh npm test run in this assessment shows all these tests passing, so the story’s acceptance criteria and listed requirements remain fully satisfied.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and requirements in docs/stories/007.0-DEV-ERROR-REPORTING.story.md are fully implemented and verified.
+
+Concrete evidence from the rule implementations shows that:
+- Each relevant rule (`require-story-annotation`, `require-req-annotation`, `require-branch-annotation`, `valid-annotation-format`, `valid-story-reference`, `valid-req-reference`) defines specific, convention-aligned messages in meta.messages with appropriate placeholders ({{name}}/{{functionName}}, {{missing}}, {{details}}, {{path}}, {{reqId}}, {{storyPath}}).
+- Error reports wire these messages through ESLint’s context.report with rich data, providing precise location and context.
+- At least `require-story-annotation` exposes ESLint suggestions for how to fix missing annotations, and tests assert on suggestion descriptions and fix functions.
+- Severity mapping matches the story’s conventions: missing annotations/references are errors; format issues are warnings, as enforced by TRACEABILITY_RULE_SEVERITIES and verified by config tests.
+- Edge cases such as filesystem errors, invalid config regexes, and rule loading failures are handled gracefully with clear diagnostics, satisfying the Error Handling criterion.
+- Dedicated tests (especially tests/rules/error-reporting.test.ts) explicitly reference this story and its requirement IDs and confirm the expected message templates, data fields, and suggestions. A full Jest run (`npm test -- --verbose`) passes, confirming all these behaviors are currently working.
+
+Based on this concrete evidence, Story 007.0-DEV-ERROR-REPORTING is fully implemented and passing.</notes>
 </traceability>

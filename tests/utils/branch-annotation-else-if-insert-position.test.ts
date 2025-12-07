@@ -38,14 +38,6 @@ describe("Else-if insert position (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION)"
           },
         } as any;
       },
-      getAncestors() {
-        return [
-          {
-            type: "IfStatement",
-            alternate: node,
-          },
-        ];
-      },
       report({ fix }: { fix?: (_f: any) => any }) {
         // immediately invoke the fixer to exercise the insert position
         if (typeof fix === "function") {
@@ -69,6 +61,12 @@ describe("Else-if insert position (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION)"
         ],
       },
     };
+
+    const parent: any = {
+      type: "IfStatement",
+      alternate: node,
+    };
+    node.parent = parent;
 
     const storyFixCountRef = { count: 0 };
 

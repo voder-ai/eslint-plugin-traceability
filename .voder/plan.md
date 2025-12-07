@@ -1,16 +1,17 @@
 ## NOW
 
-- [ ] Review the duplicated logic in the branch-annotation helper module around the catch and else-if comment-gathering functions to understand exactly which behaviors are repeated and which are safe candidates for extraction into a shared helper.
+- [ ] Review the branch-annotations story document to extract the “First Action” steps and the exact requirements for treating @supports annotations as a valid alternative to @story/@req on branches.
 
 ## NEXT
 
-- [ ] Identify a minimal, behavior-preserving helper or small set of helpers that can replace the duplicated logic while keeping the existing catch and else-if annotation semantics intact, and sketch how call sites would use them.
-- [ ] Refactor the branch-annotation helper module to introduce the new shared helper functionality and update all relevant callers so that the previous duplicated code paths are removed without changing external behavior.
-- [ ] Verify that the existing unit, rule, and formatter-integration tests for catch and else-if branch annotations still fully pass and, if needed, add a focused test to cover any subtle branch that was previously only exercised through the duplicated code paths.
-- [ ] Confirm that the overall duplication level reported for the helpers has decreased and that the resulting code remains readable and easy to maintain.
+- [ ] Analyze the current implementation of the branch-annotation rule and its helper functions to understand exactly how branch comments are inspected and how @story and @req markers are currently detected.
+- [ ] Design an extension to the branch-annotation detection logic so that a well-formed @supports annotation on a branch comment is treated as satisfying the story and requirement annotation requirements without breaking existing @story/@req behavior.
+- [ ] Update the branch-annotation rule and any related helper utilities to implement the new @supports handling in line with the story’s acceptance criteria and traceability annotations.
+- [ ] Create or extend unit and integration tests for the branch-annotation rule to cover branches annotated only with @supports, including simple if/else, catch, and else-if scenarios, ensuring tests clearly reference the relevant requirements from the story.
+- [ ] Revise the rule documentation and user-facing API reference to document that @supports is accepted as an alternative branch annotation format, and cross-check the story’s Definition of Done to confirm all its acceptance criteria are now met.
 
 ## LATER
 
-- [ ] Look for any similar small duplication patterns in other rule helper modules and, where it clearly improves clarity, apply the same style of small, behavior-preserving extractions.
-- [ ] Revisit the internal development documentation for branch annotation handling to ensure any newly introduced helpers and their responsibilities are described, making future changes to catch and else-if behavior easier to reason about.
-- [ ] As new stories refine or extend branch-annotation behavior, keep duplication in check by preferring small, focused helpers for shared comment-scanning or annotation-detection patterns rather than inlining similar logic in multiple places.
+- [ ] Identify and review the other stories marked as incomplete in the functionality assessment to understand their specific remaining gaps.
+- [ ] For each remaining incomplete story, create a similar focused implementation and testing plan to close the documented gaps while preserving existing behavior.
+- [ ] After all failing stories are addressed, perform a final pass over stories, tests, and rule implementations to confirm that every documented requirement has corresponding test coverage and that functionality is fully aligned with the specifications.

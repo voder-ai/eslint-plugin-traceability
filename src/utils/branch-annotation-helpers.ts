@@ -262,6 +262,9 @@ function scanElseIfInsideBlockComments(
   const consequentStartLine: number = node.consequent.loc.start.line;
 
   const comments: string[] = [];
+  // Intentionally start from the block's start line (using the same 1-based line value as provided by the parser)
+  // so that, when indexing into sourceCode.lines, this corresponds to the first logical line inside the block body
+  // for typical formatter layouts.
   let lineIndex = consequentStartLine;
 
   while (lineIndex < lines.length) {
@@ -526,6 +529,7 @@ function getBaseBranchIndentAndInsertPos(
  * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
  */
 function getBranchAnnotationInfo(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -538,8 +542,9 @@ function getBranchAnnotationInfo(
   insertPos: number;
 } {
   const text = gatherBranchCommentText(sourceCode, node, parent);
-  const missingStory = !/@story\b/.test(text);
-  const missingReq = !/@req\b/.test(text);
+  const hasSupports = /@supports\b/.test(text);
+  const missingStory = !/@story\b/.test(text) && !hasSupports;
+  const missingReq = !/@req\b/.test(text) && !hasSupports;
 
   let { indent, insertPos } = getBaseBranchIndentAndInsertPos(sourceCode, node);
 
@@ -581,14 +586,11 @@ export function reportMissingAnnotations(
   const sourceCode = context.getSourceCode();
 
   /**
-   * Determine the direct parent of the node using the ancestors stack when available.
+   * Determine the direct parent of the node using the parent reference on the node.
    * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
    * @supports REQ-DUAL-POSITION-DETECTION
    */
-  const contextAny = context as unknown as { getAncestors?: () => any[] };
-  const ancestors = contextAny.getAncestors?.() || [];
-  const parent =
-    ancestors.length > 0 ? ancestors[ancestors.length - 1] : undefined;
+  const parent = (node as any).parent;
 
   const { missingStory, missingReq, indent, insertPos } =
     getBranchAnnotationInfo(sourceCode, node, parent);

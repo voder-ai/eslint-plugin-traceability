@@ -8,7 +8,8 @@
  * @req REQ-ERROR-CONSISTENCY - Branch-level missing-annotation error messages follow shared conventions
  * @req REQ-ERROR-SUGGESTION - Branch-level missing-annotation errors include suggestions when applicable
  * @req REQ-NESTED-HANDLING - Nested branch annotations are correctly enforced without duplicative reporting
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION REQ-NESTED-HANDLING
+ * @req REQ-SUPPORTS-ALTERNATIVE - Branches annotated only with @supports are treated as fully annotated
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION REQ-NESTED-HANDLING REQ-SUPPORTS-ALTERNATIVE
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION
  * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF REQ-POSITION-PRIORITY-ELSE-IF REQ-PRETTIER-AUTOFIX-ELSE-IF
  */
@@ -158,6 +159,34 @@ if (outer) {
 // @req REQ-BRANCH-DETECTION
 if (condition) {}`,
         options: [{ branchTypes: ["IfStatement", "SwitchCase"] }],
+      },
+      {
+        name: "[REQ-SUPPORTS-ALTERNATIVE] if-statement with only @supports annotation is treated as fully annotated",
+        code: `// @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
+if (shouldHandleAlternative) {
+  handleAlternative();
+}`,
+      },
+      {
+        name: "[REQ-SUPPORTS-ALTERNATIVE] try/catch where both branches are annotated only with @supports",
+        code: `// @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
+try {
+  mightThrow();
+}
+// @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
+catch (error) {
+  recoverFrom(error);
+}`,
+      },
+      {
+        name: "[REQ-SUPPORTS-ALTERNATIVE] else-if branch with @supports inside the block body",
+        code: `// @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
+if (mode === 'primary') {
+  handlePrimary();
+} else if (mode === 'alternative') {
+  // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
+  handleAlternativeMode();
+}`,
       },
     ],
     invalid: [
