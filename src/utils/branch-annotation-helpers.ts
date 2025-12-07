@@ -162,9 +162,112 @@ function gatherCatchClauseCommentText(
   return beforeText;
 }
 
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+function scanElseIfPrecedingComments(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+): string {
+  const lines = sourceCode.lines;
+
+  if (!node.loc || !node.loc.start || typeof node.loc.start.line !== "number") {
+    return "";
+  }
+
+  const startLine = node.loc.start.line - 1;
+  const comments: string[] = [];
+  let i = startLine - 1;
+  let scanned = 0;
+
+  while (i >= 0 && scanned < PRE_COMMENT_OFFSET) {
+    const line = lines[i];
+    if (!line || !line.trim()) {
+      break;
+    }
+    if (!/^\s*(\/\/|\/\*)/.test(line)) {
+      break;
+    }
+    comments.unshift(line.trim());
+    i--;
+    scanned++;
+  }
+
+  return comments.join(" ");
+}
+
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+function hasValidElseIfBlockLoc(node: any): boolean {
+  const hasBlockConsequent =
+    node.consequent &&
+    node.consequent.type === "BlockStatement" &&
+    node.consequent.loc &&
+    node.consequent.loc.start;
+
+  return !!(
+    node.test &&
+    node.test.loc &&
+    node.test.loc.end &&
+    hasBlockConsequent
+  );
+}
+
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+function scanElseIfBetweenConditionAndBody(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+): string {
+  const lines = sourceCode.lines;
+  const conditionEndLine: number = node.test.loc.end.line;
+  const consequentStartLine: number = node.consequent.loc.start.line;
+
+  const comments: string[] = [];
+  for (
+    let lineIndex = conditionEndLine;
+    lineIndex < consequentStartLine - 1;
+    lineIndex++
+  ) {
+    const line = lines[lineIndex];
+    if (!line || !line.trim()) {
+      break;
+    }
+    if (!/^\s*(\/\/|\/\*)/.test(line)) {
+      break;
+    }
+    comments.push(line.trim());
+  }
+
+  return comments.join(" ");
+}
+
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+function scanElseIfInsideBlockComments(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+): string {
+  const lines = sourceCode.lines;
+  const consequentStartLine: number = node.consequent.loc.start.line;
+
+  const comments: string[] = [];
+  let lineIndex = consequentStartLine;
+
+  while (lineIndex < lines.length) {
+    const line = lines[lineIndex];
+    if (!line || !line.trim()) {
+      break;
+    }
+    if (!/^\s*(\/\/|\/\*)/.test(line)) {
+      break;
+    }
+    comments.push(line.trim());
+    lineIndex++;
+  }
+
+  return comments.join(" ");
+}
+
 /**
  * Gather annotation text for IfStatement else-if branches, supporting comments placed
- * between the else-if condition and the consequent statement body.
+ * before the else keyword, between the else-if condition and the consequent body,
+ * and in the first comment-only lines inside the consequent block body.
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * @supports REQ-DUAL-POSITION-DETECTION
  * @supports REQ-FALLBACK-LOGIC
@@ -183,41 +286,29 @@ function gatherElseIfCommentText(
     return beforeText;
   }
 
+  const beforeElseText = scanElseIfPrecedingComments(sourceCode, node);
   if (
-    !node.consequent ||
-    node.consequent.type !== "BlockStatement" ||
-    !node.consequent.loc ||
-    !node.consequent.loc.start
+    beforeElseText &&
+    (/@story\b/.test(beforeElseText) || /@req\b/.test(beforeElseText))
   ) {
+    return beforeElseText;
+  }
+
+  if (!hasValidElseIfBlockLoc(node)) {
     return beforeText;
   }
 
-  if (!node.test || !node.test.loc || !node.test.loc.end) {
-    return beforeText;
+  const betweenText = scanElseIfBetweenConditionAndBody(sourceCode, node);
+  if (betweenText) {
+    return betweenText;
   }
 
-  const lines = sourceCode.lines;
-  const conditionEndLine: number = node.test.loc.end.line;
-  const consequentStartLine: number = node.consequent.loc.start.line;
-
-  const comments: string[] = [];
-  for (
-    let lineIndex = conditionEndLine;
-    lineIndex < consequentStartLine;
-    lineIndex++
-  ) {
-    const line = lines[lineIndex];
-    if (!line || !line.trim()) {
-      break;
-    }
-    if (!/^\s*(\/\/|\/\*)/.test(line)) {
-      break;
-    }
-    comments.push(line.trim());
+  const insideText = scanElseIfInsideBlockComments(sourceCode, node);
+  if (insideText) {
+    return insideText;
   }
 
-  const betweenText = comments.join(" ");
-  return betweenText || beforeText;
+  return beforeText;
 }
 
 /**
