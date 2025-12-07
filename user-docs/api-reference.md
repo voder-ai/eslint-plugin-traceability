@@ -268,6 +268,42 @@ describe("Refunds flow docs/stories/010.0-PAYMENTS.story.md", () => {
 });
 ```
 
+### traceability/no-redundant-annotation
+
+Description: Detects and optionally removes **redundant** traceability annotations on code that is already covered by an enclosing annotated scope. It focuses on simple, statement-level constructs—such as `return` statements, basic variable declarations, and other leaf statements—where repeating the same `@story` / `@req` / `@supports` information adds noise without improving coverage. When run with `--fix`, the rule offers safe auto-fixes that remove only the redundant comments while preserving all annotations that are required to maintain correct traceability.
+
+The rule is designed to complement the core presence and validation rules: it never treats removing a redundant annotation as valid if doing so would leave the underlying requirement or story **uncovered** according to the plugin’s normal rules. It only targets comments whose traceability content is already implied by a surrounding function, method, or branch annotation.
+
+Options:
+
+The rule accepts an optional configuration object:
+
+- `strictness` (`"conservative" | "balanced" | "aggressive"`, optional) – Controls how eagerly redundancy is inferred.
+  - `"conservative"` – Only removes annotations when they are an exact structural duplicate of their containing scope (same story path and requirement IDs, no extras). Intended to minimize false positives.
+  - `"balanced"` (default) – Treats annotations as redundant when they do not add any **new** requirements or stories beyond what is already declared on the nearest enclosing scope, allowing for minor formatting differences.
+  - `"aggressive"` – Additionally flags cases where the inner annotation merely reorders or partially repeats the same requirement set, or where emphasis-only duplication (such as repeating a single requirement for emphasis) is considered redundant. Use with care in projects that rely heavily on local commentary.
+- `allowEmphasisDuplication` (boolean, optional) – When `true`, allows a statement-level annotation that repeats a **single** requirement or story from its parent purely to emphasize a critical line or edge case (for example, a guard clause that deserves its own comment), even when it would otherwise be considered redundant under the current `strictness`. Defaults to `true`. Set to `false` if you prefer to remove all covered duplicates, including emphasis-style comments.
+- `maxScopeDepth` (number, optional) – Limits how deep the rule will search for covering scopes when deciding whether an annotation is redundant. A depth of `1` (the default) considers only the nearest enclosing function/method or branch. Larger values allow walking further up nested scopes (e.g., inner blocks inside loops inside functions). Increasing this value can find more redundancy but may also make reasoning about coverage more subtle.
+- `alwaysCovered` (string[], optional) – A list of short annotation **aliases** or requirement patterns that your project treats as “implicitly covered” by higher-level documentation (for example, high-level safety or logging requirements that apply to an entire module). Any annotation whose requirement/story ID matches one of these entries is treated as redundant when it appears on simple leaf statements beneath the already-covered area, even if there is no local function-level annotation. Entries are compared as literal strings; pattern-like values (such as `"REQ-LOGGING-*"` or `"REQ-SAFETY"`) are project-specific conventions and are not treated as regular expressions by this rule.
+
+Behavior notes:
+
+- The rule only inspects comments that contain recognized traceability annotations (`@story`, `@req`, `@supports`) and are attached to simple statements (returns, expression statements, variable declarations, and similar leaf nodes). It intentionally does **not** attempt to de-duplicate annotations on functions, classes, or major branches, which remain the responsibility of the core rules.
+- Auto-fix removes only the redundant traceability lines (and any now-empty comment delimiters when safe) while preserving surrounding non-traceability text in the same comment where possible.
+- When no enclosing scope with compatible coverage is found within `maxScopeDepth`, the annotation is not considered redundant and is left unchanged.
+
+Default Severity: `warn`
+
+This rule is **not** enabled in the `recommended` or `strict` presets by default. To use it, add it explicitly to your ESLint configuration with an appropriate severity level:
+
+```jsonc
+{
+  "rules": {
+    "traceability/no-redundant-annotation": "warn"
+  }
+}
+```
+
 ### traceability/prefer-supports-annotation
 
 Description: An optional, opt-in migration helper that encourages converting legacy single‑story `@story` + `@req` JSDoc blocks into the newer multi‑story `@supports` format. The rule is **disabled by default** and is **not included in any built‑in preset**; you enable it explicitly and control its behavior entirely via ESLint severity (`"off" | "warn" | "error"`). It does not change what the core rules consider valid—it only adds migration recommendations and safe auto‑fixes on top of existing validation. The legacy rule key `traceability/prefer-implements-annotation` is still recognized as a **deprecated alias** for `traceability/prefer-supports-annotation` so that existing configurations continue to work unchanged.
@@ -706,4 +742,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```

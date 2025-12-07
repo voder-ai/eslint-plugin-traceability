@@ -31,6 +31,7 @@ const RULE_NAMES = [
   "valid-req-reference",
   "prefer-implements-annotation",
   "require-test-traceability",
+  "no-redundant-annotation",
 ] as const;
 
 const rules: Record<string, Rule.RuleModule> = {} as any;
@@ -191,6 +192,7 @@ const TRACEABILITY_RULE_SEVERITIES: Readonly<Record<string, "error" | "warn">> =
     "traceability/valid-story-reference": "error",
     "traceability/valid-req-reference": "error",
     "traceability/require-test-traceability": "error",
+    "traceability/no-redundant-annotation": "warn",
   } as const;
 
 /**
