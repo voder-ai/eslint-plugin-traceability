@@ -68,7 +68,7 @@ function initAuth() {
 
 ### traceability/require-branch-annotation
 
-Description: Ensures significant code branches (if/else, loops, switch cases, try/catch) have both `@story` and `@req` annotations in preceding comments. For `catch` clauses specifically, the rule accepts annotations either immediately before the `catch` keyword or as the first comment-only lines inside the catch block; for `else if` branches, the rule accepts annotations either immediately before the `else if` keyword or on comment-only lines between the `else if (condition)` and the first statement of the consequent body, matching Prettier’s wrapped style.
+Description: Ensures significant code branches (if/else chains, loops, switch cases, try/catch) have both `@story` and `@req` annotations in nearby comments. For most branches, the rule looks for annotations in comments immediately preceding the branch keyword (for example, the line above an `if` or `for` statement). For `catch` clauses and `else if` branches, the rule is formatter-aware and accepts annotations in additional positions that common formatters like Prettier use when they reflow code.
 
 Options:
 
@@ -76,8 +76,20 @@ Options:
 
 Behavior notes:
 
-- When both before-`catch` and inside-block annotations are present for the same catch clause, the comments immediately before `catch` take precedence for validation and reporting.
-- When auto-fixing missing annotations on a catch clause, the rule inserts placeholder comments inside the catch body so that formatters like Prettier preserve them and do not move them to unexpected locations.
+- **Catch clauses**:
+  - Valid locations for `@story` / `@req` annotations are either immediately before the `catch` keyword or on the first comment-only lines inside the catch block (before any executable statements).
+  - If annotations exist in both locations, the comments immediately before `catch` take precedence for validation and reporting.
+  - When auto-fixing missing annotations on a catch clause, the rule inserts placeholder comments inside the catch block body so that formatters like Prettier keep them attached to the branch.
+
+- **Else-if branches**:
+  - Valid locations for `@story` / `@req` annotations include:
+    - Line or block comments immediately before the `else if` line.
+    - Comment-only lines between the `else if (condition)` and the opening `{` of the consequent block (for styles where the condition and block are on separate lines).
+    - The first comment-only lines inside the consequent block body, which is where formatters like Prettier often move comments when they wrap long `else if` conditions.
+  - When annotations appear in more than one of these locations, the rule prefers the comments immediately before the `else if` line, then comments between the condition and the block, and finally comments inside the block body. This precedence avoids duplicate diagnostics while remaining compatible with formatter-driven layouts.
+  - When auto-fixing missing annotations on an `else if` branch, the rule inserts placeholder comments as the first comment-only line inside the consequent block body (just after the opening `{`), which is a stable location under Prettier and similar formatters.
+
+These behaviors are intentionally limited to `catch` clauses and `else if` branches; other branch types (plain `if`, `else`, loops, and `switch` cases) continue to use the simpler "comments immediately before the branch" association model for both validation and auto-fix placement.
 
 Default Severity: `error`
 Example:

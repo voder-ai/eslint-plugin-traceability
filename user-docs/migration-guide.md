@@ -188,6 +188,15 @@ You can introduce `@supports` gradually without breaking existing code:
 
 Detailed semantics and edge cases (path validation, scoped requirement IDs, and multi-story fixtures) are ultimately governed by your own stories and requirements. For typical migrations, this guide together with the plugin’s API reference is sufficient.
 
+### 3.2 Else-if branch annotations and formatter compatibility
+
+Versions 1.x of `eslint-plugin-traceability` extend the `traceability/require-branch-annotation` rule to better support formatter-driven layouts for `else if` branches. In most projects you **do not need to change existing annotations**:
+
+- Comments immediately before an `else if` line remain valid and continue to satisfy the rule.
+- When formatters such as Prettier move comments between the `else if (condition)` and the opening `{`, or into the first comment-only lines inside the `{ ... }` block, those annotations are now also recognized and associated with the correct branch.
+
+If you previously added suppressions or workaround comments around `else if` branches due to formatter conflicts, you can usually remove those workarounds after upgrading to 1.x as long as your annotations live in one of the supported locations. For new code, you can place annotations either directly above the `else if` or, when you know a formatter will wrap a long condition, on the first comment-only line inside the consequent block body, which is where the rule places auto-fix placeholders by default.
+
 ## 4. Test and Validate
 
 Run your test suite to confirm everything passes:

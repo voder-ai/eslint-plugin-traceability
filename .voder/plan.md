@@ -1,16 +1,16 @@
 ## NOW
 
-- [ ] Add focused unit tests for the else-if branch annotation helpers that exercise both before-else and between-condition annotation positions, their precedence, and the else-if-specific auto-fix insertion behavior, with clear traceability back to the else-if story and its requirement IDs.
+- [ ] Revise the internal rule documentation for branch annotations so that the else-if section clearly describes all supported annotation positions, their precedence, and how auto-fix behaves, matching the current else-if implementation and Story 026.0 requirements.
 
 ## NEXT
 
-- [ ] Refine the else-if Prettier integration tests so they match the actual formatted code patterns in this environment and can run by default without experimental gating while still validating the supported annotation positions.
-- [ ] Reconcile the documented acceptance criteria in the else-if story with the behavior currently implemented (including any known limitations), then update the story document to mark satisfied criteria, note any remaining gaps, and add links to the relevant helper, rule, and test files.
-- [ ] Update the internal rule documentation and user-facing API reference if needed to reflect any refinements made while tightening tests and story alignment, ensuring there are no discrepancies between docs and actual behavior.
+- [ ] Update the user-facing API reference for the branch-annotation rule so that it explains the else-if behavior in user-friendly terms, including the supported annotation positions and Prettier-friendly layout, without exposing internal implementation details.
+- [ ] Review the migration guide and add a concise note describing how existing projects should adapt their else-if annotations, if at all, to benefit from the new behavior while avoiding surprises.
+- [ ] Revisit the else-if story document to ensure its documentation-related acceptance criteria and Definition of Done items accurately reflect the updated rule docs and migration guidance.
 
 ## LATER
 
-- [ ] Broaden formatter-focused integration coverage to other branch types (plain else, nested if/else chains, switch cases) to ensure their annotation positions remain stable under common formatters.
-- [ ] Review all branch-annotation stories together (if/else-if/else, catch, switch) to confirm their described behavior is consistent and complete across branch types, adjusting stories or docs where necessary.
-- [ ] Add or expand a short developer-oriented guide summarizing the intended annotation positions and autofix behavior for all supported branch types, including how the rule is expected to interact with formatters like Prettier.
-- [ ] Once else-if behavior and tests are fully stable, perform a small refactoring pass over the branch-annotation helpers to keep them readable and maintainable, without changing observable behavior.
+- [ ] Expand formatter-focused integration tests to cover additional branch types such as plain else blocks, nested if/else chains, and switch cases to verify annotation stability under common formatters.
+- [ ] Review all branch-annotation-related stories together (if/else-if/else, catch, switch) to confirm consistent, complete behavior descriptions across branch types and adjust stories or docs where inconsistencies appear.
+- [ ] Create or extend a developer-oriented guide that summarizes intended annotation positions and auto-fix behavior for all supported branch types, including how those behaviors interact with formatters like Prettier.
+- [ ] Once else-if and other branch behaviors are fully documented and stable, perform a focused refactoring pass over the branch-annotation helper utilities to keep them small, clear, and easy to maintain without changing observable behavior.

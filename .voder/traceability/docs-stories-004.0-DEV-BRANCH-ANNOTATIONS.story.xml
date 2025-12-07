@@ -2,14 +2,17 @@
 <traceability>
   <specification>docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T23:11:54.828Z</last_validated>
+  <last_validated>2025-12-07T01:06:52.216Z</last_validated>
   <last_modified>2025-12-04T18:44:42.540Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and technical requirements for Story 004.0-DEV-BRANCH-ANNOTATIONS are implemented and verified:
-- Core Functionality: `require-branch-annotation` detects missing `@story`/`@req` on significant branch types (if/else, loops, try/catch, switch cases), with configurable branchTypes and special handling for switch default cases.
-- Quality & Performance: Implementation follows ESLint best practices (meta, schema, messages, fixers) and has a dedicated performance test ensuring fast analysis of large nested-branch files.
-- Integration: Rule is wired into the plugin’s rules export and flat-config presets, and tests confirm interaction with complex nested structures and various control flow patterns, including catch blocks and formatter-affected code.
-- User Experience: Error messages clearly identify missing annotation type; auto-fix behavior inserts sensible placeholder annotations at appropriate locations, particularly in catch blocks.
-- Error Handling: Invalid `branchTypes` configuration produces explicit configuration errors; helpers handle missing APIs and complex catch bodies gracefully without throwing.
-- Documentation: docs/rules/require-branch-annotation.md provides usage, configuration, examples, and invalid configuration behavior tied back to this story. Given the current code and passing targeted and full test runs, the story is fully satisfied.</notes>
+  <notes>The story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md specifies an ESLint rule that enforces @story/@req annotations on significant code branches, with requirements for branch detection, comment association, annotation parsing, nested handling, configurable scope, and performance.
+
+The implementation provides:
+- A dedicated rule (src/rules/require-branch-annotation.ts) with proper ESLint meta, fixers, and handlers for all relevant branch node types.
+- Helper utilities (src/utils/branch-annotation-helpers.ts) that map comments to branches (including SwitchCase, CatchClause, and else-if special cases), parse annotations from comments, compute auto-fix insertion positions compatible with formatters like Prettier, and validate/configure which branch types are enforced.
+- Comprehensive tests that exercise valid/invalid scenarios across if/else, loops, switch, try/catch, nested branches, configurable branchTypes (including invalid configuration errors), and performance on large nested-branch files.
+- Rule documentation with examples and configuration guidance in docs/rules/require-branch-annotation.md.
+- Integration into the plugin’s exported rules and recommended/strict presets.
+
+All acceptance criteria and listed requirements for this story are met and verified by passing automated tests and documentation, so the story is fully implemented.</notes>
 </traceability>

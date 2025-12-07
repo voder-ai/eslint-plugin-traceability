@@ -2,19 +2,17 @@
 <traceability>
   <specification>docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-06T23:11:04.561Z</last_validated>
+  <last_validated>2025-12-07T01:07:50.657Z</last_validated>
   <last_modified>2025-12-04T21:56:14.211Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and requirements in docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md are fully implemented and verified:
+  <notes>All acceptance criteria and requirements from docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md are implemented and verified:
 
-- File-Level Template: ensureFileSupportsAnnotation, buildSupportsTemplateComment, and insertSupportsTemplate automatically add a file-level @supports JSDoc block when missing, using the exact placeholder format specified (docs/stories/XXX.X-STORY-NAME.story.md REQ-XXX-YYY REQ-XXX-ZZZ) plus a clear TODO line. Tests in tests/rules/require-test-traceability.test.ts confirm the template insertion behavior and location.
-- Format Fixes: normalizeReqPrefixInDescription (with normalizeReqId) and handleItOrTestCall implement safe normalization of malformed [REQ-XXX] prefixes: extra spaces, underscores, parentheses, and lowercase IDs are all corrected to canonical [REQ-...] format. Each case is explicitly covered by tests (spacing, underscore, lowercase, parentheses) and validated via RuleTester output.
-- Template Quality: The placeholder template uses generic story and requirement IDs plus an explicit TODO guidance line, matching the story’s requirements for clear placeholders indicating required developer input.
-- Quality Standards & Safety: Auto-fixes are restricted to comments and string literals. Shebang lines are preserved; implementation code is not touched. Fixers only run when a REQ-like ID is already present and recognizable, or when inserting a non-semantic template. When the plugin cannot be certain (e.g., no REQ prefix at all, or describe string without a recognizable story), it reports errors but provides no fixer. This satisfies REQ-TEST-FIX-SAFE, REQ-TEST-FIX-PRESERVE, and REQ-TEST-FIX-NO-INFERENCE.
-- Integration: The rule declares meta.fixable = "code" and is written as a standard ESLint RuleModule. Tests run successfully under Jest, demonstrating the auto-fix behavior via RuleTester with eslint --fix semantics. The behavior is integrated with the existing validation logic from Story 020.0 (same rule, additional auto-fix behavior).
-- User Experience: Templates and normalization are deterministic, consistent, and limited to formatting concerns. The TODO text gives human-readable guidance. Tests cover both corrected and unchanged cases, confirming predictable behavior.
-- Error Handling: The implementation only attaches a fixer when all safety preconditions hold (auto-fix options enabled, recognizable REQ prefix, first argument is a string literal). Otherwise, it reports issues without changing code, aligning with the story’s requirement that only guaranteed-safe fixes be applied.
-- Documentation: user-docs/api-reference.md documents the require-test-traceability rule, explicitly referencing Story 021.0 and describing both the placeholder @supports insertion and malformed [REQ-XXX] prefix normalization, as well as the configuration options autoFixTestTemplate, autoFixTestPrefixFormat, and testSupportsTemplate.
+- File-level template insertion for missing @supports is implemented via ensureFileSupportsAnnotation/buildSupportsTemplateComment/insertSupportsTemplate, with a clear placeholder story path, REQ IDs, and an explicit TODO line. Tests assert the exact before/after output, fulfilling REQ-TEST-FIX-TEMPLATE and REQ-TEST-FIX-PLACEHOLDER.
+- Malformed [REQ-XXX] prefixes in test names are safely normalized by normalizeReqPrefixInDescription and normalizeReqId, and wired through handleItOrTestCall. Tests cover spacing, underscores, casing, and parentheses, fulfilling REQ-TEST-FIX-PREFIX-FORMAT.
+- Safety and non-inference guarantees (REQ-TEST-FIX-SAFE, REQ-TEST-FIX-NO-INFERENCE) are enforced by only providing fixers when a recognizable REQ pattern is already present and the first argument is a string literal; when the prefix is completely missing, the rule reports an error without offering an auto-fix.
+- Formatting and behavior preservation (REQ-TEST-FIX-PRESERVE) are handled by inserting only comments at safe positions, preserving shebangs, and rewriting only the string literal value while keeping quoting and escaping consistent; tests confirm that only the intended parts of the code change.
+- The rule is integrated into the plugin export and recommended/strict configurations, and its auto-fix capabilities and template format are documented in user-docs/api-reference.md, satisfying the Integration and Documentation acceptance criteria.
+- Targeted Jest tests for require-test-traceability that explicitly reference Story 021.0 and its requirement IDs all pass, and the full test suite passes, providing strong evidence that the implementation is correct and stable.
 
-Targeted and full test runs confirm that the implementation and its tests are present and passing. Therefore, the story 021.0-DEV-TEST-ANNOTATION-AUTO-FIX is fully implemented and passes all defined criteria.</notes>
+Based on this concrete implementation, test coverage, and documentation, the story is fully implemented and meets its Definition of Done.</notes>
 </traceability>

@@ -25,14 +25,32 @@ This behavior is covered by unit tests in `tests/utils/branch-annotation-catch-p
 
 ### Else-if annotation positions
 
-For `else if` branches, there are two valid locations for the required annotations:
+For `else if` branches, the rule is formatter-aware and recognizes annotations in several closely related positions. Conceptually, there are three supported locations, with a defined precedence:
 
-1. Immediately before the `else if` keyword (in a line or block comment directly above the `else if`).
-2. On comment-only lines between the `else if (condition)` line and the first statement of the consequent body. This matches the region where Prettier places comments when it wraps long `else if` conditions so that the condition and the consequent statement appear on separate lines.
+1. **Preceding-line comments** – Line or block comments immediately before the `else if` line (including comments that ESLint associates with the `IfStatement` via `getCommentsBefore`). This is the primary, legacy-friendly location and behaves like annotations on a normal `if` branch.
+2. **Comments between the condition and the block** – Comment-only lines that appear after the `else if (condition)` but before the opening `{` of the consequent block. This covers styles where the condition and the block are on separate lines and a comment sits between them, for example:
 
-If annotations are present in both locations, the annotations immediately before the `else if` keyword take precedence for validation and reporting.
+   ```js
+   } else if (condition)
+   // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+   // @req REQ-BRANCH-DETECTION
+   {
+     handleCondition();
+   }
+   ```
+3. **First comment-only lines inside the consequent block** – When formatters such as Prettier wrap a long `else if` condition and move comments inside the block body, annotations placed on the first comment-only lines inside the `{ ... }` block are also accepted and associated with the `else if` branch.
 
-When the rule applies an auto-fix for missing annotations on an `else if` branch, it inserts placeholder `@story` and `@req` comments on a dedicated line between the `else if (condition)` line and the first statement of the consequent body, aligned with the indentation style that Prettier uses for comments in this region. This behavior is covered by tests in `tests/rules/require-branch-annotation.test.ts` and integration tests in `tests/integration/else-if-annotation-prettier.integration.test.ts`.
+When annotations are present in more than one of these locations, the rule applies the following precedence for validation and reporting:
+
+1. Comments immediately before the `else if` line.
+2. Comment-only lines between the `else if (condition)` and the opening `{`.
+3. The first comment-only lines inside the consequent block body.
+
+This precedence avoids duplicate diagnostics when multiple comments exist around the same `else if` branch while still honoring formatter-driven placements.
+
+When the rule applies an auto-fix for missing annotations on an `else if` branch, it inserts placeholder `@story` and `@req` comments as the first comment-only line inside the consequent block body (just after the opening `{`). This placement is chosen to align with where Prettier tends to keep comments for wrapped `else if` conditions so that, after formatting, the placeholders remain attached to the branch. Other branch types continue to receive auto-fix annotations immediately before the branch keyword.
+
+This behavior is covered by unit tests in `tests/rules/require-branch-annotation.test.ts`, utility tests in `tests/utils/branch-annotation-else-if-position.test.ts` and `tests/utils/branch-annotation-else-if-insert-position.test.ts`, and integration tests in `tests/integration/else-if-annotation-prettier.integration.test.ts`.
 
 ### Options
 
