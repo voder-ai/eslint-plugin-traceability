@@ -29,11 +29,11 @@
 | **Parser Improvements**                       | -                | -              | 022.0-DEV-JSDOC-COEXISTENCE          | -                                  | -                    |
 | **Test Annotations**                          | -                | -              | 020.0-DEV-TEST-ANNOTATION-VALIDATION | 021.0-DEV-TEST-ANNOTATION-AUTO-FIX | -                    |
 
-| **Release 2.0 (Enhanced Features)** (Future) | **Setup Plugin**            | **Write Code**                        | **Validate Annotations**     | **Fix Issues**              | **Maintain Quality**      |
-| -------------------------------------------- | --------------------------- | ------------------------------------- | ---------------------------- | --------------------------- | ------------------------- |
-| **Advanced Validation**                      | 030.0-DEV-IDE-INTEGRATION   | 031.0-DEV-SMART-SUGGESTIONS           | 032.0-DEV-REAL-TIME-FEEDBACK | 033.0-DEV-BULK-FIXES        | 034.0-DEV-QUALITY-METRICS |
-| **Developer Experience**                     | 035.0-DEV-PROJECT-TEMPLATES | 036.0-DEV-ANNOTATION-HELPERS          | -                            | 037.0-DEV-GUIDED-RESOLUTION | 038.0-DEV-DASHBOARD       |
-| **Test Support**                             | -                           | 039.0-DEV-TEST-ANNOTATION-CONVENTIONS | -                            | -                           | -                         |
+| **Release 2.0 (Enhanced Features)** (Future) | **Setup Plugin**            | **Write Code**                        | **Validate Annotations**                    | **Fix Issues**              | **Maintain Quality**      |
+| -------------------------------------------- | --------------------------- | ------------------------------------- | ------------------------------------------- | --------------------------- | ------------------------- |
+| **Advanced Validation**                      | 030.0-DEV-IDE-INTEGRATION   | 031.0-DEV-SMART-SUGGESTIONS           | 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION    | 033.0-DEV-BULK-FIXES        | 034.0-DEV-QUALITY-METRICS |
+| **Developer Experience**                     | 035.0-DEV-PROJECT-TEMPLATES | 036.0-DEV-ANNOTATION-HELPERS          | 032.0-DEV-REAL-TIME-FEEDBACK                | 037.0-DEV-GUIDED-RESOLUTION | 038.0-DEV-DASHBOARD       |
+| **Test Support**                             | -                           | 039.0-DEV-TEST-ANNOTATION-CONVENTIONS | -                                           | -                           | -                         |
 
 ---
 
@@ -89,12 +89,12 @@
 
 - **Developer Integration**: 030.0-DEV-IDE-INTEGRATION (VS Code extension), 035.0-DEV-PROJECT-TEMPLATES (starter templates)
 - **Smart Features**: 031.0-DEV-SMART-SUGGESTIONS (intelligent annotation suggestions), 036.0-DEV-ANNOTATION-HELPERS (auto-completion)
-- **Advanced Validation**: 032.0-DEV-REAL-TIME-FEEDBACK (live validation)
+- **Advanced Validation**: 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION (detect and remove duplicate/misplaced annotations), 032.0-DEV-REAL-TIME-FEEDBACK (live validation)
 - **Productivity Tools**: 033.0-DEV-BULK-FIXES (mass update tools), 037.0-DEV-GUIDED-RESOLUTION (fix wizards)
 - **Quality Management**: 034.0-DEV-QUALITY-METRICS (coverage tracking), 038.0-DEV-DASHBOARD (team dashboard)
 - **Test Support**: 039.0-DEV-TEST-ANNOTATION-CONVENTIONS (IDE-assisted test annotation writing)
 
-**Total**: 10 stories covering advanced developer experience and team quality management
+**Total**: 11 stories covering advanced developer experience and team quality management
 
 ---
 
