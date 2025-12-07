@@ -18,31 +18,16 @@
 
 # User Story Map with Releases
 
-| **Release 0.5 (Quality Foundation)** | **Setup Dev Environment** | **Develop Features**              | **Validate Quality** | **Deploy** | **Maintain** |
-| ------------------------------------ | ------------------------- | --------------------------------- | -------------------- | ---------- | ------------ |
-| **Core Fixes**                       | -                         | 024.0-DEV-IGNORE-INLINE-CODE-REFS | -                    | -          | -            |
-
-| **Release 0.6 (Formatter Compatibility)** (Current) | **Setup Dev Environment** | **Develop Features**                | **Validate Quality** | **Deploy** | **Maintain** |
-| --------------------------------------------------- | ------------------------- | ----------------------------------- | -------------------- | ---------- | ------------ |
-| **Rule Enhancements**                               | -                         | 025.0-DEV-CATCH-ANNOTATION-POSITION | -                    | -          | -            |
+| **Release 0.6 (Formatter Compatibility)** (Current) | **Setup Dev Environment** | **Develop Features**                                        | **Validate Quality** | **Deploy** | **Maintain** |
+| --------------------------------------------------- | ------------------------- | ----------------------------------------------------------- | -------------------- | ---------- | ------------ |
+| **Core Fixes**                                      | -                         | 024.0-DEV-IGNORE-INLINE-CODE-REFS                           | -                    | -          | -            |
+| **Rule Enhancements**                               | -                         | 025.0-DEV-CATCH-ANNOTATION-POSITION                         | -                    | -          | -            |
+| **Rule Enhancements**                               | -                         | 026.0-DEV-ELSE-IF-ANNOTATION-POSITION                       | -                    | -          | -            |
+| **Planned (Future)**                                | -                         | _Dogfooding - Enable plugin self-validation (not scheduled)_ | -                    | -          | -            |
 
 ---
 
 ## Release Details
-
-### Release 0.5: Quality Foundation
-
-**Goal**: Ensure the plugin itself follows its own traceability standards, validating that all 1,737+ annotations in the codebase are properly formatted and enforceable.
-**Success Metric**: ESLint runs on the plugin's own codebase with traceability rules enabled, catching any missing or invalid annotations during development.
-**Scope**: Configure ESLint to use the plugin's own recommended preset, establish suppression workflow for existing violations, and enable incremental cleanup.
-
-**Stories by Category:**
-
-- **Core Fixes**: 024.0-DEV-IGNORE-INLINE-CODE-REFS (ignore backtick-wrapped annotation keywords)
-
-**Total**: 1 story covering annotation detection accuracy
-
-**Note**: This is foundational work to ensure plugin developers maintain the same standards they enforce for users. Uses incremental fix strategy to avoid blocking development while violations are cleaned up.
 
 ### Release 0.6: Formatter Compatibility (Current)
 
@@ -52,27 +37,40 @@
 
 **Stories by Category:**
 
+- **Core Fixes**: 024.0-DEV-IGNORE-INLINE-CODE-REFS (ignore backtick-wrapped annotation keywords)
 - **Rule Enhancements**: 025.0-DEV-CATCH-ANNOTATION-POSITION (support annotations inside catch blocks for Prettier compatibility)
+- **Rule Enhancements**: 026.0-DEV-ELSE-IF-ANNOTATION-POSITION (support annotations in multiple positions for else-if statements for Prettier compatibility)
 
-**Total**: 1 story resolving Prettier formatting conflicts with catch clause annotations
+**Total**: 3 stories resolving formatter compatibility issues
 
-**Note**: Addresses GitHub issue #4 - the chicken-and-egg problem where Prettier moves catch annotations inside the block but the rule expects them before the catch keyword.
+**Note**: Addresses GitHub issue #4 and related Prettier formatting conflicts where formatters move annotations to positions the rule doesn't expect.
+
+### Future Releases (Not Yet Scheduled)
+
+**Dogfooding & Self-Validation**: Enable the plugin to enforce its own traceability rules on its codebase. This work has been deferred to a future release to focus on core feature stability and formatter compatibility first.
 
 ---
 
 ## Key Questions for Plugin Developer
 
-### **Release 0.5 Questions:**
+### **Release 0.6 Questions:**
 
-**Dogfooding & Self-Validation:**
+**Formatter Compatibility:**
+
+- How can we ensure annotation detection works with different formatter configurations?
+- What other formatters besides Prettier should we test compatibility with?
+- Should the plugin provide configuration options for formatter-specific behavior?
+- How do we maintain strict validation while supporting multiple annotation positions?
+
+### **Future Release Questions:**
+
+**Dogfooding & Self-Validation (Deferred):**
 
 - How should the plugin handle the chicken-and-egg problem of validating its own annotations before the validation rules are fully implemented?
 - What is an acceptable suppression strategy that doesn't compromise code quality while allowing incremental fixes?
 - Should CI/CD block on traceability violations, or just report them during the transition period?
 - How can we track progress on reducing suppression count over time?
 - Should the plugin validate annotations in test files as strictly as in source files?
-
-### **Future Release Questions:**
 
 **Dev Tools & Workflow:**
 
