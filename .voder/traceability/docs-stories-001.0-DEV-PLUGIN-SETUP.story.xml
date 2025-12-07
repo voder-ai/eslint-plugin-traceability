@@ -2,17 +2,17 @@
 <traceability>
   <specification>docs/stories/001.0-DEV-PLUGIN-SETUP.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T09:05:21.061Z</last_validated>
+  <last_validated>2025-12-07T10:03:20.622Z</last_validated>
   <last_modified>2025-12-06T09:07:11.328Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and listed requirements for Story 001.0-DEV-PLUGIN-SETUP are fully implemented and verified:
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and requirements for docs/stories/001.0-DEV-PLUGIN-SETUP.story.md are implemented and verified:
 
-- Core Functionality: The plugin exports a standard ESLint plugin object (`rules`, `configs`, `meta`, `maintenance`), dynamically loads rule modules, and is verified by `tests/plugin-setup.test.ts` and `tests/plugin-default-export-and-configs.test.ts`, which pass in the Jest run.
-- Quality Standards: `src/index.ts` follows ESLint plugin conventions, exposes `meta` derived from package.json with `name`, `version`, and `namespace`, and matches the documented patterns in `docs/eslint-plugin-development-guide.md`.
-- Integration (ESLint v9 flat config): The `configs.recommended` and `configs.strict` presets are implemented as flat-config fragments and tested via `tests/config/flat-config-presets-integration.test.ts`, which confirms they enable `traceability/require-story-annotation` when combined with a base config. README and the ESLint 9 setup guide show correct usage.
-- User Experience: README and `user-docs/eslint-9-setup-guide.md` provide clear installation instructions, version constraints, and concrete flat-config examples for JS, TS, and mixed projects, aligned with the actual plugin API.
-- Error Handling: `src/index.ts` wraps dynamic rule loading in try/catch, logs detailed errors, and installs a placeholder rule that reports an ESLint error instead of failing plugin load. `tests/plugin-setup-error.test.ts` validates this behavior, and `tests/cli-error-handling.test.ts` verifies the CLI exits non-zero and reports a missing-annotation message when configured with the plugin, both passing in the test run.
-- Documentation: Plugin structure, configs, and development guidance are documented in `docs/eslint-plugin-development-guide.md` and `docs/custom-rules-development-guide.md`, satisfying the documentation acceptance criterion.
+- Core Functionality: The plugin exports a `plugin` default object with `rules` and `configs` populated from a central RULE_NAMES registry. Tests in tests/plugin-setup.test.ts and tests/plugin-default-export-and-configs.test.ts confirm correct exports and structure.
+- Quality Standards & Metadata: src/index.ts defines a robust `pluginMeta` that reads from package.json with fallbacks, and attaches it to the plugin under `meta`. Tests assert that `meta.name`, `meta.version`, and `meta.namespace` match expectations. Developer docs for plugin development exist as specified.
+- ESLint v9 Flat Config Integration: The flat-config presets (recommended and strict) are implemented as arrays of config objects compatible with ESLint v9. Integration tests using FlatESLint (tests/config/flat-config-presets-integration.test.ts) prove that both presets enable traceability rules when used as documented.
+- User Experience: README.md and user-docs/eslint-9-setup-guide.md provide concrete installation commands, flat-config examples, and guidance for using the recommended/strict presets, satisfying the UX and integration documentation criteria.
+- Error Handling: Rule-loading is wrapped in try/catch with console logging and a placeholder rule that reports a clear ESLint error, and this behavior is tested. CLI error handling is verified via an integration test that runs the real ESLint CLI and asserts non-zero exit and an appropriate error message. This aligns with REQ-ERROR-HANDLING and the Error Handling acceptance criterion.
+- Documentation: Internal dev guides for the plugin and custom rules exist and are referenced from the story. The project is structured as a TypeScript-based, publishable ESLint plugin with comprehensive tests, matching REQ-PLUGIN-STRUCTURE, REQ-ESLINT-COMPAT, REQ-RULE-REGISTRY, REQ-CONFIG-SYSTEM, REQ-NPM-PACKAGE, REQ-TYPESCRIPT, REQ-TEST-SETUP, and REQ-ERROR-HANDLING.
 
-Given the passing tests, inspected implementation, and up-to-date documentation, this story is fully satisfied.</notes>
+Given the passing targeted tests and the inspected implementation and documentation, the story is fully satisfied.</notes>
 </traceability>

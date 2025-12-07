@@ -2,18 +2,16 @@
 <traceability>
   <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T09:09:02.625Z</last_validated>
+  <last_validated>2025-12-07T10:06:02.668Z</last_validated>
   <last_modified>2025-12-04T21:56:14.194Z</last_modified>
-  <evidence>[object Object]</evidence>
-  <notes>All acceptance criteria for Story 020.0-DEV-TEST-ANNOTATION-VALIDATION are implemented and verified:
-- File-level annotations: enforced by `ensureFileSupportsAnnotation`, with clear error message and safe placeholder auto-fix; tested with missing/present cases.
-- Describe block story references: enforced via regex-based checks on `describe` descriptions; missing-story descriptions are reported; valid story-labelled describes are accepted.
-- Test name requirement prefixes: `it`/`test` names must start with `[REQ-...]`; violations are reported with `missingReqPrefix`, and malformed but recognizable prefixes are normalized safely in `--fix` mode.
-- Quality and ESLint best practices: rule defines `meta`, `schema`, and targeted messages; uses helpers for clarity; has dedicated RuleTester tests including auto-fix behavior.
-- Integration: rule is registered in the plugin, included in recommended/strict presets, and verified by integration tests.
-- Error messages: match the story’s examples and give actionable guidance for each violation type.
-- Framework support: the implementation recognizes `describe`, `it`, `test`, and `context`, and handles MemberExpression callees (e.g., `describe.each`), with tests explicitly covering `context` and standard Jest-style usage.
-- Documentation: README, API reference, and examples document the rule’s behavior, options, and expected test conventions. The test suite for this rule passes in the current project state.
-
-Given the concrete implementation, comprehensive tests, plugin integration, and documentation, this story is fully satisfied.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and named requirements for Story 020.0-DEV-TEST-ANNOTATION-VALIDATION are implemented and verified:
+- File-level @supports annotations on test files are enforced with clear error messages and an optional safe auto-fix template.
+- describe() (and related) calls are validated to contain a story reference based on a configurable regex pattern.
+- it()/test() names must begin with a [REQ-XXX] requirement prefix, with safe normalization for malformed but recognizable prefixes and no guessing of new IDs.
+- Test file detection is implemented via configurable path-substring patterns and tested to distinguish test from non-test files.
+- The rule supports Jest and Mocha-style APIs (describe/it/test/context, including member forms like describe.each) and handles nested describe blocks by enforcing the rule on all describe calls.
+- The rule is integrated into the plugin’s exports and both recommended and strict presets, and is documented in both README and API reference.
+- Dedicated unit tests for this rule, tied via @supports to this story, pass in the full Jest test run.
+Given this concrete evidence, the story is fully implemented and passing.</notes>
 </traceability>

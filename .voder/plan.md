@@ -1,16 +1,17 @@
 ## NOW
 
-- [ ] Review the dogfooding validation integration test file to understand which specific branches around the targeted lines are currently untested and what behaviors those branches are intended to handle.
+- [ ] Review the configurable patterns story’s Definition of Done to determine the first concrete behavior that is not yet fully implemented or tested and clarify exactly what change is required.
 
 ## NEXT
 
-- [ ] Identify concrete dogfooding scenarios that will exercise each currently uncovered branch, such as different rule enablement combinations or error conditions, and sketch the corresponding test cases in terms of inputs and expected outcomes.
-- [ ] Extend the dogfooding validation integration test with new test cases that cover those scenarios, making sure each new test clearly documents the requirement it supports and keeps existing behavior unchanged.
-- [ ] Run the full test suite conceptually against the updated tests to verify that all new scenarios pass and that the previously uncovered branches are now exercised without introducing regressions.
-- [ ] Refine any supporting fixtures or helper utilities used by the dogfooding tests if needed to keep them simple, deterministic, and aligned with the documented dogfooding requirements.
+- [ ] Inspect the existing implementation related to configurable patterns to understand how much of the required behavior is already present and where the remaining gaps are in code and tests.
+- [ ] Design the minimal additional behavior, configuration options, and validation logic needed to satisfy the first missing requirement from the configurable patterns story without breaking existing functionality.
+- [ ] Extend or add tests that precisely cover the new configurable patterns behavior, including both valid and invalid configurations, ensuring each test is clearly linked to the corresponding story requirements.
+- [ ] Implement the necessary code changes to support the new configurable patterns behavior, keeping the changes small, well-factored, and aligned with existing helper and configuration patterns.
+- [ ] Adjust or add any relevant user-facing and internal documentation so that the configurable patterns behavior, options, and examples match the final implementation and the story’s acceptance criteria.
 
 ## LATER
 
-- [ ] Perform a brief coverage-oriented review of the test suite to confirm that the new dogfooding tests have meaningfully increased branch coverage and to spot any remaining high-value gaps.
-- [ ] Update internal development documentation, if appropriate, to note the strengthened dogfooding coverage and describe the patterns used to add integration tests for new requirements.
-- [ ] Look for other complex integration paths related to dogfooding or traceability enforcement where similarly targeted tests could further improve confidence and observable behavior coverage.
+- [ ] Perform a focused coverage and branch-behavior review around the configurable patterns code paths to confirm that all important decision branches and error paths are exercised by tests.
+- [ ] Look for opportunities to refactor configurable-patterns-related helpers or configuration parsing into small, reusable units if the implementation starts to get complex, keeping the design easy to extend for future pattern-related stories.
+- [ ] Revisit related stories or features (such as other configuration-driven behaviors) to see whether they can reuse the new configurable patterns mechanisms, reducing duplication and ensuring consistent configuration semantics across the plugin and tools.

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md</specification>
-  <status>PASSED</status>
-  <last_validated>2025-12-07T09:06:15.738Z</last_validated>
+  <status>FAILED</status>
+  <last_validated>2025-12-07T10:05:50.464Z</last_validated>
   <last_modified>2025-12-04T18:44:42.530Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria for 010.1-DEV-CONFIGURABLE-PATTERNS are implemented and verified. The valid-annotation-format rule now supports both nested (story.pattern/req.pattern) and flat (storyPathPattern/requirementIdPattern) configuration options with corresponding example fields. Regex patterns are validated at configuration time with clear, stable error messages; invalid patterns are reported via invalidRuleConfiguration and the rule safely falls back to default patterns, preserving backward compatibility and auto-fix behavior. JSON Schema for the options is defined in getRuleSchema and used in rule meta, following ESLint best practices. Tests in tests/rules/valid-annotation-format.test.ts explicitly cover all listed requirements (configurable patterns, examples in messages, invalid regex handling, nested vs flat precedence, and fallback behavior), and the full Jest test suite passes. Documentation in docs/rules/valid-annotation-format.md provides clear nested and flat configuration examples and explains invalid configuration behavior, satisfying the documentation acceptance criterion and aligning with the existing valid-story-reference configuration model. No discrepancies between the story and the implementation were found.</notes>
+  <evidence>Assessment error: Assignment to constant variable.</evidence>
+  <notes>Technical error during assessment</notes>
 </traceability>
