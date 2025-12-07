@@ -3,8 +3,12 @@
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Cover additional branch cases in require-story-core (addStoryFixer/reportMissing)
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-AUTOFIX
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-RESILIENCE
  */
-import { createAddStoryFix } from "../../src/rules/helpers/require-story-core";
+import {
+  createAddStoryFix,
+  coreReportMissing,
+} from "../../src/rules/helpers/require-story-core";
 import {
   getAnnotationTemplate,
   reportMissing,
@@ -42,5 +46,39 @@ describe("Require Story Core (Story 003.0)", () => {
     const call = (context.report as jest.Mock).mock.calls[0][0];
     expect(call.node).toBe(node);
     expect(call.messageId).toBe("missingStory");
+  });
+
+  test("coreReportMissing swallows dependency errors and does not break lint run", () => {
+    const deps: any = {
+      hasStoryAnnotation: () => {
+        throw new Error("boom");
+      },
+      getReportedFunctionName: () => "fnX",
+      resolveAnnotationTargetNode: () => ({ type: "FunctionDeclaration" }),
+      getNameNodeForReport: (node: any) => node,
+      buildTemplateConfig: () => ({
+        effectiveTemplate:
+          "/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+        allowFix: true,
+      }),
+      extractName: () => "fnX",
+      getAnnotationTemplate: () =>
+        "/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+      shouldApplyAutoFix: () => true,
+      createAddStoryFix: () => () => ({}),
+      createMethodFix: () => () => ({}),
+    };
+
+    const context: any = {
+      report: jest.fn(),
+    };
+
+    const node: any = { type: "FunctionDeclaration" };
+
+    expect(() =>
+      coreReportMissing(deps, context as any, {} as any, { node }),
+    ).not.toThrow();
+
+    expect(context.report).not.toHaveBeenCalled();
   });
 });
