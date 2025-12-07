@@ -1,25 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <traceability>
   <specification>docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md</specification>
-  <status>FAILED</status>
-  <last_validated>2025-12-07T07:11:34.053Z</last_validated>
+  <status>PASSED</status>
+  <last_validated>2025-12-07T09:08:54.493Z</last_validated>
   <last_modified>2025-12-07T06:39:39.898Z</last_modified>
   <evidence>[object Object]</evidence>
-  <notes>The story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION is a concrete feature specification. Most of its requirements are clearly implemented and tested:
-
-- Dual-position detection for else-if branches (before-else vs between/inside block) is implemented in src/utils/branch-annotation-helpers.ts via gatherElseIfCommentText, scanElseIfPrecedingComments, scanElseIfBetweenConditionAndBody, and scanElseIfInsideBlockComments.
-- Position priority (favoring before-else comments) is enforced by checking beforeElseText first and only falling back when it lacks @story/@req markers.
-- Prettier-aware auto-fix for else-if with BlockStatement consequents is implemented in getBranchAnnotationInfo, which adjusts indent/insertPos to insert comments inside the block body, and is validated by tests/utils/branch-annotation-else-if-insert-position.test.ts.
-- Rule-level behavior for else-if branches (including Prettier-style auto-fix insertion and inside-block @supports) is covered by tests/rules/require-branch-annotation.test.ts.
-- Prettier integration tests for else-if exist (tests/integration/else-if-annotation-prettier.integration.test.ts) and, when enabled via an environment variable, validate that Prettier-formatted code passes the require-branch-annotation rule.
-- The rule documentation in docs/rules/require-branch-annotation.md explains the else-if annotation positions and references the relevant tests.
-
-However, the specific acceptance criterion and requirement for single-line else-if support remain unfulfilled:
-
-- The story’s Acceptance Criteria section explicitly leaves **Single-Line Support** unchecked, indicating that, from the author’s perspective, this part of the story is not yet done.
-- The requirement **REQ-SINGLE-LINE-ELSE-IF-SUPPORT** is listed in the story but does not appear in code comments or tests anywhere in the repository, indicating there is no traceable implementation or test coverage tied to that requirement.
-- All explicit else-if tests (unit, rule-level, and integration) focus on BlockStatement consequents and wrapped/formatter-driven layouts. There is no test that exercises the real-world pattern given in the story: an `else if` with no braces and a single statement, annotated as in the dry-aged-deps example.
-- While the current implementation likely still handles some single-line else-if cases via generic beforeText detection, this behavior is not explicitly verified against the requirement, and there is no dedicated test with story/requirement traceability for REQ-SINGLE-LINE-ELSE-IF-SUPPORT.
-
-Given the project’s emphasis on test-backed, traceable requirements and the explicit unchecked status of the Single-Line Support acceptance criterion, we cannot assert that all acceptance criteria are fully satisfied. Therefore, this story is assessed as FAILED: the core else-if/Prettier compatibility behavior is implemented and well-tested for block-style branches, but the specific Single-Line Support requirement for single-line else-if statements without braces is not demonstrably implemented and verified.</notes>
+  <notes>[object Object]</notes>
 </traceability>

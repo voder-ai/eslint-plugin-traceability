@@ -1,17 +1,15 @@
 ## NOW
 
-- [ ] Assess the current formatter integration tests and Jest configuration to determine whether any Prettier-related integration paths are still failing or flaky and to pinpoint exactly which scenarios need additional test coverage or fixes.
+- [ ] Review the branch annotation helper module to precisely identify the remaining duplicated logic in the formatter-aware branch handling code and decide on a small shared helper shape that can consolidate those behaviors without changing observable behavior.
 
 ## NEXT
 
-- [ ] Design and add focused integration tests that cover any uncovered or previously failing Prettier-driven formatting scenarios, ensuring they exercise the real CLI behavior and are fast, deterministic, and clearly annotated with the relevant story and requirement IDs.
-- [ ] Adjust or extend the formatter-integration helpers and rule logic, if needed, so that they behave correctly under the currently supported Prettier and Jest versions and so that the new integration tests pass reliably.
-- [ ] Run the full test suite to confirm that all Jest tests, including the formatter integration tests, complete successfully without Prettier-related errors or module-resolution issues and that coverage thresholds remain satisfied.
-- [ ] Review and, if necessary, refine the new formatter integration tests to reduce brittleness against harmless upstream Prettier formatting changes while still asserting the essential behavior and exit codes.
-- [ ] Update any relevant story documents and internal testing documentation to reflect the finalized formatter integration behavior, the new tests that cover it, and the confirmed support matrix for Node, Jest, and Prettier versions.
+- [ ] Introduce a new, well-named helper function in the branch annotation helper module that encapsulates the duplicated formatter-aware logic, including clear story and requirement annotations explaining its purpose.
+- [ ] Refactor the existing duplicated code sites to use the new helper function, ensuring inputs and outputs remain equivalent so that catch and else-if branch handling behavior does not change.
+- [ ] Revisit the existing branch-annotation helper tests for catch and else-if positions and insert positions to confirm they still exercise the refactored logic and add a targeted test if the new helper introduces any previously untested edge case.
 
 ## LATER
 
-- [ ] Perform a focused functionality review of the stories that depend on formatter-aware behavior (such as catch and else-if branch annotations) to confirm that they are now fully satisfied end to end, including their Prettier integration aspects.
-- [ ] Identify any remaining areas of the plugin that rely on external tooling behavior (other than Prettier) and add similar robust integration tests and documentation so those dependencies are equally well covered.
-- [ ] Once all formatter and external-tool integrations are stable, cross-check story requirements, implementation, tests, and user-facing documentation to ensure there are no undocumented behaviors and no documented behaviors lacking executable tests.
+- [ ] Re-run a duplication-focused review of the codebase to confirm that the branch annotation helper refactor has eliminated the identified duplicate block and to see if any similar micro-duplication remains worth addressing in future iterations.
+- [ ] Update any relevant internal documentation or decision records, if needed, to briefly note the consolidation of formatter-aware branch helper logic and its rationale for maintainability.
+- [ ] Look for other highly cohesive helper modules in the rules and utilities where small, behavior-preserving refactors could further reduce duplication and improve clarity without impacting existing story-aligned behavior.
