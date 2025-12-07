@@ -2,8 +2,25 @@
 <traceability>
   <specification>docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T06:50:23.707Z</last_validated>
+  <last_validated>2025-12-07T07:10:18.367Z</last_validated>
   <last_modified>2025-12-04T18:44:42.530Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and technical requirements in docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md are fully implemented. The valid-annotation-format rule now supports configurable story and requirement patterns and examples via both nested and flat options, validates regex sources and reports configuration errors while falling back to safe defaults, integrates cleanly with ESLint’s schema system, and is thoroughly tested and documented. The full Jest suite, including all tests tied to this story, passes, so the story is considered complete.</notes>
+  <notes>The story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md defines configurable patterns and examples for the valid-annotation-format rule, with specific requirements around custom regex patterns for story paths and requirement IDs, validation of those patterns, backward compatibility when options are omitted or invalid, example strings in error messages, JSON Schema validation for configuration, consistency with the valid-story-reference rule’s storyDirectories configuration, and thorough testing.
+
+Implementation is present and clearly tied to this story via traceability annotations:
+- src/rules/helpers/valid-annotation-options.ts introduces both nested (story.pattern, story.example, req.pattern, req.example) and flat (storyPathPattern, storyPathExample, requirementIdPattern, requirementIdExample) configuration options, resolves them into RegExp and example strings with defaults, validates regex patterns (catching invalid patterns and accumulating optionErrors), and defines a JSON Schema used by the valid-annotation-format rule. This directly fulfills REQ-PATTERN-CONFIG, REQ-REGEX-VALIDATION, REQ-BACKWARD-COMPAT, REQ-EXAMPLE-MESSAGES, and REQ-SCHEMA-VALIDATION.
+- src/rules/valid-annotation-format.ts wires the schema and option resolution into the ESLint rule metadata and runtime behavior, surfaces invalid regex configurations via invalidRuleConfiguration diagnostics without breaking annotation validation, and uses the resolved options for all subsequent checks, satisfying the pattern validation and backward compatibility aspects of the story.
+- src/rules/helpers/valid-annotation-format-validators.ts and src/rules/helpers/valid-annotation-utils.ts use ResolvedAnnotationOptions to validate @story and @req values against the configured patterns and construct error messages that include whichever example strings are configured (falling back to defaults when none are provided). This implements REQ-EXAMPLE-MESSAGES and ensures that custom patterns meaningfully affect both validation and messaging.
+
+Tests in tests/rules/valid-annotation-format.test.ts comprehensively cover all the acceptance criteria for this story. They verify that:
+- Custom nested and flat patterns for story and requirement IDs are honored (core functionality).
+- Invalid regex sources in both nested and flat fields are reported as configuration errors while the rule continues to function using default patterns (pattern validation + backward compatibility).
+- Custom example strings appear in error messages and nested configuration overrides flat shorthand settings (error messages and precedence rules).
+- When no custom patterns are provided, behavior is identical to the original hardcoded patterns, as evidenced by unchanged core format tests and by tests that explicitly assert default examples in error messages.
+
+Additional configuration tests in tests/config/eslint-config-validation.test.ts confirm that the JSON Schema for rule options is correctly defined and enforced, supporting REQ-SCHEMA-VALIDATION. The valid-story-reference rule and its tests independently handle storyDirectories and file existence checks; combined with the configurable patterns in valid-annotation-format, they allow projects to align annotation format validation with whatever directories are configured for story resolution, satisfying the integration/consistency acceptance criterion.
+
+User-facing documentation in user-docs/api-reference.md documents the nested and flat configuration shapes for valid-annotation-format, including storyPathPattern, requirementIdPattern, storyPathExample, and requirementIdExample, along with behavior notes about regex validity, default behavior when options are omitted, and how these options interact with existing suffix-normalization auto-fix behavior. This fulfills the documentation acceptance criterion.
+
+All relevant Jest suites for this feature, especially tests/rules/valid-annotation-format.test.ts, pass in the latest npm test -- --runInBand --verbose run. No discrepancies were found between the story’s acceptance criteria and the current implementation and tests. Therefore, this story is fully implemented and validated.</notes>
 </traceability>

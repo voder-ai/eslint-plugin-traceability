@@ -2,17 +2,18 @@
 <traceability>
   <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T06:51:24.340Z</last_validated>
+  <last_validated>2025-12-07T07:10:18.836Z</last_validated>
   <last_modified>2025-12-04T21:56:14.194Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
   <notes>All acceptance criteria for Story 020.0-DEV-TEST-ANNOTATION-VALIDATION are implemented and verified:
-- File-level @supports in test files enforced with clear error and safe auto-fix.
-- describe()/context() descriptions required to reference stories using a configurable pattern.
-- it()/test() names required to start with [REQ-...] prefixes, with robust normalization of malformed but recognizable prefixes.
-- Rule integrates cleanly into the plugin (included in rules, severities, recommended/strict configs).
-- Behavior is documented in README and user-docs/api-reference.md, including all configuration options described in the story.
-- Framework compatibility (Jest, Mocha) and nested describe handling are implemented via generic CallExpression handling and support for describe/it/test/context (including member forms).
-- Correctness and interactions with existing annotation/story/requirement validation rules ensure @supports annotations in test files are both present and valid. All associated tests pass in the current Jest run.
+- **File-Level Annotations**: `ensureFileSupportsAnnotation` enforces a file-level `@supports` in test files, with clear error messaging and optional `--fix` insertion of a placeholder template (tested via `missingFileSupports`).
+- **Describe Block Story References**: `handleDescribeCall` plus `describePattern` ensure `describe()` descriptions contain a story reference by regex; missing cases are reported with `missingDescribeStory`, and both valid and invalid behaviors are covered in tests.
+- **Test Name Requirement Prefixes**: `handleItOrTestCall` enforces `[REQ-XXX]` prefixes for `it`/`test`, reports `missingReqPrefix`, and normalizes malformed prefixes when safe; all major variants are covered by tests.
+- **Quality Standards**: The rule follows ESLint best practices (typed `meta`, schema, message IDs, limited scope, efficient detection based on filename substrings and simple regex/string ops). It’s fully unit-tested and integrated with the plugin’s presets.
+- **Integration**: The rule is registered in the plugin’s `rules` map, added to the central severity map, and enabled in both `recommended` and `strict` flat-config presets exposed by `src/index.ts`.
+- **Error Messages**: Messages are clear, match the examples given in the story, and are verified via tests using the corresponding `messageId`s.
+- **Framework Support**: The implementation supports Jest, Mocha, Jasmine-style APIs (`describe`, `it`, `test`, `context`) and member-call variants like `describe.each`, fulfilling REQ-TEST-FRAMEWORK-COMPAT.
+- **Documentation**: `user-docs/api-reference.md` contains a dedicated, detailed section for `traceability/require-test-traceability`, including description, options, behavior notes, and examples.
 
-Therefore this story is fully implemented and passes.</notes>
+Given the existing dependent rules (annotation format, file validation, deep requirement validation) and the targeted tests for this rule, Story 020.0 is fully implemented and passing all relevant tests.</notes>
 </traceability>

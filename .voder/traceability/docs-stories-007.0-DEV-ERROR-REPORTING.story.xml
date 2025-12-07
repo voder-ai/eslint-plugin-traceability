@@ -2,26 +2,15 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T06:51:21.270Z</last_validated>
+  <last_validated>2025-12-07T07:08:55.220Z</last_validated>
   <last_modified>2025-12-04T18:44:42.517Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story docs/stories/007.0-DEV-ERROR-REPORTING.story.md is a concrete specification for cross-rule error message behavior and conventions.
+  <notes>The story 007.0-DEV-ERROR-REPORTING is fully implemented and verified:
+- Every relevant rule defines clear, specific, and consistent error message templates using ESLint’s `meta.messages` with placeholders (e.g., `{{name}}`, `{{functionName}}`, `{{missing}}`, `{{details}}`, `{{path}}`, `{{reqId}}`, `{{storyPath}}`).
+- Tests assert not only that errors are raised, but that the correct `messageId` and `data` payloads are provided, and in the case of `require-story-annotation` they also verify ESLint suggestions (desc + fix function) are wired correctly.
+- File and requirement reference rules distinguish between missing entities and filesystem/configuration failures, reporting appropriate, contextual messages and never throwing uncaught errors.
+- Error severities align with ESLint best practices (rules are `type: 'problem'` and `recommended: 'error'` where appropriate), and annotation format issues are reported as problems but are clearly labeled and, when safe, auto-fixable.
+- All tests that reference this story and its requirements pass under the current test run.
 
-Implementation across the ruleset matches the story:
-- All key rules define specific, actionable meta.messages with appropriate placeholders and ESLint-idiomatic messageIds:
-  - traceability/require-story-annotation: missingStory with a clear, imperative message and ESLint suggestions; tests confirm messageId, data ({ name, functionName }) and suggest behavior (REQ-ERROR-SPECIFIC, REQ-ERROR-SUGGESTION, REQ-ERROR-CONTEXT, REQ-ERROR-LOCATION).
-  - traceability/require-req-annotation: missingReq uses the {{functionName}} placeholder, explains how to add @req, and is configured as an error, aligning with REQ-ERROR-SPECIFIC, REQ-ERROR-SUGGESTION, REQ-ERROR-SEVERITY.
-  - traceability/require-branch-annotation: missingAnnotation follows the shared branch pattern "Branch is missing required annotation: {{missing}}.", satisfying branch-related conventions and consistency.
-  - traceability/valid-annotation-format: invalid*Format messages all use the shared "Invalid annotation format: {{details}}." pattern, exposing detailed context about what’s wrong with @story, @req, or @supports content.
-  - traceability/valid-story-reference and traceability/valid-req-reference: messages clearly distinguish missing files, invalid extensions, unsafe paths, filesystem errors, and missing requirement IDs, each including the relevant path/ID placeholders and explanatory wording.
-
-The dedicated story-specific test suite tests/rules/error-reporting.test.ts directly validates the core requirements for require-story-annotation, and the broader rule test suites validate the others. A full Jest run (npm test -- --verbose) passes, including this suite, demonstrating that all specified behaviors remain intact.
-
-The acceptance criteria are therefore satisfied:
-- Core Functionality & Quality Standards: every validation rule has non-generic, ESLint-style messages via meta.messages and messageIds.
-- Integration & User Experience: integration tests confirm messages propagate correctly through ESLint CLI and typical usage, and messages include problem description, function/branch context, and suggested fixes where applicable.
-- Error Handling: valid-story-reference and related helpers distinguish missing files vs filesystem errors and handle boundary cases gracefully; valid-annotation-format surfaces config regex issues via a dedicated invalidRuleConfiguration message.
-- Documentation: this story itself documents the conventions and current rule implementations, and the code is annotated with @story/@req/@supports tags tying behavior back to the story.
-
-Given the aligned implementations, targeted tests referencing this story, and a passing full test run, this story is fully implemented and currently working as specified.</notes>
+Given this concrete evidence across rule implementations, focused test suites, and a clean test run, all acceptance criteria and requirements for docs/stories/007.0-DEV-ERROR-REPORTING.story.md are satisfied.</notes>
 </traceability>

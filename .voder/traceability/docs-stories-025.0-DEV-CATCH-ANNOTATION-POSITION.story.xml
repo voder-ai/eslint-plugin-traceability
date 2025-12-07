@@ -2,16 +2,158 @@
 <traceability>
   <specification>docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T06:50:27.445Z</last_validated>
+  <last_validated>2025-12-07T07:09:25.937Z</last_validated>
   <last_modified>2025-12-06T21:35:50.287Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria for Story 025.0-DEV-CATCH-ANNOTATION-POSITION are fully implemented and validated:
-- Dual-position detection and fallback for CatchClause annotations is implemented via gatherCatchClauseCommentText and wired through gatherBranchCommentText and getBranchAnnotationInfo.
-- Priority is given to annotations before the catch keyword; inside-catch comments are used as a fallback when before-catch annotations are absent.
-- Auto-fix for CatchClause places annotations inside the catch block body at the first statement’s line/indent, making them stable under Prettier.
-- Prettier integration tests confirm that code formatted with Prettier (both before-catch and inside-catch annotations, including empty catch blocks) passes the require-branch-annotation rule.
-- Rule-level tests and the full Jest suite passing provide strong evidence of no regressions for other branch types.
-- Rule documentation explicitly explains CatchClause annotation positions, Prettier compatibility, and mentions the supporting test suites.
+  <evidence>1) Test execution
+- Command run: `npm test -- --runInBand --verbose`
+- All suites passed, including those directly tied to this story:
+  - tests/utils/branch-annotation-catch-position.test.ts
+    • "gatherBranchCommentText CatchClause behavior (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)"
+    • ✓ [REQ-DUAL-POSITION-DETECTION] prefers before-catch annotations when present
+    • ✓ [REQ-FALLBACK-LOGIC] falls back to inside-catch annotations when before-catch is missing
+    • ✓ [REQ-FALLBACK-LOGIC] returns before-catch text when getCommentsInside is not available
+    • ✓ [REQ-FALLBACK-LOGIC] collects inside-catch comments using line-based fallback when getCommentsInside is unavailable
 
-Based on the concrete code, tests, and documentation, this story is fully satisfied.</notes>
+  - tests/utils/branch-annotation-catch-insert-position.test.ts
+    • "CatchClause insert position (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)"
+    • ✓ [REQ-PRETTIER-AUTOFIX] inserts annotations at the first statement inside the catch body
+
+  - tests/integration/catch-annotation-prettier.integration.test.ts
+    • "CatchClause annotations with Prettier (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)"
+    • ✓ [REQ-PRETTIER-COMPATIBILITY-BEFORE]
+    • ✓ [REQ-PRETTIER-COMPATIBILITY-INSIDE]
+    • ✓ [REQ-PRETTIER-COMPATIBILITY-EMPTY]
+
+  - tests/rules/require-branch-annotation.test.ts
+    • Contains valid and invalid try/catch cases, verifying CatchClause is enforced and that other branch types still behave correctly.
+
+2) Implementation details
+- File: src/utils/branch-annotation-helpers.ts
+
+  a) Dual-position detection and fallback (REQ-DUAL-POSITION-DETECTION, REQ-FALLBACK-LOGIC, REQ-POSITION-PRIORITY)
+  - gatherBranchCommentText(..):
+    - Gets `beforeComments = sourceCode.getCommentsBefore(node)` and joins them into `beforeText`.
+    - For `node.type === "CatchClause"`, delegates to `gatherCatchClauseCommentText(sourceCode, node, beforeText)`.
+
+  - gatherCatchClauseCommentText(..):
+    ```ts
+    function gatherCatchClauseCommentText(sourceCode, node, beforeText): string {
+      // Priority: if beforeText already has @story or @req, use it
+      if (/@story\b/.test(beforeText) || /@req\b/.test(beforeText)) {
+        return beforeText; // REQ-POSITION-PRIORITY
+      }
+
+      // Fallback 1: token-based inside comments, via getCommentsInside(node.body)
+      const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
+      if (node.body && typeof getCommentsInside === "function") {
+        try {
+          const insideComments = (getCommentsInside as (_node: any) => any[])(node.body) || [];
+          const insideText = insideComments.map(extractCommentValue).join(" ");
+          if (insideText) {
+            return insideText; // REQ-FALLBACK-LOGIC
+          }
+        } catch {
+          // fall through to line-based fallback
+        }
+      }
+
+      // Fallback 2: line-based scan of first comment-only lines inside node.body
+      if (node.body && node.body.loc && node.body.loc.start && node.body.loc.end) {
+        const lines = sourceCode.lines;
+        const startIndex = node.body.loc.start.line - 1;
+        const endIndex = node.body.loc.end.line - 1;
+        const comments: string[] = [];
+        let i = startIndex + 1;
+
+        while (i <= endIndex) {
+          if (!collectCommentLine(lines, i, comments)) {
+            break;
+          }
+          i++;
+        }
+
+        const insideText = comments.join(" ");
+        if (insideText) {
+          return insideText; // REQ-FALLBACK-LOGIC
+        }
+      }
+
+      // If nothing found inside, fall back to beforeText (even if empty)
+      return beforeText;
+    }
+    ```
+  - This covers:
+    • Checking before-catch comments.
+    • If those don’t contain annotations, scanning inside the catch block via getCommentsInside.
+    • If getCommentsInside is unavailable or empty, scanning the first comment-only lines inside the block.
+    • Preferring before-catch text when it already contains @story/@req.
+
+  b) Autofix position inside catch body (REQ-PRETTIER-AUTOFIX)
+  - getBaseBranchIndentAndInsertPos(..):
+    ```ts
+    if (node.type === "CatchClause" && node.body) {
+      const bodyNode: any = node.body;
+      const bodyStatements: any[] | undefined = Array.isArray(bodyNode.body)
+        ? bodyNode.body
+        : undefined;
+      const firstStatement: any | undefined =
+        bodyStatements && bodyStatements.length > 0
+          ? bodyStatements[0]
+          : undefined;
+
+      if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
+        const firstLine = firstStatement.loc.start.line;
+        const innerIndent =
+          sourceCode.lines[firstLine - 1].match(/^(\s*)/)?.[1] || "";
+        indent = innerIndent;
+        insertPos = sourceCode.getIndexFromLoc({ line: firstLine, column: 0 });
+      } else if (bodyNode.loc && bodyNode.loc.start) {
+        const blockLine = bodyNode.loc.start.line;
+        const blockIndent =
+          sourceCode.lines[blockLine - 1].match(/^(\s*)/)?.[1] || "";
+        const innerIndent = `${blockIndent}  `;
+        indent = innerIndent;
+        insertPos = sourceCode.getIndexFromLoc({ line: blockLine, column: 0 });
+      }
+    }
+    ```
+  - reportMissingStory/reportMissingReq use this indent/insertPos to insert `// @story ...` and `// @req ...`.
+  - For CatchClause this results in annotations inserted as the first comment-only line inside the body, aligned with the inner indentation—precisely what Prettier will preserve.
+
+  c) Rule integration (IMPL-BRANCH-ANNOTATION-INFO, IMPL-CATCHCLAUSE-HANDLER)
+  - getBranchAnnotationInfo(..) calls gatherBranchCommentText(..) for all branch nodes—including CatchClause—so the dual-position logic is fully respected when deciding missingStory/missingReq and autofix placement.
+  - src/rules/require-branch-annotation.ts uses DEFAULT_BRANCH_TYPES (which includes CatchClause) and reportMissingAnnotations on each configured branch type.
+
+3) Tests exercising each requirement
+- REQ-DUAL-POSITION-DETECTION & REQ-POSITION-PRIORITY:
+  - tests/utils/branch-annotation-catch-position.test.ts
+    • First test has annotations both before and inside; gatherBranchCommentText returns the before-catch annotations.
+
+- REQ-FALLBACK-LOGIC:
+  - Same file tests:
+    • Inside-only comments via getCommentsInside.
+    • Behavior when getCommentsInside is not available, including line-based scanning inside the block.
+
+- REQ-PRETTIER-AUTOFIX:
+  - tests/utils/branch-annotation-catch-insert-position.test.ts confirms:
+    • reportMissingAnnotations inserts the fixer range at the index corresponding to the first statement in the catch body.
+    • Inserted text starts with the inner indentation of that line.
+
+- REQ-PRETTIER-COMPATIBILITY:
+  - tests/integration/catch-annotation-prettier.integration.test.ts runs real Prettier + ESLint:
+    • Before-catch annotations that Prettier moves inside still validate (status 0).
+    • Inside-written annotations remain valid after formatting (status 0).
+    • Empty catch with inside annotations passes.
+
+- No Regression:
+  - tests/rules/require-branch-annotation.test.ts continues to validate try/catch behavior and other branches (if/switch/loops) without failures.
+
+4) Documentation
+- user-docs/api-reference.md (traceability/require-branch-annotation section) explicitly documents CatchClause behavior:
+  - Valid locations: immediately before `catch` OR first comment-only lines inside the catch block.
+  - If annotations exist in both locations, before-catch comments take precedence.
+  - Auto-fix inserts annotations inside the catch block so formatters like Prettier keep them attached.
+- This matches the story’s Documentation acceptance criterion and the actual implementation.
+</evidence>
+  <notes>All functional acceptance criteria for docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md are implemented and verified. The plugin now (1) detects CatchClause annotations both before the catch keyword and as the first comments inside the catch body, with a clear precedence for before-catch comments, (2) falls back correctly when getCommentsInside is missing or empty, (3) places auto-fix annotations inside the catch block at a Prettier-stable position, (4) passes real Prettier+ESLint integration tests, and (5) documents these behaviors in the user-facing API reference. All relevant unit, rule-level, and integration tests pass, and existing branch behavior for other constructs remains intact. Therefore this story is fully implemented and passes.</notes>
 </traceability>
