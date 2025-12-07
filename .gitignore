@@ -150,6 +150,7 @@ jscpd-report/
 .voder-secretlint.json
 .voder-test-output.json
 .voder-jscpd-report/
+.voder/traceability/
 
 # Generated CI/script reports
 scripts/eslint-suppressions-report.md
