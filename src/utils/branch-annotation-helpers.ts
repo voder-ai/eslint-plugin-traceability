@@ -530,16 +530,43 @@ export function reportMissingReq(
  * @supports REQ-ANNOTATION-PARSING
  * @supports REQ-DUAL-POSITION-DETECTION
  */
+/**
+ * Compute indentation and insert position for the start of a given 1-based line
+ * number. This keeps indentation and fixer insert positions consistent across
+ * branch helpers that need to align auto-inserted comments with existing
+ * source formatting.
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ANNOTATION-PARSING
+ */
+function getIndentAndInsertPosForLine(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  line: number,
+  fallbackIndent: string,
+): { indent: string; insertPos: number } {
+  const lines = sourceCode.lines;
+  let indent = fallbackIndent;
+
+  if (line >= 1 && line <= lines.length) {
+    const rawLine = lines[line - 1];
+    indent = rawLine.match(/^(\s*)/)?.[1] || fallbackIndent;
+  }
+
+  const insertPos = sourceCode.getIndexFromLoc({
+    line,
+    column: 0,
+  });
+
+  return { indent, insertPos };
+}
+
 function getBaseBranchIndentAndInsertPos(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
 ): { indent: string; insertPos: number } {
-  let indent =
-    sourceCode.lines[node.loc.start.line - 1].match(/^(\s*)/)?.[1] || "";
-  let insertPos = sourceCode.getIndexFromLoc({
-    line: node.loc.start.line,
-    column: 0,
-  });
+  let { indent, insertPos } = getIndentAndInsertPosForLine(
+    sourceCode,
+    node.loc.start.line,
+    "",
+  );
 
   if (node.type === "CatchClause" && node.body) {
     const bodyNode: any = node.body;
@@ -553,23 +580,25 @@ function getBaseBranchIndentAndInsertPos(
 
     if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
       const firstLine = firstStatement.loc.start.line;
-      const innerIndent =
-        sourceCode.lines[firstLine - 1].match(/^(\s*)/)?.[1] || "";
-      indent = innerIndent;
-      insertPos = sourceCode.getIndexFromLoc({
-        line: firstLine,
-        column: 0,
-      });
+      const firstLineInfo = getIndentAndInsertPosForLine(
+        sourceCode,
+        firstLine,
+        "",
+      );
+
+      indent = firstLineInfo.indent;
+      insertPos = firstLineInfo.insertPos;
     } else if (bodyNode.loc && bodyNode.loc.start) {
       const blockLine = bodyNode.loc.start.line;
-      const blockIndent =
-        sourceCode.lines[blockLine - 1].match(/^(\s*)/)?.[1] || "";
-      const innerIndent = `${blockIndent}  `;
+      const blockLineInfo = getIndentAndInsertPosForLine(
+        sourceCode,
+        blockLine,
+        "",
+      );
+      const innerIndent = `${blockLineInfo.indent}  `;
+
       indent = innerIndent;
-      insertPos = sourceCode.getIndexFromLoc({
-        line: blockLine,
-        column: 0,
-      });
+      insertPos = blockLineInfo.insertPos;
     }
   }
 
@@ -611,14 +640,14 @@ function getBranchAnnotationInfo(
     // For else-if blocks, align auto-fix comments with Prettier's tendency to place comments
     // inside the wrapped block body; non-block consequents intentionally keep the default behavior.
     const commentLine = node.consequent.loc.start.line + 1;
-    const commentIndent =
-      sourceCode.lines[commentLine - 1]?.match(/^(\s*)/)?.[1] || indent;
+    const commentLineInfo = getIndentAndInsertPosForLine(
+      sourceCode,
+      commentLine,
+      indent,
+    );
 
-    indent = commentIndent;
-    insertPos = sourceCode.getIndexFromLoc({
-      line: commentLine,
-      column: 0,
-    });
+    indent = commentLineInfo.indent;
+    insertPos = commentLineInfo.insertPos;
   }
 
   return { missingStory, missingReq, indent, insertPos };
