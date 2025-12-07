@@ -1,17 +1,15 @@
 ## NOW
 
-- [ ] Review the branch-annotations story document to extract the “First Action” steps and the exact requirements for treating @supports annotations as a valid alternative to @story/@req on branches.
+- [ ] Clarify the exact desired behaviors for idempotent auto-fix and single-application of fixes in the auto-fix story by reviewing the Story 008.0 specification and the existing auto-fix behavior tests, and sketching concrete before/after examples that these requirements must satisfy.
 
 ## NEXT
 
-- [ ] Analyze the current implementation of the branch-annotation rule and its helper functions to understand exactly how branch comments are inspected and how @story and @req markers are currently detected.
-- [ ] Design an extension to the branch-annotation detection logic so that a well-formed @supports annotation on a branch comment is treated as satisfying the story and requirement annotation requirements without breaking existing @story/@req behavior.
-- [ ] Update the branch-annotation rule and any related helper utilities to implement the new @supports handling in line with the story’s acceptance criteria and traceability annotations.
-- [ ] Create or extend unit and integration tests for the branch-annotation rule to cover branches annotated only with @supports, including simple if/else, catch, and else-if scenarios, ensuring tests clearly reference the relevant requirements from the story.
-- [ ] Revise the rule documentation and user-facing API reference to document that @supports is accepted as an alternative branch annotation format, and cross-check the story’s Definition of Done to confirm all its acceptance criteria are now met.
+- [ ] Design additional test cases that exercise running the relevant auto-fix rules multiple times on the same source file to prove idempotency and to ensure that a single violation cannot produce multiple placeholder annotations, then add these tests to the existing auto-fix behavior test suite for the story.
+- [ ] Update the auto-fix implementations in the affected rules and helper utilities so that they satisfy the new idempotency and no-duplicate-fix requirements while preserving all currently tested behavior for other auto-fix scenarios.
+- [ ] Refine the new and existing auto-fix tests, if needed, to ensure they clearly document the intended behavior, remain deterministic, and explicitly reference the REQ-AUTOFIX-IDEMPOTENT and REQ-AUTOFIX-SINGLE-APPLICATION requirements from the story.
+- [ ] Once the behavior and tests are stable, update the Story 008.0 document to tick the remaining acceptance-criteria checkboxes, add brief implementation notes for the new requirements, and confirm that the Definition of Done is fully met for this story.
 
 ## LATER
 
-- [ ] Identify and review the other stories marked as incomplete in the functionality assessment to understand their specific remaining gaps.
-- [ ] For each remaining incomplete story, create a similar focused implementation and testing plan to close the documented gaps while preserving existing behavior.
-- [ ] After all failing stories are addressed, perform a final pass over stories, tests, and rule implementations to confirm that every documented requirement has corresponding test coverage and that functionality is fully aligned with the specifications.
+- [ ] Identify any other stories still marked as incomplete in the functionality assessment and, one by one, repeat the pattern of clarifying remaining requirements, adding focused tests, and adjusting implementations until each story’s Definition of Done is satisfied.
+- [ ] After all outstanding stories are completed, perform a cross-check between all story requirements, traceability annotations in the code and tests, and the user-facing documentation to verify that each documented behavior has both an implementation and test coverage, and that no implemented behavior is missing a story reference.

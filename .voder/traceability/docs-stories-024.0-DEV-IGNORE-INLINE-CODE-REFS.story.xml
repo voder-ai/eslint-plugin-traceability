@@ -2,8 +2,16 @@
 <traceability>
   <specification>docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T06:20:28.005Z</last_validated>
+  <last_validated>2025-12-07T06:50:49.866Z</last_validated>
   <last_modified>2025-12-06T14:46:37.163Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story 024.0-DEV-IGNORE-INLINE-CODE-REFS is fully implemented. `normalizeCommentLine` centrally strips backtick-wrapped content with a length-preserving replacement (REQ-IGNORE-INLINE-CODE, REQ-PRESERVE-BOUNDARIES, REQ-CENTRALIZED-FILTER). Unit tests in `tests/rules/valid-annotation-format-internal.test.ts` exercise the required scenarios: ignoring inline-code `@story`/`@req`, handling documentation patterns like `` `@story` + `@req` ``, correctly preserving and detecting real annotations that appear outside backticks, handling multiple backtick segments, and preserving behavior on lines without backticks. All Jest tests, including these, pass in the latest run, satisfying the no-regression criterion. The behavior is also clearly documented in the JSDoc for `normalizeCommentLine`. Therefore all acceptance criteria for this story are met.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All specified requirements for 024.0-DEV-IGNORE-INLINE-CODE-REFS are implemented and verified:
+- Backtick-wrapped annotation keywords are stripped via /`[^`]*`/g and replaced with spaces of equal length before annotation detection (REQ-IGNORE-INLINE-CODE, REQ-PRESERVE-BOUNDARIES).
+- Filtering is implemented centrally in normalizeCommentLine in valid-annotation-format-internal.ts and is used by the annotation validation logic, fulfilling REQ-CENTRALIZED-FILTER and IMPL-NORMALIZE-COMMENT.
+- Tests in tests/rules/valid-annotation-format-internal.test.ts explicitly cover documentation-style patterns (e.g., "`@story` + `@req`"), ensure they do not produce detectable annotations, and verify that real annotations outside backticks are still detected.
+- Multiple backtick spans on the same line, and lines without backticks, are covered by tests; behavior is line-based, so multi-line comments are handled by applying the same normalization per line.
+- All Jest tests pass (npm test -- --verbose), demonstrating no regressions.
+- The behavior and rationale are documented in the normalizeCommentLine JSDoc, and the story file itself provides further explanation.
+
+Given this concrete implementation and passing, story-specific tests, the story is fully satisfied.</notes>
 </traceability>

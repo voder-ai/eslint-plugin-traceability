@@ -3,7 +3,9 @@
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
  * @req REQ-AUTOFIX-MISSING - Verify ESLint --fix automatically adds missing @story annotations to functions
  * @req REQ-AUTOFIX-FORMAT - Verify ESLint --fix corrects simple annotation format issues for @story annotations
- * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-FORMAT
+ * @req REQ-AUTOFIX-IDEMPOTENT - Verify ESLint --fix is idempotent and produces no changes on subsequent runs
+ * @req REQ-AUTOFIX-SINGLE-APPLICATION - Verify ESLint --fix does not apply the same fix multiple times or create duplicate annotations
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-FORMAT REQ-AUTOFIX-IDEMPOTENT REQ-AUTOFIX-SINGLE-APPLICATION
  */
 import { RuleTester } from "eslint";
 import requireStoryRule from "../../src/rules/require-story-annotation";
@@ -189,6 +191,100 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
                 autoFix: false,
               },
             ],
+            errors: [
+              {
+                messageId: "invalidStoryFormat",
+              },
+            ],
+          },
+        ],
+      },
+    );
+  });
+
+  describe("[REQ-AUTOFIX-IDEMPOTENT] and [REQ-AUTOFIX-SINGLE-APPLICATION] require-story-annotation", () => {
+    functionRuleTester.run(
+      "require-story-annotation --fix idempotent behavior",
+      requireStoryRule,
+      {
+        valid: [
+          {
+            name: "[REQ-AUTOFIX-IDEMPOTENT] second run on already fixed function produces no changes",
+            code: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction fixedOnce() {}`,
+          },
+          {
+            name: "[REQ-AUTOFIX-SINGLE-APPLICATION] already annotated code does not receive duplicate annotations",
+            code: `class E {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
+          },
+        ],
+        invalid: [
+          {
+            name: "[REQ-AUTOFIX-IDEMPOTENT] first run adds annotation; subsequent run is a no-op for function declarations",
+            code: `function needsFixOnce() {}`,
+            output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction needsFixOnce() {}`,
+            errors: [
+              {
+                messageId: "missingStory",
+                suggestions: [
+                  {
+                    desc: "Add JSDoc @story annotation for function 'needsFixOnce', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                    output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction needsFixOnce() {}`,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            name: "[REQ-AUTOFIX-SINGLE-APPLICATION] does not duplicate annotations for class methods on subsequent runs",
+            code: `class F {\n  method() {}\n}`,
+            output: `class F {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
+            errors: [
+              {
+                messageId: "missingStory",
+                suggestions: [
+                  {
+                    desc: "Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                    output: `class F {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    );
+  });
+
+  describe("[REQ-AUTOFIX-IDEMPOTENT] and [REQ-AUTOFIX-SINGLE-APPLICATION] valid-annotation-format", () => {
+    formatRuleTester.run(
+      "valid-annotation-format --fix idempotent behavior",
+      validAnnotationFormatRule as any,
+      {
+        valid: [
+          {
+            name: "[REQ-AUTOFIX-IDEMPOTENT] second run after suffix normalization produces no changes",
+            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+          },
+          {
+            name: "[REQ-AUTOFIX-SINGLE-APPLICATION] already-correct suffix is not altered or extended again",
+            code: `// @story docs/stories/005.0-DEV-EXAMPLE.story.md`,
+          },
+        ],
+        invalid: [
+          {
+            name: "[REQ-AUTOFIX-IDEMPOTENT] adds .story.md once; subsequent run sees no further change",
+            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION`,
+            output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
+            errors: [
+              {
+                messageId: "invalidStoryFormat",
+              },
+            ],
+          },
+          {
+            name: "[REQ-AUTOFIX-SINGLE-APPLICATION] converts .story to .story.md only once and does not double-append",
+            code: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story`,
+            output: `// @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md`,
             errors: [
               {
                 messageId: "invalidStoryFormat",

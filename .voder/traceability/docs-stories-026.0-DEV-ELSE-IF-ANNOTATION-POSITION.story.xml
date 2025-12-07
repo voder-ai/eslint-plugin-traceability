@@ -2,131 +2,73 @@
 <traceability>
   <specification>docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-12-07T06:23:36.801Z</last_validated>
-  <last_modified>2025-12-07T04:13:17.491Z</last_modified>
-  <evidence>Story file confirms the requirements and shows Single-Line Support is explicitly NOT done:
-- File: docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
-- Acceptance Criteria section:
-  - [x] Before-Else Position
-  - [x] After-Condition Position
-  - [ ] Single-Line Support (unchecked)
-  - [x] Prettier Compatibility
-  - [x] Position Priority
-  - [x] Auto-Fix Compatibility
-  - [x] No Regression
-  - [x] Documentation
-- Requirements list includes **REQ-SINGLE-LINE-ELSE-IF-SUPPORT**:
-  - "Support annotation detection for single-line else-if statements without braces (not just BlockStatement)",Core implementation for else-if annotation positions is present:
-- File: src/utils/branch-annotation-helpers.ts
-- Else-if detection helper:
-  - function isElseIfBranch(node, parent) checks IfStatement whose parent.alternate === node
-- Else-if comment gathering logic:
-  - function gatherElseIfCommentText(..., node, parent, beforeText):
-    - If beforeText already has @story/@req → return beforeText (preserves existing behavior)
-    - If !isElseIfBranch → return beforeText (non-else-if unaffected)
-    - beforeElseText = scanElseIfPrecedingComments(...)
-      - If beforeElseText has @story/@req → return beforeElseText (Before-Else Position)
-    - If !hasValidElseIfBlockLoc(node) → return beforeText
-    - betweenText = scanElseIfBetweenConditionAndBody(...)
-      - If betweenText non-empty → return betweenText (After-Condition Position)
-    - insideText = scanElseIfInsideBlockComments(...)
-      - If insideText non-empty → return insideText (inside-block fallback)
-    - Else return beforeText
-- gatherBranchCommentText(...) dispatches:
-  - If node.type === 'IfStatement' → calls gatherElseIfCommentText(sourceCode, node, parent, beforeText)
-- Auto-fix behavior for else-if:
-  - getBranchAnnotationInfo(..., node, parent) computes indent/insertPos from getBaseBranchIndentAndInsertPos
-  - For else-if branches with BlockStatement consequent:
-    - Sets commentLine = node.consequent.loc.start.line + 1
-    - indent from that line's leading whitespace
-    - insertPos at start of commentLine via getIndexFromLoc
-    - Comment in code: "For else-if blocks, align auto-fix comments with Prettier's tendency to place comments inside the wrapped block body; non-block consequents intentionally keep the default behavior.",Rule wiring uses the new helpers:
-- File: src/rules/require-branch-annotation.ts
-- create(context) uses validateBranchTypes and for each configured branch type (including 'IfStatement') it invokes:
-  - reportMissingAnnotations(context, node, storyFixCountRef)
-- reportMissingAnnotations(...) (in src/utils/branch-annotation-helpers.ts):
-  - Uses context.getAncestors() to determine parent
-  - Calls getBranchAnnotationInfo(sourceCode, node, parent)
-  - This in turn uses gatherBranchCommentText(..., node, parent), so the else-if logic is active for the rule.,Unit tests validate else-if position detection and priority:
-- File: tests/utils/branch-annotation-else-if-position.test.ts
-- Test 1: "[REQ-DUAL-POSITION-DETECTION-ELSE-IF] detects annotations placed before the else-if keyword"
-  - Uses commentsBefore containing @story and @req to verify gatherBranchCommentText returns both
-- Test 2: "[REQ-FALLBACK-LOGIC-ELSE-IF] falls back to annotations between condition and body when before-else-if comments lack annotations"
-  - Lines:
-    - "} else if (b && c) {"
-    - Comments inside block body with @story and @req
-  - commentsBefore is unrelated
-  - Expects gathered text to contain the inside comments → validates After-Condition/inside-block fallback
-- Test 3: "[REQ-POSITION-PRIORITY-ELSE-IF] prefers before-else-if annotations when both positions are present"
-  - commentsBefore includes @story and @req
-  - Body lines also include another @req marker
-  - Expects returned text to contain only the before-else-if @req and not the between-position @req → validates position priority.,Unit test validates else-if auto-fix insert position for Prettier:
-- File: tests/utils/branch-annotation-else-if-insert-position.test.ts
-- Test: "[REQ-PRETTIER-AUTOFIX-ELSE-IF] inserts annotations on a dedicated line inside the else-if block body"
-  - Source lines:
-    - line 4: "else if (b) {"
-    - line 5: "  doB();"
-  - Mocks context.getSourceCode() with getIndexFromLoc
-  - Calls reportMissingAnnotations(...) for an else-if IfStatement with BlockStatement consequent
-  - Asserts:
-    - fixer.insertTextBeforeRange called once
-    - Range equals [index at line 5, column 0, index at line 5, column 0] → insertion before first statement in block
-    - Inserted text starts with "  " (inner indentation) → matches Prettier-style preserved position.,Rule-level test covers else-if branches and Prettier-style auto-fix:
-- File: tests/rules/require-branch-annotation.test.ts
-- Test case name: "[REQ-PRETTIER-AUTOFIX-ELSE-IF] missing annotations on else-if branch with Prettier-style autofix insertion"
-- Code under test:
-  - "if (a) { ... } else if (b) { ... }" (else-if with BlockStatement)
-- Expected output:
-  - A single top-of-file comment: "// @story <story-file>.story.md" before the if/else if chain
-  - This, plus else-if insert-position unit test, demonstrates behavior for branches that Prettier might wrap.,Integration tests exist for Prettier compatibility (but are skipped by default):
-- File: tests/integration/else-if-annotation-prettier.integration.test.ts
-- Uses Prettier CLI and ESLint CLI to format and lint real code:
-  - Helper formatWithPrettier(...) calls Prettier with --parser typescript
-  - Helper runEslintWithRequireBranchAnnotation(...) runs ESLint with traceability/require-branch-annotation:error
-- Tests:
-  - When process.env.TRACEABILITY_EXPERIMENTAL_ELSE_IF === '1':
-    - it("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-BEFORE] ..."):
-      - Starts with annotations before else-if
-      - Formats with Prettier
-      - Asserts formatted code still contains "else if" and the story comment
-      - Runs ESLint and expects exit status 0
-    - it("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-INSIDE] ..."):
-      - Starts with annotations between condition and body
-      - Formats with Prettier
-      - Runs ESLint and expects exit status 0
-  - Else branch uses it.skip for both tests when env var is not set
-- In the provided npm test run ("npm test -- --verbose") these tests were reported as skipped:
-  - Jest summary: "Test Suites: 1 skipped, 48 passed, 48 of 49 total" and "Tests: 2 skipped, 356 passed, 358 total".,Tests for this story ran and passed (aside from the explicitly skipped Prettier integration suite):
+  <last_validated>2025-12-07T06:51:04.841Z</last_validated>
+  <last_modified>2025-12-07T06:39:39.898Z</last_modified>
+  <evidence>Story file docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md Acceptance Criteria section shows Single-Line Support explicitly unchecked:
+- [x] Before-Else Position
+- [x] After-Condition Position
+- [ ] Single-Line Support
+- [x] Prettier Compatibility
+- [x] Position Priority
+- [x] Auto-Fix Compatibility
+- [x] No Regression
+- [x] Documentation,Requirement list in the same story explicitly defines REQ-SINGLE-LINE-ELSE-IF-SUPPORT but marks it as a separate requirement:
+- **REQ-SINGLE-LINE-ELSE-IF-SUPPORT**: Support annotation detection for single-line else-if statements without braces (not just BlockStatement),Code implementing else-if handling is present but constrained to BlockStatement consequents for the new positions:
+- src/utils/branch-annotation-helpers.ts:
+  - hasValidElseIfBlockLoc requires node.consequent.type === "BlockStatement" and test/consequent locs:
+    function hasValidElseIfBlockLoc(node: any): boolean {
+      const hasBlockConsequent =
+        node.consequent &&
+        node.consequent.type === "BlockStatement" &&
+        node.consequent.loc &&
+        node.consequent.loc.start;
+      return !!(
+        node.test &&
+        node.test.loc &&
+        node.test.loc.end &&
+        hasBlockConsequent
+      );
+    }
+  - gatherElseIfCommentText only uses between/inside scanning when hasValidElseIfBlockLoc(node) is true; for non-BlockStatement (single-line, no braces) it falls back to beforeText only.,Else-if detection and Prettier-compatible behavior for blocks are well covered and wired:
+- src/utils/branch-annotation-helpers.ts:
+  - isElseIfBranch, scanElseIfPrecedingComments, scanElseIfBetweenConditionAndBody, scanElseIfInsideBlockComments, gatherElseIfCommentText, and getBranchAnnotationInfo all reference docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md.
+  - getBranchAnnotationInfo has special auto-fix placement for else-if with BlockStatement consequents: commentLine = node.consequent.loc.start.line + 1; indent from that line; insertPos at that line, aligning with Prettier's wrapped block layout.,Unit tests for else-if multi-position support and auto-fix exist and pass:
+- tests/utils/branch-annotation-else-if-position.test.ts (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION):
+  - [REQ-DUAL-POSITION-DETECTION-ELSE-IF] detects annotations placed before the else-if keyword.
+  - [REQ-FALLBACK-LOGIC-ELSE-IF] falls back to annotations between condition and body when before-else-if comments lack annotations (BlockStatement case).
+  - [REQ-POSITION-PRIORITY-ELSE-IF] prefers before-else-if annotations when both positions are present.
+- tests/utils/branch-annotation-else-if-insert-position.test.ts:
+  - [REQ-PRETTIER-AUTOFIX-ELSE-IF] asserts that auto-fix inserts annotations on a dedicated line inside the else-if block body with correct indentation.
+- tests/rules/require-branch-annotation.test.ts:
+  - Includes invalid case "[REQ-PRETTIER-AUTOFIX-ELSE-IF] missing annotations on else-if branch with Prettier-style autofix insertion" verifying rule behavior for else-if branches with BlockStatement consequents.,Prettier compatibility integration tests for else-if exist but are guarded by an env var and were skipped in the standard test run:
+- tests/integration/else-if-annotation-prettier.integration.test.ts:
+  - When process.env.TRACEABILITY_EXPERIMENTAL_ELSE_IF === "1": two tests run verifying ESLint passes after Prettier formatting for both before-else and inside-body annotations.
+  - Otherwise, the same two tests are defined with it.skip(...).
+- In the executed test run (npm test -- --verbose), Jest reported:
+  - Test Suites: 1 skipped, 48 passed, 48 of 49 total
+  - Tests:       2 skipped, 359 passed, 361 total
+  The skipped suite corresponds to this integration file.,No implementation or tests explicitly cover REQ-SINGLE-LINE-ELSE-IF-SUPPORT:
+- Search for the requirement ID:
+  - search_file_content src/utils/branch-annotation-helpers.ts "REQ-SINGLE-LINE-ELSE-IF-SUPPORT" → no matches.
+  - search_file_content tests/utils/branch-annotation-else-if-position.test.ts "REQ-SINGLE-LINE-ELSE-IF-SUPPORT" → no matches.
+  - search_file_content tests/rules/require-branch-annotation.test.ts "REW-SINGLE-LINE" / "single-line" → no matches.
+  - search_file_content tests/integration/else-if-annotation-prettier.integration.test.ts "single-line" → no matches.,The story itself acknowledges Single-Line Support as not done by leaving that acceptance criterion unchecked and by not referencing any test or implementation under the Implementation Links or Testing Strategy that addresses single-line, no-brace else-if branches specifically.,Overall test status confirms the implemented parts are stable but does not change the absence of single-line-specific support:
 - Command executed: npm test -- --verbose
-- Jest output excerpts:
-  - PASS tests/utils/branch-annotation-else-if-position.test.ts
-    - "gatherBranchCommentText else-if behavior (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION)"
-    - Contains tests for REQ-DUAL-POSITION-DETECTION-ELSE-IF, REQ-FALLBACK-LOGIC-ELSE-IF, REQ-POSITION-PRIORITY-ELSE-IF
-  - PASS tests/utils/branch-annotation-else-if-insert-position.test.ts
-    - "Else-if insert position (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION)"
-    - Verifies [REQ-PRETTIER-AUTOFIX-ELSE-IF]
-  - PASS tests/rules/require-branch-annotation.test.ts
-    - Includes invalid case for Prettier-style else-if auto-fix
-- Overall test run exited with code 0.,Missing explicit implementation and tests for single-line else-if support requirement:
-- Requirement in story: **REQ-SINGLE-LINE-ELSE-IF-SUPPORT**
-  - "Support annotation detection for single-line else-if statements without braces (not just BlockStatement)"
-- Search for requirement ID in code and tests:
-  - Command: grep -R -n REQ-SINGLE-LINE-ELSE-IF-SUPPORT src tests
-  - Result: no matches (exit code 1, no output)
-- No test file references REQ-SINGLE-LINE-ELSE-IF-SUPPORT or explicitly exercises a single-line unbraced else-if with annotations as per the example in the story.
-- Implementation detail:
-  - hasValidElseIfBlockLoc(node) and the subsequent between/inside scanning in gatherElseIfCommentText only run when node.consequent.type === 'BlockStatement'.
-  - For single-line else-if without braces, gatherElseIfCommentText falls back to beforeText only; there is no dedicated logic or test coverage targeted at this requirement.
-- The story itself keeps the Single-Line Support acceptance criterion unchecked ([ ]), signaling that the authors consider this part not yet complete.</evidence>
-  <notes>This story is clearly a specification (not a planning-only doc), and most of its requirements are implemented and covered by unit and rule-level tests:
-- Dual-position detection for else-if annotations (before-else and between condition/body) is implemented in gatherElseIfCommentText and verified by tests in tests/utils/branch-annotation-else-if-position.test.ts.
-- Position priority (before-else annotations taking precedence when both positions exist) is implemented and tested.
-- Auto-fix behavior for else-if branches with BlockStatement consequents is adjusted so comments are inserted inside the block where Prettier will preserve them, verified by tests/utils/branch-annotation-else-if-insert-position.test.ts and the require-branch-annotation rule tests.
-- Prettier compatibility is further exercised by an integration test suite that formats code with Prettier and then lints it; however, these tests are currently skipped by default unless an environment variable is set.
+- Result: exit code 0, with PASS for:
+  - tests/utils/branch-annotation-else-if-position.test.ts
+  - tests/utils/branch-annotation-else-if-insert-position.test.ts
+  - tests/rules/require-branch-annotation.test.ts
+  - tests/integration/else-if-annotation-prettier.integration.test.ts marked as skipped due to env var guard.</evidence>
+  <notes>This IS a valid specification story. Most of the story’s requirements have been implemented and are well-covered by unit and (conditionally) by integration tests:
+- Dual-position detection for else-if (before-else and between condition/body) is implemented via gatherElseIfCommentText and its helpers and validated by tests.
+- Fallback logic and position priority are implemented and tested.
+- Prettier-compatible auto-fix placement for else-if branches with BlockStatement consequents is implemented and tested.
+- The require-branch-annotation rule is wired to use the new helpers for IfStatement/else-if branches, and all existing branch-related tests pass.
 
-However, at least one explicit requirement and acceptance criterion is not fulfilled:
-- The story defines REQ-SINGLE-LINE-ELSE-IF-SUPPORT and explicitly leaves the corresponding acceptance criterion (Single-Line Support) unchecked. There is no traceability annotation, implementation-specific handling, or dedicated test targeting this requirement in the repository.
-- While the existing logic may incidentally handle some single-line cases via before-node comments, there is no concrete evidence (tests or explicit code/support requirement) that the plugin supports the real-world single-line else-if pattern described in the story (especially with @supports annotations), nor that this was intentionally validated.
+However, the acceptance criterion **“Single-Line Support: Annotations on single-line else-if statements without braces are properly detected and validated”** and corresponding requirement **REQ-SINGLE-LINE-ELSE-IF-SUPPORT** are not explicitly implemented or tested:
+- The story itself leaves this acceptance criterion unchecked, signaling it as outstanding.
+- The else-if-specific scanning and Prettier-compatible behavior are conditioned on the consequent being a BlockStatement; there is no dedicated behavior or test coverage for single-line else-if statements without braces beyond the generic ‘before-else’ comment handling.
+- No test cases reference REQ-SINGLE-LINE-ELSE-IF-SUPPORT or exercise the concrete real-world single-line pattern described in the story.
 
-Because not all acceptance criteria in the story are demonstrably satisfied—specifically Single-Line Support (REQ-SINGLE-LINE-ELSE-IF-SUPPORT)—the implementation of this story is only partially complete. Therefore the correct assessment is FAILED rather than PASSED.</notes>
+Because at least one explicit acceptance criterion and requirement remain unmet (and are acknowledged as such in the story), this story cannot be considered fully implemented. Status: FAILED.</notes>
 </traceability>

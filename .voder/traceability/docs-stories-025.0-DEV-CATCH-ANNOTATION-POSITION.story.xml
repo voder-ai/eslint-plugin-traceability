@@ -2,17 +2,16 @@
 <traceability>
   <specification>docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T06:21:19.511Z</last_validated>
+  <last_validated>2025-12-07T06:50:27.445Z</last_validated>
   <last_modified>2025-12-06T21:35:50.287Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and requirements in docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md are fully implemented and verified:
+  <notes>All acceptance criteria for Story 025.0-DEV-CATCH-ANNOTATION-POSITION are fully implemented and validated:
+- Dual-position detection and fallback for CatchClause annotations is implemented via gatherCatchClauseCommentText and wired through gatherBranchCommentText and getBranchAnnotationInfo.
+- Priority is given to annotations before the catch keyword; inside-catch comments are used as a fallback when before-catch annotations are absent.
+- Auto-fix for CatchClause places annotations inside the catch block body at the first statement’s line/indent, making them stable under Prettier.
+- Prettier integration tests confirm that code formatted with Prettier (both before-catch and inside-catch annotations, including empty catch blocks) passes the require-branch-annotation rule.
+- Rule-level tests and the full Jest suite passing provide strong evidence of no regressions for other branch types.
+- Rule documentation explicitly explains CatchClause annotation positions, Prettier compatibility, and mentions the supporting test suites.
 
-- Before-catch annotations are still detected and validated (existing behavior preserved) and now explicitly prioritized when both positions exist.
-- Inside-catch annotations (as first comments inside the catch body) are detected via getCommentsInside and a line-based fallback scanner, fulfilling REQ-DUAL-POSITION-DETECTION and REQ-FALLBACK-LOGIC.
-- Prettier compatibility is validated with real Prettier and ESLint CLI integration tests, covering before-catch moved-inside, initially-inside, and empty catch blocks.
-- Auto-fix for CatchClause inserts @story/@req inside the catch body at the correct inner indentation, matching how Prettier formats catch comments (REQ-PRETTIER-AUTOFIX).
-- Rule-level and performance tests confirm no regressions for catch or other branch types.
-- Rule documentation has a dedicated CatchClause section that explains both valid positions, precedence rules, and Prettier behavior.
-
-Given the concrete implementation, targeted unit tests, integration tests, and documentation updates, this story is fully satisfied.</notes>
+Based on the concrete code, tests, and documentation, this story is fully satisfied.</notes>
 </traceability>

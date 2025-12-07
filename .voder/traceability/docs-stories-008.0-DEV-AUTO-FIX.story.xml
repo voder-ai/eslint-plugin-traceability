@@ -2,51 +2,28 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>FAILED</status>
-  <last_validated>2025-12-07T06:21:38.745Z</last_validated>
+  <last_validated>2025-12-07T06:50:38.663Z</last_validated>
   <last_modified>2025-12-07T04:11:39.856Z</last_modified>
-  <evidence>Story file docs/stories/008.0-DEV-AUTO-FIX.story.md explicitly marks two acceptance criteria as not done:
+  <evidence>Story file docs/stories/008.0-DEV-AUTO-FIX.story.md explicitly marks two acceptance criteria as NOT done:
   - '[ ] Idempotent Fixes: Running ESLint with --fix multiple times produces the same result after the first application'
-  - '[ ] No Duplicate Fixes: Auto-fix never adds duplicate placeholder annotations for the same violation',The same story defines explicit requirements:
-  - REQ-AUTOFIX-IDEMPOTENT: 'Running --fix multiple times on the same code should not produce additional changes after the first fix'
-  - REQ-AUTOFIX-SINGLE-APPLICATION: 'Each fixable violation should result in exactly one fix being applied, never multiple duplicate fixes'
-  These are listed without any 'Implemented' description, unlike other requirements in the same section.,Tests for this story exist and are passing, but only cover a subset of the requirements:
-  - tests/rules/auto-fix-behavior-008.test.ts contains tests named for:
-    - REQ-AUTOFIX-MISSING (adding @story for various function/method shapes, template overrides, and the autoFix toggle)
-    - REQ-AUTOFIX-FORMAT (suffix normalization for @story paths and the autoFix toggle)
-    - REQ-AUTOFIX-TEMPLATE and REQ-AUTOFIX-SELECTIVE via test names
-  - Jest output (npm test -- --verbose) shows this suite passing under 'Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)' but does not mention REQ-AUTOFIX-IDEMPOTENT or REQ-AUTOFIX-SINGLE-APPLICATION in any test descriptions.,Code implementing the main auto-fix behavior is present and traced to this story:
-  - src/rules/require-story-annotation.ts:
-    - meta.fixable = "code" with JSDoc linking to docs/stories/008.0-DEV-AUTO-FIX.story.md and requirements REQ-AUTOFIX-MISSING, REQ-AUTOFIX-SAFE, REQ-AUTOFIX-PRESERVE.
-    - schema includes an 'autoFix' boolean option.
-    - create(context) reads opts.autoFix and passes it into buildVisitors, enabling/disabling fix application.
-  - src/rules/helpers/require-story-helpers.ts and src/rules/helpers/require-story-core.ts:
-    - Implement createAddStoryFix and createMethodFix to insert @story annotations with minimal text edits.
-    - Implement getAnnotationTemplate, shouldApplyAutoFix, and buildTemplateConfig to support configurable templates and selective auto-fix, with @story 008.0 and @req REQ-AUTOFIX-MISSING / REQ-AUTOFIX-TEMPLATE / REQ-AUTOFIX-SELECTIVE annotations.
-  - src/rules/valid-annotation-format.ts and src/rules/helpers/valid-annotation-format-validators.ts:
-    - meta.fixable = "code" with comments explicitly restricting fixes to safe suffix normalization per Story 008.0 and requirements REQ-AUTOFIX-SAFE / REQ-AUTOFIX-PRESERVE.
-    - Options include 'autoFix' to toggle suffix-normalization behavior.
-    - validateStoryAnnotation uses getFixedStoryPath and, when options.autoFix !== false, calls reportInvalidStoryFormatWithFix to apply suffix-only replacements.,User-facing documentation for auto-fix behavior is present:
-  - user-docs/api-reference.md (traceability/require-story-annotation section) describes:
-    - Auto-insertion of placeholder @story annotations in --fix mode for functions/methods/TS declarations.
-    - Configurable annotationTemplate and methodAnnotationTemplate.
-    - autoFix boolean option to disable edits while retaining diagnostics.
-  - user-docs/api-reference.md (traceability/valid-annotation-format section) documents:
-    - Suffix-only auto-fix behavior for @story paths (adding .md or .story.md).
-    - The autoFix boolean option to disable this behavior.,Search for explicit implementation and tests of REQ-AUTOFIX-IDEMPOTENT and REQ-AUTOFIX-SINGLE-APPLICATION found nothing:
-  - grep -R 'REQ-AUTOFIX-IDEMPOTENT' tests src -> no matches
-  - grep -R 'REQ-AUTOFIX-SINGLE-APPLICATION' tests src -> no matches
-  - grep -R 'idempotent' src tests docs -> only hits are in docs/maintenance-performance-tests.md, unrelated to this rule; nothing in the auto-fix rules or tests.,The existing auto-fix code paths (createAddStoryFix, createMethodFix, validateStoryAnnotation + getFixedStoryPath) may be logically idempotent, but there are:
-  - No dedicated tests that run ESLint --fix multiple times to assert no further changes.
-  - No assertions that a single violation only yields a single placeholder or that duplicates are never created.
-  - No traceability annotations (@req) in the auto-fix code referencing REQ-AUTOFIX-IDEMPOTENT or REQ-AUTOFIX-SINGLE-APPLICATION.,Test execution confirms all current tests pass but does not add evidence for the missing requirements:
-  - Command: npm test -- --verbose
-  - Result: 48/49 suites passed, 356/358 tests passed (2 skipped), exit code 0.
-  - Among the passing suites is 'Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)', but there are no tests whose names or comments reference idempotency or duplicate-fix behavior.</evidence>
-  <notes>docs/stories/008.0-DEV-AUTO-FIX.story.md is clearly a concrete specification with detailed acceptance criteria and requirements, so it qualifies as a story to assess. Most of the story’s scope is implemented: auto-fix for missing @story on functions/methods (REQ-AUTOFIX-MISSING), safe suffix-only normalization of @story paths (REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-SAFE, REQ-AUTOFIX-PRESERVE), configurable templates (REQ-AUTOFIX-TEMPLATE), selective auto-fix toggles (REQ-AUTOFIX-SELECTIVE), integration with existing validation rules, and user-facing documentation. These are all backed by rule implementations, helper modules, API reference documentation, and passing Jest tests (notably tests/rules/auto-fix-behavior-008.test.ts).
-
-However, two requirements and their corresponding acceptance criteria remain unimplemented with no concrete evidence in code or tests:
-- REQ-AUTOFIX-IDEMPOTENT / 'Idempotent Fixes' acceptance criterion.
-- REQ-AUTOFIX-SINGLE-APPLICATION / 'No Duplicate Fixes' acceptance criterion.
-
-The story itself lists these acceptance criteria as unchecked ([ ]), and there are no traceability annotations, tests, or documentation explicitly covering idempotent behavior or guarantees against duplicate placeholder insertion. While the current fixers may, in practice, be idempotent and non-duplicating, this cannot be treated as implemented without explicit tests or documented guarantees. Because at least these two requirements are not demonstrably satisfied, the story as a whole is not fully implemented and the assessment status is FAILED.</notes>
+  - '[ ] No Duplicate Fixes: Auto-fix never adds duplicate placeholder annotations for the same violation'
+These checkboxes are still unchecked in the current version of the story.,The Requirements section includes REQ-AUTOFIX-IDEMPOTENT and REQ-AUTOFIX-SINGLE-APPLICATION with no accompanying 'Implemented' explanation, unlike other requirements (e.g., REQ-AUTOFIX-MISSING, REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-SAFE, REQ-AUTOFIX-PRESERVE, REQ-AUTOFIX-TEMPLATE, REQ-AUTOFIX-SELECTIVE), which explicitly describe current implementation and test coverage.,Test file tests/rules/auto-fix-behavior-008.test.ts is explicitly tagged for this story:
+  - Header: '@story docs/stories/008.0-DEV-AUTO-FIX.story.md' and '@supports ... REQ-AUTOFIX-MISSING REQ-AUTOFIX-FORMAT'
+  - Describes and tests:
+    - "[REQ-AUTOFIX-MISSING] require-story-annotation auto-fix" (adds @story, respects templates, and autoFix=false)
+    - "[REQ-AUTOFIX-FORMAT] valid-annotation-format auto-fix" (suffix normalization and autoFix=false)
+  - There are NO test names or annotations mentioning REQ-AUTOFIX-IDEMPOTENT or REQ-AUTOFIX-SINGLE-APPLICATION, and no tests that run fixes multiple times or assert absence of duplicate annotations.,Search of the auto-fix behavior test file for idempotency/duplicate behavior:
+  - search_file_content(tests/rules/auto-fix-behavior-008.test.ts, 'idempotent') → no matches
+  - search_file_content(tests/rules/auto-fix-behavior-008.test.ts, 'SINGLE-APPLICATION') → no matches
+This corroborates that the dedicated Story 008.0 test suite does not cover REQ-AUTOFIX-IDEMPOTENT or REQ-AUTOFIX-SINGLE-APPLICATION.,Core auto-fix implementation is present and traced to this story but only for some requirements:
+  - src/rules/require-story-annotation.ts JSDoc includes '@req REQ-AUTOFIX-MISSING', '@req REQ-AUTOFIX-SAFE', '@req REQ-AUTOFIX-PRESERVE'; meta.fixable = 'code'; options include 'autoFix'; create() wires auto-fix-capable visitors.
+  - src/rules/valid-annotation-format.ts JSDoc and inline comments reference '@req REQ-AUTOFIX-FORMAT', '@req REQ-AUTOFIX-SAFE', '@req REQ-AUTOFIX-PRESERVE'; it exposes an 'autoFix' option and uses getFixedStoryPath/reportInvalidStoryFormatWithFix for suffix normalization.
+  - There are NO traceability annotations in these rule files for REQ-AUTOFIX-IDEMPOTENT or REQ-AUTOFIX-SINGLE-APPLICATION.,Repository-level search for the idempotency and single-application requirements (within allowed scope) shows no implementation or tests bound to them:
+  - search_file_content('src', 'REQ-AUTOFIX-IDEMPOTENT') → directory error, and no such annotation appears in the key rule files we inspected.
+  - search_file_content('tests', 'REQ-AUTOFIX-IDEMPOTENT') → directory error; the only Story 008.0 test file contents show no such requirement ID.
+  - Likewise, no references to REQ-AUTOFIX-SINGLE-APPLICATION were found in tests/rules/auto-fix-behavior-008.test.ts, and there are no other Story 008-specific test files (find_files pattern '*AUTO-FIX*' under tests returned no additional files).,All Jest tests currently pass, but they do not cover the missing requirements:
+  - Command executed: npm test -- --verbose
+  - Result: Test Suites: 1 skipped, 48 passed (48/49 total); Tests: 2 skipped, 359 passed (361 total); exit code 0.
+  - The 'Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)' suite passes, but its output (captured in the test run) only references REQ-AUTOFIX-MISSING, REQ-AUTOFIX-FORMAT, REQ-AUTOFIX-TEMPLATE, and REQ-AUTOFIX-SELECTIVE—not REQ-AUTOFIX-IDEMPOTENT or REQ-AUTOFIX-SINGLE-APPLICATION.</evidence>
+  <notes>docs/stories/008.0-DEV-AUTO-FIX.story.md is a valid, concrete specification for auto-fix behavior and is clearly in scope. The main auto-fix features (adding missing @story via require-story-annotation, path suffix normalization via valid-annotation-format, template and autoFix options, and safety/format preservation) are implemented, documented, and covered by tests. However, two explicit acceptance criteria—Idempotent Fixes and No Duplicate Fixes—remain unchecked in the story and have no corresponding requirements implemented or tested in code (no @req annotations, no tests asserting repeated --fix runs yield no further changes, and no tests ensuring a single violation cannot produce multiple placeholder annotations). Because these acceptance criteria and their linked requirements (REQ-AUTOFIX-IDEMPOTENT and REQ-AUTOFIX-SINGLE-APPLICATION) are not demonstrably satisfied, the story is not fully implemented. Therefore the assessment status is FAILED.</notes>
 </traceability>
