@@ -2,8 +2,8 @@
 <traceability>
   <specification>docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T01:05:21.251Z</last_validated>
+  <last_validated>2025-12-07T01:26:56.576Z</last_validated>
   <last_modified>2025-12-06T14:46:37.163Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story 024.0-DEV-IGNORE-INLINE-CODE-REFS is fully implemented. normalizeCommentLine implements a centralized backtick-span filter that removes any `...` content while preserving string length via spaces, and then runs the existing annotation detection logic. Unit tests in tests/rules/valid-annotation-format-internal.test.ts are explicitly tied to this story and its REQ IDs and cover: ignoring backtick-wrapped @story/@req, preserving spacing (including `@story` + `@req` documentation patterns), correctly exposing real @story annotations outside backticks on the same line, handling multiple backtick segments, and leaving non-backtick lines unchanged other than standard normalization. The full Jest suite passes, demonstrating no regressions. The function’s JSDoc documents the inline code filtering behavior. All acceptance criteria and listed requirements (REQ-IGNORE-INLINE-CODE, REQ-PRESERVE-BOUNDARIES, REQ-CENTRALIZED-FILTER) are satisfied with concrete test and code evidence.</notes>
+  <evidence>[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria for story 024.0-DEV-IGNORE-INLINE-CODE-REFS are satisfied. The `normalizeCommentLine` helper centrally strips backtick-wrapped content with length-preserving spaces, ensuring inline-code references to `@story`, `@req`, and `@supports` do not produce false positives, while real annotations on the same or other lines are still detected. Dedicated tests explicitly tied to this story validate the core behavior, common documentation patterns, mixed real+inline-code cases, multiple backtick segments, and non-backtick regression behavior. The full Jest test suite passes, providing regression assurance.</notes>
 </traceability>
