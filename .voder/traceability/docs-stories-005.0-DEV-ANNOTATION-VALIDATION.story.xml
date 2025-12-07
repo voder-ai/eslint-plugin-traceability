@@ -2,26 +2,8 @@
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T13:23:34.573Z</last_validated>
+  <last_validated>2025-12-07T13:47:02.347Z</last_validated>
   <last_modified>2025-12-06T21:35:50.094Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md defines a rule that validates @story and @req annotation format and syntax, including multiline handling, flexible parsing, specific error messages, and documentation.
-
-All key requirements are implemented and verified:
-- REQ-FORMAT-SPECIFICATION & REQ-SYNTAX-VALIDATION: The `valid-annotation-format` rule and its helpers define explicit regex-based formats for @story and @req, apply them to collapsed values, and are thoroughly tested in `tests/rules/valid-annotation-format.test.ts` (both valid and invalid cases).
-- REQ-PATH-FORMAT: `validateStoryAnnotation` uses a storyPattern regex to enforce `docs/stories/<version>-DEV-<NAME>.story.md` structure, detects missing values, invalid extensions, traversal (`../`), and applies safe suffix-only autofix where appropriate. Tests cover all these cases, matching the examples from the story.
-- REQ-REQ-FORMAT: `validateReqAnnotation` enforces a default `^REQ-[A-Z0-9-]+$` pattern, with configuration support; tests cover missing IDs, invalid formats, and configurable patterns/examples.
-- REQ-MULTILINE-SUPPORT: `PendingAnnotation` state, `processCommentLine`, and `finalizePendingAnnotation` handle annotations split across multiple lines, collapsing whitespace before validation. Tests explicitly exercise multi-line story/req cases, and the perf test builds many multi-line JSDoc comments.
-- REQ-FLEXIBLE-PARSING: `normalizeCommentLine` supports inline/block/JSDoc comments and detects tags anywhere in a line; the rule scans all comments from the Program node. Tests confirm behavior with various spacings and comment styles, and the perf test asserts performance on a large, mixed corpus.
-- REQ-ERROR-SPECIFICITY: Error messages are centralized via `invalidStoryFormat`/`invalidReqFormat` and helpers `buildStoryErrorMessage`/`buildReqErrorMessage`, and tests assert the exact message strings, including offending values and expected examples.
-
-Acceptance criteria are satisfied:
-- Core Functionality: The ESLint rule validates @story/@req (and @supports) formats as specified, with comprehensive passing tests.
-- Quality Standards: The rule uses ESLint recommended patterns (meta, messages, schema, RuleTester tests) and is integrated into the plugin.
-- Integration: It operates over all comments at the Program level, so it validates the same annotations used by the function and branch rules, and is included in documented configs.
-- User Experience: Error messages are clear, specific, and tested to match detailed guidance.
-- Error Handling: Handles malformed comments, missing values, and invalid regex configurations gracefully (reporting configuration errors and falling back to defaults instead of crashing), with tests for these paths.
-- Documentation: docs/rules/valid-annotation-format.md documents formats, options, and examples of valid/invalid annotations, aligned with the story examples.
-
-All relevant tests (including those explicitly tied to this story) pass in the current test run, so this story is fully implemented.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and listed requirements for Story 005.0-DEV-ANNOTATION-VALIDATION are fully implemented and verified by tests. The `valid-annotation-format` ESLint rule validates @story and @req syntax and format (including @supports where relevant), enforces path and identifier patterns, supports multi-line values and flexible whitespace, provides specific and configurable error messages (including custom examples), handles malformed comments and invalid configuration gracefully, integrates into the plugin and with other rules, and has performance coverage on large annotated files. All associated tests pass in the current test run, and the story file itself provides the required format specification and examples. Therefore the story is PASSED.</notes>
 </traceability>

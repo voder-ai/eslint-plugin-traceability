@@ -1,14 +1,15 @@
 ## NOW
 
-- [ ] Update the function-annotations story document so that it explicitly states that the advanced req-detection heuristics are now covered by dedicated tests and marks the corresponding acceptance-criteria or Definition of Done items as complete.
+- [ ] Review the existing branch-annotation helper code around the duplicated else-if and catch comment-scanning logic to understand exactly what behavior is shared and decide on a small helper extraction that will remove the duplication without changing observable behavior.
 
 ## NEXT
 
-- [ ] Review the requirement IDs and descriptions in the function-annotations story to ensure they match the behaviors exercised by the new req-annotation detection tests and adjust wording where necessary for clarity.
-- [ ] Check any related development documentation that references the advanced req-detection heuristics to confirm it no longer suggests these paths are untested or experimental, updating the language to reflect their tested status.
+- [ ] Introduce a new focused helper function in the branch-annotation helpers module that encapsulates the shared comment-scanning behavior and update the existing else-if and catch paths to delegate to this helper while preserving all current rules and traceability annotations.
+- [ ] Adjust or extend the existing unit tests for branch-annotation helpers and related rules to cover the refactored paths and confirm that behavior remains identical after the duplication is removed.
+- [ ] Re-run the internal duplication analysis mentally against the updated helper code to ensure the previously reported duplicated region is eliminated and that the refactor did not introduce new overlapping logic elsewhere.
 
 ## LATER
 
-- [ ] Scan coverage reports for other minor uncovered branches in core helper modules and plan similarly small, focused test additions to close those gaps incrementally.
-- [ ] Standardize the use of @supports traceability annotations in any remaining legacy test files that still rely only on @story/@req so they match the preferred format.
-- [ ] Revisit the else-if single-line annotation support story and design the implementation and tests needed to fully satisfy that requirement once the current coverage and documentation updates are complete.
+- [ ] Revisit the remaining minor uncovered branches in core helper modules and design similarly small, focused tests to close those coverage gaps.
+- [ ] Standardize the use of @supports traceability annotations in any remaining legacy test files that still rely only on @story and @req so they align with the preferred format.
+- [ ] Return to the else-if single-line annotation support story and plan the implementation and tests needed to fully satisfy that requirement once the helper refactors and small quality improvements are complete.

@@ -141,6 +141,26 @@ type ReportDeps = {
 };
 
 /**
+ * Safely execute a reporting operation, swallowing unexpected errors so that
+ * traceability rules never break ESLint runs. When TRACEABILITY_DEBUG=1 is
+ * set in the environment, a diagnostic message is logged to stderr.
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-RESILIENCE
+ */
+function withSafeReporting(label: string, fn: () => void): void {
+  try {
+    fn();
+  } catch (error) {
+    if (process.env.TRACEABILITY_DEBUG === "1") {
+      // Debug logging only when explicitly enabled for troubleshooting helper failures.
+      console.error(
+        `[traceability] ${label} failed`,
+        (error as Error)?.message ?? error,
+      );
+    }
+  }
+}
+
+/**
  * Core helper to report a missing @story annotation for a function-like node.
  * This reporting utility delegates behavior to injected dependencies so that
  * higher-level helpers can stay small while sharing error-reporting logic.
@@ -159,7 +179,7 @@ export function coreReportMissing(
 ): void {
   const { node, target: passedTarget, options = {} } = config;
 
-  try {
+  withSafeReporting("coreReportMissing", () => {
     if (deps.hasStoryAnnotation(sourceCode, node)) {
       return;
     }
@@ -188,18 +208,7 @@ export function coreReportMissing(
         },
       ],
     });
-  } catch (error) {
-    // Intentionally swallow unexpected helper errors so traceability checks never
-    // break lint runs. When TRACEABILITY_DEBUG=1 is set, log a debug message to
-    // help diagnose misbehaving helpers in local development without affecting
-    // normal CI or production usage.
-    if (process.env.TRACEABILITY_DEBUG === "1") {
-      console.error(
-        "[traceability] coreReportMissing failed for node",
-        (error as Error)?.message ?? error,
-      );
-    }
-  }
+  });
 }
 
 /**
@@ -221,7 +230,7 @@ export function coreReportMethod(
 ): void {
   const { node, target: passedTarget, options = {} } = config;
 
-  try {
+  withSafeReporting("coreReportMethod", () => {
     if (deps.hasStoryAnnotation(sourceCode, node)) {
       return;
     }
@@ -251,16 +260,5 @@ export function coreReportMethod(
         },
       ],
     });
-  } catch (error) {
-    // Intentionally swallow unexpected helper errors so traceability checks never
-    // break lint runs. When TRACEABILITY_DEBUG=1 is set, log a debug message to
-    // help diagnose misbehaving helpers in local development without affecting
-    // normal CI or production usage.
-    if (process.env.TRACEABILITY_DEBUG === "1") {
-      console.error(
-        "[traceability] coreReportMethod failed for node",
-        (error as Error)?.message ?? error,
-      );
-    }
-  }
+  });
 }

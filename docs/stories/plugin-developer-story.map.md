@@ -18,11 +18,11 @@
 
 # User Story Map with Releases
 
-| **Release 0.6 (Formatter Compatibility)** (Current) | **Setup Dev Environment** | **Develop Features**                                        | **Validate Quality** | **Deploy** | **Maintain** |
-| --------------------------------------------------- | ------------------------- | ----------------------------------------------------------- | -------------------- | ---------- | ------------ |
-| **Core Fixes**                                      | -                         | 024.0-DEV-IGNORE-INLINE-CODE-REFS                           | -                    | -          | -            |
-| **Rule Enhancements**                               | -                         | 025.0-DEV-CATCH-ANNOTATION-POSITION                         | -                    | -          | -            |
-| **Rule Enhancements**                               | -                         | 026.0-DEV-ELSE-IF-ANNOTATION-POSITION                       | -                    | -          | -            |
+| **Release 0.6 (Formatter Compatibility)** (Current) | **Setup Dev Environment** | **Develop Features**                                         | **Validate Quality** | **Deploy** | **Maintain** |
+| --------------------------------------------------- | ------------------------- | ------------------------------------------------------------ | -------------------- | ---------- | ------------ |
+| **Core Fixes**                                      | -                         | 024.0-DEV-IGNORE-INLINE-CODE-REFS                            | -                    | -          | -            |
+| **Rule Enhancements**                               | -                         | 025.0-DEV-CATCH-ANNOTATION-POSITION                          | -                    | -          | -            |
+| **Rule Enhancements**                               | -                         | 026.0-DEV-ELSE-IF-ANNOTATION-POSITION                        | -                    | -          | -            |
 | **Planned (Future)**                                | -                         | _Dogfooding - Enable plugin self-validation (not scheduled)_ | -                    | -          | -            |
 
 ---

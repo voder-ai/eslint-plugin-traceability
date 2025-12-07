@@ -2,24 +2,66 @@
 <traceability>
   <specification>docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T13:23:38.976Z</last_validated>
+  <last_validated>2025-12-07T13:48:15.278Z</last_validated>
   <last_modified>2025-12-06T13:04:07.978Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and explicit requirements in docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md are implemented and verified:
-
-- Rule naming & aliasing (REQ-RULE-NAME / Rule Naming AC): the plugin exposes `traceability/prefer-supports-annotation` as the primary rule and `traceability/prefer-implements-annotation` as a deprecated alias with `meta.deprecated = true` and `meta.replacedBy = ["prefer-supports-annotation"]`. Tests explicitly validate that neither rule is enabled in recommended/strict presets (default off) and that both keys can be configured with severities, satisfying rule naming and configurability.
-
-- Optional warning & configurable enforcement (REQ-OPTIONAL-WARNING, REQ-CONFIG-SEVERITY): the rule is of type "suggestion", not included in the shipped configs, and uses standard ESLint severity configuration. By default, it is off; when enabled as `"warn"` or `"error"`, it emits diagnostics via `preferImplements`, `cannotAutoFix`, and `multiStoryDetected`. Tests cover these behaviors.
-
-- Auto-fix support & single-story conversion (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX, Preserve Order AC, Quality Standards AC): auto-fix is implemented for simple, single-story blocks containing `@story` plus one or more `@req` lines, with no `@supports` and no complex tokenization. The fixer converts them into a single `@supports <story> <REQ IDs...>` line, preserving existing indentation, comment prefix, and surrounding JSDoc structure. Tests assert exact before/after text for both single-REQ and multi-REQ scenarios and ensure complex patterns are not auto-fixed.
-
-- Multi-story and mixed usage detection (REQ-MULTI-STORY-DETECT, Multi-story Detection AC): the analysis logic distinguishes between simple and multi-story blocks and between pure legacy and mixed legacy/`@supports` comments. Multi-story and mixed-usage cases emit specific diagnostics (`multiStoryDetected` and `cannotAutoFix`) with detailed messages, and never apply auto-fix, aligning exactly with the story’s non-autofixable examples.
-
-- Backward compatibility & validation (REQ-BACKWARD-COMP-VALIDATION, Both Formats Valid AC): comments that are only `@story`, only `@req`, only `@supports`, or non-fixable shapes are either ignored or only warned, and underlying validation rules (`valid-annotation-format`, `valid-req-reference`, `require-story-annotation`, `require-req-annotation`) are unchanged. The rule is optional and not part of default presets, so legacy annotations remain valid when the rule is disabled.
-
-- Valid output (REQ-VALID-OUTPUT, Quality Standards AC): the auto-fix path is deliberately conservative. Any ambiguous or multi-line/extra-token `@story` or `@req` annotations disable auto-fix by nulling `storyPath`, ensuring only clearly valid `@supports` lines are generated. Separate tests in this suite and in the validation rules confirm that such `@supports` lines conform to the existing validators.
-
-- Documentation (Documentation AC): docs/rules/prefer-implements-annotation.md documents the rule as `prefer-supports-annotation`, describes migration behavior, provides before/after auto-fix examples, and shows explicit configuration snippets for enabling the rule at off/warn/error levels and for using the deprecated alias.
-
-Given the concrete implementation, targeted tests directly linked to this story, and a passing test suite, this story is fully implemented and verified.</notes>
+  <evidence>Story file exists: docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md (verified via check_file_exists).,Primary rule implementation: src/rules/prefer-implements-annotation.ts implements the migration logic from @story/@req to @supports and is explicitly traced to this story via JSDoc (@story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md and multiple @req entries matching story requirements).,Rule naming & aliasing (REQ-RULE-NAME / Rule Naming AC):
+  - src/index.ts dynamically loads 'prefer-implements-annotation' into rules, then wires a second key:
+    - rules["prefer-supports-annotation"] = preferSupportsRule (same implementation, meta.deprecated=false).
+    - The original implements rule’s meta is updated with deprecated=true and replacedBy=["prefer-supports-annotation"].
+  - tests/plugin-default-export-and-configs.test.ts expects both rule keys to be present in plugin.rules: 'prefer-implements-annotation' and 'prefer-supports-annotation'.
+  - docs/rules/prefer-implements-annotation.md documents the rule as 'prefer-supports-annotation' and calls 'traceability/prefer-implements-annotation' a deprecated alias.,Optional warning & backward-compatible behavior (REQ-OPTIONAL-WARNING, REQ-BACKWARD-COMP-VALIDATION):
+  - Rule meta.type = 'suggestion' and docs.recommended = false in src/rules/prefer-implements-annotation.ts, meaning ESLint presets do not enable it; only user-configured severity controls it.
+  - tests/rules/prefer-implements-annotation.test.ts valid cases confirm that comments with only @story, only @req, only @supports, @story+@supports (no @req), and @req+@supports (no @story) produce no diagnostics, ensuring legacy usage remains valid when rule is disabled or not applicable.
+  - Same test file invalid cases verify that when the rule is enabled, a single-story @story + @req block triggers the 'preferImplements' recommendation message.,Auto-fix support and behavior (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX, REQ-PRESERVE-FORMAT, REQ-VALID-OUTPUT):
+  - src/rules/prefer-implements-annotation.ts:
+    - meta.fixable = 'code', enabling ESLint auto-fix.
+    - collectStoryAndReqMetadata() extracts @story path and simple @req IDs only when lines have exactly two tokens (e.g., '@req REQ-ID'); complex forms cause it to bail out by setting storyPath=null, preventing unsafe fixes.
+    - buildImplementsAutoFix() requires exactly one story path, exactly one @story line, at least one @req line, and a non-null storyPath; otherwise it returns null (no fix), enforcing the 'simple, single-story' constraint.
+    - applyImplementsReplacement() constructs a single '@supports <story-path> <REQ-1> <REQ-2> ...' line, using the original @story line’s prefix (indentation and '*') and replacing only the @story line while removing the @req lines; all other comment lines remain untouched.
+  - tests/rules/prefer-implements-annotation.test.ts invalid cases:
+    - 'single-story @story + @req block triggers preferImplements message' and 'single @story + single @req auto-fixes to single @supports line' include explicit 'output' fields showing the comment rewritten to:
+      '/**\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */', verifying working auto-fix.
+    - 'single @story with multiple @req lines auto-fixes to single @supports line containing all REQ IDs' asserts the output '@supports ... REQ-ONE REQ-TWO REQ-THREE', confirming REQ-SINGLE-STORY-FIX and correct aggregation of multiple @req IDs into one @supports line.
+    - Tests 'complex @req content ... does not auto-fix but still warns' and 'complex @story content ... does not auto-fix but still warns' verify that complex forms produce recommendations but no auto-fix (consistent with REQ-VALID-OUTPUT and conservative behavior).
+  - The generated @supports lines use a .story.md path and 'REQ-...' IDs that match patterns already validated by the existing 'valid-annotation-format' tests (tests/rules/valid-annotation-format.test.ts), demonstrating that auto-fix output conforms to the plugin’s own @supports validation rules (REQ-VALID-OUTPUT).,Multi-story detection and non-fixable cases (REQ-MULTI-STORY-DETECT):
+  - src/rules/prefer-implements-annotation.ts:
+    - analyzeComment() collects distinct story paths into a Set and flags the presence of @supports.
+    - hasMultipleStories(storyPaths) uses a named threshold MULTI_STORY_THRESHOLD=1 to detect multi-story blocks.
+    - processComment() logic:
+      - If hasImplements (i.e., comment contains @supports), it reports messageId 'cannotAutoFix' with data.reason 'comment mixes @story/@req with existing @supports annotations'.
+      - If hasMultipleStories(storyPaths) is true, it reports messageId 'multiStoryDetected' and does not generate a fix.
+  - tests/rules/prefer-implements-annotation.test.ts invalid cases:
+    - 'mixed @story/@req and @supports triggers cannotAutoFix' asserts a 'cannotAutoFix' error with the exact 'reason' text expected.
+    - 'multiple @story paths in same block trigger multiStoryDetected' asserts a 'multiStoryDetected' error, confirming detection of non-fixable multi-story patterns.,Preservation of JSDoc structure and annotation order (REQ-PRESERVE-FORMAT / 'Preserve Order' AC):
+  - applyImplementsReplacement() computes a prefix from the original @story line via /^\s*\*?\s*/ and uses that for the new @supports line, ensuring indentation and leading '*' are preserved.
+  - It injects the @supports line at the same index as the original @story line and only removes the @story and @req lines, leaving all other comment lines (e.g., description and @param/@returns tags) unchanged.
+  - This guarantees that the relative placement of the new @supports line within the JSDoc (e.g., after the description and before @param, if that was the original position of @story) is preserved, satisfying REQ-PRESERVE-FORMAT and the 'Preserve Order' acceptance criterion.,Configurable enforcement and default=off (REQ-CONFIG-SEVERITY, 'Configurable Enforcement' AC):
+  - Rule meta.schema = [] – no custom options; enforcement level is controlled exclusively via ESLint severity ('off' | 'warn' | 'error').
+  - The rule is not included in TRACEABILITY_RULE_SEVERITIES in src/index.ts, so it is absent from both recommended and strict presets.
+  - tests/rules/prefer-implements-annotation.test.ts, describe 'prefer-implements-annotation configuration severity (REQ-CONFIG-SEVERITY)':
+    - Confirms that configs.recommended[0].rules and configs.strict[0].rules have no 'traceability/prefer-implements-annotation' or 'traceability/prefer-supports-annotation' entries (default off).
+    - Demonstrates a flat config with both 'traceability/prefer-implements-annotation' and 'traceability/prefer-supports-annotation' set to 'warn' and 'error', and asserts that these values are accepted, proving configurable severity via standard ESLint mechanisms and honoring both primary and alias names.,Both formats remain valid (REQ-BACKWARD-COMP-VALIDATION, 'Both Formats Valid' AC):
+  - The migration rule itself ignores comments that are already in a valid legacy or new format when there is no migration opportunity:
+    - Valid test cases (tests/rules/prefer-implements-annotation.test.ts) show that comments with only @story, only @req, only @supports, or certain @story/@supports / @req/@supports combinations do not trigger diagnostics.
+  - Core validation rules continue to accept and validate @story and @req as before:
+    - tests/rules/valid-annotation-format.test.ts contains extensive 'valid' and 'invalid' cases for @story, @req, and @supports formats, independent of the migration rule.
+    - tests/rules/valid-story-reference.test.ts and tests/rules/valid-req-reference.test.ts validate story path existence and requirement references, ensuring legacy-style annotations are still fully supported.
+  - The migration rule being disabled by default and excluded from presets, combined with these validations, ensures that enabling or disabling the rule does not change the fundamental validity of @story/@req annotations.,Documentation and migration guidance (Documentation AC):
+  - docs/rules/prefer-implements-annotation.md documents the rule under the heading 'prefer-supports-annotation', describes it as an opt-in migration aid, explains behavior for legacy blocks, mixed usage, and multi-story patterns, and includes explicit before/after auto-fix examples and configuration snippets showing how to enable 'traceability/prefer-supports-annotation' (and its deprecated alias) with 'off'/'warn'/'error' severities.
+  - user-docs/migration-guide.md includes a dedicated section 'Optional prefer-supports-annotation migration rule', describing:
+    - That 'traceability/prefer-supports-annotation' is the canonical rule name with 'traceability/prefer-implements-annotation' as a deprecated alias.
+    - That the rule is disabled by default and not part of any preset.
+    - Example configuration enabling 'traceability/prefer-supports-annotation': 'warn'.
+    - Narrative and examples of auto-fix behavior for simple single-story blocks, and non-fixable mixed/multi-story cases.
+  - user-docs/api-reference.md has an entry 'traceability/prefer-supports-annotation' describing it as an opt-in migration helper, explicitly notes the deprecated alias, and links to the migration guide for details, satisfying the requirement for a migration guide with auto-fix examples and opt-in configuration.,Rule naming acceptance criterion specifically (Rule Naming AC):
+  - grep shows multiple references tying this story to the rule naming behavior, including .voder/traceability/docs-stories-010.3-DEV-MIGRATE-TO-SUPPORTS.story.xml summarizing: 'plugin exposes traceability/prefer-supports-annotation as the primary rule and traceability/prefer-implements-annotation as a deprecated alias with meta.deprecated = true and meta.replacedBy = ["prefer-supports-annotation"]'. This matches exactly what src/index.ts does.,Test coverage and status:
+  - tests/rules/prefer-implements-annotation.test.ts exercises:
+    - Optional warning behavior, auto-fix behavior, single-story multi-req conversion, multi-story detection, and non-fixable mixed cases.
+    - Configuration severity and default-off behavior (via configs from src/index.ts).
+  - tests/plugin-default-export-and-configs.test.ts confirms that the plugin's rules object includes both 'prefer-implements-annotation' and 'prefer-supports-annotation', and that recommended/strict presets do not enable them by default.
+  - npm test -- --verbose (run via jest --ci --bail --verbose) reports all suites passing, including the migration rule tests:
+    - 'prefer-supports-annotation / prefer-implements-annotation aliasing (Story 010.3-DEV-MIGRATE-TO-SUPPORTS)' with all REQ-* named cases passing.
+    - 'prefer-implements-annotation configuration severity (REQ-CONFIG-SEVERITY)' tests passing.
+  - No failing or skipped tests related to this story; overall summary: 48 of 49 test suites passed, 1 skipped, 371 tests passed.</evidence>
+  <notes>All acceptance criteria for docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md are fully implemented. The core migration rule is implemented in src/rules/prefer-implements-annotation.ts, wired so that 'traceability/prefer-supports-annotation' is the primary rule name with 'traceability/prefer-implements-annotation' as a deprecated alias. The rule is disabled by default and strictly opt-in via ESLint severity. It detects simple legacy @story + @req blocks, emits configurable recommendation diagnostics, and provides conservative auto-fixes that replace @story/@req lines with a single @supports line while preserving comment formatting and order. Multi-story and mixed @story/@req/@supports patterns are detected and reported as non-fixable, with clear messages. Legacy @story/@req annotations remain valid and unaffected when the rule is disabled, and auto-fix output conforms to the existing @supports validation rules. Documentation (rule doc, migration guide, and API reference) clearly describes the rule, its alias, configuration options, and auto-fix examples. All relevant unit and integration tests for this story pass, confirming behavior and configuration semantics.</notes>
 </traceability>

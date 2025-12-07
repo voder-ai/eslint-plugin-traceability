@@ -2,8 +2,8 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T13:22:56.330Z</last_validated>
+  <last_validated>2025-12-07T13:48:38.765Z</last_validated>
   <last_modified>2025-12-07T09:49:44.029Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>docs/stories/008.0-DEV-AUTO-FIX.story.md is a valid specification. The implementing rules (require-story-annotation and valid-annotation-format) explicitly reference this story and the REQ-AUTOFIX-* requirements, including safe auto-fix behavior, idempotence, single-application guarantees, configurable templates, and selective auto-fix toggles. The dedicated test suite tests/rules/auto-fix-behavior-008.test.ts is directly tied to this story and exercises all listed requirements (missing-annotation fixes, format/suffix fixes, idempotent behavior, no duplicate fixes, template configurability, and autoFix=false behavior). Re-running that suite shows all 21 tests passing. User documentation in user-docs/api-reference.md describes the auto-fix behavior and configuration in line with the story. All acceptance criteria and enumerated requirements for Story 008.0-DEV-AUTO-FIX are therefore fully implemented and currently passing tests.</notes>
+  <evidence>[object Object]</evidence>
+  <notes>docs/stories/008.0-DEV-AUTO-FIX.story.md describes auto-fix behavior for missing @story annotations and safe @story path suffix normalization, including safety, idempotence, single-application, template configurability, selective enabling, and documentation requirements. All corresponding capabilities are implemented in the ESLint rules `require-story-annotation` and `valid-annotation-format`, thoroughly covered by dedicated tests in tests/rules/auto-fix-behavior-008.test.ts and related helper tests, and documented in user-docs/api-reference.md. The full Jest test suite (including the 008 auto-fix tests) passes. No acceptance criterion or requirement from this story appears unimplemented or failing, so the story is fully satisfied.</notes>
 </traceability>

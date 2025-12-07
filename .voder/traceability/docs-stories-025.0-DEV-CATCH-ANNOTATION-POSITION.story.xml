@@ -2,85 +2,15 @@
 <traceability>
   <specification>docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T13:23:05.742Z</last_validated>
+  <last_validated>2025-12-07T13:47:25.958Z</last_validated>
   <last_modified>2025-12-06T21:35:50.287Z</last_modified>
-  <evidence>Story file docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md exists and matches the specification provided in the prompt, including requirements REQ-DUAL-POSITION-DETECTION, REQ-FALLBACK-LOGIC, REQ-POSITION-PRIORITY, and REQ-PRETTIER-AUTOFIX.,Implementation in src/utils/branch-annotation-helpers.ts:
-- DEFAULT_BRANCH_TYPES includes "CatchClause" (IMPL-CATCHCLAUSE-HANDLER).
-- gatherBranchCommentText(...) has a dedicated CatchClause branch that calls gatherCatchClauseCommentText(sourceCode, node, beforeText).
-- gatherCatchClauseCommentText(...) implements dual-position behavior:
-  - If beforeText already contains @story or @req, it returns beforeText directly (REQ-POSITION-PRIORITY).
-  - Otherwise, if sourceCode.getCommentsInside exists, it collects comment values from node.body and returns their joined text when present (inside-catch detection; REQ-DUAL-POSITION-DETECTION, REQ-FALLBACK-LOGIC).
-  - If getCommentsInside is not available or fails, it uses a line-based fallback: it scans sourceCode.lines from the first line inside node.body’s loc to the end loc, collecting contiguous comment-only lines via collectCommentLine; if any are found, it returns that insideText (inside-catch fallback; REQ-FALLBACK-LOGIC).
-  - If neither inside path yields comments, it falls back to beforeText.
-- getBaseBranchIndentAndInsertPos(...) contains special handling for node.type === "CatchClause":
-  - When the catch body has at least one statement, it derives indent and insertPos from the first statement’s line, so fixes are inserted inside the catch body, before the first statement.
-  - When the body is empty but has a loc, it uses the block’s start line and derives an inner indent (blockIndent + two spaces) for the inserted comment.
-  - This ensures auto-fix annotations are placed inside the catch block in a formatter-stable position (REQ-PRETTIER-AUTOFIX).
-- getBranchAnnotationInfo(...) uses gatherBranchCommentText(), so CatchClause dual-position detection feeds into missingStory/missingReq calculation (IMPL-BRANCH-ANNOTATION-INFO).,Unit tests for CatchClause comment detection: tests/utils/branch-annotation-catch-position.test.ts
-- File header:
-  "@story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md" and
-  "@supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC REQ-POSITION-PRIORITY REQ-PRETTIER-AUTOFIX" (traceability to this story and its requirements).
-- Tests:
-  - "[REQ-DUAL-POSITION-DETECTION] prefers before-catch annotations when present" creates a CatchClause with both commentsBefore and commentsInside and asserts gatherBranchCommentText returns the before-catch @story and @req, verifying position priority (REQ-POSITION-PRIORITY).
-  - "[REQ-FALLBACK-LOGIC] falls back to inside-catch annotations when before-catch is missing" sets commentsBefore empty and commentsInside with @story/@req; gatherBranchCommentText returns inside-catch annotations (REQ-DUAL-POSITION-DETECTION, REQ-FALLBACK-LOGIC).
-  - "[REQ-FALLBACK-LOGIC] returns before-catch text when getCommentsInside is not available" omits getCommentsInside and verifies before-catch text is used when present (fallback behavior).
-  - "[REQ-FALLBACK-LOGIC] collects inside-catch comments using line-based fallback when getCommentsInside is unavailable" uses only sourceCode.lines and a BlockStatement.loc, with inline // @story and // @req inside the catch body; gatherBranchCommentText returns those inside-catch comments via the line-based fallback (REQ-FALLBACK-LOGIC).,Unit tests for CatchClause insert position (auto-fix): tests/utils/branch-annotation-catch-insert-position.test.ts
-- File header references this story and supports REQ-PRETTIER-AUTOFIX.
-- Test "[REQ-PRETTIER-AUTOFIX] inserts annotations at the first statement inside the catch body" constructs:
-  - A synthetic sourceCode with lines representing a try/catch where the first statement in the catch body is on line 5.
-  - A CatchClause node whose body has a BlockStatement with a first ExpressionStatement at line 5.
-  - A mocked context.report that immediately invokes the fixer provided by reportMissingAnnotations.
-- After calling reportMissingAnnotations(context, node, storyFixCountRef), the test asserts:
-  - fixer.insertTextBeforeRange is called exactly once.
-  - The range passed to insertTextBeforeRange equals [expectedIndex, expectedIndex], where expectedIndex is the index of line 5 column 0 (first statement in catch body).
-  - The inserted text starts with two spaces (inner indentation from line 5).
-- This verifies that auto-fix inserts annotations inside the catch body before the first executable statement, which is precisely the Prettier-stable location described in the story (REQ-PRETTIER-AUTOFIX).,Integration tests with Prettier: tests/integration/catch-annotation-prettier.integration.test.ts
-- File header:
-  "@story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md" and
-  "@supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-PRETTIER-COMPATIBILITY".
-- Uses the real ESLint CLI (resolved from eslint/package.json) with the local eslint.config.js and enables traceability/require-branch-annotation:error.
-- Uses the real Prettier CLI (prettier.cjs) with --parser typescript to format code.
-- Tests:
-  - "[REQ-PRETTIER-COMPATIBILITY-BEFORE] accepts code where annotations start before catch but are moved inside by Prettier":
-    - Original code places @story/@req before the catch keyword.
-    - Prettier formats the code; assertions confirm the story comment appears after "catch (error) {" (i.e., inside the catch body).
-    - ESLint with require-branch-annotation on the formatted code returns status 0.
-  - "[REQ-PRETTIER-COMPATIBILITY-INSIDE] accepts code where annotations start inside the catch body and are preserved by Prettier":
-    - Original code places @story/@req inside the catch body.
-    - After Prettier, formatted code still has @story inside the body; ESLint returns status 0.
-  - "[REQ-PRETTIER-COMPATIBILITY-EMPTY] accepts empty catch blocks with inside-catch annotations after Prettier formatting":
-    - Tests an empty catch with only annotations in the body; after formatting, ESLint returns status 0.
-- These tests validate that formatted code with annotations in either allowed position passes linting, satisfying the Prettier Compatibility acceptance criterion.,Rule-level tests for require-branch-annotation: tests/rules/require-branch-annotation.test.ts
-- Suite name: "Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)" but individual tests include CatchClause behavior and Prettier-aware scenarios:
-  - Under "valid" cases: includes a "valid catch with annotations" test.
-  - Under "invalid" cases: includes tests such as "missing annotations on try-catch blocks" and a specific test "[REQ-PRETTIER-AUTOFIX-ELSE-IF] missing annotations on else-if branch with Prettier-style autofix insertion" plus various other branch types.
-- The successful Jest run (see below) shows this suite passing, indicating no regressions for catch and other branch types (No Regression acceptance criterion).,User-facing documentation describing CatchClause positions and Prettier compatibility: user-docs/api-reference.md, section "traceability/require-branch-annotation"
-- Under "Behavior notes" for **Catch clauses**:
-  - Explicitly states:
-    - "Valid locations for `@story` / `@req` annotations are either immediately before the `catch` keyword or on the first comment-only lines inside the catch block (before any executable statements)."
-    - "If annotations exist in both locations, the comments immediately before `catch` take precedence for validation and reporting."
-    - "When auto-fixing missing annotations on a catch clause, the rule inserts placeholder comments inside the catch block body so that formatters like Prettier keep them attached to the branch."
-- It also notes that these formatter-aware behaviors are limited to catch clauses and else-if branches and that other branches still use the simpler "comments immediately before the branch" model.
-- This matches the story’s documentation acceptance criterion, including explaining both valid positions and Prettier behavior to end users.,Full Jest test run (npm test -- --runInBand --verbose) executed earlier in this session:
-- Relevant excerpts from stderr output:
-  - "CatchClause annotations with Prettier (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)" – all three tests passed:
-    - [REQ-PRETTIER-COMPATIBILITY-BEFORE]
-    - [REQ-PRETTIER-COMPATIBILITY-INSIDE]
-    - [REQ-PRETTIER-COMPATIBILITY-EMPTY]
-  - "CatchClause insert position (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)" – test "[REQ-PRETTIER-AUTOFIX] inserts annotations at the first statement inside the catch body" passed.
-  - "gatherBranchCommentText CatchClause behavior (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)" – tests for REQ-DUAL-POSITION-DETECTION and REQ-FALLBACK-LOGIC passed (including priority and line-based fallback cases).
-  - The overall Jest summary:
-    - Test Suites: 48 passed, 1 skipped, 49 total.
-    - Tests: 371 passed, 2 skipped, 373 total.
-    - The require-branch-annotation rule suite and all related utility and integration suites passed, demonstrating no regressions and confirming all story-specific tests are green.</evidence>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
   <notes>All acceptance criteria for Story 025.0-DEV-CATCH-ANNOTATION-POSITION are fully implemented and verified:
-- Dual-position CatchClause detection is implemented via gatherCatchClauseCommentText and exercised by unit tests.
-- Fallback logic (prefer before-catch, then inside-catch via getCommentsInside, then line-based scan) is present and tested.
-- Position priority (before-catch wins when both positions have annotations) is enforced and covered by tests.
-- Auto-fix for catch clauses inserts annotations inside the catch body in a Prettier-stable location and is validated by dedicated insert-position tests.
-- End-to-end Prettier + ESLint integration tests confirm formatted code passes the require-branch-annotation rule for all specified scenarios, including empty catch blocks.
-- Rule documentation in the user API reference accurately describes the two valid positions, precedence rules, and Prettier-aware behavior.
-- A full Jest run shows all relevant unit, rule, and integration tests passing, indicating no regressions for catch or other branch types.
-
-Based on this concrete evidence, the story is fully implemented and remains in a passing state.</notes>
+- Before-catch annotations remain supported and are preferred when both before and inside positions are present, enforced via gatherCatchClauseCommentText and validated by dedicated unit tests (REQ-DUAL-POSITION-DETECTION, REQ-POSITION-PRIORITY).
+- Inside-catch annotations are detected using both getCommentsInside and a robust line-based fallback when that API is unavailable, satisfying REQ-FALLBACK-LOGIC and REQ-DUAL-POSITION-DETECTION.
+- Auto-fix for CatchClause branches calculates indent and insert position inside the catch body and inserts placeholder comments before the first executable statement (or on the first line inside an empty block), matching Prettier’s layout and validated by branch-annotation-catch-insert-position tests (REQ-PRETTIER-AUTOFIX).
+- Integration tests running real Prettier and ESLint demonstrate that code formatted by Prettier passes traceability checks whether annotations begin before catch or inside the body, including empty catch cases (Prettier Compatibility criterion).
+- The main require-branch-annotation rule suite and all other branch-related tests pass, showing no regressions for other branch types (if/switch/loops/try).
+- User-facing API documentation explicitly documents both valid CatchClause annotation positions, precedence, and formatter-aware auto-fix behavior.
+Given the existing implementation, focused unit tests, end-to-end Prettier integration tests, and passing test suite, the story is fully satisfied and is marked as PASSED.</notes>
 </traceability>

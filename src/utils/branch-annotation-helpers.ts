@@ -138,6 +138,46 @@ function collectCommentLine(
   return true;
 }
 
+/**
+ * Scan contiguous formatter-aware comment lines between the provided 0-based
+ * start and end indices (inclusive), stopping when a non-comment or blank line
+ * is encountered. This helper is used as a line-based fallback when
+ * structured comment APIs are not available for branch bodies.
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC-ELSE-IF
+ */
+function scanCommentLinesInRange(
+  lines: string[],
+  startIndex: number,
+  endIndexInclusive: number,
+): string {
+  if (!Array.isArray(lines) || lines.length === 0) {
+    return "";
+  }
+
+  if (
+    startIndex < 0 ||
+    startIndex >= lines.length ||
+    startIndex > endIndexInclusive
+  ) {
+    return "";
+  }
+
+  const comments: string[] = [];
+  const lastIndex = Math.min(endIndexInclusive, lines.length - 1);
+  let i = startIndex;
+
+  while (i <= lastIndex) {
+    if (!collectCommentLine(lines, i, comments)) {
+      break;
+    }
+    i++;
+  }
+
+  return comments.join(" ");
+}
+
 function isElseIfBranch(node: any, parent: any | undefined): boolean {
   return (
     node &&
@@ -181,17 +221,8 @@ function gatherCatchClauseCommentText(
     const lines = sourceCode.lines;
     const startIndex = node.body.loc.start.line - 1;
     const endIndex = node.body.loc.end.line - 1;
-    const comments: string[] = [];
-    let i = startIndex + 1;
 
-    while (i <= endIndex) {
-      if (!collectCommentLine(lines, i, comments)) {
-        break;
-      }
-      i++;
-    }
-
-    const insideText = comments.join(" ");
+    const insideText = scanCommentLinesInRange(lines, startIndex + 1, endIndex);
     if (insideText) {
       return insideText;
     }
@@ -255,18 +286,18 @@ function scanElseIfBetweenConditionAndBody(
   const conditionEndLine: number = node.test.loc.end.line;
   const consequentStartLine: number = node.consequent.loc.start.line;
 
-  const comments: string[] = [];
-  for (
-    let lineIndex = conditionEndLine;
-    lineIndex < consequentStartLine - 1;
-    lineIndex++
-  ) {
-    if (!collectCommentLine(lines, lineIndex, comments)) {
-      break;
-    }
+  // Lines in sourceCode are 0-based indexes, but loc.line values are 1-based.
+  // We want to scan comments strictly between the condition and the
+  // consequent body, so we start at the line after the condition's end and
+  // stop at the line immediately before the consequent's starting line.
+  const startIndex = conditionEndLine; // already the next logical line index when 0-based
+  const endIndexExclusive = consequentStartLine - 1;
+
+  if (endIndexExclusive <= startIndex) {
+    return "";
   }
 
-  return comments.join(" ");
+  return scanCommentLinesInRange(lines, startIndex, endIndexExclusive - 1);
 }
 
 /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
