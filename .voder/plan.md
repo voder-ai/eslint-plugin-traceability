@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Add clear, formatter-aware examples to the examples documentation that show annotated if/else/else-if chains before and after formatting, demonstrating where annotations should go and how they are interpreted by the branch-annotation rule.
+- [ ] Review the conditional logic around the uncovered branch in the req-annotation detection utility so you clearly understand what scenario it handles and what inputs are needed to exercise each side of that branch.
 
 ## NEXT
 
-- [ ] Ensure the new examples are consistent with the documented behavior in the branch-annotation stories and API reference, adjusting wording or annotations in the examples where necessary to match the current implementation.
-- [ ] Add brief explanatory notes alongside the new examples that call out how common formatters (such as Prettier) may move comments and why the shown annotation positions remain valid.
-- [ ] Cross-reference the new branch-annotation examples from the existing user documentation (for example from the rule’s API reference section) so users can easily discover them when configuring formatter-aware annotations.
+- [ ] Identify or confirm the dedicated test file that verifies the req-annotation detection utility and sketch one or more test cases that will drive execution through the previously uncovered branch paths.
+- [ ] Implement new unit tests for the req-annotation detection utility that cover both sides of the uncovered conditional branch, including any relevant edge cases, and annotate these tests with the appropriate story and requirement references.
+- [ ] Run the existing automated checks implicitly triggered by the workflow to confirm the new tests pass and that overall coverage now includes the previously uncovered branch.
 
 ## LATER
 
-- [ ] Expand the examples documentation with additional scenarios that cover other supported branch types (such as switch cases and loop constructs), making sure each example illustrates both annotation placement and expected rule behavior.
-- [ ] Introduce a small section in the examples documentation that contrasts legacy annotation patterns with the recommended formatter-aware patterns, helping users migrate older codebases more confidently.
-- [ ] Revisit and refine the examples over time as formatter behavior or supported branch patterns evolve, keeping them aligned with the latest stories, implementation, and tests.
+- [ ] Review the full req-annotation detection utility for any additional subtle edge cases that might benefit from explicit tests, and extend the suite where helpful.
+- [ ] Consider small refactorings to the req-annotation detection utility to make branch conditions and intent clearer, guided by the new tests to keep behavior stable.
+- [ ] Update or add internal documentation, if needed, to describe the expected behavior of the req-annotation detection heuristics so future contributors understand how the newly tested branch should behave.

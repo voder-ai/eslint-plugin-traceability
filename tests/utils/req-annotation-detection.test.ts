@@ -201,6 +201,24 @@ describe("reqAnnotationDetection advanced heuristics (Story 003.0-DEV-FUNCTION-A
     expect(has).toBe(false);
   });
 
+  it("[REQ-ANNOTATION-REQ-DETECTION] fallbackTextBeforeHasReq returns false when range[0] is not a number", () => {
+    const context = {
+      getSourceCode() {
+        return createMockSourceCode({ text: "/* @req REQ-IN-TEXT-BUT-INVALID-RANGE */" });
+      },
+    } as any;
+
+    const node = {
+      // First element of range is not a number; guard on numeric start index should trigger
+      range: ["not-a-number", 10] as any,
+      parent: {},
+    } as any;
+
+    const has = _hasReqAnnotation(null as any, [], context, node);
+
+    expect(has).toBe(false);
+  });
+
   it("[REQ-ANNOTATION-REQ-DETECTION] fallbackTextBeforeHasReq returns true when text window contains @req", () => {
     const fullText = `
       // some header

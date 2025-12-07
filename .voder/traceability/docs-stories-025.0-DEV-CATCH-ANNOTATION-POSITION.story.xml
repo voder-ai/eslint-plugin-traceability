@@ -2,17 +2,17 @@
 <traceability>
   <specification>docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T01:50:28.077Z</last_validated>
+  <last_validated>2025-12-07T02:12:52.999Z</last_validated>
   <last_modified>2025-12-06T21:35:50.287Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and requirements for docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md are fully implemented and verified:
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All functional requirements in docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md are fully implemented and backed by targeted unit tests, integration tests with real Prettier + ESLint, and updated user-facing documentation.
 
-- Before-catch annotations are still recognized and take precedence when both positions exist.
-- Inside-catch annotations are detected via ESLint’s getCommentsInside as well as a robust line-based fallback.
-- Auto-fix for CatchClause inserts annotations inside the catch block in a Prettier-stable location.
-- End-to-end integration tests with Prettier confirm that formatted code passes require-branch-annotation without manual intervention.
-- Other branch types remain unaffected and fully covered by existing tests.
-- Rule documentation clearly explains both valid CatchClause annotation positions, priority, and Prettier compatibility.
+Implementation details:
+- CatchClause dual-position detection is implemented via gatherCatchClauseCommentText and wired through gatherBranchCommentText and getBranchAnnotationInfo used by the require-branch-annotation rule.
+- The function prioritizes before-catch annotations when they contain @story/@req and falls back to inside-catch comments (via getCommentsInside or a line-based scan) when needed, matching REQ-DUAL-POSITION-DETECTION, REQ-FALLBACK-LOGIC, and REQ-POSITION-PRIORITY.
+- Auto-fix behavior for CatchClause computes indentation and insertion index inside the catch block body (before the first statement or just inside the block), ensuring Prettier preserves the inserted annotations (REQ-PRETTIER-AUTOFIX).
+- Dedicated unit tests cover all key behaviors (priority, fallback, inside-body detection, and insert position), and integration tests verify that Prettier-formatted code with catch annotations passes the require-branch-annotation rule.
+- The API reference in user-docs documents both valid annotation positions, priority rules, and Prettier-aware auto-fix behavior for catch clauses.
 
-Given the current code, tests, and docs, this story is correctly and completely implemented.</notes>
+All related tests pass in the current test run, and no regressions are evident in other branch types. Therefore, this story is fully satisfied.</notes>
 </traceability>

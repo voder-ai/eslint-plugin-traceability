@@ -2,22 +2,8 @@
 <traceability>
   <specification>docs/stories/010.0-DEV-DEEP-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T01:54:13.554Z</last_validated>
+  <last_validated>2025-12-07T02:14:30.381Z</last_validated>
   <last_modified>2025-12-04T18:44:42.514Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All key aspects of Story 010.0-DEV-DEEP-VALIDATION are implemented and verified:
-
-- **Core Functionality**: Implemented by the `traceability/valid-req-reference` rule and its helpers. It parses comments for `@story`, `@req`, and `@supports`, resolves the referenced story file, scans that markdown file for `REQ-...` identifiers using a global regex, and reports a clear `reqMissing` error when an annotated requirement is not present. Tests cover both successful and failing cases, including missing requirement IDs.
-
-- **Quality Standards (various formats and structures)**: Requirements are discovered via `/REQ-[A-Z0-9-]+/g` over the entire story file, which makes the rule agnostic to markdown structure and list style. Tests exercise at least two distinct formats and structures: standard story docs (001.0 story), dedicated bullet-list fixture (`story_bullet.md`), and multi-story fixtures with shared and distinct IDs. This demonstrates correct behavior across different formats and layouts.
-
-- **Integration with existing validation and parsing**: The rule is registered and enabled alongside the existing annotation and file-validation rules, and uses similar comment-scanning patterns. It extends the existing file-validation model by adding content-level checks (on top of the existence checks provided by `valid-story-reference`), aligning with the story’s specified integration points.
-
-- **User Experience**: Error messages are specific and consistent with the error-reporting story: `"Requirement '{{reqId}}' not found in '{{storyPath}}'"` and `"Invalid story path '{{storyPath}}'"` include the precise problematic values and are wired via `meta.messages`. Tests assert `messageId` and `data` for these errors, ensuring the UX is correct.
-
-- **Error Handling**: The implementation guards against invalid paths (path traversal, absolute paths, leaving the project root) and I/O errors when reading story files. In all such cases, the rule reports a clear lint error (`invalidPath` or `reqMissing`) and does not throw, so ESLint runs remain stable even if story files are malformed or unreadable. This satisfies the requirement to handle malformed files and parsing errors gracefully.
-
-- **Documentation**: The rule is documented in both the root README (as an available rule) and the API reference (with description, severity, and example). The API reference explicitly states that it verifies that `@req` IDs match known requirements, and elsewhere notes that deep checking for `@req` and `@supports` is handled by this rule. While documentation does not exhaustively list every possible markdown pattern, it clearly communicates the behavior and gives usable examples, which is sufficient for the acceptance criterion.
-
-Given the concrete implementation, dedicated tests tied to this story, and passing project-wide test run, this story is fully implemented and meets all of its acceptance criteria.</notes>
+  <notes>[object Object]</notes>
 </traceability>

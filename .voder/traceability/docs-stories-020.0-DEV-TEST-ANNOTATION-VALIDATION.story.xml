@@ -2,17 +2,20 @@
 <traceability>
   <specification>docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T01:53:55.755Z</last_validated>
+  <last_validated>2025-12-07T02:15:55.119Z</last_validated>
   <last_modified>2025-12-04T21:56:14.194Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>Story 020.0-DEV-TEST-ANNOTATION-VALIDATION is fully implemented.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>Story 020.0-DEV-TEST-ANNOTATION-VALIDATION defines an ESLint rule to enforce traceability conventions in test files: file-level @supports annotations, story references in describe() strings, and [REQ-...] prefixes in test names, with configuration, framework support, integration, and documentation.
 
-The ESLint rule `require-test-traceability` exists, is wired into the plugin, and is covered by focused tests. It enforces:
-- File-level `@supports` annotations in test files (REQ-TEST-FILE-SUPPORTS) using `ensureFileSupportsAnnotation`, with clear error messaging and optional placeholder auto-fix.
-- Story references in `describe`/top-level test blocks via a configurable regex pattern (REQ-TEST-DESCRIBE-STORY, REQ-TEST-NESTED-DESCRIBE).
-- `[REQ-XXX]` prefixes in `it`/`test` names, including detection and normalization of malformed prefixes (REQ-TEST-IT-REQ-PREFIX, REQ-TEST-ERROR-CONTEXT).
-- Selective application to test files based on configurable `testFilePatterns` (REQ-TEST-PATTERN-DETECT).
-- Compatibility with Jest and Mocha-style APIs by recognizing `describe`, `it`, `test`, and `context`, and handling member forms like `describe.each` (REQ-TEST-FRAMEWORK-COMPAT).
+Implementation status against Acceptance Criteria:
+- File-Level Annotations: Implemented via ensureFileSupportsAnnotation, which reports 'missingFileSupports' when no @supports is present in a detected test file and (optionally) auto-inserts a placeholder @supports JSDoc. Tested in tests/rules/require-test-traceability.test.ts invalid case for missing @supports.
+- Describe Block Story References: Implemented via handleDescribeCall using a configurable describePattern (default 'Story [0-9]+\\.[0-9]+-') and messageId 'missingDescribeStory'. Tested in invalid case with describe('no story reference here', ...).
+- Test Name Requirement Prefixes: Implemented via handleItOrTestCall enforcing /^\[REQ-[^\]]+]/ on it()/test() names, with safe normalization of malformed prefixes in --fix mode. Tested in cases for missing prefix and several malformed formats.
+- Quality Standards: Rule uses standard ESLint RuleModule shape, declares meta.schema, messages, and fixable, and limits work to files that match simple testFilePatterns with straightforward AST traversal. No performance issues are evident, and behavior is covered by dedicated tests.
+- Integration: The rule is dynamically loaded and exported by the plugin (src/index.ts), included in recommended and strict presets at severity 'error', and is asserted in tests/plugin-default-export-and-configs.test.ts. README and user-docs describe it as part of the core rule set.
+- Error Messages: Messages exactly match those outlined in the story's example error messages and provide clear, actionable guidance. Additional context (e.g., TODO comments) is provided in the auto-inserted @supports template.
+- Framework Support: The helper recognizes 'describe', 'it', 'test', and 'context' as test framework calls, covering typical Jest and Mocha BDD patterns. Tests include 'context(...)' usage to validate non-Jest frameworks.
+- Documentation: user-docs/api-reference.md contains a detailed section for traceability/require-test-traceability, including description, all configuration options, behavior notes, and examples, and the rule is also referenced in README.md.
 
-Existing rules from dependency stories (valid-annotation-format, valid-story-reference, valid-req-reference) provide the deeper validation for story paths and requirement IDs referenced in `@supports`, satisfying REQ-TEST-SUPPORTS-VALID when the plugin is used as documented. User-facing documentation in `user-docs/api-reference.md` and README describes the rule’s behavior, options, and usage in detail. The dedicated Jest test file for this rule passes as part of the full test suite, confirming behavior matches the specification. Therefore this story is assessed as PASSED.</notes>
+The story’s additional requirements about validating that @supports references existing story files and requirements are satisfied via composition with existing rules from dependency stories (valid-annotation-format, valid-story-reference, valid-req-reference), which already run on annotations in test files. Overall, all explicit acceptance criteria for Story 020.0 are met, with concrete implementation, tests, plugin integration, and documentation in place.</notes>
 </traceability>

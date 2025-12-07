@@ -2,16 +2,17 @@
 <traceability>
   <specification>docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T01:50:52.066Z</last_validated>
+  <last_validated>2025-12-07T02:13:06.473Z</last_validated>
   <last_modified>2025-12-06T13:04:07.978Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and detailed requirements from docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md are satisfied:
-- Rule Naming (REQ-RULE-NAME): prefer-supports-annotation is the canonical rule name, with prefer-implements-annotation implemented as a deprecated alias in src/index.ts and validated by tests.
-- Optional Warning (REQ-OPTIONAL-WARNING): The rule emits recommendation diagnostics (messageId preferImplements) when @story + @req are detected; it is of type "suggestion" and disabled by default, so it is only active when configured as warn/error.
-- Auto-fix Support / Single Story Conversion / Preserve Order (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX, REQ-PRESERVE-FORMAT): Implementation in prefer-implements-annotation.ts and its tests confirm that simple single-story blocks with one or multiple @req lines are converted to a single @supports line while preserving surrounding JSDoc structure.
-- Multi-story Detection (REQ-MULTI-STORY-DETECT): hasMultipleStories(), MULTI_STORY_THRESHOLD, and processComment() emit cannotAutoFix and multiStoryDetected messages for mixed or multi-story patterns; tests assert both messages and reasons.
-- Configurable Enforcement (REQ-CONFIG-SEVERITY): Rule is not present in TRACEABILITY_RULE_SEVERITIES, so presets leave it off; tests demonstrate that users can set severity to "warn" or "error" for both canonical and alias names.
-- Both Formats Valid / Backward Compatibility (REQ-BACKWARD-COMP-VALIDATION): When the rule is disabled (default), validation-only rules still govern correctness; even when enabled, tests confirm that pure @story, pure @req, pure @supports, and certain mixed-but-incomplete patterns remain valid and unreported.
-- Quality Standards / Valid Output (REQ-VALID-OUTPUT): Auto-fix is conservative, bailing out for complex @story/@req lines, and generated @supports annotations are validated by the existing format and reference rules, as shown by the passing Jest suite.
-- Documentation: Both the rule doc and the migration guide provide migration examples, configuration snippets, and behavioral explanations aligned with the story. The targeted test run for tests/rules/prefer-implements-annotation.test.ts passed, reconfirming the previous full assessment. Therefore, this story is fully implemented and remains in a PASSED state despite the unchecked checkbox in the story file.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria and explicit requirements in `docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md` are implemented and covered by tests and documentation:
+
+- **Rule naming & aliasing (REQ-RULE-NAME)**: `traceability/prefer-supports-annotation` is exposed as the primary rule name, with `traceability/prefer-implements-annotation` wired as a deprecated alias (`src/index.ts`), and tests assert both names are available and behave identically.
+- **Optional warning & multi-story detection (REQ-OPTIONAL-WARNING, REQ-MULTI-STORY-DETECT)**: Rule only reports on legacy `@story`+`@req` blocks and multi-story/mixed cases, with precise messages matching the story, and is disabled by default in presets; tests verify this behavior.
+- **Auto-fix & single-story conversion (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX, REQ-PRESERVE-FORMAT, REQ-VALID-OUTPUT)**: Implementation provides a conservative auto-fix that rewrites eligible single-story blocks to a single `@supports` line while preserving comment structure and bailing out on complex/ambiguous patterns; unit tests validate single-REQ and multi-REQ conversions and no-fix behavior for complex cases.
+- **Configurable enforcement (REQ-CONFIG-SEVERITY)**: The rule uses standard ESLint severities (`off`/`warn`/`error`), is not included in built-in presets by default, and tests confirm both the primary and alias keys can be configured with different severities.
+- **Backward compatibility & validation (REQ-BACKWARD-COMP-VALIDATION, Both Formats Valid)**: Valid test cases prove that comments containing only `@story`, only `@req`, only `@supports`, or certain mixed-but-non-target patterns are ignored by this rule, ensuring legacy annotations remain valid when the rule is disabled or not configured.
+- **Documentation (Documentation acceptance criterion)**: A dedicated rule doc and the migration guide explain the rule’s purpose, configuration, auto-fix behavior, and limitations with examples, matching the story’s examples and configuration guidance.
+
+The full Jest suite (including all tests for this story) passes, providing concrete verification that 010.3’s behavior works as specified. Therefore this story is fully implemented.</notes>
 </traceability>

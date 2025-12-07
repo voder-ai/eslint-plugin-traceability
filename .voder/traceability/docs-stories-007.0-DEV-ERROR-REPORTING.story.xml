@@ -2,8 +2,15 @@
 <traceability>
   <specification>docs/stories/007.0-DEV-ERROR-REPORTING.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T01:50:47.579Z</last_validated>
+  <last_validated>2025-12-07T02:13:29.470Z</last_validated>
   <last_modified>2025-12-04T18:44:42.517Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>docs/stories/007.0-DEV-ERROR-REPORTING.story.md is unchanged from the previously assessed version, and all relevant implementation and tests are still present. The rules named in the story (require-story-annotation, require-req-annotation, require-branch-annotation, valid-annotation-format, valid-story-reference, valid-req-reference) each define meta.messages using the shared patterns and placeholders described, and they are exercised by focused unit tests plus integration tests. Jest was run with full verbose output and all suites, including the dedicated error-reporting suite and the severity/config tests, passed. The behavior observed meets all acceptance criteria: specific and actionable messages, ESLint-best-practice formatting, correct integration with ESLint reporting (including location data), clear suggested fixes and context, graceful handling of incomplete/IO error contexts, and documented, consistently applied severity levels. Therefore this story is fully implemented and verified.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>Story 007.0-DEV-ERROR-REPORTING specifies cross-rule conventions for clear, actionable error messages (including placeholders, context fields, suggestions, and severity) across the core traceability rules. The current implementation:
+- Defines specific, templated messages in meta.messages for all relevant rules (require-story-annotation, require-req-annotation, require-branch-annotation, valid-annotation-format, valid-story-reference, valid-req-reference) that match the patterns described in the story.
+- Wires those templates through shared helpers (coreReportMissing/coreReportMethod, annotation-checker, branch-annotation-helpers, valid-annotation-format-validators/options, valid-story-reference-helpers, valid-req-reference-helpers) so ESLint reports include precise locations and rich data (functionName, missing, details, path, reqId, storyPath).
+- Provides ESLint suggestions and/or autofixes where appropriate, especially for missing @story and @req annotations, and documents these behaviors.
+- Implements and tests a severity policy that treats missing annotations and unresolved references as errors while treating pure format issues as warnings, exactly as specified.
+- Includes dedicated tests that are explicitly annotated with @supports for this story and its REQ-ERROR-* requirement IDs, all of which currently pass.
+
+No discrepancies were found between the story’s acceptance criteria and the current implementation/test suite, so this story is fully implemented and verified.</notes>
 </traceability>

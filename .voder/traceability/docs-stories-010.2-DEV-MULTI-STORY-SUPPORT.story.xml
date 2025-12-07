@@ -2,17 +2,8 @@
 <traceability>
   <specification>docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T01:50:56.906Z</last_validated>
+  <last_validated>2025-12-07T02:14:13.270Z</last_validated>
   <last_modified>2025-12-04T18:45:50.452Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>The story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md defines support for a new @supports annotation allowing multi-story requirement mapping, while maintaining backward compatibility with @story/@req and supporting mixed usage. The implementation matches this specification:
-
-- Core functionality and format validation: valid-annotation-format parses @supports as `@supports <story-path> <REQ-ID>...`, validates story path and requirement IDs, and coexists with @story/@req in the same comments.
-- Deep validation: valid-req-reference (via valid-req-reference-helpers) resolves each @supports story path, loads its requirements, and validates each REQ ID, with per-story scoping and clear error messages including reqId and storyPath.
-- Rule integration: require-story-annotation and require-req-annotation treat @supports as satisfying both story and requirement annotation requirements, while legacy-only code paths still behave as before.
-- Mixed usage: tests explicitly cover comments mixing @story, @req, and @supports in the same block and across multiple stories.
-- Backward compatibility: numerous tests demonstrate legacy @story/@req behavior is unchanged, and additional tests ensure missing annotations without @supports remain errors.
-- Documentation/migration: rules and tests around prefer-supports-annotation / prefer-implements-annotation reflect the ADR decision to standardize on @supports and provide migration guidance.
-
-All relevant unit and integration tests pass in the current run, and key implementation files carry explicit @supports traceability annotations back to this story and its REQs. Based on this concrete evidence, all acceptance criteria and listed requirements for story 010.2 are fully implemented.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>The story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md is fully implemented. The codebase adds first-class support for @supports annotations in both format validation and deep requirement validation, updates detection heuristics so @supports satisfies both story and requirement rules, supports mixed use of @story/@req/@supports, and provides clear, story-path-aware error messages. Tests explicitly tagged for this story cover valid and invalid @supports syntax, multi-story scenarios with shared IDs, and acceptance of @supports by existing rules. All relevant tests pass in the current test run, so all acceptance criteria and listed requirements for this story are met.</notes>
 </traceability>
