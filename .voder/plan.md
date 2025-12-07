@@ -1,17 +1,17 @@
 ## NOW
 
-- [ ] Review the configurable patterns story’s Definition of Done to determine the first concrete behavior that is not yet fully implemented or tested and clarify exactly what change is required.
+- [ ] Review the req-annotation detection helper around the identified lines to understand which specific branch conditions are currently untested and what observable behaviors those branches are supposed to produce.
 
 ## NEXT
 
-- [ ] Inspect the existing implementation related to configurable patterns to understand how much of the required behavior is already present and where the remaining gaps are in code and tests.
-- [ ] Design the minimal additional behavior, configuration options, and validation logic needed to satisfy the first missing requirement from the configurable patterns story without breaking existing functionality.
-- [ ] Extend or add tests that precisely cover the new configurable patterns behavior, including both valid and invalid configurations, ensuring each test is clearly linked to the corresponding story requirements.
-- [ ] Implement the necessary code changes to support the new configurable patterns behavior, keeping the changes small, well-factored, and aligned with existing helper and configuration patterns.
-- [ ] Adjust or add any relevant user-facing and internal documentation so that the configurable patterns behavior, options, and examples match the final implementation and the story’s acceptance criteria.
+- [ ] Design a couple of minimal, behavior-focused Jest test cases that exercise the currently uncovered branch paths in the req-annotation detection helper, using the existing mocking and helper utilities as a model.
+- [ ] Add the new tests to the appropriate req-annotation detection test file, including file-level and test-level traceability annotations that reference the correct story and requirement IDs.
+- [ ] Review the updated coverage information for the req-annotation detection helper to confirm that the branches around those lines are now exercised by tests.
+- [ ] If coverage still shows any remaining uncovered logic at those lines, refine or add additional small tests until all meaningful paths through that branch are covered.
+- [ ] Update the corresponding story document (and any linked requirement descriptions) to note that these edge-case detection paths are now backed by explicit tests, keeping the story’s acceptance criteria in sync with the implementation.
 
 ## LATER
 
-- [ ] Perform a focused coverage and branch-behavior review around the configurable patterns code paths to confirm that all important decision branches and error paths are exercised by tests.
-- [ ] Look for opportunities to refactor configurable-patterns-related helpers or configuration parsing into small, reusable units if the implementation starts to get complex, keeping the design easy to extend for future pattern-related stories.
-- [ ] Revisit related stories or features (such as other configuration-driven behaviors) to see whether they can reuse the new configurable patterns mechanisms, reducing duplication and ensuring consistent configuration semantics across the plugin and tools.
+- [ ] Scan coverage reports for other minor uncovered branches in core helper modules and plan similar small test additions to close those gaps incrementally.
+- [ ] Standardize the use of @supports annotations in any remaining legacy test files that still only use @story/@req, aligning them with the preferred traceability format.
+- [ ] Revisit the else-if single-line annotation support story to design and implement the missing behavior and tests once the current req-annotation detection coverage work is complete.

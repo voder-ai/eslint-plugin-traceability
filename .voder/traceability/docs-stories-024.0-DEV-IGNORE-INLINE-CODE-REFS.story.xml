@@ -2,14 +2,8 @@
 <traceability>
   <specification>docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T10:01:49.630Z</last_validated>
+  <last_validated>2025-12-07T12:47:05.514Z</last_validated>
   <last_modified>2025-12-06T14:46:37.163Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria for 024.0-DEV-IGNORE-INLINE-CODE-REFS are concretely met:
-- Backtick-wrapped @story/@req/@supports are removed before annotation detection with a centralized, length-preserving filter in normalizeCommentLine.
-- Common documentation patterns (e.g., "`@story` + `@req`", "using `@supports`...") no longer surface as annotations, while real annotations outside backticks are still detected.
-- Unit tests explicitly tied to this story cover core behavior, mixed real + inline-code scenarios, multiple backtick spans, and unchanged behavior for non-backtick lines.
-- The full Jest suite passes, demonstrating no regressions.
-- The normalization JSDoc and inline comments clearly document the inline-code filtering behavior.
-Therefore, the story is fully implemented and verified.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria for 024.0-DEV-IGNORE-INLINE-CODE-REFS are satisfied. The normalizeCommentLine helper now centrally strips backtick-wrapped content using a regex, replacing each span with spaces to preserve boundaries (REQ-IGNORE-INLINE-CODE, REQ-PRESERVE-BOUNDARIES, REQ-CENTRALIZED-FILTER). Dedicated tests in tests/rules/valid-annotation-format-internal.test.ts cover ignoring backtick-wrapped @story/@req, handling multiple inline-code segments, ensuring real annotations outside backticks are still detected, and confirming non-backtick lines behave as before. The full Jest suite passes, demonstrating no regressions. The behavior is explicitly documented in the JSDoc for normalizeCommentLine and in the story itself. Therefore, this story is fully implemented.</notes>
 </traceability>

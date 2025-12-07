@@ -393,4 +393,61 @@ describe("reqAnnotationDetection advanced heuristics (Story 003.0-DEV-FUNCTION-A
 
     expect(has).toBe(true);
   });
+
+  it("[REQ-ANNOTATION-REQ-DETECTION] hasReqAnnotation returns true when advanced heuristics find req via linesBeforeHasReq", () => {
+    const context = {
+      getSourceCode() {
+        return createMockSourceCode({
+          lines: [
+            "// header without req",
+            "/** @req REQ-ADV-LINES */",
+            "function bar() {}",
+          ],
+        });
+      },
+    } as any;
+
+    const node = {
+      loc: { start: { line: 3 } },
+      parent: {},
+    } as any;
+
+    const jsdoc = { value: "/** no req here */" } as any;
+    const comments = [{ value: "no req or supports here" }];
+
+    const has = _hasReqAnnotation(jsdoc as any, comments as any, context, node as any);
+
+    expect(has).toBe(true);
+  });
+
+  it("[REQ-ANNOTATION-REQ-DETECTION] hasReqAnnotation returns true when advanced heuristics find req via parentChainHasReq", () => {
+    const sourceCode = {
+      getCommentsBefore(n: any) {
+        if (n && n.isReqParent) {
+          return [{ value: "/* @req REQ-ADV-PARENT */" }];
+        }
+        return [{ value: "no req here" }];
+      },
+    } as any;
+
+    const context = {
+      getSourceCode() {
+        return sourceCode;
+      },
+    } as any;
+
+    const node = {
+      parent: {
+        isReqParent: true,
+        parent: {},
+      },
+    } as any;
+
+    const jsdoc = { value: "/** jsdoc without requirement */" } as any;
+    const comments = [{ value: "comment without requirement" }];
+
+    const has = _hasReqAnnotation(jsdoc as any, comments as any, context, node as any);
+
+    expect(has).toBe(true);
+  });
 });

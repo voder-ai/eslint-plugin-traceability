@@ -2,8 +2,16 @@
 <traceability>
   <specification>docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T10:04:17.962Z</last_validated>
+  <last_validated>2025-12-07T12:48:37.113Z</last_validated>
   <last_modified>2025-12-06T21:35:50.287Z</last_modified>
   <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria for Story 025.0-DEV-CATCH-ANNOTATION-POSITION are fully implemented and verified. The core helpers now support dual-position annotation detection for CatchClause (before-catch and first comments inside the body) with correct priority and fallback behavior. Auto-fix logic inserts annotations inside the catch body to align with Prettier’s formatting, and this is validated by both unit tests and Prettier-based integration tests. Internal rule documentation and the user-facing API reference explicitly describe the supported CatchClause annotation positions and formatter compatibility. The overall Jest test suite passes, including all tests that directly exercise the behavior required by this story. Therefore, the story is considered PASSED.</notes>
+  <notes>All acceptance criteria and requirements for Story 025.0-DEV-CATCH-ANNOTATION-POSITION are fully implemented and verified:
+- CatchClause annotations are detected both before the catch keyword and inside the catch block body.
+- When both positions exist, before-catch annotations take precedence.
+- Fallback behavior correctly uses getCommentsInside when available and a line-based scan inside the block when necessary.
+- Auto-fix for missing annotations on CatchClause inserts comments inside the catch body in a formatter-stable position.
+- Integration tests confirm that Prettier-formatted code passes traceability checks without manual intervention.
+- Rule tests demonstrate that other branches (if/switch/loops/try/finally/else-if) behave as before, indicating no regressions.
+- User-facing API documentation explicitly describes the dual catch positions, precedence, and Prettier-aware auto-fix behavior.
+Given the passing test suite and aligned documentation, this story is assessed as PASSED.</notes>
 </traceability>
