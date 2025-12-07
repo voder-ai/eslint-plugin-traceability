@@ -2,17 +2,17 @@
 <traceability>
   <specification>docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T02:13:06.473Z</last_validated>
+  <last_validated>2025-12-07T02:40:10.859Z</last_validated>
   <last_modified>2025-12-06T13:04:07.978Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and explicit requirements in `docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md` are implemented and covered by tests and documentation:
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria in docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md are satisfied:
+- Rule Naming: The plugin exposes traceability/prefer-supports-annotation as the primary rule and traceability/prefer-implements-annotation as a deprecated alias, with metadata and tests confirming aliasing and default-disabled status.
+- Optional Warning & Configurable Enforcement: The rule is a suggestion-type ESLint rule, disabled by default in recommended/strict configs, and is enabled/controlled exclusively via standard ESLint severity (off/warn/error). Tests explicitly verify that it is absent from default presets and that both rule keys accept warn/error.
+- Auto-fix Support & Single Story Conversion & Preserve Order: The implementation provides a conservative fixer that, for a single @story path with one or more simple @req lines, replaces them with a single @supports line, preserving indentation and line position within the JSDoc. Tests assert exact before/after code for single and multi-REQ cases.
+- Multi-story Detection & Cannot Auto-fix: Mixed legacy/@supports and multi-story patterns are detected and reported via cannotAutoFix and multiStoryDetected without attempting a fix; this is covered by targeted tests and aligns with the story’s non-auto-fix examples.
+- Both Formats Valid & Backward Compatibility: When the migration pattern is not present (only @story, only @req, only @supports, or story/req with supports but missing one side), the rule does not report, and default presets leave the rule off entirely. This ensures legacy @story/@req remain valid, and other validation rules are unchanged.
+- Quality Standards: The auto-fix only triggers for clearly-safe, single-story patterns; more complex patterns are diagnostics-only. The resulting @supports annotations conform to the plugin’s existing validation rules (all validation test suites still pass).
+- Documentation: The dedicated rule doc serves as a migration guide with configuration and auto-fix examples and describes aliasing, severity configuration, and manual-migration cases. Combined with the passing, story-linked tests, this demonstrates the full implementation of Story 010.3.
 
-- **Rule naming & aliasing (REQ-RULE-NAME)**: `traceability/prefer-supports-annotation` is exposed as the primary rule name, with `traceability/prefer-implements-annotation` wired as a deprecated alias (`src/index.ts`), and tests assert both names are available and behave identically.
-- **Optional warning & multi-story detection (REQ-OPTIONAL-WARNING, REQ-MULTI-STORY-DETECT)**: Rule only reports on legacy `@story`+`@req` blocks and multi-story/mixed cases, with precise messages matching the story, and is disabled by default in presets; tests verify this behavior.
-- **Auto-fix & single-story conversion (REQ-AUTO-FIX, REQ-SINGLE-STORY-FIX, REQ-PRESERVE-FORMAT, REQ-VALID-OUTPUT)**: Implementation provides a conservative auto-fix that rewrites eligible single-story blocks to a single `@supports` line while preserving comment structure and bailing out on complex/ambiguous patterns; unit tests validate single-REQ and multi-REQ conversions and no-fix behavior for complex cases.
-- **Configurable enforcement (REQ-CONFIG-SEVERITY)**: The rule uses standard ESLint severities (`off`/`warn`/`error`), is not included in built-in presets by default, and tests confirm both the primary and alias keys can be configured with different severities.
-- **Backward compatibility & validation (REQ-BACKWARD-COMP-VALIDATION, Both Formats Valid)**: Valid test cases prove that comments containing only `@story`, only `@req`, only `@supports`, or certain mixed-but-non-target patterns are ignored by this rule, ensuring legacy annotations remain valid when the rule is disabled or not configured.
-- **Documentation (Documentation acceptance criterion)**: A dedicated rule doc and the migration guide explain the rule’s purpose, configuration, auto-fix behavior, and limitations with examples, matching the story’s examples and configuration guidance.
-
-The full Jest suite (including all tests for this story) passes, providing concrete verification that 010.3’s behavior works as specified. Therefore this story is fully implemented.</notes>
+Therefore this story is fully implemented and verified by tests and documentation.</notes>
 </traceability>

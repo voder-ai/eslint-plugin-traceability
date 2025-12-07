@@ -329,4 +329,68 @@ describe("reqAnnotationDetection advanced heuristics (Story 003.0-DEV-FUNCTION-A
 
     expect(has).toBe(true);
   });
+
+  it("[REQ-ANNOTATION-REQ-DETECTION] linesBeforeHasReq returns true when preceding lines contain @req marker", () => {
+    const context = {
+      getSourceCode() {
+        return createMockSourceCode({
+          lines: [
+            "// some header",
+            "/** @req REQ-LINE-BEFORE */",
+            "function foo() {}",
+          ],
+        });
+      },
+    } as any;
+
+    const node = {
+      // Node starts on line 3 (1-based), so line 2 is inspected by linesBeforeHasReq
+      loc: { start: { line: 3 } },
+      parent: {},
+    } as any;
+
+    const has = _hasReqAnnotation(null as any, [], context, node);
+
+    expect(has).toBe(true);
+  });
+
+  it("[REQ-ANNOTATION-REQ-DETECTION] parentChainHasReq returns true when leadingComments contain @supports and getCommentsBefore is unusable", () => {
+    const context = {
+      getSourceCode() {
+        return {
+          // Not a callable function; forces parentChainHasReq to rely on leadingComments
+          getCommentsBefore: 42,
+        } as any;
+      },
+    } as any;
+
+    const node = {
+      parent: {
+        leadingComments: [
+          { value: "some other comment" },
+          {
+            value:
+              "@supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FROM-LEADING-COMMENT",
+          },
+        ],
+        parent: {},
+      },
+    } as any;
+
+    const has = _hasReqAnnotation(null as any, [], context, node);
+
+    expect(has).toBe(true);
+  });
+
+  it("[REQ-ANNOTATION-REQ-DETECTION] returns true when jsdoc has @req even if context is undefined", () => {
+    const jsdoc = { value: "/** @req REQ-JSDOC-NO-CONTEXT */" } as any;
+
+    const node = {
+      parent: {},
+    } as any;
+
+    const has = _hasReqAnnotation(jsdoc, [], undefined as any, node);
+
+    expect(has).toBe(true);
+  });
 });

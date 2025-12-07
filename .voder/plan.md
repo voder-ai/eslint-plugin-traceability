@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Review the conditional logic around the uncovered branch in the req-annotation detection utility so you clearly understand what scenario it handles and what inputs are needed to exercise each side of that branch.
+- [ ] Perform a focused review of the entire req-annotation detection utility to identify any remaining subtle edge cases or conditional paths that may not be clearly covered by existing tests.
 
 ## NEXT
 
-- [ ] Identify or confirm the dedicated test file that verifies the req-annotation detection utility and sketch one or more test cases that will drive execution through the previously uncovered branch paths.
-- [ ] Implement new unit tests for the req-annotation detection utility that cover both sides of the uncovered conditional branch, including any relevant edge cases, and annotate these tests with the appropriate story and requirement references.
-- [ ] Run the existing automated checks implicitly triggered by the workflow to confirm the new tests pass and that overall coverage now includes the previously uncovered branch.
+- [ ] List any newly identified edge cases or branch scenarios from the req-annotation detection utility review and map each one to a concrete example that should be tested.
+- [ ] Extend the existing req-annotation detection test suite with additional test cases that exercise the newly identified scenarios, ensuring each test is clearly named and tied to the relevant story and requirement annotations.
+- [ ] Re-evaluate the utility’s behavior against the strengthened tests to confirm that all important branches are now exercised and that the observable behavior remains correct and consistent.
 
 ## LATER
 
-- [ ] Review the full req-annotation detection utility for any additional subtle edge cases that might benefit from explicit tests, and extend the suite where helpful.
-- [ ] Consider small refactorings to the req-annotation detection utility to make branch conditions and intent clearer, guided by the new tests to keep behavior stable.
-- [ ] Update or add internal documentation, if needed, to describe the expected behavior of the req-annotation detection heuristics so future contributors understand how the newly tested branch should behave.
+- [ ] Consider small, behavior-preserving refactorings to the req-annotation detection utility to make its branching logic and heuristics easier to read and reason about, using the expanded tests as a safety net.
+- [ ] Update or add internal development documentation to describe the req-annotation detection strategies, including the newly tested edge cases, so future contributors can understand and extend the heuristics safely.
+- [ ] Periodically revisit the req-annotation detection tests when new stories or requirements are added to ensure the suite continues to reflect the full range of supported annotation patterns.

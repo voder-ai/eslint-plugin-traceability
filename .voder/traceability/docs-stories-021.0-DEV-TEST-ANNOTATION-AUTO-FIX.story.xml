@@ -2,17 +2,15 @@
 <traceability>
   <specification>docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T02:12:04.367Z</last_validated>
+  <last_validated>2025-12-07T02:40:30.432Z</last_validated>
   <last_modified>2025-12-04T21:56:14.211Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>Story docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md is fully implemented.
-
-The require-test-traceability rule and its helpers provide:
-- A safe file-level @supports placeholder template with clear TODO-style guidance when missing, inserted at the top of test files (or just after a shebang) without touching implementation code (REQ-TEST-FIX-TEMPLATE, REQ-TEST-FIX-PLACEHOLDER, REQ-TEST-FIX-SAFE, REQ-TEST-FIX-PRESERVE, REQ-TEST-FIX-NO-INFERENCE).
-- Normalization of malformed [REQ-XXX] prefixes in it/test names for the exact shapes described in the story (spacing, underscores, parentheses, lowercase), but only when a REQ-based ID is already present and recognizable, never inventing new IDs and preserving overall formatting (REQ-TEST-FIX-PREFIX-FORMAT, REQ-TEST-FIX-SAFE, REQ-TEST-FIX-PRESERVE, REQ-TEST-FIX-NO-INFERENCE).
-- Configuration flags and behavior fully aligned with the story’s configuration section (`autoFixTestTemplate`, `autoFixTestPrefixFormat`, `testSupportsTemplate`).
-- Comprehensive tests that cover both template insertion and all specified malformed prefix forms, including the deliberate absence of auto-fix when there is no REQ prefix at all.
-- User-facing documentation in user-docs/api-reference.md that clearly explains the auto-fix capabilities, safety constraints, and configuration for test auto-fix behavior.
-
-All acceptance criteria and detailed requirements from the story are satisfied, and the relevant tests pass in the current test run, so the story status is PASSED.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria for 021.0-DEV-TEST-ANNOTATION-AUTO-FIX are implemented and verified:
+- File-level @supports templates are automatically inserted with clear TODO placeholders when missing, controlled by autoFixTestTemplate and testSupportsTemplate.
+- Malformed [REQ-XXX] prefixes in it/test names are normalized for spacing, delimiters, case, and bracket/parenthesis usage, but only when a recognizable REQ ID is already present; otherwise the rule reports an error without an auto-fix (no inference).
+- Implementation uses ESLint's fixer API with meta.fixable="code", and is wired into the existing require-test-traceability rule that handles validation (Story 020.0), ensuring integration with the standard ESLint --fix workflow.
+- Helper functions preserve quoting, avoid touching implementation code, and insert only comments or adjusted string literals, meeting safety and formatting preservation requirements.
+- Dedicated tests in tests/rules/require-test-traceability.test.ts cover all Story 021.0 requirements, and the full Jest suite passes.
+- User documentation in user-docs/api-reference.md explains the auto-fix capabilities and template format, including configuration options.
+Therefore, the story is fully implemented and passes based on concrete code, tests, and documentation.</notes>
 </traceability>
