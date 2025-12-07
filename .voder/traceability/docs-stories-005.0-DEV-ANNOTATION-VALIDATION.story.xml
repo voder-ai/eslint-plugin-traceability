@@ -2,10 +2,16 @@
 <traceability>
   <specification>docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T01:27:07.060Z</last_validated>
+  <last_validated>2025-12-07T01:51:11.935Z</last_validated>
   <last_modified>2025-12-06T21:35:50.094Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and requirements for docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md are fully implemented and verified.
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>All specified requirements and acceptance criteria for story 005.0-DEV-ANNOTATION-VALIDATION are fully implemented and verified by tests.
 
-Core functionality and syntax/format validation (REQ-FORMAT-SPECIFICATION, REQ-SYNTAX-VALIDATION, REQ-PATH-FORMAT, REQ-REQ-FORMAT) are implemented in src/rules/valid-annotation-format.ts and comprehensively tested in tests/rules/valid-annotation-format.test.ts, which covers both valid examples and all the invalid patterns called out in the story (missing extension, path traversal, missing identifiers, malformed IDs, etc.). Multi-line handling and flexible parsing behavior (REQ-MULTILINE-SUPPORT, REQ-FLEXIBLE-PARSING) are validated both in unit tests and in the large-file performance test. Error messages are specific, echo offending values, and include concrete examples, matching REQ-ERROR-SPECIFICITY and the User Experience and Error Handling acceptance criteria. Documentation describes the expected formats and examples of valid/invalid annotations, satisfying the Documentation criterion. All related tests pass in the latest npm test run. Therefore this story is assessed as PASSED.</notes>
+Core functionality (validation of @story and @req syntax and format) is provided by the `valid-annotation-format` rule and its helpers, which enforce default patterns for story paths and requirement IDs, support multi-line annotations, and normalize whitespace for flexible parsing.
+
+Error handling and user experience requirements are met via detailed, case-specific error messages constructed by buildStoryErrorMessage/buildReqErrorMessage and verified in tests, including missing values, bad formats, path traversal, and configuration errors. The rule follows ESLint best practices: proper `meta`, `schema`, message IDs, RuleTester coverage, and JSON schema-based option validation.
+
+Integration with function and branch rules is satisfied because the rule operates on all comments in the file independently of AST node type, so any annotations used by those rules are also format-validated. Extensive documentation in `docs/rules/valid-annotation-format.md` describes the format specification, valid/invalid examples, configuration options, and error messages, aligning with the story’s documentation and Definition of Done.
+
+All relevant unit and performance tests tied to this story pass in the current test run, confirming the implementation is complete and working as intended.</notes>
 </traceability>
