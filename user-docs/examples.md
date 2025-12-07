@@ -160,9 +160,7 @@ function pickCategory(score: number): string {
   // @req REQ-BRANCH-DETECTION
   if (score >= 80) {
     return "high";
-  } else if (
-    score >= 50
-  ) {
+  } else if (score >= 50) {
     // @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
     // @req REQ-DUAL-POSITION-DETECTION-ELSE-IF
     return "medium";

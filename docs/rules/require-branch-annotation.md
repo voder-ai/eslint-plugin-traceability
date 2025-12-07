@@ -38,6 +38,7 @@ For `else if` branches, the rule is formatter-aware and recognizes annotations i
      handleCondition();
    }
    ```
+
 3. **First comment-only lines inside the consequent block** – When formatters such as Prettier wrap a long `else if` condition and move comments inside the block body, annotations placed on the first comment-only lines inside the `{ ... }` block are also accepted and associated with the `else if` branch.
 
 When annotations are present in more than one of these locations, the rule applies the following precedence for validation and reporting:
@@ -110,3 +111,4 @@ module.exports = {
 };
 
 // Error: Value "InvalidType" should be equal to one of the allowed values.
+```

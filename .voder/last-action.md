@@ -1,210 +1,262 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: list_directory with input: {"dirPath":"src/utils"}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts"}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":130,"endLine":220}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":220,"endLine":320}
-Used tool: find_files with input: {"pattern":"*reqAnnotationDetection*.test.*","directory":"tests"}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"hasReqAnnotation","isRegex":false}
+**Action:** Used tool: get_git_status with input: {}
+Used tool: find_files with input: {"pattern":"*reqAnnotationDetection*","directory":"src"}
 Used tool: find_files with input: {"pattern":"*req-annotation*","directory":"tests"}
+Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts"}
 Used tool: read_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts"}
-Used tool: modify_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts","instruction":"Add a new test case after the existing test that checks \"fallbackTextBeforeHasReq returns false when node.range is not an array\". The new test should be named \"[REQ-ANNOTATION-REQ-DETECTION] fallbackTextBeforeHasReq returns false when range[0] is not a number\" and should construct a SourceCode with getText returning a string that contains an @req marker, a node with a range where the first element is not a number, and then assert that _hasReqAnnotation returns false, ensuring that the guard on the numeric start index is exercised."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--reporters=default","--testPathPattern","tests/utils/req-annotation-detection.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--reporters=default","tests/utils/req-annotation-detection.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--reporters=default"]}
-Used tool: get_git_status with input: {}
+Used tool: read_file with input: {"filePath":"tests/rules/require-req-annotation.test.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-io.ts"}
+Used tool: read_file with input: {"filePath":"package.json"}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--coverage","--testPathPattern","tests/utils/req-annotation-detection.test.ts"]}
+Used tool: find_files with input: {"pattern":"jest.config.*","directory":"."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--testPathPatterns","tests/utils/req-annotation-detection.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--coverage","--testPathPatterns","tests/utils/req-annotation-detection.test.ts"]}
+Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":1,"endLine":260}
+Used tool: modify_file with input: {"filePath":"tests/utils/req-annotation-detection.test.ts","instruction":"Append three additional test cases near the end of the existing describe block, just before the closing `});`. The new tests should cover: (1) a positive detection path where `linesBeforeHasReq` detects an `@req` marker in preceding lines; (2) a positive detection path where `parentChainHasReq` detects an `@supports` marker in `leadingComments` when `getCommentsBefore` is not usable; and (3) a sanity check that `hasReqAnnotation` still returns true when there is a `@req` in JSDoc but the `context` argument is `undefined` (so advanced heuristics are skipped). Use the existing `createMockSourceCode` helper where convenient. Name each test with the appropriate `[REQ-...]` tags and keep the style consistent with the rest of the file."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--testPathPatterns","tests/utils/req-annotation-detection.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--testPathPatterns","tests/rules/require-req-annotation.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: add coverage for fallbackTextBeforeHasReq numeric range guard"}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: git_commit with input: {"message":"test: extend req annotation detection coverage for advanced heuristics"}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":19997622688,"timeout":600000}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":90,"endLine":140}
-Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":100,"endLine":140}
+Used tool: wait_for_github_workflow with input: {"runId":19997900404,"timeout":600000}
+Used tool: read_file with input: {"filePath":"src/utils/reqAnnotationDetection.ts","startLine":70,"endLine":120}
 
 **Response:**
 
 ```
-Here’s what I implemented for the ##NOW and ##NEXT sections, plus the updated plan with checkboxes.
+Here’s what I implemented for the ##NOW and ##NEXT items and how they map to concrete changes.
 
 ---
 
-## What I did
+## Work completed
 
 ### NOW
 
-- Reviewed `src/utils/reqAnnotationDetection.ts`, focusing on the previously uncovered conditional in `fallbackTextBeforeHasReq`:
+- [x] Perform a focused review of the entire req-annotation detection utility to identify any remaining subtle edge cases or conditional paths that may not be clearly covered by existing tests.
 
-  ```ts
-  function fallbackTextBeforeHasReq(sourceCode: any, node: any): boolean {
-    if (
-      typeof sourceCode?.getText !== "function" ||
-      !Array.isArray((node && node.range) || [])
-    ) {
-      return false;
-    }
-    const range = node.range;
+What I did:
 
-    // Guard when the node range cannot provide a numeric start index.
-    if (!Array.isArray(range) || typeof range[0] !== "number") {
-      return false;
-    }
+- Reviewed `src/utils/reqAnnotationDetection.ts` end-to-end, focusing on:
+  - Guard branches and early returns in:
+    - `linesBeforeHasReq`
+    - `parentChainHasReq`
+    - `fallbackTextBeforeHasReq`
+    - `hasReqInAdvancedHeuristics`
+    - `hasReqInJsdocOrComments`
+    - `hasReqAnnotation`
+  - The different “positive” detection sources:
+    - Preceding source lines (`linesBeforeHasReq`)
+    - Parent chain comments/leadingComments (`parentChainHasReq`)
+    - Fallback text window (`fallbackTextBeforeHasReq`)
+    - JSDoc and nearby comments (`hasReqInJsdocOrComments`)
+  - Handling of `@supports` alongside `@req` in all of the above.
+- Cross‑checked current tests in:
+  - `tests/utils/req-annotation-detection.test.ts`
+  - `tests/rules/require-req-annotation.test.ts`
+- From that comparison, identified three subtle but important scenarios that were either not covered or not covered explicitly enough:
+  1. Positive detection through `linesBeforeHasReq` (preceeding source lines containing an `@req` marker).
+  2. Positive detection through `parentChainHasReq` when:
+     - `sourceCode.getCommentsBefore` is *present but unusable* (non-function),
+     - and `leadingComments` on a parent contain an `@supports` marker.
+  3. JSDoc-only detection when `context` is `undefined`, i.e., `hasReqAnnotation` falls back to JSDoc/comments without any `context.getSourceCode`.
 
-    try {
-      const start = Math.max(0, range[0] - FALLBACK_WINDOW);
-      const textBefore = sourceCode.getText().slice(start, range[0]);
-
-      if (
-        typeof textBefore === "string" &&
-        (textBefore.includes("@req") || textBefore.includes("@supports"))
-      ) {
-        return true;
-      }
-    } catch {
-      /* noop */
-    }
-    return false;
-  }
-  ```
-
-- Clarified scenarios:
-  - Early-return `false` when:
-    - `sourceCode.getText` is not a function, OR
-    - `node.range` is missing/not an array, OR
-    - `node.range` is an array but `range[0]` is not a number.
-  - Otherwise, it computes a bounded text window before the node and returns `true` iff that window contains `@req` or `@supports`, and `false` if not, or if `getText()` throws (via the `catch`).
-
-This gave a clear picture of how to exercise each side of the numeric-start-index guard.
+This completes the focused review and identifies the missing/under‑tested branches.
 
 ---
 
 ### NEXT
 
-#### 1) Confirmed the dedicated test file and target branch scenarios
+- [x] List any newly identified edge cases or branch scenarios from the req-annotation detection utility review and map each one to a concrete example that should be tested.
+- [x] Extend the existing req-annotation detection test suite with additional test cases that exercise the newly identified scenarios, ensuring each test is clearly named and tied to the relevant story and requirement annotations.
+- [x] Re-evaluate the utility’s behavior against the strengthened tests to confirm that all important branches are now exercised and that the observable behavior remains correct and consistent.
 
-- Located the dedicated test suite for this utility:
+#### Newly identified edge cases and their concrete examples
 
-  - `tests/utils/req-annotation-detection.test.ts`
+1. **Detection via preceding lines (`linesBeforeHasReq`)**
+   - Scenario: A function has no JSDoc, but one of the last few physical lines before the function contains an `@req` annotation.
+   - Concrete example (implemented test):
+     - Source lines:
+       ```ts
+       "// some header",
+       "/** @req REQ-LINE-BEFORE */",
+       "function foo() {}",
+       ```
+     - Node location: `loc.start.line === 3` so line 2 is scanned.
+     - Expectation: `hasReqAnnotation` returns `true`.
+   - Coverage: Ensures the positive path of `linesBeforeHasReq` is explicitly validated.
 
-- Verified that this file already covers many edge cases for:
-  - Missing `sourceCode`/node
-  - `linesBeforeHasReq` guards
-  - `parentChainHasReq` with/without `getCommentsBefore`
-  - `fallbackTextBeforeHasReq` when:
-    - `getText` is not a function
-    - `node.range` is not an array
-    - `getText` throws
-    - valid numeric range with `@req` present in the window
+2. **Detection via parent leadingComments when `getCommentsBefore` is unusable**
+   - Scenario: `sourceCode.getCommentsBefore` exists but is not a function (e.g. a non-callable value), and requirement annotations live in `leadingComments` on a parent node with an `@supports` marker.
+   - Concrete example (implemented test):
+     - `context.getSourceCode()` returns:
+       ```ts
+       { getCommentsBefore: 42 } // non-function
+       ```
+     - Node:
+       ```ts
+       {
+         parent: {
+           leadingComments: [
+             { value: "some other comment" },
+             {
+               value: "@supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FROM-LEADING-COMMENT",
+             },
+           ],
+           parent: {},
+         },
+       }
+       ```
+     - Expectation: `hasReqAnnotation` returns `true`.
+   - Coverage: Explicitly exercises the branch in `parentChainHasReq` that:
+     - Skips `getCommentsBefore` due to it not being a function.
+     - Finds `@supports` in `leadingComments`.
 
-- Identified the missing path: the guard where `node.range` is an array but `range[0]` is **not** a number (`typeof range[0] !== "number"`), which previously was not exercised.
+3. **JSDoc-only detection when `context` is `undefined`**
+   - Scenario: Callers have a valid JSDoc with `@req`, but no ESLint rule context is available. `hasReqAnnotation` must still correctly report requirement coverage.
+   - Concrete example (implemented test):
+     - `jsdoc`:
+       ```ts
+       { value: "/** @req REQ-JSDOC-NO-CONTEXT */" }
+       ```
+     - `context`: `undefined`
+     - `node`: `{ parent: {} }`
+     - Expectation: `hasReqAnnotation` returns `true`.
+   - Coverage: Ensures:
+     - The `context && typeof context.getSourceCode === "function"` guard behaves correctly.
+     - `hasReqAnnotation` still uses `hasReqInJsdocOrComments` when no context is provided.
 
-#### 2) Implemented a new unit test for the numeric-range guard
+#### Test suite extensions
 
-In `tests/utils/req-annotation-detection.test.ts`, I added this test immediately after the “node.range is not an array” case:
+File updated:
 
-```ts
-it("[REQ-ANNOTATION-REQ-DETECTION] fallbackTextBeforeHasReq returns false when range[0] is not a number", () => {
-  const context = {
-    getSourceCode() {
-      return createMockSourceCode({
-        text: "/* @req REQ-IN-TEXT-BUT-INVALID-RANGE */",
-      });
-    },
-  } as any;
+- `tests/utils/req-annotation-detection.test.ts`
 
-  const node = {
-    // First element of range is not a number; guard on numeric start index should trigger
-    range: ["not-a-number", 10] as any,
-    parent: {},
-  } as any;
+New tests added at the end of the existing `describe` block:
 
-  const has = _hasReqAnnotation(null as any, [], context, node);
+1. **Preceding lines `@req` path**
+   ```ts
+   it("[REQ-ANNOTATION-REQ-DETECTION] linesBeforeHasReq returns true when preceding lines contain @req marker", () => {
+     const context = {
+       getSourceCode() {
+         return createMockSourceCode({
+           lines: [
+             "// some header",
+             "/** @req REQ-LINE-BEFORE */",
+             "function foo() {}",
+           ],
+         });
+       },
+     } as any;
 
-  expect(has).toBe(false);
-});
-```
+     const node = {
+       // Node starts on line 3 (1-based), so line 2 is inspected by linesBeforeHasReq
+       loc: { start: { line: 3 } },
+       parent: {},
+     } as any;
 
-Details:
+     const has = _hasReqAnnotation(null as any, [], context, node);
 
-- Uses the existing helper `createMockSourceCode` for a minimal `SourceCode`-like object.
-- `text` includes an `@req` marker so that, **if** the numeric guard did not work, the fallback window logic would likely see an annotation and return `true`.
-- `node.range` is an array, but `range[0]` is a string (`"not-a-number"`), which should trigger the guard:
+     expect(has).toBe(true);
+   });
+   ```
 
-  ```ts
-  if (!Array.isArray(range) || typeof range[0] !== "number") {
-    return false;
-  }
-  ```
+2. **Parent leadingComments `@supports` path with unusable `getCommentsBefore`**
+   ```ts
+   it("[REQ-ANNOTATION-REQ-DETECTION] parentChainHasReq returns true when leadingComments contain @supports and getCommentsBefore is unusable", () => {
+     const context = {
+       getSourceCode() {
+         return {
+           // Not a callable function; forces parentChainHasReq to rely on leadingComments
+           getCommentsBefore: 42,
+         } as any;
+       },
+     } as any;
 
-- The assertion `expect(has).toBe(false)` verifies that the guard short-circuits correctly and that we don’t enter the slice window when the numeric start index is invalid.
+     const node = {
+       parent: {
+         leadingComments: [
+           { value: "some other comment" },
+           {
+             value:
+               "@supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FROM-LEADING-COMMENT",
+           },
+         ],
+         parent: {},
+       },
+     } as any;
+
+     const has = _hasReqAnnotation(null as any, [], context, node);
+
+     expect(has).toBe(true);
+   });
+   ```
+
+3. **JSDoc-only `@req` when context is undefined**
+   ```ts
+   it("[REQ-ANNOTATION-REQ-DETECTION] returns true when jsdoc has @req even if context is undefined", () => {
+     const jsdoc = { value: "/** @req REQ-JSDOC-NO-CONTEXT */" } as any;
+
+     const node = {
+       parent: {},
+     } as any;
+
+     const has = _hasReqAnnotation(jsdoc, [], undefined as any, node);
+
+     expect(has).toBe(true);
+   });
+   ```
 
 Traceability:
 
-- The file already has a header:
-
+- File header already includes:
   ```ts
   /**
    * Tests for advanced @req detection heuristics
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
    */
   ```
+- New tests all keep the `[REQ-ANNOTATION-REQ-DETECTION]` tag in their names, aligning with the story and requirement.
 
-  so the new test is covered by that `@supports` annotation and references the `REQ-ANNOTATION-REQ-DETECTION` requirement in its name.
+#### Re-evaluation and quality checks
 
-#### 3) Ran checks and confirmed coverage
+- Targeted tests:
+  - `npm test -- --runInBand --ci --testPathPatterns tests/utils/req-annotation-detection.test.ts`
+  - `npm test -- --runInBand --ci --testPathPatterns tests/rules/require-req-annotation.test.ts`
+- Aggregate fast CI-style checks:
+  - `npm run ci-verify:fast`
+- Pre-push hook and full CI/CD:
+  - Changes were committed as:
+    - `test: extend req annotation detection coverage for advanced heuristics`
+  - `git push` triggered the `CI/CD Pipeline` on GitHub.
+  - The latest run (`runId: 19997900404`) completed with conclusion: `success`.
+- Coverage confirmation:
+  - From the full `ci-verify:full` run after push:
+    - `src/utils/reqAnnotationDetection.ts` now reports:
+      - Statements: 100%
+      - Branches: 98.3%
+      - Functions: 100%
+      - Lines: 100%
+  - This indicates all critical branches and guard paths in the req-detection utility are now exercised by tests.
 
-- Ran the Jest test suite non-interactively:
+Behavioral check:
 
-  ```bash
-  npm test -- --runInBand --reporters=default
-  ```
-
-  Result: all suites passed, including `tests/utils/req-annotation-detection.test.ts`.
-
-- Ran the standard quality checks:
-
-  ```bash
-  npm run build
-  npm run lint
-  npm run type-check
-  npm run format:check
-  ```
-
-  All passed with exit code 0.
-
-- The pre-push hook then executed the CI-equivalent pipeline (`npm run ci-verify:full` and `npm run security:secrets`), which also passed. Coverage after the change shows:
-
-  - `src/utils/reqAnnotationDetection.ts`: 99.14% statements, 96.61% branches, 100% functions, 99.14% lines.
-  - The specific numeric-start-index guard in `fallbackTextBeforeHasReq` is now exercised via the new test.
-
-- Committed and pushed:
-
-  ```text
-  test: add coverage for fallbackTextBeforeHasReq numeric range guard
-  ```
-
-- The GitHub Actions “CI/CD Pipeline” run for `main` completed successfully.
+- No changes were made to `src/utils/reqAnnotationDetection.ts` itself—only tests were extended.
+- All rule and maintenance tests still pass, confirming no regressions in user-visible behavior.
 
 ---
 
 ## Updated Plan
 
-### NOW
+## NOW
 
-- [x] Review the conditional logic around the uncovered branch in the req-annotation detection utility so you clearly understand what scenario it handles and what inputs are needed to exercise each side of that branch.
+- [x] Perform a focused review of the entire req-annotation detection utility to identify any remaining subtle edge cases or conditional paths that may not be clearly covered by existing tests.
 
-### NEXT
+## NEXT
 
-- [x] Identify or confirm the dedicated test file that verifies the req-annotation detection utility and sketch one or more test cases that will drive execution through the previously uncovered branch paths.
-- [x] Implement new unit tests for the req-annotation detection utility that cover both sides of the uncovered conditional branch, including any relevant edge cases, and annotate these tests with the appropriate story and requirement references.
-- [x] Run the existing automated checks implicitly triggered by the workflow to confirm the new tests pass and that overall coverage now includes the previously uncovered branch.
-
-### LATER
-
-- [ ] Review the full req-annotation detection utility for any additional subtle edge cases that might benefit from explicit tests, and extend the suite where helpful.
-- [ ] Consider small refactorings to the req-annotation detection utility to make branch conditions and intent clearer, guided by the new tests to keep behavior stable.
-- [ ] Update or add internal documentation, if needed, to describe the expected behavior of the req-annotation detection heuristics so future contributors understand how the newly tested branch should behave.
+- [x] List any newly identified edge cases or branch scenarios from the req-annotation detection utility review and map each one to a concrete example that should be tested.
+- [x] Extend the existing req-annotation detection test suite with additional test cases that exercise the newly identified scenarios, ensuring each test is clearly named and tied to the relevant story and requirement annotations.
+- [x] Re-evaluate the utility’s behavior against the strengthened tests to confirm that all important branches are now exercised and that the observable behavior remains correct and consistent.
 ```

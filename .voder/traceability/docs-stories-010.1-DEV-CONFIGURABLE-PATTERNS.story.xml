@@ -2,17 +2,18 @@
 <traceability>
   <specification>docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T02:39:03.173Z</last_validated>
+  <last_validated>2025-12-07T03:01:21.372Z</last_validated>
   <last_modified>2025-12-04T18:44:42.530Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All acceptance criteria and enumerated requirements for story 010.1-DEV-CONFIGURABLE-PATTERNS are fully implemented and verified:
-- Core functionality (storyPathPattern, requirementIdPattern and their example counterparts) is provided via both nested (story/req) and flat shorthand options in AnnotationRuleOptions, wired into valid-annotation-format.
-- Backward compatibility is maintained by default regex patterns and examples; when options are omitted or invalid, the rule falls back to these defaults while continuing to operate and auto-fix safely.
-- Pattern validation is performed by resolvePattern; invalid regex sources are detected, surfaced as explicit configuration errors, and default patterns are used instead.
-- Error messages use configurable story and requirement examples, with tests confirming that custom examples and nested-over-flat precedence are reflected in the emitted details.
-- ESLint/JSON Schema configuration for these options is defined in getRuleSchema and validated by dedicated tests, ensuring types and option shapes are correct.
-- Integration with valid-story-reference is consistent: both rules share default directory conventions (docs/stories) and valid-story-reference’s own configuration and tests confirm compatible behavior for storyDirectories and path handling.
-- User documentation in user-docs/api-reference.md documents the new pattern and example options (nested and flat), their defaults, precedence, and usage examples, aligning with the story’s configuration examples.
+  <evidence>[object Object],[object Object]</evidence>
+  <notes>All acceptance criteria for story 010.1-DEV-CONFIGURABLE-PATTERNS are fully implemented and verified:
 
-Given the code, tests, and documentation all align with the story’s requirements and the targeted tests pass, the story is assessed as PASSED.</notes>
+- Core functionality: `valid-annotation-format` now supports both nested (`story.pattern`, `req.pattern`) and flat (`storyPathPattern`, `requirementIdPattern`) configuration for story and requirement ID patterns, plus corresponding example fields. These options are normalized and resolved into runtime `RegExp` and example strings.
+- Backward compatibility: When no options are provided, or when options contain invalid regex strings, the rule falls back to the original hardcoded defaults (`docs/stories/... .story.md` for story paths and `REQ-[A-Z0-9-]+` for IDs). Multiple tests confirm this fallback behavior.
+- Pattern validation: Custom patterns are compiled via `new RegExp(...)`, and any compilation errors are captured and reported through the `invalidRuleConfiguration` message, while still continuing validation with default patterns.
+- Error messages and examples: Error messages for invalid/missing `@story` and `@req` values use the configurable `storyExample`/`reqExample`, with clear tests confirming that nested examples override flat examples and both override defaults.
+- Quality standards / schema: Options are described by a strict JSON Schema (nested and flat forms, plus `autoFix`), wired into ESLint’s `meta.schema`. The comprehensive RuleTester suite, which exercises these options, passes, demonstrating that configuration validation behaves correctly.
+- Integration with `valid-story-reference`: The default path pattern used by `valid-annotation-format` aligns with the `docs/stories/*.story.md` convention validated by `valid-story-reference`, and the `valid-story-reference` test suite passes alongside the new pattern configuration features, indicating seamless coexistence.
+- Documentation examples: The story file itself contains concrete configuration examples for `storyPathPattern`, `requirementIdPattern`, `storyPathExample`, and `requirementIdExample`, and those shapes are mirrored and validated in the tests.
+
+Given the passing targeted tests, the aligned implementation in helper modules, and the maintained defaults and schema validation, this story is correctly and completely implemented.</notes>
 </traceability>

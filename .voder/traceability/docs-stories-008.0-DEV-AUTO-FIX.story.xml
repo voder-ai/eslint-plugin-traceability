@@ -2,8 +2,8 @@
 <traceability>
   <specification>docs/stories/008.0-DEV-AUTO-FIX.story.md</specification>
   <status>PASSED</status>
-  <last_validated>2025-12-07T02:39:16.315Z</last_validated>
+  <last_validated>2025-12-07T02:59:48.687Z</last_validated>
   <last_modified>2025-12-05T06:16:39.799Z</last_modified>
-  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
-  <notes>All functional and documentation aspects required by docs/stories/008.0-DEV-AUTO-FIX.story.md are implemented and verified. Auto-fix behavior for missing @story annotations (require-story-annotation) and safe @story path suffix normalization (valid-annotation-format) is present, gated by configurable templates and autoFix flags, and fully covered by dedicated tests in tests/rules/auto-fix-behavior-008.test.ts. The implementation aligns with safety and formatting preservation requirements (only inserting comments or adjusting suffix substrings) and falls back to non-fixing error reporting when a safe fix cannot be determined or when autoFix is disabled. User-facing documentation in user-docs/api-reference.md clearly describes these capabilities, options, and safety constraints. The full Jest suite, including the specific story 008.0 tests, passes. Therefore this story is fully implemented and passes all acceptance criteria.</notes>
+  <evidence>[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]</evidence>
+  <notes>Based on the current story text, implementation in the rules and helpers, the dedicated auto-fix tests in tests/rules/auto-fix-behavior-008.test.ts, and the user documentation in user-docs/api-reference.md, all acceptance criteria and detailed requirements for docs/stories/008.0-DEV-AUTO-FIX.story.md are fully satisfied. The auto-fix behavior is present, safe, configurable via templates and autoFix toggles, integrated into the ESLint rule system, and verified by passing tests.</notes>
 </traceability>

@@ -95,6 +95,31 @@ function extractCommentValue(_c: any): string {
   return _c.value;
 }
 
+/**
+ * Collect a single contiguous comment line at the given index, appending its
+ * trimmed text to the accumulator. Returns true when a valid comment was
+ * collected and false when scanning should stop (blank or non-comment line).
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF
+ */
+function collectCommentLine(
+  lines: string[],
+  index: number,
+  comments: string[],
+): boolean {
+  const line = lines[index];
+  if (!line || !line.trim()) {
+    return false;
+  }
+  if (!/^\s*(\/\/|\/\*)/.test(line)) {
+    return false;
+  }
+
+  comments.push(line.trim());
+  return true;
+}
+
 function isElseIfBranch(node: any, parent: any | undefined): boolean {
   return (
     node &&
@@ -142,14 +167,9 @@ function gatherCatchClauseCommentText(
     let i = startIndex + 1;
 
     while (i <= endIndex) {
-      const line = lines[i];
-      if (!line || !line.trim()) {
+      if (!collectCommentLine(lines, i, comments)) {
         break;
       }
-      if (!/^\s*(\/\/|\/\*)/.test(line)) {
-        break;
-      }
-      comments.push(line.trim());
       i++;
     }
 
@@ -225,14 +245,9 @@ function scanElseIfBetweenConditionAndBody(
     lineIndex < consequentStartLine - 1;
     lineIndex++
   ) {
-    const line = lines[lineIndex];
-    if (!line || !line.trim()) {
+    if (!collectCommentLine(lines, lineIndex, comments)) {
       break;
     }
-    if (!/^\s*(\/\/|\/\*)/.test(line)) {
-      break;
-    }
-    comments.push(line.trim());
   }
 
   return comments.join(" ");
@@ -250,14 +265,9 @@ function scanElseIfInsideBlockComments(
   let lineIndex = consequentStartLine;
 
   while (lineIndex < lines.length) {
-    const line = lines[lineIndex];
-    if (!line || !line.trim()) {
+    if (!collectCommentLine(lines, lineIndex, comments)) {
       break;
     }
-    if (!/^\s*(\/\/|\/\*)/.test(line)) {
-      break;
-    }
-    comments.push(line.trim());
     lineIndex++;
   }
 
