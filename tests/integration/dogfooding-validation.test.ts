@@ -1,9 +1,11 @@
 /**
  * Dogfooding validation integration tests
- * @supports docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md REQ-DOGFOODING-TEST REQ-DOGFOODING-CI
+ * @supports docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md REQ-DOGFOODING-TEST REQ-DOGFOODING-CI REQ-DOGFOODING-VERIFY REQ-DOGFOODING-PRESET
  */
 import * as path from "path";
 import { spawnSync } from "child_process";
+import { FlatESLint } from "eslint/use-at-your-own-risk";
+import { configs, default as traceabilityPlugin } from "../../src/index";
 
 /**
  * @supports docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md REQ-DOGFOODING-TEST
@@ -72,5 +74,46 @@ describe("Dogfooding Validation (Story 023.0-MAINT-DOGFOODING-VALIDATION)", () =
     expect(result.status).not.toBe(0);
     expect(result.stdout).toContain("error");
     expect(result.stdout).toContain("src/dogfood.ts");
+  });
+
+  it("[REQ-DOGFOODING-VERIFY] should report at least one traceability rule active for TS sources", () => {
+    /**
+     * @supports docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md REQ-DOGFOODING-VERIFY
+     */
+    const eslintConfig = require("../../eslint.config.js");
+
+    const tsConfig = getTsConfigFromEslintConfig(eslintConfig);
+
+    expect(tsConfig).toBeDefined();
+
+    const rules = (tsConfig as any).rules || {};
+    const hasTraceabilityRule = Object.keys(rules).some((key) =>
+      key.startsWith("traceability/"),
+    );
+
+    expect(hasTraceabilityRule).toBe(true);
+  });
+
+  it("[REQ-DOGFOODING-PRESET] should be compatible with recommended preset usage without throwing", async () => {
+    /**
+     * @supports docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md REQ-DOGFOODING-PRESET
+     */
+    const config = [
+      { plugins: { traceability: traceabilityPlugin as any }, rules: {} },
+      ...configs.recommended,
+    ];
+
+    const eslint = new FlatESLint({
+      overrideConfig: config,
+      overrideConfigFile: true,
+      ignore: false,
+    });
+
+    const results = await eslint.lintText("function foo() {}", {
+      filePath: "example.ts",
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    expect(Array.isArray(results[0].messages)).toBe(true);
   });
 });

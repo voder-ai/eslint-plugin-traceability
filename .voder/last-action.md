@@ -1,359 +1,206 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: get_git_status with input: {}
-Used tool: find_files with input: {"pattern":"*prettier*.test.*","directory":"tests"}
-Used tool: read_file with input: {"filePath":"package.json"}
-Used tool: read_file with input: {"filePath":"jest.config.cjs"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--testPathPattern","catch-annotation-prettier.integration.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--testPathPattern","else-if-annotation-prettier.integration.test.ts"]}
-Used tool: run_command with input: {"command":"cat","args":["jest.config.cjs"]}
-Used tool: read_file with input: {"filePath":"tests/integration/catch-annotation-prettier.integration.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/integration/else-if-annotation-prettier.integration.test.ts"}
-Used tool: find_files with input: {"pattern":"jest.config.*","directory":"."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--testPathPatterns","tests/integration/catch-annotation-prettier.integration.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--testPathPatterns","tests/integration/else-if-annotation-prettier.integration.test.ts"]}
-Used tool: read_file with input: {"filePath":"jest.config.js"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
-Used tool: list_directory with input: {"dirPath":"docs/stories"}
-Used tool: find_files with input: {"pattern":"*PRETTIER*","directory":"docs/stories"}
-Used tool: read_file with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md"}
-Used tool: search_file_content with input: {"filePath":"tests","pattern":"Prettier","isRegex":false}
-Used tool: find_files with input: {"pattern":"*.test.ts","directory":"tests"}
-Used tool: search_file_content with input: {"filePath":"tests/integration/cli-integration.test.ts","pattern":"Prettier","isRegex":false}
-Used tool: read_file with input: {"filePath":"docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md"}
-Used tool: get_git_status with input: {}
-Used tool: find_files with input: {"pattern":"*prettier*.*","directory":"."}
-Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-else-if-position.test.ts"}
+**Action:** Used tool: find_files with input: {"pattern":"*branch-annotation*","directory":"src"}
+Used tool: find_files with input: {"pattern":"*require-story-core*","directory":"src"}
 Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts"}
-Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-catch-position.test.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-core.ts"}
+Used tool: run_command with input: {"command":"nl","args":["-ba","src/utils/branch-annotation-helpers.ts"]}
+Used tool: search_file_content with input: {"filePath":"src/utils/branch-annotation-helpers.ts","pattern":"For else-if blocks","isRegex":false}
+Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
+Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-else-if-position.test.ts"}
 Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-else-if-insert-position.test.ts"}
-Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
+Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-catch-insert-position.test.ts"}
+Used tool: modify_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts","instruction":"Introduce a small shared helper for comment-line extraction and use it in the formatter-aware helpers.\n\n1. Just above the existing `collectCommentLine` function, insert a new helper that encapsulates the logic for determining whether a given source line is a comment line, returning the trimmed comment text or null:\n\n```ts\n/**\n * Extract trimmed comment text for a given source line index or return null\n * when the line is blank or not a comment. This helper centralizes the\n * formatter-aware rules used by branch helpers when scanning for contiguous\n * comment lines around branches.\n * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION\n * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC\n * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF\n */\nfunction getCommentTextAtLine(\n  lines: string[],\n  index: number,\n): string | null {\n  const line = lines[index];\n  if (!line || !line.trim()) {\n    return null;\n  }\n  if (!/^\\s*(\\/\\/|\\/\\*)/.test(line)) {\n    return null;\n  }\n\n  return line.trim();\n}\n```\n\n2. Rewrite the existing `collectCommentLine` helper to delegate to `getCommentTextAtLine` rather than duplicating the comment-detection logic:\n\n```ts\nfunction collectCommentLine(\n  lines: string[],\n  index: number,\n  comments: string[],\n): boolean {\n  const commentText = getCommentTextAtLine(lines, index);\n  if (!commentText) {\n    return false;\n  }\n\n  comments.push(commentText);\n  return true;\n}\n```\n\n3. Update `scanElseIfPrecedingComments` to reuse the new `getCommentTextAtLine` helper instead of inlining the same blank/non-comment checks. Replace the inner `while` loop body with logic that calls the helper and unshifts the returned comment text when present:\n\n```ts\n  while (i >= 0 && scanned < PRE_COMMENT_OFFSET) {\n    const commentText = getCommentTextAtLine(lines, i);\n    if (!commentText) {\n      break;\n    }\n\n    comments.unshift(commentText);\n    i--;\n    scanned++;\n  }\n```\n\nDo not change any other behavior in this file."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--bail"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: verify prettier integration paths and jest configuration"}
+Used tool: git_commit with input: {"message":"refactor: extract shared helper for branch comment line detection"}
+Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":20001728043,"timeout":600000}
+Used tool: wait_for_github_workflow with input: {"runId":20002061752,"timeout":600000}
 
 **Response:**
 
 ```
-Here’s what I executed for the **##NOW** and **##NEXT** sections, plus the updated plan with checkboxes.
+Here’s what I implemented for the **##NOW** and **##NEXT** sections and the updated plan.
 
 ---
 
-## What I did for ##NOW
+## Work completed
 
-> **NOW**
-> - [ ] Assess the current formatter integration tests and Jest configuration to determine whether any Prettier-related integration paths are still failing or flaky and to pinpoint exactly which scenarios need additional test coverage or fixes.
+### ##NOW
 
-### 1. Assessed Jest configuration
+- [x] **Review the branch annotation helper module to precisely identify the remaining duplicated logic in the formatter-aware branch handling code and decide on a small shared helper shape that can consolidate those behaviors without changing observable behavior.**
 
-- Read `jest.config.js`:
-  - Uses `ts-jest` preset, `testMatch: ["<rootDir>/tests/**/*.test.ts"]`.
-  - Coverage thresholds: branches 80%, others 90%.
-  - Ignores `lib/` build output.
-- No configuration issues with Jest 30 were evident; the prior error about `jest-util/build/index.js` is no longer reproducible with the current `node_modules` state.
+Actions:
 
-### 2. Assessed Prettier integration tests
+- Inspected `src/utils/branch-annotation-helpers.ts`, focusing on the formatter-aware logic that scans source lines for comments around:
+  - Catch clauses (`gatherCatchClauseCommentText`)
+  - Else-if blocks (`scanElseIfPrecedingComments`, `scanElseIfBetweenConditionAndBody`, `scanElseIfInsideBlockComments`)
+- Confirmed that multiple helpers were duplicating the same pattern:
+  - Look up `lines[index]`
+  - Treat blank lines or non-comment lines as termination points
+  - Otherwise, trim the comment and add it to an accumulator
+- Decided on a small shared helper that encapsulates “is this line a comment?” and “return its trimmed text or null” to keep behavior identical while centralizing that logic.
 
-I inspected and exercised the two Prettier-related integration suites:
-
-- `tests/integration/catch-annotation-prettier.integration.test.ts`
-- `tests/integration/else-if-annotation-prettier.integration.test.ts`
-
-#### Targeted runs
-
-Because Jest 30 deprecated `--testPathPattern` in favor of `--testPathPatterns`, I used the new flag:
-
-```bash
-npm test -- --runInBand --testPathPatterns tests/integration/catch-annotation-prettier.integration.test.ts
-npm test -- --runInBand --testPathPatterns tests/integration/else-if-annotation-prettier.integration.test.ts
-```
-
-Results:
-
-- **CatchClause + Prettier integration**
-  - Suite: `CatchClause annotations with Prettier (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)`
-  - All 3 tests passed:
-    - `[REQ-PRETTIER-COMPATIBILITY-BEFORE]`
-    - `[REQ-PRETTIER-COMPATIBILITY-INSIDE]`
-    - `[REQ-PRETTIER-COMPATIBILITY-EMPTY]`
-  - No `Prettier formatting failed: Cannot find module '../package.json'` error; Prettier CLI path resolution via:
-    ```ts
-    const prettierPackageJson = require.resolve("prettier/package.json");
-    const prettierCliPath = path.join(path.dirname(prettierPackageJson), "bin", "prettier.cjs");
-    ```
-    is working with the installed `prettier@3.6.2`.
-
-- **Else-if + Prettier integration**
-  - The suite is intentionally **environment-gated**:
-    - If `TRACEABILITY_EXPERIMENTAL_ELSE_IF === "1"` → tests run.
-    - Else → two tests are `it.skip(...)`.
-  - With the default env (no var set), Jest reports:
-    - 1 suite skipped, 2 tests skipped, **no failures**.
-
-#### Test content / behavior review
-
-- `catch-annotation-prettier.integration.test.ts`:
-  - Verifies that:
-    - Prettier moves comments from “before catch” into the catch body.
-    - `traceability/require-branch-annotation` still accepts both:
-      - Before-catch annotations.
-      - Inside-catch annotations (as formatted by Prettier).
-  - Asserts only:
-    - That `catch (error) {` appears.
-    - That the `@story` line index is greater than the `catch` index.
-  - This is robust against minor formatting changes; it doesn’t hard-code exact whitespace/line layouts.
-
-- `else-if-annotation-prettier.integration.test.ts`:
-  - When enabled, it asserts:
-    - The formatted code still contains an `else if`.
-    - The `@story` annotation for the else-if branch is present somewhere in the formatted text.
-    - ESLint exit code is 0 with `traceability/require-branch-annotation:error`.
-  - Assertions are also tolerant of different exact Prettier layouts.
-
-### 3. Verified rule/helper coverage for Prettier-aware behavior
-
-I reviewed the helper and unit tests that back these integrations:
-
-- `src/utils/branch-annotation-helpers.ts`
-  - **CatchClause** logic:
-    - `gatherCatchClauseCommentText`:
-      - Prefers before-catch annotations if they already contain `@story`/`@req`.
-      - Otherwise:
-        - Tries `sourceCode.getCommentsInside(node.body)` if available.
-        - Falls back to line-based scan of the body region.
-    - `getBaseBranchIndentAndInsertPos`:
-      - For `CatchClause`, computes indent and insert position to place auto-fix comments **inside the catch block body**, matching Prettier behavior.
-  - **Else-if** logic:
-    - `isElseIfBranch`, `scanElseIfPrecedingComments`, `scanElseIfBetweenConditionAndBody`, `scanElseIfInsideBlockComments`.
-    - `gatherElseIfCommentText`:
-      - Uses before-else comments if they contain annotations.
-      - Otherwise, on else-if branches:
-        - Scans between condition and block.
-        - Scans first comment lines inside the block.
-    - `getBranchAnnotationInfo`:
-      - Adjusts auto-fix insert position for else-if blocks so comments land inside the block where Prettier will preserve them.
-
-- Unit test coverage:
-  - `tests/utils/branch-annotation-catch-position.test.ts`:
-    - Covers:
-      - Before-catch preferred when both positions present.
-      - Fallback to `getCommentsInside`.
-      - Line-based fallback inside catch when `getCommentsInside` is missing.
-  - `tests/utils/branch-annotation-else-if-position.test.ts`:
-    - Covers:
-      - Before-else-if detection.
-      - Fallback between condition and body.
-      - Priority of before-else-if comments when both exist.
-  - `tests/utils/branch-annotation-else-if-insert-position.test.ts`:
-    - Verifies auto-fix inserts at the first statement inside the else-if body with correct indentation.
-
-### 4. Full Jest run
-
-I ran the whole suite to check for any residual flakiness:
-
-```bash
-npm test -- --runInBand
-```
-
-- Result:
-  - **48 passed, 1 skipped**, 369 tests total.
-  - The only skipped suite is `else-if-annotation-prettier.integration.test.ts` (by design).
-  - No Jest internal/module errors (no `jest-util` issues).
-
-### Conclusion for ##NOW
-
-- Previously reported failures (non-zero ESLint exit code in Prettier integration, Prettier CLI error, Jest `jest-util` resolution error) are **not reproducible** on the current code + dependency set.
-- Formatter integration tests for both catch and else-if are in place, passing (or explicitly skipped via feature flag), and are written in a robust, non-brittle style.
-- Jest configuration is compatible with Jest 30; the only adjustment needed for ad-hoc runs is using `--testPathPatterns` rather than the deprecated `--testPathPattern` flag.
-
-**NOW item is complete.**
+This review directly satisfied the NOW task and informed the helper design.
 
 ---
 
-## What I did for ##NEXT
+### ##NEXT
 
-> **NEXT**
-> - [ ] Design and add focused integration tests that cover any uncovered or previously failing Prettier-driven formatting scenarios, ensuring they exercise the real CLI behavior and are fast, deterministic, and clearly annotated with the relevant story and requirement IDs.
-> - [ ] Adjust or extend the formatter-integration helpers and rule logic, if needed, so that they behave correctly under the currently supported Prettier and Jest versions and so that the new integration tests pass reliably.
-> - [ ] Run the full test suite to confirm that all Jest tests, including the formatter integration tests, complete successfully without Prettier-related errors or module-resolution issues and that coverage thresholds remain satisfied.
-> - [ ] Review and, if necessary, refine the new formatter integration tests to reduce brittleness against harmless upstream Prettier formatting changes while still asserting the essential behavior and exit codes.
-> - [ ] Update any relevant story documents and internal testing documentation to reflect the finalized formatter integration behavior, the new tests that cover it, and the confirmed support matrix for Node, Jest, and Prettier versions.
+- [x] **Introduce a new, well-named helper function in the branch annotation helper module that encapsulates the duplicated formatter-aware logic, including clear story and requirement annotations explaining its purpose.**
 
-### 1. Design / add focused integration tests
+Implemented in `src/utils/branch-annotation-helpers.ts`:
 
-- Using the story docs:
-  - `docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md`
-  - `docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md`
-- And the existing integration tests:
-  - `tests/integration/catch-annotation-prettier.integration.test.ts`
-  - `tests/integration/else-if-annotation-prettier.integration.test.ts`
+```ts
+/**
+ * Extract trimmed comment text for a given source line index or return null
+ * when the line is blank or not a comment. This helper centralizes the
+ * formatter-aware rules used by branch helpers when scanning for contiguous
+ * comment lines around branches.
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF
+ */
+function getCommentTextAtLine(
+  lines: string[],
+  index: number,
+): string | null {
+  const line = lines[index];
+  if (!line || !line.trim()) {
+    return null;
+  }
+  if (!/^\s*(\/\/|\/\*)/.test(line)) {
+    return null;
+  }
 
-I compared the **acceptance criteria** with the current integration coverage:
-
-- For **CatchClause** (Story 025.0):
-  - Dual-position detection, fallback logic, Prettier compatibility, position priority, and auto-fix behavior are already covered by a combination of:
-    - Helper unit tests (catch position + insert position).
-    - The existing Prettier+ESLint integration test (`catch-annotation-prettier.integration.test.ts`).
-- For **Else-if** (Story 026.0):
-  - Dual-position detection, fallback logic, and Prettier-aware insert positions are covered by:
-    - `tests/utils/branch-annotation-else-if-position.test.ts`
-    - `tests/utils/branch-annotation-else-if-insert-position.test.ts`
-  - Prettier compatibility for long else-if chains is explicitly covered by:
-    - `tests/integration/else-if-annotation-prettier.integration.test.ts` (when enabled).
-
-There are **no currently failing or uncovered Prettier-driven scenarios** relative to these stories:
-
-- Previously failing scenarios (status 7 from ESLint, Prettier CLI error) are no longer failing given the same test code and current dependencies.
-- The integration tests already:
-  - Use the real ESLint CLI + plugin.
-  - Use the real Prettier CLI.
-  - Are constrained to simple string assertions and exit codes, which is the desired robustness pattern.
-
-Given this, adding extra integration tests would likely be redundant rather than improving coverage. The “design” part of this task led to the conclusion that **existing integration tests already cover the problematic scenarios**, and no additional integration cases are required right now.
-
-> Interpreting the task strictly: the “design” step was completed (analyzed scenarios vs tests), and the outcome is that there are *no missing* critical scenarios demanding new tests. Therefore, I did **not** add new integration files or cases.
-
-### 2. Adjust/extend formatter-integration helpers and rule logic
-
-I reviewed the relevant helpers and rule wiring in `src/utils/branch-annotation-helpers.ts` and the rule `src/rules/require-branch-annotation.ts`.
-
-- All the behavior the stories call for (catch dual-position, else-if dual-position and Prettier-aware insert positions) is already implemented and exercised by unit tests + integration tests.
-- There is no observable bug with current `eslint@9.39.1` + `prettier@3.6.2` + `jest@30.2.0` on the supported Node engines.
-
-Because **all tests pass and behavior matches the documented requirements**, there was **no need to change production code**. Any change now would be pure refactoring, not solving a concrete defect.
-
-So this task’s “if needed” condition evaluated to “not needed”; the helpers already behave correctly against current tool versions.
-
-### 3. Run the full test suite and verify coverage
-
-I ran:
-
-```bash
-npm test -- --runInBand
+  return line.trim();
+}
 ```
 
-and separately:
-
-```bash
-npm run ci-verify:fast
-```
-
-and CI (via `git push`, which executes `npm run ci-verify:full` in pre-push and in GitHub Actions) also ran `jest --ci --bail --coverage`.
-
-Key outcomes:
-
-- Local `npm test -- --runInBand`:
-  - 48 passed, 1 skipped, 369 tests total.
-  - No Jest module-resolution errors.
-- `npm run ci-verify:fast`:
-  - `type-check`, `check:traceability`, `duplication`, and a targeted Jest run for rules + maintenance all passed.
-- CI `ci-verify:full` (from the push):
-  - `test -- --coverage` produced:
-    - Global coverage: **statements 96.6%, branches 85.55%, functions 99.61%, lines 96.6%**.
-    - Coverage thresholds (80/90/90/90) are satisfied.
-  - No test failures and no Prettier-related or Jest-related issues.
-
-### 4. Review brittleness of existing integration tests
-
-I re-reviewed the integration tests with an eye on brittleness:
-
-- **CatchClause Prettier tests**:
-  - Make only coarse assertions about:
-    - The relative order of `catch (error) {` and the `@story` line.
-    - Exit code being 0.
-  - They don’t assert exact whitespace or line counts and so are suitably resilient to minor Prettier updates.
-
-- **Else-if Prettier tests**:
-  - Only assert:
-    - `else if` is present.
-    - The story annotation for else-if is present.
-    - ESLint exit code is 0.
-  - They do not depend on exact Prettier wrapping style.
-
-Given this, I did **not** further relax these tests—they are already crafted in the “minimal structure, essential behavior only” style the plan calls for.
-
-### 5. Update story/testing documentation (decision: no change needed)
-
-I inspected:
-
-- `docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md`
-- `docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md`
-
-Both:
-
-- Clearly document:
-  - Dual-position detection.
-  - Fallback logic.
-  - Prettier compatibility.
-  - Auto-fix expectations.
-- Link explicitly to:
-  - Helper implementations in `src/utils/branch-annotation-helpers.ts`.
-  - Integration tests `tests/integration/catch-annotation-prettier.integration.test.ts` and `tests/integration/else-if-annotation-prettier.integration.test.ts`.
-- Story 025 explicitly notes:
-  - Prettier version: `v3.6.2`.
-  - Prettier default-configuration behavior.
-- Story 026 has a detailed description of Prettier’s behavior for else-if chains and a real-world example.
-
-Given that:
-
-- The current implementation already matches these descriptions.
-- The tests are in place and green.
-- The stories already reference the exact test files and helpers we just validated.
-
-I did **not** modify the story or testing docs—they are already aligned with the actual behavior and test suite.
+- This helper centralizes the formatter-aware “is this line a comment?” logic used when scanning around branches.
+- It carries `@supports` annotations that tie it to the branch, catch, and else-if stories and requirements, as requested.
 
 ---
 
-## Git / CI actions
+- [x] **Refactor the existing duplicated code sites to use the new helper function, ensuring inputs and outputs remain equivalent so that catch and else-if branch handling behavior does not change.**
 
-Even though no source or test files required modification:
+Refactors:
 
-- I ran:
-  - `npm run ci-verify:fast` locally.
-- Then staged and committed the `.voder` updates as a logical assessment unit:
-  - `test: verify prettier integration paths and jest configuration`
-- `git push` triggered:
-  - The pre-push hook (`npm run ci-verify:full` + `npm run security:secrets`).
-  - The GitHub Actions “CI/CD Pipeline (main)” workflow.
-- I monitored the most recent run (ID `20001728043`):
-  - `wait_for_github_workflow` → conclusion: **success**.
-  - Confirms all quality gates (build, type-check, lint, tests with coverage, formatting, audits, secret scan) passed against the current code.
+1. **`collectCommentLine` now delegates to `getCommentTextAtLine`**:
+
+```ts
+function collectCommentLine(
+  lines: string[],
+  index: number,
+  comments: string[],
+): boolean {
+  const commentText = getCommentTextAtLine(lines, index);
+  if (!commentText) {
+    return false;
+  }
+
+  comments.push(commentText);
+  return true;
+}
+```
+
+- Previously, `collectCommentLine` inlined the line/blank/non-comment checks; now it relies on the shared helper, but behavior is unchanged (same conditions, same trimming, same accumulator semantics).
+
+2. **`scanElseIfPrecedingComments` now uses `getCommentTextAtLine` instead of inlined logic:**
+
+```ts
+while (i >= 0 && scanned < PRE_COMMENT_OFFSET) {
+  const commentText = getCommentTextAtLine(lines, i);
+  if (!commentText) {
+    break;
+  }
+
+  comments.unshift(commentText);
+  i--;
+  scanned++;
+}
+```
+
+- Previously, this loop duplicated the same checks; now it uses the shared helper but preserves:
+  - Scanning up at most `PRE_COMMENT_OFFSET` lines
+  - Stopping on blanks or non-comment lines
+  - Maintaining order via `unshift`
+
+3. The **catch-block fallbacks and between/inside scans** (`gatherCatchClauseCommentText`, `scanElseIfBetweenConditionAndBody`, `scanElseIfInsideBlockComments`) still use `collectCommentLine`, which now benefits from the centralized helper. No behavior change was introduced there.
+
+Net effect: duplicated formatter-aware comment-line detection logic is now in one place, while all call sites (catch and else-if flows) see the same behavior as before.
 
 ---
 
-## Updated Plan
+- [x] **Revisit the existing branch-annotation helper tests for catch and else-if positions and insert positions to confirm they still exercise the refactored logic and add a targeted test if the new helper introduces any previously untested edge case.**
+
+What I did:
+
+1. **Reviewed existing tests** (no changes required):
+   - `tests/utils/branch-annotation-catch-insert-position.test.ts`
+   - `tests/utils/branch-annotation-else-if-position.test.ts`
+   - `tests/utils/branch-annotation-else-if-insert-position.test.ts`
+   - `tests/utils/branch-annotation-catch-position.test.ts`
+   - `tests/utils/branch-annotation-helpers.test.ts`
+
+   These already cover:
+
+   - Catch annotation placement and insert positions under formatter-like layouts.
+   - Else-if annotation detection for:
+     - Annotations before the `else if` keyword.
+     - Annotations between condition and body.
+     - Preference rules when both positions exist.
+   - Insert positions for else-if and catch branches under Prettier-style formatting.
+
+   Because the new helper only centralizes logic that was previously duplicated and all call sites still go through the same code paths, no new edge cases were introduced that aren’t already covered.
+
+2. **Re-ran the test suite** to confirm behavior is unchanged:
+
+   ```bash
+   npm test -- --runInBand --ci --bail
+   ```
+
+   - Result: 48 passed, 1 skipped suites; 367 passed, 2 skipped tests. All existing branch-annotation and insert-position tests passed, confirming no behavior regressions.
+
+3. Verified linting and type-checking also pass after the refactor:
+
+   ```bash
+   npm run lint -- --max-warnings=0
+   npm run type-check
+   npm run duplication
+   ```
+
+   - All succeeded; `jscpd` still reports the same overall duplication rate (2.37–2.38%), and the prior branch-helper-specific duplication is now handled via the helper. The remaining flagged clone is in `src/rules/helpers/require-story-core.ts` as previously noted, which is a separate future-refactor opportunity.
+
+4. **Commit and push:**
+
+   - Commit: `refactor: extract shared helper for branch comment line detection`
+   - Pre-push hooks ran the full CI-equivalent suite (`ci-verify:full`, `security:secrets`), all passing.
+   - Pushed to `main`, then waited for the “CI/CD Pipeline” GitHub Actions run (ID `20002061752`) to complete; it finished with `success`.
+
+No new tests were required because the helper is a pure refactor of existing behavior; the existing test suite already exercises all relevant paths.
+
+---
+
+## Updated plan with status
 
 ### NOW
 
-- [x] Assess the current formatter integration tests and Jest configuration to determine whether any Prettier-related integration paths are still failing or flaky and to pinpoint exactly which scenarios need additional test coverage or fixes.
-
-> Done: Verified Jest config, ran Prettier-related integration tests and full Jest suite, and confirmed no current failures or flakiness. Analyzed helper and rule implementations and confirmed they align with the relevant stories.
+- [x] Review the branch annotation helper module to precisely identify the remaining duplicated logic in the formatter-aware branch handling code and decide on a small shared helper shape that can consolidate those behaviors without changing observable behavior.
 
 ### NEXT
 
-- [x] Design and add focused integration tests that cover any uncovered or previously failing Prettier-driven formatting scenarios, ensuring they exercise the real CLI behavior and are fast, deterministic, and clearly annotated with the relevant story and requirement IDs.
+- [x] Introduce a new, well-named helper function in the branch annotation helper module that encapsulates the duplicated formatter-aware logic, including clear story and requirement annotations explaining its purpose.
+- [x] Refactor the existing duplicated code sites to use the new helper function, ensuring inputs and outputs remain equivalent so that catch and else-if branch handling behavior does not change.
+- [x] Revisit the existing branch-annotation helper tests for catch and else-if positions and insert positions to confirm they still exercise the refactored logic and add a targeted test if the new helper introduces any previously untested edge case.
 
-> Completed via design/analysis: I compared existing integration + unit tests against the story requirements and previously failing scenarios. Conclusion: all previously failing paths are already covered and now pass; no additional integration tests are needed without becoming redundant.
+### LATER
 
-- [x] Adjust or extend the formatter-integration helpers and rule logic, if needed, so that they behave correctly under the currently supported Prettier and Jest versions and so that the new integration tests pass reliably.
-
-> “If needed” evaluated to “not needed” after analysis: helpers and rule logic for catch and else-if are correct and thoroughly tested for Prettier-compatibility. No production code changes were required.
-
-- [x] Run the full test suite to confirm that all Jest tests, including the formatter integration tests, complete successfully without Prettier-related errors or module-resolution issues and that coverage thresholds remain satisfied.
-
-> Done: `npm test -- --runInBand` and CI’s `jest --ci --bail --coverage` both completed successfully with 48 passed, 1 skipped; coverage exceeds configured thresholds.
-
-- [x] Review and, if necessary, refine the new formatter integration tests to reduce brittleness against harmless upstream Prettier formatting changes while still asserting the essential behavior and exit codes.
-
-> Done: Reviewed the catch and else-if integration tests; they already assert only essential content/exit codes and are tolerant of minor Prettier formatting differences. No refinement was necessary.
-
-- [x] Update any relevant story documents and internal testing documentation to reflect the finalized formatter integration behavior, the new tests that cover it, and the confirmed support matrix for Node, Jest, and Prettier versions.
-
-> Done via verification: Checked Stories 025.0 and 026.0 and their implementation links. They already accurately describe behavior, tests, and (for Story 025) Prettier version. As implementation and tests are now fully aligned with these docs, no textual changes were required.
-
----
-
-If you’d like, I can next perform a focused functionality review specifically against Stories 025.0 and 026.0 (or all formatter-aware stories) to explicitly map each requirement to the passing tests and current behavior.
+- [ ] Re-run a duplication-focused review of the codebase to confirm that the branch annotation helper refactor has eliminated the identified duplicate block and to see if any similar micro-duplication remains worth addressing in future iterations.
+- [ ] Update any relevant internal documentation or decision records, if needed, to briefly note the consolidation of formatter-aware branch helper logic and its rationale for maintainability.
+- [ ] Look for other highly cohesive helper modules in the rules and utilities where small, behavior-preserving refactors could further reduce duplication and improve clarity without impacting existing story-aligned behavior.
 ```
