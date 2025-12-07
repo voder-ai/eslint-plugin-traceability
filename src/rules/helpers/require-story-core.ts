@@ -161,6 +161,46 @@ function withSafeReporting(label: string, fn: () => void): void {
 }
 
 /**
+ * Build the shared ESLint report descriptor for a missing @story annotation.
+ * This keeps the core helpers focused on computing names, targets, and
+ * templates while centralizing the diagnostic wiring.
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ERROR-SPECIFIC
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-RESILIENCE
+ */
+function createMissingStoryReportDescriptor(config: {
+  nameNode: any;
+  name: string;
+  resolvedTarget: any;
+  effectiveTemplate: string;
+  allowFix: boolean;
+  createFix: (_target: any, _annotationTemplate: string) => any;
+}) {
+  const {
+    nameNode,
+    name,
+    resolvedTarget,
+    effectiveTemplate,
+    allowFix,
+    createFix,
+  } = config;
+
+  const baseFix = createFix(resolvedTarget, effectiveTemplate);
+
+  return {
+    node: nameNode,
+    messageId: "missingStory" as const,
+    data: { name, functionName: name },
+    fix: allowFix ? baseFix : undefined,
+    suggest: [
+      {
+        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${effectiveTemplate}`,
+        fix: baseFix,
+      },
+    ],
+  };
+}
+
+/**
  * Core helper to report a missing @story annotation for a function-like node.
  * This reporting utility delegates behavior to injected dependencies so that
  * higher-level helpers can stay small while sharing error-reporting logic.
@@ -194,20 +234,16 @@ export function coreReportMissing(
     const { effectiveTemplate, allowFix } = deps.buildTemplateConfig(options);
     const name = functionName;
 
-    context.report({
-      node: nameNode,
-      messageId: "missingStory",
-      data: { name, functionName: name },
-      fix: allowFix
-        ? deps.createAddStoryFix(resolvedTarget, effectiveTemplate)
-        : undefined,
-      suggest: [
-        {
-          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${effectiveTemplate}`,
-          fix: deps.createAddStoryFix(resolvedTarget, effectiveTemplate),
-        },
-      ],
-    });
+    context.report(
+      createMissingStoryReportDescriptor({
+        nameNode,
+        name,
+        resolvedTarget,
+        effectiveTemplate,
+        allowFix,
+        createFix: deps.createAddStoryFix,
+      }),
+    );
   });
 }
 
@@ -241,24 +277,17 @@ export function coreReportMethod(
     const nameNode =
       (node.key && node.key.type === "Identifier" && node.key) || node;
 
-    const effectiveTemplate = deps.getAnnotationTemplate(
-      options.annotationTemplateOverride,
-    );
-    const allowFix = deps.shouldApplyAutoFix(options.autoFixToggle);
+    const { effectiveTemplate, allowFix } = deps.buildTemplateConfig(options);
 
-    context.report({
-      node: nameNode,
-      messageId: "missingStory",
-      data: { name, functionName: name },
-      fix: allowFix
-        ? deps.createMethodFix(resolvedTarget, effectiveTemplate)
-        : undefined,
-      suggest: [
-        {
-          desc: `Add JSDoc @story annotation for function '${name}', e.g., ${effectiveTemplate}`,
-          fix: deps.createMethodFix(resolvedTarget, effectiveTemplate),
-        },
-      ],
-    });
+    context.report(
+      createMissingStoryReportDescriptor({
+        nameNode,
+        name,
+        resolvedTarget,
+        effectiveTemplate,
+        allowFix,
+        createFix: deps.createMethodFix,
+      }),
+    );
   });
 }

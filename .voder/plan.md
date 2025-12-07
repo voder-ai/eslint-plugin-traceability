@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Review the existing branch-annotation helper code around the duplicated else-if and catch comment-scanning logic to understand exactly what behavior is shared and decide on a small helper extraction that will remove the duplication without changing observable behavior.
+- [ ] Analyze the remaining error-reporting helper code in the core story-reporting module to pinpoint any residual duplication or overly complex patterns and decide the next minimal refactor that preserves existing behavior while simplifying the implementation.
 
 ## NEXT
 
-- [ ] Introduce a new focused helper function in the branch-annotation helpers module that encapsulates the shared comment-scanning behavior and update the existing else-if and catch paths to delegate to this helper while preserving all current rules and traceability annotations.
-- [ ] Adjust or extend the existing unit tests for branch-annotation helpers and related rules to cover the refactored paths and confirm that behavior remains identical after the duplication is removed.
-- [ ] Re-run the internal duplication analysis mentally against the updated helper code to ensure the previously reported duplicated region is eliminated and that the refactor did not introduce new overlapping logic elsewhere.
+- [ ] Introduce a small, focused helper or two in the core story-reporting module to encapsulate the shared construction of missing-story report data so that the remaining duplicated logic in the existing reporting functions is removed without changing what ESLint users observe.
+- [ ] Review the existing tests that exercise the core story-reporting behavior and add any missing cases needed to ensure the new helpers and error-resilience paths are fully covered, including scenarios where dependencies throw but linting continues safely.
+- [ ] Re-evaluate the updated core story-reporting helpers for duplication and complexity to confirm that the originally identified duplicated region has been eliminated and no new complex or overlapping logic has been introduced.
 
 ## LATER
 
-- [ ] Revisit the remaining minor uncovered branches in core helper modules and design similarly small, focused tests to close those coverage gaps.
-- [ ] Standardize the use of @supports traceability annotations in any remaining legacy test files that still rely only on @story and @req so they align with the preferred format.
-- [ ] Return to the else-if single-line annotation support story and plan the implementation and tests needed to fully satisfy that requirement once the helper refactors and small quality improvements are complete.
+- [ ] Design a small sequence of extractions to break the oversized branch-annotation helper module into a few cohesive utilities grouped by concern, such as generic comment scanning, catch-specific helpers, and else-if–specific helpers, while maintaining current behavior and traceability annotations.
+- [ ] After the branch-annotation helpers are decomposed, revisit the linting thresholds for maximum lines per file and per function in the rules and helpers slice to modestly tighten them in line with the code-quality ratcheting plan.
+- [ ] Identify any remaining untested defensive branches or rare error paths in core helper modules and add targeted characterization tests that lock in their current behavior before any further refactoring.
