@@ -1,6 +1,6 @@
 /**
  * Unit tests for annotation-scope-analyzer utilities
- * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-DUPLICATION-DETECTION REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-DUPLICATION-DETECTION REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL REQ-CONFIGURABLE-STRICTNESS
  */
 import type { Rule } from "eslint";
 import {
@@ -13,110 +13,276 @@ import {
   type RedundancyRuleOptions,
 } from "../../src/utils/annotation-scope-analyzer";
 
-describe("annotation-scope-analyzer helpers (Story 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION)", () => {
-  it("[REQ-DUPLICATION-DETECTION] builds stable story/req keys", () => {
-    const key = toStoryReqKey("docs/stories/001.story.md", "REQ-ONE");
-    expect(key).toBe("docs/stories/001.story.md|REQ-ONE");
-  });
+describe(
+  "annotation-scope-analyzer helpers (Story 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION)",
+  () => {
+    it("[REQ-DUPLICATION-DETECTION] builds stable story/req keys", () => {
+      const key = toStoryReqKey("docs/stories/001.story.md", "REQ-ONE");
+      expect(key).toBe("docs/stories/001.story.md|REQ-ONE");
+    });
 
-  it("[REQ-DUPLICATION-DETECTION] extracts pairs from @story/@req sequences", () => {
-    const text = `// @story docs/stories/001.story.md\n// @req REQ-ONE`;
-    const pairs = extractStoryReqPairsFromText(text);
-    expect(Array.from(pairs)).toEqual([
-      "docs/stories/001.story.md|REQ-ONE",
-    ]);
-  });
+    it(
+      "[REQ-DUPLICATION-DETECTION] normalizes missing story or requirement to empty segments",
+      () => {
+        const noStory = toStoryReqKey(null, "REQ-ONE");
+        const noReq = toStoryReqKey(
+          "docs/stories/001.story.md",
+          undefined as unknown as string,
+        );
 
-  it("[REQ-SCOPE-ANALYSIS] extracts pairs from @supports lines", () => {
-    const text = `// @supports docs/stories/002.story.md REQ-A REQ-B OTHER`;
-    const pairs = extractStoryReqPairsFromText(text);
-    expect(pairs.has("docs/stories/002.story.md|REQ-A")).toBe(true);
-    expect(pairs.has("docs/stories/002.story.md|REQ-B")).toBe(true);
-  });
-
-  it("[REQ-DUPLICATION-DETECTION] aggregates pairs across comments", () => {
-    const comments = [
-      { value: "// @story docs/stories/001.story.md\n// @req REQ-ONE" },
-      { value: "// @supports docs/stories/002.story.md REQ-TWO" },
-    ];
-    const pairs = extractStoryReqPairsFromComments(comments);
-    expect(pairs.size).toBe(2);
-  });
-
-  it("[REQ-DUPLICATION-DETECTION] determines full coverage correctly", () => {
-    const parent = new Set([
-      "story|REQ-ONE",
-      "story|REQ-TWO",
-    ]);
-    const childCovered = new Set(["story|REQ-ONE"]);
-    const childNotCovered = new Set(["story|REQ-THREE"]);
-
-    expect(arePairsFullyCovered(childCovered, parent)).toBe(true);
-    expect(arePairsFullyCovered(childNotCovered, parent)).toBe(false);
-  });
-
-  it("[REQ-STATEMENT-SIGNIFICANCE] respects alwaysCovered and strictness levels", () => {
-    const base: RedundancyRuleOptions = {
-      strictness: "moderate",
-      allowEmphasisDuplication: false,
-      maxScopeDepth: 3,
-      alwaysCovered: ["ReturnStatement"],
-    };
-    const branchTypes = ["IfStatement"];
-
-    expect(
-      isStatementEligibleForRedundancy(
-        { type: "ReturnStatement" },
-        base,
-        branchTypes,
-      ),
-    ).toBe(true);
-    expect(
-      isStatementEligibleForRedundancy(
-        { type: "ExpressionStatement" },
-        base,
-        branchTypes,
-      ),
-    ).toBe(true);
-    expect(
-      isStatementEligibleForRedundancy(
-        { type: "IfStatement" },
-        base,
-        branchTypes,
-      ),
-    ).toBe(false);
-  });
-
-  it("[REQ-SAFE-REMOVAL] computes removal range for full-line comment", () => {
-    const source = `const x = 1;\n// @story docs/stories/001.story.md\nconst y = 2;\n`;
-    const sourceCode = {
-      getText() {
-        return source;
+        expect(noStory).toBe("|REQ-ONE");
+        expect(noReq).toBe("docs/stories/001.story.md|");
       },
-    } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+    );
 
-    const start = source.indexOf("// @story");
-    const end = start + "// @story docs/stories/001.story.md".length;
-    const comment = { range: [start, end] };
+    it("[REQ-DUPLICATION-DETECTION] extracts pairs from @story/@req sequences", () => {
+      const text = `// @story docs/stories/001.story.md\n// @req REQ-ONE`;
+      const pairs = extractStoryReqPairsFromText(text);
+      expect(Array.from(pairs)).toEqual([
+        "docs/stories/001.story.md|REQ-ONE",
+      ]);
+    });
 
-    const [removalStart, removalEnd] = getCommentRemovalRange(comment, sourceCode);
-    const removed =
-      source.slice(0, removalStart) + source.slice(removalEnd);
+    it("[REQ-DUPLICATION-DETECTION] returns empty set when text has no annotations", () => {
+      const pairs = extractStoryReqPairsFromText("");
+      expect(pairs.size).toBe(0);
+    });
 
-    expect(removed).toBe("const x = 1;\nconst y = 2;\n");
-  });
+    it("[REQ-SCOPE-ANALYSIS] extracts pairs from @supports lines", () => {
+      const text = `// @supports docs/stories/002.story.md REQ-A REQ-B OTHER`;
+      const pairs = extractStoryReqPairsFromText(text);
+      expect(pairs.has("docs/stories/002.story.md|REQ-A")).toBe(true);
+      expect(pairs.has("docs/stories/002.story.md|REQ-B")).toBe(true);
+    });
 
-  it("[REQ-SAFE-REMOVAL] returns [0, 0] for comments with invalid range length (EXPECTS EXPECTED_RANGE_LENGTH usage)", () => {
-    const source = "const x = 1;";
-    const sourceCode = {
-      getText() {
-        return source;
+    it("[REQ-DUPLICATION-DETECTION] aggregates pairs across comments", () => {
+      const comments = [
+        { value: "// @story docs/stories/001.story.md\n// @req REQ-ONE" },
+        { value: "// @supports docs/stories/002.story.md REQ-TWO" },
+      ];
+      const pairs = extractStoryReqPairsFromComments(comments);
+      expect(pairs.size).toBe(2);
+    });
+
+    it("[REQ-DUPLICATION-DETECTION] returns empty set for empty comments list", () => {
+      const pairs = extractStoryReqPairsFromComments([]);
+      expect(pairs.size).toBe(0);
+    });
+
+    it("[REQ-DUPLICATION-DETECTION] determines full coverage correctly", () => {
+      const parent = new Set([
+        "story|REQ-ONE",
+        "story|REQ-TWO",
+      ]);
+      const childCovered = new Set(["story|REQ-ONE"]);
+      const childNotCovered = new Set(["story|REQ-THREE"]);
+
+      expect(arePairsFullyCovered(childCovered, parent)).toBe(true);
+      expect(arePairsFullyCovered(childNotCovered, parent)).toBe(false);
+    });
+
+    it("[REQ-DUPLICATION-DETECTION] treats empty child or parent as not covered", () => {
+      const nonEmpty = new Set(["story|REQ-ONE"]);
+
+      expect(arePairsFullyCovered(new Set(), nonEmpty)).toBe(false);
+      expect(arePairsFullyCovered(nonEmpty, new Set())).toBe(false);
+    });
+
+    it("[REQ-STATEMENT-SIGNIFICANCE] respects alwaysCovered and strictness levels", () => {
+      const base: RedundancyRuleOptions = {
+        strictness: "moderate",
+        allowEmphasisDuplication: false,
+        maxScopeDepth: 3,
+        alwaysCovered: ["ReturnStatement"],
+      };
+      const branchTypes = ["IfStatement"];
+
+      expect(
+        isStatementEligibleForRedundancy(
+          { type: "ReturnStatement" },
+          base,
+          branchTypes,
+        ),
+      ).toBe(true);
+      expect(
+        isStatementEligibleForRedundancy(
+          { type: "ExpressionStatement" },
+          base,
+          branchTypes,
+        ),
+      ).toBe(true);
+      expect(
+        isStatementEligibleForRedundancy(
+          { type: "IfStatement" },
+          base,
+          branchTypes,
+        ),
+      ).toBe(false);
+    });
+
+    it(
+      "[REQ-CONFIGURABLE-STRICTNESS] treats permissive mode as only honoring alwaysCovered list",
+      () => {
+        const options: RedundancyRuleOptions = {
+          strictness: "permissive",
+          allowEmphasisDuplication: false,
+          maxScopeDepth: 3,
+          alwaysCovered: ["ReturnStatement"],
+        };
+        const branchTypes: string[] = ["IfStatement"];
+
+        expect(
+          isStatementEligibleForRedundancy(
+            { type: "ReturnStatement" },
+            options,
+            branchTypes,
+          ),
+        ).toBe(true);
+        expect(
+          isStatementEligibleForRedundancy(
+            { type: "ExpressionStatement" },
+            options,
+            branchTypes,
+          ),
+        ).toBe(false);
       },
-    } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+    );
 
-    const comment = { range: [0] as unknown as [number, number] };
+    it(
+      "[REQ-CONFIGURABLE-STRICTNESS] treats strict mode as allowing any non-branch statement",
+      () => {
+        const options: RedundancyRuleOptions = {
+          strictness: "strict",
+          allowEmphasisDuplication: false,
+          maxScopeDepth: 3,
+          alwaysCovered: [],
+        };
+        const branchTypes: string[] = ["IfStatement"];
 
-    const range = getCommentRemovalRange(comment, sourceCode);
-    expect(range).toEqual([0, 0]);
-  });
-});
+        expect(
+          isStatementEligibleForRedundancy(
+            { type: "ExpressionStatement" },
+            options,
+            branchTypes,
+          ),
+        ).toBe(true);
+        expect(
+          isStatementEligibleForRedundancy(
+            { type: "IfStatement" },
+            options,
+            branchTypes,
+          ),
+        ).toBe(false);
+      },
+    );
+
+    it("[REQ-STATEMENT-SIGNIFICANCE] returns false for null or non-node values", () => {
+      const options: RedundancyRuleOptions = {
+        strictness: "moderate",
+        allowEmphasisDuplication: false,
+        maxScopeDepth: 3,
+        alwaysCovered: [],
+      };
+      const branchTypes: string[] = [];
+
+      expect(
+        isStatementEligibleForRedundancy(null, options, branchTypes),
+      ).toBe(false);
+      expect(
+        isStatementEligibleForRedundancy(
+          {} as { type?: string },
+          options,
+          branchTypes,
+        ),
+      ).toBe(false);
+    });
+
+    it("[REQ-SAFE-REMOVAL] computes removal range for full-line comment", () => {
+      const source = `const x = 1;\n// @story docs/stories/001.story.md\nconst y = 2;\n`;
+      const sourceCode = {
+        getText() {
+          return source;
+        },
+      } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+
+      const start = source.indexOf("// @story");
+      const end = start + "// @story docs/stories/001.story.md".length;
+      const comment = { range: [start, end] };
+
+      const [removalStart, removalEnd] = getCommentRemovalRange(
+        comment,
+        sourceCode,
+      );
+      const removed =
+        source.slice(0, removalStart) + source.slice(removalEnd);
+
+      expect(removed).toBe("const x = 1;\nconst y = 2;\n");
+    });
+
+    it(
+      "[REQ-SAFE-REMOVAL] computes removal range for full-line comment with Windows newlines",
+      () => {
+        const source =
+          "const x = 1;\r\n// @story docs/stories/001.story.md\r\nconst y = 2;\r\n";
+        const sourceCode = {
+          getText() {
+            return source;
+          },
+        } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+
+        const start = source.indexOf("// @story");
+        const end = start + "// @story docs/stories/001.story.md".length;
+        const comment = { range: [start, end] };
+
+        const [removalStart, removalEnd] = getCommentRemovalRange(
+          comment,
+          sourceCode,
+        );
+        const removed =
+          source.slice(0, removalStart) + source.slice(removalEnd);
+
+        expect(removed).toBe("const x = 1;\r\nconst y = 2;\r\n");
+      },
+    );
+
+    it("[REQ-SAFE-REMOVAL] computes removal range for inline comment", () => {
+      const source =
+        "const x = 1; // @story docs/stories/001.story.md\nconst y = 2;\n";
+      const sourceCode = {
+        getText() {
+          return source;
+        },
+      } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+
+      const start = source.indexOf("// @story");
+      const end = start + "// @story docs/stories/001.story.md".length;
+      const comment = { range: [start, end] };
+
+      const [removalStart, removalEnd] = getCommentRemovalRange(
+        comment,
+        sourceCode,
+      );
+      const removed =
+        source.slice(0, removalStart) + source.slice(removalEnd);
+
+      expect(removed).toBe("const x = 1; \nconst y = 2;\n");
+    });
+
+    it(
+      "[REQ-SAFE-REMOVAL] returns [0, 0] for comments with invalid range length (EXPECTS EXPECTED_RANGE_LENGTH usage)",
+      () => {
+        const source = "const x = 1;";
+        const sourceCode = {
+          getText() {
+            return source;
+          },
+        } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+
+        const comment = { range: [0] as unknown as [number, number] };
+
+        const range = getCommentRemovalRange(comment, sourceCode);
+        expect(range).toEqual([0, 0]);
+      },
+    );
+  },
+);

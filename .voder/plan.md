@@ -1,16 +1,15 @@
 ## NOW
 
-- [ ] Review the redundant-annotation detection story to extract the specific documentation and migration-guide requirements for how users should clean up redundant traceability annotations.
+- [ ] Design and add new unit tests that exercise the currently uncovered branches in the annotation scope analyzer utility so that the logic around scope pair computation for those cases is fully covered.
 
 ## NEXT
 
-- [ ] Review the existing no-redundant-annotation rule implementation and its tests to confirm the precise behaviors, options, and edge cases that must be accurately described in the migration guide.
-- [ ] Draft and insert a dedicated section in the migration guide that explains redundancy cleanup during migration, including when and how to enable the no-redundant-annotation rule, what kinds of duplicate or overlapping annotations it flags, and recommended workflows for safely applying fixes.
-- [ ] Refine the new migration-guide content to ensure it uses clear user-facing language, references the unified rule and @supports-first approach consistently, and aligns with the acceptance criteria in the redundant-annotation story.
-- [ ] Update the redundant-annotation story to mark the migration-guide documentation criterion as satisfied and adjust any narrative text so it accurately reflects the new guidance and the current implementation state.
+- [ ] Review the updated tests alongside the annotation scope analyzer implementation to confirm that each previously uncovered branch now has a clear, behavior-focused test scenario associated with it.
+- [ ] Align the new tests with the relevant development story by adding appropriate traceability annotations and ensuring test names clearly describe the requirements they validate.
+- [ ] Run through the existing coverage information conceptually to identify any remaining low-coverage logic in the annotation scope analyzer and add additional targeted tests if necessary to close those gaps.
 
 ## LATER
 
-- [ ] Cross-check other user-facing docs (API reference, examples, traceability overview) to ensure they consistently mention redundancy cleanup where appropriate and link users toward the migration-guide recommendations.
-- [ ] Identify any additional real-world patterns of redundant annotations (for example, mixed @supports and legacy annotations on the same function) that could be highlighted with examples in future documentation iterations.
-- [ ] Consider whether additional integration tests or end-to-end scenarios are needed to validate common redundancy-cleanup workflows that users might follow based on the new migration-guide guidance.
+- [ ] Evaluate whether the annotation scope analyzer’s internal structure can be simplified or better modularized now that coverage is stronger, performing small, safe refactors without changing behavior.
+- [ ] Look for similar partially covered helpers or utilities in the rules codebase and plan incremental test additions to raise their branch coverage as well.
+- [ ] Consider adding a brief note in the internal docs describing the annotation scope analyzer’s responsibilities and the key edge cases covered by tests, to guide future contributors.

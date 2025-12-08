@@ -1,351 +1,233 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: read_file with input: {"filePath":"docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md"}
-Used tool: list_directory with input: {"dirPath":"tests"}
-Used tool: read_file with input: {"filePath":"user-docs/api-reference.md"}
-Used tool: read_file with input: {"filePath":"src/index.ts"}
-Used tool: list_directory with input: {"dirPath":"tests/integration"}
-Used tool: find_files with input: {"pattern":"*require-story-annotation*.test.ts","directory":"tests"}
-Used tool: find_files with input: {"pattern":"*require-req-annotation*.test.ts","directory":"tests"}
-Used tool: find_files with input: {"pattern":"*require-traceability*.test.ts","directory":"tests"}
-Used tool: read_file with input: {"filePath":"tests/integration/cli-integration.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/integration/no-redundant-annotation.integration.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/config/require-story-annotation-config.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-annotation.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/rules/require-req-annotation.test.ts"}
-Used tool: read_file with input: {"filePath":"src/rules/require-traceability.ts"}
-Used tool: read_file with input: {"filePath":"tests/config/flat-config-presets-integration.test.ts"}
+**Action:** Used tool: read_file with input: {"filePath":"docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md"}
+Used tool: read_file with input: {"filePath":"src/rules/no-redundant-annotation.ts"}
+Used tool: read_file with input: {"filePath":"tests/rules/no-redundant-annotation.test.ts"}
+Used tool: read_file with input: {"filePath":"user-docs/migration-guide.md"}
 Used tool: get_git_status with input: {}
-Used tool: read_file with input: {"filePath":"jest.config.js"}
-Used tool: create_file with input: {"filePath":"tests/integration/require-traceability-aliases.integration.test.ts"}
-Used tool: generate_file with input: {"filePath":"tests/integration/require-traceability-aliases.integration.test.ts","overwrite":true,"content":"/**\n * Integration tests for unified require-traceability rule and its legacy aliases.\n *\n * @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE REQ-SUPPORTS-FIRST-MODEL REQ-PRESETS-CANONICAL-RULE\n */\nimport { FlatESLint } from \"eslint/use-at-your-own-risk\";\nimport traceabilityPlugin, { configs } from \"../../src/index\";\n\nasync function lintTextWithConfig(\n  text: string,\n  filename: string,\n  extraConfig: any,\n) {\n  const baseConfig = {\n    plugins: {\n      traceability: traceabilityPlugin,\n    },\n  };\n\n  const eslint = new FlatESLint({\n    overrideConfig: [baseConfig, ...extraConfig],\n    overrideConfigFile: true,\n    ignore: false,\n  } as any);\n\n  const [result] = await eslint.lintText(text, { filePath: filename });\n  return result;\n}\n\ndescribe(\"Unified require-traceability and aliases integration (Story 010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES)\", () => {\n  const codeMissingAll = \"function foo() {}\";\n  const codeWithSupportsOnly = `/**\\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\\n */\\nfunction foo() {}`;\n  const codeWithStoryAndReq = `/**\\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\\n * @req REQ-ANNOTATION-REQUIRED\\n */\\nfunction foo() {}`;\n\n  async function getDiagnosticsForRule(ruleKey: string, code: string) {\n    const config = [\n      {\n        rules: {\n          [ruleKey]: \"error\",\n        },\n      },\n    ];\n\n    const result = await lintTextWithConfig(code, \"example.js\", config);\n    return result.messages.map((m) => ({ ruleId: m.ruleId, messageId: m.messageId }));\n  }\n\n  it(\"[REQ-UNIFIED-ALIAS-ENGINE] canonical and alias keys all report missing traceability on unannotated function\", async () => {\n    const ruleKeys = [\n      \"traceability/require-traceability\",\n      \"traceability/require-story-annotation\",\n      \"traceability/require-req-annotation\",\n    ];\n\n    const results = await Promise.all(\n      ruleKeys.map((ruleKey) => getDiagnosticsForRule(ruleKey, codeMissingAll)),\n    );\n\n    results.forEach((messages, index) => {\n      const ruleKey = ruleKeys[index];\n      expect(messages.length).toBeGreaterThan(0);\n      messages.forEach((msg) => {\n        expect(msg.ruleId).toBe(ruleKey);\n      });\n    });\n  });\n\n  it(\"[REQ-SUPPORTS-FIRST-MODEL] @supports-only annotation satisfies all three rule keys\", async () => {\n    const ruleKeys = [\n      \"traceability/require-traceability\",\n      \"traceability/require-story-annotation\",\n      \"traceability/require-req-annotation\",\n    ];\n\n    const results = await Promise.all(\n      ruleKeys.map((ruleKey) => getDiagnosticsForRule(ruleKey, codeWithSupportsOnly)),\n    );\n\n    results.forEach((messages) => {\n      expect(messages).toHaveLength(0);\n    });\n  });\n\n  it(\"[REQ-SUPPORTS-FIRST-MODEL] @story + @req annotation satisfies all three rule keys\", async () => {\n    const ruleKeys = [\n      \"traceability/require-traceability\",\n      \"traceability/require-story-annotation\",\n      \"traceability/require-req-annotation\",\n    ];\n\n    const results = await Promise.all(\n      ruleKeys.map((ruleKey) => getDiagnosticsForRule(ruleKey, codeWithStoryAndReq)),\n    );\n\n    results.forEach((messages) => {\n      expect(messages).toHaveLength(0);\n    });\n  });\n\n  it(\"[REQ-PRESETS-CANONICAL-RULE] recommended preset surfaces unified and legacy diagnostics together for missing annotations\", async () => {\n    const result = await lintTextWithConfig(\n      codeMissingAll,\n      \"example.js\",\n      configs.recommended,\n    );\n\n    const ruleIds = result.messages.map((m) => m.ruleId).sort();\n\n    expect(ruleIds).toContain(\"traceability/require-traceability\");\n    expect(ruleIds).toContain(\"traceability/require-story-annotation\");\n    expect(ruleIds).toContain(\"traceability/require-req-annotation\");\n  });\n});\n"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci"]}
+Used tool: read_file with input: {"filePath":"user-docs/api-reference.md"}
+Used tool: read_file with input: {"filePath":"src/utils/annotation-scope-analyzer.ts"}
+Used tool: modify_file with input: {"filePath":"user-docs/migration-guide.md","instruction":"After the end of section \"### 3.2 Else-if branch annotations and formatter compatibility\" and before the \"## 4. Test and Validate\" heading, insert a new section titled \"### 3.3 Redundant traceability annotation cleanup\". The new section should explain that v1.x introduces the `traceability/no-redundant-annotation` rule (enabled as `warn` in the built-in presets) to help clean up redundant statement-level traceability annotations during migration, describe the typical redundant patterns it targets (branch + statement duplication, sequential simple statements, trivial returns) in an @supports-first world while still supporting legacy `@story`/`@req`, and emphasize that it never removes the last annotation that provides coverage for a story/requirement pair. It should provide a short, user-facing migration workflow for enabling and using the rule safely (start with the recommended preset, run ESLint without `--fix` to review warnings, then run with `--fix` once comfortable, optionally tightening severity and strictness over time), and briefly mention the key configuration knobs (`strictness`, `allowEmphasisDuplication`, `maxScopeDepth`, `alwaysCovered`) without duplicating the full API reference. Include at least one before/after code example using illustrative `docs/stories/...` paths that represent consumer project story files (not this plugin's docs)."}
+Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: add integration tests for unified require-traceability aliases"}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: git_commit with input: {"message":"docs: document redundant annotation cleanup in migration guide"}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":20044525470,"timeout":600000}
-Used tool: modify_file with input: {"filePath":"tests/integration/require-traceability-aliases.integration.test.ts","instruction":"After the existing test that checks the recommended preset (the last `it` block), add a new `it` block that performs the same assertions for `configs.strict`. Name it something like \"[REQ-PRESETS-CANONICAL-RULE] strict preset surfaces unified and legacy diagnostics together for missing annotations\". Reuse `codeMissingAll` and `lintTextWithConfig`, pass `configs.strict` as the extraConfig, and assert that the resulting ruleIds array contains `traceability/require-traceability`, `traceability/require-story-annotation`, and `traceability/require-req-annotation`."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci"]}
+Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
+Used tool: modify_file with input: {"filePath":"docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md","instruction":"In the \"Implementation Links\" section, add a new bullet at the end of the list referencing the migration guide section that now documents redundancy cleanup. The new bullet should read exactly:\n\n- `user-docs/migration-guide.md` section \"3.3 Redundant traceability annotation cleanup\""}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: extend unified rule integration tests for strict preset"}
-Used tool: modify_file with input: {"filePath":"docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md","instruction":"In the Acceptance Criteria section, change the unchecked Integration Tests item from \"- [ ] **Integration Tests**: ...\" to checked (\"- [x] ...\") keeping the text the same. In the Definition of Done section at the bottom, change the last checkbox \"- [ ] Additional integration tests added or extended to validate alias behavior end to end.\" to checked (\"- [x] ...\"). Also update the first Definition of Done bullet from \"All currently in-scope acceptance criteria are met (excluding explicitly future integration tests).\" to say \"All currently in-scope acceptance criteria are met, including integration tests for unified rule and aliases.\""}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"docs: mark unified rule alias story integration criteria complete"}
+Used tool: git_commit with input: {"message":"docs: link redundant annotation story to migration guide"}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":20044620829,"timeout":600000}
+Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
 
 **Response:**
 
 ```
-- [x] Execute **NOW** and **NEXT** tasks for unified rule + aliases integration tests  
+## What I implemented
 
-## What was implemented
+### ##NOW
 
-### 1) Review story and extract expectations (##NOW)
+- [x] **Review the redundant-annotation detection story to extract the specific documentation and migration-guide requirements for how users should clean up redundant traceability annotations.**
 
-I reviewed `docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md` and its Acceptance Criteria / Definition of Done:
+Actions:
 
-Key expectations for integration tests:
-
-- All three function-level keys behave consistently:
-  - `traceability/require-traceability` (canonical)
-  - `traceability/require-story-annotation` (legacy alias)
-  - `traceability/require-req-annotation` (legacy alias)
-- Representative fixtures cover:
-  - Missing annotations
-  - `@supports`-only annotations
-  - Legacy `@story` + `@req` annotations
-- Presets:
-  - `configs.recommended` and `configs.strict` both enable the unified rule and keep legacy keys as shims
-  - Presets should surface diagnostics under all three rule keys for missing annotations
-
-This completes:
-
-- [x] Review the unified-function-rule story’s implementation notes and acceptance criteria to extract the exact integration test scenarios and expectations for `require-traceability` and its legacy aliases.
+- Opened and reviewed `docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md`.
+- Confirmed:
+  - Acceptance criteria include a **Documentation** item for rule docs and best practices.
+  - Definition of Done includes:  
+    `- [x] Migration guide updated with redundancy cleanup recommendations`
+  - Story describes:
+    - Target redundancy patterns (branch + statement duplication, multiple annotations in same scope, trivial statement annotations).
+    - Preservation patterns (different REQs, complex nested logic).
+    - Config model (`strictness`, `allowEmphasisDuplication`, `maxScopeDepth`, `alwaysCovered`).
+- Verified which part was missing: the **migration guide** had no section that explicitly covered redundancy cleanup and how to use the `no-redundant-annotation` rule in migration workflows.
 
 ---
 
-### 2) Design configs and fixtures (##NEXT, item 1)
+### ##NEXT
 
-I designed a small set of reusable fixtures and a shared lint helper in a new integration test file.
+- [x] **Review the existing no-redundant-annotation rule implementation and its tests to confirm the precise behaviors, options, and edge cases that must be accurately described in the migration guide.**
 
-**File created**:  
-`tests/integration/require-traceability-aliases.integration.test.ts`
+Files reviewed:
 
-Key pieces:
+- `src/rules/no-redundant-annotation.ts`
+- `src/utils/annotation-scope-analyzer.ts`
+- `tests/rules/no-redundant-annotation.test.ts`
+- `user-docs/api-reference.md` (rule’s user-facing API docs)
 
-```ts
-/**
- * Integration tests for unified require-traceability rule and its legacy aliases.
- *
- * @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE REQ-SUPPORTS-FIRST-MODEL REQ-PRESETS-CANONICAL-RULE
- */
-import { FlatESLint } from "eslint/use-at-your-own-risk";
-import traceabilityPlugin, { configs } from "../../src/index";
+Key behavior/option details confirmed:
 
-async function lintTextWithConfig(
-  text: string,
-  filename: string,
-  extraConfig: any,
-) {
-  const baseConfig = {
-    plugins: {
-      traceability: traceabilityPlugin,
-    },
-  };
+- Rule purpose:
+  - Detects redundant statement-level annotations whose `(storyPath, reqId)` pairs are already fully covered by enclosing scopes (branch/function).
+  - Provides `fix`es that remove only redundant annotation comments.
+- Scope/coverage logic:
+  - Uses `collectScopePairs` and `getScopePairs` to aggregate story/req pairs from:
+    - Branch annotations (via `DEFAULT_BRANCH_TYPES` + `gatherBranchCommentText`).
+    - Function-like scopes (JSDoc + leading comments).
+  - Uses `extractStoryReqPairsFromComments` / `extractStoryReqPairsFromText` to parse both:
+    - Legacy `@story` / `@req`
+    - Modern `@supports story-path REQ-...`
+  - `arePairsFullyCovered(child, parent)` ensures redundancy is defined as **child ⊆ parent** pairs.
+- Statement significance / eligibility:
+  - `isStatementEligibleForRedundancy(node, options, DEFAULT_BRANCH_TYPES)` implements `strictness` and `alwaysCovered` semantics.
+  - Defaults: `strictness: "moderate"`, `alwaysCovered: ["ReturnStatement", "VariableDeclaration"]`.
+- Safety:
+  - `getCommentRemovalRange()` ensures safe, line-aware removal, never touching non-comment code on the same line.
+  - Rule only reports when:
+    - There *are* scope pairs.
+    - Statement is eligible.
+    - Statement comments contain traceability annotations.
+    - All pairs are fully covered by scope.
+    - Optionally honors `allowEmphasisDuplication` (skip single fully-covered pair when true).
+- Config options (from rule + API reference):
+  - `strictness`: `"strict" | "moderate" | "permissive"`.
+  - `allowEmphasisDuplication`: boolean.
+  - `maxScopeDepth`: number (default 3).
+  - `alwaysCovered`: list of AST statement types.
+- Tests confirm:
+  - Preserves different requirements in same scope and complex nested branches.
+  - Flags trivial returns and sequential simple statements when redundant.
+  - Honors `strictness`, `allowEmphasisDuplication`, and `maxScopeDepth` behavior.
+  - Works with function-level annotations and nested blocks.
 
-  const eslint = new FlatESLint({
-    overrideConfig: [baseConfig, ...extraConfig],
-    overrideConfigFile: true,
-    ignore: false,
-  } as any);
-
-  const [result] = await eslint.lintText(text, { filePath: filename });
-  return result;
-}
-```
-
-Representative fixtures:
-
-```ts
-const codeMissingAll = "function foo() {}";
-
-const codeWithSupportsOnly = `/**
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
- */
-function foo() {}`;
-
-const codeWithStoryAndReq = `/**
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
- */
-function foo() {}`;
-```
-
-This satisfies:
-
-- [x] Design a small set of representative ESLint configurations and code fixtures that exercise function-level traceability with `@supports` and legacy `@story`/`@req` annotations, ensuring they can be reused across all three rule keys.
+This gave the precise behavior and options I needed to reflect in the migration guide at a user-facing, non-implementation level.
 
 ---
 
-### 3) New integration suite for unified rule + aliases (##NEXT, item 2)
+- [x] **Draft and insert a dedicated section in the migration guide that explains redundancy cleanup during migration, including when and how to enable the no-redundant-annotation rule, what kinds of duplicate or overlapping annotations it flags, and recommended workflows for safely applying fixes.**
 
-In the same file, I added a helper to run a single rule:
+Changes made:
 
-```ts
-async function getDiagnosticsForRule(ruleKey: string, code: string) {
-  const config = [
-    {
-      rules: {
-        [ruleKey]: "error",
-      },
-    },
-  ];
+- Edited `user-docs/migration-guide.md` to add a new subsection directly after **3.2 Else-if branch annotations and formatter compatibility** and before **4. Test and Validate**:
 
-  const result = await lintTextWithConfig(code, "example.js", config);
-  return result.messages.map((m) => ({
-    ruleId: m.ruleId,
-    messageId: m.messageId,
-  }));
-}
-```
+  #### `### 3.3 Redundant traceability annotation cleanup`
 
-Then added integration tests that exercise **each** of the three keys against the same fixtures:
+  This new section:
 
-1. **Missing annotations** → all three keys report diagnostics
+  - Introduces `traceability/no-redundant-annotation` as a **statement-level redundancy cleanup** rule.
+  - States it is enabled as `"warn"` in the built-in **recommended** preset (matching `user-docs/api-reference.md`).
+  - Describes the main patterns it targets in an `@supports`-first but mixed-world:
+    - Branch + statement duplication.
+    - Sequential simple statements with identical coverage.
+    - Trivial return duplication.
+  - Emphasizes safety:
+    - It **never removes the last annotation** for any `(story, requirement)` pair.
+    - Keeps annotations at the most meaningful scope (e.g., branch-level) and drops only duplicates.
+  - Mentions that it works with both `@supports` and legacy `@story`/`@req`.
+  - Uses **consumer-project** examples with illustrative `docs/stories/...` paths, e.g.:
 
-```ts
-it("[REQ-UNIFIED-ALIAS-ENGINE] canonical and alias keys all report missing traceability on unannotated function", async () => {
-  const ruleKeys = [
-    "traceability/require-traceability",
-    "traceability/require-story-annotation",
-    "traceability/require-req-annotation",
-  ];
+    ```js
+    if (!user) {
+      // @supports docs/stories/010.0-AUTH-SESSION-MANAGEMENT.story.md REQ-UNAUTH-REDIRECT
+      // @supports docs/stories/010.0-AUTH-SESSION-MANAGEMENT.story.md REQ-UNAUTH-REDIRECT
+      return redirectToLogin();
+    }
+    ```
 
-  const results = await Promise.all(
-    ruleKeys.map((ruleKey) => getDiagnosticsForRule(ruleKey, codeMissingAll)),
-  );
+    becoming:
 
-  results.forEach((messages, index) => {
-    const ruleKey = ruleKeys[index];
-    expect(messages.length).toBeGreaterThan(0);
-    messages.forEach((msg) => {
-      expect(msg.ruleId).toBe(ruleKey);
-    });
-  });
-});
-```
+    ```js
+    if (!user) {
+      // @supports docs/stories/010.0-AUTH-SESSION-MANAGEMENT.story.md REQ-UNAUTH-REDIRECT
+      return redirectToLogin();
+    }
+    ```
 
-2. **`@supports`-only** annotation → accepted by all three keys
+    and a branch+statement duplication example for an orders/checkout flow.
 
-```ts
-it("[REQ-SUPPORTS-FIRST-MODEL] @supports-only annotation satisfies all three rule keys", async () => {
-  const ruleKeys = [
-    "traceability/require-traceability",
-    "traceability/require-story-annotation",
-    "traceability/require-req-annotation",
-  ];
+  - Provides a **safe migration workflow**:
 
-  const results = await Promise.all(
-    ruleKeys.map((ruleKey) =>
-      getDiagnosticsForRule(ruleKey, codeWithSupportsOnly),
-    ),
-  );
+    1. Start from `traceability.configs.recommended` (so the rule is on as `"warn"`).
+    2. Run ESLint without `--fix` to review warnings.
+    3. Once comfortable, run ESLint with `--fix` to apply safe cleanups.
+    4. Optionally tighten over time (raise severity to `"error"` and adjust strictness).
 
-  results.forEach((messages) => {
-    expect(messages).toHaveLength(0);
-  });
-});
-```
+  - Briefly mentions the **key configuration knobs** (without duplicating the full API reference):
+    - `strictness`
+    - `allowEmphasisDuplication`
+    - `maxScopeDepth`
+    - `alwaysCovered`
 
-3. **`@story` + `@req`** → accepted by all three keys
-
-```ts
-it("[REQ-SUPPORTS-FIRST-MODEL] @story + @req annotation satisfies all three rule keys", async () => {
-  const ruleKeys = [
-    "traceability/require-traceability",
-    "traceability/require-story-annotation",
-    "traceability/require-req-annotation",
-  ];
-
-  const results = await Promise.all(
-    ruleKeys.map((ruleKey) =>
-      getDiagnosticsForRule(ruleKey, codeWithStoryAndReq),
-    ),
-  );
-
-  results.forEach((messages) => {
-    expect(messages).toHaveLength(0);
-  });
-});
-```
-
-These are genuine integration tests using `FlatESLint` + plugin registration, not just unit-level `RuleTester`.
-
-This completes:
-
-- [x] Add or extend an integration-level Jest test suite that runs ESLint against the shared fixtures using each of the three rule names (`require-traceability`, `require-story-annotation`, and `require-req-annotation`) and asserts that the reported diagnostics and behaviors are consistent with the story’s requirements.
+  This aligns with the rule’s real behavior and with the configuration model described in the API reference.
 
 ---
 
-### 4) Include presets behavior (recommended & strict) (##NEXT, item 3)
+- [x] **Refine the new migration-guide content to ensure it uses clear user-facing language, references the unified rule and @supports-first approach consistently, and aligns with the acceptance criteria in the redundant-annotation story.**
 
-In the same integration suite, I added tests to verify the *presets* enable the unified rule and legacy aliases together and surface diagnostics for missing annotations.
+Refinements applied as part of writing the section:
 
-For `configs.recommended`:
-
-```ts
-it("[REQ-PRESETS-CANONICAL-RULE] recommended preset surfaces unified and legacy diagnostics together for missing annotations", async () => {
-  const result = await lintTextWithConfig(
-    codeMissingAll,
-    "example.js",
-    configs.recommended,
-  );
-
-  const ruleIds = result.messages.map((m) => m.ruleId).sort();
-
-  expect(ruleIds).toContain("traceability/require-traceability");
-  expect(ruleIds).toContain("traceability/require-story-annotation");
-  expect(ruleIds).toContain("traceability/require-req-annotation");
-});
-```
-
-For `configs.strict`:
-
-```ts
-it("[REQ-PRESETS-CANONICAL-RULE] strict preset surfaces unified and legacy diagnostics together for missing annotations", async () => {
-  const result = await lintTextWithConfig(
-    codeMissingAll,
-    "example.js",
-    configs.strict,
-  );
-
-  const ruleIds = result.messages.map((m) => m.ruleId).sort();
-
-  expect(ruleIds).toContain("traceability/require-traceability");
-  expect(ruleIds).toContain("traceability/require-story-annotation");
-  expect(ruleIds).toContain("traceability/require-req-annotation");
-});
-```
-
-This validates the story’s **Presets** and **REQ-PRESETS-CANONICAL-RULE** criteria in an end-to-end manner.
-
-Thus:
-
-- [x] Refine the new integration tests to also cover the behavior when using the recommended and strict presets, confirming that enabling presets produces the expected diagnostics for unified and alias rule keys.
+- Language is strictly user-facing:
+  - No internal file paths from this plugin.
+  - All `docs/stories/...` examples are explicitly positioned as **your project’s** story files.
+- Consistent with the **@supports-first** narrative established earlier in the migration guide:
+  - Mentions that the rule works with both `@supports` and legacy `@story`/`@req`.
+  - Uses `@supports` examples as the primary shape, with implicit support for legacy form.
+- Explicitly calls out that the rule:
+  - Targets *redundant* annotations, not missing ones.
+  - Preserves coverage and only removes duplicates implied by scope inheritance.
+- The behavior descriptions match:
+  - Story’s “Redundancy Patterns to Detect” and “Patterns to PRESERVE”.
+  - Rule and helper implementations (`no-redundant-annotation.ts` and `annotation-scope-analyzer.ts`).
+  - Existing API reference description for `traceability/no-redundant-annotation`.
 
 ---
 
-### 5) Update the story to mark integration criteria done (##NEXT, item 4)
+- [x] **Update the redundant-annotation story to mark the migration-guide documentation criterion as satisfied and adjust any narrative text so it accurately reflects the new guidance and the current implementation state.**
 
-I updated `docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md`:
+Changes made:
 
-**Acceptance Criteria**:
+- Updated `docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md` **Implementation Links** section to explicitly reference the migration guide:
 
-- Changed Integration Tests line from unchecked to checked:
+  ```md
+  ## Implementation Links
 
-```md
-- [x] **Integration Tests**: Integration tests (e.g., via ESLint CLI or RuleTester) verify that enabling each of the three function-level keys produces consistent behavior on representative fixtures, including @supports and @story/@req combinations.
-```
+  - `src/rules/no-redundant-annotation.ts`
+  - `src/utils/annotation-scope-analyzer.ts`
+  - `tests/rules/no-redundant-annotation.test.ts`
+  - `tests/utils/annotation-scope-analyzer.test.ts`
+  - `user-docs/migration-guide.md` section "3.3 Redundant traceability annotation cleanup"
+  ```
 
-**Definition of Done**:
-
-- Updated first bullet to reflect that integration tests are now included:
-
-```md
-- [x] All currently in-scope acceptance criteria are met, including integration tests for unified rule and aliases.
-```
-
-- Marked the last DoD item as complete:
-
-```md
-- [x] Additional integration tests added or extended to validate alias behavior end to end.
-```
-
-So:
-
-- [x] Update the unified-function-rule story to mark the integration-test acceptance criteria as satisfied and adjust any narrative text so it accurately reflects the new test coverage.
+- The Definition of Done already had `Migration guide updated with redundancy cleanup recommendations` checked; the new link and section now actually fulfill this criterion, aligning the story with reality.
 
 ---
 
-## Quality checks & CI
+## Quality checks and CI/CD
 
-Before each push / after logical work chunks, I ran:
+For each logical unit of work:
 
-- `npm test -- --runInBand --ci`  
-  - 53 suites / 418 tests passing after new integration tests added.
+1. **After adding migration-guide section**:
+   - Ran:
+     - `npm run ci-verify:fast` (type-check, traceability check, duplication, Jest rule+maintenance tests).
+   - All checks passed.
+   - Committed:  
+     `docs: document redundant annotation cleanup in migration guide`
+   - Pushed to `main`.
+   - Waited for GitHub Actions `CI/CD Pipeline` run `20045420545` → **success**.
 
-- `npm run build`
-- `npm run lint`
-- `npm run type-check`
-- `npm run format:check`
+2. **After linking story to migration guide**:
+   - Staged and committed:
+     - `docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md` change.
+   - Commit message:  
+     `docs: link redundant annotation story to migration guide`
+   - Pushed to `main`.
+   - CI automatically ran full `ci-verify:full` + `security:secrets` again; workflow `20045474382` completed with **success**.
 
-Pre-push hooks also executed the full `ci-verify:full` and `security:secrets` pipeline locally.
-
-After pushing:
-
-- Monitored GitHub Actions:
-  - Run `20044525470` and later `20044620829` for “CI/CD Pipeline (main)” both completed with `success`.
+No code behavior changes were made—only documentation/story updates—so existing tests and quality gates remained green.
 
 ---
 
-## Updated plan with checkmarks
+## Updated Plan
 
 ### NOW
 
-- [x] Review the unified-function-rule story’s implementation notes and acceptance criteria to extract the exact integration test scenarios and expectations for `require-traceability` and its legacy aliases.
+- [x] Review the redundant-annotation detection story to extract the specific documentation and migration-guide requirements for how users should clean up redundant traceability annotations.
 
 ### NEXT
 
-- [x] Design a small set of representative ESLint configurations and code fixtures that exercise function-level traceability with `@supports` and legacy `@story`/`@req` annotations, ensuring they can be reused across all three rule keys.
-- [x] Add or extend an integration-level Jest test suite that runs ESLint against the shared fixtures using each of the three rule names (`require-traceability`, `require-story-annotation`, and `require-req-annotation`) and asserts that the reported diagnostics and behaviors are consistent with the story’s requirements.
-- [x] Refine the new integration tests to also cover the behavior when using the recommended and strict presets, confirming that enabling presets produces the expected diagnostics for unified and alias rule keys.
-- [x] Update the unified-function-rule story to mark the integration-test acceptance criteria as satisfied and adjust any narrative text so it accurately reflects the new test coverage.
+- [x] Review the existing no-redundant-annotation rule implementation and its tests to confirm the precise behaviors, options, and edge cases that must be accurately described in the migration guide.
+- [x] Draft and insert a dedicated section in the migration guide that explains redundancy cleanup during migration, including when and how to enable the no-redundant-annotation rule, what kinds of duplicate or overlapping annotations it flags, and recommended workflows for safely applying fixes.
+- [x] Refine the new migration-guide content to ensure it uses clear user-facing language, references the unified rule and @supports-first approach consistently, and aligns with the acceptance criteria in the redundant-annotation story.
+- [x] Update the redundant-annotation story to mark the migration-guide documentation criterion as satisfied and adjust any narrative text so it accurately reflects the new guidance and the current implementation state.
 ```
