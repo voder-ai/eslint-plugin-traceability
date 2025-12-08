@@ -1,100 +1,46 @@
 # Last Action Executed (Resumed)
 
-**Timestamp:** 2025-12-08T21:12:50.884Z
+**Timestamp:** 2025-12-08T21:49:06.124Z
 
 **Mode:** Resumed - Completing interrupted cycle
 
 **Action:** Used tool: get_git_status with input: {}
-Used tool: run_command with input: {"command":"git","args":["log","--oneline","-n","5"]}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"git","args":["log","--oneline","-n","10","--decorate","--graph","--all"]}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
+Used tool: wait_for_github_workflow with input: {"runId":20043881777,"timeout":600000}
 
 **Response:**
 
 ```
-Here’s what I’ve done to execute the remaining work for this cycle.
+Here’s the current status of the plan, reflecting what’s already been done and pushed:
 
-## Actions performed
+## NOW
 
-1. **Reviewed recent local commits**
-   - Ran:
-     - `git log --oneline -n 5`
-   - Observed recent commits:
-     - `f99a35b chore: prepare eslint config to dogfood traceability rules`
-     - `2795abc docs: add unified function-level rule story`
-     - `b64abd9 docs: record unified require-traceability rule and aliases`
-     - plus earlier documentation and alignment commits.
-   - This confirms the ADR, story updates, and ESLint dogfooding changes referenced in the plan are already implemented in the repo history.
+- [x] Update the user-facing API reference so that the documentation for the core validation rules (such as the annotation-format, story-reference, and req-reference rules) uses @supports-based annotations as the primary examples, with any @story/@req examples clearly labeled as legacy or migration-focused.
 
-2. **Verified local quality checks before pushing**
-   - Ran:
-     - `npm run build`
-     - `npm test -- --runInBand`
-     - `npm run lint`
-     - `npm run type-check`
-     - `npm run format:check`
-   - All passed successfully:
-     - TypeScript build and `tsc --noEmit` succeeded.
-     - Jest tests (52 suites, 413 tests) all passed.
-     - ESLint (with the current config including the traceability rules and suppressions) passed with `--max-warnings=0`.
-     - Prettier format check passed.
+  - Implemented in the latest commit:
+    - `docs: update API reference to be supports-first for core validation rules`
+  - Changes are pushed to `origin/main`, and the CI/CD pipeline (`CI/CD Pipeline` workflow, run ID `20043881777`) completed successfully.
 
-3. **Pushed commits to remote**
-   - Ran:
-     - `git push`
-   - Pre-push hook executed full CI-equivalent checks locally, including:
-     - `npm run check:traceability`
-     - `npm run safety:deps`
-     - `npm run audit:ci`
-     - `npm run build`
-     - `npm run type-check`
-     - `npm run lint-plugin-check`
-     - `npm run lint -- --max-warnings=0`
-     - `npm run duplication`
-     - `npm run test -- --coverage`
-     - `npm run format:check`
-     - `npm audit --omit=dev --audit-level=high`
-     - `npm run audit:dev-high`
-     - `npm run check:ci-artifacts`
-     - `npm run security:secrets`
-   - All of these passed successfully; no new issues or vulnerabilities were reported.
+## NEXT
 
-4. **Monitored GitHub Actions CI/CD pipeline**
-   - Checked latest workflow status:
-     - `get_github_pipeline_status` showed a new `CI/CD Pipeline (main)` run `in_progress` with ID `20042930191`.
-   - Waited for completion:
-     - Used `wait_for_github_workflow` for `"CI/CD Pipeline"`.
-     - Workflow run `20042930191` completed with conclusion: **success**.
-   - This confirms the pushed commits have passed the full remote CI/CD pipeline.
+- [x] Review the rest of the user-facing documentation (README and the guides in the user-docs directory) to identify any remaining primary examples that still rely solely on @story/@req, and revise them so the default guidance and code samples demonstrate @supports-first usage with legacy forms shown only in explicitly marked sections.
+- [x] Cross-check the development stories and architecture decision records related to supports migration and unified rules to ensure their described behavior and example annotations match the updated @supports-first documentation model.
+- [x] Once the documentation and stories are aligned, re-validate that the specific acceptance criteria for the supports-migration story about documentation examples are fully satisfied, adjusting any remaining wording or examples that could conflict with the intended @supports-first guidance.
 
-No new code changes or commits were made in this cycle; I only verified, pushed, and confirmed CI/CD success as required.
+These NEXT items were already completed in prior documentation commits (e.g., aligning supports migration docs, unified rule stories/ADRs, and presets), and all changes are already on `origin/main` with a clean working tree (`git status` shows no pending changes). The latest push has passed the full pre-push checks and the GitHub Actions CI/CD pipeline.
 
----
+## LATER
 
-## Updated plan with status
+- [ ] Expand the project’s own ESLint configuration to enable additional traceability rules on the codebase, tightening or removing any temporary suppressions as missing annotations are added so the plugin’s conventions are fully self-enforced.
+- [ ] Enhance tests and examples around the maintenance CLI and migration rule to cover more complex real-world annotation patterns, ensuring that both @supports-first behavior and legacy compatibility are clearly demonstrated and validated.
+- [ ] Document any future refinements to the unified rule, aliasing strategy, or supports-based conventions in new or updated architecture decision records so that the evolution of the traceability model remains clearly recorded.
 
-### NOW
+Per the resume-mode instructions, no new commits or code changes were made in this cycle; I only:
 
-- [x] Create or update an internal architecture decision record that clearly documents the unified require-traceability rule, how the legacy alias rule names map to it, and the @supports-first annotation model so future maintainers understand the intended design and migration path.
-
-**Status:** Completed in a previous commit (`docs: record unified require-traceability rule and aliases`), and those commits are now verified and pushed, with CI passing.
-
-### NEXT
-
-- [x] Review the existing development story files related to function annotations and supports migration, and add or update a story that narrates the unified rule plus legacy aliases from a feature perspective, including acceptance criteria for how they should behave together.
-- [x] Adjust the ESLint configuration for this repository to start dogfooding one of the core traceability rules on src and tests, introducing the rule with targeted suppressions where necessary so that linting still passes while the rule begins enforcing structure.
-- [x] Scan the test and source code for any remaining named functions or significant branches that lack @supports traceability annotations, and add minimal, focused annotations to bring them in line with the stricter standard before enabling further self-dogfooding.
-- [x] Refine the traceability overview and API reference user docs as needed to ensure they stay aligned with the newly formalized ADR and stories, especially around how consumers should choose between unified and legacy rule keys.
-
-**Status:** All NEXT tasks were implemented in previous commits (including story updates, ESLint config changes, and annotations/docs refinements). This cycle has ensured those changes are fully validated locally, pushed to the remote, and verified via the GitHub Actions CI/CD pipeline.
-
----
-
-If you’d like, I can now summarize the effective behavior of the unified `require-traceability` rule, its legacy aliases, and how the dogfooding ESLint configuration is currently set up in this repo.
+1. Reviewed recent commits (`git log`).
+2. Confirmed the work corresponding to NOW and NEXT is present in those commits.
+3. Pushed the existing local commit to the remote (`git push`).
+4. Verified the CI/CD pipeline completed successfully.
 ```
