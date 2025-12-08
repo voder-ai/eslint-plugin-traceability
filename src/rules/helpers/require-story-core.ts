@@ -194,7 +194,7 @@ function createMissingStoryReportDescriptor(config: {
     fix: allowFix ? baseFix : undefined,
     suggest: [
       {
-        desc: `Add JSDoc @story annotation for function '${name}', e.g., ${effectiveTemplate}`,
+        desc: `Add traceability annotation for function '${name}' using @supports (preferred) or @story (legacy), for example: ${effectiveTemplate.replace("@story", "@supports")}`,
         fix: baseFix,
       },
     ],

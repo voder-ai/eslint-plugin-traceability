@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Refactor the legacy function-annotation rules so that the `require-story-annotation` and `require-req-annotation` rule names truly act as aliases that share the same underlying implementation as the unified `require-traceability` rule, while preserving their existing option shapes and diagnostics.
+- [ ] Revise the core traceability rules’ error messages and auto-fix suggestions so that they present `@supports` as the preferred annotation format while still accepting legacy `@story`/`@req`, aligning the user-facing UX with the migrate-to-supports story requirements.
 
 ## NEXT
 
-- [ ] Add or adjust targeted tests to verify that configuring any of the three rule names (`require-traceability`, `require-story-annotation`, `require-req-annotation`) produces equivalent behavior for in-scope functions, including options such as scope and exportPriority and all relevant error messages.
-- [ ] Review the function-annotations story’s Definition of Done against the refactored implementation and update the story text only where necessary to accurately describe the finalized aliasing model and mark its acceptance criteria as satisfied based on the new behavior.
-- [ ] Perform a focused cleanup pass on the unified function-annotation implementation and its helpers to remove any duplication introduced by the alias refactor and ensure the code remains easy to understand and maintain.
+- [ ] Extend and adjust unit tests for the core traceability rules to assert the updated error messages and suggestion texts that favor `@supports`, ensuring all existing option combinations and edge cases are covered.
+- [ ] Update user-facing documentation (README, API reference, and the migrate-to-supports guide) so that examples and narrative treat `@supports` as the primary, recommended annotation style and clearly describe legacy `@story`/`@req` as backward-compatible.
+- [ ] Revisit the migrate-to-supports story’s acceptance criteria and Definition of Done, confirm each criterion is now satisfied by implementation and tests, and mark the story as fully complete in the story file.
 
 ## LATER
 
-- [ ] Extend configuration-level and integration tests to cover mixed usage of the unified and legacy rule names in realistic ESLint flat-config setups, confirming consistent behavior in real-world scenarios.
-- [ ] Evaluate the performance and complexity of the unified function-annotation logic on larger synthetic projects and, if needed, refine internal helper structure to keep analysis fast and maintainable.
-- [ ] Add targeted regression tests for tricky function shapes or annotation patterns mentioned in the function-annotations story, ensuring that future changes cannot silently break the unified rule or its aliases.
+- [ ] Add richer end-to-end examples showing a full workflow for migrating an existing codebase from `@story`/`@req` to `@supports`, including before/after code samples and recommended rule configurations.
+- [ ] Introduce additional regression tests for complex or mixed annotation patterns (multiple stories, partial migrations, and multi-line inline comments) to ensure the updated UX and migration behavior remain stable over time.
+- [ ] Review other rules and docs in the plugin for any remaining references that implicitly prefer `@story`/`@req` and align them with the `@supports`-first model as long as it does not conflict with backward compatibility guarantees.

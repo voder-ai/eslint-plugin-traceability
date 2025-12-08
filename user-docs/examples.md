@@ -104,6 +104,9 @@ describe("Story 021.0-DEV-TEST-TRACEABILITY", () => {
     const result = performOperation(input);
 
     // Assert
+    const result = performOperation(input);
+
+    // Assert
     expect(result).toBe("edge-ok");
   });
 });
@@ -125,13 +128,11 @@ In this version, annotations are placed immediately before each significant bran
 
 ```ts
 function pickCategory(score: number): string {
-  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-  // @req REQ-BRANCH-DETECTION
+  // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION
   if (score >= 80) {
     return "high";
   }
-  // @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
-  // @req REQ-DUAL-POSITION-DETECTION-ELSE-IF
+  // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
   else if (score >= 50) {
     return "medium";
   }
@@ -156,13 +157,11 @@ Prettier may reflow your `else if` line, wrap the condition, or move comments in
 
 ```ts
 function pickCategory(score: number): string {
-  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-  // @req REQ-BRANCH-DETECTION
+  // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION
   if (score >= 80) {
     return "high";
   } else if (score >= 50) {
-    // @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
-    // @req REQ-DUAL-POSITION-DETECTION-ELSE-IF
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
     return "medium";
   } else {
     return "low";
@@ -173,6 +172,6 @@ function pickCategory(score: number): string {
 Depending on your Prettier version and configuration, the exact layout of the `else if` line and braces may differ, but as long as your annotations are in one of the supported locations, the rule will accept them.
 
 - Notes:
-  - For most branch types, `traceability/require-branch-annotation` associates comments immediately before the branch keyword (such as `if`, `else`, `switch`, `case`) with that branch.
+  - For most branch types, `traceability/require-branch-annotation` associates comments immediately before the branch keyword (such as `if`, `else`, `switch`, `case`) with that branch. Branches can be annotated either with a single `@supports` line (preferred), or with the older `@story`/`@req` pair for backward compatibility. The rule treats a valid `@supports` annotation as satisfying both the story and requirement presence checks.
   - For `catch` clauses and `else if` branches, the rule is formatter-aware and also looks at comments between the condition and the block, as well as the first comment-only lines inside the block body, so you do not need to fight Prettier if it moves your annotations.
   - When annotations exist in more than one place around an `else if` branch, the rule prefers comments immediately before the `else if` line, then comments between the condition and the block, and finally comments inside the block body, matching the behavior described in the API reference and stories `025.0` and `026.0`.

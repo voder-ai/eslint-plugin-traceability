@@ -44,7 +44,7 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
               messageId: "missingStory",
               suggestions: [
                 {
-                  desc: "Add JSDoc @story annotation for function 'autoFixMe', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  desc: "Add traceability annotation for function 'autoFixMe' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
                   output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction autoFixMe() {}`,
                 },
               ],
@@ -60,7 +60,7 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
               messageId: "missingStory",
               suggestions: [
                 {
-                  desc: "Add JSDoc @story annotation for function 'fnExpr', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  desc: "Add traceability annotation for function 'fnExpr' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
                   output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst fnExpr = function() {};`,
                 },
               ],
@@ -76,7 +76,7 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
               messageId: "missingStory",
               suggestions: [
                 {
-                  desc: "Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  desc: "Add traceability annotation for function 'method' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
                   output: `class C {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
                 },
               ],
@@ -96,7 +96,7 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
               messageId: "missingStory",
               suggestions: [
                 {
-                  desc: "Add JSDoc @story annotation for function 'tsDecl', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  desc: "Add traceability annotation for function 'tsDecl' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
                   output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ndeclare function tsDecl(): void;`,
                 },
               ],
@@ -116,7 +116,7 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
               messageId: "missingStory",
               suggestions: [
                 {
-                  desc: "Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                  desc: "Add traceability annotation for function 'method' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
                   output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ninterface D {\n  method(): void;\n}`,
                 },
               ],
@@ -227,7 +227,7 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
                 messageId: "missingStory",
                 suggestions: [
                   {
-                    desc: "Add JSDoc @story annotation for function 'needsFixOnce', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                    desc: "Add traceability annotation for function 'needsFixOnce' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
                     output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction needsFixOnce() {}`,
                   },
                 ],
@@ -243,7 +243,7 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
                 messageId: "missingStory",
                 suggestions: [
                   {
-                    desc: "Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                    desc: "Add traceability annotation for function 'method' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
                     output: `class F {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
                   },
                 ],

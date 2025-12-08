@@ -38,7 +38,7 @@ const rule: Rule.RuleModule = {
     type: "problem",
     docs: {
       description:
-        "Require @story annotations on functions and auto-fix missing annotations where possible",
+        "Require traceability annotations on functions and methods, preferring @supports for story coverage while still accepting legacy @story annotations, and provide optional auto-fix for missing annotations.",
       recommended: "error",
     },
     hasSuggestions: true,
@@ -54,7 +54,7 @@ const rule: Rule.RuleModule = {
     fixable: "code",
     messages: {
       missingStory:
-        "Function '{{name}}' must have an explicit @story annotation. Add a JSDoc or line comment with @story that points to the implementing story file, such as docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md.",
+        "Function '{{name}}' must declare a traceability annotation. Prefer adding an @supports line that links this function to at least one story (for example, '@supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED'), or, when you only need a single-story reference, add a legacy @story annotation that points to the implementing story file, such as docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md.",
     },
     schema: [
       {

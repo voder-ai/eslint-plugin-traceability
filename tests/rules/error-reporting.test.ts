@@ -102,7 +102,7 @@ describe("Error Reporting Enhancements for require-story-annotation (Story 007.0
 
       const suggestion = error.suggest[0];
       expect(suggestion.desc).toBe(
-        "Add JSDoc @story annotation for function 'bar', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+        "Add traceability annotation for function 'bar' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
       );
       expect(suggestion.fix).toBeDefined();
     });

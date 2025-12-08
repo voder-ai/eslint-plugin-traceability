@@ -48,8 +48,8 @@ export default [
 
 ### Available Rules
 
-- `traceability/require-story-annotation` Enforces presence of `@story` annotations. (See the rule documentation in the plugin's user guide.)
-- `traceability/require-req-annotation` Enforces presence of `@req` annotations. (See the rule documentation in the plugin's user guide.)
+- `traceability/require-story-annotation` Enforces presence of `@story` annotations. Prefers `@supports` for new code while still accepting legacy `@story`. (See the rule documentation in the plugin's user guide.)
+- `traceability/require-req-annotation` Enforces presence of `@req` annotations. Prefers `@supports` for requirement coverage while still accepting legacy `@req`. (See the rule documentation in the plugin's user guide.)
 - `traceability/require-branch-annotation` Enforces presence of branch annotations. (See the rule documentation in the plugin's user guide.)
 - `traceability/valid-annotation-format` Enforces correct format of traceability annotations. (See the rule documentation in the plugin's user guide.)
 - `traceability/valid-story-reference` Validates that `@story` references point to existing story files. (See the rule documentation in the plugin's user guide.)
@@ -83,14 +83,16 @@ export default [
 
 ```js
 /**
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- *   // Point this to your own project's story/requirements file, not to this plugin's internal docs.
- * @req REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ *   // Prefer @supports for new implementations; @story/@req remain supported for
+ *   // legacy and simple single-story code paths.
  */
 function initAuth() {
   // implementation...
 }
 ```
+
+`@supports` is the canonical format for new, multi-story integrations and richer traceability. The legacy `@story` and `@req` forms are kept for backward compatibility and remain appropriate for simple, single-story functions or where a gradual migration is preferred.
 
 3. Run ESLint:
 

@@ -132,11 +132,13 @@ function getNameNodeForReqReport(node: any): any {
 }
 
 /**
- * Helper to report a missing @req annotation via the ESLint context API.
- * Uses getNodeName to provide a readable name for the node.
+ * Helper to report missing traceability annotations via the ESLint context API.
+ * Uses getNodeName to provide a readable name for the node. @supports is the
+ * preferred format for expressing traceability to one or more requirements and
+ * stories, while @req is treated as a legacy shorthand for single-story usage.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @req REQ-ANNOTATION-REPORTING - Report missing @req annotation to context
+ * @req REQ-ANNOTATION-REPORTING - Report missing traceability annotations to context
  * @req REQ-ERROR-SPECIFIC - Provide specific error details including node name
  * @req REQ-ERROR-LOCATION - Include contextual location information in errors
  * @req REQ-ERROR-SUGGESTION - Provide actionable suggestions or fixes where possible

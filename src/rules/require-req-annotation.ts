@@ -28,7 +28,7 @@ const rule: Rule.RuleModule = {
     fixable: "code",
     docs: {
       description:
-        "Require @req annotations on function-like exports (declarations, expressions, and methods, excluding arrow functions)",
+        "Require traceability annotations on function-like exports, preferring @supports for requirement coverage while still accepting legacy @req annotations.",
       recommended: "error",
     },
     messages: {
@@ -45,7 +45,7 @@ const rule: Rule.RuleModule = {
        * specifically the {{name}} placeholder populated via context.report.
        */
       missingReq:
-        "Function '{{functionName}}' is missing a required @req annotation. Add a JSDoc or line comment with @req (for example, '@req REQ-EXAMPLE') referencing the appropriate requirement from the story file.",
+        "Function '{{functionName}}' is missing required traceability annotations. Prefer adding an @supports line that links this function to at least one requirement (for example, '@supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-EXAMPLE'), or, when you are limited to a single-story context, add a legacy @req annotation such as '@req REQ-EXAMPLE' referencing the appropriate requirement from the story file.",
     },
     schema: [
       {

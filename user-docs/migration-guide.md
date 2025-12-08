@@ -46,7 +46,7 @@ The following diff shows a typical migration in **your own project**, where `doc
 
 ### 3.1 Multi-story `@supports` annotations
 
-Starting in v1.x, `eslint-plugin-traceability` supports an additional annotation form for integration code that implements requirements from multiple stories in a consuming project. The following snippet shows one example of how you might structure such an annotation in **your** codebase:
+Starting in v1.x, `eslint-plugin-traceability` introduces and prefers the `@supports` annotation for integration code that implements requirements from multiple stories in a consuming project. The following snippet shows one example of how you might structure such an annotation in **your** codebase:
 
 ```js
 /**
@@ -133,6 +133,8 @@ export function initAuth() {
 }
 ```
 
+These `@story` and `@req` forms are treated as a legacy single-story style that remains valid for simple cases, while new multi-story integrations should prefer `@supports` as the primary format.
+
 #### When to introduce `@supports`
 
 Adopt `@supports` for **multi-story integration** code, especially when:
@@ -183,6 +185,7 @@ You can introduce `@supports` gradually without breaking existing code:
 
 1. Leave existing `@story` and `@req` annotations in place.
 2. Add `@supports` lines that group requirements by story file.
+   Over time, teams are encouraged to converge on `@supports` as the canonical format for multi-story integrations, keeping `@story`/`@req` primarily for simple, single-story cases.
 3. Run ESLint with `traceability/valid-annotation-format` and `traceability/valid-req-reference` enabled to confirm everything passes.
 4. Optionally, once you are comfortable, standardize on using `@supports` for multi-story integration functions while keeping `@story` + `@req` for simple, single-story code.
 

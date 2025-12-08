@@ -103,7 +103,8 @@ const rule: Rule.RuleModule = {
   meta: {
     type: "problem",
     docs: {
-      description: "Require @story and @req annotations on code branches",
+      description:
+        "Require traceability annotations on significant code branches, preferring @supports for combined story and requirement coverage while still accepting legacy @story and @req comments.",
       recommended: "error",
     },
     fixable: "code",
@@ -112,7 +113,8 @@ const rule: Rule.RuleModule = {
        * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
        * @req REQ-ERROR-CONSISTENCY - Use shared branch error message convention with {{missing}} placeholder
        */
-      missingAnnotation: "Branch is missing required annotation: {{missing}}.",
+      missingAnnotation:
+        "Branch is missing required traceability annotation: {{missing}}. Prefer using a single @supports line that links this branch to its story and requirements (for example, '@supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION'), or add the missing legacy tag if you are not yet using @supports.",
     },
     schema: [
       {

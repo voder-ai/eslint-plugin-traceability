@@ -77,7 +77,7 @@ declare function tsDecl(): void;`,
             messageId: "missingStory",
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'bar', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'bar' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction bar() {}`,
               },
             ],
@@ -93,7 +93,7 @@ declare function tsDecl(): void;`,
             messageId: "missingStory",
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'fnExpr', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'fnExpr' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst fnExpr = function() {};`,
               },
             ],
@@ -110,7 +110,7 @@ declare function tsDecl(): void;`,
             data: { name: "method", functionName: "method" },
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'method' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `class C {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n  method() {}\n}`,
               },
             ],
@@ -126,7 +126,7 @@ declare function tsDecl(): void;`,
             messageId: "missingStory",
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'tsDecl', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'tsDecl' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ndeclare function tsDecl(): void;`,
               },
             ],
@@ -142,7 +142,7 @@ declare function tsDecl(): void;`,
             messageId: "missingStory",
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'method', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'method' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\ninterface D {\n  method(): void;\n}`,
               },
             ],
@@ -158,7 +158,7 @@ declare function tsDecl(): void;`,
             messageId: "missingStory",
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'handler', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'handler' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst handler = () => {};`,
               },
             ],
@@ -174,7 +174,7 @@ declare function tsDecl(): void;`,
             messageId: "missingStory",
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'innerNamed', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'innerNamed' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction innerNamed() {\n    return 1;\n  }\n  return innerNamed();\n}`,
               },
             ],
@@ -208,7 +208,7 @@ declare function tsDecl(): void;`,
             messageId: "missingStory",
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'exportedMissing', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'exportedMissing' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport function exportedMissing() {}`,
               },
             ],
@@ -225,7 +225,7 @@ declare function tsDecl(): void;`,
             messageId: "missingStory",
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'arrowExported', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'arrowExported' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport const arrowExported = () => {};`,
               },
             ],
@@ -254,7 +254,7 @@ declare function tsDecl(): void;`,
             messageId: "missingStory",
             suggestions: [
               {
-                desc: `Add JSDoc @story annotation for function 'onlyDecl', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                desc: `Add traceability annotation for function 'onlyDecl' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction onlyDecl() {}`,
               },
             ],
