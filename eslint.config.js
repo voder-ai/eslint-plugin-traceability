@@ -143,6 +143,9 @@ module.exports = [
       "no-implied-eval": "error",
       "no-new-func": "error",
       "no-new-wrappers": "error",
+      // ...(plugin.rules ? {
+      //   "traceability/valid-annotation-format": "error",
+      // } : {}),
     },
   },
   {
