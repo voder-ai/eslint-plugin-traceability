@@ -281,6 +281,15 @@ function handleComment(opts: {
   }
 }
 
+/**
+ * ESLint rule factory: configures and returns visitors that validate story
+ * references in @story and @supports annotations across all comments.
+ *
+ * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
+ * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+ * @req REQ-STORY-FILE-EXISTS - Ensure each referenced story in @story/@supports annotations points to an existing file
+ * @req REQ-STORY-CONTENT - Provide a foundation for deeper story content validation by guaranteeing valid references
+ */
 export default {
   meta: {
     type: "problem",

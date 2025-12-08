@@ -119,10 +119,14 @@ type ParsedImplementsTokens = {
 };
 
 /**
- * Prepare and validate the token array for an @supports value.
+ * Parse the raw token stream for an @implements annotation into a structured
+ * representation with a single storyPath and an array of requirement IDs.
  *
- * Returns { storyPath, reqIds } when tokens are present and structurally valid,
- * or null when a missing-value condition has been reported.
+ * Handles trimming, token splitting, and basic structural checks, and reports
+ * missing-value conditions via the provided dependency helpers.
+ *
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ * @req REQ-IMPLEMENTS-TOKENS
  */
 function parseImplementsTokens(
   deps: ImplementsDeps,
@@ -159,8 +163,12 @@ function parseImplementsTokens(
 }
 
 /**
- * Validate the parsed storyPath and reqIds against the provided patterns and
- * delegate reporting of any invalid tokens.
+ * Validate a previously parsed @implements token structure against configured
+ * story and requirement patterns, reporting any configuration or format errors
+ * via the supplied dependency helpers.
+ *
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ * @req REQ-IMPLEMENTS-TOKENS
  */
 function validateImplementsTokens(
   deps: ImplementsDeps,

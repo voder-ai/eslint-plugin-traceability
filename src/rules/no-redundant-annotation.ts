@@ -35,6 +35,12 @@ const DEFAULT_STRICTNESS: Strictness = "moderate";
 const DEFAULT_ALLOW_EMPHASIS_DUPLICATION = false;
 const DEFAULT_MAX_SCOPE_DEPTH = 3;
 
+/**
+ * Normalize and apply defaults to rule options for the redundancy detector.
+ *
+ * @story docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md
+ * @req REQ-REDUNDANT-OPTIONS
+ */
 function normalizeOptions(raw: any | undefined): RedundancyRuleOptions {
   const strictness: Strictness =
     raw && typeof raw.strictness === "string"
@@ -398,6 +404,12 @@ const rule: Rule.RuleModule = {
     },
   },
 
+  /**
+   * Wire up the ESLint visitors that detect and fix redundant annotations.
+   *
+   * @story docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md
+   * @req REQ-REDUNDANT-DETECTION
+   */
   create(context) {
     const options = normalizeOptions(context.options[0]);
 

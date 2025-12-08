@@ -16,8 +16,7 @@ const ruleTester = new RuleTester({
   languageOptions: tsRuleTesterLanguageOptions,
 } as any);
 
-describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)" /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */, /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-() => {
+describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)" /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */ /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */, () => {
   ruleTester.run("require-story-annotation", rule, {
     valid: [
       {

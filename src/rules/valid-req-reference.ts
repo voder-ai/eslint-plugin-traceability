@@ -37,6 +37,10 @@ export default {
   /**
    * Rule create entrypoint that returns the Program visitor.
    * Delegates to createValidReqReferenceProgramVisitor helper.
+   *
+   * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+   * @req REQ-REQ-VALIDATION - Validate that requirement references in annotations resolve to known requirements
+   * @req REQ-REQ-FILE-EXISTS - Ensure that referenced story files exist before validating requirement references
    */
   create(context) {
     return {

@@ -101,6 +101,14 @@ const rule: Rule.RuleModule = {
         "Test name should start with requirement ID (e.g., '[REQ-MAINT-DETECT] ...').",
     },
   },
+  /**
+   * Wire up the ESLint rule visitors that enforce test traceability conventions
+   * for supported test frameworks.
+   *
+   * @story docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
+   * @req REQ-TEST-FILE-SUPPORTS REQ-TEST-DESCRIBE-STORY REQ-TEST-IT-REQ-PREFIX
+   * @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PREFIX-FORMAT
+   */
   create(context) {
     const filename = context.getFilename();
     const rawOptions = (context.options && context.options[0]) || {};

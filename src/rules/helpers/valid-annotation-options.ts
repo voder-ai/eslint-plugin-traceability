@@ -74,18 +74,42 @@ export interface ResolvedAnnotationOptions {
   autoFix: boolean;
 }
 
+/**
+ * Get the default regular expression used to validate story paths.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Provide a default story path pattern
+ */
 function getDefaultStoryPattern(): RegExp {
   return /^docs\/stories\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$/;
 }
 
+/**
+ * Get the default story example string used in error messages.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Provide a default story example value
+ */
 function getDefaultStoryExample(): string {
   return "docs/stories/005.0-DEV-EXAMPLE.story.md";
 }
 
+/**
+ * Get the default regular expression used to validate requirement IDs.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Provide a default requirement ID pattern
+ */
 function getDefaultReqPattern(): RegExp {
   return /^REQ-[A-Z0-9-]+$/;
 }
 
+/**
+ * Get the default requirement ID example string used in error messages.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Provide a default requirement ID example value
+ */
 export function getDefaultReqExample(): string {
   return "REQ-EXAMPLE";
 }
@@ -107,10 +131,25 @@ let resolvedDefaults: ResolvedAnnotationOptions = {
  */
 let optionErrors: string[] = [];
 
+/**
+ * Expose the most recently resolved options so other helpers can reuse
+ * the same defaults without re-resolving configuration.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Share resolved default patterns across helpers
+ * @req REQ-BACKWARD-COMPAT - Maintain a stable default configuration
+ */
 export function getResolvedDefaults(): ResolvedAnnotationOptions {
   return resolvedDefaults;
 }
 
+/**
+ * Retrieve an array of configuration error messages collected during
+ * option resolution, typically regex validation failures.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Surface configuration problems to callers
+ */
 export function getOptionErrors(): string[] {
   return optionErrors;
 }
@@ -118,6 +157,9 @@ export function getOptionErrors(): string[] {
 /**
  * Build a stable, engine-independent configuration error message
  * for invalid regex options.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Provide consistent regex validation diagnostics
  */
 function buildInvalidRegexError(field: string, pattern: string): string {
   return `Invalid regular expression for option "${field}": "${pattern}"`;
@@ -212,17 +254,42 @@ function resolveExample(
   return defaultExample;
 }
 
+/**
+ * Extract and normalize user-provided options from the raw ESLint
+ * options array into an AnnotationRuleOptions object.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Accept structured configuration for patterns
+ * @req REQ-BACKWARD-COMPAT - Tolerate missing or malformed options
+ */
 function getUserOptions(
   rawOptions: unknown[],
 ): AnnotationRuleOptions | undefined {
   return normalizeUserOptions(rawOptions);
 }
 
+/**
+ * Resolve the auto-fix flag, defaulting to true when the option
+ * is not explicitly provided by the user.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Support configuration of fix behavior
+ * @req REQ-BACKWARD-COMPAT - Preserve default auto-fix behavior
+ */
 function resolveAutoFixFlag(user: AnnotationRuleOptions | undefined): boolean {
   const autoFixFlag = user?.autoFix;
   return typeof autoFixFlag === "boolean" ? autoFixFlag : true;
 }
 
+/**
+ * Resolve the story path pattern from nested or flat configuration
+ * fields, validating and falling back to the default as needed.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Allow configurable story path patterns
+ * @req REQ-REGEX-VALIDATION - Validate story path regex options
+ * @req REQ-BACKWARD-COMPAT - Use a default when no pattern is provided
+ */
 function resolveStoryPattern(
   nestedStoryPattern: string | undefined,
   flatStoryPattern: string | undefined,
@@ -236,6 +303,15 @@ function resolveStoryPattern(
   });
 }
 
+/**
+ * Resolve the requirement ID pattern from nested or flat configuration
+ * fields, validating and falling back to the default as needed.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Allow configurable requirement ID patterns
+ * @req REQ-REGEX-VALIDATION - Validate requirement ID regex options
+ * @req REQ-BACKWARD-COMPAT - Use a default when no pattern is provided
+ */
 function resolveReqPattern(
   nestedReqPattern: string | undefined,
   flatReqPattern: string | undefined,
@@ -249,6 +325,14 @@ function resolveReqPattern(
   });
 }
 
+/**
+ * Resolve the story example string from nested or flat configuration
+ * fields, preferring user-provided values and falling back to the default.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-EXAMPLE-MESSAGES - Allow custom story examples in messages
+ * @req REQ-BACKWARD-COMPAT - Use a default story example when omitted
+ */
 function resolveStoryExample(
   nestedStoryExample: string | undefined,
   flatStoryExample: string | undefined,
@@ -260,6 +344,14 @@ function resolveStoryExample(
   );
 }
 
+/**
+ * Resolve the requirement ID example string from nested or flat configuration
+ * fields, preferring user-provided values and falling back to the default.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-EXAMPLE-MESSAGES - Allow custom requirement ID examples in messages
+ * @req REQ-BACKWARD-COMPAT - Use a default requirement ID example when omitted
+ */
 function resolveReqExample(
   nestedReqExample: string | undefined,
   flatReqExample: string | undefined,
@@ -271,6 +363,14 @@ function resolveReqExample(
   );
 }
 
+/**
+ * Collect user-provided story pattern inputs from both nested and flat
+ * configuration fields to support backward-compatible shapes.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Read story patterns from multiple option shapes
+ * @req REQ-BACKWARD-COMPAT - Support legacy flat storyPathPattern
+ */
 function getStoryPatternInputs(user: AnnotationRuleOptions | undefined): {
   nestedStoryPattern: string | undefined;
   flatStoryPattern: string | undefined;
@@ -281,6 +381,14 @@ function getStoryPatternInputs(user: AnnotationRuleOptions | undefined): {
   };
 }
 
+/**
+ * Collect user-provided story example inputs from both nested and flat
+ * configuration fields to support backward-compatible shapes.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-EXAMPLE-MESSAGES - Read story examples from multiple option shapes
+ * @req REQ-BACKWARD-COMPAT - Support legacy flat storyPathExample
+ */
 function getStoryExampleInputs(user: AnnotationRuleOptions | undefined): {
   nestedStoryExample: string | undefined;
   flatStoryExample: string | undefined;
@@ -291,6 +399,14 @@ function getStoryExampleInputs(user: AnnotationRuleOptions | undefined): {
   };
 }
 
+/**
+ * Collect user-provided requirement ID pattern inputs from both nested
+ * and flat configuration fields to support backward-compatible shapes.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Read requirement ID patterns from multiple shapes
+ * @req REQ-BACKWARD-COMPAT - Support legacy flat requirementIdPattern
+ */
 function getReqPatternInputs(user: AnnotationRuleOptions | undefined): {
   nestedReqPattern: string | undefined;
   flatReqPattern: string | undefined;
@@ -301,6 +417,14 @@ function getReqPatternInputs(user: AnnotationRuleOptions | undefined): {
   };
 }
 
+/**
+ * Collect user-provided requirement ID example inputs from both nested
+ * and flat configuration fields to support backward-compatible shapes.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-EXAMPLE-MESSAGES - Read requirement ID examples from multiple shapes
+ * @req REQ-BACKWARD-COMPAT - Support legacy flat requirementIdExample
+ */
 function getReqExampleInputs(user: AnnotationRuleOptions | undefined): {
   nestedReqExample: string | undefined;
   flatReqExample: string | undefined;
@@ -311,6 +435,15 @@ function getReqExampleInputs(user: AnnotationRuleOptions | undefined): {
   };
 }
 
+/**
+ * Internal helper to resolve all rule options into a concrete, validated
+ * ResolvedAnnotationOptions structure, applying defaults and validation.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Combine pattern and example configuration
+ * @req REQ-REGEX-VALIDATION - Enforce regex validity during resolution
+ * @req REQ-BACKWARD-COMPAT - Respect defaults when options are missing
+ */
 function resolveOptionsInternal(
   user: AnnotationRuleOptions | undefined,
 ): ResolvedAnnotationOptions {
@@ -344,6 +477,11 @@ function resolveOptionsInternal(
 /**
  * Resolve user options into concrete, validated configuration.
  * Falls back to existing defaults when options are not provided or invalid.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-PATTERN-CONFIG - Drive rule behavior from configurable patterns
+ * @req REQ-REGEX-VALIDATION - Validate all configured regex patterns
+ * @req REQ-BACKWARD-COMPAT - Maintain behavior when no custom options set
  */
 export function resolveOptions(
   rawOptions: unknown[],
@@ -358,7 +496,12 @@ export function resolveOptions(
 }
 
 /**
- * Build the JSON schema for rule options.
+ * Build the JSON Schema definition that validates rule configuration
+ * passed to ESLint, ensuring option shapes and types are correct.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ * @req REQ-SCHEMA-VALIDATION - Define a JSON Schema for rule options
+ * @req REQ-PATTERN-CONFIG - Describe configurable pattern and example fields
  */
 export function getRuleSchema() {
   return [

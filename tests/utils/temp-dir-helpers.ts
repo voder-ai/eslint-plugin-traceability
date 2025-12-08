@@ -10,7 +10,10 @@ import * as path from "path";
 export interface TempDirHandle {
   /** The absolute path to the created temporary directory. */
   readonly dir: string;
-  /** Remove the directory recursively; safe to call multiple times. */
+  /**
+   * Remove the directory recursively; safe to call multiple times.
+   * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+   */
   cleanup(): void;
 }
 
@@ -20,6 +23,8 @@ export interface TempDirHandle {
  * This helper centralizes the mkdtemp + rmSync pattern that appears in
  * multiple maintenance tests so those tests can focus on behavior instead
  * of filesystem plumbing.
+ *
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-TEMP-HELPERS REQ-MAINT-SAFE
  */
 export function createTempDir(prefix: string): TempDirHandle {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -27,7 +32,6 @@ export function createTempDir(prefix: string): TempDirHandle {
   return {
     dir,
     cleanup() {
-      // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
       fs.rmSync(dir, { recursive: true, force: true });
     },
   };

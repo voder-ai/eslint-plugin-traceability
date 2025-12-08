@@ -141,6 +141,11 @@ function isTestCallName(name: string): boolean {
   return ["describe", "it", "test", "context"].includes(name);
 }
 
+/**
+ * Extract the test framework call name from a CallExpression callee.
+ *
+ * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FRAMEWORK-COMPAT
+ */
 function getCalleeName(node: any): string | null {
   if (node.callee.type === "Identifier") {
     return node.callee.name;
@@ -154,6 +159,11 @@ function getCalleeName(node: any): string | null {
   return null;
 }
 
+/**
+ * Extract the first string literal argument from a CallExpression, if present.
+ *
+ * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY REQ-TEST-IT-REQ-PREFIX
+ */
 function getFirstArgumentLiteral(node: any): string | null {
   const arg = node.arguments && node.arguments[0];
   if (!arg) return null;
@@ -255,6 +265,13 @@ function createUpdatedStringLiteralRaw(
   return JSON.stringify(newValue);
 }
 
+/**
+ * Validate describe() calls to ensure they include a story reference
+ * matching the configured describeRegex when required.
+ *
+ * @story docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
+ * @req REQ-TEST-DESCRIBE-STORY
+ */
 function handleDescribeCall(
   context: any,
   node: any,
@@ -271,6 +288,13 @@ function handleDescribeCall(
   }
 }
 
+/**
+ * Validate it() and test() calls to ensure their descriptions start with a
+ * [REQ-XXX] prefix, optionally normalizing malformed prefixes when enabled.
+ *
+ * @story docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
+ * @req REQ-TEST-IT-REQ-PREFIX
+ */
 function handleItOrTestCall(
   context: any,
   node: any,

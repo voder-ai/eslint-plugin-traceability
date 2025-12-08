@@ -267,6 +267,13 @@ function analyzeComment(comment: any): CommentAnalysis {
   return { hasStory, hasReq, hasImplements, storyPaths };
 }
 
+/**
+ * Check whether a given set of story paths represents multiple story/req
+ * blocks within the same comment, which cannot be safely auto-migrated.
+ *
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @req REQ-MIGRATE-INLINE
+ */
 function hasMultipleStories(storyPaths: Set<string>): boolean {
   // @req REQ-MULTI-STORY-DETECT - Use named threshold constant instead of a magic number
   return storyPaths.size > MULTI_STORY_THRESHOLD;
@@ -322,11 +329,27 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
 
 type LineComment = { type: "Line" } & any;
 
+/**
+ * Extract the leading whitespace and `//` prefix from a line comment's full
+ * source text so that new inline annotations can be inserted with matching
+ * indentation and formatting.
+ *
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @req REQ-MIGRATE-INLINE
+ */
 function getLinePrefixFromText(fullText: string): string {
   const match = fullText.match(/^(\s*\/\/\s*)/);
   return match ? match[1] : "";
 }
 
+/**
+ * Attempt to construct an inline auto-fix that replaces a contiguous
+ * sequence of `@story` and `@req` line comments with a single `@supports`
+ * annotation while preserving the original comment prefix.
+ *
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @req REQ-MIGRATE-INLINE
+ */
 function tryBuildInlineAutoFix(
   context: Rule.RuleContext,
   comments: LineComment[],
@@ -380,6 +403,14 @@ function tryBuildInlineAutoFix(
   return (fixer) => fixer.replaceTextRange([start, end], implLine);
 }
 
+/**
+ * Coordinate detection and optional migration of a single inline `@story`
+ * comment and its following `@req` comments, reporting diagnostics and
+ * scheduling auto-fixes where safe.
+ *
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @req REQ-MIGRATE-INLINE
+ */
 function handleInlineStorySequence(
   context: Rule.RuleContext,
   group: LineComment[],
@@ -441,6 +472,14 @@ function handleInlineStorySequence(
   return reqIndices[reqIndices.length - 1] + 1;
 }
 
+/**
+ * Process a contiguous group of inline line comments, identifying legacy
+ * `@story`/`@req` sequences and scheduling the corresponding diagnostics
+ * and potential auto-fixes for migration to `@supports`.
+ *
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @req REQ-MIGRATE-INLINE
+ */
 function processInlineGroup(
   context: Rule.RuleContext,
   group: LineComment[],
