@@ -104,4 +104,32 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
 
     expect(strictRules).toEqual(recommendedRules);
   });
+
+  describe("Unified function-annotation rule aliases (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", () => {
+    it("[REQ-ANNOTATION-REQUIRED] legacy rule names share the unified require-traceability implementation", () => {
+      const unified = rules["require-traceability"] as any;
+      const storyAlias = rules["require-story-annotation"] as any;
+      const reqAlias = rules["require-req-annotation"] as any;
+
+      expect(typeof unified.create).toBe("function");
+      expect(storyAlias.create).toBe(unified.create);
+      expect(reqAlias.create).toBe(unified.create);
+    });
+
+    it("[REQ-CONFIGURABLE-SCOPE] alias rules preserve metadata needed for configuration and diagnostics", () => {
+      const unified = rules["require-traceability"] as any;
+      const storyAlias = rules["require-story-annotation"] as any;
+      const reqAlias = rules["require-req-annotation"] as any;
+
+      // All variants should expose a schema and messages map so that options
+      // like scope/exportPriority and the core diagnostics remain available.
+      expect(unified.meta?.schema).toBeDefined();
+      expect(storyAlias.meta?.schema).toBeDefined();
+      expect(reqAlias.meta?.schema).toBeDefined();
+
+      expect(unified.meta?.messages).toBeDefined();
+      expect(storyAlias.meta?.messages).toBeDefined();
+      expect(reqAlias.meta?.messages).toBeDefined();
+    });
+  });
 });

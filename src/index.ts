@@ -93,6 +93,89 @@ RULE_NAMES.forEach(
 );
 
 /**
+ * Wire up the unified function-annotation rule and its backward-compatible
+ * aliases so that:
+ * - traceability/require-traceability is the canonical rule implementation
+ * - traceability/require-story-annotation and
+ *   traceability/require-req-annotation act as aliases that share the same
+ *   underlying logic while preserving their legacy metadata (docs, schema,
+ *   and diagnostics).
+ *
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY
+ */
+{
+  const unifiedRule = rules["require-traceability"] as
+    | Rule.RuleModule
+    | undefined;
+  const legacyStoryRule = rules["require-story-annotation"] as
+    | Rule.RuleModule
+    | undefined;
+  const legacyReqRule = rules["require-req-annotation"] as
+    | Rule.RuleModule
+    | undefined;
+
+  if (unifiedRule) {
+    const createAliasRule = (
+      legacyRule: Rule.RuleModule | undefined,
+    ): Rule.RuleModule => {
+      if (!legacyRule) {
+        return unifiedRule;
+      }
+
+      const baseMeta = ((unifiedRule as any).meta ?? {}) as Record<string, any>;
+      const legacyMeta = ((legacyRule as any).meta ?? {}) as Record<
+        string,
+        any
+      >;
+
+      const mergedMeta: Rule.RuleMetaData = {
+        ...baseMeta,
+        ...legacyMeta,
+        docs: {
+          ...(baseMeta.docs ?? {}),
+          ...(legacyMeta.docs ?? {}),
+        },
+        messages: {
+          ...(baseMeta.messages ?? {}),
+          ...(legacyMeta.messages ?? {}),
+        },
+        schema:
+          (legacyMeta.schema as Rule.RuleMetaData["schema"]) ??
+          (baseMeta.schema as Rule.RuleMetaData["schema"]) ??
+          [],
+        hasSuggestions:
+          (legacyMeta.hasSuggestions as boolean | undefined) ??
+          (baseMeta.hasSuggestions as boolean | undefined),
+        fixable:
+          (legacyMeta.fixable as Rule.RuleMetaData["fixable"]) ??
+          (baseMeta.fixable as Rule.RuleMetaData["fixable"]),
+        deprecated:
+          (legacyMeta.deprecated as boolean | undefined) ??
+          (baseMeta.deprecated as boolean | undefined),
+        replacedBy:
+          (legacyMeta.replacedBy as string[] | undefined) ??
+          (baseMeta.replacedBy as string[] | undefined),
+        type:
+          (legacyMeta.type as Rule.RuleMetaData["type"]) ??
+          (baseMeta.type as Rule.RuleMetaData["type"]) ??
+          "problem",
+      };
+
+      const aliasRule: Rule.RuleModule = {
+        ...(unifiedRule as any),
+        meta: mergedMeta,
+        create: unifiedRule.create,
+      };
+
+      return aliasRule;
+    };
+
+    rules["require-story-annotation"] = createAliasRule(legacyStoryRule);
+    rules["require-req-annotation"] = createAliasRule(legacyReqRule);
+  }
+}
+
+/**
  * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-RULE-NAME
  * Wire up traceability/prefer-supports-annotation as the primary rule name and
  * traceability/prefer-implements-annotation as its deprecated alias.
