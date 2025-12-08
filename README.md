@@ -46,6 +46,45 @@ export default [
 ];
 ```
 
+### Canonical function-level rule and legacy aliases
+
+For function-level checks, `traceability/require-traceability` is the **canonical** rule. It ensures that in-scope functions and methods have both story coverage and requirement coverage, and it understands both the modern `@supports` format and the legacy `@story` / `@req` pairs.
+
+The older rule keys:
+
+- `traceability/require-story-annotation`
+- `traceability/require-req-annotation`
+
+remain available as **backward-compatible aliases** that are wired to the same underlying engine. Existing configurations that reference these legacy keys will continue to behave as before. New configurations should normally prefer the unified `traceability/require-traceability` rule and treat the legacy keys as compatibility shims or for gradual migration.
+
+A concise flat-config example that enables the unified function-level rule and commonly used supporting rules explicitly:
+
+```js
+// eslint.config.js
+import traceability from "eslint-plugin-traceability";
+
+export default [
+  {
+    plugins: {
+      traceability,
+    },
+    rules: {
+      // Canonical function-level rule (preferred for new configs)
+      "traceability/require-traceability": "error",
+
+      // Common supporting rules
+      "traceability/require-branch-annotation": "warn",
+      "traceability/valid-annotation-format": "error",
+      "traceability/valid-story-reference": "error",
+      "traceability/valid-req-reference": "error",
+
+      // Optional: enforce test traceability conventions
+      "traceability/require-test-traceability": "warn",
+    },
+  },
+];
+```
+
 ### Available Rules
 
 The plugin exposes several rules. For **new configurations**, the unified function-level rule and `@supports` annotations are the canonical choice; the `@story` and `@req` forms remain available primarily for backward compatibility and gradual migration.
@@ -245,6 +284,7 @@ For the canonical, user-facing security policy (including how to report vulnerab
 - ESLint v9 Setup Guide: [user-docs/eslint-9-setup-guide.md](user-docs/eslint-9-setup-guide.md)
 - API Reference: [user-docs/api-reference.md](user-docs/api-reference.md)
 - Examples: [user-docs/examples.md](user-docs/examples.md)
+- Traceability Overview and FAQ: [user-docs/traceability-overview.md](user-docs/traceability-overview.md)
 - Migration Guide: [user-docs/migration-guide.md](user-docs/migration-guide.md)
 - Full README: <https://github.com/voder-ai/eslint-plugin-traceability#readme>
 - Contribution guide: <https://github.com/voder-ai/eslint-plugin-traceability/blob/main/CONTRIBUTING.md>

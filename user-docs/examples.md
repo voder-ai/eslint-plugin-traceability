@@ -43,7 +43,7 @@ npx eslint "src/**/*.js"
 
 ## 3. CLI Invocation Example
 
-You can use the plugin without a config file by specifying rules inline:
+You can use the plugin without a config file by specifying rules inline. The recommended approach for new setups is to use the unified `traceability/require-traceability` rule:
 
 ```bash
 npx eslint --no-eslintrc \
@@ -51,7 +51,13 @@ npx eslint --no-eslintrc \
   sample.js
 ```
 
-This uses the unified function-level rule, which enforces both story and requirement coverage via `@supports` (preferred) or legacy `@story`/`@req` annotations. If you need to keep older configurations that refer to the legacy keys, you can still enable them explicitly:
+This unified function-level rule enforces both story and requirement coverage via `@supports` (preferred) or, for backward compatibility, via legacy `@story`/`@req` annotations.
+
+Replace `sample.js` with your JavaScript or TypeScript file.
+
+### 3.1 Legacy aliases (for existing configurations)
+
+If you have older configurations that already refer to the legacy keys `traceability/require-story-annotation` and `traceability/require-req-annotation`, you can still enable them explicitly to avoid breaking those setups:
 
 ```bash
 npx eslint --no-eslintrc \
@@ -61,9 +67,7 @@ npx eslint --no-eslintrc \
 ```
 
 - `--no-eslintrc` tells ESLint to ignore user configs.
-- `--rule` options enable the unified rule or legacy aliases as needed.
-
-Replace `sample.js` with your JavaScript or TypeScript file.
+- `--rule` options enable either the unified rule (recommended for new configurations) or the legacy aliases when you must preserve older setups.
 
 ## 4. Linting a Specific Directory
 

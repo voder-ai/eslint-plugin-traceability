@@ -11,6 +11,8 @@ Security and dependency hygiene for the published package are enforced by the sa
 
 Each rule enforces traceability conventions in your code. Below is a summary of each rule exposed by this plugin.
 
+For function-level traceability, new configurations should treat `traceability/require-traceability` as the **canonical** rule: it composes both story and requirement checks and understands both the newer `@supports` style and the legacy `@story` / `@req` pairing. The older keys `traceability/require-story-annotation` and `traceability/require-req-annotation` remain available as **backward-compatible aliases** so existing configs keep working, but they are no longer the primary entry points and are mainly useful when you need to tune severities independently. For new and multi-story scenarios, prefer `@supports` annotations; `@story` and `@req` remain valid and are still appropriate for simple single-story code paths where a consolidated `@supports` tag is not yet required.
+
 In addition to the core `@story` and `@req` annotations, the plugin also understands `@supports` for code that fulfills requirements from multiple stories—for example, a consuming project might use a path like
 `@supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND`
 to indicate that a given function supports a particular requirement from a payments story document within that project’s own `docs/stories` tree. For a detailed explanation of `@supports` behavior and validation, see [Migration Guide](migration-guide.md) (section **3.1 Multi-story @supports annotations**). Additional background on multi-story semantics is available in the project’s internal rule documentation, which is intended for maintainers rather than end users.
