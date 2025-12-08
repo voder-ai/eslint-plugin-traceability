@@ -17,6 +17,10 @@ to indicate that a given function supports a particular requirement from a payme
 
 The `prefer-supports-annotation` rule is an **opt-in migration helper** that is disabled by default and **not** part of any built-in preset. It can be enabled and given a severity like `"warn"` or `"error"` using normal ESLint rule configuration when you want to gradually encourage multi-story `@supports` usage. The legacy rule key `traceability/prefer-implements-annotation` remains available as a **deprecated alias** for backward compatibility, but new configurations should prefer `traceability/prefer-supports-annotation`. Detailed behavior and migration guidance are documented in the project’s internal rule documentation, which is targeted for maintainers; typical end users can rely on the high-level guidance in this API reference and the [Migration Guide](migration-guide.md).
 
+### traceability/require-traceability
+
+Description: Unified function-level traceability rule that composes the behavior of `traceability/require-story-annotation` and `traceability/require-req-annotation`. When enabled, it enforces that in‑scope functions and methods carry both a story reference (`@story` or an equivalent `@supports` tag) and at least one requirement reference (`@req` or, when configured, `@supports`). The recommended flat‑config presets in this plugin enable `traceability/require-traceability` by default alongside the legacy rule keys for backward compatibility, so that existing configurations referring to `traceability/require-story-annotation` or `traceability/require-req-annotation` continue to work without change.
+
 ### traceability/require-story-annotation
 
 Description: Ensures every function declaration has a JSDoc comment with an `@story` annotation referencing the related user story. When you adopt multi-story `@supports` annotations, this rule also accepts `@supports` as an alternative way to prove story coverage, so either `@story` or at least one `@supports` tag will satisfy the presence check. When run with `--fix`, the rule inserts a single-line placeholder JSDoc `@story` annotation above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. This template is now configurable on a per-rule basis, and the rule exposes an explicit auto-fix toggle so you can choose between diagnostic-only behavior and automatic placeholder insertion. The default template remains aligned with Story 008.0, but you can now customize it per rule configuration and optionally disable auto-fix entirely when you only want diagnostics without edits.
@@ -134,8 +138,6 @@ Behavior notes:
 - Patterns are compiled with the `u` flag; invalid patterns cause a rule configuration error.
 - When options are omitted, the rule behaves exactly as in earlier versions, relying on its built‑in defaults and path‑suffix normalization logic only.
 - The pattern checks are additional validation; they do not change the existing auto‑fix behavior, which remains limited to safe `@story` suffix normalization described above.
-
-You can customize these validations to match your own naming conventions by overriding `story.pattern`/`storyPathPattern` and `req.pattern`/`requirementIdPattern`. This is useful when you store stories outside `docs/stories`, avoid `DEV` in filenames, or use a different requirement ID scheme instead of the default `REQ-...` format. Any custom values must still be valid JavaScript regular expression **sources** (without surrounding `/` characters).
 
 #### Migration and mixed usage
 
@@ -306,7 +308,7 @@ This rule is **not** enabled in the `recommended` or `strict` presets by default
 
 ### traceability/prefer-supports-annotation
 
-Description: An optional, opt-in migration helper that encourages converting legacy single‑story `@story` + `@req` JSDoc blocks into the newer multi‑story `@supports` format. The rule is **disabled by default** and is **not included in any built‑in preset**; you enable it explicitly and control its behavior entirely via ESLint severity (`"off" | "warn" | "error"`). It does not change what the core rules consider valid—it only adds migration recommendations and safe auto‑fixes on top of existing validation. The legacy rule key `traceability/prefer-implements-annotation` is still recognized as a **deprecated alias** for `traceability/prefer-supports-annotation` so that existing configurations continue to work unchanged.
+Description: An optional, opt-in migration helper that encourages converting legacy single‑story `@story` + `@req` JSDoc blocks into the newer multi‑story `@supports` format. The rule is **disabled by default** and is **not included in any built-in preset**; you enable it explicitly and control its behavior entirely via ESLint severity (`"off" | "warn" | "error"`). It does not change what the core rules consider valid—it only adds migration recommendations and safe auto‑fixes on top of existing validation. The legacy rule key `traceability/prefer-implements-annotation` is still recognized as a **deprecated alias** for `traceability/prefer-supports-annotation` so that existing configurations continue to work unchanged.
 
 Options: None – this rule does not accept a configuration object. All tuning is done via the ESLint rule level (`"off"`, `"warn"`, `"error"`).
 
@@ -349,7 +351,7 @@ Main behaviors:
 Deliberate non‑targets and ignored comments:
 
 - JSDoc blocks that contain **only** `@story`, **only** `@req`, or **only** `@supports` are **not** modified by this rule. They remain valid and continue to be governed solely by the core rules such as `require-story-annotation`, `require-req-annotation`, and `valid-annotation-format`.
-- Inline or line comments like `// @story ...`, `// @req ...`, or `// @supports ...` are also supported in a limited, migration‑oriented way: when the rule detects a simple, consecutive pair or small run of `// @story ...` and `// @req ...` lines that are directly attached to a function or branch, it can, in `--fix` mode, consolidate them into a single `// @supports ...` line while preserving indentation and the comment’s relative position next to the code. More complex inline patterns (such as mixed traceability and non‑traceability content, multiple distinct stories, or interleaved unrelated comments) are still reported without auto‑fix for safety. As with JSDoc migration, this behavior is opt‑in: the rule remains disabled by default and must be explicitly enabled with your desired severity when you are ready to start migrating inline annotations.
+- Inline or line comments like `// @story ...`, `// @req ...`, or `// @supports ...` are also supported in a limited, migration‑oriented way: when the rule detects a simple, consecutive pair or small run of `// @story ...` and `// @req ...` lines that are directly attached to a function or branch, it can, in `--fix` mode, consolidate them into a single `// @supports ...` line while preserving indentation and the comment’s relative position next to the code. More complex inline patterns (such as mixed traceability and non-traceability content, multiple distinct stories, or interleaved unrelated comments) are still reported without auto‑fix for safety. As with JSDoc migration, this behavior is opt‑in: the rule remains disabled by default and must be explicitly enabled with your desired severity when you are ready to start migrating inline annotations.
 - Any block that does not match the “single story + simple requirements, no supports” shape is treated conservatively: the rule may report a diagnostic to flag the legacy/mixed pattern, but it will not rewrite comments unless it is clearly safe.
 
 Interaction with other rules:
@@ -422,8 +424,9 @@ The `prefer-supports-annotation` migration rule (and its deprecated alias key `t
 
 Core rules enabled by the `recommended` preset:
 
-- `traceability/require-story-annotation`: `error`
-- `traceability/require-req-annotation`: `error`
+- `traceability/require-traceability`: `error` (unified function-level rule; composes story + req checks)
+- `traceability/require-story-annotation`: `error` (legacy key; kept for backward compatibility)
+- `traceability/require-req-annotation`: `error` (legacy key; kept for backward compatibility)
 - `traceability/require-branch-annotation`: `error`
 - `traceability/valid-annotation-format`: `warn`
 - `traceability/valid-story-reference`: `error`

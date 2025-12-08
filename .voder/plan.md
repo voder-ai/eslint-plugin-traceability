@@ -1,17 +1,20 @@
 ## NOW
 
-- [ ] Implement the remaining switch statement behaviors from the branch-annotations story by updating the branch-annotation rule so that switch default cases are required to have traceability annotations and fall-through case groups are handled according to the story’s fall-through semantics.
+- [ ] Implement the unified `require-traceability` rule so that it fully satisfies the function-annotations story’s requirements, including all aliasing behavior and backward compatibility.
+- [ ] Refactor the existing `require-story-annotation` and `require-req-annotation` rule implementations so they delegate to `require-traceability` without changing their option shapes or diagnostics.
+- [ ] Wire up all three rule names (`require-traceability`, `require-story-annotation`, `require-req-annotation`) in the plugin’s export surface (rule registry and shared configurations) according to the story’s expectations.
+- [ ] Add and update unit tests to exercise the unified rule under all three names, confirming identical behavior, configuration handling, and error-message requirements.
+- [ ] Update the function-annotations story and any relevant rule documentation to describe `require-traceability` as the canonical rule and the other two as aliases, and mark the associated acceptance criteria as satisfied.
 
 ## NEXT
 
-- [ ] Extend the branch-annotation rule to support loop annotation flexibility so that loops are considered correctly annotated when the traceability annotation is placed either on the loop statement or on the first significant statement inside the loop body, as specified in the story.
-- [ ] Update function-annotation and branch-annotation logic to enforce the story’s rules for named versus anonymous arrow functions and to implement nested function inheritance of annotations, ensuring inner anonymous functions can inherit coverage from an annotated outer function while named inner functions require their own annotations.
-- [ ] Add or adjust unit tests for the branch-annotation and function-annotation rules to cover the new switch, loop, arrow function, and nested function behaviors, including both positive and negative cases tied to the specific requirement IDs from the branch-annotations story.
-- [ ] Introduce or extend integration tests that run the ESLint plugin against representative files containing complex switch statements, nested loops, and nested arrow functions to confirm that the combined behavior matches all acceptance criteria of the branch-annotations story.
-- [ ] Update the branch-annotations story file and relevant user-facing documentation to reflect the completed behaviors, marking the outstanding acceptance criteria as satisfied and clarifying any nuances in switch, loop, and nested function handling.
+- [ ] Perform a pass over the new and refactored rule code to simplify internal helpers, remove duplication between legacy and unified implementations, and ensure the behavior is easy to reason about.
+- [ ] Add additional focused tests for edge configurations (e.g., mixed use of aliases in a single ESLint config, legacy options with the new rule name) to guard against regressions in alias and configuration behavior.
+- [ ] Run the test suite and linting locally with multiple ESLint versions (within our supported range) to confirm the unified rule behaves consistently and does not introduce compatibility issues.
+- [ ] Draft a brief migration note (changelog entry or upgrade guide snippet) explaining the introduction of `require-traceability`, how it relates to the legacy rules, and recommended usage going forward.
 
 ## LATER
 
-- [ ] Review performance and complexity of the updated branch and function annotation logic on large, branch-heavy codebases and optimize helper utilities if needed while preserving behavior.
-- [ ] Add additional regression tests for edge cases such as ternary operators, logical operators, and async catch blocks to strengthen confidence that excluded constructs remain excluded and included constructs continue to behave as required.
-- [ ] Refine internal helper abstractions for comment and scope analysis to reduce duplication between branch-annotation, function-annotation, and redundant-annotation rules while keeping the implementation easy to understand and maintain.
+- [ ] Extend integration tests to run the ESLint plugin using the new `require-traceability` rule name in representative configurations to verify end-to-end behavior in real-world-style setups.
+- [ ] Review performance and complexity of the unified rule implementation on large projects and, if necessary, refactor internal helpers to keep the function-annotation logic simple and maintainable.
+- [ ] Add targeted regression tests around edge cases covered by the story (such as unusual function syntaxes or mixed annotation styles) to prevent future changes from breaking the unified rule’s guarantees.

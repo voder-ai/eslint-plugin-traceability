@@ -33,6 +33,7 @@ describe("Flat config presets integration (Story 002.0-DEV-ESLINT-CONFIG)", () =
     const result = await lintTextWithConfig(code, config);
     const ruleIds = result.messages.map((m) => m.ruleId).sort();
 
+    expect(ruleIds).toContain("traceability/require-traceability");
     expect(ruleIds).toContain("traceability/require-story-annotation");
   });
 
@@ -41,6 +42,7 @@ describe("Flat config presets integration (Story 002.0-DEV-ESLINT-CONFIG)", () =
     const code = "function bar() {}";
     const result = await lintTextWithConfig(code, config);
     const ruleIds = result.messages.map((m) => m.ruleId).sort();
+    expect(ruleIds).toContain("traceability/require-traceability");
     expect(ruleIds).toContain("traceability/require-story-annotation");
   });
 })

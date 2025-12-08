@@ -23,6 +23,7 @@ import {
  * @req REQ-RULE-LIST - Enumerate supported rule file names for plugin discovery
  */
 const RULE_NAMES = [
+  "require-traceability",
   "require-story-annotation",
   "require-req-annotation",
   "require-branch-annotation",
@@ -185,6 +186,7 @@ const plugin: {
  */
 const TRACEABILITY_RULE_SEVERITIES: Readonly<Record<string, "error" | "warn">> =
   {
+    "traceability/require-traceability": "error",
     "traceability/require-story-annotation": "error",
     "traceability/require-req-annotation": "error",
     "traceability/require-branch-annotation": "error",

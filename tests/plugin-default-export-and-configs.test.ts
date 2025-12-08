@@ -18,6 +18,7 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
   it("[REQ-PLUGIN-STRUCTURE] rules object has correct rule names", () => {
     // Arrange: expected rule names in insertion order
     const expected = [
+      "require-traceability",
       "require-story-annotation",
       "require-req-annotation",
       "require-branch-annotation",
@@ -37,6 +38,10 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
 
   it("[REQ-RULE-REGISTRY] configs.recommended contains correct rule configuration", () => {
     const recommendedRules = configs.recommended[0].rules;
+    expect(recommendedRules).toHaveProperty(
+      "traceability/require-traceability",
+      "error",
+    );
     expect(recommendedRules).toHaveProperty(
       "traceability/require-story-annotation",
       "error",
@@ -62,6 +67,10 @@ describe("Plugin Default Export and Configs (Story 001.0-DEV-PLUGIN-SETUP)", () 
     expect(recommendedRules).toHaveProperty(
       "traceability/valid-annotation-format",
       "warn",
+    );
+    expect(recommendedRules).toHaveProperty(
+      "traceability/require-traceability",
+      "error",
     );
     expect(recommendedRules).toHaveProperty(
       "traceability/require-story-annotation",
