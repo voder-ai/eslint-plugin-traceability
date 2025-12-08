@@ -1,15 +1,17 @@
 ## NOW
 
-- [ ] Implement the next concrete behavior from the migrate-to-supports story by updating the traceability rule logic so that it fully respects @supports-based annotations for branch and scope analysis as described in that story’s Implementation Notes.
+- [ ] Implement the remaining switch statement behaviors from the branch-annotations story by updating the branch-annotation rule so that switch default cases are required to have traceability annotations and fall-through case groups are handled according to the story’s fall-through semantics.
 
 ## NEXT
 
-- [ ] Add or adjust unit-level tests for the updated traceability rules to cover scenarios with @supports annotations, including mixed @story/@supports usage and preservation of branch position context.
-- [ ] Introduce or extend integration tests that run the ESLint plugin against representative files to verify that @supports-based annotations are treated as canonical and that legacy @story/@req annotations continue to behave correctly during migration.
-- [ ] Update the user-facing API and rule documentation to describe the new @supports-focused behavior, including any migration notes, and ensure that the migrate-to-supports story’s acceptance criteria and Definition of Done items are marked as satisfied where appropriate.
+- [ ] Extend the branch-annotation rule to support loop annotation flexibility so that loops are considered correctly annotated when the traceability annotation is placed either on the loop statement or on the first significant statement inside the loop body, as specified in the story.
+- [ ] Update function-annotation and branch-annotation logic to enforce the story’s rules for named versus anonymous arrow functions and to implement nested function inheritance of annotations, ensuring inner anonymous functions can inherit coverage from an annotated outer function while named inner functions require their own annotations.
+- [ ] Add or adjust unit tests for the branch-annotation and function-annotation rules to cover the new switch, loop, arrow function, and nested function behaviors, including both positive and negative cases tied to the specific requirement IDs from the branch-annotations story.
+- [ ] Introduce or extend integration tests that run the ESLint plugin against representative files containing complex switch statements, nested loops, and nested arrow functions to confirm that the combined behavior matches all acceptance criteria of the branch-annotations story.
+- [ ] Update the branch-annotations story file and relevant user-facing documentation to reflect the completed behaviors, marking the outstanding acceptance criteria as satisfied and clarifying any nuances in switch, loop, and nested function handling.
 
 ## LATER
 
-- [ ] Evaluate the impact of @supports-focused processing on performance for large codebases and optimize any hot paths in comment parsing or branch analysis if needed.
-- [ ] Identify and refactor any remaining code paths, tests, or docs that still assume @story/@req as primary, consolidating them around @supports while keeping backward compatibility as required by the story.
-- [ ] Augment user documentation with additional examples and troubleshooting guidance that illustrate common migration patterns from @story/@req blocks to @supports-based annotations.
+- [ ] Review performance and complexity of the updated branch and function annotation logic on large, branch-heavy codebases and optimize helper utilities if needed while preserving behavior.
+- [ ] Add additional regression tests for edge cases such as ternary operators, logical operators, and async catch blocks to strengthen confidence that excluded constructs remain excluded and included constructs continue to behave as required.
+- [ ] Refine internal helper abstractions for comment and scope analysis to reduce duplication between branch-annotation, function-annotation, and redundant-annotation rules while keeping the implementation easy to understand and maintain.

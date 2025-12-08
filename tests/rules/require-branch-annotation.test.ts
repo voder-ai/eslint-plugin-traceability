@@ -20,16 +20,19 @@ const ruleTester = new RuleTester({
   languageOptions: { parserOptions: { ecmaVersion: 2020 } },
 } as any);
 
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 const makeMissingAnnotationErrors = (...missing: Array<"@story" | "@req">) =>
   missing.map((item) => ({
     messageId: "missingAnnotation" as const,
     data: { missing: item },
   }));
 
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 const runRule = (tests: Parameters<typeof ruleTester.run>[2]) =>
   ruleTester.run("require-branch-annotation", rule, tests);
 
-describe("Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
+describe("Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)", /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+() => {
   runRule({
     valid: [
       {
@@ -61,7 +64,21 @@ for (let i = 0; i < 10; i++) {}`,
   // @req REQ-BRANCH-DETECTION
   case 'a':
     break;
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-SWITCH-DEFAULT-REQUIRED
   default:
+    break;
+}`,
+      },
+      {
+        name: "[REQ-SWITCH-FALLTHROUGH] valid fall-through group only requires annotation on last case before body",
+        code: `switch (status) {
+  case "pending":
+  case "processing":
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-SWITCH-FALLTHROUGH
+  case "validating":
+    handleInProgress();
     break;
 }`,
       },
@@ -105,6 +122,14 @@ for (const item of items) {
 }`,
       },
       {
+        name: "[REQ-LOOP-PLACEMENT-FLEXIBLE] for-of loop annotated via comment inside body",
+        code: `for (const item of items) {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-LOOP-ANNOTATION
+  process(item);
+}`,
+      },
+      {
         name: "[REQ-BRANCH-DETECTION] valid for-in loop with annotations",
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
@@ -117,6 +142,14 @@ for (const key in object) {
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
 while (condition) {
+  iterate();
+}`,
+      },
+      {
+        name: "[REQ-LOOP-PLACEMENT-FLEXIBLE] while loop annotated via comment inside body",
+        code: `while (condition) {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-LOOP-ANNOTATION
   iterate();
 }`,
       },
@@ -139,13 +172,6 @@ if (outer) {
   if (inner) {
     doWork();
   }
-}`,
-      },
-      {
-        name: "[REQ-BRANCH-DETECTION] valid default case without annotations",
-        code: `switch (value) {
-  default:
-    doSomething();
 }`,
       },
       {
@@ -216,6 +242,17 @@ while (true) {}`,
         errors: makeMissingAnnotationErrors("@story"),
       },
       {
+        name: "[REQ-LOOP-ANNOTATION] missing annotations when loop body contains only non-comment code",
+        code: `for (const item of items) {
+  process(item);
+}`,
+        output: `// @story <story-file>.story.md
+for (const item of items) {
+  process(item);
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
         name: "[REQ-BRANCH-DETECTION] missing annotations on switch-case",
         code: `switch (value) {
   case 'a':
@@ -229,6 +266,50 @@ while (true) {}`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
+        name: "[REQ-SWITCH-FALLTHROUGH] intermediate fall-through case should not be the only annotated case",
+        code: `switch (status) {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-SWITCH-FALLTHROUGH
+  case "pending":
+  case "processing":
+  case "validating":
+    handleInProgress();
+    break;
+}`,
+        output: `switch (status) {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-SWITCH-FALLTHROUGH
+  case "pending":
+  case "processing":
+  // @story <story-file>.story.md
+  case "validating":
+    handleInProgress();
+    break;
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-SWITCH-DEFAULT-REQUIRED] missing annotations on default case",
+        code: `switch (value) {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
+  case 'a':
+    doSomething();
+  default:
+    doDefault();
+}`,
+        output: `switch (value) {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
+  case 'a':
+    doSomething();
+  // @story <story-file>.story.md
+  default:
+    doDefault();
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
         name: "[REQ-BRANCH-DETECTION] missing annotations on do-while loop",
         code: `do {
   action();
@@ -237,17 +318,6 @@ while (true) {}`,
 do {
   action();
 } while (condition);`,
-        errors: makeMissingAnnotationErrors("@story", "@req"),
-      },
-      {
-        name: "[REQ-BRANCH-DETECTION] missing annotations on for-of loop",
-        code: `for (const item of items) {
-  process(item);
-}`,
-        output: `// @story <story-file>.story.md
-for (const item of items) {
-  process(item);
-}`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {

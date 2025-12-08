@@ -1,4 +1,6 @@
 import type { Rule } from "eslint";
+import { reportMissingAnnotations } from "./branch-annotation-report-helpers";
+import { gatherLoopCommentText } from "./branch-annotation-loop-helpers";
 const PRE_COMMENT_OFFSET = 2; // number of lines above branch to inspect for comments
 
 /**
@@ -147,7 +149,7 @@ function collectCommentLine(
  * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC
  * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC-ELSE-IF
  */
-function scanCommentLinesInRange(
+export function scanCommentLinesInRange(
   lines: string[],
   startIndex: number,
   endIndexInclusive: number,
@@ -178,6 +180,7 @@ function scanCommentLinesInRange(
   return comments.join(" ");
 }
 
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 function isElseIfBranch(node: any, parent: any | undefined): boolean {
   return (
     node &&
@@ -377,6 +380,22 @@ function gatherElseIfCommentText(
   return beforeText;
 }
 
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+function gatherSwitchCaseCommentText(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+): string {
+  const lines = sourceCode.lines;
+  const startLine = node.loc.start.line;
+  let i = startLine - PRE_COMMENT_OFFSET;
+  const comments: string[] = [];
+  while (i >= 0 && /^\s*(\/\/|\/\*)/.test(lines[i])) {
+    comments.unshift(lines[i].trim());
+    i--;
+  }
+  return comments.join(" ");
+}
+
 /**
  * Gather leading comment text for a branch node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
@@ -395,21 +414,10 @@ export function gatherBranchCommentText(
    * @req REQ-TRACEABILITY-SWITCHCASE-COMMENTS - Trace collection of preceding comments for SwitchCase
    */
   if (node.type === "SwitchCase") {
-    const lines = sourceCode.lines;
-    const startLine = node.loc.start.line;
-    let i = startLine - PRE_COMMENT_OFFSET;
-    const comments: string[] = [];
-    // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-    // @req REQ-TRACEABILITY-WHILE - Trace while loop that collects preceding comments for SwitchCase
-    while (i >= 0 && /^\s*(\/\/|\/\*)/.test(lines[i])) {
-      comments.unshift(lines[i].trim());
-      i--;
-    }
-    return comments.join(" ");
+    return gatherSwitchCaseCommentText(sourceCode, node);
   }
 
   const beforeComments = sourceCode.getCommentsBefore(node) || [];
-
   const beforeText = beforeComments.map(extractCommentValue).join(" ");
 
   if (node.type === "CatchClause") {
@@ -424,6 +432,21 @@ export function gatherBranchCommentText(
    */
   if (node.type === "IfStatement") {
     return gatherElseIfCommentText(sourceCode, node, parent, beforeText);
+  }
+
+  /**
+   * Conditional branch for loop nodes that may include annotations either on the loop
+   * statement itself or at the top of the loop body, allowing flexible placement.
+   * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-ANNOTATION REQ-LOOP-PLACEMENT-FLEXIBLE
+   */
+  if (
+    node.type === "ForStatement" ||
+    node.type === "ForInStatement" ||
+    node.type === "ForOfStatement" ||
+    node.type === "WhileStatement" ||
+    node.type === "DoWhileStatement"
+  ) {
+    return gatherLoopCommentText(sourceCode, node, beforeText);
   }
 
   return beforeText;
@@ -522,193 +545,4 @@ export function reportMissingReq(
   }
 }
 
-/**
- * Compute the base indent and insert position for a branch node, including
- * special handling for CatchClause bodies.
- * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
- * @supports REQ-ANNOTATION-PARSING
- * @supports REQ-DUAL-POSITION-DETECTION
- */
-/**
- * Compute indentation and insert position for the start of a given 1-based line
- * number. This keeps indentation and fixer insert positions consistent across
- * branch helpers that need to align auto-inserted comments with existing
- * source formatting.
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ANNOTATION-PARSING
- */
-function getIndentAndInsertPosForLine(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  line: number,
-  fallbackIndent: string,
-): { indent: string; insertPos: number } {
-  const lines = sourceCode.lines;
-  let indent = fallbackIndent;
-
-  if (line >= 1 && line <= lines.length) {
-    const rawLine = lines[line - 1];
-    indent = rawLine.match(/^(\s*)/)?.[1] || fallbackIndent;
-  }
-
-  const insertPos = sourceCode.getIndexFromLoc({
-    line,
-    column: 0,
-  });
-
-  return { indent, insertPos };
-}
-
-function getBaseBranchIndentAndInsertPos(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-): { indent: string; insertPos: number } {
-  let { indent, insertPos } = getIndentAndInsertPosForLine(
-    sourceCode,
-    node.loc.start.line,
-    "",
-  );
-
-  if (node.type === "CatchClause" && node.body) {
-    const bodyNode: any = node.body;
-    const bodyStatements: any[] | undefined = Array.isArray(bodyNode.body)
-      ? bodyNode.body
-      : undefined;
-    const firstStatement: any | undefined =
-      bodyStatements && bodyStatements.length > 0
-        ? bodyStatements[0]
-        : undefined;
-
-    if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
-      const firstLine = firstStatement.loc.start.line;
-      const firstLineInfo = getIndentAndInsertPosForLine(
-        sourceCode,
-        firstLine,
-        "",
-      );
-
-      indent = firstLineInfo.indent;
-      insertPos = firstLineInfo.insertPos;
-    } else if (bodyNode.loc && bodyNode.loc.start) {
-      const blockLine = bodyNode.loc.start.line;
-      const blockLineInfo = getIndentAndInsertPosForLine(
-        sourceCode,
-        blockLine,
-        "",
-      );
-      const innerIndent = `${blockLineInfo.indent}  `;
-
-      indent = innerIndent;
-      insertPos = blockLineInfo.insertPos;
-    }
-  }
-
-  return { indent, insertPos };
-}
-
-/**
- * Compute annotation-related metadata for a branch node.
- * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
- * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports REQ-DUAL-POSITION-DETECTION
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
- */
-function getBranchAnnotationInfo(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-  parent?: any,
-): {
-  missingStory: boolean;
-  missingReq: boolean;
-  indent: string;
-  insertPos: number;
-} {
-  const text = gatherBranchCommentText(sourceCode, node, parent);
-  const hasSupports = /@supports\b/.test(text);
-  const missingStory = !/@story\b/.test(text) && !hasSupports;
-  const missingReq = !/@req\b/.test(text) && !hasSupports;
-
-  let { indent, insertPos } = getBaseBranchIndentAndInsertPos(sourceCode, node);
-
-  if (
-    isElseIfBranch(node, parent) &&
-    node.consequent &&
-    node.consequent.type === "BlockStatement" &&
-    node.consequent.loc &&
-    node.consequent.loc.start
-  ) {
-    // For else-if blocks, align auto-fix comments with Prettier's tendency to place comments
-    // inside the wrapped block body; non-block consequents intentionally keep the default behavior.
-    const commentLine = node.consequent.loc.start.line + 1;
-    const commentLineInfo = getIndentAndInsertPosForLine(
-      sourceCode,
-      commentLine,
-      indent,
-    );
-
-    indent = commentLineInfo.indent;
-    insertPos = commentLineInfo.insertPos;
-  }
-
-  return { missingStory, missingReq, indent, insertPos };
-}
-
-/**
- * Report missing annotations on a branch node.
- * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
- * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports REQ-DUAL-POSITION-DETECTION
- */
-export function reportMissingAnnotations(
-  context: Rule.RuleContext,
-  node: any,
-  storyFixCountRef: { count: number },
-): void {
-  const sourceCode = context.getSourceCode();
-
-  /**
-   * Determine the direct parent of the node using the parent reference on the node.
-   * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
-   * @supports REQ-DUAL-POSITION-DETECTION
-   */
-  const parent = (node as any).parent;
-
-  const { missingStory, missingReq, indent, insertPos } =
-    getBranchAnnotationInfo(sourceCode, node, parent);
-
-  const actions: Array<{ missing: boolean; fn: Function; args: any[] }> = [
-    {
-      missing: missingStory,
-      fn: reportMissingStory,
-      args: [context, node, { indent, insertPos, storyFixCountRef }],
-    },
-    {
-      missing: missingReq,
-      fn: reportMissingReq,
-      args: [context, node, { indent, insertPos, missingStory }],
-    },
-  ];
-
-  /**
-   * Process a single action from the actions array.
-   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-TRACEABILITY-ACTIONS-FOREACH - Trace processing of actions array to report missing annotations
-   */
-  function processAction(item: {
-    missing: boolean;
-    fn: Function;
-    args: any[];
-  }) {
-    /**
-     * Callback invoked for each action to decide and execute reporting.
-     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-     * @req REQ-TRACEABILITY-FOR-EACH-CALLBACK - Trace callback handling for each action item
-     */
-    if (item.missing) {
-      item.fn(...item.args);
-    }
-  }
-
-  actions.forEach(processAction);
-}
+export { reportMissingAnnotations };

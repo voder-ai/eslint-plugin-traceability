@@ -34,6 +34,7 @@ interface ReportOptions {
   autoFixToggle?: boolean;
 }
 
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 function getAnnotationTemplate(override?: string): string {
   if (typeof override === "string" && override.trim().length > 0) {
     return override.trim();
@@ -52,6 +53,7 @@ function shouldApplyAutoFix(autoFix: boolean | undefined): boolean {
  * Build the effective annotation template and autofix toggle
  * from the provided report options.
  */
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 function buildTemplateConfig(options?: ReportOptions): {
   effectiveTemplate: string;
   allowFix: boolean;
@@ -62,6 +64,85 @@ function buildTemplateConfig(options?: ReportOptions): {
   const allowFix = shouldApplyAutoFix(options?.autoFixToggle);
 
   return { effectiveTemplate, allowFix };
+}
+
+/**
+ * Determine whether a node represents an anonymous arrow function expression
+ * where the parent variable declarator has no explicit Identifier name.
+ *
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
+ */
+function isAnonymousArrowFunction(node: any): boolean {
+  return !!node && node.type === "ArrowFunctionExpression";
+}
+
+/**
+ * Determine whether a function-like node is nested within another function.
+ *
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-NESTED-FUNCTION-INHERITANCE
+ */
+function isNestedFunction(node: any): boolean {
+  let current = node?.parent;
+  while (current) {
+    if (
+      current.type === "FunctionDeclaration" ||
+      current.type === "FunctionExpression" ||
+      current.type === "ArrowFunctionExpression" ||
+      current.type === "MethodDefinition" ||
+      current.type === "TSDeclareFunction" ||
+      current.type === "TSMethodSignature"
+    ) {
+      return true;
+    }
+    current = current.parent;
+  }
+  return false;
+}
+
+/**
+ * Determine whether a function-like node is effectively anonymous for the
+ * purposes of nested-function inheritance. Named functions must always carry
+ * their own annotations, while anonymous nested functions may inherit.
+ *
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-NESTED-FUNCTION-INHERITANCE
+ */
+function isEffectivelyAnonymousFunction(node: any): boolean {
+  const name = getContainerKeyOrIdName(node) ?? getDirectIdentifierName(node);
+  if (typeof name === "string" && name.length > 0 && name !== "(anonymous)") {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Determine whether a function node is required to carry its own annotation
+ * according to Story 004.0-DEV-BRANCH-ANNOTATIONS rules.
+ *
+ * - Anonymous arrow functions used as callbacks are excluded from
+ *   function-level annotation requirements.
+ * - Named arrow functions must be annotated.
+ * - Nested anonymous functions may inherit their parent function's
+ *   annotation and therefore are not required to be annotated directly.
+ * - Named nested functions must always carry their own explicit annotations.
+ *
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED REQ-NESTED-FUNCTION-INHERITANCE
+ */
+function requiresOwnFunctionAnnotation(node: any): boolean {
+  // Anonymous arrow functions used as callbacks are excluded from function-level
+  // requirements when they are nested inside another function or method.
+  if (
+    isAnonymousArrowFunction(node) &&
+    isNestedFunction(node) &&
+    isEffectivelyAnonymousFunction(node)
+  ) {
+    return false;
+  }
+
+  if (isNestedFunction(node) && isEffectivelyAnonymousFunction(node)) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -141,6 +222,7 @@ function leadingCommentsHasStory(node: any): boolean {
  */
 function hasStoryAnnotation(sourceCode: any, node: any): boolean {
   try {
+    // Direct, node-local checks always apply first.
     if (jsdocHasStory(sourceCode, node)) {
       return true;
     }
@@ -150,13 +232,24 @@ function hasStoryAnnotation(sourceCode: any, node: any): boolean {
     if (leadingCommentsHasStory(node)) {
       return true;
     }
-    if (linesBeforeHasStory(sourceCode, node)) {
+    if (!isNestedFunction(node) && linesBeforeHasStory(sourceCode, node)) {
       return true;
     }
-    if (parentChainHasStory(sourceCode, node)) {
+
+    const canInherit =
+      isNestedFunction(node) && isEffectivelyAnonymousFunction(node);
+
+    // Only nodes that are allowed to inherit annotations (e.g., nested anonymous
+    // callbacks) may treat parent-chain comments or broad fallback text as
+    // satisfying the annotation requirement.
+    if (canInherit && parentChainHasStory(sourceCode, node)) {
       return true;
     }
-    if (fallbackTextBeforeHasStory(sourceCode, node)) {
+    if (canInherit && fallbackTextBeforeHasStory(sourceCode, node)) {
+      return true;
+    }
+
+    if (canInherit) {
       return true;
     }
   } catch (error) {
@@ -285,11 +378,22 @@ function extractName(node: any): string {
   return "(anonymous)";
 }
 
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 function shouldProcessNode(
   node: any,
   scope: string[],
   exportPriority: string = "all",
 ): boolean {
+  if (
+    node &&
+    (node.type === "FunctionDeclaration" ||
+      node.type === "FunctionExpression" ||
+      node.type === "ArrowFunctionExpression") &&
+    !requiresOwnFunctionAnnotation(node)
+  ) {
+    return false;
+  }
+
   if (!scope.includes(node.type)) {
     return false;
   }
@@ -344,6 +448,7 @@ function resolveAnnotationTargetNode(
   return passedTarget ?? resolveTargetNode(sourceCode, node);
 }
 
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 function reportMissing(
   context: Rule.RuleContext,
   sourceCode: any,
@@ -368,6 +473,7 @@ function reportMissing(
   );
 }
 
+/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 function reportMethod(
   context: Rule.RuleContext,
   sourceCode: any,

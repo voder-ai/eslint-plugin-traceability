@@ -16,7 +16,8 @@ const ruleTester = new RuleTester({
   languageOptions: tsRuleTesterLanguageOptions,
 } as any);
 
-describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", () => {
+describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+() => {
   ruleTester.run("require-story-annotation", rule, {
     valid: [
       {
@@ -58,8 +59,12 @@ declare function tsDecl(): void;`,
 }`,
       }),
       {
-        name: "[REQ-ANNOTATION-REQUIRED] unannotated arrow function allowed by default",
-        code: `const arrowFn = () => {};`,
+        name: "[REQ-ARROW-FUNCTION-EXCLUDED] anonymous arrow callback in higher-order function is allowed without annotation",
+        code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction mapValues(items) {\n  return items.map(() => {\n    return 1;\n  });\n}`,
+      },
+      {
+        name: "[REQ-NESTED-FUNCTION-INHERITANCE] anonymous inner function inherits outer annotation",
+        code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  const inner = function() {\n    return 1;\n  };\n  return inner();\n}`,
       },
     ],
     invalid: [
@@ -145,6 +150,38 @@ declare function tsDecl(): void;`,
           },
         ],
       }),
+      {
+        name: "[REQ-ARROW-FUNCTION-EXCLUDED] named arrow function must be annotated",
+        code: `const handler = () => {};`,
+        output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst handler = () => {};`,
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'handler', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst handler = () => {};`,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "[REQ-NESTED-FUNCTION-INHERITANCE] named inner function inside annotated outer must still be annotated",
+        code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  function innerNamed() {\n    return 1;\n  }\n  return innerNamed();\n}`,
+        output: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction innerNamed() {\n    return 1;\n  }\n  return innerNamed();\n}`,
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'innerNamed', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction innerNamed() {\n    return 1;\n  }\n  return innerNamed();\n}`,
+              },
+            ],
+          },
+        ],
+      },
     ],
   });
 
@@ -158,11 +195,6 @@ declare function tsDecl(): void;`,
       {
         name: "[exportPriority] exported with annotation",
         code: `// @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\nexport function exportedAnnotated() {}`,
-        options: [{ exportPriority: "exported" }],
-      },
-      {
-        name: "[exportPriority] exported arrow function missing @story annotation",
-        code: `export const arrowExported = () => {};`,
         options: [{ exportPriority: "exported" }],
       },
     ],
@@ -179,6 +211,23 @@ declare function tsDecl(): void;`,
               {
                 desc: `Add JSDoc @story annotation for function 'exportedMissing', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport function exportedMissing() {}`,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "[exportPriority][REQ-ARROW-FUNCTION-EXCLUDED] exported named arrow function must be annotated",
+        code: `export const arrowExported = () => {};`,
+        output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport const arrowExported = () => {};`,
+        options: [{ exportPriority: "exported" }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add JSDoc @story annotation for function 'arrowExported', e.g., /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport const arrowExported = () => {};`,
               },
             ],
           },
