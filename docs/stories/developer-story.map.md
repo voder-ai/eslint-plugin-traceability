@@ -29,11 +29,11 @@
 | **Parser Improvements**                       | -                | -              | 022.0-DEV-JSDOC-COEXISTENCE          | -                                  | -                    |
 | **Test Annotations**                          | -                | -              | 020.0-DEV-TEST-ANNOTATION-VALIDATION | 021.0-DEV-TEST-ANNOTATION-AUTO-FIX | -                    |
 
-| **Release 2.0 (Enhanced Features)** (Future) | **Setup Plugin**            | **Write Code**                        | **Validate Annotations**                    | **Fix Issues**              | **Maintain Quality**      |
-| -------------------------------------------- | --------------------------- | ------------------------------------- | ------------------------------------------- | --------------------------- | ------------------------- |
-| **Advanced Validation**                      | 030.0-DEV-IDE-INTEGRATION   | 031.0-DEV-SMART-SUGGESTIONS           | 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION    | 033.0-DEV-BULK-FIXES        | 034.0-DEV-QUALITY-METRICS |
-| **Developer Experience**                     | 035.0-DEV-PROJECT-TEMPLATES | 036.0-DEV-ANNOTATION-HELPERS          | 032.0-DEV-REAL-TIME-FEEDBACK                | 037.0-DEV-GUIDED-RESOLUTION | 038.0-DEV-DASHBOARD       |
-| **Test Support**                             | -                           | 039.0-DEV-TEST-ANNOTATION-CONVENTIONS | -                                           | -                           | -                         |
+| **Release 2.0 (Enhanced Features)** (Future) | **Setup Plugin**            | **Write Code**                        | **Validate Annotations**                 | **Fix Issues**              | **Maintain Quality**      |
+| -------------------------------------------- | --------------------------- | ------------------------------------- | ---------------------------------------- | --------------------------- | ------------------------- |
+| **Advanced Validation**                      | 030.0-DEV-IDE-INTEGRATION   | 031.0-DEV-SMART-SUGGESTIONS           | 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION | 033.0-DEV-BULK-FIXES        | 034.0-DEV-QUALITY-METRICS |
+| **Developer Experience**                     | 035.0-DEV-PROJECT-TEMPLATES | 036.0-DEV-ANNOTATION-HELPERS          | 032.0-DEV-REAL-TIME-FEEDBACK             | 037.0-DEV-GUIDED-RESOLUTION | 038.0-DEV-DASHBOARD       |
+| **Test Support**                             | -                           | 039.0-DEV-TEST-ANNOTATION-CONVENTIONS | -                                        | -                           | -                         |
 
 ---
 

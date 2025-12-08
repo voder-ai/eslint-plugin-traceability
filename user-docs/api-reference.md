@@ -278,17 +278,17 @@ Options:
 
 The rule accepts an optional configuration object:
 
-- `strictness` (`"conservative" | "balanced" | "aggressive"`, optional) – Controls how eagerly redundancy is inferred.
-  - `"conservative"` – Only removes annotations when they are an exact structural duplicate of their containing scope (same story path and requirement IDs, no extras). Intended to minimize false positives.
-  - `"balanced"` (default) – Treats annotations as redundant when they do not add any **new** requirements or stories beyond what is already declared on the nearest enclosing scope, allowing for minor formatting differences.
-  - `"aggressive"` – Additionally flags cases where the inner annotation merely reorders or partially repeats the same requirement set, or where emphasis-only duplication (such as repeating a single requirement for emphasis) is considered redundant. Use with care in projects that rely heavily on local commentary.
-- `allowEmphasisDuplication` (boolean, optional) – When `true`, allows a statement-level annotation that repeats a **single** requirement or story from its parent purely to emphasize a critical line or edge case (for example, a guard clause that deserves its own comment), even when it would otherwise be considered redundant under the current `strictness`. Defaults to `true`. Set to `false` if you prefer to remove all covered duplicates, including emphasis-style comments.
-- `maxScopeDepth` (number, optional) – Limits how deep the rule will search for covering scopes when deciding whether an annotation is redundant. A depth of `1` (the default) considers only the nearest enclosing function/method or branch. Larger values allow walking further up nested scopes (e.g., inner blocks inside loops inside functions). Increasing this value can find more redundancy but may also make reasoning about coverage more subtle.
-- `alwaysCovered` (string[], optional) – A list of short annotation **aliases** or requirement patterns that your project treats as “implicitly covered” by higher-level documentation (for example, high-level safety or logging requirements that apply to an entire module). Any annotation whose requirement/story ID matches one of these entries is treated as redundant when it appears on simple leaf statements beneath the already-covered area, even if there is no local function-level annotation. Entries are compared as literal strings; pattern-like values (such as `"REQ-LOGGING-*"` or `"REQ-SAFETY"`) are project-specific conventions and are not treated as regular expressions by this rule.
+- `strictness` (`"strict" | "moderate" | "permissive"`, optional)  Controls how broadly statements are considered eligible for redundancy.
+  - `"strict"`  Treats any non-branch statement as a candidate for redundancy once it is covered by a containing annotated scope. This is the most aggressive mode and is useful in codebases that want to push almost all traceability down to function/branch level only.
+  - `"moderate"` (default)  Focuses on obviously leaf-like statements: anything in `alwaysCovered` **plus** bare `ExpressionStatement` nodes (for example, simple calls or assignments) that are not themselves branches. This mode balances redundancy cleanup with readability.
+  - `"permissive"`  Only treats AST node types listed in `alwaysCovered` as candidates. Other statements are ignored even when they are technically covered by an enclosing scope, which is useful when you prefer more explicit, local annotations.
+- `allowEmphasisDuplication` (boolean, optional)  When `true`, allows a statement-level annotation that repeats a **single** fully-covered story/requirement pair from its parent scope purely for emphasis (for example, a guard clause with its own comment) and **does not** report it as redundant. When omitted or `false` (the default), even emphasis-only duplicates are treated as redundant when they add no new coverage.
+- `maxScopeDepth` (number, optional)  Limits how far up the ancestor chain the rule searches for covering scopes when deciding whether a statements annotations are redundant. A value of `1` restricts checks to the immediate parent scope; larger values allow the rule to consider annotations on enclosing branches and functions further up the tree. The default is `3`, which is suitable for most common function and branch nesting patterns, but you can increase it (for example, to `4` or higher) in projects that use additional nested blocks inside annotated functions.
+- `alwaysCovered` (string[], optional)  List of AST statement `node.type` strings that your project treats as "always covered" by their containing scope when that scope is annotated. By default, the rule treats `ReturnStatement` and `VariableDeclaration` as always-covered leaf statements. You can extend or override this list to tune which statement types are considered trivial enough to inherit coverage from their parent scopes.
 
 Behavior notes:
 
-- The rule only inspects comments that contain recognized traceability annotations (`@story`, `@req`, `@supports`) and are attached to simple statements (returns, expression statements, variable declarations, and similar leaf nodes). It intentionally does **not** attempt to de-duplicate annotations on functions, classes, or major branches, which remain the responsibility of the core rules.
+- The rule only inspects comments that contain recognized traceability annotations (`@story`, `@req`, `@supports`) and are attached to simple statements (returns, expression statements, variable declarations, and similar leaf nodes). It intentionally does **not** attempt to de-duplicate annotations on functions, classes, or major branches, which remain the responsibility of the core rules. When a statement has multiple redundant traceability comments (for example, a small comment block that repeats both @story and @req lines), the rule reports a **single** diagnostic for that statement and, in fix mode, removes all of the redundant annotation comments associated with it in a single grouped fix.
 - Auto-fix removes only the redundant traceability lines (and any now-empty comment delimiters when safe) while preserving surrounding non-traceability text in the same comment where possible.
 - When no enclosing scope with compatible coverage is found within `maxScopeDepth`, the annotation is not considered redundant and is left unchanged.
 
@@ -299,8 +299,8 @@ This rule is **not** enabled in the `recommended` or `strict` presets by default
 ```jsonc
 {
   "rules": {
-    "traceability/no-redundant-annotation": "warn"
-  }
+    "traceability/no-redundant-annotation": "warn",
+  },
 }
 ```
 
@@ -742,3 +742,4 @@ In CI:
 
 ```bash
 npm run traceability:verify
+```

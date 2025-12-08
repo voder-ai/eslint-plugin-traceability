@@ -30,6 +30,42 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
       },
     ],
     invalid: [
+      {
+        name: "[REQ-SCOPE-ANALYSIS][REQ-STATEMENT-SIGNIFICANCE] flags redundant annotation on simple return inside annotated if",
+        code: `function example() {
+  // @story docs/stories/004.0-EXAMPLE.story.md
+  // @req REQ-PROCESS
+  if (condition) {
+    /* @story docs/stories/004.0-EXAMPLE.story.md\n     * @req REQ-PROCESS
+     */
+    return value;
+  }
+}`,
+        output: `function example() {
+  // @story docs/stories/004.0-EXAMPLE.story.md
+  // @req REQ-PROCESS
+  if (condition) {
+    return value;
+  }
+}`,
+        errors: [
+          {
+            messageId: "redundantAnnotation",
+          },
+        ],
+      },
+      {
+        name: "[REQ-DUPLICATION-DETECTION] flags redundant annotations on sequential simple statements in same scope",
+        code: `// @story docs/stories/003.0-EXAMPLE.story.md\n// @req REQ-INIT\nfunction init() {\n  // @story docs/stories/003.0-EXAMPLE.story.md\n  // @req REQ-INIT\n  const config = loadConfig();\n  const validator = new Validator(config);\n}`,
+        output: `// @story docs/stories/003.0-EXAMPLE.story.md\n// @req REQ-INIT\nfunction init() {\n  const config = loadConfig();\n  const validator = new Validator(config);\n}`,
+        errors: [{ messageId: "redundantAnnotation" }],
+      },
+      {
+        name: "[REQ-SAFE-REMOVAL] removes full-line redundant comment without touching code on same line above",
+        code: `function example() {\n  const keep = 1;\n  // @story docs/stories/003.0-EXAMPLE.story.md\n  // @req REQ-INIT\n  if (flag) {\n    // @story docs/stories/003.0-EXAMPLE.story.md\n    // @req REQ-INIT\n    const value = 1;\n  }\n}`,
+        output: `function example() {\n  const keep = 1;\n  // @story docs/stories/003.0-EXAMPLE.story.md\n  // @req REQ-INIT\n  if (flag) {\n    const value = 1;\n  }\n}`,
+        errors: [{ messageId: "redundantAnnotation" }],
+      },
       // TODO: rule implementation exists; full invalid-case behavior tests pending refinement
       // {
       //   name: "[REQ-SCOPE-ANALYSIS][REQ-STATEMENT-SIGNIFICANCE] flags redundant annotation on simple return inside annotated if",
@@ -57,6 +93,35 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
       //     { messageId: "redundantAnnotation" },
       //   ],
       // },
+    ],
+  });
+
+  runRule({
+    valid: [
+      {
+        name: "[REQ-CONFIGURABLE-STRICTNESS] permissive mode does not flag expression statements as redundant",
+        options: [{ strictness: "permissive" }],
+        code: `function example() {\n  // @story docs/stories/004.0-EXAMPLE.story.md\n  // @req REQ-PROCESS\n  if (condition) {\n    // @story docs/stories/004.0-EXAMPLE.story.md\n    // @req REQ-PROCESS\n    doSomething();\n  }\n}`,
+      },
+      {
+        name: "[REQ-CONFIGURABLE-STRICTNESS] allowEmphasisDuplication skips single covered pair",
+        options: [{ allowEmphasisDuplication: true }],
+        code: `function example() {\n  // @story docs/stories/004.0-EXAMPLE.story.md\n  // @req REQ-PROCESS\n  if (condition) {\n    // @story docs/stories/004.0-EXAMPLE.story.md\n    // @req REQ-PROCESS\n    return value;\n  }\n}`,
+      },
+      {
+        name: "[REQ-SCOPE-INHERITANCE] maxScopeDepth=1 does not treat grandparent function annotations as covering nested block",
+        options: [{ maxScopeDepth: 1 }],
+        code: `/**\n * @story docs/stories/004.0-EXAMPLE.story.md\n * @req REQ-PROCESS\n */\nfunction example() {\n  if (outer) {\n    {\n      // @story docs/stories/004.0-EXAMPLE.story.md\n      // @req REQ-PROCESS\n      const value = compute();\n    }\n  }\n}`,
+      },
+    ],
+    invalid: [
+      {
+        name: "[REQ-SCOPE-INHERITANCE] maxScopeDepth>1 treats function-level annotations as covering nested block statements",
+        options: [{ maxScopeDepth: 4 }],
+        code: `/**\n * @story docs/stories/004.0-EXAMPLE.story.md\n * @req REQ-PROCESS\n */\nfunction example() {\n  if (outer) {\n    {\n      // @story docs/stories/004.0-EXAMPLE.story.md\n      // @req REQ-PROCESS\n      const value = compute();\n    }\n  }\n}`,
+        output: `/**\n * @story docs/stories/004.0-EXAMPLE.story.md\n * @req REQ-PROCESS\n */\nfunction example() {\n  if (outer) {\n    {\n      const value = compute();\n    }\n  }\n}`,
+        errors: [{ messageId: "redundantAnnotation" }],
+      },
     ],
   });
 });

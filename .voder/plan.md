@@ -1,18 +1,16 @@
 ## NOW
 
-- [ ] Review the redundant-annotation detection story document to extract its acceptance criteria and any explicit “First Action” steps that must guide the implementation of the new rule and utilities.
+- [ ] Reintroduce a single, focused invalid test case for the redundant-annotation rule in the rule test file, based directly on the story’s core example of a simple statement fully covered by its enclosing scope, so that this behavior is specified and ready to drive any needed rule refinements.
 
 ## NEXT
 
-- [ ] Define the precise behavior and configuration surface of the redundant-annotation detection rule based on the story, including how it should interpret scopes, what counts as redundancy, and how autofix should behave.
-- [ ] Add new failing tests that describe the desired behavior for the redundant-annotation detection rule, including unit tests for the rule, tests for the shared annotation-scope utility, and at least one end-to-end integration test that exercises cleanup across multiple files.
-- [ ] Introduce a minimal implementation of the redundant-annotation detection rule and its supporting annotation-scope utility that targets the simplest acceptance criteria first, just enough to make the new tests for the basic cases pass.
-- [ ] Integrate the new rule into the plugin’s public surface (rule map and any recommended configs), ensuring it is discoverable and behaves consistently with existing traceability rules.
-- [ ] Expand the implementation to cover remaining edge cases and acceptance criteria from the story (such as overlaps between file-level and function-level annotations, mixed @story/@supports/@req combinations, and formatter-affected layouts), adjusting tests or adding new ones as needed.
-- [ ] Update user-facing and internal documentation to describe the new rule, its options, examples, and limitations, and then mark the story’s DoD/acceptance criteria as satisfied in the story file.
+- [ ] Expand the invalid test set for the redundant-annotation rule to cover the remaining key acceptance criteria from the story, such as multiple simple statements under a shared scope annotation, mixed @story/@supports/@req combinations, and preservation of non-redundant inner annotations.
+- [ ] Refine the redundant-annotation rule implementation so that all newly added invalid tests pass, including honoring configuration options like strictness, alwaysCovered, allowEmphasisDuplication, and maxScopeDepth as described in the story.
+- [ ] Add at least one integration-level test that runs ESLint with the plugin against multiple files, confirming that redundant annotations are cleaned up consistently across a small synthetic project while required annotations are preserved.
+- [ ] Update the user-facing API reference and any internal rule documentation to accurately describe the final behavior and option semantics of the redundant-annotation rule, and then mark the corresponding acceptance criteria and Definition of Done items as satisfied in the redundant-annotation story file.
 
 ## LATER
 
-- [ ] Assess the performance of redundant-annotation detection on large projects and, if necessary, optimize the annotation-scope utility to avoid repeated traversals or redundant work.
-- [ ] Look for opportunities to share or refactor common logic between the new redundant-annotation rule and existing annotation-detection helpers to reduce duplication while keeping the code easy to understand.
-- [ ] Add additional examples and troubleshooting notes to the user documentation based on early usage of the new rule, such as clarifying how it behaves with legacy annotations or partially migrated code.
+- [ ] Evaluate the performance of the redundant-annotation rule and its scope-analyzer utilities on large, representative projects and, if necessary, optimize scope traversal or comment parsing to avoid redundant work.
+- [ ] Identify and extract any common logic between the redundant-annotation rule and existing annotation-related helpers into shared utilities to reduce duplication without sacrificing clarity.
+- [ ] Augment the user documentation with additional examples and troubleshooting guidance based on real-world usage, clarifying how the rule behaves with legacy annotations, partially migrated code, and different strictness configurations.

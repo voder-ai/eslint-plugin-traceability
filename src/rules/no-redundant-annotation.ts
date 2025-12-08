@@ -178,6 +178,138 @@ function debugScopePairs(scopeNode: any, scopePairs: Set<string>): void {
 }
 
 /**
+ * Walk up enclosing scopes starting from the given scope node and
+ * accumulate all story/requirement pairs, limited by maxScopeDepth.
+ *
+ * This keeps REQ-SCOPE-INHERITANCE and REQ-CONFIGURABLE-STRICTNESS
+ * aligned with the story's configuration model while delegating the
+ * actual comment parsing to getScopePairs.
+ *
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE REQ-CONFIGURABLE-STRICTNESS
+ */
+function collectScopePairs(
+  context: Rule.RuleContext,
+  startingScopeNode: any | undefined,
+  maxScopeDepth: number,
+): Set<string> {
+  const result = new Set<string>();
+
+  if (!startingScopeNode || maxScopeDepth <= 0) {
+    return result;
+  }
+
+  let current: any | undefined = startingScopeNode;
+  let depth = 0;
+
+  while (current && depth < maxScopeDepth) {
+    const parent: any | undefined = (current as any).parent;
+    const pairs = getScopePairs(context, current, parent);
+
+    for (const key of pairs) {
+      result.add(key);
+    }
+
+    current = parent;
+    depth += 1;
+  }
+
+  return result;
+}
+
+/**
+ * Determine whether a statement is redundant relative to the provided
+ * scopePairs and options, and when so return the associated annotation
+ * comments. Returns null when the statement should not be treated as
+ * redundant.
+ *
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-SAFE-REMOVAL REQ-STATEMENT-SIGNIFICANCE REQ-CONFIGURABLE-STRICTNESS
+ */
+function getRedundantStatementContext(
+  context: Rule.RuleContext,
+  stmt: any,
+  scopePairs: Set<string>,
+  options: RedundancyRuleOptions,
+): { comments: any[] } | null {
+  if (scopePairs.size === 0) {
+    return null;
+  }
+
+  if (!isStatementEligibleForRedundancy(stmt, options, DEFAULT_BRANCH_TYPES)) {
+    return null;
+  }
+
+  const stmtComments = getStatementComments(context, stmt);
+  if (stmtComments.length === 0) {
+    return null;
+  }
+
+  const stmtPairs = extractStoryReqPairsFromComments(stmtComments);
+  if (process.env.TRACEABILITY_DEBUG === "1") {
+    console.log(
+      "[no-redundant-annotation] Statement type=%s eligible=%s commentCount=%d pairs=%o",
+      stmt && stmt.type,
+      isStatementEligibleForRedundancy(stmt, options, DEFAULT_BRANCH_TYPES),
+      stmtComments.length,
+      Array.from(stmtPairs),
+    );
+  }
+
+  if (stmtPairs.size === 0) {
+    return null;
+  }
+
+  // When emphasis duplication is allowed, treat a single fully-covered
+  // pair as intentional emphasis and skip reporting.
+  if (options.allowEmphasisDuplication && stmtPairs.size === 1) {
+    if (arePairsFullyCovered(stmtPairs, scopePairs)) {
+      return null;
+    }
+  }
+
+  if (!arePairsFullyCovered(stmtPairs, scopePairs)) {
+    return null;
+  }
+
+  // At this point the statement-level annotations are fully
+  // covered by the parent/ancestor scopes and therefore redundant.
+  const annotationComments = stmtComments.filter((comment) => {
+    const commentText = typeof comment.value === "string" ? comment.value : "";
+    return /@story\b|@req\b|@supports\b/.test(commentText);
+  });
+
+  if (annotationComments.length === 0) {
+    return null;
+  }
+
+  return { comments: annotationComments };
+}
+
+/**
+ * Compute unique removal ranges for the given annotation comments.
+ *
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
+ */
+function getRemovalRangesForAnnotationComments(
+  comments: any[],
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+): [number, number][] {
+  const rangeMap = new Map<string, [number, number]>();
+
+  for (const comment of comments) {
+    const [removalStart, removalEnd] = getCommentRemovalRange(
+      comment,
+      sourceCode,
+    );
+    const key = `${removalStart}:${removalEnd}`;
+    if (!rangeMap.has(key)) {
+      rangeMap.set(key, [removalStart, removalEnd]);
+    }
+  }
+
+  return Array.from(rangeMap.values()).sort((a, b) => b[0] - a[0]);
+}
+
+/**
  * Analyze a block's statements and report redundant traceability annotations.
  *
  * This helper encapsulates the iteration and reporting logic so that the
@@ -192,60 +324,36 @@ function reportRedundantAnnotationsInBlock(
   options: RedundancyRuleOptions,
 ): void {
   const statements: any[] = Array.isArray(blockNode.body) ? blockNode.body : [];
-  if (statements.length === 0) return;
+  if (statements.length === 0 || scopePairs.size === 0) return;
+
+  const sourceCode = context.getSourceCode();
 
   for (const stmt of statements) {
-    if (
-      !isStatementEligibleForRedundancy(stmt, options, DEFAULT_BRANCH_TYPES)
-    ) {
+    const info = getRedundantStatementContext(
+      context,
+      stmt,
+      scopePairs,
+      options,
+    );
+    if (!info) {
       continue;
     }
 
-    const stmtComments = getStatementComments(context, stmt);
-    if (stmtComments.length === 0) {
+    const ranges = getRemovalRangesForAnnotationComments(
+      info.comments,
+      sourceCode,
+    );
+    if (ranges.length === 0) {
       continue;
     }
 
-    const stmtPairs = extractStoryReqPairsFromComments(stmtComments);
-    if (process.env.TRACEABILITY_DEBUG === "1") {
-      console.log(
-        "[no-redundant-annotation] Statement type=%s eligible=%s commentCount=%d pairs=%o",
-        stmt && stmt.type,
-        isStatementEligibleForRedundancy(stmt, options, DEFAULT_BRANCH_TYPES),
-        stmtComments.length,
-        Array.from(stmtPairs),
-      );
-    }
-    if (stmtPairs.size === 0) {
-      continue;
-    }
-
-    if (!arePairsFullyCovered(stmtPairs, scopePairs)) {
-      continue;
-    }
-
-    // At this point the statement-level annotations are fully
-    // covered by the parent scope and therefore redundant.
-    for (const comment of stmtComments) {
-      const commentText =
-        typeof comment.value === "string" ? comment.value : "";
-      if (!/@story\b|@req\b|@supports\b/.test(commentText)) {
-        continue;
-      }
-
-      const [removalStart, removalEnd] = getCommentRemovalRange(
-        comment,
-        context.getSourceCode(),
-      );
-
-      context.report({
-        node: stmt as any,
-        messageId: "redundantAnnotation",
-        fix(fixer) {
-          return fixer.removeRange([removalStart, removalEnd]);
-        },
-      });
-    }
+    context.report({
+      node: stmt as any,
+      messageId: "redundantAnnotation",
+      fix(fixer) {
+        return ranges.map(([start, end]) => fixer.removeRange([start, end]));
+      },
+    });
   }
 }
 
@@ -297,7 +405,6 @@ const rule: Rule.RuleModule = {
       // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-SAFE-REMOVAL
       BlockStatement(node: any) {
         const parent = (node as any).parent;
-        const scopeNode = parent;
 
         if (process.env.TRACEABILITY_DEBUG === "1") {
           console.log(
@@ -307,8 +414,12 @@ const rule: Rule.RuleModule = {
           );
         }
 
-        const scopePairs = getScopePairs(context, scopeNode, scopeNode?.parent);
-        debugScopePairs(scopeNode, scopePairs);
+        const scopePairs = collectScopePairs(
+          context,
+          parent,
+          options.maxScopeDepth,
+        );
+        debugScopePairs(parent, scopePairs);
         if (scopePairs.size === 0) return;
 
         reportRedundantAnnotationsInBlock(context, node, scopePairs, options);
