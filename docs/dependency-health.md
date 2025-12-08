@@ -244,7 +244,7 @@ As of the latest review:
   - `safeUpdates: 0` (all four are currently filtered out by the age threshold)
 - `npm audit --omit=dev --audit-level=high` reports **0 high-severity** vulnerabilities for production dependencies.
 
-The `lint-staged` devDependency has been updated to the current `dry-aged-deps`–recommended version, and there are still no remaining safe upgrade candidates under the configured thresholds.
+The `ts-jest` devDependency has been updated to the current dry-aged-deps–recommended version, and there are still no remaining safe upgrade candidates under the configured thresholds (the four remaining outdated packages are all filtered out by the age threshold).
 
 The previously documented dev-only vulnerabilities in the semantic-release/npm release toolchain have been resolved by upgrading to the current semantic-release/npm stack. The prior vulnerable state is retained solely as a historical incident record in `docs/security-incidents/SECURITY-INCIDENT-2025-11-18-semantic-release-bundled-npm.known-error.md`.
 
