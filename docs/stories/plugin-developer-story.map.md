@@ -16,20 +16,23 @@
 
 ---
 
-# User Story Map with Releases
+# User Story Map with Themes
 
-| **Release 0.6 (Formatter Compatibility)** (Current) | **Setup Dev Environment** | **Develop Features**                                         | **Validate Quality** | **Deploy** | **Maintain** |
-| --------------------------------------------------- | ------------------------- | ------------------------------------------------------------ | -------------------- | ---------- | ------------ |
-| **Core Fixes**                                      | -                         | 024.0-DEV-IGNORE-INLINE-CODE-REFS                            | -                    | -          | -            |
-| **Rule Enhancements**                               | -                         | 025.0-DEV-CATCH-ANNOTATION-POSITION                          | -                    | -          | -            |
-| **Rule Enhancements**                               | -                         | 026.0-DEV-ELSE-IF-ANNOTATION-POSITION                        | -                    | -          | -            |
-| **Planned (Future)**                                | -                         | _Dogfooding - Enable plugin self-validation (not scheduled)_ | -                    | -          | -            |
+| **Formatter Compatibility** (Current) | **Setup Dev Environment** | **Develop Features**                  | **Validate Quality** | **Deploy** | **Maintain** |
+| ------------------------------------- | ------------------------- | ------------------------------------- | -------------------- | ---------- | ------------ |
+| **Core Fixes**                        | -                         | 024.0-DEV-IGNORE-INLINE-CODE-REFS     | -                    | -          | -            |
+| **Rule Enhancements**                 | -                         | 025.0-DEV-CATCH-ANNOTATION-POSITION   | -                    | -          | -            |
+| **Rule Enhancements**                 | -                         | 026.0-DEV-ELSE-IF-ANNOTATION-POSITION | -                    | -          | -            |
+
+| **Quality Foundation** (Future) | **Setup Dev Environment** | **Develop Features**              | **Validate Quality** | **Deploy** | **Maintain** |
+| ------------------------------- | ------------------------- | --------------------------------- | -------------------- | ---------- | ------------ |
+| **Self-Validation**             | -                         | 023.0-MAINT-DOGFOODING-VALIDATION | -                    | -          | -            |
 
 ---
 
-## Release Details
+## Theme Details
 
-### Release 0.6: Formatter Compatibility (Current)
+### Formatter Compatibility (Current)
 
 **Goal**: Ensure the plugin works seamlessly with popular code formatters (Prettier) without creating linting/formatting conflicts that force developers to choose between code quality and traceability.
 **Success Metric**: Codebases using both Prettier and eslint-plugin-traceability can maintain 100% traceability compliance without suppressions, manual formatting fights, or disabling either tool.
@@ -45,15 +48,25 @@
 
 **Note**: Addresses GitHub issue #4 and related Prettier formatting conflicts where formatters move annotations to positions the rule doesn't expect.
 
-### Future Releases (Not Yet Scheduled)
+### Quality Foundation (Future)
 
-**Dogfooding & Self-Validation**: Enable the plugin to enforce its own traceability rules on its codebase. This work has been deferred to a future release to focus on core feature stability and formatter compatibility first.
+**Goal**: Enable the plugin to enforce its own traceability rules on its codebase, demonstrating credibility through dogfooding.
+**Success Metric**: Plugin source code passes all traceability validation rules with minimal suppressions, providing confidence in the plugin's effectiveness.
+**Scope**: Enable self-validation with recommended preset, track and reduce suppressions incrementally.
+
+**Stories by Category:**
+
+- **Self-Validation**: 023.0-MAINT-DOGFOODING-VALIDATION (enable plugin to validate its own annotations)
+
+**Total**: 1 story enabling self-validation and credibility demonstration
+
+**Note**: This work has been deferred to focus on core feature stability and formatter compatibility first.
 
 ---
 
 ## Key Questions for Plugin Developer
 
-### **Release 0.6 Questions:**
+### **Formatter Compatibility Questions:**
 
 **Formatter Compatibility:**
 
@@ -62,9 +75,9 @@
 - Should the plugin provide configuration options for formatter-specific behavior?
 - How do we maintain strict validation while supporting multiple annotation positions?
 
-### **Future Release Questions:**
+### **Quality Foundation Questions:**
 
-**Dogfooding & Self-Validation (Deferred):**
+**Dogfooding & Self-Validation:**
 
 - How should the plugin handle the chicken-and-egg problem of validating its own annotations before the validation rules are fully implemented?
 - What is an acceptable suppression strategy that doesn't compromise code quality while allowing incremental fixes?

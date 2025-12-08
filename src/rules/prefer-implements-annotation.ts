@@ -279,7 +279,7 @@ function hasMultipleStories(storyPaths: Set<string>): boolean {
  *
  * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-AUTO-FIX REQ-VALID-OUTPUT
  */
-function processComment(comment: any, context: Rule.RuleContext): void {
+function processBlockComment(comment: any, context: Rule.RuleContext): void {
   const { hasStory, hasReq, hasImplements, storyPaths } =
     analyzeComment(comment);
 
@@ -313,6 +313,187 @@ function processComment(comment: any, context: Rule.RuleContext): void {
     messageId: "preferImplements",
     fix: fix ?? undefined,
   });
+}
+
+/**
+ * Helpers for processing inline `//` comments that contain legacy
+ * @story + @req patterns.
+ */
+
+type LineComment = { type: "Line" } & any;
+
+function getLinePrefixFromText(fullText: string): string {
+  const match = fullText.match(/^(\s*\/\/\s*)/);
+  return match ? match[1] : "";
+}
+
+function tryBuildInlineAutoFix(
+  context: Rule.RuleContext,
+  comments: LineComment[],
+  storyIndex: number,
+  reqIndices: number[],
+): Rule.ReportFixer | null {
+  const sourceCode = context.getSourceCode();
+
+  const storyComment = comments[storyIndex];
+  const storyNormalized = normalizeCommentLine(storyComment.value || "");
+  if (!storyNormalized || !/^@story\b/.test(storyNormalized)) {
+    return null;
+  }
+
+  const storyParts = storyNormalized.split(/\s+/);
+  if (storyParts.length !== MIN_STORY_TOKENS) {
+    return null;
+  }
+  const storyPath = storyParts[1];
+
+  const reqIds: string[] = [];
+  for (const idx of reqIndices) {
+    const reqComment = comments[idx];
+    const reqNormalized = normalizeCommentLine(reqComment.value || "");
+    if (!reqNormalized || !/^@req\b/.test(reqNormalized)) {
+      return null;
+    }
+    const reqParts = reqNormalized.split(/\s+/);
+    if (reqParts.length !== MIN_REQ_TOKENS) {
+      return null;
+    }
+    reqIds.push(reqParts[1]);
+  }
+
+  if (!reqIds.length) {
+    return null;
+  }
+
+  const fullText = sourceCode.text.slice(
+    storyComment.range[0],
+    storyComment.range[1],
+  );
+  const linePrefix = getLinePrefixFromText(fullText);
+
+  const implAnnotation = `@supports ${storyPath} ${reqIds.join(" ")}`;
+  const implLine = `${linePrefix}${implAnnotation}`;
+
+  const start = storyComment.range[0];
+  const end = comments[reqIndices[reqIndices.length - 1]].range[1];
+
+  return (fixer) => fixer.replaceTextRange([start, end], implLine);
+}
+
+function handleInlineStorySequence(
+  context: Rule.RuleContext,
+  group: LineComment[],
+  startIndex: number,
+): number {
+  const n = group.length;
+  const current = group[startIndex];
+  const normalized = normalizeCommentLine(current.value || "");
+
+  if (!normalized || !/^@story\b/.test(normalized)) {
+    return startIndex + 1;
+  }
+
+  if (/^@supports\b/.test(normalized)) {
+    return startIndex + 1;
+  }
+
+  const storyIndex = startIndex;
+  const reqIndices: number[] = [];
+  let j = startIndex + 1;
+
+  while (j < n) {
+    const next = group[j];
+    const nextNormalized = normalizeCommentLine(next.value || "");
+    if (!nextNormalized || /^@supports\b/.test(nextNormalized)) {
+      break;
+    }
+    if (/^@req\b/.test(nextNormalized)) {
+      reqIndices.push(j);
+      j += 1;
+      continue;
+    }
+    break;
+  }
+
+  if (reqIndices.length === 0) {
+    context.report({
+      node: current as any,
+      messageId: "preferImplements",
+    });
+    return startIndex + 1;
+  }
+
+  const fix = tryBuildInlineAutoFix(context, group, storyIndex, reqIndices);
+
+  if (fix) {
+    context.report({
+      node: current as any,
+      messageId: "preferImplements",
+      fix,
+    });
+  } else {
+    context.report({
+      node: current as any,
+      messageId: "preferImplements",
+    });
+  }
+
+  return reqIndices[reqIndices.length - 1] + 1;
+}
+
+function processInlineGroup(
+  context: Rule.RuleContext,
+  group: LineComment[],
+): void {
+  if (group.length === 0) return;
+
+  const n = group.length;
+  let i = 0;
+
+  while (i < n) {
+    const current = group[i];
+    const normalized = normalizeCommentLine(current.value || "");
+    if (!normalized || !/^@story\b/.test(normalized)) {
+      i += 1;
+      continue;
+    }
+
+    i = handleInlineStorySequence(context, group, i);
+  }
+}
+
+/**
+ * Scan sequences of Line comments for inline legacy @story/@req patterns and
+ * report diagnostics and optional auto-fixes.
+ */
+function processInlineComments(
+  context: Rule.RuleContext,
+  lineComments: LineComment[],
+): void {
+  if (!lineComments.length) return;
+
+  // Group by contiguous line numbers
+  let group: LineComment[] = [lineComments[0]];
+
+  const flushGroup = () => {
+    processInlineGroup(context, group);
+    group = [];
+  };
+
+  for (let idx = 1; idx < lineComments.length; idx++) {
+    const prev = lineComments[idx - 1];
+    const curr = lineComments[idx];
+    if (
+      curr.loc.start.line === prev.loc.start.line + 1 &&
+      curr.loc.start.column === prev.loc.start.column
+    ) {
+      group.push(curr);
+    } else {
+      flushGroup();
+      group.push(curr);
+    }
+  }
+  flushGroup();
 }
 
 /**
@@ -399,11 +580,18 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
       Program() {
         const comments = sourceCode.getAllComments() || [];
 
-        comments
-          .filter((comment: any) => comment.type === "Block")
-          .forEach((comment: any) => {
-            processComment(comment, context);
-          });
+        const blockComments = comments.filter(
+          (comment: any) => comment.type === "Block",
+        );
+        blockComments.forEach((comment: any) => {
+          processBlockComment(comment, context);
+        });
+
+        const lineComments = comments.filter(
+          (comment: any) => comment.type === "Line",
+        ) as LineComment[];
+
+        processInlineComments(context, lineComments);
       },
     };
   },

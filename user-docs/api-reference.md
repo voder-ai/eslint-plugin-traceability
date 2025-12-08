@@ -349,7 +349,7 @@ Main behaviors:
 Deliberate non‑targets and ignored comments:
 
 - JSDoc blocks that contain **only** `@story`, **only** `@req`, or **only** `@supports` are **not** modified by this rule. They remain valid and continue to be governed solely by the core rules such as `require-story-annotation`, `require-req-annotation`, and `valid-annotation-format`.
-- Inline or line comments like `// @story ...`, `// @req ...`, or `// @supports ...` are intentionally ignored by this migration helper; they are still checked by the underlying validation rules where applicable.
+- Inline or line comments like `// @story ...`, `// @req ...`, or `// @supports ...` are also supported in a limited, migration‑oriented way: when the rule detects a simple, consecutive pair or small run of `// @story ...` and `// @req ...` lines that are directly attached to a function or branch, it can, in `--fix` mode, consolidate them into a single `// @supports ...` line while preserving indentation and the comment’s relative position next to the code. More complex inline patterns (such as mixed traceability and non‑traceability content, multiple distinct stories, or interleaved unrelated comments) are still reported without auto‑fix for safety. As with JSDoc migration, this behavior is opt‑in: the rule remains disabled by default and must be explicitly enabled with your desired severity when you are ready to start migrating inline annotations.
 - Any block that does not match the “single story + simple requirements, no supports” shape is treated conservatively: the rule may report a diagnostic to flag the legacy/mixed pattern, but it will not rewrite comments unless it is clearly safe.
 
 Interaction with other rules:
