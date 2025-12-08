@@ -117,4 +117,18 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
     expect(ruleIds).toContain("traceability/require-story-annotation");
     expect(ruleIds).toContain("traceability/require-req-annotation");
   });
+
+  it("[REQ-PRESETS-CANONICAL-RULE] strict preset surfaces unified and legacy diagnostics together for missing annotations", async () => {
+    const result = await lintTextWithConfig(
+      codeMissingAll,
+      "example.js",
+      configs.strict,
+    );
+
+    const ruleIds = result.messages.map((m) => m.ruleId).sort();
+
+    expect(ruleIds).toContain("traceability/require-traceability");
+    expect(ruleIds).toContain("traceability/require-story-annotation");
+    expect(ruleIds).toContain("traceability/require-req-annotation");
+  });
 });
