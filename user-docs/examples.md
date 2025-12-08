@@ -47,13 +47,21 @@ You can use the plugin without a config file by specifying rules inline:
 
 ```bash
 npx eslint --no-eslintrc \
+  --rule "traceability/require-traceability:error" \
+  sample.js
+```
+
+This uses the unified function-level rule, which enforces both story and requirement coverage via `@supports` (preferred) or legacy `@story`/`@req` annotations. If you need to keep older configurations that refer to the legacy keys, you can still enable them explicitly:
+
+```bash
+npx eslint --no-eslintrc \
   --rule "traceability/require-story-annotation:error" \
   --rule "traceability/require-req-annotation:error" \
   sample.js
 ```
 
 - `--no-eslintrc` tells ESLint to ignore user configs.
-- `--rule` options enable the traceability rules you need.
+- `--rule` options enable the unified rule or legacy aliases as needed.
 
 Replace `sample.js` with your JavaScript or TypeScript file.
 
