@@ -245,6 +245,32 @@ describe(
       },
     );
 
+    it(
+      "[REQ-SAFE-REMOVAL] computes removal range for full-line comment with standalone CR newline",
+      () => {
+        const source =
+          "const x = 1;\r// @story docs/stories/001.story.md\rconst y = 2;\r";
+        const sourceCode = {
+          getText() {
+            return source;
+          },
+        } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+
+        const start = source.indexOf("// @story");
+        const end = start + "// @story docs/stories/001.story.md".length;
+        const comment = { range: [start, end] };
+
+        const [removalStart, removalEnd] = getCommentRemovalRange(
+          comment,
+          sourceCode,
+        );
+        const removed =
+          source.slice(0, removalStart) + source.slice(removalEnd);
+
+        expect(removed).toBe("const x = 1;\rconst y = 2;\r");
+      },
+    );
+
     it("[REQ-SAFE-REMOVAL] computes removal range for inline comment", () => {
       const source =
         "const x = 1; // @story docs/stories/001.story.md\nconst y = 2;\n";
