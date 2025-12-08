@@ -27,24 +27,21 @@ const rule: Rule.RuleModule = {
     type: "problem",
     docs: {
       description:
-        "Require @story and @req (or @supports) annotations on functions and methods",
+        "Require both story and requirement traceability annotations on functions and methods via the unified alias rule",
       recommended: "error",
     },
-    hasSuggestions:
-      Boolean(storyRule.meta?.hasSuggestions) ||
-      Boolean(reqRule.meta?.hasSuggestions),
-    fixable:
-      (storyRule.meta && storyRule.meta.fixable) ||
-      (reqRule.meta && reqRule.meta.fixable) ||
-      undefined,
+    hasSuggestions: true,
+    fixable: undefined,
     messages: {
+      // Unified messageId for potential future direct use by this rule.
+      missingTraceability:
+        "Function '{{name}}' must declare both story and requirement traceability annotations.",
+      // Preserve underlying rule messageIds so that composed listeners can
+      // continue to report using their original IDs.
       ...(storyRule.meta?.messages ?? {}),
       ...(reqRule.meta?.messages ?? {}),
     },
-    schema:
-      (storyRule.meta && storyRule.meta.schema) ??
-      (reqRule.meta && reqRule.meta.schema) ??
-      [],
+    schema: [],
   },
 
   create(context) {

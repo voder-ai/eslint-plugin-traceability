@@ -37,6 +37,7 @@ describe("CLI Integration (Story 001.0-DEV-PLUGIN-SETUP)", () => {
       name: "does not report error when @story annotation is present",
       code: `/**
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
  */
 function foo() {}`,
       rule: "traceability/require-story-annotation:error",
