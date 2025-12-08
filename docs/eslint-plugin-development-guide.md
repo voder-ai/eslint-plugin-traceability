@@ -521,15 +521,3 @@ Plugin development in this repo is protected by the same security and dependency
 - [@typescript-eslint/utils](https://typescript-eslint.io/packages/utils/)
 - [ESLint RuleTester](https://eslint.org/docs/latest/integrate/nodejs-api#ruletester)
 
-## Dogfooding and Self-Validation
-
-This repository dogfoods its own traceability rules by enabling them directly in its root `eslint.config.js`, starting with `traceability/require-story-annotation` and extending to additional rules over time. Enablement follows an incremental, one-rule-at-a-time strategy so that existing violations can be handled with explicit, trackable suppressions rather than blocking development.
-
-Suppressions introduced during dogfooding are reported and monitored via `npm run report:eslint-suppressions`, which provides visibility into where and why rules are currently bypassed. Removing these suppressions is treated as ongoing quality and maintenance work, separate from the initial rule enablement, so that rules can be turned on early without requiring an immediate full clean-up.
-
-Dogfooding itself is validated through automated tests and CI:
-
-- `tests/integration/dogfooding-validation.test.ts` asserts that the plugin is correctly wired into this repo’s ESLint configuration and that key dogfooding guarantees hold.
-- The existing CI pipeline, specifically `npm run lint` as part of `npm run ci-verify:full`, ensures that dogfooding configuration remains valid and that new changes do not silently break self-enforcement.
-
-This approach and its rationale are documented in Story `docs/stories/023.0-MAINT-DOGFOODING-VALIDATION.story.md` and address Problem `docs/problems/001-plugin-not-enforcing-own-traceability-rules.open.md`, ensuring the plugin continuously enforces the same traceability standards it provides to downstream users.
