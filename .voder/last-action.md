@@ -1,372 +1,257 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: find_files with input: {"pattern":"*annotation*","directory":"src"}
-Used tool: read_file with input: {"filePath":"/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-checker.ts"}
-Used tool: find_files with input: {"pattern":"*annotation-checker*","directory":"tests"}
-Used tool: search_file_content with input: {"filePath":"tests","pattern":"annotation-checker","isRegex":false}
-Used tool: read_file with input: {"filePath":"/Users/tomhoward/Projects/eslint-plugin-traceability/tests/utils/annotation-checker-branches.test.ts"}
-Used tool: read_file with input: {"filePath":"/Users/tomhoward/Projects/eslint-plugin-traceability/tests/utils/annotation-checker.test.ts"}
-Used tool: read_file with input: {"filePath":"/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/annotation-scope-analyzer.ts"}
-Used tool: find_files with input: {"pattern":"*annotation-scope-analyzer*","directory":"tests"}
-Used tool: read_file with input: {"filePath":"/Users/tomhoward/Projects/eslint-plugin-traceability/tests/utils/annotation-scope-analyzer.test.ts"}
-Used tool: read_file with input: {"filePath":"/Users/tomhoward/Projects/eslint-plugin-traceability/src/utils/reqAnnotationDetection.ts"}
-Used tool: read_file with input: {"filePath":"/Users/tomhoward/Projects/eslint-plugin-traceability/src/rules/helpers/require-story-utils.ts","startLine":1,"endLine":220}
-Used tool: read_file with input: {"filePath":"package.json"}
+**Action:** Used tool: list_directory with input: {"dirPath":"."}
+Used tool: list_directory with input: {"dirPath":"user-docs"}
+Used tool: read_file with input: {"filePath":"README.md"}
+Used tool: read_file with input: {"filePath":"user-docs/api-reference.md"}
+Used tool: list_directory with input: {"dirPath":"docs"}
+Used tool: list_directory with input: {"dirPath":"docs/stories"}
+Used tool: read_file with input: {"filePath":"user-docs/examples.md"}
+Used tool: read_file with input: {"filePath":"user-docs/migration-guide.md"}
+Used tool: search_file_content with input: {"filePath":"user-docs/api-reference.md","pattern":"require-traceability","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"user-docs/examples.md","pattern":"require-traceability","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"user-docs/migration-guide.md","pattern":"require-traceability","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"docs/rules/config-presets.md","pattern":"require-traceability","isRegex":false}
+Used tool: find_files with input: {"pattern":"*require-traceability*","directory":"src"}
+Used tool: search_file_content with input: {"filePath":"eslint.config.js","pattern":"require-traceability","isRegex":false}
+Used tool: modify_file with input: {"filePath":"README.md","instruction":"Replace the entire \"### Available Rules\" section (from the line that starts with \"### Available Rules\" down to just before the line that starts with \"Configuration options:\") with an updated section that highlights the unified rule and @supports-first guidance. The new section should be:\n\n\"### Available Rules\n\nThe plugin exposes several rules. For **new configurations**, the unified function-level rule and `@supports` annotations are the canonical choice; the `@story` and `@req` forms remain available primarily for backward compatibility and gradual migration.\n\n- `traceability/require-traceability` \u0013 **Unified function-level traceability rule.** Ensures that in-scope functions and methods have both story coverage and requirement coverage. It accepts either `@supports` (preferred for new code) or legacy `@story` / `@req` annotations and is enabled by default in the plugin's `recommended` and `strict` presets.\n- `traceability/require-story-annotation` \u0013 Legacy function-level rule key that focuses on the **story** side of function-level traceability. It is kept for backward compatibility and is wired to the same underlying engine as `traceability/require-traceability`, so existing configurations that refer to this rule continue to work. New configurations should normally rely on `traceability/require-traceability` instead of enabling this rule directly.\n- `traceability/require-req-annotation` \u0013 Legacy function-level rule key that focuses on the **requirement** side of function-level traceability. Like `traceability/require-story-annotation`, it is retained for backward compatibility and conceptually composes the same checks exposed by `traceability/require-traceability`. New configurations can usually rely on the unified rule alone unless you have specific reasons to tune the legacy keys separately.\n- `traceability/require-branch-annotation` \u0013 Enforces presence of branch annotations on significant control-flow branches (if/else, switch cases, loops, try/catch). Branch annotations can use a single `@supports` line (preferred) or the older `@story`/`@req` pair for backward compatibility. (See the rule documentation in the plugin's user guide.)\n- `traceability/valid-annotation-format` \u0013 Enforces correct format of traceability annotations, including `@supports` (preferred), `@story`, and `@req`. (See the rule documentation in the plugin's user guide.)\n- `traceability/valid-story-reference` \u0013 Validates that story references (whether written via `@story` or embedded in `@supports`) point to existing story files. (See the rule documentation in the plugin's user guide.)\n- `traceability/valid-req-reference` \u0013 Validates that requirement identifiers (whether written via `@req` or embedded in `@supports`) point to existing requirement IDs in your story files. (See the rule documentation in the plugin's user guide.)\n- `traceability/require-test-traceability` \u0013 Enforces traceability conventions in test files by requiring file-level `@supports` annotations, story references in `describe` blocks, and `[REQ-...]` prefixes in `it`/`test` names. (See the rule documentation in the plugin's user guide.)\n- `traceability/no-redundant-annotation` \u0013 Detects and optionally removes redundant traceability annotations on simple leaf statements that are already covered by an enclosing annotated scope. This rule is opt-in and is not enabled in the built-in presets by default.\n- `traceability/prefer-supports-annotation` \u0013 Optional migration helper that recommends converting legacy single-story `@story`/`@req` JSDoc blocks and inline comments into the newer `@supports` format. It is disabled by default and must be explicitly enabled. The legacy rule name `traceability/prefer-implements-annotation` remains available as a deprecated alias. (See the rule documentation in the plugin's user guide.)\n\nConfiguration options: For detailed per-rule options (such as scopes, branch types, and story directory settings), see the individual rule docs in the plugin's user guide and the consolidated [API Reference](user-docs/api-reference.md).\""}
+Used tool: modify_file with input: {"filePath":"user-docs/api-reference.md","instruction":"In the Rules section at the top, immediately after the introductory paragraph that explains @story, @req, and @supports and the paragraph about the `prefer-supports-annotation` rule, add a short \"Function-level rules overview\" subsection that clearly describes `traceability/require-traceability` as the canonical rule and positions `traceability/require-story-annotation` and `traceability/require-req-annotation` as legacy aliases. The text should be:\n\n\"### Function-level rules overview\n\nFor function-level traceability, the plugin exposes a unified rule and two legacy keys:\n\n- `traceability/require-traceability` is the **canonical function-level rule** for new configurations. It ensures functions and methods have both story coverage and requirement coverage, and it accepts either `@supports` (preferred) or legacy `@story` / `@req` annotations.\n- `traceability/require-story-annotation` and `traceability/require-req-annotation` are **backward-compatible aliases** that focus on the story and requirement aspects separately. They are retained for existing configurations and share the same underlying implementation model as the unified rule, but new ESLint configs should normally rely on `traceability/require-traceability` rather than enabling these legacy keys directly.\n\nAll three rule keys can still be configured individually if you need fine-grained control (for example, to tune severities separately), but the recommended and strict presets enable `traceability/require-traceability` by default and keep the legacy keys primarily for projects that adopted them before the unified rule existed.\"\n\nThen, within the individual rule subsections for `traceability/require-story-annotation` and `traceability/require-req-annotation`, prepend a short bold note to their descriptions clarifying they are legacy keys that map to the same conceptual behavior as the unified rule and that new configs should prefer `traceability/require-traceability`. For example, start the description paragraph with something like:\n\n\"**Legacy function-level key:** This rule key is retained for backward compatibility and conceptually composes the same checks as `traceability/require-traceability`. New configurations should normally enable `traceability/require-traceability` instead and rely on this key only when you need to tune it independently.\""}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
 Used tool: get_git_status with input: {}
-Used tool: read_file with input: {"filePath":"src/utils/annotation-checker.ts"}
-Used tool: search_file_content with input: {"filePath":"src","pattern":"checkReqAnnotation","isRegex":false}
-Used tool: find_files with input: {"pattern":"*.ts","directory":"src"}
-Used tool: run_command with input: {"command":"grep","args":["-n","checkReqAnnotation","-R","src"]}
-Used tool: read_file with input: {"filePath":"src/rules/require-req-annotation.ts"}
-Used tool: modify_file with input: {"filePath":"src/utils/annotation-checker.ts","instruction":"Refactor the reportMissing helper by extracting the construction of the report options into a separate buildMissingReqReportOptions function. The new helper should:\n- Accept (node: any, enableFix: boolean) and return the reportOptions object.\n- Contain the existing logic that:\n  - Derives parentNode from node.parent\n  - Resolves name via getReportedName(node, parentNode)\n  - Resolves nameNode via getNameNodeForReqReport(node)\n  - Builds { node: nameNode, messageId: \"missingReq\", data: { name, functionName: name } }\n  - Conditionally attaches a fix property when enableFix is true using createMissingReqFix(node).\n- Include JSDoc traceability annotations consistent with reportMissing (same stories/requirements).\n\nThen simplify reportMissing to:\n- Take (context: any, node: any, enableFix: boolean = true)\n- Call buildMissingReqReportOptions(node, enableFix) to obtain reportOptions\n- Pass reportOptions directly to context.report(reportOptions)\n\nDo not change any other logic in the file."}
-Used tool: read_file with input: {"filePath":"src/utils/annotation-checker.ts"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--bail","tests/utils/annotation-checker.test.ts","tests/utils/annotation-checker-branches.test.ts"]}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: extract builder for missing @req report options"}
-Used tool: find_files with input: {"pattern":"*branch-annotation-helpers*","directory":"src/utils"}
-Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts"}
-Used tool: read_file with input: {"filePath":"tests/utils/branch-annotation-helpers.test.ts"}
-Used tool: modify_file with input: {"filePath":"tests/utils/branch-annotation-helpers.test.ts","instruction":"Extend the test suite to cover additional branches and helpers in src/utils/branch-annotation-helpers.ts.\n\nWithin the existing describe block, after the current tests, add:\n\n1) A test that exercises extractCommentValue indirectly via gatherSwitchCaseCommentText by:\n   - Creating a fake sourceCode with a lines array containing preceding comment lines for a SwitchCase.\n   - Creating a minimal SwitchCase-like node with loc.start.line set appropriately.\n   - Calling a small wrapper that invokes the unexported gatherSwitchCaseCommentText through gatherBranchCommentText by passing node.type === \"SwitchCase\".\n   - Asserting that the returned text is the trimmed concatenation of the preceding comment lines.\n\n2) A test that exercises gatherBranchCommentText behavior for CatchClause and loop nodes by:\n   - Mocking sourceCode.getCommentsBefore to return comments for a CatchClause, then verifying that gatherBranchCommentText returns those comments when beforeText already contains @story.\n   - Creating a simple loop node (e.g., ForStatement) and stubbing gatherLoopCommentText via jest.mock to return a known string, then asserting gatherBranchCommentText returns that string for the loop node.\n\nEnsure new tests:\n- Import gatherBranchCommentText from the helper module.\n- Keep existing tests unchanged.\n- Maintain JSDoc traceability header as-is and, if adding new describe/it blocks, continue to reference Story 004.0-DEV-BRANCH-ANNOTATIONS and appropriate REQ IDs in the test names where relevant."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--bail","tests/utils/branch-annotation-helpers.test.ts"]}
-Used tool: modify_file with input: {"filePath":"tests/utils/branch-annotation-helpers.test.ts","instruction":"Fix the new tests to construct SourceCode-like stubs whose getCommentsBefore method is defined as a function on the same object that is later passed as the first argument to gatherBranchCommentText.\n\nSpecifically:\n- In the SwitchCase test, define sourceCode first, then call gatherBranchCommentText(sourceCode as any, switchCaseNode as any) respecting the helper's signature (sourceCode first, node second), and ensure sourceCode includes a getCommentsBefore method that returns an empty array.\n- Similarly update the CatchClause/loop test to:\n  - Pass sourceCodeCatch as the first argument and catchNode as the second to gatherBranchCommentText.\n  - Pass sourceCodeLoop as the first argument and forNode as the second.\n- Update expectations accordingly if argument order changes in the test."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--bail","tests/utils/branch-annotation-helpers.test.ts"]}
-Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-loop-helpers.ts"}
-Used tool: modify_file with input: {"filePath":"tests/utils/branch-annotation-helpers.test.ts","instruction":"Update the new tests to match the actual behavior of gatherBranchCommentText and related helpers.\n\nFor the SwitchCase test:\n- Note that gatherSwitchCaseCommentText currently returns comments via lines[i].trim(), and scanCommentLinesInRange returns comments.join(\" \"), so the combined text will use a space separator and preserve the leading // from each line.\n- Adjust the sourceCode.lines and assertion so that:\n  - lines[1] is \"  // @story first part\" and lines[2] is \"  // continuation second part\".\n  - The expected text is \"// @story first part // continuation second part\".\n\nFor the CatchClause/loop test:\n- Recognize that gatherBranchCommentText currently uses beforeComments.map(extractCommentValue).join(\" \"), so the loop test will only see the comments from getCommentsBefore; it does not yet delegate to gatherLoopCommentText.\n- Keep the loop test, but adjust the expectations to match join(\" \") behavior: expected text should be \"@story loop branch story loop details\" and should not rely on gatherLoopCommentText behavior.\n- Ensure both tests pass given the current implementation, without changing production code."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--bail","tests/utils/branch-annotation-helpers.test.ts"]}
-Used tool: modify_file with input: {"filePath":"tests/utils/branch-annotation-helpers.test.ts","instruction":"In the SwitchCase test, adjust the synthetic SourceCode.lines and the SwitchCase node's loc.start.line so they match gatherSwitchCaseCommentText's PRE_COMMENT_OFFSET logic.\n\nSpecifically:\n- Set lines to an array like:\n  [\n    \"// @story first part\",\n    \"// continuation second part\",\n    \"case 1:\",\n  ]\n- Set switchCaseNode.loc.start.line to 3 (so PRE_COMMENT_OFFSET=2 will scan indices 1 and 0).\n- Keep getCommentsBefore returning an empty array.\n- Update the expectation comment if needed, but keep the expected text value as \"// @story first part // continuation second part\"."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--bail","tests/utils/branch-annotation-helpers.test.ts"]}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: extend branch annotation helper coverage"}
-Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:full"]}
+Used tool: git_commit with input: {"message":"docs: document unified traceability rule and legacy aliases"}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":20036193509,"timeout":600000}
+Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
+Used tool: search_file_content with input: {"filePath":"user-docs/examples.md","pattern":"require-story-annotation","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"user-docs/examples.md","pattern":"require-req-annotation","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"user-docs/migration-guide.md","pattern":"require-story-annotation","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"user-docs/migration-guide.md","pattern":"require-req-annotation","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"user-docs/migration-guide.md","pattern":"require-traceability","isRegex":false}
+Used tool: modify_file with input: {"filePath":"user-docs/examples.md","instruction":"In section \"3. CLI Invocation Example\", update the example to show the unified rule as the primary option and mention the legacy keys as alternatives. Replace the existing code block under that heading with the following, and add a short explanatory paragraph afterwards:\n\n\"```bash\nnpx eslint --no-eslintrc \\\n  --rule \"traceability/require-traceability:error\" \\\n  sample.js\n```\n\nThis uses the unified function-level rule, which enforces both story and requirement coverage via `@supports` (preferred) or legacy `@story`/`@req` annotations. If you need to keep older configurations that refer to the legacy keys, you can still enable them explicitly:\n\n```bash\nnpx eslint --no-eslintrc \\\n  --rule \"traceability/require-story-annotation:error\" \\\n  --rule \"traceability/require-req-annotation:error\" \\\n  sample.js\n```\"\n\nKeep the surrounding explanatory bullet points, but adjust the first bullet to say that `--rule` enables the unified rule or legacy aliases as needed."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: get_git_status with input: {}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"docs: emphasize unified traceability rule in docs and examples"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
+Used tool: search_file_content with input: {"filePath":"user-docs/eslint-9-setup-guide.md","pattern":"require-story-annotation","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"user-docs/eslint-9-setup-guide.md","pattern":"require-traceability","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"README.md","pattern":"require-story-annotation","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"README.md","pattern":"require-traceability","isRegex":false}
+Used tool: modify_file with input: {"filePath":"README.md","instruction":"In the \"Plugin Validation\" section near the bottom, update the sample CLI command so that it validates the unified rule instead of just the legacy story rule. Replace the existing example block:\n\n```bash\n# Validate missing @story annotation (should report an error)\nnpx eslint --no-eslintrc --config eslint.config.js sample.js --rule 'traceability/require-story-annotation:error'\n```\n\nwith:\n\n```bash\n# Validate missing function-level traceability (should report an error)\nnpx eslint --no-eslintrc --config eslint.config.js sample.js --rule 'traceability/require-traceability:error'\n```\n\nand immediately after that block, add a short note that legacy keys are still supported, for example:\n\n\"If you have existing configurations that reference the legacy function-level keys, you can also validate them directly by enabling `traceability/require-story-annotation` and `traceability/require-req-annotation` instead.\""}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: get_git_status with input: {}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"docs: update CLI validation example to use unified rule"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
 
 **Response:**
 
 ```
-Here’s what I implemented for the ##NOW and ##NEXT sections, and how it was validated.
+Here’s what I implemented for the ##NOW and ##NEXT items, plus the updated plan.
 
 ---
 
-## What I did
+## Changes Implemented
 
-### NOW: Review annotation-checker helper
+### 1) README rule overview (##NOW – done)
 
-- Examined `src/utils/annotation-checker.ts` plus its tests:
-  - `tests/utils/annotation-checker.test.ts`
-  - `tests/utils/annotation-checker-branches.test.ts`
-- Identified a small, safe refactor opportunity:
-  - The `reportMissing` helper both:
-    - Derived reporting metadata (name, node, data object)
-    - Attached optional autofix handling (`createMissingReqFix`)
-    - Called `context.report` directly
-  - This responsibility could be split so rule implementations or future helpers could reuse the “build report options” logic without duplicating it.
+**File:** `README.md`
 
-This satisfies:
+**What changed:**
 
-- [x] Review the annotation-checker helper implementation to identify small, safe refactoring opportunities that reduce duplication or complexity without changing its externally observed behavior.
+- Rewrote the **“Available Rules”** section so it:
 
----
+  - Clearly highlights the unified rule and @supports-first guidance:
 
-### NEXT (1): Minimal refactor of annotation-checker helper
+    - `traceability/require-traceability` is described as the **unified function-level traceability rule**, preferred for new configurations, accepting `@supports` (preferred) as well as legacy `@story` / `@req`.
 
-**Changes in `src/utils/annotation-checker.ts`:**
+  - Explicitly positions the legacy function-level rules as backward-compatible:
 
-- Extracted the reporting options construction into a new helper:
+    - `traceability/require-story-annotation` is labeled as a **legacy function-level rule key** that shares the same underlying engine as the unified rule, kept for backward compatibility; new configs should use `require-traceability` instead.
+    - `traceability/require-req-annotation` is likewise described as a legacy key focusing on the requirement side, conceptually composing the same checks as the unified rule.
 
-  ```ts
-  /**
-   * Helper to build the report options object for missing traceability annotations.
-   * Uses getNodeName to provide a readable name for the node. @supports is the
-   * preferred format for expressing traceability to one or more requirements and
-   * stories, while @req is treated as a legacy shorthand for single-story usage.
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
-   * @req REQ-ANNOTATION-REPORTING
-   * @req REQ-ERROR-SPECIFIC
-   * @req REQ-ERROR-LOCATION
-   * @req REQ-ERROR-SUGGESTION
-   * @req REQ-ERROR-CONTEXT
-   */
-  function buildMissingReqReportOptions(node: any, enableFix: boolean) {
-    const parentNode = (node as any)?.parent;
-    const name = getReportedName(node, parentNode);
-    const nameNode = getNameNodeForReqReport(node);
-    const reportOptions: any = {
-      node: nameNode,
-      messageId: "missingReq",
-      data: { name, functionName: name },
-    };
+  - Lists the full current rule set, including:
+    - `traceability/require-traceability`
+    - `traceability/require-story-annotation`
+    - `traceability/require-req-annotation`
+    - `traceability/require-branch-annotation`
+    - `traceability/valid-annotation-format`
+    - `traceability/valid-story-reference`
+    - `traceability/valid-req-reference`
+    - `traceability/require-test-traceability`
+    - `traceability/no-redundant-annotation` (explicitly called out as opt-in)
+    - `traceability/prefer-supports-annotation` (described as an optional migration helper with a deprecated alias `prefer-implements-annotation`)
 
-    // Conditionally attach an autofix only when enabled in the rule options.
-    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-AUTOFIX
-    if (enableFix) {
-      reportOptions.fix = createMissingReqFix(node);
-    }
-
-    return reportOptions;
-  }
-  ```
-
-- Simplified `reportMissing` to delegate to this helper:
-
-  ```ts
-  function reportMissing(context: any, node: any, enableFix: boolean = true) {
-    const reportOptions = buildMissingReqReportOptions(node, enableFix);
-    context.report(reportOptions);
-  }
-  ```
-
-- Left all other logic unchanged:
-  - `getFixTargetNode`, `createMissingReqFix`, `getReportedName`, `getNameNodeForReqReport`, and `checkReqAnnotation` behavior is identical.
-  - Existing traceability annotations on the functions were preserved/extended appropriately.
-
-**Verification:**
-
-- Ran focused tests covering this helper:
+- Updated the **“Plugin Validation”** CLI example to use the unified rule:
 
   ```bash
-  npm test -- --runInBand --ci --bail \
-    tests/utils/annotation-checker.test.ts \
-    tests/utils/annotation-checker-branches.test.ts
+  # Validate missing function-level traceability (should report an error)
+  npx eslint --no-eslintrc --config eslint.config.js sample.js --rule 'traceability/require-traceability:error'
   ```
 
-  Both suites passed (9 tests total).
+  And added an explicit note that existing configurations can still validate the legacy keys by enabling `traceability/require-story-annotation` and `traceability/require-req-annotation` instead.
 
-- Committed as:
-
-  - `refactor: extract builder for missing @req report options`
-
-This completes:
-
-- [x] Apply a minimal refactor to the annotation-checker helper based on the review, ensuring its behavior remains identical and the existing focused tests still fully pass.
+This fully satisfies the ##NOW item: the README now presents the unified rule as the primary option and clearly explains the legacy aliases in @supports-first terms.
 
 ---
 
-### NEXT (2 & 3): Select another helper and add targeted tests
+### 2) API reference: unified rule as canonical (##NEXT – done)
 
-I chose `src/utils/branch-annotation-helpers.ts` as another shared helper in the traceability path and focused on branches that previously had limited direct unit coverage.
+**File:** `user-docs/api-reference.md`
 
-**Helper reviewed:**
+**What changed:**
 
-- `src/utils/branch-annotation-helpers.ts`:
-  - `validateBranchTypes`
-  - `gatherBranchCommentText`
-  - Internal helpers for:
-    - SwitchCase comments (`gatherSwitchCaseCommentText`)
-    - CatchClause comments
-    - Else-if comment positioning
-    - Loop comment handling (via `gatherLoopCommentText` from `branch-annotation-loop-helpers`)
+- In the **Rules** section, after the introductory paragraphs about `@story`, `@req`, `@supports`, and `prefer-supports-annotation`, I added a new subsection:
 
-Tests already existed for `validateBranchTypes` in:
+  ```markdown
+  ### Function-level rules overview
 
-- `tests/utils/branch-annotation-helpers.test.ts`
+  For function-level traceability, the plugin exposes a unified rule and two legacy keys:
 
-but did not yet cover the `gatherBranchCommentText` paths directly.
+  - `traceability/require-traceability` is the **canonical function-level rule** for new configurations. It ensures functions and methods have both story coverage and requirement coverage, and it accepts either `@supports` (preferred) or legacy `@story` / `@req` annotations.
+  - `traceability/require-story-annotation` and `traceability/require-req-annotation` are **backward-compatible aliases** that focus on the story and requirement aspects separately. They are retained for existing configurations and share the same underlying implementation model as the unified rule, but new ESLint configs should normally rely on `traceability/require-traceability` rather than enabling these legacy keys directly.
 
-#### New/extended tests
-
-**File updated:**
-
-- `tests/utils/branch-annotation-helpers.test.ts`
-
-Key changes:
-
-1. **Imported the branch comment helper:**
-
-   ```ts
-   import {
-     validateBranchTypes,
-     DEFAULT_BRANCH_TYPES,
-     gatherBranchCommentText,
-   } from "../../src/utils/branch-annotation-helpers";
-   ```
-
-2. **Added SwitchCase coverage:**
-
-   ```ts
-   it(
-     "should gather SwitchCase comment text via gatherBranchCommentText " +
-       "(Story 004.0-DEV-BRANCH-ANNOTATIONS)",
-     () => {
-       // SourceCode-like stub aligned with PRE_COMMENT_OFFSET logic
-       const sourceCode: any = {
-         lines: [
-           "// @story first part",
-           "// continuation second part",
-           "case 1:",
-         ],
-         getCommentsBefore: () => [],
-         getText: jest.fn(),
-       };
-
-       const switchCaseNode: any = {
-         type: "SwitchCase",
-         loc: {
-           start: { line: 3, column: 0 },
-           end: { line: 3, column: 7 },
-         },
-       };
-
-       const text = gatherBranchCommentText(
-         sourceCode as any,
-         switchCaseNode as any,
-       );
-
-       expect(text).toBe("// @story first part // continuation second part");
-     },
-   );
-   ```
-
-   - This exercises the `SwitchCase` branch inside `gatherBranchCommentText`, which internally calls `gatherSwitchCaseCommentText`, which:
-     - Walks upward from `loc.start.line - PRE_COMMENT_OFFSET` while lines are comment-like.
-     - Uses `.trim()` on each line and concatenates them with a space.
-
-3. **Added CatchClause + loop coverage:**
-
-   ```ts
-   it(
-     "should gather comment text for CatchClause and loop nodes via " +
-       "gatherBranchCommentText (Story 004.0-DEV-BRANCH-ANNOTATIONS)",
-     () => {
-       // CatchClause: comments from getCommentsBefore
-       const catchComments = [
-         { type: "Line", value: "@story catch branch story" },
-         { type: "Line", value: "additional info" },
-       ];
-       const sourceCodeCatch: any = {
-         getCommentsBefore: jest.fn().mockReturnValue(catchComments),
-         getText: jest.fn().mockReturnValue("@story existing beforeText"),
-         lines: [],
-       };
-
-       const catchNode: any = {
-         type: "CatchClause",
-         loc: {
-           start: { line: 10, column: 0 },
-           end: { line: 12, column: 1 },
-         },
-       };
-
-       const catchText = gatherBranchCommentText(
-         sourceCodeCatch as any,
-         catchNode as any,
-       );
-       expect(sourceCodeCatch.getCommentsBefore).toHaveBeenCalledWith(catchNode);
-       expect(catchText).toContain("@story catch branch story");
-       expect(catchText).toContain("additional info");
-
-       // Loop node: ForStatement currently uses beforeComments.map(...).join(" ")
-       const loopComments = [
-         { type: "Line", value: "@story loop branch story" },
-         { type: "Block", value: "loop details" },
-       ];
-       const sourceCodeLoop: any = {
-         getCommentsBefore: jest.fn().mockReturnValue(loopComments),
-         getText: jest.fn().mockReturnValue("@story loop beforeText"),
-         lines: [],
-       };
-
-       const forNode: any = {
-         type: "ForStatement",
-         loc: {
-           start: { line: 20, column: 0 },
-           end: { line: 25, column: 1 },
-         },
-       };
-
-       const loopText = gatherBranchCommentText(sourceCodeLoop as any, forNode as any);
-       expect(sourceCodeLoop.getCommentsBefore).toHaveBeenCalledWith(forNode);
-       expect(loopText).toBe("@story loop branch story loop details");
-     },
-   );
-   ```
-
-   - CatchClause path:
-     - Verifies `getCommentsBefore` is invoked.
-     - Confirms `gatherBranchCommentText` returns joined `value` fields.
-   - Loop path (ForStatement):
-     - Matches current implementation where `gatherBranchCommentText` aggregates comments for loop nodes via `beforeComments.map(extractCommentValue).join(" ")` prior to any additional logic.
-     - Ensures we explicitly assert the combined comment string reflecting current behavior.
-
-4. **Traceability:**
-   - File-level JSDoc header remains:
-
-     ```ts
-     /**
-      * Unit tests for branch annotation helpers
-      * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-      * @req REQ-CONFIGURABLE-SCOPE ...
-      * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE
-      */
-     ```
-
-   - New tests reference the story explicitly in their names, aligning with existing conventions.
-
-**Verification for new tests:**
-
-- Ran the new/extended test file alone:
-
-  ```bash
-  npm test -- --runInBand --ci --bail tests/utils/branch-annotation-helpers.test.ts
+  All three rule keys can still be configured individually if you need fine-grained control (for example, to tune severities separately), but the recommended and strict presets enable `traceability/require-traceability` by default and keep the legacy keys primarily for projects that adopted them before the unified rule existed.
   ```
 
-  - After a couple of corrections to match the helper’s real behavior (line indices and concatenation semantics), all 5 tests in this file now pass.
+- In the **`traceability/require-story-annotation`** rule section, I updated the description to start with a clear legacy note:
 
-- Committed as:
+  ```markdown
+  Description: **Legacy function-level key:** This rule key is retained for backward compatibility and conceptually composes the same checks as `traceability/require-traceability`. New configurations should normally enable `traceability/require-traceability` instead and rely on this key only when you need to tune it independently. Ensures every function declaration has a traceability annotation, preferring `@supports` ...
+  ```
 
-  - `test: extend branch annotation helper coverage`
+- In the **`traceability/require-req-annotation`** rule section, I did the same:
 
-This satisfies:
+  ```markdown
+  Description: **Legacy function-level key:** This rule key is retained for backward compatibility and conceptually composes the same checks as `traceability/require-traceability`. New configurations should normally enable `traceability/require-traceability` instead and rely on this key only when you need to tune it independently. Ensures that function-like constructs consistently declare their linked requirements ...
+  ```
 
-- [x] Select another shared helper module involved in traceability checks and perform the same kind of branch-coverage review to identify any untested branches or error paths.
-- [x] Design and add targeted tests for the newly identified branches in that helper so its behavior is explicitly covered and easier to maintain.
+The existing `traceability/require-traceability` section already described it as the unified rule and noted that presets enable it alongside legacy keys, so the above changes complete the picture: unified rule is canonical, legacy keys are clearly identified as aliases with shared behavior.
 
 ---
 
-### Full quality gate and CI
+### 3) Related user-facing docs: examples & migration guide (##NEXT – done)
 
-Before pushing:
+**File:** `user-docs/examples.md`
 
-- Ran the full project quality pipeline locally:
+- In **“3. CLI Invocation Example”**, I switched the primary example to the unified rule and relegated the legacy keys to a compatibility snippet:
 
   ```bash
-  npm run ci-verify:full
+  npx eslint --no-eslintrc \
+    --rule "traceability/require-traceability:error" \
+    sample.js
   ```
 
-  This ran:
+  Followed by:
 
-  - Traceability checks
-  - Safety and audit checks
-  - Build + type-check
-  - Lint (plugin guard + eslint)
-  - Duplication scan
-  - Jest with coverage
-  - Prettier format check
-  - CI artifact checks
+  > This uses the unified function-level rule, which enforces both story and requirement coverage via `@supports` (preferred) or legacy `@story`/`@req` annotations. If you need to keep older configurations that refer to the legacy keys, you can still enable them explicitly:
 
-  All passed successfully.
+  ```bash
+  npx eslint --no-eslintrc \
+    --rule "traceability/require-story-annotation:error" \
+    --rule "traceability/require-req-annotation:error" \
+    sample.js
+  ```
 
-- Pushed to `main` and monitored CI:
+- Adjusted the explanation bullets so that:
 
-  - Latest run `CI/CD Pipeline` (ID `20036193509`) completed with conclusion: `success`.
+  - `--rule` is explicitly described as enabling the **unified rule or legacy aliases as needed**.
+
+This aligns the examples with the unified-rule-first story and clearly positions the two function-level legacy keys as compatibility options.
+
+**File:** `user-docs/migration-guide.md`
+
+- Searched for references to `require-traceability`, `require-story-annotation`, and `require-req-annotation`:
+
+  - The migration guide already focuses on:
+    - Versioning & ESLint flat config changes.
+    - Strengthened validation rules.
+    - `@supports` semantics and the optional `traceability/prefer-supports-annotation` migration rule.
+  - It **does not** currently talk about rule names for function-level presence checks, so there was nothing conflicting or outdated to fix there relative to the unified rule.
+
+Given that, no edits were required to keep it consistent with the new unified-rule positioning.
+
+**File:** `user-docs/eslint-9-setup-guide.md`
+
+- Searched for any mentions of `require-traceability` or `require-story-annotation`:
+
+  - The setup guide focuses on ESLint v9 flat config wiring and does not reference function-level rule keys directly, so it remains consistent.
+
+---
+
+### 4) Scan for outdated/conflicting function-level rule descriptions (##NEXT – done)
+
+Beyond the files above, I also checked and updated:
+
+- **README “Plugin Validation”** section:
+  - Updated the CLI snippet to use `traceability/require-traceability:error` as the validation rule.
+  - Added a short note explaining that if you have existing configs referencing the legacy keys, you can still validate them by enabling `traceability/require-story-annotation` and `traceability/require-req-annotation` instead.
+
+- Confirmed there are no other user-facing documents (README, user-docs/…) that:
+
+  - Present `traceability/require-story-annotation` or `traceability/require-req-annotation` as the primary way to enforce function-level traceability, or
+  - Conflict with the new unified-rule-first guidance.
+
+The only legacy mentions now are clearly labeled as backward compatibility or secondary options.
+
+---
+
+## Quality Checks & CI
+
+For each logical batch of changes, I:
+
+- Ran local checks:
+
+  - `npm test -- --runInBand --ci`
+  - `npm run lint -- --max-warnings=0`
+  - `npm run type-check`
+  - `npm run build`
+  - `npm run format:check`
+
+- Committed with Conventional Commit messages (docs-only):
+
+  - `docs: document unified traceability rule and legacy aliases`
+  - `docs: emphasize unified traceability rule in docs and examples`
+  - `docs: update CLI validation example to use unified rule`
+
+- Pushed to `main` and waited for the **“CI/CD Pipeline (main)”** GitHub Actions workflow to complete; each new run completed with **conclusion: success**.
+
+No code or configuration changes were made—only documentation—so runtime and behavior remain unchanged while docs are now aligned with the unified rule and @supports-first guidance.
 
 ---
 
 ## Updated Plan
 
-## NOW
+### NOW
 
-- [x] Review the annotation-checker helper implementation to identify small, safe refactoring opportunities that reduce duplication or complexity without changing its externally observed behavior.
+- [x] Revise the README rule overview so it clearly presents the unified traceability rule as the primary option, explains how the legacy function-level rules act as aliases for backward compatibility, and aligns the wording with the current @supports-first guidance.
 
-## NEXT
+### NEXT
 
-- [x] Apply a minimal refactor to the annotation-checker helper based on the review, ensuring its behavior remains identical and the existing focused tests still fully pass.
-- [x] Select another shared helper module involved in traceability checks and perform the same kind of branch-coverage review to identify any untested branches or error paths.
-- [x] Design and add targeted tests for the newly identified branches in that helper so its behavior is explicitly covered and easier to maintain.
+- [x] Update the API reference documentation to clearly describe the unified function-level rule as the canonical choice, position the legacy function rules as aliases that share its implementation, and ensure their descriptions and examples are consistent with the @supports-first behavior.
+- [x] Review related user-facing docs such as the examples and migration guide to confirm they reference the unified rule appropriately and that any remaining mentions of legacy-only usage are clearly labeled as backward-compatibility guidance.
+- [x] Scan the documentation for any conflicting or outdated descriptions of function-level traceability rules and adjust them so that all user-facing material tells a consistent story about using the unified rule with @supports annotations.
 
-If you’d like, I can next look for additional small refactors or missing edge-case coverage in other helpers (e.g., `annotation-scope-analyzer` or `require-story-utils`) using the same approach.
+### LATER
+
+- [ ] Add a concise decision or overview section in the user documentation that answers "Which traceability rule should I use?" and summarizes when to enable the unified rule versus relying on legacy aliases.
+- [ ] Periodically re-check new or updated documentation whenever traceability rules evolve to ensure the unified rule remains the primary documented path and that examples continue to emphasize @supports.
+- [ ] Consider adding a brief note in the development documentation explaining how the unified rule and its aliases are wired internally so future maintainers keep the docs, metadata, and behavior in sync.
 ```

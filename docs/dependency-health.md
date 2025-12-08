@@ -235,14 +235,13 @@ These processes ensure that:
   - Regular, automated `npm audit` runs.
   - Documented incident handling and risk acceptance when no compliant upgrade path exists.
 
-## Current Status (2025-12-04, verified)
+## Current Status (2025-12-08, verified)
 
 As of the latest review:
 
 - `npm run deps:maturity -- --format=json --check` reports:
-  - `totalOutdated: 0`
-  - `safeUpdates: 0`
-  - `packages: []`
+  - `totalOutdated: 4`
+  - `safeUpdates: 0` (all four are currently filtered out by the age threshold)
 - `npm audit --omit=dev --audit-level=high` reports **0 high-severity** vulnerabilities for production dependencies.
 
 The `lint-staged` devDependency has been updated to the current `dry-aged-deps`–recommended version, and there are still no remaining safe upgrade candidates under the configured thresholds.
