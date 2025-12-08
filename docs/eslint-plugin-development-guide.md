@@ -520,4 +520,3 @@ Plugin development in this repo is protected by the same security and dependency
 - [ESLint Custom Rules](https://eslint.org/docs/latest/extend/custom-rules)
 - [@typescript-eslint/utils](https://typescript-eslint.io/packages/utils/)
 - [ESLint RuleTester](https://eslint.org/docs/latest/integrate/nodejs-api#ruletester)
-

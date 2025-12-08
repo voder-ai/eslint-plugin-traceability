@@ -102,10 +102,20 @@ Aligned with the internal rule behavior, the key cases are:
   The following are **ignored** by this rule and remain valid:
   - Comments that contain only `@story` lines,
   - Comments that contain only `@req` lines,
-  - Comments that contain only `@supports` lines, and
-  - Line comments such as `// @story ...`.
+  - Comments that contain only `@supports` lines.
 
-  These forms are still supported by the plugin and are not modified by `traceability/prefer-supports-annotation`.
+  Line comments are treated more selectively:
+  - Simple, consecutive line comments such as:
+
+    ```js
+    // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-REQUIRED
+    function initAuth() {}
+    ```
+
+    that are directly attached to a function, method, or branch and describe exactly one story path plus one or more requirement IDs can now be migrated automatically. When the rule is enabled and you run ESLint with `--fix`, these are consolidated into a single `// @supports ...` line that preserves the same story path and requirement IDs.
+
+  - More complex inline patterns — for example, mixed traceability and non-traceability content, multiple distinct `@story` paths, or interleaved unrelated comments between `@story` and `@req` lines — are still reported but are **not** auto-fixed. In these cases, the rule continues to treat unsupported inline shapes conservatively, emitting diagnostics and leaving the comments unchanged so you can adjust them manually.
 
 A typical migration path is:
 

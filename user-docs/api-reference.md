@@ -307,12 +307,14 @@ Behavior notes:
 
 Default Severity: `warn`
 
-This rule is **not** enabled in the `recommended` or `strict` presets by default. To use it, add it explicitly to your ESLint configuration with an appropriate severity level:
+This rule is enabled at severity `warn` in both the `recommended` and `strict` presets. You can override its behavior in your own configuration — for example, by raising it to `error` for stricter enforcement, or by explicitly disabling it if you prefer to keep statement-level duplication.
+
+Configuration example (override preset severity from `warn` to `error`):
 
 ```jsonc
 {
   "rules": {
-    "traceability/no-redundant-annotation": "warn",
+    "traceability/no-redundant-annotation": "error",
   },
 }
 ```
@@ -443,6 +445,7 @@ Core rules enabled by the `recommended` preset:
 - `traceability/valid-story-reference`: `error`
 - `traceability/valid-req-reference`: `error`
 - `traceability/require-test-traceability`: `error`
+- `traceability/no-redundant-annotation`: `warn`
 
 Usage:
 
@@ -756,3 +759,4 @@ In CI:
 
 ```bash
 npm run traceability:verify
+```

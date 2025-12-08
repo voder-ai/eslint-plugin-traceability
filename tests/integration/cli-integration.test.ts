@@ -71,6 +71,10 @@ function baz() {}`,
     },
   ];
 
+  /**
+   * Helper to run ESLint CLI with a single rule for integration tests
+   * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE
+   */
   function runEslint(code: string, rule: string) {
     const args = [
       "--no-config-lookup",

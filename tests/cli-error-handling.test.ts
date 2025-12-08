@@ -7,11 +7,21 @@
 import { spawnSync } from "child_process";
 import path from "path";
 
+const originalNodePath = process.env.NODE_PATH;
+
 describe("CLI Error Handling for Traceability Plugin (Story 001.0-DEV-PLUGIN-SETUP)", () => {
   beforeAll(() => {
     // Simulate missing plugin build by deleting lib directory (if exist)
     // In tests, assume plugin built to lib/src/index.js; point plugin import to src/index.ts via env
     process.env.NODE_PATH = path.resolve(__dirname, "../src");
+  });
+
+  afterAll(() => {
+    if (originalNodePath === undefined) {
+      delete process.env.NODE_PATH;
+    } else {
+      process.env.NODE_PATH = originalNodePath;
+    }
   });
 
   it("[REQ-ERROR-HANDLING] should exit with error when rule module missing", () => {
