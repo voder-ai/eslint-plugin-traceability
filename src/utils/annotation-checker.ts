@@ -132,7 +132,7 @@ function getNameNodeForReqReport(node: any): any {
 }
 
 /**
- * Helper to report missing traceability annotations via the ESLint context API.
+ * Helper to build the report options object for missing traceability annotations.
  * Uses getNodeName to provide a readable name for the node. @supports is the
  * preferred format for expressing traceability to one or more requirements and
  * stories, while @req is treated as a legacy shorthand for single-story usage.
@@ -144,7 +144,7 @@ function getNameNodeForReqReport(node: any): any {
  * @req REQ-ERROR-SUGGESTION - Provide actionable suggestions or fixes where possible
  * @req REQ-ERROR-CONTEXT - Include contextual hints to help understand the error
  */
-function reportMissing(context: any, node: any, enableFix: boolean = true) {
+function buildMissingReqReportOptions(node: any, enableFix: boolean) {
   const parentNode = (node as any)?.parent;
   const name = getReportedName(node, parentNode);
   const nameNode = getNameNodeForReqReport(node);
@@ -161,6 +161,24 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
     reportOptions.fix = createMissingReqFix(node);
   }
 
+  return reportOptions;
+}
+
+/**
+ * Helper to report missing traceability annotations via the ESLint context API.
+ * Uses getNodeName to provide a readable name for the node. @supports is the
+ * preferred format for expressing traceability to one or more requirements and
+ * stories, while @req is treated as a legacy shorthand for single-story usage.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * @req REQ-ANNOTATION-REPORTING - Report missing traceability annotations to context
+ * @req REQ-ERROR-SPECIFIC - Provide specific error details including node name
+ * @req REQ-ERROR-LOCATION - Include contextual location information in errors
+ * @req REQ-ERROR-SUGGESTION - Provide actionable suggestions or fixes where possible
+ * @req REQ-ERROR-CONTEXT - Include contextual hints to help understand the error
+ */
+function reportMissing(context: any, node: any, enableFix: boolean = true) {
+  const reportOptions = buildMissingReqReportOptions(node, enableFix);
   context.report(reportOptions);
 }
 
