@@ -163,7 +163,7 @@ export function reportMissingAnnotations(
   ];
 
   /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-function processAction(item: {
+  function processAction(item: {
     missing: boolean;
     fn: Function;
     args: any[];

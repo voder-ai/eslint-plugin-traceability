@@ -31,8 +31,7 @@ const makeMissingAnnotationErrors = (...missing: Array<"@story" | "@req">) =>
 const runRule = (tests: Parameters<typeof ruleTester.run>[2]) =>
   ruleTester.run("require-branch-annotation", rule, tests);
 
-describe("Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)", /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-() => {
+describe("Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)" /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */, () => {
   runRule({
     valid: [
       {
