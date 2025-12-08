@@ -154,9 +154,11 @@ For a full description of options and JSON payloads, see the [Maintenance API an
 You can validate the plugin by running ESLint CLI with the plugin on a sample file:
 
 ```bash
-# Validate missing @story annotation (should report an error)
-npx eslint --no-eslintrc --config eslint.config.js sample.js --rule 'traceability/require-story-annotation:error'
+# Validate missing function-level traceability (should report an error)
+npx eslint --no-eslintrc --config eslint.config.js sample.js --rule 'traceability/require-traceability:error'
 ```
+
+If you have existing configurations that reference the legacy function-level keys, you can also validate them directly by enabling `traceability/require-story-annotation` and `traceability/require-req-annotation` instead.
 
 This command runs ESLint with the plugin, pointing at `eslint.config.js` flat config.
 
