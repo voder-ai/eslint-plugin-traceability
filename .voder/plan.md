@@ -1,17 +1,15 @@
 ## NOW
 
-- [x] Create or update an internal architecture decision record that clearly documents the unified require-traceability rule, how the legacy alias rule names map to it, and the @supports-first annotation model so future maintainers understand the intended design and migration path.
+- [ ] Update the user-facing API reference so that the documentation for the core validation rules (such as the annotation-format, story-reference, and req-reference rules) uses @supports-based annotations as the primary examples, with any @story/@req examples clearly labeled as legacy or migration-focused.
 
 ## NEXT
 
-- [x] Review the existing development story files related to function annotations and supports migration, and add or update a story that narrates the unified rule plus legacy aliases from a feature perspective, including acceptance criteria for how they should behave together.
-- [x] Adjust the ESLint configuration for this repository to start dogfooding one of the core traceability rules on src and tests, introducing the rule with targeted suppressions where necessary so that linting still passes while the rule begins enforcing structure.
-- [ ] Scan the test and source code for any remaining named functions or significant branches that lack @supports traceability annotations, and add minimal, focused annotations to bring them in line with the stricter standard before enabling further self-dogfooding.
-- [ ] Refine the traceability overview and API reference user docs as needed to ensure they stay aligned with the newly formalized ADR and stories, especially around how consumers should choose between unified and legacy rule keys.
+- [ ] Review the rest of the user-facing documentation (README and the guides in the user-docs directory) to identify any remaining primary examples that still rely solely on @story/@req, and revise them so the default guidance and code samples demonstrate @supports-first usage with legacy forms shown only in explicitly marked sections.
+- [ ] Cross-check the development stories and architecture decision records related to supports migration and unified rules to ensure their described behavior and example annotations match the updated @supports-first documentation model.
+- [ ] Once the documentation and stories are aligned, re-validate that the specific acceptance criteria for the supports-migration story about documentation examples are fully satisfied, adjusting any remaining wording or examples that could conflict with the intended @supports-first guidance.
 
 ## LATER
 
-- [ ] Gradually expand the set of enabled traceability rules in this project’s own ESLint configuration, removing temporary suppressions as violations are fixed so the codebase fully self-enforces its traceability conventions.
-- [ ] Periodically review and update user-facing documentation (README, API reference, examples, migration guide, overview) whenever new traceability behaviors or rules are added, keeping them tightly synchronized with actual presets and rule semantics.
-- [ ] Monitor performance and stability of the large-workspace maintenance and CLI tests over time, and adjust timing thresholds or scenario sizes if future environments show they are close to the limits while still reliably catching regressions.
-- [ ] Document any future changes to the unified rule’s behavior, presets, or aliasing strategy in follow-up architecture decision records so the decision history around traceability enforcement remains clear and discoverable.
+- [ ] Expand the project’s own ESLint configuration to enable additional traceability rules on the codebase, tightening or removing any temporary suppressions as missing annotations are added so the plugin’s conventions are fully self-enforced.
+- [ ] Enhance tests and examples around the maintenance CLI and migration rule to cover more complex real-world annotation patterns, ensuring that both @supports-first behavior and legacy compatibility are clearly demonstrated and validated.
+- [ ] Document any future refinements to the unified rule, aliasing strategy, or supports-based conventions in new or updated architecture decision records so that the evolution of the traceability model remains clearly recorded.

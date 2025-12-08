@@ -123,7 +123,7 @@ if (error) {
 
 ### traceability/valid-annotation-format
 
-Description: Validates that all traceability annotations (`@story`, `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule limits changes to safe `@story` path suffix normalization only—for example, adding `.md` when the path ends with `.story`, or adding `.story.md` when the base path has no extension—using targeted replacements implemented in the `getFixedStoryPath` and `reportInvalidStoryFormatWithFix` helpers. It does not change directories, infer new story names, or modify any surrounding comment text or whitespace, in line with Story 008.0. Selective disabling of this suffix-normalization auto-fix behavior is available via the `autoFix` option, which defaults to `true` for backward compatibility.
+Description: Validates that all traceability annotations (`@supports` as the preferred form for new code, plus legacy `@story` and `@req`) follow the correct JSDoc or inline comment format. When run with `--fix`, the rule limits changes to safe `@story` path suffix normalization only—for example, adding `.md` when the path ends with `.story`, or adding `.story.md` when the base path has no extension—using targeted replacements implemented in the `getFixedStoryPath` and `reportInvalidStoryFormatWithFix` helpers. It does not change directories, infer new story names, or modify any surrounding comment text or whitespace, in line with Story 008.0. Selective disabling of this suffix-normalization auto-fix behavior is available via the `autoFix` option, which defaults to `true` for backward compatibility.
 
 Options:
 
@@ -161,21 +161,34 @@ The `valid-annotation-format` rule is intentionally **backward compatible** with
 Deep requirement checking for both `@req` and `@supports` is handled by the `valid-req-reference` rule in the plugin's internal docs. Advanced edge cases and internal semantics are mainly of interest to maintainers; typical end users can rely on the options and examples in this API reference when configuring the rule for their projects.
 
 Default Severity: `error`
-Example:
+
+Primary example (recommended `@supports` style):
 
 ```javascript
 /**
- * @story docs/stories/005.0-DEV-VALIDATION.story.md
- * @req REQ-FORMAT-VALIDATION
+ * @supports docs/stories/005.0-DEV-VALIDATION.story.md#REQ-FORMAT-VALIDATION
  */
 function example() {
   // ...
 }
 ```
 
+Legacy example (`@story` + `@req`, still valid but not preferred for new code):
+
+```javascript
+/**
+ * @story docs/stories/005.0-DEV-VALIDATION.story.md
+ * @req REQ-FORMAT-VALIDATION
+ */
+function legacyExample() {
+  // ...
+}
+```
+
 ### traceability/valid-story-reference
 
-Description: Checks that the file paths in `@story` annotations point to existing story markdown files.
+Description: Checks that the story file paths used by traceability annotations point to existing story markdown files in an `@supports`‑first world. Modern code typically encodes story paths in `@supports` tags (for example, `@supports docs/stories/010.0-PAYMENTS.story.md#REQ-ID`), but this rule continues to operate on the underlying `@story` values for file‑existence checks, keeping legacy annotations and mixed blocks fully supported.
+
 Options:
 Configure rule behavior using an options object with these properties:
 
@@ -201,31 +214,57 @@ Example configuration:
 ```
 
 Default Severity: `error`
-Example:
+
+Primary example (recommended `@supports` style, with a companion `@story` used for existence checks):
 
 ```javascript
 /**
- * @story docs/stories/006.0-DEV-STORY-EXISTS.story.md
- * @req REQ-STORY-EXISTS
+ * @supports docs/stories/006.0-DEV-STORY-EXISTS.story.md#REQ-STORY-EXISTS
+ * @story docs/stories/006.0-DEV-STORY-EXISTS.story.md // used for file-existence validation; kept for backward compatibility
  */
 function example() {
   // ...
 }
 ```
 
+Legacy-only example (`@story` + `@req`, still supported as an input to this rule):
+
+```javascript
+/**
+ * @story docs/stories/006.0-DEV-STORY-EXISTS.story.md
+ * @req REQ-STORY-EXISTS
+ */
+function legacyExample() {
+  // ...
+}
+```
+
 ### traceability/valid-req-reference
 
-Description: Verifies that the IDs used in `@req` annotations match known requirement identifiers.
+Description: Verifies that the requirement IDs used in traceability annotations match known requirement identifiers, whether they appear in modern `@supports` tags or in legacy `@req` annotations.
+
 Options: None
 Default Severity: `error`
-Example:
+
+Primary example (recommended `@supports` style with requirement IDs):
+
+```javascript
+/**
+ * @supports docs/stories/007.0-DEV-REQ-REFERENCE.story.md#REQ-VALID-REFERENCE REQ-VALID-REFERENCE-EDGE
+ */
+function example() {
+  // ...
+}
+```
+
+Legacy example (`@story` + `@req`, still valid for backward compatibility):
 
 ```javascript
 /**
  * @story docs/stories/007.0-DEV-REQ-REFERENCE.story.md
  * @req REQ-VALID-REFERENCE
  */
-function example() {
+function legacyExample() {
   // ...
 }
 ```
@@ -340,7 +379,7 @@ Main behaviors:
 
    ```js
    /**
-    * @supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND REQ-PAYMENTS-EDGE
+    * @supports docs/stories/010.0-PAYMENTS.story.md#REQ-PAYMENTS-REFUND REQ-PAYMENTS-REFUND-EDGE
     */
    ```
 
