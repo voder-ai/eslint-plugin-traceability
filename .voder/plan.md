@@ -4,7 +4,7 @@
 
 ## NEXT
 
-- [ ] Review the existing development story files related to function annotations and supports migration, and add or update a story that narrates the unified rule plus legacy aliases from a feature perspective, including acceptance criteria for how they should behave together.
+- [x] Review the existing development story files related to function annotations and supports migration, and add or update a story that narrates the unified rule plus legacy aliases from a feature perspective, including acceptance criteria for how they should behave together.
 - [ ] Adjust the ESLint configuration for this repository to start dogfooding one of the core traceability rules on src and tests, introducing the rule with targeted suppressions where necessary so that linting still passes while the rule begins enforcing structure.
 - [ ] Scan the test and source code for any remaining named functions or significant branches that lack @supports traceability annotations, and add minimal, focused annotations to bring them in line with the stricter standard before enabling further self-dogfooding.
 - [ ] Refine the traceability overview and API reference user docs as needed to ensure they stay aligned with the newly formalized ADR and stories, especially around how consumers should choose between unified and legacy rule keys.
