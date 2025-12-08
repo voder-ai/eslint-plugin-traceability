@@ -1,16 +1,16 @@
 ## NOW
 
-- [ ] Review the unified-function-rule story’s implementation notes and acceptance criteria to extract the exact integration test scenarios and expectations for `require-traceability` and its legacy aliases.
+- [ ] Review the redundant-annotation detection story to extract the specific documentation and migration-guide requirements for how users should clean up redundant traceability annotations.
 
 ## NEXT
 
-- [ ] Design a small set of representative ESLint configurations and code fixtures that exercise function-level traceability with `@supports` and legacy `@story`/`@req` annotations, ensuring they can be reused across all three rule keys.
-- [ ] Add or extend an integration-level Jest test suite that runs ESLint against the shared fixtures using each of the three rule names (`require-traceability`, `require-story-annotation`, and `require-req-annotation`) and asserts that the reported diagnostics and behaviors are consistent with the story’s requirements.
-- [ ] Refine the new integration tests to also cover the behavior when using the recommended and strict presets, confirming that enabling presets produces the expected diagnostics for unified and alias rule keys.
-- [ ] Update the unified-function-rule story to mark the integration-test acceptance criteria as satisfied and adjust any narrative text so it accurately reflects the new test coverage.
+- [ ] Review the existing no-redundant-annotation rule implementation and its tests to confirm the precise behaviors, options, and edge cases that must be accurately described in the migration guide.
+- [ ] Draft and insert a dedicated section in the migration guide that explains redundancy cleanup during migration, including when and how to enable the no-redundant-annotation rule, what kinds of duplicate or overlapping annotations it flags, and recommended workflows for safely applying fixes.
+- [ ] Refine the new migration-guide content to ensure it uses clear user-facing language, references the unified rule and @supports-first approach consistently, and aligns with the acceptance criteria in the redundant-annotation story.
+- [ ] Update the redundant-annotation story to mark the migration-guide documentation criterion as satisfied and adjust any narrative text so it accurately reflects the new guidance and the current implementation state.
 
 ## LATER
 
-- [ ] Review related architecture decisions about the unified rule and aliasing to ensure they reference the existence and purpose of the new integration tests.
-- [ ] Look for additional edge cases or real-world patterns (such as nested functions, callbacks, and mixed annotation forms) that could benefit from future integration tests, and note them for a follow-up enhancement.
-- [ ] Once the integration tests have been stable for some time, consider simplifying or removing any redundant lower-level tests that duplicate the new end-to-end coverage, while keeping overall traceability and behavior well tested.
+- [ ] Cross-check other user-facing docs (API reference, examples, traceability overview) to ensure they consistently mention redundancy cleanup where appropriate and link users toward the migration-guide recommendations.
+- [ ] Identify any additional real-world patterns of redundant annotations (for example, mixed @supports and legacy annotations on the same function) that could be highlighted with examples in future documentation iterations.
+- [ ] Consider whether additional integration tests or end-to-end scenarios are needed to validate common redundancy-cleanup workflows that users might follow based on the new migration-guide guidance.

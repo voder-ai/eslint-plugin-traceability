@@ -210,6 +210,117 @@ Versions 1.x of `eslint-plugin-traceability` extend the `traceability/require-br
 
 If you previously added suppressions or workaround comments around `else if` branches due to formatter conflicts, you can usually remove those workarounds after upgrading to 1.x as long as your annotations live in one of the supported locations. For new code, you can place annotations either directly above the `else if` or, when you know a formatter will wrap a long condition, on the first comment-only line inside the consequent block body, which is where the rule places auto-fix placeholders by default.
 
+### 3.3 Redundant traceability annotation cleanup
+
+As you move toward an **`@supports`-first** style while still supporting legacy `@story`/`@req`, v1.x adds `traceability/no-redundant-annotation` to help clean up redundant **statement-level** annotations that often accumulate during migration and refactoring.
+
+This rule is enabled as `"warn"` in the built-in recommended presets, so you automatically get guidance without breaking existing builds.
+
+At a high level, the rule targets common duplication patterns where multiple adjacent statements or branches repeat the **same story/requirement coverage**, for example:
+
+- **Branch + statement duplication** — the `if`/`else` branch is annotated, and the first statement inside the block repeats the exact same coverage.
+- **Sequential simple statements** — back‑to‑back statements each carry identical traceability, even though they form a single logical step.
+- **Trivial returns** — a branch and an immediately returning statement both repeat the same story/requirement pair.
+
+In all cases, the rule is conservative:
+
+- It **never removes the last annotation** that provides coverage for a given `(story path, requirement ID)` pair.
+- It prefers to keep annotations in the positions that are easiest to reason about (for example, on the controlling branch or on the first statement in a short sequence), and trims only clearly redundant copies.
+
+The rule operates over both `@supports` and legacy `@story`/`@req` style annotations, so it continues to work even in mixed codebases during a long-running migration.
+
+A simplified example, using an illustrative story path that represents a file in **your** documentation tree:
+
+Before (redundant duplication inside a branch):
+
+```js
+if (!user) {
+  // @supports docs/stories/010.0-AUTH-SESSION-MANAGEMENT.story.md REQ-UNAUTH-REDIRECT
+  // @supports docs/stories/010.0-AUTH-SESSION-MANAGEMENT.story.md REQ-UNAUTH-REDIRECT
+  return redirectToLogin();
+}
+```
+
+After (`no-redundant-annotation` auto-fix, coverage preserved but duplication removed):
+
+```js
+if (!user) {
+  // @supports docs/stories/010.0-AUTH-SESSION-MANAGEMENT.story.md REQ-UNAUTH-REDIRECT
+  return redirectToLogin();
+}
+```
+
+Another example where the branch and first statement are both annotated with the same coverage:
+
+Before:
+
+```js
+// @supports docs/stories/020.0-ORDERS-CHECKOUT.story.md REQ-CALCULATE-TOTAL
+if (cart.items.length === 0) {
+  // @supports docs/stories/020.0-ORDERS-CHECKOUT.story.md REQ-CALCULATE-TOTAL
+  return 0;
+}
+```
+
+After (keep coverage at the branch, drop the redundant inner statement annotation):
+
+```js
+// @supports docs/stories/020.0-ORDERS-CHECKOUT.story.md REQ-CALCULATE-TOTAL
+if (cart.items.length === 0) {
+  return 0;
+}
+```
+
+#### Safe migration workflow
+
+To use `traceability/no-redundant-annotation` safely during your v1.x migration:
+
+1. **Start from the recommended preset**
+
+   Make sure your ESLint flat config includes the plugin’s recommended config (which enables this rule as `"warn"`):
+
+   ```js
+   import traceability from "eslint-plugin-traceability";
+
+   export default [traceability.configs.recommended];
+   ```
+
+2. **Run ESLint without auto-fix**
+
+   Run ESLint without `--fix` to review the warnings:
+
+   ```bash
+   npm run lint
+   ```
+
+   Look for diagnostics from `traceability/no-redundant-annotation` and confirm that the suggested removals match your expectations.
+
+3. **Run with `--fix` once comfortable**
+
+   When you are satisfied with the behavior, re-run ESLint with auto-fix enabled to apply safe cleanups in bulk:
+
+   ```bash
+   npm run lint -- --fix
+   ```
+
+4. **Optionally tighten over time**
+
+   As your team gets comfortable:
+
+   - You can raise the rule severity to `"error"` for new code, and/or
+   - Increase strictness via configuration (see below) to catch more subtle forms of duplication.
+
+#### Key configuration knobs
+
+The full API reference documents all options, but the most important knobs for migration are:
+
+- **`strictness`** — controls how aggressively the rule interprets “redundant.” Lower settings only remove obvious duplication; higher levels consider more complex patterns across nearby statements and branches.
+- **`allowEmphasisDuplication`** — when `true`, allows an explicit “emphasis” annotation to repeat coverage (for example, keeping a second comment in a particularly critical spot) without being reported as redundant.
+- **`maxScopeDepth`** — limits how far into nested blocks the rule looks when deciding what is redundant, which can be useful if you want very local cleanups only.
+- **`alwaysCovered`** — a safety valve that forces the rule to preserve at least one annotation for each `(story, requirement)` pair within the relevant scope, even under stricter modes.
+
+For most teams, the defaults in the recommended preset are a good starting point; you can then tune these options incrementally as your traceability style and `@supports` usage stabilize.
+
 ## 4. Test and Validate
 
 Run your test suite to confirm everything passes:
