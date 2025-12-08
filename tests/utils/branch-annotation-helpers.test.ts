@@ -5,7 +5,7 @@
  * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of branch types for annotation enforcement
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE
  */
-import { validateBranchTypes, DEFAULT_BRANCH_TYPES } from "../../src/utils/branch-annotation-helpers";
+import { validateBranchTypes, DEFAULT_BRANCH_TYPES, gatherBranchCommentText } from "../../src/utils/branch-annotation-helpers";
 import type { Rule } from "eslint";
 
 describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
@@ -47,5 +47,81 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
         message: expect.stringContaining(`Value "${t}" should be equal to one of the allowed values:`),
       }));
     });
+  });
+
+  it("should gather SwitchCase comment text via gatherBranchCommentText (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
+    // Fake SourceCode-like object with lines aligned to PRE_COMMENT_OFFSET logic
+    const sourceCode: any = {
+      lines: [
+        "// @story first part",
+        "// continuation second part",
+        "case 1:",
+      ],
+      getCommentsBefore: () => [],
+      getText: jest.fn(),
+    };
+
+    // SwitchCase-like node with loc.start.line corresponding to "case 1:" line (line 3)
+    const switchCaseNode: any = {
+      type: "SwitchCase",
+      loc: {
+        start: { line: 3, column: 0 },
+        end: { line: 3, column: 7 },
+      },
+    };
+
+    const text = gatherBranchCommentText(sourceCode as any, switchCaseNode as any);
+
+    // Expect combined text using space separator and preserving leading //
+    expect(text).toBe("// @story first part // continuation second part");
+  });
+
+  it("should gather comment text for CatchClause and loop nodes via gatherBranchCommentText (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
+    // CatchClause: comments come from getCommentsBefore when beforeText already contains @story
+    const catchComments = [
+      { type: "Line", value: "@story catch branch story" },
+      { type: "Line", value: "additional info" },
+    ];
+    const sourceCodeCatch: any = {
+      getCommentsBefore: jest.fn().mockReturnValue(catchComments),
+      getText: jest.fn().mockReturnValue("@story existing beforeText"),
+      lines: [],
+    };
+
+    const catchNode: any = {
+      type: "CatchClause",
+      loc: {
+        start: { line: 10, column: 0 },
+        end: { line: 12, column: 1 },
+      },
+    };
+
+    const catchText = gatherBranchCommentText(sourceCodeCatch as any, catchNode as any);
+    expect(sourceCodeCatch.getCommentsBefore).toHaveBeenCalledWith(catchNode);
+    expect(catchText).toContain("@story catch branch story");
+    expect(catchText).toContain("additional info");
+
+    // Loop node: ForStatement currently uses beforeComments.map(extractCommentValue).join(" ")
+    const loopComments = [
+      { type: "Line", value: "@story loop branch story" },
+      { type: "Block", value: "loop details" },
+    ];
+    const sourceCodeLoop: any = {
+      getCommentsBefore: jest.fn().mockReturnValue(loopComments),
+      getText: jest.fn().mockReturnValue("@story loop beforeText"),
+      lines: [],
+    };
+
+    const forNode: any = {
+      type: "ForStatement",
+      loc: {
+        start: { line: 20, column: 0 },
+        end: { line: 25, column: 1 },
+      },
+    };
+
+    const loopText = gatherBranchCommentText(sourceCodeLoop as any, forNode as any);
+    expect(sourceCodeLoop.getCommentsBefore).toHaveBeenCalledWith(forNode);
+    expect(loopText).toBe("@story loop branch story loop details");
   });
 });
