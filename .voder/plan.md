@@ -1,14 +1,15 @@
 ## NOW
 
-- [ ] Close the external GitHub issue that tracks the function-annotations work (issue #5) by adding a final comment that references the released version containing the completed implementation and then marking the issue as closed so its state is recorded as finished in GitHub.
+- [ ] Add complete traceability JSDoc annotations using the @supports format to all exported wiring functions in the main plugin entry file so that each function explicitly references the correct function-annotations and unified-rule stories and their requirement IDs.
 
 ## NEXT
 
-- [ ] Update the function-annotations story file so that the acceptance criterion and Definition of Done items related to the GitHub issue resolution are checked off and explicitly reference the closed issue and the release version that contained the fix.
-- [ ] Confirm that all tests and code annotations linked to the function-annotations story (including REQ IDs and @supports tags) still accurately describe the implemented behavior of the unified rule and test callback exclusion, and adjust any outdated wording in the story to match the current implementation.
+- [ ] Add inline @supports traceability comments to each significant conditional branch and error-handling path in the plugin entry and maintenance CLI modules so that all user-visible control-flow decisions are mapped to their corresponding stories and requirement IDs.
+- [ ] Update rule and helper modules related to function and branch annotations to ensure every named function has a correctly formatted @supports JSDoc that references the appropriate story files and requirement IDs, replacing any legacy or malformed annotations as needed.
+- [ ] Ensure tests that exercise function-annotation and test-callback behavior reference the updated requirement IDs in their test names and file-level @supports annotations so that test traceability remains consistent with the code annotations and stories.
 
 ## LATER
 
-- [ ] Remove any remaining inline lint rule suppressions in helper and rule modules by simplifying code or extracting utilities so that all enabled lint rules pass without local disables while keeping behavior unchanged.
-- [ ] Extract small duplicated logic fragments in helper and rule modules into shared internal utilities so the duplication checker reports fewer clones without modifying public behavior or rule outputs.
-- [ ] Incrementally tighten file-level size limits in the linting configuration and split oversized modules into smaller, focused files as those limits are ratcheted down, keeping each file easy to understand and maintain.
+- [ ] Create or update a short internal documentation page describing the required @supports annotation format, examples for functions and branches, and the mapping to the traceability enforcement rules so future contributors can apply annotations consistently.
+- [ ] Extend or fine-tune the traceability checking script or rule configuration so that it validates the presence and basic format of @supports annotations on all named functions and key branches without producing false positives for non-business-logic code.
+- [ ] Once traceability annotations are complete and consistent, revisit the lint and duplication configuration to incrementally lower size and duplication thresholds in a way that preserves readability while keeping traceability comments intact and accurate.

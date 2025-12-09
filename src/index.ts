@@ -102,6 +102,7 @@ RULE_NAMES.forEach(
  *   and diagnostics).
  *
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY
+ * @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE
  */
 function createAliasRuleMeta(
   unifiedRule: Rule.RuleModule,
@@ -148,6 +149,13 @@ function createAliasRuleMeta(
   };
 }
 
+/**
+ * Wire up the unified `require-traceability` rule and its legacy alias rules
+ * so that they share the same implementation while preserving legacy metadata.
+ *
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-EXPORT-PRIORITY
+ * @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE
+ */
 function wireUnifiedFunctionAnnotationAliases(): void {
   const unifiedRule = rules["require-traceability"] as
     | Rule.RuleModule
@@ -186,6 +194,8 @@ wireUnifiedFunctionAnnotationAliases();
  * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-RULE-NAME
  * Wire up traceability/prefer-supports-annotation as the primary rule name and
  * traceability/prefer-implements-annotation as its deprecated alias.
+ *
+ * @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-MIGRATION-RULE-NAMING
  */
 function wirePreferSupportsAlias(): void {
   const implementsRule = rules["prefer-implements-annotation"] as
@@ -295,6 +305,9 @@ const TRACEABILITY_RULE_SEVERITIES: Readonly<Record<string, "error" | "warn">> =
  * @req REQ-ERROR-SEVERITY - Map rule types to appropriate ESLint severity levels (errors vs warnings)
  * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
  * @req REQ-CONFIG-PRESETS - Provide flat-config presets that self-register the plugin and core rules
+ *
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SEVERITY
+ * @supports docs/stories/002.0-DEV-ESLINT-CONFIG.story.md REQ-CONFIG-PRESETS
  */
 function createTraceabilityFlatConfig() {
   return {

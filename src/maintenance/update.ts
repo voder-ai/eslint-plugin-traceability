@@ -5,6 +5,7 @@ import { getAllFiles } from "./utils";
  * Helper to process a single file for annotation reference updates
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-UPDATE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
  */
 function processFileForAnnotationUpdates(
   fullPath: string,
@@ -55,8 +56,7 @@ export function updateAnnotationReferences(
    * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
    * @req REQ-MAINT-UPDATE
    */
-  // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-  // @req REQ-MAINT-UPDATE
+  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
   if (
     !fs.existsSync(codebasePath) ||
     !fs.statSync(codebasePath).isDirectory()
@@ -73,11 +73,13 @@ export function updateAnnotationReferences(
    * Iterate over all files and replace annotation references
    * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
    * @req REQ-MAINT-UPDATE
+   * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
    */
   /**
    * Loop over each discovered file path
    * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
    * @req REQ-MAINT-UPDATE
+   * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
    */
   for (const fullPath of files) {
     processFileForAnnotationUpdates(

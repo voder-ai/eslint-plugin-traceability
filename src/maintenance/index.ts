@@ -7,6 +7,7 @@
  * @req REQ-MAINT-VERIFY
  * @req REQ-MAINT-REPORT
  * @req REQ-MAINT-SAFE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-UPDATE REQ-MAINT-BATCH REQ-MAINT-VERIFY REQ-MAINT-REPORT REQ-MAINT-SAFE
  */
 export { detectStaleAnnotations } from "./detect";
 export { updateAnnotationReferences } from "./update";

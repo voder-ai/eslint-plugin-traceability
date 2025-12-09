@@ -23,6 +23,7 @@ export const EXIT_USAGE = 2;
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-DETECT - CLI surface for detection of stale annotations
  * @req REQ-MAINT-SAFE - Return specific exit codes for stale vs clean states
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE
  */
 export function handleDetect(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
@@ -54,6 +55,7 @@ Run 'traceability-maint report' for a structured summary.`,
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-VERIFY - CLI surface for verification of annotations
  * @req REQ-MAINT-SAFE - Return distinct exit codes for verification failures
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-VERIFY REQ-MAINT-SAFE
  */
 export function handleVerify(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
@@ -76,6 +78,7 @@ export function handleVerify(normalized: NormalizedCliArgs): number {
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-REPORT - CLI surface for human-readable maintenance reports
  * @req REQ-MAINT-SAFE - Support machine-readable formats for safe automation
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT REQ-MAINT-SAFE
  */
 export function handleReport(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
@@ -103,6 +106,7 @@ export function handleReport(normalized: NormalizedCliArgs): number {
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-UPDATE - CLI surface for updating annotation references
  * @req REQ-MAINT-SAFE - Provide dry-run mode and explicit parameter checks
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE REQ-MAINT-SAFE
  */
 export function handleUpdate(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
