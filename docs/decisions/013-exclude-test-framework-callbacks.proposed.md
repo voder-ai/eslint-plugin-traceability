@@ -13,18 +13,22 @@ Story 004.0-DEV-BRANCH-ANNOTATIONS introduced the requirement `REQ-ARROW-FUNCTIO
 The current implementation excludes anonymous arrow functions only when they are **nested inside another function**. However, test framework callbacks (e.g., `describe()`, `it()`, `test()`, `beforeEach()`, etc.) are often called at the **top level** of test files, meaning they are not nested inside any other function.
 
 This creates a problem:
+
 ```javascript
 // Test file with file-level traceability
 /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 
-describe('Feature X', () => {  // ❌ Flagged as missing annotation
-  it('should work', () => {    // ❌ Flagged as missing annotation
+describe("Feature X", () => {
+  // ❌ Flagged as missing annotation
+  it("should work", () => {
+    // ❌ Flagged as missing annotation
     // test code
   });
 });
 ```
 
 The anonymous arrow functions passed to `describe()` and `it()` are being flagged as requiring `@story` annotations, even though:
+
 1. They are implementation details of the test structure
 2. The test file itself has file-level `@supports` or `@story` annotation for traceability
 3. These callbacks don't have meaningful names and exist only as test scaffolding
@@ -81,6 +85,7 @@ The implementation will be confirmed by:
 Detect anonymous arrow functions passed as direct callbacks to known test framework functions (describe, it, test, etc.) and exclude them from annotation requirements by default.
 
 Configuration example:
+
 ```javascript
 {
   "traceability/require-story-annotation": ["error", {
@@ -148,12 +153,15 @@ Only exclude the innermost test callbacks (it, test) but require annotations on 
 5. Add comprehensive tests for various test framework patterns
 
 **Test frameworks covered:**
+
 - Jest (describe, it, test, beforeEach, afterEach, beforeAll, afterAll)
 - Mocha (describe, it, suite, context, specify, before, after, beforeEach, afterEach)
-- Vitest (describe, it, test, beforeEach, afterEach, beforeAll, afterAll)
+- Vitest (describe, it, test, bench, beforeEach, afterEach, beforeAll, afterAll)
 - Focused/skipped variants (fdescribe, xdescribe, fit, xit, etc.)
+- Concurrent variants (test.concurrent, describe.concurrent)
 
 **Related:**
+
 - Story 004.0-DEV-BRANCH-ANNOTATIONS (REQ-ARROW-FUNCTION-EXCLUDED)
 - Story 003.0-DEV-FUNCTION-ANNOTATIONS
 - Issue #5: https://github.com/voder-ai/eslint-plugin-traceability/issues/5
