@@ -8,7 +8,7 @@ consulted:
     docs/conventional-commits-guide.md,
     docs/decisions/006-semantic-release-for-automated-publishing.accepted.md,
     docs/decisions/007-github-releases-over-changelog.accepted.md,
-    docs/decisions/adr-pre-push-parity.md
+    docs/decisions/adr-pre-push-parity.md,
   ]
 informed: [Project Contributors, CI/CD Pipeline Maintainers]
 ---
