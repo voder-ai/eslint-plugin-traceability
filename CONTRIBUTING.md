@@ -101,7 +101,7 @@ Under the hood, `ci-verify:fast` runs Jest with:
 jest --testPathPattern 'tests/(rules|maintenance)'
 ```
 
-This executes a meaningful subset of the suite (rule tests plus maintenance tests), making it suitable as a quick pre-flight signal before running the full gate. Maintainers performing deep CODE_QUALITY reviews should consult `docs/code-quality-core-review-scope.md` and `docs/code-quality-excluded-areas.md` for guidance. These documents explain which parts of the codebase to prioritize and which large or auxiliary areas are typically out of scope for intensive review.
+This executes a meaningful subset of the suite (rule tests plus maintenance tests), making it suitable as a quick pre-flight signal before running the full gate. Maintainers performing deep CODE_QUALITY reviews can consult the project's internal code-quality review scope documentation for guidance; those internal docs explain which parts of the codebase to prioritize and which large or auxiliary areas are typically out of scope for intensive review and are not required reading for most contributors.
 
 For reference, the full gate performs:
 

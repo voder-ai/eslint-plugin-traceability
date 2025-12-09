@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Refactor the most complex helper in the redundant-annotation rule so that its logic is split into smaller, well-named internal functions without changing the rule’s external behavior.
+- [ ] Revise the CONTRIBUTING guide so that any references to internal documentation files are described in generic terms rather than hard-coding internal paths, while keeping contributor instructions accurate and up to date.
 
 ## NEXT
 
-- [ ] Refactor the remaining complex helper in the redundant-annotation rule to use similarly small, focused internal functions while preserving all existing semantics and diagnostics.
-- [ ] Review the redundant-annotation rule and its unit tests together to ensure the new helper structure is easy to follow and that each major behavior still has clear, focused test coverage.
-- [ ] Identify any gaps in test coverage introduced or revealed by the refactor and add small, targeted tests to cover those specific code paths if needed.
+- [ ] Review all user-visible markdown files to ensure they do not link directly to internal development documentation and that any mentions of internal paths are clearly presented as examples, not resources users are expected to open.
+- [ ] Verify that the documented contributor workflows (tests, linting, build, CI hooks) in the CONTRIBUTING guide still match the current scripts and hooks configuration, updating wording where necessary.
+- [ ] Add a brief explanation in the CONTRIBUTING guide describing the relationship between local git hooks and the CI pipeline so contributors understand that local checks mirror the CI gates.
 
 ## LATER
 
-- [ ] Apply the same small-step refactoring approach to other oversized rule and utility modules so that long functions and large files are gradually decomposed into clearer helpers.
-- [ ] Once the key hotspots are simplified, consider tightening the project’s maximum-lines-per-function or related complexity thresholds to lock in the improvement.
-- [ ] Add a short internal documentation note describing the responsibilities of the redundant-annotation rule and its main helpers, including how it uses scope analysis, to guide future contributors working on this area.
+- [ ] Document the overall documentation structure in a short section of the README or a dedicated user-facing doc, clarifying which files are intended for end users versus internal development documentation.
+- [ ] Periodically re-review the no-redundant-annotation rule and its tests to see if any further small refactors or additional examples would improve clarity for future contributors.
+- [ ] Apply similar small, behavior-preserving refactors to other complex rule or helper modules as they become hotspots, ensuring each change is accompanied by focused tests and traceability annotations.
