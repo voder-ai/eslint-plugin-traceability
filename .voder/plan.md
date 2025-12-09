@@ -1,15 +1,14 @@
 ## NOW
 
-- [ ] Eliminate the remaining inline lint rule suppressions from one specific helper or rule module by adjusting its function signatures or extracting small utilities so that the file complies with all enabled lint rules without local disables while keeping its runtime behavior and public API exactly the same.
+- [ ] Restructure the function-annotations story file so that every repository-scoped acceptance criterion and Definition of Done item is checked off, and move the GitHub issue #5 closure requirement into a clearly labeled external follow-up section that explains it is tracked directly in GitHub rather than as an in-repo checkbox.
 
 ## NEXT
 
-- [ ] Apply the same suppression-removal refactoring approach to all other helper and rule modules that still rely on inline lint disables so that the entire ruleset is cleanly lint-compliant without local suppressions.
-- [ ] Refactor small repeated logic fragments in helper and rule modules into shared internal utilities so that the duplication checker reports fewer clones while preserving rule behavior and configuration contracts.
+- [ ] Adjust any remaining references inside the function-annotations story that treat the GitHub issue #5 closure as an in-repo requirement so they instead describe it as an external administrative task linked to the completed implementation.
+- [ ] Verify that the function-annotations story’s requirements and tests are still correctly cross-referenced (REQ IDs, @supports tags in tests) and update any outdated requirement text to match the current behavior of the unified rule and test callback exclusion.
 
 ## LATER
 
-- [ ] Gradually tighten file-level size limits in the linting configuration and, when a file exceeds the new threshold, split cohesive groups of helpers into separate modules so each file remains focused and easy to navigate.
-- [ ] Broaden performance-focused tests for function and branch annotation rules against large synthetic projects and update the related stories with concrete timing expectations derived from those measurements.
-- [ ] After the external GitHub issue related to test callback handling has been closed with the required release-referenced comment, update the function-annotations story checklist to mark the issue-resolution acceptance and Definition of Done items complete and note the release that contained the fix.
-- [ ] Extend internal development documentation to summarize the finalized lint thresholds, preferred refactoring patterns, and the ratcheting strategy so future contributors can continue improving code quality metrics consistently over time.
+- [ ] Remove any remaining inline lint rule suppressions in helper and rule modules by refactoring code so that all enabled lint rules pass without local disables while preserving behavior.
+- [ ] Extract small duplicated logic fragments in helper and rule modules into shared internal utilities so the duplication checker reports fewer clones without changing public behavior.
+- [ ] Incrementally tighten file-level size limits in the linting configuration and split oversized modules into smaller, focused files as they exceed new thresholds, keeping the codebase easy to navigate.
