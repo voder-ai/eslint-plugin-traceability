@@ -468,4 +468,48 @@ describe("Require Story Helpers (Story 003.0)", () => {
     });
     expect(result).toBeTruthy();
   });
+
+  /**
+   * Additional coverage for nested and helper-wrapped test callbacks.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @req REQ-TEST-CALLBACK-EXCLUSION - Document how nested and wrapper-based callbacks interact with exclusion logic
+   */
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Nested anonymous arrow inside it() callback is excluded via nested-function inheritance", () => {
+    const outerCallback: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "it" },
+      },
+    };
+
+    const innerCallback: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "BlockStatement",
+        parent: outerCallback,
+      },
+    };
+
+    // Outer callback is treated as a test framework callback and excluded.
+    const outerResult = shouldProcessNode(outerCallback, DEFAULT_SCOPE);
+    // Inner anonymous arrow inherits from its nested parent and is also excluded.
+    const innerResult = shouldProcessNode(innerCallback, DEFAULT_SCOPE);
+
+    expect(outerResult).toBeFalsy();
+    expect(innerResult).toBeFalsy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow callback passed to local wrapper around describe() is not treated as a test callback", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "withDescribe" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeTruthy();
+  });
 });
