@@ -138,6 +138,39 @@ describe("Require Story Utils - getNodeName (Story 003.0)", () => {
     expect(getNodeName(jsxNamespaced)).toBe("NsComponent");
   });
 
+  it("[REQ-ANNOTATION-REQUIRED] returns null for non-TemplateLiteral nodes passed to templateLiteralToString via getNodeName", () => {
+    const fakeTemplate: any = {
+      type: "Literal",
+      value: "no-template",
+      quasis: [{ value: { cooked: "ignored", raw: "ignored" } }],
+    };
+
+    const realTemplateWithExpr: any = {
+      type: "TemplateLiteral",
+      expressions: [{ type: "Identifier", name: "expr" }],
+      quasis: [{ value: { cooked: "start", raw: "start" } }],
+    };
+
+    expect(getNodeName(fakeTemplate)).toBe("no-template");
+    expect(getNodeName(realTemplateWithExpr)).toBeNull();
+  });
+
+  it("[REQ-ANNOTATION-REQUIRED] handles nullish and missing .value in TemplateLiteral quasis defensively", () => {
+    const defensiveTemplate: any = {
+      type: "TemplateLiteral",
+      expressions: [],
+      quasis: [
+        null,
+        { value: null },
+        { value: { cooked: "part1", raw: "raw1" } },
+        { value: { raw: "-only-raw" } },
+        {},
+      ],
+    };
+
+    expect(getNodeName(defensiveTemplate)).toBe("part1-only-raw");
+  });
+
   it("[REQ-ANNOTATION-REQUIRED] follows generic .key fallback for other shapes", () => {
     const genericWithKey: any = {
       type: "SomeNode",

@@ -1,16 +1,15 @@
 ## NOW
 
-- [ ] Review the require-story-utils helper module and its existing tests to identify which specific branches and decision paths around story annotation handling are still uncovered and what input scenarios would reach them.
+- [ ] Analyze the remaining uncovered defensive branches in the story utility helper to determine which specific edge-case inputs would exercise them and whether they represent distinct, user-visible behavior worth testing.
 
 ## NEXT
 
-- [ ] Design a small set of focused test scenarios that exercise each uncovered branch in the require-story-utils helpers, guided by the corresponding development stories and rule documentation so the intended behavior is clear.
-- [ ] Extend the existing test suite for story-annotation helpers or rules with new cases that implement these scenarios, including clear traceability annotations and descriptive requirement-tagged test names.
-- [ ] Confirm that the new tests actually execute the previously uncovered branches in require-story-utils and, if any branches remain untested, refine the test inputs or add additional cases until they are covered.
-- [ ] Review the behavior enforced by the new tests against the documented semantics for story annotation handling, and adjust tests or documentation if any discrepancies emerge so they remain aligned.
+- [ ] Design one or two minimal additional test cases that target only the uncovered but meaningful defensive branches in the story utility helper, keeping them tied to the existing function-annotation story and requirement IDs.
+- [ ] Extend the dedicated helper test file with these new edge-case tests, ensuring they follow the existing traceability and naming conventions and do not duplicate already-covered scenarios.
+- [ ] Re-evaluate coverage for the story utility helper to confirm that all behaviorally meaningful branches are now executed by tests, and explicitly note any remaining untested guards that are intentionally left as generic defensive code.
 
 ## LATER
 
-- [ ] Apply the same targeted-coverage approach to other helper modules with notable remaining branch gaps, such as require-test-traceability helpers or visitor utilities, adding only the minimal tests needed to cover important branches.
-- [ ] Document a brief internal guideline that illustrates how to close coverage gaps safely after refactors using the redundant-annotation and require-story-utils helpers as examples.
-- [ ] Add a short section to the main user-facing documentation that explains the overall documentation structure and distinguishes clearly between end-user guides and internal development references.
+- [ ] Apply the same targeted-coverage approach to other rule helper modules that still have notable branch coverage gaps, adding only focused tests for behaviorally important defensive branches.
+- [ ] Document a brief internal guideline for closing coverage gaps after refactors, using the story utility and redundant-annotation helpers as concrete examples of how to approach defensive branches.
+- [ ] Enhance the user-facing documentation with a short section that clarifies the overall documentation layout and clearly distinguishes between end-user guides and internal development references without exposing internal-only paths.
