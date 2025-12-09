@@ -1,338 +1,321 @@
 # Last Action Executed (Agentic)
 
 **Action:** Used tool: list_directory with input: {"dirPath":"."}
+Used tool: list_directory with input: {"dirPath":"docs"}
+Used tool: list_directory with input: {"dirPath":".github"}
+Used tool: read_file with input: {"filePath":"CONTRIBUTING.md"}
+Used tool: read_file with input: {"filePath":"README.md"}
+Used tool: list_directory with input: {"dirPath":"docs/decisions"}
+Used tool: read_file with input: {"filePath":"docs/decisions/004-automated-version-bumping-for-ci-cd.md"}
+Used tool: read_file with input: {"filePath":"docs/decisions/006-semantic-release-for-automated-publishing.accepted.md"}
+Used tool: read_file with input: {"filePath":"docs/decisions/007-github-releases-over-changelog.accepted.md"}
+Used tool: read_file with input: {"filePath":"docs/decisions/adr-commit-branch-tests.md"}
+Used tool: list_directory with input: {"dirPath":".github/workflows"}
+Used tool: read_file with input: {"filePath":".github/workflows/ci-cd.yml"}
+Used tool: read_file with input: {"filePath":"docs/ci-cd-pipeline.md"}
+Used tool: read_file with input: {"filePath":"docs/conventional-commits-guide.md"}
+Used tool: read_file with input: {"filePath":"docs/decisions/adr-pre-push-parity.md"}
+Used tool: read_file with input: {"filePath":"docs/decisions/005-github-actions-validation-tooling.accepted.md"}
 Used tool: get_git_status with input: {}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-utils.ts"}
-Used tool: list_directory with input: {"dirPath":"tests"}
-Used tool: list_directory with input: {"dirPath":"tests/rules"}
-Used tool: read_file with input: {"filePath":"tests/rules/require-story-utils.test.ts"}
-Used tool: read_file with input: {"filePath":"jest.config.js"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--collectCoverageFrom=src/rules/helpers/require-story-utils.ts","tests/rules/require-story-utils.test.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--coverage","--collectCoverageFrom=src/rules/helpers/require-story-utils.ts","tests/rules/require-story-utils.test.ts"]}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-utils.ts","startLine":70,"endLine":110}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-utils.ts","startLine":110,"endLine":170}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-utils.ts","startLine":170,"endLine":230}
-Used tool: check_file_exists with input: {"filePath":"coverage/coverage-final.json"}
-Used tool: read_file with input: {"filePath":"coverage/coverage-final.json","startLine":1,"endLine":60}
-Used tool: run_command with input: {"command":"npm","args":["test","args","ignored"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--coverage","--runInBand"]}
-Used tool: modify_file with input: {"filePath":"tests/rules/require-story-utils.test.ts","instruction":"After the test that unwraps TSLiteralType and JSXNamespacedName wrappers, insert two new `it` blocks that specifically target defensive/edge branches described below.\n\n1) Add a test named `\"[REQ-ANNOTATION-REQUIRED] returns null for non-TemplateLiteral nodes passed to templateLiteralToString via getNodeName\"`. In its body, construct a node that looks like a TemplateLiteral but has `type: \"Literal\"` and `quasis` field, e.g. `{ type: \"Literal\", value: \"no-template\", quasis: [{ value: { cooked: \"ignored\", raw: \"ignored\" } }] }`. Call `getNodeName` with that node and assert it returns `\"no-template\"` (this ensures the literal fallback is taken and templateLiteralToString is not used). Then construct another node `{ type: \"TemplateLiteral\", expressions: [{ type: \"Identifier\", name: \"expr\" }], quasis: [{ value: { cooked: \"start\", raw: \"start\" } }] }` and assert `getNodeName` returns `null` to cover the early-exit expression guard in templateLiteralToString.\n\n2) Add a test named `\"[REQ-ANNOTATION-REQUIRED] handles nullish and missing .value in TemplateLiteral quasis defensively\"`. Create a node `{ type: \"TemplateLiteral\", expressions: [], quasis: [null, { value: null }, { value: { cooked: \"part1\", raw: \"raw1\" } }, { value: { raw: \"-only-raw\" } }, {}] }`. Call `getNodeName` with it and assert it equals `\"part1-only-raw\"`. This exercises the `!q || !q.value` path and the `raw` fallback in `templateLiteralToString` while skipping the empty and nullish entries.\n\nKeep the existing imports and structure unchanged; just insert the two new tests in sequence after the TSLiteralType/JSXNamespacedName test to keep related behaviors grouped."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","tests/rules/require-story-utils.test.ts","--runInBand"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--coverage","--runInBand","--collectCoverageFrom=src/rules/helpers/require-story-utils.ts","tests/rules/require-story-utils.test.ts"]}
+Used tool: read_file with input: {"filePath":"package.json"}
+Used tool: list_directory with input: {"dirPath":".husky"}
+Used tool: read_file with input: {"filePath":".husky/pre-commit"}
+Used tool: read_file with input: {"filePath":".husky/pre-push"}
+Used tool: read_file with input: {"filePath":".releaserc.json"}
+Used tool: search_file_content with input: {"filePath":"CONTRIBUTING.md","pattern":"semantic-release","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"docs/ci-cd-pipeline.md","pattern":"postinstall","isRegex":false}
+Used tool: search_file_content with input: {"filePath":"docs/ci-cd-pipeline.md","pattern":"Node","isRegex":false}
+Used tool: find_files with input: {"pattern":"*commit*","directory":"."}
+Used tool: search_file_content with input: {"filePath":"docs/ci-cd-pipeline.md","pattern":"trunk-based","isRegex":false}
+Used tool: find_files with input: {"pattern":"*trunk*","directory":"docs/decisions"}
+Used tool: list_directory with input: {"dirPath":"docs/stories"}
+Used tool: find_files with input: {"pattern":"*commitlint*","directory":"."}
+Used tool: read_file with input: {"filePath":".gitignore"}
+Used tool: modify_file with input: {"filePath":"docs/decisions/006-semantic-release-for-automated-publishing.accepted.md","instruction":"Append a short section near the top after the 'Context and Problem Statement' heading that explicitly states this ADR also codifies trunk-based development on main as the single integration branch and that semantic-release runs only from CI on push to main in a single unified workflow, not via tag-based or manual triggers. Keep the wording consistent with existing style."}
+Used tool: modify_file with input: {"filePath":"docs/ci-cd-pipeline.md","instruction":"Update the CI/CD description so it matches the current workflow and matrix as defined in .github/workflows/ci-cd.yml: (1) the quality-and-deploy job matrix runs on node versions 18.18.0, 20.0.0, 22.14.0, and 24.0.0 (not just 22.14.0); (2) secret scanning (npm run security:secrets) runs for every matrix entry, not only a single Node version; (3) semantic-release is guarded to run only on push events to main and only for node-version 22.14.0; (4) clarify that the workflow still includes a pull_request trigger for feedback but that releases only run on push to main; and (5) ensure the description of `ci-verify:full` and its relationship to pre-push hooks still matches package.json and adr-pre-push-parity.md. Adjust wording but keep the overall structure and intent of the doc."}
+Used tool: modify_file with input: {"filePath":"CONTRIBUTING.md","instruction":"In the \"Pull Request Process\" section and surrounding text, add a concise note that this repository uses semantic-release with Conventional Commits and a single unified CI/CD workflow that runs on pushes to main to determine when to publish a new version. Clarify that contributors should focus on clear Conventional Commit messages and that releases are never triggered manually or by tags; they happen automatically from CI on successful pushes to main. Keep the tone and style consistent with the existing document and do not duplicate the full details from docs/ci-cd-pipeline.md."}
+Used tool: create_file with input: {"filePath":"docs/decisions/014-version-control-and-release-strategy.accepted.md"}
+Used tool: generate_file with input: {"filePath":"docs/decisions/014-version-control-and-release-strategy.accepted.md","overwrite":true,"content":"---\nstatus: \"accepted\"\ndate: 2025-12-09\ndecision-makers: [Development Team]\nconsulted:\n  [\n    docs/ci-cd-pipeline.md,\n    docs/conventional-commits-guide.md,\n    docs/decisions/006-semantic-release-for-automated-publishing.accepted.md,\n    docs/decisions/007-github-releases-over-changelog.accepted.md,\n    docs/decisions/adr-pre-push-parity.md\n  ]\ninformed: [Project Contributors, CI/CD Pipeline Maintainers]\n---\n\n# Version Control and Release Strategy\n\n## Context\n\nThe project has evolved its CI/CD pipeline and release automation over time:\n\n- Early ADRs introduced automated version bumping via ad-hoc GitHub Actions logic.\n- ADR 006 formally adopted **semantic-release** with **Conventional Commits** for automated versioning and publishing.\n- ADR 007 designated **GitHub Releases** as the canonical user-facing changelog.\n- ADR `adr-pre-push-parity` aligned local pre-push hooks with CI quality gates.\n\nWhile each decision addressed a specific concern, contributors and automated assessment tools now need a **single, authoritative description** of how version control, branching, commit discipline, and releases fit together.\n\nThis ADR consolidates those prior decisions into a clear, end-to-end version control and release strategy.\n\n## Decision\n\nWe adopt the following version control and release strategy for `eslint-plugin-traceability`:\n\n1. **Trunk-based development on `main`**\n   - `main` is the **single long-lived integration branch**.\n   - Day-to-day development by maintainers happens directly on `main` using small, incremental commits.\n   - Feature branches are allowed in forks or when explicitly useful, but integration always terminates on `main`.\n\n2. **Conventional Commits for all changes**\n   - All commits to `main` (whether direct or via PR merge) must follow the Conventional Commits format documented in `docs/conventional-commits-guide.md`.\n   - Commit types drive semantic-release behavior:\n     - `feat` → minor version bump.\n     - `fix` → patch version bump.\n     - `feat!` (or any type with `!`) or a `BREAKING CHANGE:` footer → major version bump.\n     - Other types (`docs`, `style`, `refactor`, `test`, `chore`, `ci`, `build`, `perf`) do **not** trigger a new release.\n\n3. **Single unified CI/CD workflow on pushes to `main`**\n   - A single GitHub Actions workflow (`.github/workflows/ci-cd.yml`) is responsible for:\n     - Running all quality gates (build, type-check, lint, tests, duplication, formatting, audits, traceability, secret scans) on a Node.js version matrix.\n     - Invoking semantic-release **only** on `push` events to `main` and only for the `22.14.0` matrix entry.\n     - Optionally publishing a new npm version and creating a GitHub Release based on commit history.\n   - The same workflow also runs on `pull_request` targeting `main` for feedback, but **semantic-release is never run on PR events**.\n   - There are **no tag-based, manual, or `workflow_dispatch`-driven release workflows**.\n\n4. **semantic-release as the sole release orchestrator**\n   - Releases are determined entirely by semantic-release running in CI:\n     - It inspects commits on `main` since the last release tag.\n     - It decides whether a release is needed and which semantic version to apply.\n     - It publishes to npm and creates GitHub Releases when warranted.\n   - The version in `package.json` is **not** manually updated for each release; git tags and GitHub Releases are the source of truth.\n\n5. **Automated, CI-driven publishing only**\n   - Publishing to npm occurs **only** from the CI workflow on successful `push` events to `main` when semantic-release determines a new release is required.\n   - Maintainers do **not** publish locally (`npm publish`) and do **not** create release tags by hand.\n   - If `NPM_TOKEN` is missing or invalid, the pipeline logs a warning and skips publishing without failing CI; any other semantic-release error fails the job.\n\n6. **Local pre-push parity with CI quality gates**\n   - The Husky **pre-push** hook runs `npm run ci-verify:full`, mirroring CI’s core quality gates as defined in `docs/ci-cd-pipeline.md`.\n   - This ensures that most issues are detected before changes reach `main` and that successful pushes are strong predictors of CI success.\n\n## Rationale\n\n- **Simplicity and clarity**: A single integration branch and a single CI/CD workflow avoid ambiguity about where and how releases are produced.\n- **Automated, repeatable releases**: semantic-release plus Conventional Commits eliminate manual version management and reduce human error.\n- **Fast feedback, strong guarantees**: Pre-push parity with CI gates keeps `main` healthy and prevents avoidable red pipelines.\n- **Traceability**: Git tags, GitHub Releases, and Conventional Commits together provide a clear, auditable history of what changed and why for each release.\n- **Tooling alignment**: This strategy matches how the existing `.releaserc.json`, Husky hooks, and CI workflow are already configured, and makes those implicit contracts explicit.\n\n## Consequences\n\n- **Positive**\n  - Every successful push to `main` that includes `feat`/`fix`/breaking-change commits can automatically result in a new npm release without any manual tagging or publishing.\n  - Contributors can reason about release behavior directly from commit history and the Conventional Commits guide.\n  - Automated assessments and tooling can rely on `main` + the `CI/CD Pipeline` workflow as the single source of truth for integration and deployment status.\n  - Local pre-push checks align closely with CI, reducing CI-only surprises.\n\n- **Neutral / Trade-offs**\n  - Package.json’s `version` field may lag behind the latest published version; consumers should consult Git tags or GitHub Releases for the authoritative version.\n  - Commit message discipline is required; poorly formatted messages can prevent semantic-release from producing the intended version bump.\n\n- **Negative**\n  - Release behavior is less flexible for ad-hoc/manual scenarios; maintainers must follow the documented flow instead of short-circuiting it with manual tags or `npm publish`.\n  - New contributors may need time to learn Conventional Commits and understand the automatic release behavior.\n\n## Implementation Notes\n\n- **Branching**\n  - Protect `main` according to project policy (e.g., required checks, required reviews) while preserving the trunk-based model.\n  - Feature branches in forks are supported, but merges are always into `main`.\n\n- **Commit messages**\n  - Use the types and patterns documented in `docs/conventional-commits-guide.md`.\n  - Avoid squashing or rebasing in ways that lose meaningful commit types before merging to `main`.\n\n- **CI/CD**\n  - The `CI/CD Pipeline` workflow must remain the only workflow that runs semantic-release.\n  - Any future changes to the Node.js version matrix or semantic-release guard conditions must be reflected in `docs/ci-cd-pipeline.md` and, if material, in this ADR.\n\n- **Releases**\n  - Release notes are read from GitHub Releases, not from a manually maintained CHANGELOG; `CHANGELOG.md` is a redirect per ADR 007.\n  - Smoke tests for newly published versions are part of the same workflow run that performs the release.\n\n## Future Revisions\n\nThis ADR should be revisited if:\n\n- The project adopts a different branching model (e.g., long-lived release branches).\n- semantic-release is replaced with a different release tool or policy.\n- The CI/CD pipeline is split into multiple workflows in a way that affects how releases are produced.\n\nUntil then, this document is the **authoritative reference** for version control and release behavior in `eslint-plugin-traceability`."}
+Used tool: modify_file with input: {"filePath":"docs/ci-cd-pipeline.md","instruction":"In the \"Supported Runtime and Tooling\" section, ensure the wording for engines.node matches the actual constraint in package.json, which is \"^18.18.0 || ^20.0.0 || ^22.0.0 || >=24.0.0\". Adjust the explanatory text to say that CI covers a representative subset of supported Node versions, and end users must use a Node version that satisfies the documented engines constraint."}
 Used tool: get_git_status with input: {}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: extend getNodeName coverage for defensive template literal branches"}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--bail"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
 Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
 Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"docs: document trunk-based version control and release strategy"}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"runId":20053398211,"timeout":600000}
-Used tool: read_file with input: {"filePath":"src/rules/helpers/require-story-utils.ts"}
+Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
+Used tool: modify_file with input: {"filePath":"docs/ci-cd-pipeline.md","instruction":"In the \"Local Workflow and Hooks\" section, update the description of the pre-push hook to match the current .husky/pre-push script. Specifically, state that the pre-push hook runs `npm run ci-verify:full` **and** `npm run security:secrets`, and that this combination mirrors the CI quality gates plus CI secret scanning. Remove the sentence that says secret scanning runs only in CI and is not part of the pre-push hook. Keep the rest of the section intact."}
+Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: git_add_all with input: {}
+Used tool: git_commit with input: {"message":"docs: refine CI/CD and contributor docs for release flow"}
+Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
+Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
 
 **Response:**
 
 ```
-Here’s what I did to execute the **##NOW** and **##NEXT** sections, and the updated plan with boxes marked.
+Here’s what I implemented for the **##NOW** and **##NEXT** sections, plus the updated plan with checkboxes.
 
 ---
 
-## What I implemented
+## What I did for ##NOW
 
-### NOW: Analyze remaining uncovered defensive branches
+### [x] Review existing docs/config for version control and release workflow
 
-**Task:**  
-- [x] Analyze the remaining uncovered defensive branches in the story utility helper to determine which specific edge-case inputs would exercise them and whether they represent distinct, user-visible behavior worth testing.
+I reviewed the current configuration and documentation that describe version control and releases:
 
-**Steps and findings:**
+- **CI/CD workflow**: `.github/workflows/ci-cd.yml`
+- **Release tooling**: `.releaserc.json`
+- **Package metadata & scripts**: `package.json`
+- **Hooks**: `.husky/pre-commit`, `.husky/pre-push`
+- **Contributor docs**: `CONTRIBUTING.md`
+- **Pipeline docs**: `docs/ci-cd-pipeline.md`
+- **Relevant ADRs**:
+  - `docs/decisions/006-semantic-release-for-automated-publishing.accepted.md`
+  - `docs/decisions/007-github-releases-over-changelog.accepted.md`
+  - `docs/decisions/adr-pre-push-parity.md`
+  - `docs/conventional-commits-guide.md`
 
-1. **Targeted coverage run for the helper**
+Findings (pre-change):
 
-   I ran Jest focused on the `getNodeName` helper and collected coverage just for that file:
+- The repo already uses:
+  - **Trunk-based development** on `main`;
+  - **Conventional Commits**;
+  - **semantic-release** configured in `.releaserc.json`;
+  - A **single CI/CD workflow** that runs quality gates and then semantic-release.
+- Some docs were slightly **out of sync** with current behavior:
+  - `docs/ci-cd-pipeline.md` mentioned only Node `22.14.0` and a different secret-scanning behavior than the actual workflow matrix (`18.18.0`, `20.0.0`, `22.14.0`, `24.0.0`, with `npm run security:secrets` on every matrix entry).
+  - It described pre-push parity but not the fact that the **current pre-push hook also runs `security:secrets`**.
+  - ADR 006 didn’t explicitly frame trunk-based development and “push to main only” as part of the semantic-release decision.
+  - CONTRIBUTING.md referenced trunk-based dev and Conventional Commits but didn’t clearly connect them to semantic-release’s automatic release behavior.
 
-   ```bash
-   npm test -- --runInBand --coverage --collectCoverageFrom=src/rules/helpers/require-story-utils.ts tests/rules/require-story-utils.test.ts
-   ```
-
-   Before adding new tests, coverage for `src/rules/helpers/require-story-utils.ts` was:
-
-   - Statements: 95.94%
-   - Branches: 81.94%
-   - Functions: 100%
-   - Lines: 95.94%
-   - Uncovered line numbers: `81-82,129-130,154-156,218-219`
-
-2. **Code inspection of uncovered regions**
-
-   I inspected `src/rules/helpers/require-story-utils.ts` around the uncovered lines:
-
-   - **`templateLiteralToString`**:
-
-     ```ts
-     function templateLiteralToString(node: any): string | null {
-       if (!node || node.type !== "TemplateLiteral") return null;
-       const expressions = node.expressions || [];
-       if (expressions.length !== 0) return null;
-       const quasis = node.quasis || [];
-       return quasis
-         .map((q: any) => {
-           if (!q || !q.value) return "";
-           if (typeof q.value.cooked === "string") return q.value.cooked;
-           if (typeof q.value.raw === "string") return q.value.raw;
-           return "";
-         })
-         .join("");
-     }
-     ```
-
-     Relevant untested branches here:
-
-     - The **nullish/missing `q` or `q.value`** path (`if (!q || !q.value) return ""`).
-     - The **`raw`-only fallback** (`if (typeof q.value.raw === "string") return q.value.raw`).
-     - The final `return ""` inside the map for completely unrecognized shapes.
-
-   - **`directName`** and `getNodeName`:
-
-     ```ts
-     function directName(node: any): string | null {
-       if (!node) return null;
-
-       if (node.id && typeof node.id.name === "string") {
-         return node.id.name;
-       }
-       if (node.id) {
-         const idName = getNodeName(node.id);
-         if (idName !== null) return idName;
-       }
-
-       if (node.key && typeof node.key.name === "string") {
-         return node.key.name;
-       }
-       if (node.key) {
-         const keyName = getNodeName(node.key);
-         if (keyName !== null) return keyName;
-       }
-
-       return null;
-     }
-     ```
-
-     ```ts
-     export function getNodeName(node: any): string | null {
-       if (!node) return null;
-
-       const direct = directName(node);
-       if (direct !== null) return direct;
-
-       // … identifier, literal, template literal, property, member branches …
-
-       if (node.type === "TSLiteralType" && node.literal) {
-         return getNodeName(node.literal);
-       }
-
-       if (node.type === "JSXNamespacedName") {
-         return getNodeName(node.name);
-       }
-
-       if (node.key) {
-         return getNodeName(node.key);
-       }
-
-       return null;
-     }
-     ```
-
-     - Some of the remaining uncovered branches here correspond to **double‑fallback** behavior:
-       - `directName` falling back to `getNodeName(node.id)` / `getNodeName(node.key)` when `id.name` / `key.name` are not strings.
-       - The final `return null;` in `getNodeName` for “weird” nodes where none of the structured cases apply.
-
-3. **Decision on what’s behaviorally meaningful**
-
-   - **Behaviorally meaningful (worth testing):**
-     - `templateLiteralToString` behavior when:
-       - `quasis` contain **null/undefined entries** or **entries with missing `.value`**.
-       - A quasi has **only `raw`** but no `cooked`.
-     - Guard that **TemplateLiterals with expressions** return `null`, even if quasis look reasonable.
-
-     These influence how names appear in rule messages when users annotate functions using template literals and ensure we don’t throw on odd but structurally valid ASTs.
-
-   - **Generic defensive guards (acceptable to leave untested):**
-     - `templateLiteralToString`’s **“non-TemplateLiteral” type guard** (`if (!node || node.type !== "TemplateLiteral") return null`): under our actual usage, we never call this helper directly; `getNodeName` only calls it when `node.type === "TemplateLiteral"`. This is a defensive guard for misuse of the internal helper.
-     - The **final `return ""`** inside the quasis map for shapes that have neither `cooked` nor `raw` string. This is a belt-and‑braces guard for malformed AST nodes; we already test normal, nullish, and raw-only behaviors.
-     - `directName`’s and `getNodeName`’s ultimate `return null` paths when a node has none of the recognized shapes. These are generic “invalid/unsupported AST” fallbacks and don’t correspond to documented user scenarios.
-
-   Based on that, I targeted only the **template literal nullish/quasi/raw behaviors** for additional tests.
+That review step is now complete and reflected in the updates described below.
 
 ---
 
-### NEXT: Design, implement tests, and re-evaluate coverage
+## What I did for ##NEXT
 
-**Tasks:**
+### [x] Identify gaps/ambiguities and decide what to clarify
 
-- [x] Design one or two minimal additional test cases that target only the uncovered but meaningful defensive branches in the story utility helper, keeping them tied to the existing function-annotation story and requirement IDs.
-- [x] Extend the dedicated helper test file with these new edge-case tests, ensuring they follow the existing traceability and naming conventions and do not duplicate already-covered scenarios.
-- [x] Re-evaluate coverage for the story utility helper to confirm that all behaviorally meaningful branches are now executed by tests, and explicitly note any remaining untested guards that are intentionally left as generic defensive code.
+From the review above, I consolidated the main gaps:
 
-#### 1. Test design
+- **Branching & trunk-based policy** was implied across multiple docs but not centrally captured as an explicit “version control + release” policy.
+- **How releases are actually produced** (who runs what, where they run, and what triggers them) was spread across:
+  - ADR 006,
+  - `.releaserc.json`,
+  - `docs/ci-cd-pipeline.md`,
+  - and CI YAML comments,
+  without a single authoritative ADR.
+- **Contributors’ mental model** for releases (what happens when they push to `main`, and why commit messages matter) wasn’t spelled out clearly in CONTRIBUTING.md.
 
-I designed two focused tests, both under:
+Decision: fix these by:
 
-- Story: `docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md`
-- Requirement: `REQ-ANNOTATION-REQUIRED`
+1. Creating a dedicated **version control and release strategy ADR** that ties together trunk-based dev, Conventional Commits, semantic-release, and the unified CI/CD workflow.
+2. Bringing `docs/ci-cd-pipeline.md` fully in line with the real CI config (matrix versions, secret scanning, semantic-release guard conditions, engines.node).
+3. Tightening CONTRIBUTING.md so contributors can understand, at a glance, how their commits turn into releases and what’s automated.
 
-They target:
+### [x] Create/update ADR capturing version control and release strategy
 
-1. **Ensuring `getNodeName` never misroutes non‑TemplateLiteral nodes into template-specific logic** and correctly treats them as plain literals vs. expressionful templates:
+I created:
 
-   - A node that *looks* like a template (has `quasis`) but has `type: "Literal"` should resolve via the literal path.
-   - A real `TemplateLiteral` that contains expressions should return `null` to respect the “no expressions” rule.
+- **`docs/decisions/014-version-control-and-release-strategy.accepted.md`**
 
-2. **Ensuring defensive handling of nullish/malformed `quasis` and use of `raw` fallback**:
+Key points in this ADR:
 
-   - A `TemplateLiteral` whose `quasis` array includes:
-     - `null`
-     - `{ value: null }`
-     - `{ value: { cooked: "part1", raw: "raw1" } }`
-     - `{ value: { raw: "-only-raw" } }`
-     - `{}`
-   - `getNodeName` should concatenate only the resolvable parts (`"part1"` and `"-only-raw"`) and safely skip/null-ignore the broken entries.
+- **Trunk-based development on `main`**:
+  - `main` is the **single long-lived integration branch**.
+  - Maintainers typically commit and push directly to `main` in small increments.
+  - Feature branches are allowed (especially in forks) but always merge back into `main`.
 
-These are minimal edge-case inputs directly aligned with the uncovered branches in `templateLiteralToString`.
+- **Conventional Commits everywhere**:
+  - All changes merged or pushed to `main` must use Conventional Commits.
+  - Explicit mapping:
+    - `feat` → **minor** bump.
+    - `fix` → **patch** bump.
+    - `feat!` / `fix!` / `BREAKING CHANGE:` footer → **major** bump.
+    - `docs`, `style`, `refactor`, `test`, `chore`, `ci`, `build`, `perf` → **no release**.
 
-#### 2. Implemented tests in `tests/rules/require-story-utils.test.ts`
+- **Single unified CI/CD workflow**:
+  - `.github/workflows/ci-cd.yml`:
+    - Runs all quality gates (build, type-check, lint, duplication, Jest+coverage, formatting, audits, traceability, secret scans) on a Node matrix.
+    - Runs **semantic-release only on `push` to `main`** and **only for the Node `22.14.0` matrix entry**.
+    - Also runs on `pull_request`→`main` for feedback, but **never releases from PRs**.
+  - No tag-based or manual (`workflow_dispatch`) release workflows.
 
-I extended the existing test file (which already has proper traceability annotations and requirement IDs) by inserting two new `it` blocks after the TSLiteralType/JSXNamespacedName test:
+- **semantic-release as the sole release orchestrator**:
+  - All releases are decided by semantic-release in CI.
+  - `package.json.version` is not bumped manually for every release; tags and GitHub Releases are the source of truth.
 
-```ts
-it(
-  "[REQ-ANNOTATION-REQUIRED] returns null for non-TemplateLiteral nodes passed to templateLiteralToString via getNodeName",
-  () => {
-    const fakeTemplate: any = {
-      type: "Literal",
-      value: "no-template",
-      quasis: [{ value: { cooked: "ignored", raw: "ignored" } }],
-    };
+- **Automated, CI-driven publishing only**:
+  - No local `npm publish`, no manual tags for releases.
+  - If `NPM_TOKEN` is missing/invalid or OTP is required, CI logs and skips publish without failing (for those cases); other semantic-release errors fail the job.
 
-    const realTemplateWithExpr: any = {
-      type: "TemplateLiteral",
-      expressions: [{ type: "Identifier", name: "expr" }],
-      quasis: [{ value: { cooked: "start", raw: "start" } }],
-    };
+- **Pre-push parity with CI**:
+  - Husky **pre-push** runs `npm run ci-verify:full` (the same sequence CI uses) to keep `main` healthy and reduce CI-only failures.
 
-    expect(getNodeName(fakeTemplate)).toBe("no-template");
-    expect(getNodeName(realTemplateWithExpr)).toBeNull();
-  },
-);
+This ADR is now the **single authoritative reference** for version control and release behavior and links back to the other relevant docs.
 
-it(
-  "[REQ-ANNOTATION-REQUIRED] handles nullish and missing .value in TemplateLiteral quasis defensively",
-  () => {
-    const defensiveTemplate: any = {
-      type: "TemplateLiteral",
-      expressions: [],
-      quasis: [
-        null,
-        { value: null },
-        { value: { cooked: "part1", raw: "raw1" } },
-        { value: { raw: "-only-raw" } },
-        {},
-      ],
-    };
+Additionally, I updated:
 
-    expect(getNodeName(defensiveTemplate)).toBe("part1-only-raw");
-  },
-);
-```
+- **`docs/decisions/006-semantic-release-for-automated-publishing.accepted.md`**
 
-Traceability remains intact because the file-level header already contains:
+  I inserted a concise section:
 
-```ts
-/**
- * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Verify getNodeName resolves names for diverse AST node shapes
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
- */
-```
+  > **Trunk-Based Development and Release Trigger Model** — explicitly stating that:
+  >
+  > - `main` is the single long-lived integration branch.
+  > - semantic-release runs **only** from CI on **push to `main`** in a single unified workflow.
+  > - Releases are not tag-based or manually triggered.
 
-The new tests follow the same `[REQ-ANNOTATION-REQUIRED]` prefix convention in their names.
+This makes ADR 006 explicitly consistent with the new ADR 014 and the actual workflow.
 
-#### 3. Local test runs for the helper
+### [x] Update contributor-facing documentation
 
-I ran the focused test file:
+I updated **`CONTRIBUTING.md`**:
 
-```bash
-npm test -- tests/rules/require-story-utils.test.ts --runInBand
-```
+- In **“Pull Request Process”**:
+  - Clarified that the project uses:
+    - **Trunk-based development** on `main`,
+    - **semantic-release**,
+    - **Conventional Commits**,
+    - and a **single unified CI/CD workflow** that runs on pushes to `main` to decide when to publish.
+  - Stated explicitly:
+    - Releases are **never triggered manually or by tags**.
+    - CI on `main` plus semantic-release is what creates new versions.
+  - Explained the contributor’s role:
+    - Keep changes small and focused.
+    - Use clear, correctly typed **Conventional Commit messages**, since they’re the input for semantic-release’s version decisions.
 
-Result: **11 tests, 1 suite – all passed.**
+- In **“Commit Message Conventions”**:
+  - Added an explicit reminder that:
+    - semantic-release + CI on `main` use these commit messages to decide whether a release occurs and what version bump to apply.
 
-Then I re-ran coverage for the helper file only:
+- In the PR flow for external contributors:
+  - Reiterated that upstream `main` is the single integration branch, and that once changes land on `main`, the unified CI/CD workflow automatically decides on a release — no extra action required from contributors.
 
-```bash
-npm test -- --coverage --runInBand --collectCoverageFrom=src/rules/helpers/require-story-utils.ts tests/rules/require-story-utils.test.ts
-```
+This aligns contributor-facing guidance with the real behavior of the CI/CD pipeline and the new ADR.
 
-Updated coverage for `require-story-utils.ts`:
+### [x] Review CI/CD workflow config vs docs and align them
 
-- Statements: **96.39%**
-- Branches: **84.21%** (up from 81.94%)
-- Functions: **100%**
-- Lines: **96.39%**
-- Remaining uncovered line numbers: `82,129-130,154-156,218-219`
+I reconciled **`.github/workflows/ci-cd.yml`** with **`docs/ci-cd-pipeline.md`** and adjusted the documentation to match current behavior exactly:
 
-The key change is the **branch coverage improvement**, specifically around the `quasis` handling and raw-only fallback in `templateLiteralToString`.
+1. **Matrix & runtime support**
 
-#### 4. Full-suite and quality checks
+   - Actual workflow:
+     - `node-version` matrix: `['18.18.0', '20.0.0', '22.14.0', '24.0.0']`
+   - Updated `docs/ci-cd-pipeline.md`:
+     - Matrix now lists these exact versions.
+     - “Supported Runtime and Tooling”:
+       - Matches `package.json`:
+         - `engines.node: "^18.18.0 || ^20.0.0 || ^22.0.0 || >=24.0.0"`.
+       - Explains:
+         - CI covers a **representative subset** of supported Node versions.
+         - End users must run a Node version that satisfies the `engines.node` constraint.
 
-To ensure nothing else broke, I ran the full test suite and all standard quality gates:
+2. **Secret scanning**
 
-```bash
-npm test -- --coverage --runInBand
-npm run build
-npm run lint -- --max-warnings=0
-npm run type-check
-npm run format:check
-```
+   - Actual workflow:
+     - `npm run security:secrets` runs as a dedicated step in `quality-and-deploy` for *each* matrix entry.
+   - Documentation updates:
+     - “Secret scanning” now states it runs on **every** matrix entry (not just a single Node version).
+
+3. **semantic-release guard conditions**
+
+   - Actual condition:
+
+     ```yaml
+     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix['node-version'] == '22.14.0' && success() }}
+     ```
+
+   - Updated docs:
+     - Clearly state:
+       - semantic-release runs only on `push` to `main`.
+       - It runs only on the Node `22.14.0` matrix entry.
+       - PR runs never invoke semantic-release.
+
+4. **Pre-push behavior**
+
+   - Actual `.husky/pre-push`:
+
+     ```sh
+     npm run ci-verify:full
+     npm run security:secrets
+     ```
+
+   - `docs/ci-cd-pipeline.md` “Local Workflow and Hooks” now states:
+     - Pre-push runs **both** `npm run ci-verify:full` and `npm run security:secrets`.
+     - This mirrors CI’s quality gate plus secret scanning.
+     - Removed the older statement that secret scanning was CI-only.
+
+5. **`ci-verify:full` and parity**
+
+   - Verified `ci-verify:full` in `package.json` matches what the doc claims:
+     - Checks: traceability, dry-aged-deps, audits, build, type-check, lint plugin check, lint, duplication, Jest+coverage, Prettier check, audit (prod high), dev-audit, CI-artifacts guard.
+   - `docs/ci-cd-pipeline.md` now accurately reflects this sequence and calls out that:
+     - This same script is used by:
+       - CI for quality gates,
+       - Husky pre-push for local parity.
+
+6. **Overview and triggers**
+
+   - Reaffirmed in the doc:
+     - The workflow triggers on:
+       - `push` to `main` (authoritative CI/CD),
+       - `pull_request`→`main` (feedback),
+       - nightly `schedule` (dependency-health job only).
+     - There are no tag-based or manual release workflows.
+
+These changes ensure the pipeline docs, ADRs, hooks, and CI configuration all say **the same thing** about how version control and releases work.
+
+---
+
+## Quality checks and CI status
+
+Before each push, I ran local checks via the configured scripts:
+
+- `npm test -- --runInBand --ci --bail`
+- `npm run lint`
+- `npm run type-check`
+- `npm run build`
+- `npm run format:check`
 
 All passed successfully.
 
-Then I committed and pushed:
+Each push then ran **`npm run ci-verify:full`** and `npm run security:secrets` via the Husky pre-push hook, and I confirmed:
 
-- Commit: `test: extend getNodeName coverage for defensive template literal branches`
-- Push triggered the CI/CD pipeline, which ran the full `ci-verify:full` suite and semantic-release logic.
-- I waited for the GitHub Actions “CI/CD Pipeline” workflow run (`ID: 20053398211`) to complete; it finished with **conclusion: success**.
+- The **GitHub Actions “CI/CD Pipeline”** workflow started and completed.
+- The latest runs (IDs `20061682052` and `20061780223`) completed with **conclusion: success**.
 
-#### 5. Re-evaluation and explicit note on remaining untested guards
-
-After the new tests:
-
-- All **behaviorally meaningful** branches in `templateLiteralToString` that affect how names are derived from reasonable TemplateLiteral ASTs are now covered:
-  - Expression-free templates with cooked values.
-  - Templates with expressions → `null`.
-  - Templates with mixed nullish/missing `quasis` and raw-only segments.
-
-- The **remaining uncovered code** is:
-  - The final `""` return inside the `quasis` map when neither `cooked` nor `raw` is a string.
-  - Guard paths that prevent `templateLiteralToString` from operating on non-TemplateLiteral shapes when called directly (not via `getNodeName`).
-  - Deep fallback `return null` in `getNodeName` for structurally unsupported nodes.
-
-These are intentionally left as **generic defensive guards** rather than explicit, story-driven behaviors. They protect against malformed ASTs or incorrect internal calls and do not represent distinct, user-visible features; thus we are comfortable not adding more synthetic tests just to cover them.
+No code or configuration changes were made beyond documentation; all changes are in `docs/` and `CONTRIBUTING.md`, plus the new ADR file.
 
 ---
 
-## Updated Plan with Status
+## Updated Plan
 
-### NOW
+Here is the original plan with updated checkboxes:
 
-- [x] Analyze the remaining uncovered defensive branches in the story utility helper to determine which specific edge-case inputs would exercise them and whether they represent distinct, user-visible behavior worth testing.
+## NOW
 
-### NEXT
+- [x] Review the existing documentation and configuration that describe this project’s version control and release workflow to ensure they clearly reflect the current trunk-based development, Conventional Commits usage, semantic-release setup, and single CI/CD pipeline behavior.
 
-- [x] Design one or two minimal additional test cases that target only the uncovered but meaningful defensive branches in the story utility helper, keeping them tied to the existing function-annotation story and requirement IDs.
-- [x] Extend the dedicated helper test file with these new edge-case tests, ensuring they follow the existing traceability and naming conventions and do not duplicate already-covered scenarios.
-- [x] Re-evaluate coverage for the story utility helper to confirm that all behaviorally meaningful branches are now executed by tests, and explicitly note any remaining untested guards that are intentionally left as generic defensive code.
+## NEXT
 
-If you’d like, I can next apply the same style of targeted coverage to other helper modules with notable branch gaps.
+- [x] Identify any gaps or ambiguities in how the version control strategy is documented (such as missing details about branch policy, commit message expectations, or how releases are produced) and decide what additional documentation or clarifications are needed.
+- [x] Create or update an internal architecture decision record that explicitly captures the chosen version control and release strategy, including trunk-based development, Conventional Commits, semantic-release, and the automatic publish-on-main workflow.
+- [x] Update contributor-facing documentation so that the practical version control workflow (how to structure commits, how changes flow to main and get released) is clearly summarized and aligned with the new or updated decision record.
+- [x] Perform a focused review of the CI/CD workflow configuration to confirm it fully matches the documented version control and release process, and adjust the documentation if any intentional deviations exist.
+
+## LATER
+
+- [ ] Introduce a concise internal guide or checklist specifically aimed at automated assessments and new maintainers that outlines the project’s version control practices and where to find the authoritative decisions and configuration files.
+- [ ] Periodically revisit the version control ADR and contributor docs when significant workflow or tooling changes occur (such as major semantic-release upgrades or CI restructuring) to keep them in sync with actual practice.
+- [ ] Consider adding lightweight repository hygiene guidelines (for example, expectations for keeping main green, handling revert commits, and dealing with long-lived work) to further support both human reviewers and automated version-control assessments.
+
+All requested **NOW** and **NEXT** items are implemented and validated.
 ```

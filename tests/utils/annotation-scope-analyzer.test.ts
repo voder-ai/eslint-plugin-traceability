@@ -295,6 +295,59 @@ describe(
     });
 
     it(
+      "[REQ-SAFE-REMOVAL] consumes trailing spaces and tabs following a full-line comment",
+      () => {
+        const source =
+          "const x = 1;\n// @story docs/stories/001.story.md   	  \nconst y = 2;\n";
+        const sourceCode = {
+          getText() {
+            return source;
+          },
+        } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+
+        const start = source.indexOf("// @story");
+        const end = start + "// @story docs/stories/001.story.md".length;
+        const comment = { range: [start, end] };
+
+        const [removalStart, removalEnd] = getCommentRemovalRange(
+          comment,
+          sourceCode,
+        );
+        const removed =
+          source.slice(0, removalStart) + source.slice(removalEnd);
+
+        expect(removed).toBe("const x = 1;\nconst y = 2;\n");
+      },
+    );
+
+    it(
+      "[REQ-SAFE-REMOVAL] handles full-line comment at end of file without trailing newline",
+      () => {
+        const source =
+          "const x = 1;\n// @story docs/stories/001.story.md";
+        const sourceCode = {
+          getText() {
+            return source;
+          },
+        } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+
+        const start = source.indexOf("// @story");
+        const end = start + "// @story docs/stories/001.story.md".length;
+        const comment = { range: [start, end] };
+
+        const [removalStart, removalEnd] = getCommentRemovalRange(
+          comment,
+          sourceCode,
+        );
+        const removed =
+          source.slice(0, removalStart) + source.slice(removalEnd);
+
+        expect(removed).toBe("const x = 1;\n");
+        expect(removalEnd).toBe(source.length);
+      },
+    );
+
+    it(
       "[REQ-SAFE-REMOVAL] returns [0, 0] for comments with invalid range length (EXPECTS EXPECTED_RANGE_LENGTH usage)",
       () => {
         const source = "const x = 1;";
@@ -305,6 +358,23 @@ describe(
         } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
 
         const comment = { range: [0] as unknown as [number, number] };
+
+        const range = getCommentRemovalRange(comment, sourceCode);
+        expect(range).toEqual([0, 0]);
+      },
+    );
+
+    it(
+      "[REQ-SAFE-REMOVAL] returns [0, 0] when comment range is not an array",
+      () => {
+        const source = "const x = 1;";
+        const sourceCode = {
+          getText() {
+            return source;
+          },
+        } as unknown as ReturnType<Rule.RuleContext["getSourceCode"]>;
+
+        const comment = { range: null as unknown as [number, number] };
 
         const range = getCommentRemovalRange(comment, sourceCode);
         expect(range).toEqual([0, 0]);

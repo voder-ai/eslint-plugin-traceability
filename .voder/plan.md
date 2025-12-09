@@ -1,16 +1,16 @@
 ## NOW
 
-- [ ] Review the existing documentation and configuration that describe this project’s version control and release workflow to ensure they clearly reflect the current trunk-based development, Conventional Commits usage, semantic-release setup, and single CI/CD pipeline behavior.
+- [ ] Analyze the behavior of the logic around the currently uncovered branches in the annotation scope analyzer so you can determine exactly what scenarios and inputs new tests need to cover for those code paths.
 
 ## NEXT
 
-- [ ] Identify any gaps or ambiguities in how the version control strategy is documented (such as missing details about branch policy, commit message expectations, or how releases are produced) and decide what additional documentation or clarifications are needed.
-- [ ] Create or update an internal architecture decision record that explicitly captures the chosen version control and release strategy, including trunk-based development, Conventional Commits, semantic-release, and the automatic publish-on-main workflow.
-- [ ] Update contributor-facing documentation so that the practical version control workflow (how to structure commits, how changes flow to main and get released) is clearly summarized and aligned with the new or updated decision record.
-- [ ] Perform a focused review of the CI/CD workflow configuration to confirm it fully matches the documented version control and release process, and adjust the documentation if any intentional deviations exist.
+- [ ] Design concrete test cases that exercise each of the identified scenarios for the uncovered branches, focusing on observable behavior and edge conditions rather than internal implementation details.
+- [ ] Add the new tests to the existing test suite that covers the annotation scope analyzer, ensuring they follow the project’s traceability conventions with appropriate @supports annotations and requirement IDs in test names.
+- [ ] Review the new tests to confirm they are behavior-focused and independent, and that together they exercise all previously uncovered branches in the targeted section of the annotation scope analyzer.
+- [ ] Adjust or extend the tests if any branches remain uncovered for legitimate behavioral paths, and explicitly document in code comments where remaining branches are purely defensive guards that are intentionally left untested.
 
 ## LATER
 
-- [ ] Introduce a concise internal guide or checklist specifically aimed at automated assessments and new maintainers that outlines the project’s version control practices and where to find the authoritative decisions and configuration files.
-- [ ] Periodically revisit the version control ADR and contributor docs when significant workflow or tooling changes occur (such as major semantic-release upgrades or CI restructuring) to keep them in sync with actual practice.
-- [ ] Consider adding lightweight repository hygiene guidelines (for example, expectations for keeping main green, handling revert commits, and dealing with long-lived work) to further support both human reviewers and automated version-control assessments.
+- [ ] Look for any other small remaining gaps in coverage for the annotation scope analyzer or closely related helpers and plan similar targeted tests to close them.
+- [ ] Document in an internal note or ADR comment how branch coverage for the annotation scope analyzer is validated, so future contributors understand which behaviors are intentionally tested and which guards are intentionally untested.
+- [ ] Consider minor refactorings to simplify any overly complex conditional logic in the analyzer once coverage is strong, keeping behavior and existing tests intact while improving readability and maintainability.
