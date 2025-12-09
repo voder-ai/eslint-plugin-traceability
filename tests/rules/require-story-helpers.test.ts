@@ -226,6 +226,110 @@ describe("Require Story Helpers (Story 003.0)", () => {
     expect(result).toBeFalsy();
   });
 
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function used as beforeEach callback is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "beforeEach" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function used as afterEach callback is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "afterEach" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function used as beforeAll callback is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "beforeAll" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function used as afterAll callback is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "afterAll" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function used as suite callback is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "suite" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function used as context callback is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "context" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function used as specify callback is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "specify" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function used as bench callback is checked by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "bench" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeTruthy();
+  });
+
   /**
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @req REQ-TEST-CALLBACK-EXCLUSION - Verify arrow function test callbacks are checked when exclusion is disabled
@@ -236,6 +340,126 @@ describe("Require Story Helpers (Story 003.0)", () => {
       parent: {
         type: "CallExpression",
         callee: { type: "Identifier", name: "it" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      excludeTestCallbacks: false,
+    });
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] beforeEach arrow function callback is checked when excludeTestCallbacks is false", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "beforeEach" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      excludeTestCallbacks: false,
+    });
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] afterEach arrow function callback is checked when excludeTestCallbacks is false", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "afterEach" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      excludeTestCallbacks: false,
+    });
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] beforeAll arrow function callback is checked when excludeTestCallbacks is false", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "beforeAll" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      excludeTestCallbacks: false,
+    });
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] afterAll arrow function callback is checked when excludeTestCallbacks is false", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "afterAll" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      excludeTestCallbacks: false,
+    });
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] suite arrow function callback is checked when excludeTestCallbacks is false", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "suite" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      excludeTestCallbacks: false,
+    });
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] context arrow function callback is checked when excludeTestCallbacks is false", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "context" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      excludeTestCallbacks: false,
+    });
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] specify arrow function callback is checked when excludeTestCallbacks is false", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "specify" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      excludeTestCallbacks: false,
+    });
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] bench arrow function callback is always checked (also when excludeTestCallbacks is false)", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "bench" },
       },
     };
 

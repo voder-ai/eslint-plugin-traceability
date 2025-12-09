@@ -41,15 +41,33 @@ interface ReportOptions {
  * @req REQ-TEST-CALLBACK-EXCLUSION
  */
 const TEST_FUNCTION_NAMES = new Set([
+  // Core test/describe-style functions (Jest, Mocha, Vitest share many of these)
   "it",
   "test",
   "describe",
+  "suite",
+
+  // Focused variants
   "fit",
-  "xit",
   "ftest",
-  "xtest",
   "fdescribe",
+  "fsuite",
+
+  // Skipped variants
+  "xit",
+  "xtest",
   "xdescribe",
+  "xsuite",
+
+  // Additional common aliases
+  "context",
+  "specify",
+  "before",
+  "after",
+  "beforeEach",
+  "afterEach",
+  "beforeAll",
+  "afterAll",
 ]);
 
 const TEST_FUNCTION_CONCURRENT_PROP = "concurrent";
@@ -148,7 +166,10 @@ function isEffectivelyAnonymousFunction(node: any): boolean {
  * framework function (Jest, Mocha, Vitest, etc).
  *
  * Supports:
- * - it(), test(), describe(), fit(), xit(), ftest(), xtest(), fdescribe(), xdescribe()
+ * - it(), test(), describe(), suite(), context(), specify()
+ * - lifecycle hooks: before(), after(), beforeEach(), afterEach(), beforeAll(), afterAll()
+ * - focused variants: fit(), ftest(), fdescribe(), fsuite()
+ * - skipped variants and helpers: xit(), xtest(), xdescribe(), xsuite()
  * - their .concurrent variants (e.g., it.concurrent(), test.concurrent())
  *
  * @req REQ-TEST-CALLBACK-EXCLUSION

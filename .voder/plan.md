@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Implement the excludeTestCallbacks configuration option in the unified function-annotation traceability rule so that, when enabled by default, anonymous callback functions passed to common test framework APIs are exempt from annotation requirements while preserving existing behavior for all other functions.
+- [ ] Expand the test-callback exclusion logic so that all anonymous arrow callbacks passed to the broader set of test framework functions described in the function-annotations story (including Jest lifecycle hooks, Mocha’s `suite`/`context`/`specify`/`before`/`after`, and Vitest’s `bench` and lifecycle hooks) are excluded by default, with updated helper-level tests that confirm each of these names is handled correctly.
 
 ## NEXT
 
-- [ ] Add or extend unit and integration tests that cover functions used as callbacks in test framework APIs, verifying that anonymous callbacks are exempt from annotation checks when excludeTestCallbacks is enabled and are enforced when the option is disabled or when the callbacks fall outside the recognized patterns.
-- [ ] Update user-facing documentation and configuration examples to describe the excludeTestCallbacks option, its default behavior, and how users can adjust it for their own test frameworks.
-- [ ] Update the function-annotations story document to mark the technical requirements related to excludeTestCallbacks as complete and to clearly state the current status of the GitHub issue #5 resolution requirement based on what has actually been done in the repository.
+- [ ] Add additional rule-level test cases that exercise Mocha-style and Vitest-style test callbacks, confirming that anonymous callbacks are exempt from annotation checks by default and are enforced when the exclusion option is disabled.
+- [ ] Align the user-facing documentation and the ADR describing test callback exclusion so that the documented list of supported test framework functions exactly matches the implemented behavior and clearly explains any limitations.
+- [ ] Ensure the function-annotations story explicitly calls out the expanded list of supported test framework callbacks in its requirements and that all technical acceptance criteria related to callback exclusion are accurately checked off based on the new implementation and tests.
 
 ## LATER
 
-- [ ] Add additional edge-case tests for the excludeTestCallbacks behavior, including nested test callbacks, less common test-framework helpers, and custom wrapper functions to ensure they are handled or documented appropriately.
-- [ ] Finalize or create an architecture decision record that captures the rationale, configuration shape, and consequences of excluding test framework callbacks from function-level traceability checks.
-- [ ] Review nearby stories for similar non-technical acceptance criteria tied to external issue tracking or release coordination and adjust their acceptance checklists so that their completion status matches the evidence available in the repository.
+- [ ] Once the external GitHub issue related to test callback exclusion has actually been closed in the real tracker, update the function-annotations story’s Issue #5 resolution checklist items to reflect that completion.
+- [ ] Add edge-case tests for nested and custom-wrapped test callbacks (for example, callbacks passed through helper functions that wrap `it` or `describe`) to document and verify how the exclusion logic behaves in less common patterns.
+- [ ] Consider adding configuration support for custom test function name lists so projects using non-standard test helpers can opt into the same exclusion behavior without modifying the core rule.

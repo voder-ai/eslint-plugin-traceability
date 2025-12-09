@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2025-12-09
 decision-makers: [Development Team]
 ---
@@ -156,7 +156,7 @@ Only exclude the innermost test callbacks (it, test) but require annotations on 
 
 - Jest (describe, it, test, beforeEach, afterEach, beforeAll, afterAll)
 - Mocha (describe, it, suite, context, specify, before, after, beforeEach, afterEach)
-- Vitest (describe, it, test, bench, beforeEach, afterEach, beforeAll, afterAll)
+- Vitest (describe, it, test, beforeEach, afterEach, beforeAll, afterAll; note: `bench` callbacks are **not** excluded by default and are treated as regular functions that require annotations)
 - Focused/skipped variants (fdescribe, xdescribe, fit, xit, etc.)
 - Concurrent variants (test.concurrent, describe.concurrent)
 
@@ -165,3 +165,12 @@ Only exclude the innermost test callbacks (it, test) but require annotations on 
 - Story 004.0-DEV-BRANCH-ANNOTATIONS (REQ-ARROW-FUNCTION-EXCLUDED)
 - Story 003.0-DEV-FUNCTION-ANNOTATIONS
 - Issue #5: https://github.com/voder-ai/eslint-plugin-traceability/issues/5
+
+### Implementation Notes
+
+The implementation relies on:
+
+- A fixed `TEST_FUNCTION_NAMES` set that enumerates the test framework functions whose anonymous callbacks are excluded from annotation requirements.
+- An `excludeTestCallbacks` rule option (default: `true`) that enables or disables this behavior.
+
+Vitest's `bench` function is intentionally omitted from `TEST_FUNCTION_NAMES`, so `bench` callbacks are always treated as regular functions that require annotations.

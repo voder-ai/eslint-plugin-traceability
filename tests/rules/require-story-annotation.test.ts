@@ -72,6 +72,32 @@ declare function tsDecl(): void;`,
  */
 describe('Feature X', () => {
   it('does something', () => {});
+});
+
+// Mocha-style suite/context/specify examples
+suite('Mocha suite', () => {
+  beforeEach(() => {});
+  afterEach(() => {});
+  before(() => {});
+  after(() => {});
+
+  test('Mocha test', () => {});
+  specify('Mocha specify', () => {});
+  context('Mocha context', () => {
+    it('nested it', () => {});
+  });
+});
+
+// Vitest-style APIs including hooks and bench
+describe('Vitest suite', () => {
+  beforeEach(() => {});
+  afterEach(() => {});
+  beforeAll(() => {});
+  afterAll(() => {});
+
+  it('Vitest it', () => {});
+  test('Vitest test', () => {});
+  bench('Vitest bench', () => {});
 });`,
       },
     ],
