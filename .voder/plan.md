@@ -1,16 +1,15 @@
 ## NOW
 
-- [ ] Analyze the behavior of the logic around the currently uncovered branches in the annotation scope analyzer so you can determine exactly what scenarios and inputs new tests need to cover for those code paths.
+- [x] Review the branch-annotations story document to identify all its acceptance criteria and definition-of-done items, with special attention to the requirement about resolving GitHub issue #5, and verify which of those criteria are already satisfied by the current code and tests.
 
 ## NEXT
 
-- [ ] Design concrete test cases that exercise each of the identified scenarios for the uncovered branches, focusing on observable behavior and edge conditions rather than internal implementation details.
-- [ ] Add the new tests to the existing test suite that covers the annotation scope analyzer, ensuring they follow the project’s traceability conventions with appropriate @supports annotations and requirement IDs in test names.
-- [ ] Review the new tests to confirm they are behavior-focused and independent, and that together they exercise all previously uncovered branches in the targeted section of the annotation scope analyzer.
-- [ ] Adjust or extend the tests if any branches remain uncovered for legitimate behavioral paths, and explicitly document in code comments where remaining branches are purely defensive guards that are intentionally left untested.
+- [ ] Search within the repository documentation, ADRs, and commit messages for any internal evidence that GitHub issue #5 has been addressed or closed so you can correlate it with the story’s REQ-ISSUE-5-RESOLUTION requirement.
+- [ ] Based on the evidence you find, update the branch-annotations story file to accurately reflect its status by marking completed technical requirements as done and either checking off the issue-resolution criterion with a supporting note or clearly documenting that it remains an external pending action.
+- [ ] Re-run a quick consistency review across the branch-annotation rule implementation, its tests, and related docs to ensure they all align with the finalized story 004 requirements and terminology.
 
 ## LATER
 
-- [ ] Look for any other small remaining gaps in coverage for the annotation scope analyzer or closely related helpers and plan similar targeted tests to close them.
-- [ ] Document in an internal note or ADR comment how branch coverage for the annotation scope analyzer is validated, so future contributors understand which behaviors are intentionally tested and which guards are intentionally untested.
-- [ ] Consider minor refactorings to simplify any overly complex conditional logic in the analyzer once coverage is strong, keeping behavior and existing tests intact while improving readability and maintainability.
+- [ ] If the story review reveals any subtle behavioral gaps or unclear edge cases in the branch-annotation rule, design and add targeted tests to cover those scenarios while keeping the story’s requirements as the source of truth.
+- [ ] Improve internal development documentation (such as an ADR or a short dev note) explaining how story 004 is validated, including how external issue-resolution requirements should be tracked and reflected in story files.
+- [ ] Once story 004 is fully aligned and marked complete, scan other nearby stories for similar non-technical acceptance criteria that might require clarification or alignment with repository-local evidence.
