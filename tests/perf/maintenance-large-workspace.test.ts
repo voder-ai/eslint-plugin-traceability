@@ -77,76 +77,86 @@ export function example_${moduleIndex}_${fileIndex}() {}
 }
 
 describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  let workspace: { root: string; cleanup: () => void };
-
-  beforeAll(() => {
-    workspace = createLargeWorkspace();
-  });
-
-  afterAll(() => {
-    workspace.cleanup();
-  });
-
   it("[REQ-MAINT-DETECT] detectStaleAnnotations completes within a generous time budget", () => {
-    const start = performance.now();
-    const stale = detectStaleAnnotations(workspace.root);
-    const durationMs = performance.now() - start;
+    const workspace = createLargeWorkspace();
+    try {
+      const start = performance.now();
+      const stale = detectStaleAnnotations(workspace.root);
+      const durationMs = performance.now() - start;
 
-    // Sanity check: we expect at least some stale entries due to the generated stale-story-* references.
-    expect(stale.length).toBeGreaterThan(0);
+      // Sanity check: we expect at least some stale entries due to the generated stale-story-* references.
+      expect(stale.length).toBeGreaterThan(0);
 
-    // Guardrail: this operation should remain comfortably under ~5 seconds on CI hardware.
-    expect(durationMs).toBeLessThan(5000);
+      // Guardrail: this operation should remain comfortably under ~5 seconds on CI hardware.
+      expect(durationMs).toBeLessThan(5000);
+    } finally {
+      workspace.cleanup();
+    }
   });
 
   it("[REQ-MAINT-VERIFY] verifyAnnotations remains fast on large workspaces", () => {
-    const start = performance.now();
-    const result = verifyAnnotations(workspace.root);
-    const durationMs = performance.now() - start;
+    const workspace = createLargeWorkspace();
+    try {
+      const start = performance.now();
+      const result = verifyAnnotations(workspace.root);
+      const durationMs = performance.now() - start;
 
-    // With both valid and stale references, verification should report false.
-    expect(result).toBe(false);
-    expect(durationMs).toBeLessThan(5000);
+      // With both valid and stale references, verification should report false.
+      expect(result).toBe(false);
+      expect(durationMs).toBeLessThan(5000);
+    } finally {
+      workspace.cleanup();
+    }
   });
 
   it("[REQ-MAINT-REPORT] generateMaintenanceReport produces output within a generous time budget", () => {
-    const start = performance.now();
-    const report = generateMaintenanceReport(workspace.root);
-    const durationMs = performance.now() - start;
+    const workspace = createLargeWorkspace();
+    try {
+      const start = performance.now();
+      const report = generateMaintenanceReport(workspace.root);
+      const durationMs = performance.now() - start;
 
-    expect(report).not.toBe("");
-    expect(durationMs).toBeLessThan(5000);
+      expect(report).not.toBe("");
+      expect(durationMs).toBeLessThan(5000);
+    } finally {
+      workspace.cleanup();
+    }
   });
 
   it("[REQ-MAINT-UPDATE] updateAnnotationReferences and batchUpdateAnnotations remain tractable", () => {
-    const exampleOldPath = "stale-story-0000.story.md";
-    const exampleNewPath = "updated-story-0000.story.md";
+    const workspace = createLargeWorkspace();
+    try {
+      const exampleOldPath = "stale-story-0000.story.md";
+      const exampleNewPath = "updated-story-0000.story.md";
 
-    const singleStart = performance.now();
-    const updatedCount = updateAnnotationReferences(
-      workspace.root,
-      exampleOldPath,
-      exampleNewPath,
-    );
-    const singleDuration = performance.now() - singleStart;
+      const singleStart = performance.now();
+      const updatedCount = updateAnnotationReferences(
+        workspace.root,
+        exampleOldPath,
+        exampleNewPath,
+      );
+      const singleDuration = performance.now() - singleStart;
 
-    expect(updatedCount).toBeGreaterThan(0);
-    expect(singleDuration).toBeLessThan(5000);
+      expect(updatedCount).toBeGreaterThan(0);
+      expect(singleDuration).toBeLessThan(5000);
 
-    const batchStart = performance.now();
-    const totalUpdated = batchUpdateAnnotations(workspace.root, [
-      {
-        oldPath: "stale-story-0001.story.md",
-        newPath: "updated-story-0001.story.md",
-      },
-      {
-        oldPath: "stale-story-0002.story.md",
-        newPath: "updated-story-0002.story.md",
-      },
-    ]);
-    const batchDuration = performance.now() - batchStart;
+      const batchStart = performance.now();
+      const totalUpdated = batchUpdateAnnotations(workspace.root, [
+        {
+          oldPath: "stale-story-0001.story.md",
+          newPath: "updated-story-0001.story.md",
+        },
+        {
+          oldPath: "stale-story-0002.story.md",
+          newPath: "updated-story-0002.story.md",
+        },
+      ]);
+      const batchDuration = performance.now() - batchStart;
 
-    expect(totalUpdated).toBeGreaterThanOrEqual(2);
-    expect(batchDuration).toBeLessThan(5000);
+      expect(totalUpdated).toBeGreaterThanOrEqual(2);
+      expect(batchDuration).toBeLessThan(5000);
+    } finally {
+      workspace.cleanup();
+    }
   });
 });

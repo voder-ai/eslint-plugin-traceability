@@ -44,8 +44,8 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
   });
 
   it("[REQ-MAINT-DETECT] handles permission denied errors by returning an empty result", () => {
-    const tmpDir2 = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-perm-"));
-    const dir = path.join(tmpDir2, "subdir");
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-perm-"));
+    const dir = path.join(tmpDir, "subdir");
     fs.mkdirSync(dir);
     const filePath = path.join(dir, "file.ts");
     const content = `
@@ -54,21 +54,34 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
  */
 `;
     fs.writeFileSync(filePath, content, "utf8");
-    // Remove read permission
+
+    const originalReadFileSync = fs.readFileSync;
+    const readSpy = jest
+      .spyOn(fs, "readFileSync")
+      .mockImplementation((p: any, ...args: any[]) => {
+        const strPath = typeof p === "string" ? p : p.toString();
+        if (strPath === filePath) {
+          const err: NodeJS.ErrnoException = new Error(
+            "EACCES: permission denied, open",
+          );
+          err.code = "EACCES";
+          throw err;
+        }
+        // Delegate to original implementation for all other paths
+        // to keep behavior realistic.
+        // @ts-ignore
+        return originalReadFileSync(p, ...args);
+      });
+
     try {
-      fs.chmodSync(dir, 0o000);
-      expect(() => detectStaleAnnotations(tmpDir2)).toThrow();
+      const result = detectStaleAnnotations(tmpDir);
+      expect(result).toEqual([]);
     } finally {
-      // Restore permissions and cleanup temporary directory, ignoring errors during cleanup
+      readSpy.mockRestore();
       try {
-        fs.chmodSync(dir, 0o700);
+        fs.rmSync(tmpDir, { recursive: true, force: true });
       } catch {
-        // ignore
-      }
-      try {
-        fs.rmSync(tmpDir2, { recursive: true, force: true });
-      } catch {
-        // ignore
+        // ignore cleanup errors
       }
     }
   });

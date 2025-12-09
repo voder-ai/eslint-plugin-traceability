@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Enable the traceability annotation format lint rule in the project’s lint configuration and add targeted suppressions so that all existing TypeScript and JavaScript files pass linting while the rule is active.
+- [ ] Rename the test file that currently uses the term "branches" to a behavior-focused name that describes what aspect of the annotation checker it verifies, without changing any of the test cases inside the file.
 
 ## NEXT
 
-- [ ] Update a small group of malformed or legacy traceability annotations in one helper module to comply with the new format rule so that the corresponding suppressions can be safely removed.
-- [ ] Refactor one clearly duplicated helper pattern in the traceability rule helpers into a shared function so that the amount of duplicated code in that area is reduced without increasing complexity.
-- [ ] Align any remaining mixed @story/@req annotations on core rule entry points with the preferred @supports-first style so that the codebase consistently uses the modern traceability format.
+- [ ] Adjust the performance-oriented maintenance test suites so that each test case operates on its own independently created and cleaned-up workspace, eliminating shared state between tests in the same file.
+- [ ] Strengthen the permission-focused test in the maintenance isolation suite so it uses a platform-tolerant assertion pattern that still validates the intended error-handling behavior without depending on fragile filesystem permission semantics.
+- [ ] Refactor any non-performance tests that rely on loops or complex conditional logic into smaller, clearer test cases or parameterized test tables so that each test checks a single behavior with minimal internal logic.
 
 ## LATER
 
-- [ ] Gradually replace the remaining suppressions for the traceability annotation format rule by correcting annotations across the codebase in small, self-contained changes.
-- [ ] Identify another small cluster of duplicated logic in the rules or maintenance helpers and extract it into a shared utility to further lower code duplication while keeping functions short and focused.
-- [ ] Lower the maximum allowed file length limit in the lint configuration once helpers are more decomposed so that long files are discouraged without forcing disruptive refactors.
+- [ ] Add a short developer-facing guide that documents the different layers of tests in the project (unit, integration, maintenance CLI, performance) and how to extend them, keeping it aligned with the actual Jest configuration and scripts.
+- [ ] Introduce additional targeted tests around edge-case behaviors in the unified traceability rule and maintenance tools if future changes reveal untested branches or error paths.
+- [ ] Periodically review new or modified tests to ensure they follow the established patterns of isolation, minimal internal logic, and clear traceability annotations so that the overall quality of the test suite remains high as the project evolves.

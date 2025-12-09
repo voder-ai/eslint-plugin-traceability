@@ -55,96 +55,112 @@ export function cli_example_${moduleIndex}_${fileIndex}() {}
 }
 
 describe("Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  let workspace: { root: string; cleanup: () => void };
-  let originalCwd: string;
-
-  beforeAll(() => {
-    originalCwd = process.cwd();
-    workspace = createCliLargeWorkspace();
-    process.chdir(workspace.root);
-  });
-
-  afterAll(() => {
-    process.chdir(originalCwd);
-    workspace.cleanup();
-  });
-
   it("[REQ-MAINT-DETECT] detect --json completes within a generous time budget and returns JSON payload", () => {
+    const { root, cleanup } = createCliLargeWorkspace();
+    const originalCwd = process.cwd();
+    process.chdir(root);
+
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
 
-    const start = performance.now();
-    const exitCode = runMaintenanceCli([
-      "node",
-      "traceability-maint",
-      "detect",
-      "--root",
-      workspace.root,
-      "--json",
-    ]);
-    const durationMs = performance.now() - start;
+    try {
+      const start = performance.now();
+      const exitCode = runMaintenanceCli([
+        "node",
+        "traceability-maint",
+        "detect",
+        "--root",
+        root,
+        "--json",
+      ]);
+      const durationMs = performance.now() - start;
 
-    expect(exitCode === 0 || exitCode === 1).toBe(true);
-    expect(durationMs).toBeLessThan(5000);
+      expect(exitCode === 0 || exitCode === 1).toBe(true);
+      expect(durationMs).toBeLessThan(5000);
 
-    expect(logSpy).toHaveBeenCalledTimes(1);
-    const payloadRaw = String(logSpy.mock.calls[0][0]);
-    const payload = JSON.parse(payloadRaw) as { root: string; stale: string[] };
-    expect(payload.root).toBe(workspace.root);
-    expect(Array.isArray(payload.stale)).toBe(true);
-    expect(payload.stale.length).toBeGreaterThan(0);
-
-    logSpy.mockRestore();
+      expect(logSpy).toHaveBeenCalledTimes(1);
+      const payloadRaw = String(logSpy.mock.calls[0][0]);
+      const payload = JSON.parse(payloadRaw) as {
+        root: string;
+        stale: string[];
+      };
+      expect(payload.root).toBe(root);
+      expect(Array.isArray(payload.stale)).toBe(true);
+      expect(payload.stale.length).toBeGreaterThan(0);
+    } finally {
+      logSpy.mockRestore();
+      process.chdir(originalCwd);
+      cleanup();
+    }
   });
 
   it("[REQ-MAINT-REPORT] report --format=json completes within a generous time budget", () => {
+    const { root, cleanup } = createCliLargeWorkspace();
+    const originalCwd = process.cwd();
+    process.chdir(root);
+
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
 
-    const start = performance.now();
-    const exitCode = runMaintenanceCli([
-      "node",
-      "traceability-maint",
-      "report",
-      "--root",
-      workspace.root,
-      "--format",
-      "json",
-    ]);
-    const durationMs = performance.now() - start;
+    try {
+      const start = performance.now();
+      const exitCode = runMaintenanceCli([
+        "node",
+        "traceability-maint",
+        "report",
+        "--root",
+        root,
+        "--format",
+        "json",
+      ]);
+      const durationMs = performance.now() - start;
 
-    expect(exitCode).toBe(0);
-    expect(durationMs).toBeLessThan(5000);
+      expect(exitCode).toBe(0);
+      expect(durationMs).toBeLessThan(5000);
 
-    expect(logSpy).toHaveBeenCalledTimes(1);
-    const payloadRaw = String(logSpy.mock.calls[0][0]);
-    const payload = JSON.parse(payloadRaw) as { root: string; report: string };
-    expect(payload.root).toBe(workspace.root);
-    expect(typeof payload.report).toBe("string");
-
-    logSpy.mockRestore();
+      expect(logSpy).toHaveBeenCalledTimes(1);
+      const payloadRaw = String(logSpy.mock.calls[0][0]);
+      const payload = JSON.parse(payloadRaw) as {
+        root: string;
+        report: string;
+      };
+      expect(payload.root).toBe(root);
+      expect(typeof payload.report).toBe("string");
+    } finally {
+      logSpy.mockRestore();
+      process.chdir(originalCwd);
+      cleanup();
+    }
   });
 
   it("[REQ-MAINT-VERIFY] verify completes within a generous time budget and reports stale annotations", () => {
+    const { root, cleanup } = createCliLargeWorkspace();
+    const originalCwd = process.cwd();
+    process.chdir(root);
+
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
 
-    const start = performance.now();
-    const exitCode = runMaintenanceCli([
-      "node",
-      "traceability-maint",
-      "verify",
-      "--root",
-      workspace.root,
-    ]);
-    const durationMs = performance.now() - start;
+    try {
+      const start = performance.now();
+      const exitCode = runMaintenanceCli([
+        "node",
+        "traceability-maint",
+        "verify",
+        "--root",
+        root,
+      ]);
+      const durationMs = performance.now() - start;
 
-    expect(exitCode).toBe(1);
-    expect(durationMs).toBeLessThan(5000);
+      expect(exitCode).toBe(1);
+      expect(durationMs).toBeLessThan(5000);
 
-    expect(logSpy).toHaveBeenCalledTimes(1);
-    const message = String(logSpy.mock.calls[0][0]);
-    expect(message).toContain(
-      "Stale or invalid traceability annotations detected under",
-    );
-
-    logSpy.mockRestore();
+      expect(logSpy).toHaveBeenCalledTimes(1);
+      const message = String(logSpy.mock.calls[0][0]);
+      expect(message).toContain(
+        "Stale or invalid traceability annotations detected under",
+      );
+    } finally {
+      logSpy.mockRestore();
+      process.chdir(originalCwd);
+      cleanup();
+    }
   });
 });
