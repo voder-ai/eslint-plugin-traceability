@@ -70,62 +70,17 @@ function normalizeOptions(raw: any | undefined): RedundancyRuleOptions {
 }
 
 /**
- * Compute the story/requirement pairs for annotations that apply to the
- * given scope node.
- *
- * For branch scopes we reuse the same comment-gathering helper used by
- * the require-branch-annotation rule so that REQ-SCOPE-INHERITANCE
- * aligns with existing behavior.
+ * Collect comments around a scope node using JSDoc, leading comments,
+ * and any comments that appear immediately before the node.
  *
  * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE
  */
-function getScopePairs(
-  context: Rule.RuleContext,
+function getScopeCommentsFromJSDocAndLeading(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]> | any,
   scopeNode: any,
-  parent: any | undefined,
-): Set<string> {
-  const sourceCode = context.getSourceCode();
-
-  // Branch-style scope: use the branch helpers to collect comment text.
-  if (DEFAULT_BRANCH_TYPES.includes(scopeNode.type)) {
-    const text = gatherBranchCommentText(sourceCode as any, scopeNode, parent);
-    return extractStoryReqPairsFromText(text);
-  }
-
-  // Function-like scopes: collect from JSDoc and leading/before comments
-  const FUNCTION_LIKE_TYPES = new Set([
-    "FunctionDeclaration",
-    "FunctionExpression",
-    "ArrowFunctionExpression",
-    "MethodDefinition",
-    "TSDeclareFunction",
-    "TSMethodSignature",
-  ]);
-
+): any[] {
   const comments: any[] = [];
 
-  if (FUNCTION_LIKE_TYPES.has(scopeNode.type)) {
-    const jsdoc = (sourceCode as any).getJSDocComment
-      ? (sourceCode as any).getJSDocComment(scopeNode)
-      : null;
-    const before = (sourceCode as any).getCommentsBefore
-      ? (sourceCode as any).getCommentsBefore(scopeNode) || []
-      : [];
-
-    if (jsdoc) {
-      comments.push(jsdoc);
-    }
-
-    if (Array.isArray(scopeNode.leadingComments)) {
-      comments.push(...scopeNode.leadingComments);
-    }
-
-    comments.push(...before);
-
-    return extractStoryReqPairsFromComments(comments);
-  }
-
-  // Fallback: inspect JSDoc and leading comments around the scope node.
   const jsdoc = (sourceCode as any).getJSDocComment
     ? (sourceCode as any).getJSDocComment(scopeNode)
     : null;
@@ -143,6 +98,35 @@ function getScopePairs(
 
   comments.push(...before);
 
+  return comments;
+}
+
+/**
+ * Compute the story/requirement pairs for annotations that apply to the
+ * given scope node.
+ *
+ * For branch scopes we reuse the same comment-gathering helper used by
+ * the require-branch-annotation rule so that REQ-SCOPE-INHERITANCE
+ * aligns with existing behavior. For non-branch scopes, we reuse a
+ * shared helper that collects JSDoc, leading, and immediately-before
+ * comments around the scope node.
+ *
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE
+ */
+function getScopePairs(
+  context: Rule.RuleContext,
+  scopeNode: any,
+  parent: any | undefined,
+): Set<string> {
+  const sourceCode = context.getSourceCode();
+
+  // Branch-style scope: use the branch helpers to collect comment text.
+  if (DEFAULT_BRANCH_TYPES.includes(scopeNode.type)) {
+    const text = gatherBranchCommentText(sourceCode as any, scopeNode, parent);
+    return extractStoryReqPairsFromText(text);
+  }
+
+  const comments = getScopeCommentsFromJSDocAndLeading(sourceCode, scopeNode);
   return extractStoryReqPairsFromComments(comments);
 }
 

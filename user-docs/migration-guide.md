@@ -306,7 +306,6 @@ To use `traceability/no-redundant-annotation` safely during your v1.x migration:
 4. **Optionally tighten over time**
 
    As your team gets comfortable:
-
    - You can raise the rule severity to `"error"` for new code, and/or
    - Increase strictness via configuration (see below) to catch more subtle forms of duplication.
 

@@ -8,7 +8,7 @@ consulted:
     docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md,
     docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md,
     docs/decisions/010-implements-annotation-for-multi-story-requirements.proposed.md,
-    docs/decisions/011-rename-implements-to-supports-annotation.accepted.md
+    docs/decisions/011-rename-implements-to-supports-annotation.accepted.md,
   ]
 informed: [Plugin Users, Project Contributors]
 ---
