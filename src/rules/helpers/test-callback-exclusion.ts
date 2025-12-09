@@ -8,6 +8,7 @@
  * @story docs/stories/013-exclude-test-framework-callbacks.proposed.md
  * @req REQ-TEST-CALLBACK-EXCLUSION - Provide reusable test callback exclusion logic
  */
+import type { TSESTree } from "@typescript-eslint/utils";
 
 /**
  * Options controlling how test callbacks are treated by the helpers.
@@ -22,6 +23,10 @@ interface CallbackExclusionOptions {
   excludeTestCallbacks?: boolean;
   additionalTestHelperNames?: string[];
 }
+
+type TraceabilityNodeWithParent = TSESTree.Node & {
+  parent?: TraceabilityNodeWithParent | null;
+};
 
 /**
  * Known test framework function names and variants.
@@ -107,7 +112,7 @@ function isRecognizedTestHelperName(
  * @req REQ-TEST-CALLBACK-EXCLUSION
  */
 function isTestFrameworkCallback(
-  node: any,
+  node: TraceabilityNodeWithParent | null | undefined,
   options?: CallbackExclusionOptions,
 ): boolean {
   if (options?.excludeTestCallbacks === false) {
@@ -123,7 +128,9 @@ function isTestFrameworkCallback(
     return false;
   }
 
-  const callee = parent.callee;
+  const callExpressionParent = parent as TraceabilityNodeWithParent &
+    TSESTree.CallExpression;
+  const callee = callExpressionParent.callee;
 
   if (callee.type === "Identifier") {
     return isRecognizedTestHelperName(callee.name, options);

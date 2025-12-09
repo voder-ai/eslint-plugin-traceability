@@ -1,18 +1,16 @@
 ## NOW
 
-- [ ] Lower the allowed cyclomatic complexity for functions in the linting configuration and refactor any functions that exceed the new limit into smaller, focused helpers so that all code complies with the stricter complexity threshold without changing behavior.
+- [ ] Strengthen the test callback exclusion helper by updating its function signatures and parameters to use precise ESLint AST node types instead of untyped or loosely typed values, ensuring the behavior of excludeTestCallbacks and additionalTestHelperNames remains unchanged while making the helper fully type-safe and aligned with the function-annotation story requirements.
 
 ## NEXT
 
-- [ ] Add an integration test that exercises the unified traceability rule in a flat ESLint configuration with custom additional test helper names configured, verifying that callbacks in both JavaScript and TypeScript files respect the exclusion and bench callbacks still require annotations.
-- [ ] Reduce the maximum allowed non-comment lines per function in the linting configuration and split any functions that violate the new limit into smaller, single-responsibility helpers while keeping existing behavior and public interfaces intact.
-- [ ] Eliminate any remaining localized lint rule suppressions in helper and rule modules by simplifying signatures, removing unused parameters, or extracting shared logic so those files pass linting without inline disables.
-- [ ] Inspect the new test callback exclusion helper module and replace untyped or loosely typed parameters with concrete AST node types from the existing utilities, ensuring the helper remains behaviorally identical but gains stronger type safety and clearer intent.
-- [ ] Identify small duplicated logic blocks in the helper and rule files reported by the duplication checker and extract them into shared internal utilities so that duplication metrics improve without altering rule behavior.
+- [ ] Lower the maximum allowed non-comment lines per function in the linting configuration and split any functions that exceed the new limit into smaller, single-responsibility helpers so that all existing behavior and public APIs remain unchanged.
+- [ ] Remove any remaining inline lint rule suppressions in helper and rule modules by simplifying function signatures, dropping unused parameters, or extracting shared utilities so that those files satisfy all enabled lint rules without local disables.
+- [ ] Extract small duplicated logic blocks in helper and rule files into shared internal utilities so that the duplication checker reports fewer clones without altering rule behavior or public contracts.
 
 ## LATER
 
-- [ ] Incrementally ratchet down file-level size limits in the linting configuration and, when a file exceeds the new limit, move cohesive groups of helpers into separate modules to keep each file focused and easier to navigate.
-- [ ] Broaden performance-oriented tests around function and branch annotation rules on large synthetic projects, then use the results to update the relevant stories’ performance acceptance criteria with realistic timing expectations.
-- [ ] Once the external GitHub issue related to test callback handling has been closed with a version-referenced comment, update the function-annotations story checklist to mark the resolution items complete and reference the release containing the fix.
-- [ ] Extend internal documentation to capture the finalized lint thresholds, refactoring patterns, and ratcheting strategy so future contributors understand how to keep code quality metrics improving over time.
+- [ ] Incrementally ratchet down file-level size limits in the linting configuration and, when a file exceeds the new threshold, move cohesive groups of helpers into separate modules so each file stays focused and easier to navigate.
+- [ ] Expand performance-oriented tests for function and branch annotation rules on large synthetic projects and update the relevant stories with concrete, measured timing expectations based on those results.
+- [ ] Once the external GitHub issue related to test callback handling has been closed with the required version-referenced comment, update the function-annotations story checklist to mark the issue-resolution acceptance and Definition of Done items complete and mention the release that contained the fix.
+- [ ] Extend internal development documentation to record the finalized lint thresholds, preferred refactoring patterns, and the ratcheting strategy so future contributors can continue improving code quality metrics consistently over time.
