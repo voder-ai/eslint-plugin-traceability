@@ -1,6 +1,6 @@
 ## NOW
 
-- [ ] Introduce a configuration option that lets projects specify additional test helper function names to be treated as excluded callbacks in the function-annotation logic, and add unit tests confirming that callbacks passed to these configured helpers are skipped when this option is used.
+- [x] Introduce a configuration option that lets projects specify additional test helper function names to be treated as excluded callbacks in the function-annotation logic, and add unit tests confirming that callbacks passed to these configured helpers are skipped when this option is used.
 
 ## NEXT
 

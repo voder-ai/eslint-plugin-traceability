@@ -100,6 +100,11 @@ describe('Vitest suite', () => {
   bench('Vitest bench', () => {});
 });`,
       },
+      {
+        name: "[REQ-TEST-CALLBACK-EXCLUSION][Story 003.0] additionalTestHelperNames excludes configured helper callbacks when excludeTestCallbacks=true",
+        code: `withTestCase("does something", () => {});`,
+        options: [{ additionalTestHelperNames: ["withTestCase"] }],
+      },
     ],
     invalid: [
       {
@@ -211,6 +216,22 @@ describe('Vitest suite', () => {
               {
                 desc: `Add traceability annotation for function 'innerNamed' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
                 output: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction innerNamed() {\n    return 1;\n  }\n  return innerNamed();\n}`,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "[REQ-TEST-CALLBACK-EXCLUSION][Story 003.0] bench callback still reported even when included in additionalTestHelperNames",
+        code: `bench("bench case", () => {});`,
+        options: [{ additionalTestHelperNames: ["bench"], autoFix: false }],
+        errors: [
+          {
+            messageId: "missingStory",
+            suggestions: [
+              {
+                desc: `Add traceability annotation for function '(anonymous)' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                output: `bench("bench case", /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n() => {});`,
               },
             ],
           },

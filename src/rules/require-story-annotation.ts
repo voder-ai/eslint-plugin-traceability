@@ -70,6 +70,11 @@ const rule: Rule.RuleModule = {
           methodAnnotationTemplate: { type: "string" },
           autoFix: { type: "boolean" },
           excludeTestCallbacks: { type: "boolean" },
+          additionalTestHelperNames: {
+            type: "array",
+            items: { type: "string" },
+            uniqueItems: true,
+          },
         },
         additionalProperties: false,
       },
@@ -104,6 +109,13 @@ const rule: Rule.RuleModule = {
       typeof opts.excludeTestCallbacks === "boolean"
         ? opts.excludeTestCallbacks
         : true;
+    const additionalTestHelperNames =
+      Array.isArray(opts.additionalTestHelperNames) &&
+      opts.additionalTestHelperNames.every(
+        (name: unknown) => typeof name === "string",
+      )
+        ? opts.additionalTestHelperNames
+        : undefined;
 
     /**
      * Optional debug logging for troubleshooting this rule.
@@ -122,7 +134,10 @@ const rule: Rule.RuleModule = {
 
     // Local closure that binds configured scope and export priority to the helper.
     const should = (node: any) =>
-      shouldProcessNode(node, scope, exportPriority, { excludeTestCallbacks });
+      shouldProcessNode(node, scope, exportPriority, {
+        excludeTestCallbacks,
+        additionalTestHelperNames,
+      });
 
     // Delegate visitor construction to helper to keep this file concise.
     return buildVisitors(context, sourceCode, {
@@ -133,6 +148,7 @@ const rule: Rule.RuleModule = {
       methodAnnotationTemplate,
       autoFix,
       excludeTestCallbacks,
+      additionalTestHelperNames,
     });
   },
 };
