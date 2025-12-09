@@ -8,6 +8,7 @@ We follow a **trunk-based development model** where `main` is the **single integ
   - `docs/decisions/006-semantic-release-for-automated-publishing.accepted.md`
   - `docs/decisions/007-github-releases-over-changelog.accepted.md`
   - `docs/decisions/005-github-actions-validation-tooling.accepted.md`
+  - `docs/decisions/adr-pre-push-parity.md`
 
 ## Overview
 
@@ -17,12 +18,12 @@ We use a **single unified GitHub Actions workflow** to run all quality checks an
 - Workflow name: `CI/CD Pipeline`
 - Triggers:
   - **Authoritative CI/CD trigger:** `push` to `main` (trunk-based integration and deployment)
-  - **Auxiliary feedback trigger:** `pull_request` targeting `main` (for optional review flows and forks)
+  - **Auxiliary feedback trigger:** `pull_request` targeting `main` (for optional review flows and forks; releases never run on PRs)
   - Nightly `schedule` for dependency health checks
 
-There are no tag-based triggers and no manual `workflow_dispatch` jobs for releases. Publishing (when needed) always happens as part of the same workflow run that executes the quality gates, and **only for `push` events on `main`**.
+There are no tag-based triggers and no manual `workflow_dispatch` jobs for releases. Publishing (when needed) always happens as part of the same workflow run that executes the quality gates, and **only for `push` events on `main`**. The semantic-release step itself is additionally restricted to one specific Node.js version in the matrix (see below).
 
-Pull request runs exist to give **early feedback** (for contributors working in forks or when an explicit review flow is desired), but the **source of truth for integration and deployment is always `main`** and its push-based CI runs.
+Pull request runs exist to give **early feedback** (for contributors working in forks or when an explicit review flow is desired), but the **source of truth for integration and deployment is always `main`** and its push-based CI runs. The release step is never invoked from `pull_request` events.
 
 ## Jobs
 
@@ -35,7 +36,10 @@ Runs on:
 
 Matrix:
 
+- Node `18.18.0`
+- Node `20.0.0`
 - Node `22.14.0`
+- Node `24.0.0`
 
 Key steps (in order):
 
@@ -51,7 +55,7 @@ Key steps (in order):
 
 4. **Full quality gate**
    - `npm run ci-verify:full`
-   - This script is the canonical definition of our quality gates and is also used by the Husky pre-push hook.
+   - This script is the canonical definition of our quality gates and is also used by the Husky pre-push hook, per `adr-pre-push-parity.md`.
    - It runs, in order:
      - `npm run check:traceability`
      - `npm run safety:deps`
@@ -68,7 +72,9 @@ Key steps (in order):
    - For a consolidated description of all security-related tooling and gates (including how these audit steps fit into the overall model), see `docs/security-overview.md`.
 
 5. **Secret scanning**
-   - Only on Node `20.x` matrix entry: `npm run security:secrets` using secretlint.
+   - Runs on **every** matrix entry:
+     - `npm run security:secrets` (using secretlint)
+   - This keeps secret scanning consistent across all supported CI Node versions.
 
 6. **Artifact upload**
    - Always upload:
@@ -79,10 +85,14 @@ Key steps (in order):
 
 7. **Automated release (semantic-release)**
 
-   This step runs **only** on `push` events to `main` for the Node `20.x` job, which forms the authoritative CI/CD path for trunk-based development:
+   This step runs **only** on `push` events to `main` for the Node `22.14.0` job, which forms the authoritative CI/CD path for trunk-based deployment:
 
    ```yaml
-   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix['node-version'] == '20.x' && success() }}
+   if: >-
+     ${{ github.event_name == 'push'
+         && github.ref == 'refs/heads/main'
+         && matrix['node-version'] == '22.14.0'
+         && success() }}
    ```
 
    - Runs `npx semantic-release` with:
@@ -96,7 +106,7 @@ Key steps (in order):
      - `@semantic-release/github` (creates GitHub Releases)
 
    Behavior:
-   - On each successful push to `main`, semantic-release:
+   - On each successful push to `main` (for the Node `22.14.0` job), semantic-release:
      - Analyzes commits since the last tag using **Conventional Commits** (see `docs/conventional-commits-guide.md`).
      - Decides whether the release is `major`, `minor`, `patch`, or **no release**.
      - If no relevant commits are found, it logs that no new release is needed and exits successfully.
@@ -143,13 +153,13 @@ This job is intentionally isolated from the main `quality-and-deploy` path and h
 
 ## Continuous Deployment Behavior
 
-- Every push to `main` triggers the `quality-and-deploy` job on Node 18.x and 20.x and is treated as the **single source of truth** for integration and deployment in our trunk-based model.
+- Every push to `main` triggers the `quality-and-deploy` job on Node `18.18.0`, `20.0.0`, `22.14.0`, and `24.0.0` and is treated as the **single source of truth** for integration and deployment in our trunk-based model.
 - `pull_request` runs targeting `main` use the same `quality-and-deploy` job but function purely as **early feedback** for:
   - Contributors working from forks.
   - Maintainers who explicitly choose to use a PR-based review flow.
   - These PR runs never invoke semantic-release and never publish.
-- The full quality gate (`ci-verify:full`) must pass on both Node versions for a `push` to `main`.
-- If, and only if, the Node 20.x job on `main` succeeds and `NPM_TOKEN` is available, semantic-release is invoked.
+- The full quality gate (`ci-verify:full`) must pass on all matrix Node versions for a `push` to `main`.
+- If, and only if, the Node `22.14.0` job on `main` succeeds and `NPM_TOKEN` is available, semantic-release is invoked.
 - semantic-release decides whether a new version is required based on commit messages:
   - `feat` → minor version bump
   - `fix` → patch bump
@@ -178,8 +188,8 @@ Local hooks:
 
 - **Pre-push** (`.husky/pre-push`):
   - Runs `npm run ci-verify:full`.
-  - This mirrors the CI quality gate so that most issues are caught before code reaches GitHub.
-  - Secret scanning (`npm run security:secrets`) currently runs only in CI on the Node 20.x matrix entry and is not part of the pre-push hook, but it uses the same configuration so results stay consistent between local and CI.
+  - This mirrors the CI quality gate (same script, same sequence of checks) so that most issues are caught before code reaches GitHub, consistent with `adr-pre-push-parity.md`.
+  - Secret scanning (`npm run security:secrets`) currently runs only in CI (on **all** Node matrix entries) and is not part of the pre-push hook, but it uses the same configuration so results stay consistent between local and CI.
 
 Husky is wired up via the `postinstall` npm script (`"postinstall": "husky"`) instead of the deprecated `husky install` `prepare` script.
 
@@ -232,17 +242,20 @@ Because releases are determined solely from commit history on `main`, it is impo
 
 The pipeline runs its full CI matrix on:
 
-- Node `22.14.0` (for all quality gates and semantic-release tooling)
+- Node `18.18.0`
+- Node `20.0.0`
+- Node `22.14.0`
+- Node `24.0.0`
 
 The package itself declares:
 
-- `engines.node: ">=18.18.0"`
+- `engines.node: "^18.18.0 || ^20.0.0 || ^22.0.0 || >=24.0.0"`
 - `peerDependencies.eslint: "^9.0.0"`
 
 This means:
 
-- **CI** executes all checks (build, tests, linting, audits, semantic-release, etc.) on Node `22.14.0`.
-- **End users** can run `eslint-plugin-traceability` on any Node.js runtime version `>=18.18.0` that is compatible with their ESLint setup.
+- **CI** executes all checks (build, tests, linting, audits, semantic-release, etc.) on a **representative subset** of supported Node.js versions (currently specific patch releases of 18, 20, 22, and 24). These matrix entries are chosen to balance coverage and runtime cost while staying within the documented engines range.
+- **End users** must run `eslint-plugin-traceability` on a Node.js runtime that satisfies the `engines.node` constraint (`^18.18.0 || ^20.0.0 || ^22.0.0 || >=24.0.0`) and is compatible with their ESLint setup.
 
 User-facing docs are aligned with these constraints:
 

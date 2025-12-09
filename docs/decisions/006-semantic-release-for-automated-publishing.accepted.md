@@ -30,6 +30,12 @@ The current automated version bumping strategy (ADR 004) has several limitations
 
 The current approach was designed as a temporary solution to prevent npm publish failures, but its limitations suggest that a more comprehensive release automation strategy is needed.
 
+## Trunk-Based Development and Release Trigger Model
+
+This ADR also codifies a trunk-based development approach where `main` is the single long-lived integration branch. All changes are integrated into `main` via pull requests and are released exclusively from `main`.
+
+semantic-release will be executed only from CI on push events to `main` in a single unified workflow. Releases are not triggered manually, via tag-based workflows, or from other branches. This ensures a single, consistent source of truth for both integration and automated publishing.
+
 ## Decision Drivers
 
 - Need for proper semantic version determination based on change significance

@@ -18,7 +18,14 @@ This project officially supports Node.js 18.18.x, 20.x, 22.14.x, and 24.x, match
 
 ## Pull Request Process
 
-This project uses **trunk-based development** with a single integration branch: `main`.
+This project uses **trunk-based development** with a single integration branch: `main`. The repository also uses **semantic-release** with **Conventional Commits** and a **single unified CI/CD workflow** that runs on pushes to `main` to determine when and how to publish a new version. Releases are **never triggered manually or by tags**; they are cut automatically by CI on successful pushes to `main` that contain appropriately classified Conventional Commits.
+
+As a contributor, your primary responsibility is to:
+
+- Keep changes small and focused, and
+- Use clear, well-structured Conventional Commit messages (see “Commit Message Conventions” below),
+
+so that the CI/CD pipeline can correctly infer the next version and changelog entries.
 
 ### Core workflow (default)
 
@@ -52,7 +59,7 @@ External contributors who do not have direct push access will typically:
 2. Create small, incremental commits in their fork (feature branches in forks are acceptable if helpful to your workflow).
 3. Open a PR from the fork against the `main` branch of this repository.
 
-Even in this case, `main` in the upstream repository remains the **single integration branch**, and changes are merged into `main` as soon as they are ready.
+Even in this case, `main` in the upstream repository remains the **single integration branch**, and changes are merged into `main` as soon as they are ready. The unified CI/CD workflow will then evaluate the Conventional Commit history on `main` and, if appropriate, automatically publish a new release based on those commits—no manual tag or release steps are needed from contributors.
 
 ## Commit Message Conventions
 
@@ -78,6 +85,8 @@ Examples:
 - `docs: update README` → no version change
 
 Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`
+
+Because releases are driven by semantic-release and the CI/CD workflow on `main`, clear Conventional Commit messages are essential: they are the primary input used to decide whether a new release is published and what its version bump should be.
 
 ## Coding Style and Quality Checks
 
