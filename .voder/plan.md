@@ -1,15 +1,15 @@
 ## NOW
 
-- [ ] Add complete traceability JSDoc annotations using the @supports format to all exported wiring functions in the main plugin entry file so that each function explicitly references the correct function-annotations and unified-rule stories and their requirement IDs.
+- [ ] Enable the traceability annotation format lint rule in the project’s lint configuration and add targeted suppressions so that all existing TypeScript and JavaScript files pass linting while the rule is active.
 
 ## NEXT
 
-- [ ] Add inline @supports traceability comments to each significant conditional branch and error-handling path in the plugin entry and maintenance CLI modules so that all user-visible control-flow decisions are mapped to their corresponding stories and requirement IDs.
-- [ ] Update rule and helper modules related to function and branch annotations to ensure every named function has a correctly formatted @supports JSDoc that references the appropriate story files and requirement IDs, replacing any legacy or malformed annotations as needed.
-- [ ] Ensure tests that exercise function-annotation and test-callback behavior reference the updated requirement IDs in their test names and file-level @supports annotations so that test traceability remains consistent with the code annotations and stories.
+- [ ] Update a small group of malformed or legacy traceability annotations in one helper module to comply with the new format rule so that the corresponding suppressions can be safely removed.
+- [ ] Refactor one clearly duplicated helper pattern in the traceability rule helpers into a shared function so that the amount of duplicated code in that area is reduced without increasing complexity.
+- [ ] Align any remaining mixed @story/@req annotations on core rule entry points with the preferred @supports-first style so that the codebase consistently uses the modern traceability format.
 
 ## LATER
 
-- [ ] Create or update a short internal documentation page describing the required @supports annotation format, examples for functions and branches, and the mapping to the traceability enforcement rules so future contributors can apply annotations consistently.
-- [ ] Extend or fine-tune the traceability checking script or rule configuration so that it validates the presence and basic format of @supports annotations on all named functions and key branches without producing false positives for non-business-logic code.
-- [ ] Once traceability annotations are complete and consistent, revisit the lint and duplication configuration to incrementally lower size and duplication thresholds in a way that preserves readability while keeping traceability comments intact and accurate.
+- [ ] Gradually replace the remaining suppressions for the traceability annotation format rule by correcting annotations across the codebase in small, self-contained changes.
+- [ ] Identify another small cluster of duplicated logic in the rules or maintenance helpers and extract it into a shared utility to further lower code duplication while keeping functions short and focused.
+- [ ] Lower the maximum allowed file length limit in the lint configuration once helpers are more decomposed so that long files are discouraged without forcing disruptive refactors.
