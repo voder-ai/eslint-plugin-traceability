@@ -4,7 +4,7 @@
 
 ## NEXT
 
-- [ ] Wire the new additional-helper configuration through the require-story-annotation rule’s schema and options so ESLint users can set it in their configs, and add rule-level tests demonstrating the end-to-end behavior.
+- [x] Wire the new additional-helper configuration through the require-story-annotation rule’s schema and options so ESLint users can set it in their configs, and add rule-level tests demonstrating the end-to-end behavior.
 - [ ] Update the function-annotations story to document the new configuration capability for custom excluded test helpers and mark the corresponding requirement and acceptance-criteria items as satisfied.
 - [ ] Amend ADR 013 to describe the new configuration option for custom helper names, including rationale and examples of how teams can use it to align with their own test wrappers.
 - [ ] Add an integration test that exercises the unified require-traceability rule in a realistic flat-config setup where custom helper names are configured for exclusion, verifying behavior across both JS and TS files.

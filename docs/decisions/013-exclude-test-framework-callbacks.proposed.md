@@ -67,6 +67,8 @@ Chosen option: "Add `excludeTestCallbacks` option (default: `true`)", because it
 - Bad, because adds another configuration option (though with sensible default)
 - Neutral, because false negatives possible if production code uses function names like `describe()`
 
+The chosen option is extended with a customizable helper list via the `additionalTestHelperNames` configuration option, allowing teams to align the exclusion behavior with their own wrapper helpers that behave like test callbacks.
+
 ### Confirmation
 
 The implementation will be confirmed by:
@@ -151,6 +153,7 @@ Only exclude the innermost test callbacks (it, test) but require annotations on 
 3. Update `requiresOwnFunctionAnnotation()` to check this condition
 4. Wire the `excludeTestCallbacks` option through the rule schema and configuration
 5. Add comprehensive tests for various test framework patterns
+6. Expose an additionalTestHelperNames option on the function-annotation helpers and require-story-annotation rule so projects can register their own helper names that should be treated as test callbacks when excludeTestCallbacks is enabled.
 
 **Test frameworks covered:**
 
@@ -172,5 +175,4 @@ The implementation relies on:
 
 - A fixed `TEST_FUNCTION_NAMES` set that enumerates the test framework functions whose anonymous callbacks are excluded from annotation requirements.
 - An `excludeTestCallbacks` rule option (default: `true`) that enables or disables this behavior.
-
-Vitest's `bench` function is intentionally omitted from `TEST_FUNCTION_NAMES`, so `bench` callbacks are always treated as regular functions that require annotations.
+- The additionalTestHelperNames option allows projects to extend the core TEST_FUNCTION_NAMES set with custom helper names (for example, withTestCase, withDescribeSuite) while preserving the invariant that Vitest's bench callbacks are never excluded.
