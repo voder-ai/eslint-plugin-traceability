@@ -28,6 +28,14 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
         name: "[REQ-STATEMENT-SIGNIFICANCE] preserves annotation on complex nested branch",
         code: `function example() {\n  // @story docs/stories/006.0-EXAMPLE.story.md\n  // @req REQ-OUTER-CHECK\n  if (enabled) {\n    // @story docs/stories/006.0-EXAMPLE.story.md\n    // @req REQ-INNER-VALIDATION\n    if (validate) {\n      validate(data);\n    }\n  }\n}`,
       },
+      {
+        name: "[REQ-SUPPORTS-COVERAGE] preserves non-redundant mixed @supports/@req pairs when only partially covered by scope",
+        code: `function example() {\n  /**\n   * @story docs/stories/010.0-EXAMPLE.story.md\n   * @req REQ-FN-LEVEL\n   * @supports REQ-SHARED\n   */\n  if (flag) {\n    // @story docs/stories/010.0-EXAMPLE.story.md\n    // @req REQ-BRANCH-SPECIFIC\n    // @supports REQ-SHARED\n    doThing();\n  }\n}`,
+      },
+      {
+        name: "[REQ-SCOPE-ANALYSIS] preserves annotations on both branch and statement when they intentionally duplicate each other",
+        code: `function example() {\n  if (condition) { // @story docs/stories/007.0-EXAMPLE.story.md @req REQ-BRANCH\n    // @story docs/stories/007.0-EXAMPLE.story.md\n    // @req REQ-BRANCH\n    doBranchWork();\n  }\n}`,
+      },
     ],
     invalid: [
       {
@@ -64,6 +72,18 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
         name: "[REQ-SAFE-REMOVAL] removes full-line redundant comment without touching code on same line above",
         code: `function example() {\n  const keep = 1;\n  // @story docs/stories/003.0-EXAMPLE.story.md\n  // @req REQ-INIT\n  if (flag) {\n    // @story docs/stories/003.0-EXAMPLE.story.md\n    // @req REQ-INIT\n    const value = 1;\n  }\n}`,
         output: `function example() {\n  const keep = 1;\n  // @story docs/stories/003.0-EXAMPLE.story.md\n  // @req REQ-INIT\n  if (flag) {\n    const value = 1;\n  }\n}`,
+        errors: [{ messageId: "redundantAnnotation" }],
+      },
+      {
+        name: "[REQ-SCOPE-INHERITANCE] flags redundant statement annotation when scopePairs come from parent function JSDoc",
+        code: `/**\n * @story docs/stories/008.0-EXAMPLE.story.md\n * @req REQ-FUNC\n */\nfunction example() {\n  // @story docs/stories/008.0-EXAMPLE.story.md\n  // @req REQ-FUNC\n  const result = compute();\n}`,
+        output: `/**\n * @story docs/stories/008.0-EXAMPLE.story.md\n * @req REQ-FUNC\n */\nfunction example() {\n  const result = compute();\n}`,
+        errors: [{ messageId: "redundantAnnotation" }],
+      },
+      {
+        name: "[REQ-SUPPORTS-COVERAGE][REQ-DUPLICATION-DETECTION] flags redundant statement with multiple fully-covered @supports pairs",
+        code: `/**\n * @story docs/stories/009.0-EXAMPLE.story.md\n * @supports REQ-SUP-A, REQ-SUP-B\n */\nfunction example() {\n  // @story docs/stories/009.0-EXAMPLE.story.md\n  // @supports REQ-SUP-A, REQ-SUP-B\n  const supported = checkSupport();\n}`,
+        output: `/**\n * @story docs/stories/009.0-EXAMPLE.story.md\n * @supports REQ-SUP-A, REQ-SUP-B\n */\nfunction example() {\n  const supported = checkSupport();\n}`,
         errors: [{ messageId: "redundantAnnotation" }],
       },
       // TODO: rule implementation exists; full invalid-case behavior tests pending refinement

@@ -1,37 +1,33 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: read_file with input: {"filePath":"src/rules/no-redundant-annotation.ts"}
-Used tool: find_files with input: {"pattern":"*no-redundant-annotation*.test.ts","directory":"tests"}
-Used tool: read_file with input: {"filePath":"tests/rules/no-redundant-annotation.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/integration/no-redundant-annotation.integration.test.ts"}
-Used tool: modify_file with input: {"filePath":"src/rules/no-redundant-annotation.ts","instruction":"Refactor the redundant-statement helper into smaller functions without changing behavior.\n\n1. Just above the existing `getRedundantStatementContext` function, insert three new helper functions:\n   - `getStatementPairsForRedundancy` which:\n     * Accepts `(context: Rule.RuleContext, stmt: any, scopePairs: Set<string>, options: RedundancyRuleOptions)` and returns `{ comments: any[]; pairs: Set<string> } | null`.\n     * Immediately returns `null` when `scopePairs.size === 0`.\n     * Uses `isStatementEligibleForRedundancy(stmt, options, DEFAULT_BRANCH_TYPES)` to skip ineligible statements (returning `null` when false).\n     * Uses the existing `getStatementComments(context, stmt)` helper to collect comments, returns `null` when no comments.\n     * Calls `extractStoryReqPairsFromComments` on those comments to produce `stmtPairs`.\n     * Preserves the existing TRACEABILITY_DEBUG logging: when `process.env.TRACEABILITY_DEBUG === \"1\"`, log the same message currently used in `getRedundantStatementContext`, including calling `isStatementEligibleForRedundancy` again in the log to keep behavior identical.\n     * Returns `null` when `stmtPairs.size === 0`.\n     * Otherwise returns `{ comments: stmtComments, pairs: stmtPairs }`.\n     * Include a JSDoc comment with `@supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-STATEMENT-SIGNIFICANCE REQ-SCOPE-ANALYSIS`.\n\n   - `isStatementRedundantWithinScope` which:\n     * Accepts `(stmtPairs: Set<string>, scopePairs: Set<string>, options: RedundancyRuleOptions)` and returns `boolean`.\n     * Encapsulates the existing redundancy logic:\n       - If `options.allowEmphasisDuplication` is true and `stmtPairs.size === 1` and `arePairsFullyCovered(stmtPairs, scopePairs)` is true, return `false` (do not treat as redundant).\n       - If `arePairsFullyCovered(stmtPairs, scopePairs)` is false, return `false`.\n       - Otherwise return `true`.\n     * Include a JSDoc comment with `@supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-SAFE-REMOVAL REQ-CONFIGURABLE-STRICTNESS`.\n\n   - `getAnnotationCommentsFromStatement` which:\n     * Accepts `(comments: any[]): any[]`.\n     * Filters the provided comments to only those whose `value` string contains `@story`, `@req`, or `@supports`, using the same regular expression currently in `getRedundantStatementContext`.\n     * Returns the filtered list.\n     * Include a JSDoc comment with `@supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL REQ-REDUNDANCY-PATTERNS`.\n\n2. Rewrite `getRedundantStatementContext` to delegate to these helpers instead of inlining all the logic:\n   - Remove the initial `if (scopePairs.size === 0)`, `isStatementEligibleForRedundancy`, direct comment collection, pair extraction, debug logging, and manual annotation filtering.\n   - New implementation structure:\n\n```ts\nfunction getRedundantStatementContext(\n  context: Rule.RuleContext,\n  stmt: any,\n  scopePairs: Set<string>,\n  options: RedundancyRuleOptions,\n): { comments: any[] } | null {\n  const stmtInfo = getStatementPairsForRedundancy(\n    context,\n    stmt,\n    scopePairs,\n    options,\n  );\n\n  if (!stmtInfo) {\n    return null;\n  }\n\n  const { comments, pairs } = stmtInfo;\n\n  if (!isStatementRedundantWithinScope(pairs, scopePairs, options)) {\n    return null;\n  }\n\n  const annotationComments = getAnnotationCommentsFromStatement(comments);\n  if (annotationComments.length === 0) {\n    return null;\n  }\n\n  return { comments: annotationComments };\n}\n```\n\n3. Keep the existing JSDoc on `getRedundantStatementContext` but adjust wording if necessary so it still accurately describes using helpers to determine redundancy, without altering the `@supports` line.\n\n4. Do not modify any other functions in this file as part of this change."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--testPathPattern","no-redundant-annotation"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","no-redundant-annotation"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","src/rules/no-redundant-annotation.ts"]}
+**Action:** Used tool: get_git_status with input: {}
+Used tool: list_directory with input: {"dirPath":"."}
+Used tool: read_file with input: {"filePath":"CONTRIBUTING.md"}
+Used tool: read_file with input: {"filePath":"package.json"}
+Used tool: list_directory with input: {"dirPath":".husky"}
+Used tool: list_directory with input: {"dirPath":"user-docs"}
+Used tool: read_file with input: {"filePath":".husky/pre-commit"}
+Used tool: read_file with input: {"filePath":".husky/pre-push"}
+Used tool: read_file with input: {"filePath":"README.md"}
+Used tool: read_file with input: {"filePath":"CHANGELOG.md"}
+Used tool: read_file with input: {"filePath":"SECURITY.md"}
+Used tool: read_file with input: {"filePath":"user-docs/api-reference.md"}
+Used tool: read_file with input: {"filePath":"user-docs/eslint-9-setup-guide.md"}
+Used tool: read_file with input: {"filePath":"user-docs/examples.md"}
+Used tool: read_file with input: {"filePath":"user-docs/migration-guide.md"}
+Used tool: read_file with input: {"filePath":"user-docs/traceability-overview.md"}
+Used tool: modify_file with input: {"filePath":"CONTRIBUTING.md","instruction":"Replace the specific references to internal code-quality documentation file paths with a more generic description.\n\nFind the paragraph that currently reads:\n\"Under the hood, `ci-verify:fast` runs Jest with:\n\n```bash\njest --testPathPattern 'tests/(rules|maintenance)'\n```\n\nThis executes a meaningful subset of the suite (rule tests plus maintenance tests), making it suitable as a quick pre-flight signal before running the full gate. Maintainers performing deep CODE_QUALITY reviews should consult `docs/code-quality-core-review-scope.md` and `docs/code-quality-excluded-areas.md` for guidance. These documents explain which parts of the codebase to prioritize and which large or auxiliary areas are typically out of scope for intensive review.\"\n\nChange just the maintainer sentence so that the paragraph becomes:\n\"Under the hood, `ci-verify:fast` runs Jest with:\n\n```bash\njest --testPathPattern 'tests/(rules|maintenance)'\n```\n\nThis executes a meaningful subset of the suite (rule tests plus maintenance tests), making it suitable as a quick pre-flight signal before running the full gate. Maintainers performing deep CODE_QUALITY reviews can consult the project's internal code-quality review scope documentation for guidance; those internal docs explain which parts of the codebase to prioritize and which large or auxiliary areas are typically out of scope for intensive review and are not required reading for most contributors.\""}
+Used tool: run_command with input: {"command":"npm","args":["run","check:scripts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--passWithNoTests=false"]}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: extract helpers for redundant statement analysis"}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","no-redundant-annotation"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","src/rules/no-redundant-annotation.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check","--","--pretty","false"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check","--","src/rules/no-redundant-annotation.ts"]}
-Used tool: git_push with input: {}
-Used tool: get_github_pipeline_status with input: {}
-Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
-Used tool: modify_file with input: {"filePath":"src/rules/no-redundant-annotation.ts","instruction":"Refactor the getScopePairs helper into smaller, clearer pieces without changing behavior.\n\n1. Directly above the existing `getScopePairs` function, insert a new helper function:\n\n```ts\n/**\n * Collect comments around a scope node using JSDoc, leading comments,\n * and any comments that appear immediately before the node.\n *\n * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE\n */\nfunction getScopeCommentsFromJSDocAndLeading(\n  sourceCode: ReturnType<Rule.RuleContext[\"getSourceCode\"]> | any,\n  scopeNode: any,\n): any[] {\n  const comments: any[] = [];\n\n  const jsdoc = (sourceCode as any).getJSDocComment\n    ? (sourceCode as any).getJSDocComment(scopeNode)\n    : null;\n  const before = (sourceCode as any).getCommentsBefore\n    ? (sourceCode as any).getCommentsBefore(scopeNode) || []\n    : [];\n\n  if (jsdoc) {\n    comments.push(jsdoc);\n  }\n\n  if (Array.isArray(scopeNode.leadingComments)) {\n    comments.push(...scopeNode.leadingComments);\n  }\n\n  comments.push(...before);\n\n  return comments;\n}\n```\n\n2. Replace the body of `getScopePairs` with a simpler implementation that delegates to the new helper for non-branch scopes:\n\n- Remove the in-function `FUNCTION_LIKE_TYPES` Set declaration and the duplicated JSDoc/leading-comment logic.\n- New implementation:\n\n```ts\nfunction getScopePairs(\n  context: Rule.RuleContext,\n  scopeNode: any,\n  parent: any | undefined,\n): Set<string> {\n  const sourceCode = context.getSourceCode();\n\n  // Branch-style scope: use the branch helpers to collect comment text.\n  if (DEFAULT_BRANCH_TYPES.includes(scopeNode.type)) {\n    const text = gatherBranchCommentText(sourceCode as any, scopeNode, parent);\n    return extractStoryReqPairsFromText(text);\n  }\n\n  const comments = getScopeCommentsFromJSDocAndLeading(sourceCode, scopeNode);\n  return extractStoryReqPairsFromComments(comments);\n}\n```\n\n3. Keep the existing JSDoc comment for `getScopePairs` (including its @supports line) unchanged, apart from allowing the text to describe that non-branch scopes now use the shared helper; do not alter the @supports tag or the function signature.\n\n4. Do not modify any other functions in this file as part of this change."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","no-redundant-annotation"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint","--","src/rules/no-redundant-annotation.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check","--","--pretty","false"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check","--","src/rules/no-redundant-annotation.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format","--","src/rules/no-redundant-annotation.ts"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check","--","src/rules/no-redundant-annotation.ts"]}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"refactor: simplify scope pair collection helpers"}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check","--","--pretty","false"]}
+Used tool: git_commit with input: {"message":"docs: generalize internal code-quality doc references in contributing guide"}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
 Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","build"]}
 Used tool: run_command with input: {"command":"npm","args":["run","duplication"]}
+Used tool: run_command with input: {"command":"npm","args":["run","security:secrets"]}
 Used tool: git_push with input: {}
 Used tool: get_github_pipeline_status with input: {}
 Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
@@ -39,271 +35,135 @@ Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline"
 **Response:**
 
 ```
-Here’s what I implemented and how it maps to your plan.
+Here’s the updated status and what was done.
+
+## Updated Plan
+
+## NOW
+
+- [x] Revise the CONTRIBUTING guide so that any references to internal documentation files are described in generic terms rather than hard-coding internal paths, while keeping contributor instructions accurate and up to date.
+
+## NEXT
+
+- [x] Review all user-visible markdown files to ensure they do not link directly to internal development documentation and that any mentions of internal paths are clearly presented as examples, not resources users are expected to open.
+- [x] Verify that the documented contributor workflows (tests, linting, build, CI hooks) in the CONTRIBUTING guide still match the current scripts and hooks configuration, updating wording where necessary.
+- [x] Add a brief explanation in the CONTRIBUTING guide describing the relationship between local git hooks and the CI pipeline so contributors understand that local checks mirror the CI gates.
+
+## LATER
+
+- [ ] Document the overall documentation structure in a short section of the README or a dedicated user-facing doc, clarifying which files are intended for end users versus internal development documentation.
+- [ ] Periodically re-review the no-redundant-annotation rule and its tests to see if any further small refactors or additional examples would improve clarity for future contributors.
+- [ ] Apply similar small, behavior-preserving refactors to other complex rule or helper modules as they become hotspots, ensuring each change is accompanied by focused tests and traceability annotations.
 
 ---
 
-## Changes made
+## What I changed
 
-### 1. Refactor the most complex helper (statement redundancy logic)  ✅
+### 1) Generalize internal-doc references in CONTRIBUTING (NOW)
 
-Target: `getRedundantStatementContext` in `src/rules/no-redundant-annotation.ts`.
+In `CONTRIBUTING.md`, I updated the sentence that previously hard‑coded internal doc paths:
 
-**What I did**
+> Maintainers performing deep CODE_QUALITY reviews should consult `docs/code-quality-core-review-scope.md` and `docs/code-quality-excluded-areas.md` for guidance. These documents explain which parts of the codebase to prioritize and which large or auxiliary areas are typically out of scope for intensive review.
 
-I split the statement-level redundancy logic into three focused helpers and simplified `getRedundantStatementContext` to orchestrate them:
+This now reads:
 
-New helpers:
+> Maintainers performing deep CODE_QUALITY reviews can consult the project's internal code-quality review scope documentation for guidance; those internal docs explain which parts of the codebase to prioritize and which large or auxiliary areas are typically out of scope for intensive review and are not required reading for most contributors.
 
-1. `getStatementPairsForRedundancy(...)`
-   - Gathers comments and story/req pairs for a candidate statement and decides whether they’re relevant for redundancy analysis.
-   - Behavior:
-     - Returns `null` if:
-       - `scopePairs.size === 0`
-       - `isStatementEligibleForRedundancy` is false
-       - There are no statement comments
-       - Extracted pairs set is empty
-     - Otherwise returns `{ comments: stmtComments, pairs: stmtPairs }`.
-   - Keeps the existing debug logging behavior verbatim:
-     - Logs `[no-redundant-annotation] Statement type=... eligible=... commentCount=... pairs=...` when `TRACEABILITY_DEBUG === "1"`, including re-calling `isStatementEligibleForRedundancy` exactly as before.
-   - Annotated with:
-     - `@supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-STATEMENT-SIGNIFICANCE REQ-SCOPE-ANALYSIS`.
+This satisfies the requirement to avoid exposing specific internal paths in user-visible docs, while still pointing maintainers at the right kind of resource.
 
-2. `isStatementRedundantWithinScope(...)`
-   - Encapsulates the redundancy decision logic.
-   - Behavior is identical to the previous inline logic:
-     - If `options.allowEmphasisDuplication` is true, `stmtPairs.size === 1`, and `arePairsFullyCovered(stmtPairs, scopePairs)` is true → returns `false` (intentional emphasis, not redundant).
-     - If `arePairsFullyCovered(stmtPairs, scopePairs)` is false → returns `false`.
-     - Otherwise → returns `true` (redundant).
-   - Annotated with:
-     - `@supports … REQ-REDUNDANCY-PATTERNS REQ-SAFE-REMOVAL REQ-CONFIGURABLE-STRICTNESS`.
+### 2) Review user-visible markdown for internal links (NEXT #1)
 
-3. `getAnnotationCommentsFromStatement(comments: any[])`
-   - Filters a comment list down to those containing `@story`, `@req`, or `@supports`, using the same regex as before:
-     - `/@story\b|@req\b|@supports\b/`
-   - Annotated with:
-     - `@supports … REQ-SAFE-REMOVAL REQ-REDUNDANCY-PATTERNS`.
+I inspected:
 
-Updated `getRedundantStatementContext`:
+- `README.md`
+- `CHANGELOG.md`
+- `SECURITY.md`
+- `CONTRIBUTING.md`
+- `user-docs/api-reference.md`
+- `user-docs/eslint-9-setup-guide.md`
+- `user-docs/examples.md`
+- `user-docs/migration-guide.md`
+- `user-docs/traceability-overview.md`
 
-```ts
-function getRedundantStatementContext(
-  context: Rule.RuleContext,
-  stmt: any,
-  scopePairs: Set<string>,
-  options: RedundancyRuleOptions,
-): { comments: any[] } | null {
-  const stmtInfo = getStatementPairsForRedundancy(
-    context,
-    stmt,
-    scopePairs,
-    options,
-  );
+Findings:
 
-  if (!stmtInfo) {
-    return null;
-  }
+- No user-facing markdown links to `docs/` or `prompts/` paths.
+- Any `docs/stories/...` references are clearly framed as *example paths in a consumer’s own repo*, not links into this project’s internal docs.
+- The only remaining mention of internal documentation is the generic phrasing I added in `CONTRIBUTING.md` (no file paths, no links), which is acceptable.
 
-  const { comments, pairs } = stmtInfo;
+So the “no direct links to internal dev docs from user docs” requirement is satisfied.
 
-  if (!isStatementRedundantWithinScope(pairs, scopePairs, options)) {
-    return null;
-  }
+### 3) Verify CONTRIBUTING workflows vs actual scripts/hooks (NEXT #2)
 
-  const annotationComments = getAnnotationCommentsFromStatement(comments);
-  if (annotationComments.length === 0) {
-    return null;
-  }
+Using `package.json`, `.husky/pre-commit`, and `.husky/pre-push`:
 
-  return { comments: annotationComments };
-}
-```
-
-- JSDoc for `getRedundantStatementContext` still describes the same responsibility and keeps the existing `@supports` line unchanged.
-- No change to rule metadata, messages, options, or external behavior.
-
-**Validation**
-
-- Targeted tests for this rule:
-  - `npm test -- --runInBand no-redundant-annotation`
-    - Passed: `tests/rules/no-redundant-annotation.test.ts`
-    - Passed: `tests/integration/no-redundant-annotation.integration.test.ts`
-- Lint, types, format:
-  - `npm run lint -- src/rules/no-redundant-annotation.ts`
-  - `npm run type-check -- --pretty false`
-  - `npm run format:check -- src/rules/no-redundant-annotation.ts`
-- Commit:  
-  `refactor: extract helpers for redundant statement analysis`
-- Full CI (via pre-push + GitHub Actions) later re-validated this commit as part of the combined pipeline.
-
-This completes the **NOW** item.
-
----
-
-### 2. Refactor the remaining complex helper (scope pair logic)  ✅
-
-Target: `getScopePairs` in `src/rules/no-redundant-annotation.ts`.
-
-**What I did**
-
-Introduced a new helper to centralize JSDoc/leading/before-comment collection and simplified `getScopePairs` to delegate to it.
-
-New helper:
-
-```ts
-/**
- * Collect comments around a scope node using JSDoc, leading comments,
- * and any comments that appear immediately before the node.
- *
- * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE
- */
-function getScopeCommentsFromJSDocAndLeading(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]> | any,
-  scopeNode: any,
-): any[] {
-  const comments: any[] = [];
-
-  const jsdoc = (sourceCode as any).getJSDocComment
-    ? (sourceCode as any).getJSDocComment(scopeNode)
-    : null;
-  const before = (sourceCode as any).getCommentsBefore
-    ? (sourceCode as any).getCommentsBefore(scopeNode) || []
-    : [];
-
-  if (jsdoc) {
-    comments.push(jsdoc);
-  }
-
-  if (Array.isArray(scopeNode.leadingComments)) {
-    comments.push(...scopeNode.leadingComments);
-  }
-
-  comments.push(...before);
-
-  return comments;
-}
-```
-
-Refactored `getScopePairs`:
-
-```ts
-/**
- * Compute the story/requirement pairs for annotations that apply to the
- * given scope node.
- *
- * For branch scopes we reuse the same comment-gathering helper used by
- * the require-branch-annotation rule so that REQ-SCOPE-INHERITANCE
- * aligns with existing behavior. For non-branch scopes, we reuse a
- * shared helper that collects JSDoc, leading, and immediately-before
- * comments around the scope node.
- *
- * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE
- */
-function getScopePairs(
-  context: Rule.RuleContext,
-  scopeNode: any,
-  parent: any | undefined,
-): Set<string> {
-  const sourceCode = context.getSourceCode();
-
-  // Branch-style scope: use the branch helpers to collect comment text.
-  if (DEFAULT_BRANCH_TYPES.includes(scopeNode.type)) {
-    const text = gatherBranchCommentText(sourceCode as any, scopeNode, parent);
-    return extractStoryReqPairsFromText(text);
-  }
-
-  const comments = getScopeCommentsFromJSDocAndLeading(sourceCode, scopeNode);
-  return extractStoryReqPairsFromComments(comments);
-}
-```
-
-Key points:
-
-- Branch-handling path is unchanged: still uses `gatherBranchCommentText` + `extractStoryReqPairsFromText`.
-- Non-branch scopes now use `getScopeCommentsFromJSDocAndLeading` instead of duplicated inline logic.
-- The function signature and `@supports` annotation are unchanged; only wording in the JSDoc description was slightly expanded to mention the shared helper.
-
----
-
-### 3. Review rule + unit tests and check for coverage gaps  ✅
-
-**What I reviewed**
-
-- Rule implementation:
-  - `src/rules/no-redundant-annotation.ts` after both refactors:
-    - `normalizeOptions`, `collectScopePairs`, `getRedundantStatementContext`, new helpers, and `reportRedundantAnnotationsInBlock` form a clear pipeline:  
-      scope → scope pairs → per-statement pairs → redundancy decision → comment ranges → fix.
-- Tests:
-  - Unit: `tests/rules/no-redundant-annotation.test.ts`
-    - Covers:
-      - Different requirements preserved (`REQ-DIFFERENT-REQUIREMENTS`).
-      - Nested branches where child annotations are non-redundant (`REQ-STATEMENT-SIGNIFICANCE`).
-      - Redundant return and simple statements within annotated scopes (`REQ-SCOPE-ANALYSIS`, `REQ-DUPLICATION-DETECTION`).
-      - Config options:
-        - `strictness: "permissive"` (no redundant expression statements).
-        - `allowEmphasisDuplication: true` (single fully-covered pair preserved).
-        - `maxScopeDepth` behavior with and without grandparent coverage (`REQ-SCOPE-INHERITANCE`).
-  - Integration: `tests/integration/no-redundant-annotation.integration.test.ts`
-    - Verifies:
-      - The rule is wired via the plugin and FlatESLint.
-      - Linting and fixing across multiple files removes only redundant annotations and preserves required ones (`REQ-REDUNDANCY-PATTERNS`, `REQ-SAFE-REMOVAL`, `REQ-SCOPE-INHERITANCE`).
-
-**Coverage check**
-
-- Full test run:
-  - `npm test` → 53 suites / 428 tests, all passing.
-- Coverage:
-  - `npm test -- --coverage` (via CI and local pre-push) shows:
-    - For `src/rules/no-redundant-annotation.ts`:
-      - Statements: 93.56%
-      - Branches: 76.62%
-      - Functions: 100%
-      - Lines: 93.56%
-    - All thresholds still satisfied; refactor did not introduce uncovered functions or regress coverage expectations.
-- The new helpers are exercised indirectly through existing tests:
-  - Every previously-tested scenario still flows through `getRedundantStatementContext`, which now delegates to helpers.
-  - Scope inheritance scenarios still exercise `getScopePairs` and thus the new `getScopeCommentsFromJSDocAndLeading`.
-
-**Gaps / new tests**
-
-- I examined the existing tests and coverage lines for `no-redundant-annotation.ts` after the refactor.
-- The uncovered lines correspond to specific branches already known to be edge-case paths rather than newly introduced logic; coverage percentage remained very similar to pre-refactor values.
-- No new untested behavior was introduced (options, redundancy rules, and message IDs are unchanged), so no additional tests are necessary at this point.
-
----
-
-## CI / Quality status
-
-Before each push and for the final state, I ran:
-
-- Build: `npm run build`
-- Tests:
-  - Targeted: `npm test -- --runInBand no-redundant-annotation`
-  - Full: `npm test`
-- Lint:
+- `CONTRIBUTING.md` mentions:
+  - `npm run ci-verify:fast`
+  - `npm run ci-verify:full`
+  - `npm run build`
+  - `npm run type-check`
   - `npm run lint`
-  - `npm run lint -- src/rules/no-redundant-annotation.ts`
-- Type-check: `npm run type-check -- --pretty false`
-- Formatting:
-  - `npm run format` (once, which also reformattted some docs)
+  - `npm test`
   - `npm run format:check`
-- Duplication: `npm run duplication`
+  - `npm run duplication`
+  - `npm run lint:require-built-plugin`
 
-All passed locally.
+All of these scripts exist in `package.json` with the described behavior.
 
-Pushes triggered the GitHub Actions “CI/CD Pipeline” workflow on `main`; I waited for both runs to complete successfully (`success` conclusion).
+Hooks:
+
+- `.husky/pre-commit` runs `npx lint-staged` (fast, staged files only).
+- `.husky/pre-push` runs `npm run ci-verify:full` and `npm run security:secrets`.
+
+`CONTRIBUTING.md` already states that:
+
+- `ci-verify:fast` is a quick, focused Jest subset (rules + maintenance).
+- `ci-verify:full` is a comprehensive, CI-equivalent gate.
+
+This is consistent with the scripts and hooks; no wording changes were needed beyond the internal-doc reference already adjusted.
+
+### 4) Explain hook–CI relationship in CONTRIBUTING (NEXT #3)
+
+`CONTRIBUTING.md` already contains:
+
+- A “Note on pre-push hook” section:
+
+  > Note on pre-push hook: the repository's pre-push hook now runs a full CI-equivalent verification task. You can run it locally (and it's what the hook runs before pushing) with:
+  >
+  > ```bash
+  > npm run ci-verify:full
+  > ```
+  >
+  > `ci-verify:full` is the comprehensive local gate intended to mirror CI quality checks: it runs a clean build, type-checking, linting, `format:check`, duplication analysis, traceability checks, the full Jest test suite with coverage, dependency and security audits, and related safeguards. `ci-verify:fast` executes a focused subset of Jest tests [...] Continuous Integration still runs some CI-only steps that are not part of `ci-verify:full` [...]
+
+This already gives a clear explanation of how the pre-push hook and CI pipeline relate and explicitly states that `ci-verify:full` mirrors CI. Given this, no additional edits were necessary; the requirement is already met and validated against the actual hook scripts and CI workflow.
 
 ---
 
-## Updated plan
+## Quality checks and CI
 
-### NOW
+After editing `CONTRIBUTING.md`:
 
-- [x] Refactor the most complex helper in the redundant-annotation rule so that its logic is split into smaller, well-named internal functions without changing the rule’s external behavior.
+- Local checks:
+  - `npm run check:scripts`
+  - `npm run lint -- --max-warnings=0`
+  - `npm test -- --runInBand --passWithNoTests=false`
+  - `npm run type-check`
+  - `npm run format:check`
+  - `npm run build`
+  - `npm run duplication`
+  - `npm run security:secrets`
 
-### NEXT
+All passed.
 
-- [x] Refactor the remaining complex helper in the redundant-annotation rule to use similarly small, focused internal functions while preserving all existing semantics and diagnostics.
-- [x] Review the redundant-annotation rule and its unit tests together to ensure the new helper structure is easy to follow and that each major behavior still has clear, focused test coverage.
-- [x] Identify any gaps in test coverage introduced or revealed by the refactor and add small, targeted tests to cover those specific code paths if needed. (No new gaps were identified; existing tests sufficiently exercise the refactored helpers.)
+- Commit:
+  - `docs: generalize internal code-quality doc references in contributing guide`
+
+- Push:
+  - `git push` succeeded. The pre-push hook ran `ci-verify:full` and `security:secrets` successfully.
+
+- CI:
+  - The “CI/CD Pipeline” workflow run (ID `20051424868`) completed with conclusion `success`.
+
+Everything is green, and the requested NOW and NEXT tasks are fully implemented.
 ```
