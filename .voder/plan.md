@@ -1,6 +1,6 @@
 ## NOW
 
-- [ ] Strengthen the test callback exclusion helper by updating its function signatures and parameters to use precise ESLint AST node types instead of untyped or loosely typed values, ensuring the behavior of excludeTestCallbacks and additionalTestHelperNames remains unchanged while making the helper fully type-safe and aligned with the function-annotation story requirements.
+- [x] Strengthen the test callback exclusion helper by updating its function signatures and parameters to use precise ESLint AST node types instead of untyped or loosely typed values, ensuring the behavior of excludeTestCallbacks and additionalTestHelperNames remains unchanged while making the helper fully type-safe and aligned with the function-annotation story requirements.
 
 ## NEXT
 

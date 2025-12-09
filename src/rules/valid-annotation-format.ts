@@ -14,6 +14,78 @@ import {
   finalizePendingAnnotation,
 } from "./helpers/valid-annotation-format-validators";
 
+function handleImplementsLine(
+  normalized: string,
+  pending: PendingAnnotation | null,
+  deps: {
+    context: any;
+    comment: any;
+    options: ResolvedAnnotationOptions;
+  },
+): PendingAnnotation | null {
+  const { context, comment, options } = deps;
+  const isImplements = /@supports\b/.test(normalized);
+  if (!isImplements) {
+    return pending;
+  }
+
+  const implementsValue = normalized.replace(/^@supports\b/, "").trim();
+  validateImplementsAnnotation(context, comment, implementsValue, options);
+  return pending;
+}
+
+function handleStoryOrReqLine(
+  normalized: string,
+  pending: PendingAnnotation | null,
+  deps: {
+    context: any;
+    comment: any;
+    options: ResolvedAnnotationOptions;
+  },
+): PendingAnnotation | null {
+  const { context, comment, options } = deps;
+  const isStory = /@story\b/.test(normalized);
+  const isReq = /@req\b/.test(normalized);
+
+  if (!isStory && !isReq) {
+    return pending;
+  }
+
+  finalizePendingAnnotation(context, comment, options, pending);
+  const rawValue = normalized.replace(/^@story\b|^@req\b/, "");
+  const trimmedValue = rawValue.trim();
+
+  return {
+    type: isStory ? "story" : "req",
+    value: trimmedValue,
+    hasValue: trimmedValue.length > 0,
+  };
+}
+
+function extendPendingAnnotation(
+  normalized: string,
+  pending: PendingAnnotation | null,
+): PendingAnnotation | null {
+  if (!pending) {
+    return pending;
+  }
+
+  const continuation = normalized.trim();
+  if (!continuation) {
+    return pending;
+  }
+
+  const updatedValue = pending.value
+    ? `${pending.value} ${continuation}`
+    : continuation;
+
+  return {
+    ...pending,
+    value: updatedValue,
+    hasValue: pending.hasValue || continuation.length > 0,
+  };
+}
+
 /**
  * Process a single normalized comment line and update the pending annotation state.
  *
@@ -46,33 +118,22 @@ function processCommentLine({
     return pending;
   }
 
-  const isStory = /@story\b/.test(normalized);
-  const isReq = /@req\b/.test(normalized);
-  const isImplements = /@supports\b/.test(normalized);
-
-  // Handle @supports as an immediate, single-line annotation
-  // @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-  // @req REQ-IMPLEMENTS-PARSE - Immediately validate @supports without starting multi-line state
-  if (isImplements) {
-    const implementsValue = normalized.replace(/^@supports\b/, "").trim();
-    validateImplementsAnnotation(context, comment, implementsValue, options);
-    return pending;
+  const afterImplements = handleImplementsLine(normalized, pending, {
+    context,
+    comment,
+    options,
+  });
+  if (afterImplements !== pending) {
+    return afterImplements;
   }
 
-  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-  // @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-  // @req REQ-SYNTAX-VALIDATION - Start new pending annotation when a tag is found
-  // @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
-  // @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
-  if (isStory || isReq) {
-    finalizePendingAnnotation(context, comment, options, pending);
-    const value = normalized.replace(/^@story\b|^@req\b/, "").trim();
-    return {
-      type: isStory ? "story" : "req",
-      value,
-      hasValue: value.trim().length > 0,
-    };
+  const afterStoryOrReq = handleStoryOrReqLine(normalized, pending, {
+    context,
+    comment,
+    options,
+  });
+  if (afterStoryOrReq !== pending) {
+    return afterStoryOrReq;
   }
 
   // Implement JSDoc tag coexistence behavior: terminate @story/@req values when a new non-traceability JSDoc tag line (e.g., @param, @returns) is encountered.
@@ -88,24 +149,7 @@ function processCommentLine({
   // @req REQ-MULTILINE-SUPPORT - Extend value of existing pending annotation across lines
   // @req REQ-AUTOFIX-FORMAT - Maintain complete logical value for downstream validation and fixes
   // @req REQ-MIXED-SUPPORT - Leave non-annotation lines untouched when no pending state exists
-  if (pending) {
-    const continuation = normalized.trim();
-    // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-    // @req REQ-MULTILINE-SUPPORT - Skip blank continuation lines without altering pending annotation
-    if (!continuation) {
-      return pending;
-    }
-    const updatedValue = pending.value
-      ? `${pending.value} ${continuation}`
-      : continuation;
-    return {
-      ...pending,
-      value: updatedValue,
-      hasValue: pending.hasValue || continuation.length > 0,
-    };
-  }
-
-  return pending;
+  return extendPendingAnnotation(normalized, pending);
 }
 
 /**
@@ -128,11 +172,15 @@ function processCommentLine({
  * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
  * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
  */
-function processComment(
-  context: any,
-  comment: any,
-  options: ResolvedAnnotationOptions,
-): void {
+function processCommentLines({
+  context,
+  comment,
+  options,
+}: {
+  context: any;
+  comment: any;
+  options: ResolvedAnnotationOptions;
+}): void {
   const rawLines = (comment.value || "").split(/\r?\n/);
   let pending: PendingAnnotation | null = null;
 
@@ -148,6 +196,14 @@ function processComment(
   });
 
   finalizePendingAnnotation(context, comment, options, pending);
+}
+
+function processComment(
+  context: any,
+  comment: any,
+  options: ResolvedAnnotationOptions,
+): void {
+  processCommentLines({ context, comment, options });
 }
 
 export default {

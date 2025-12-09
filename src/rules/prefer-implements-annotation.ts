@@ -411,24 +411,11 @@ function tryBuildInlineAutoFix(
  * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
  * @req REQ-MIGRATE-INLINE
  */
-function handleInlineStorySequence(
-  context: Rule.RuleContext,
+function collectReqIndicesAfterStory(
   group: LineComment[],
   startIndex: number,
-): number {
+): { reqIndices: number[]; nextIndex: number } {
   const n = group.length;
-  const current = group[startIndex];
-  const normalized = normalizeCommentLine(current.value || "");
-
-  if (!normalized || !/^@story\b/.test(normalized)) {
-    return startIndex + 1;
-  }
-
-  if (/^@supports\b/.test(normalized)) {
-    return startIndex + 1;
-  }
-
-  const storyIndex = startIndex;
   const reqIndices: number[] = [];
   let j = startIndex + 1;
 
@@ -445,6 +432,31 @@ function handleInlineStorySequence(
     }
     break;
   }
+
+  return { reqIndices, nextIndex: j };
+}
+
+function handleInlineStorySequence(
+  context: Rule.RuleContext,
+  group: LineComment[],
+  startIndex: number,
+): number {
+  const current = group[startIndex];
+  const normalized = normalizeCommentLine(current.value || "");
+
+  if (!normalized || !/^@story\b/.test(normalized)) {
+    return startIndex + 1;
+  }
+
+  if (/^@supports\b/.test(normalized)) {
+    return startIndex + 1;
+  }
+
+  const storyIndex = startIndex;
+  const { reqIndices, nextIndex } = collectReqIndicesAfterStory(
+    group,
+    startIndex,
+  );
 
   if (reqIndices.length === 0) {
     context.report({
@@ -469,7 +481,7 @@ function handleInlineStorySequence(
     });
   }
 
-  return reqIndices[reqIndices.length - 1] + 1;
+  return nextIndex;
 }
 
 /**
@@ -480,24 +492,30 @@ function handleInlineStorySequence(
  * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
  * @req REQ-MIGRATE-INLINE
  */
+function advanceInlineGroupIndex(
+  context: Rule.RuleContext,
+  group: LineComment[],
+  currentIndex: number,
+): number {
+  const current = group[currentIndex];
+  const normalized = normalizeCommentLine(current.value || "");
+  if (!normalized || !/^@story\b/.test(normalized)) {
+    return currentIndex + 1;
+  }
+
+  return handleInlineStorySequence(context, group, currentIndex);
+}
+
 function processInlineGroup(
   context: Rule.RuleContext,
   group: LineComment[],
 ): void {
   if (group.length === 0) return;
 
-  const n = group.length;
   let i = 0;
 
-  while (i < n) {
-    const current = group[i];
-    const normalized = normalizeCommentLine(current.value || "");
-    if (!normalized || !/^@story\b/.test(normalized)) {
-      i += 1;
-      continue;
-    }
-
-    i = handleInlineStorySequence(context, group, i);
+  while (i < group.length) {
+    i = advanceInlineGroupIndex(context, group, i);
   }
 }
 

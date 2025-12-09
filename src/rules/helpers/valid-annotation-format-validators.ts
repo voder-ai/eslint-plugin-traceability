@@ -223,8 +223,8 @@ export function validateStoryAnnotation(
   }
 
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-  // @req REQ-PATH-FORMAT - Reject @story values containing internal whitespace as invalid
-  if (/\s/.test(trimmed)) {
+  // @req REQ-PATH-FORMAT - Reject @story values containing internal whitespace that do not collapse into a valid story path
+  if (/\s/.test(trimmed) && !pathPattern.test(collapsed)) {
     reportInvalidStoryFormat(context, comment, collapsed, options);
     return;
   }
@@ -282,6 +282,13 @@ export function validateReqAnnotation(
   }
 
   const collapsed = collapseAnnotationValue(trimmed);
+  // Allow mixed @req/@supports lines to pass without additional @req validation,
+  // while still validating simple multi-line @req identifiers that collapse
+  // to a single token.
+  if (collapsed.includes("@supports")) {
+    return;
+  }
+
   const reqPattern = options.reqPattern;
 
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md

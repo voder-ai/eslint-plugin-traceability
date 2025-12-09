@@ -103,7 +103,52 @@ RULE_NAMES.forEach(
  *
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY
  */
-{
+function createAliasRuleMeta(
+  unifiedRule: Rule.RuleModule,
+  legacyRule: Rule.RuleModule | undefined,
+): Rule.RuleMetaData | null {
+  if (!legacyRule) {
+    return null;
+  }
+
+  const baseMeta = ((unifiedRule as any).meta ?? {}) as Record<string, any>;
+  const legacyMeta = ((legacyRule as any).meta ?? {}) as Record<string, any>;
+
+  return {
+    ...baseMeta,
+    ...legacyMeta,
+    docs: {
+      ...(baseMeta.docs ?? {}),
+      ...(legacyMeta.docs ?? {}),
+    },
+    messages: {
+      ...(baseMeta.messages ?? {}),
+      ...(legacyMeta.messages ?? {}),
+    },
+    schema:
+      (legacyMeta.schema as Rule.RuleMetaData["schema"]) ??
+      (baseMeta.schema as Rule.RuleMetaData["schema"]) ??
+      [],
+    hasSuggestions:
+      (legacyMeta.hasSuggestions as boolean | undefined) ??
+      (baseMeta.hasSuggestions as boolean | undefined),
+    fixable:
+      (legacyMeta.fixable as Rule.RuleMetaData["fixable"]) ??
+      (baseMeta.fixable as Rule.RuleMetaData["fixable"]),
+    deprecated:
+      (legacyMeta.deprecated as boolean | undefined) ??
+      (baseMeta.deprecated as boolean | undefined),
+    replacedBy:
+      (legacyMeta.replacedBy as string[] | undefined) ??
+      (baseMeta.replacedBy as string[] | undefined),
+    type:
+      (legacyMeta.type as Rule.RuleMetaData["type"]) ??
+      (baseMeta.type as Rule.RuleMetaData["type"]) ??
+      "problem",
+  };
+}
+
+function wireUnifiedFunctionAnnotationAliases(): void {
   const unifiedRule = rules["require-traceability"] as
     | Rule.RuleModule
     | undefined;
@@ -118,56 +163,16 @@ RULE_NAMES.forEach(
     const createAliasRule = (
       legacyRule: Rule.RuleModule | undefined,
     ): Rule.RuleModule => {
-      if (!legacyRule) {
+      const mergedMeta = createAliasRuleMeta(unifiedRule, legacyRule);
+      if (!mergedMeta) {
         return unifiedRule;
       }
 
-      const baseMeta = ((unifiedRule as any).meta ?? {}) as Record<string, any>;
-      const legacyMeta = ((legacyRule as any).meta ?? {}) as Record<
-        string,
-        any
-      >;
-
-      const mergedMeta: Rule.RuleMetaData = {
-        ...baseMeta,
-        ...legacyMeta,
-        docs: {
-          ...(baseMeta.docs ?? {}),
-          ...(legacyMeta.docs ?? {}),
-        },
-        messages: {
-          ...(baseMeta.messages ?? {}),
-          ...(legacyMeta.messages ?? {}),
-        },
-        schema:
-          (legacyMeta.schema as Rule.RuleMetaData["schema"]) ??
-          (baseMeta.schema as Rule.RuleMetaData["schema"]) ??
-          [],
-        hasSuggestions:
-          (legacyMeta.hasSuggestions as boolean | undefined) ??
-          (baseMeta.hasSuggestions as boolean | undefined),
-        fixable:
-          (legacyMeta.fixable as Rule.RuleMetaData["fixable"]) ??
-          (baseMeta.fixable as Rule.RuleMetaData["fixable"]),
-        deprecated:
-          (legacyMeta.deprecated as boolean | undefined) ??
-          (baseMeta.deprecated as boolean | undefined),
-        replacedBy:
-          (legacyMeta.replacedBy as string[] | undefined) ??
-          (baseMeta.replacedBy as string[] | undefined),
-        type:
-          (legacyMeta.type as Rule.RuleMetaData["type"]) ??
-          (baseMeta.type as Rule.RuleMetaData["type"]) ??
-          "problem",
-      };
-
-      const aliasRule: Rule.RuleModule = {
+      return {
         ...(unifiedRule as any),
         meta: mergedMeta,
         create: unifiedRule.create,
       };
-
-      return aliasRule;
     };
 
     rules["require-story-annotation"] = createAliasRule(legacyStoryRule);
@@ -175,12 +180,14 @@ RULE_NAMES.forEach(
   }
 }
 
+wireUnifiedFunctionAnnotationAliases();
+
 /**
  * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-RULE-NAME
  * Wire up traceability/prefer-supports-annotation as the primary rule name and
  * traceability/prefer-implements-annotation as its deprecated alias.
  */
-{
+function wirePreferSupportsAlias(): void {
   const implementsRule = rules["prefer-implements-annotation"] as
     | Rule.RuleModule
     | undefined;
@@ -211,6 +218,8 @@ RULE_NAMES.forEach(
     }
   }
 }
+
+wirePreferSupportsAlias();
 
 /**
  * Plugin metadata used by ESLint for debugging and caching.
