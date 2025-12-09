@@ -8,7 +8,7 @@ decision-makers: [Development Team]
 
 ## Context and Problem Statement
 
-Story 004.0-DEV-BRANCH-ANNOTATIONS introduced the requirement `REQ-ARROW-FUNCTION-EXCLUDED`, which states: "Anonymous arrow functions (e.g., callbacks like `array.map(() => {})`) are excluded from function-level annotation requirements."
+Story 003.0-DEV-FUNCTION-ANNOTATIONS introduced the requirement `REQ-FUNCTION-DETECTION`, which states: "Anonymous arrow functions (e.g., callbacks like `array.map(() => {})`) are excluded by default from traceability requirements."
 
 The current implementation excludes anonymous arrow functions only when they are **nested inside another function**. However, test framework callbacks (e.g., `describe()`, `it()`, `test()`, `beforeEach()`, etc.) are often called at the **top level** of test files, meaning they are not nested inside any other function.
 
@@ -38,7 +38,7 @@ This blocks adoption of function-level traceability in projects with test suites
 
 ## Decision Drivers
 
-- **Existing requirement alignment**: `REQ-ARROW-FUNCTION-EXCLUDED` already establishes that anonymous arrow function callbacks should be excluded
+- **Existing requirement alignment**: `REQ-FUNCTION-DETECTION` already establishes that anonymous arrow function callbacks should be excluded by default
 - **Practical usability**: Test files can have dozens or hundreds of test cases; requiring annotations on every callback is impractical
 - **File-level traceability sufficiency**: Test files typically have file-level annotations that establish traceability for the entire test suite
 - **ESLint ecosystem consistency**: Other ESLint rules often have special handling for test files and test framework patterns
@@ -97,7 +97,7 @@ Configuration example:
 - Good, because provides targeted relief specifically for test callback pattern
 - Good, because test framework function names are well-known and stable
 - Good, because opt-out available for stricter enforcement
-- Good, because aligns with existing `REQ-ARROW-FUNCTION-EXCLUDED` requirement
+- Good, because aligns with existing `REQ-FUNCTION-DETECTION` requirement
 - Bad, because requires maintaining list of test framework function names
 - Bad, because adds configuration complexity
 - Neutral, because false negatives if production code uses names like `describe()`
