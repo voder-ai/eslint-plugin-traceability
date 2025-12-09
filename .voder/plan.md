@@ -1,16 +1,16 @@
 ## NOW
 
-- [ ] Analyze the redundant-annotation rule and its existing tests to design specific scenarios that will exercise the currently uncovered decision branches in the redundant-annotation helpers, especially around scope pair collection and statement redundancy decisions.
+- [ ] Review the require-story-utils helper module and its existing tests to identify which specific branches and decision paths around story annotation handling are still uncovered and what input scenarios would reach them.
 
 ## NEXT
 
-- [ ] Add new focused test cases to the redundant-annotation rule’s test suite that cover the designed scenarios, ensuring each test is tied to the relevant stories and requirement IDs via annotations and descriptive test names.
-- [ ] Verify that the new tests actually exercise the previously uncovered branches in the redundant-annotation helpers and adjust the test inputs or assertions as needed until those branches are fully covered.
-- [ ] Review the behavior enforced by the new tests to confirm it still matches the documented semantics for redundant annotations and, if any mismatch is discovered, update either the tests or the documentation so they are aligned.
-- [ ] Once the redundant-annotation coverage gaps are closed, quickly scan other recently refactored helper modules for any similarly small uncovered branches that can be addressed with a few targeted tests, and, where appropriate, plan analogous coverage improvements.
+- [ ] Design a small set of focused test scenarios that exercise each uncovered branch in the require-story-utils helpers, guided by the corresponding development stories and rule documentation so the intended behavior is clear.
+- [ ] Extend the existing test suite for story-annotation helpers or rules with new cases that implement these scenarios, including clear traceability annotations and descriptive requirement-tagged test names.
+- [ ] Confirm that the new tests actually execute the previously uncovered branches in require-story-utils and, if any branches remain untested, refine the test inputs or add additional cases until they are covered.
+- [ ] Review the behavior enforced by the new tests against the documented semantics for story annotation handling, and adjust tests or documentation if any discrepancies emerge so they remain aligned.
 
 ## LATER
 
-- [ ] Document a brief internal guideline on how to close coverage gaps safely after refactors, using the redundant-annotation helpers as an example of adding targeted tests without changing behavior.
-- [ ] Revisit the no-redundant-annotation rule and its documentation periodically to see whether additional examples, clarifying comments, or minor structural refactors would make its behavior easier to understand for new contributors while keeping tests comprehensive.
-- [ ] Add a short section to the main user-facing documentation explaining the overall documentation structure, clearly indicating which files are for end users and which are internal development references, once the current coverage-focused work is complete.
+- [ ] Apply the same targeted-coverage approach to other helper modules with notable remaining branch gaps, such as require-test-traceability helpers or visitor utilities, adding only the minimal tests needed to cover important branches.
+- [ ] Document a brief internal guideline that illustrates how to close coverage gaps safely after refactors using the redundant-annotation and require-story-utils helpers as examples.
+- [ ] Add a short section to the main user-facing documentation that explains the overall documentation structure and distinguishes clearly between end-user guides and internal development references.
