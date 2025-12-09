@@ -24,58 +24,24 @@ import {
   coreReportMissing,
   coreReportMethod,
 } from "./require-story-core";
+import {
+  isTestFrameworkCallback,
+  type CallbackExclusionOptions,
+} from "./test-callback-exclusion";
 
 /**
  * Shared configuration helpers
  */
 
-interface ReportOptions {
+interface ReportOptions extends CallbackExclusionOptions {
   annotationTemplateOverride?: string;
   autoFixToggle?: boolean;
-  excludeTestCallbacks?: boolean;
 }
-
-/**
- * Known test framework function names and variants.
- * Includes Jest, Mocha, Vitest and their focused/skipped/concurrent variants.
- * @req REQ-TEST-CALLBACK-EXCLUSION
- */
-const TEST_FUNCTION_NAMES = new Set([
-  // Core test/describe-style functions (Jest, Mocha, Vitest share many of these)
-  "it",
-  "test",
-  "describe",
-  "suite",
-
-  // Focused variants
-  "fit",
-  "ftest",
-  "fdescribe",
-  "fsuite",
-
-  // Skipped variants
-  "xit",
-  "xtest",
-  "xdescribe",
-  "xsuite",
-
-  // Additional common aliases
-  "context",
-  "specify",
-  "before",
-  "after",
-  "beforeEach",
-  "afterEach",
-  "beforeAll",
-  "afterAll",
-]);
-
-const TEST_FUNCTION_CONCURRENT_PROP = "concurrent";
 
 /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 function getAnnotationTemplate(
   override?: string,
-  _options?: { excludeTestCallbacks?: boolean },
+  _options?: CallbackExclusionOptions,
 ): string {
   if (typeof override === "string" && override.trim().length > 0) {
     return override.trim();
@@ -85,7 +51,7 @@ function getAnnotationTemplate(
 
 function shouldApplyAutoFix(
   autoFix: boolean | undefined,
-  _options?: { excludeTestCallbacks?: boolean },
+  _options?: CallbackExclusionOptions,
 ): boolean {
   if (autoFix === false) {
     return false;
@@ -104,10 +70,14 @@ function buildTemplateConfig(options?: ReportOptions): {
 } {
   const effectiveTemplate = getAnnotationTemplate(
     options?.annotationTemplateOverride,
-    { excludeTestCallbacks: options?.excludeTestCallbacks },
+    {
+      excludeTestCallbacks: options?.excludeTestCallbacks,
+      additionalTestHelperNames: options?.additionalTestHelperNames,
+    },
   );
   const allowFix = shouldApplyAutoFix(options?.autoFixToggle, {
     excludeTestCallbacks: options?.excludeTestCallbacks,
+    additionalTestHelperNames: options?.additionalTestHelperNames,
   });
 
   return { effectiveTemplate, allowFix };
@@ -162,58 +132,6 @@ function isEffectivelyAnonymousFunction(node: any): boolean {
 }
 
 /**
- * Determine whether a node represents a callback passed to a known test
- * framework function (Jest, Mocha, Vitest, etc).
- *
- * Supports:
- * - it(), test(), describe(), suite(), context(), specify()
- * - lifecycle hooks: before(), after(), beforeEach(), afterEach(), beforeAll(), afterAll()
- * - focused variants: fit(), ftest(), fdescribe(), fsuite()
- * - skipped variants and helpers: xit(), xtest(), xdescribe(), xsuite()
- * - their .concurrent variants (e.g., it.concurrent(), test.concurrent())
- *
- * @req REQ-TEST-CALLBACK-EXCLUSION
- */
-function isTestFrameworkCallback(
-  node: any,
-  options?: { excludeTestCallbacks?: boolean },
-): boolean {
-  if (options?.excludeTestCallbacks === false) {
-    return false;
-  }
-
-  if (!node || node.type !== "ArrowFunctionExpression") {
-    return false;
-  }
-
-  const parent = node.parent;
-  if (!parent || parent.type !== "CallExpression") {
-    return false;
-  }
-
-  const callee = parent.callee;
-
-  if (callee.type === "Identifier") {
-    return TEST_FUNCTION_NAMES.has(callee.name);
-  }
-
-  if (
-    callee.type === "MemberExpression" &&
-    !callee.computed &&
-    callee.property &&
-    callee.property.type === "Identifier" &&
-    callee.property.name === TEST_FUNCTION_CONCURRENT_PROP
-  ) {
-    const obj = callee.object;
-    if (obj && obj.type === "Identifier") {
-      return TEST_FUNCTION_NAMES.has(obj.name);
-    }
-  }
-
-  return false;
-}
-
-/**
  * Determine whether a function node is required to carry its own annotation
  * according to Story 004.0-DEV-BRANCH-ANNOTATIONS rules.
  *
@@ -228,7 +146,7 @@ function isTestFrameworkCallback(
  */
 function requiresOwnFunctionAnnotation(
   node: any,
-  options?: { excludeTestCallbacks?: boolean },
+  options?: CallbackExclusionOptions,
 ): boolean {
   if (isTestFrameworkCallback(node, options)) {
     return false;
@@ -489,7 +407,7 @@ function shouldProcessNode(
   node: any,
   scope: string[],
   exportPriority: string = "all",
-  options?: { excludeTestCallbacks?: boolean },
+  options?: CallbackExclusionOptions,
 ): boolean {
   if (
     node &&

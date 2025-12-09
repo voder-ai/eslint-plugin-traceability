@@ -512,4 +512,39 @@ describe("Require Story Helpers (Story 003.0)", () => {
     const result = shouldProcessNode(node, DEFAULT_SCOPE);
     expect(result).toBeTruthy();
   });
+
+  /**
+   * Additional coverage for configurable test helper names.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @req REQ-TEST-CALLBACK-EXCLUSION - Verify additionalTestHelperNames interacts correctly with exclusion logic
+   */
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow callback passed to configured additionalTestHelperNames helper is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "withTest" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      additionalTestHelperNames: ["withTest"],
+    });
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-TEST-CALLBACK-EXCLUSION] bench callback is never excluded even when included in additionalTestHelperNames", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "bench" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      additionalTestHelperNames: ["bench"],
+    });
+    expect(result).toBeTruthy();
+  });
 });
