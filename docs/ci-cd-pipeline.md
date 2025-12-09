@@ -187,9 +187,8 @@ Local hooks:
   - Runs `npx lint-staged`, which executes Prettier and ESLint with `--fix` on staged files in `src/` and `tests/` so that formatting and basic linting are enforced before every commit.
 
 - **Pre-push** (`.husky/pre-push`):
-  - Runs `npm run ci-verify:full`.
-  - This mirrors the CI quality gate (same script, same sequence of checks) so that most issues are caught before code reaches GitHub, consistent with `adr-pre-push-parity.md`.
-  - Secret scanning (`npm run security:secrets`) currently runs only in CI (on **all** Node matrix entries) and is not part of the pre-push hook, but it uses the same configuration so results stay consistent between local and CI.
+  - Runs `npm run ci-verify:full` **and** `npm run security:secrets`.
+  - This combination mirrors the CI quality gate plus CI secret scanning so that most issues are caught before code reaches GitHub, consistent with `adr-pre-push-parity.md`.
 
 Husky is wired up via the `postinstall` npm script (`"postinstall": "husky"`) instead of the deprecated `husky install` `prepare` script.
 
