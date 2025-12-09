@@ -1,14 +1,14 @@
 ## NOW
 
-- [ ] Restructure the function-annotations story file so that every repository-scoped acceptance criterion and Definition of Done item is checked off, and move the GitHub issue #5 closure requirement into a clearly labeled external follow-up section that explains it is tracked directly in GitHub rather than as an in-repo checkbox.
+- [ ] Close the external GitHub issue that tracks the function-annotations work (issue #5) by adding a final comment that references the released version containing the completed implementation and then marking the issue as closed so its state is recorded as finished in GitHub.
 
 ## NEXT
 
-- [ ] Adjust any remaining references inside the function-annotations story that treat the GitHub issue #5 closure as an in-repo requirement so they instead describe it as an external administrative task linked to the completed implementation.
-- [ ] Verify that the function-annotations story’s requirements and tests are still correctly cross-referenced (REQ IDs, @supports tags in tests) and update any outdated requirement text to match the current behavior of the unified rule and test callback exclusion.
+- [ ] Update the function-annotations story file so that the acceptance criterion and Definition of Done items related to the GitHub issue resolution are checked off and explicitly reference the closed issue and the release version that contained the fix.
+- [ ] Confirm that all tests and code annotations linked to the function-annotations story (including REQ IDs and @supports tags) still accurately describe the implemented behavior of the unified rule and test callback exclusion, and adjust any outdated wording in the story to match the current implementation.
 
 ## LATER
 
-- [ ] Remove any remaining inline lint rule suppressions in helper and rule modules by refactoring code so that all enabled lint rules pass without local disables while preserving behavior.
-- [ ] Extract small duplicated logic fragments in helper and rule modules into shared internal utilities so the duplication checker reports fewer clones without changing public behavior.
-- [ ] Incrementally tighten file-level size limits in the linting configuration and split oversized modules into smaller, focused files as they exceed new thresholds, keeping the codebase easy to navigate.
+- [ ] Remove any remaining inline lint rule suppressions in helper and rule modules by simplifying code or extracting utilities so that all enabled lint rules pass without local disables while keeping behavior unchanged.
+- [ ] Extract small duplicated logic fragments in helper and rule modules into shared internal utilities so the duplication checker reports fewer clones without modifying public behavior or rule outputs.
+- [ ] Incrementally tighten file-level size limits in the linting configuration and split oversized modules into smaller, focused files as those limits are ratcheted down, keeping each file easy to understand and maintain.
