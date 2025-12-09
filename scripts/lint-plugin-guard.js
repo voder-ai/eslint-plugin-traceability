@@ -20,7 +20,6 @@ const result = spawnSync(
 
 // If spawnSync failed to start the process, surface the error and exit non-zero.
 if (result.error) {
-  // eslint-disable-next-line no-console -- Logging is required here for CLI error visibility; see docs/decisions/adr-0001-console-usage-for-cli-guards.md
   console.error("Failed to run lint-plugin-check.js:", result.error);
   process.exit(1);
 }
