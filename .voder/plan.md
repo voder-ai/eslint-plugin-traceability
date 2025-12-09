@@ -1,15 +1,18 @@
 ## NOW
 
-- [x] Introduce a configuration option that lets projects specify additional test helper function names to be treated as excluded callbacks in the function-annotation logic, and add unit tests confirming that callbacks passed to these configured helpers are skipped when this option is used.
+- [ ] Lower the allowed cyclomatic complexity for functions in the linting configuration and refactor any functions that exceed the new limit into smaller, focused helpers so that all code complies with the stricter complexity threshold without changing behavior.
 
 ## NEXT
 
-- [x] Wire the new additional-helper configuration through the require-story-annotation rule’s schema and options so ESLint users can set it in their configs, and add rule-level tests demonstrating the end-to-end behavior.
-- [ ] Update the function-annotations story to document the new configuration capability for custom excluded test helpers and mark the corresponding requirement and acceptance-criteria items as satisfied.
-- [ ] Amend ADR 013 to describe the new configuration option for custom helper names, including rationale and examples of how teams can use it to align with their own test wrappers.
-- [ ] Add an integration test that exercises the unified require-traceability rule in a realistic flat-config setup where custom helper names are configured for exclusion, verifying behavior across both JS and TS files.
+- [ ] Add an integration test that exercises the unified traceability rule in a flat ESLint configuration with custom additional test helper names configured, verifying that callbacks in both JavaScript and TypeScript files respect the exclusion and bench callbacks still require annotations.
+- [ ] Reduce the maximum allowed non-comment lines per function in the linting configuration and split any functions that violate the new limit into smaller, single-responsibility helpers while keeping existing behavior and public interfaces intact.
+- [ ] Eliminate any remaining localized lint rule suppressions in helper and rule modules by simplifying signatures, removing unused parameters, or extracting shared logic so those files pass linting without inline disables.
+- [ ] Inspect the new test callback exclusion helper module and replace untyped or loosely typed parameters with concrete AST node types from the existing utilities, ensuring the helper remains behaviorally identical but gains stronger type safety and clearer intent.
+- [ ] Identify small duplicated logic blocks in the helper and rule files reported by the duplication checker and extract them into shared internal utilities so that duplication metrics improve without altering rule behavior.
 
 ## LATER
 
-- [ ] Expand performance-oriented tests around function annotations, including scenarios with many test files and deeply nested suites, and adjust the function-annotations story’s performance-related acceptance criteria to reference concrete timing expectations if necessary.
-- [ ] Once maintainers have actually closed the real GitHub issue #5 with a version-referenced comment in the external tracker, update the Issue #5 resolution checklist items in the function-annotations story to mark them complete and, if useful, note the release tag that contained the fix.
+- [ ] Incrementally ratchet down file-level size limits in the linting configuration and, when a file exceeds the new limit, move cohesive groups of helpers into separate modules to keep each file focused and easier to navigate.
+- [ ] Broaden performance-oriented tests around function and branch annotation rules on large synthetic projects, then use the results to update the relevant stories’ performance acceptance criteria with realistic timing expectations.
+- [ ] Once the external GitHub issue related to test callback handling has been closed with a version-referenced comment, update the function-annotations story checklist to mark the resolution items complete and reference the release containing the fix.
+- [ ] Extend internal documentation to capture the finalized lint thresholds, refactoring patterns, and ratcheting strategy so future contributors understand how to keep code quality metrics improving over time.

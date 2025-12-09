@@ -93,7 +93,7 @@ module.exports = [
       ...(plugin.rules ? { traceability: plugin } : {}),
     },
     rules: {
-      complexity: ["error", { max: 18 }],
+      complexity: ["error", { max: 16 }],
       // Enforce maximum lines per function for maintainability
       "max-lines-per-function": ["error", { max: 55, skipBlankLines: true, skipComments: true }],
       // Enforce maximum lines per file for maintainability
@@ -126,7 +126,7 @@ module.exports = [
       ...(plugin.rules ? { traceability: plugin } : {}),
     },
     rules: {
-      complexity: ["error", { max: 18 }],
+      complexity: ["error", { max: 16 }],
       // Enforce maximum lines per function for maintainability
       "max-lines-per-function": ["error", { max: 55, skipBlankLines: true, skipComments: true }],
       // Enforce maximum lines per file for maintainability
