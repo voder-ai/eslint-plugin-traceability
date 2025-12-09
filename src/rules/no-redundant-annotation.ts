@@ -223,19 +223,17 @@ function collectScopePairs(
 }
 
 /**
- * Determine whether a statement is redundant relative to the provided
- * scopePairs and options, and when so return the associated annotation
- * comments. Returns null when the statement should not be treated as
- * redundant.
+ * Extract statement-level comments and story/requirement pairs that are
+ * relevant for redundancy analysis within a given scope.
  *
- * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-SAFE-REMOVAL REQ-STATEMENT-SIGNIFICANCE REQ-CONFIGURABLE-STRICTNESS
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-STATEMENT-SIGNIFICANCE REQ-SCOPE-ANALYSIS
  */
-function getRedundantStatementContext(
+function getStatementPairsForRedundancy(
   context: Rule.RuleContext,
   stmt: any,
   scopePairs: Set<string>,
   options: RedundancyRuleOptions,
-): { comments: any[] } | null {
+): { comments: any[]; pairs: Set<string> } | null {
   if (scopePairs.size === 0) {
     return null;
   }
@@ -250,6 +248,7 @@ function getRedundantStatementContext(
   }
 
   const stmtPairs = extractStoryReqPairsFromComments(stmtComments);
+
   if (process.env.TRACEABILITY_DEBUG === "1") {
     console.log(
       "[no-redundant-annotation] Statement type=%s eligible=%s commentCount=%d pairs=%o",
@@ -264,25 +263,81 @@ function getRedundantStatementContext(
     return null;
   }
 
-  // When emphasis duplication is allowed, treat a single fully-covered
-  // pair as intentional emphasis and skip reporting.
-  if (options.allowEmphasisDuplication && stmtPairs.size === 1) {
-    if (arePairsFullyCovered(stmtPairs, scopePairs)) {
-      return null;
-    }
+  return { comments: stmtComments, pairs: stmtPairs };
+}
+
+/**
+ * Decide whether the provided statement-level pairs should be considered
+ * redundant within the given scope, respecting configuration options.
+ *
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-SAFE-REMOVAL REQ-CONFIGURABLE-STRICTNESS
+ */
+function isStatementRedundantWithinScope(
+  stmtPairs: Set<string>,
+  scopePairs: Set<string>,
+  options: RedundancyRuleOptions,
+): boolean {
+  if (
+    options.allowEmphasisDuplication &&
+    stmtPairs.size === 1 &&
+    arePairsFullyCovered(stmtPairs, scopePairs)
+  ) {
+    return false;
   }
 
   if (!arePairsFullyCovered(stmtPairs, scopePairs)) {
-    return null;
+    return false;
   }
 
-  // At this point the statement-level annotations are fully
-  // covered by the parent/ancestor scopes and therefore redundant.
-  const annotationComments = stmtComments.filter((comment) => {
+  return true;
+}
+
+/**
+ * Filter a list of comments down to those that contain traceability
+ * annotations relevant for redundancy detection.
+ *
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL REQ-REDUNDANCY-PATTERNS
+ */
+function getAnnotationCommentsFromStatement(comments: any[]): any[] {
+  return comments.filter((comment) => {
     const commentText = typeof comment.value === "string" ? comment.value : "";
     return /@story\b|@req\b|@supports\b/.test(commentText);
   });
+}
 
+/**
+ * Determine whether a statement is redundant relative to the provided
+ * scopePairs and options, using helper functions to gather statement
+ * pairs, apply redundancy rules, and collect the associated annotation
+ * comments. Returns null when the statement should not be treated as
+ * redundant.
+ *
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-SAFE-REMOVAL REQ-STATEMENT-SIGNIFICANCE REQ-CONFIGURABLE-STRICTNESS
+ */
+function getRedundantStatementContext(
+  context: Rule.RuleContext,
+  stmt: any,
+  scopePairs: Set<string>,
+  options: RedundancyRuleOptions,
+): { comments: any[] } | null {
+  const stmtInfo = getStatementPairsForRedundancy(
+    context,
+    stmt,
+    scopePairs,
+    options,
+  );
+
+  if (!stmtInfo) {
+    return null;
+  }
+
+  const { comments, pairs } = stmtInfo;
+
+  if (!isStatementRedundantWithinScope(pairs, scopePairs, options)) {
+    return null;
+  }
+
+  const annotationComments = getAnnotationCommentsFromStatement(comments);
   if (annotationComments.length === 0) {
     return null;
   }
