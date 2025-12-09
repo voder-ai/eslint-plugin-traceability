@@ -43,6 +43,7 @@ Options:
 - `annotationTemplate` (string, optional) – Overrides the default placeholder JSDoc used when inserting missing `@story` annotations for functions and non-method constructs. When omitted or blank, the built-in template from Story 008.0 is used.
 - `methodAnnotationTemplate` (string, optional) – Overrides the default placeholder JSDoc used when inserting missing `@story` annotations for class methods and TypeScript method signatures. When omitted or blank, falls back to `annotationTemplate` if provided, otherwise the built-in template.
 - `autoFix` (boolean, optional) – When set to `false`, disables all automatic fix behavior for this rule while retaining its suggestions and diagnostics. When omitted or `true`, the rule behaves as before, inserting placeholder annotations in `--fix` mode.
+- `excludeTestCallbacks` (boolean, optional) – When `true` (default), excludes anonymous arrow functions that are direct callbacks to common test framework functions (for example, Jest/Mocha/Vitest `describe`/`it`/`test`/`beforeEach`/`afterEach`/`beforeAll`/`afterAll`, plus focused/skipped/concurrent variants such as `fdescribe`, `xdescribe`, `fit`, `xit`, `test.concurrent`, `describe.concurrent`) from function-level annotation requirements. This assumes those test files are already covered by file-level `@supports` annotations and `traceability/require-test-traceability`. When set to `false`, these callbacks are treated like any other arrow function and must be annotated when in-scope.
 
 Default Severity: `error`
 Example:
@@ -56,6 +57,8 @@ function initAuth() {
   // authentication logic
 }
 ```
+
+Among the supported scopes, anonymous callbacks passed directly to common test framework functions are excluded from annotation requirements by default via `excludeTestCallbacks`; projects that prefer stricter enforcement for these callbacks can disable this exclusion by setting `excludeTestCallbacks: false` in their rule configuration.
 
 ### traceability/require-req-annotation
 

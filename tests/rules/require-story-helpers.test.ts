@@ -208,4 +208,40 @@ describe("Require Story Helpers (Story 003.0)", () => {
     const res = parentChainHasStory(fakeSource, node);
     expect(res).toBeTruthy();
   });
+
+  /**
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @req REQ-TEST-CALLBACK-EXCLUSION - Verify arrow function test callbacks can be excluded by default
+   */
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function used as test callback is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "it" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  /**
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @req REQ-TEST-CALLBACK-EXCLUSION - Verify arrow function test callbacks are checked when exclusion is disabled
+   */
+  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow function test callback is checked when excludeTestCallbacks is false", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "it" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE, "all", {
+      excludeTestCallbacks: false,
+    });
+    expect(result).toBeTruthy();
+  });
 });

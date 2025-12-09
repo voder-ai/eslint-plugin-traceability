@@ -69,6 +69,7 @@ const rule: Rule.RuleModule = {
           annotationTemplate: { type: "string" },
           methodAnnotationTemplate: { type: "string" },
           autoFix: { type: "boolean" },
+          excludeTestCallbacks: { type: "boolean" },
         },
         additionalProperties: false,
       },
@@ -99,6 +100,10 @@ const rule: Rule.RuleModule = {
         ? opts.methodAnnotationTemplate.trim()
         : undefined;
     const autoFix = typeof opts.autoFix === "boolean" ? opts.autoFix : true;
+    const excludeTestCallbacks =
+      typeof opts.excludeTestCallbacks === "boolean"
+        ? opts.excludeTestCallbacks
+        : true;
 
     /**
      * Optional debug logging for troubleshooting this rule.
@@ -117,7 +122,7 @@ const rule: Rule.RuleModule = {
 
     // Local closure that binds configured scope and export priority to the helper.
     const should = (node: any) =>
-      shouldProcessNode(node, scope, exportPriority);
+      shouldProcessNode(node, scope, exportPriority, { excludeTestCallbacks });
 
     // Delegate visitor construction to helper to keep this file concise.
     return buildVisitors(context, sourceCode, {
@@ -127,6 +132,7 @@ const rule: Rule.RuleModule = {
       annotationTemplate,
       methodAnnotationTemplate,
       autoFix,
+      excludeTestCallbacks,
     });
   },
 };

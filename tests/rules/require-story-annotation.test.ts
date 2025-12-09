@@ -65,6 +65,15 @@ declare function tsDecl(): void;`,
         name: "[REQ-NESTED-FUNCTION-INHERITANCE] anonymous inner function inherits outer annotation",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  const inner = function() {\n    return 1;\n  };\n  return inner();\n}`,
       },
+      {
+        name: "[REQ-TEST-CALLBACK-EXCLUSION][Story 003.0] default exclusion of Jest-style anonymous test callbacks",
+        code: `/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
+ */
+describe('Feature X', () => {
+  it('does something', () => {});
+});`,
+      },
     ],
     invalid: [
       {
@@ -263,4 +272,39 @@ declare function tsDecl(): void;`,
       },
     ],
   });
+
+  ruleTester.run(
+    "require-story-annotation with excludeTestCallbacks option",
+    rule,
+    {
+      valid: [
+        {
+          name: "[REQ-TEST-CALLBACK-EXCLUSION][Story 003.0] non-test arrow function annotated when excludeTestCallbacks=false",
+          code: `/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ */
+const handler = () => {};`,
+          options: [{ excludeTestCallbacks: false }],
+        },
+      ],
+      invalid: [
+        {
+          name: "[REQ-TEST-CALLBACK-EXCLUSION][Story 003.0] Jest-style it() callback requires annotation when excludeTestCallbacks=false",
+          code: `it('does something', () => {});`,
+          options: [{ excludeTestCallbacks: false, autoFix: false }],
+          errors: [
+            {
+              messageId: "missingStory",
+              suggestions: [
+                {
+                  desc: `Add traceability annotation for function '(anonymous)' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */`,
+                  output: `it('does something', /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n() => {});`,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  );
 });

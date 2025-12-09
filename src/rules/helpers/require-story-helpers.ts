@@ -32,17 +32,43 @@ import {
 interface ReportOptions {
   annotationTemplateOverride?: string;
   autoFixToggle?: boolean;
+  excludeTestCallbacks?: boolean;
 }
 
+/**
+ * Known test framework function names and variants.
+ * Includes Jest, Mocha, Vitest and their focused/skipped/concurrent variants.
+ * @req REQ-TEST-CALLBACK-EXCLUSION
+ */
+const TEST_FUNCTION_NAMES = new Set([
+  "it",
+  "test",
+  "describe",
+  "fit",
+  "xit",
+  "ftest",
+  "xtest",
+  "fdescribe",
+  "xdescribe",
+]);
+
+const TEST_FUNCTION_CONCURRENT_PROP = "concurrent";
+
 /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-function getAnnotationTemplate(override?: string): string {
+function getAnnotationTemplate(
+  override?: string,
+  _options?: { excludeTestCallbacks?: boolean },
+): string {
   if (typeof override === "string" && override.trim().length > 0) {
     return override.trim();
   }
   return `/** @story ${STORY_PATH} */`;
 }
 
-function shouldApplyAutoFix(autoFix: boolean | undefined): boolean {
+function shouldApplyAutoFix(
+  autoFix: boolean | undefined,
+  _options?: { excludeTestCallbacks?: boolean },
+): boolean {
   if (autoFix === false) {
     return false;
   }
@@ -60,8 +86,11 @@ function buildTemplateConfig(options?: ReportOptions): {
 } {
   const effectiveTemplate = getAnnotationTemplate(
     options?.annotationTemplateOverride,
+    { excludeTestCallbacks: options?.excludeTestCallbacks },
   );
-  const allowFix = shouldApplyAutoFix(options?.autoFixToggle);
+  const allowFix = shouldApplyAutoFix(options?.autoFixToggle, {
+    excludeTestCallbacks: options?.excludeTestCallbacks,
+  });
 
   return { effectiveTemplate, allowFix };
 }
@@ -115,6 +144,55 @@ function isEffectivelyAnonymousFunction(node: any): boolean {
 }
 
 /**
+ * Determine whether a node represents a callback passed to a known test
+ * framework function (Jest, Mocha, Vitest, etc).
+ *
+ * Supports:
+ * - it(), test(), describe(), fit(), xit(), ftest(), xtest(), fdescribe(), xdescribe()
+ * - their .concurrent variants (e.g., it.concurrent(), test.concurrent())
+ *
+ * @req REQ-TEST-CALLBACK-EXCLUSION
+ */
+function isTestFrameworkCallback(
+  node: any,
+  options?: { excludeTestCallbacks?: boolean },
+): boolean {
+  if (options?.excludeTestCallbacks === false) {
+    return false;
+  }
+
+  if (!node || node.type !== "ArrowFunctionExpression") {
+    return false;
+  }
+
+  const parent = node.parent;
+  if (!parent || parent.type !== "CallExpression") {
+    return false;
+  }
+
+  const callee = parent.callee;
+
+  if (callee.type === "Identifier") {
+    return TEST_FUNCTION_NAMES.has(callee.name);
+  }
+
+  if (
+    callee.type === "MemberExpression" &&
+    !callee.computed &&
+    callee.property &&
+    callee.property.type === "Identifier" &&
+    callee.property.name === TEST_FUNCTION_CONCURRENT_PROP
+  ) {
+    const obj = callee.object;
+    if (obj && obj.type === "Identifier") {
+      return TEST_FUNCTION_NAMES.has(obj.name);
+    }
+  }
+
+  return false;
+}
+
+/**
  * Determine whether a function node is required to carry its own annotation
  * according to Story 004.0-DEV-BRANCH-ANNOTATIONS rules.
  *
@@ -127,7 +205,14 @@ function isEffectivelyAnonymousFunction(node: any): boolean {
  *
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED REQ-NESTED-FUNCTION-INHERITANCE
  */
-function requiresOwnFunctionAnnotation(node: any): boolean {
+function requiresOwnFunctionAnnotation(
+  node: any,
+  options?: { excludeTestCallbacks?: boolean },
+): boolean {
+  if (isTestFrameworkCallback(node, options)) {
+    return false;
+  }
+
   // Anonymous arrow functions used as callbacks are excluded from function-level
   // requirements when they are nested inside another function or method.
   if (
@@ -383,13 +468,14 @@ function shouldProcessNode(
   node: any,
   scope: string[],
   exportPriority: string = "all",
+  options?: { excludeTestCallbacks?: boolean },
 ): boolean {
   if (
     node &&
     (node.type === "FunctionDeclaration" ||
       node.type === "FunctionExpression" ||
       node.type === "ArrowFunctionExpression") &&
-    !requiresOwnFunctionAnnotation(node)
+    !requiresOwnFunctionAnnotation(node, options)
   ) {
     return false;
   }
