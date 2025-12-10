@@ -50,3 +50,13 @@ If a performance test fails:
 3. Only consider adjusting the 5 second budgets after understanding the cause and confirming that CI hardware characteristics have changed.
 
 For deeper guidance on maintenance-specific scenarios and expectations, see `docs/maintenance-performance-tests.md`.
+
+## Recommended Runtime Verification Commands
+
+Before merging substantial changes to the maintenance tools or rules, it is recommended to run:
+
+- `npm run ci-verify:fast` for a quick but meaningful verification gate during development.
+- `npm run ci-verify:full` to mirror the full CI pipeline locally (including coverage, audits, and performance-sensitive tests under `tests/perf`).
+- `npm test -- --runInBand --ci --testPathPatterns tests/perf` to focus specifically on the performance suites when investigating or tuning performance.
+
+The `ci-verify:full` script already runs Jest with coverage, which includes the performance tests. If `npm run ci-verify:full` passes, it implies that the current changes respect the configured performance guarantees.
