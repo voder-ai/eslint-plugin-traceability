@@ -106,35 +106,32 @@ These decisions complete the **NOW** task of identifying the critical maintenanc
 Performance and stress tests for the maintenance tools live under:
 
 - Core API performance tests:
-  - `tests/maintenance/perf/detect-large-workspace.test.ts`
-  - `tests/maintenance/perf/update-large-workspace.test.ts`
+  - `tests/perf/maintenance-large-workspace.test.ts`
 - CLI-level performance tests:
-  - `tests/maintenance/perf/cli-large-workspace.test.ts`
+  - `tests/perf/maintenance-cli-large-workspace.test.ts`
 - Shared fixture and helper utilities:
-  - `tests/maintenance/perf/large-workspace-fixtures.ts`
+  - `tests/perf/large-workspace-fixtures.ts`
   - `tests/utils/temp-dir-helpers.ts`
 
 Typical commands:
 
 - Run only maintenance performance tests (recommended):
   - Using package script (preferred, if available):
-    - `pnpm test:maintenance-perf`
-    - or `npm run test:maintenance-perf`
-  - Direct Vitest invocation:
-    - `pnpm vitest run tests/maintenance/perf`
-    - or `npx vitest run tests/maintenance/perf`
+    - `npm test -- maintenance-perf`
+  - Direct Jest invocation:
+    - `npx jest tests/perf`
 
 - Run a single perf test file:
-  - `pnpm vitest run tests/maintenance/perf/detect-large-workspace.test.ts`
-  - `pnpm vitest run tests/maintenance/perf/cli-large-workspace.test.ts`
+  - `npx jest tests/perf/maintenance-large-workspace.test.ts`
+  - `npx jest tests/perf/maintenance-cli-large-workspace.test.ts`
 
 - Run maintenance tests including perf as part of a broader suite (slower):
-  - `pnpm vitest run tests/maintenance`
+  - `npx jest tests/maintenance`
 
-If your project uses Jest instead of Vitest, the equivalent commands are:
+If your project uses Vitest instead of Jest, the equivalent commands are:
 
-- `pnpm jest tests/maintenance/perf`
-- `pnpm jest tests/maintenance/perf/detect-large-workspace.test.ts`
+- `npx vitest run tests/perf`
+- `npx vitest run tests/perf/maintenance-large-workspace.test.ts`
 
 Check `package.json` for the authoritative scripts and preferred test runner.
 
