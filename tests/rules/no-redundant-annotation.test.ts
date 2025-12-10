@@ -6,6 +6,7 @@
  * @req REQ-STATEMENT-SIGNIFICANCE - Verify that simple statements are treated as redundant when covered by scope
  * @req REQ-SAFE-REMOVAL - Verify that auto-fix removes only redundant annotations and preserves code
  * @req REQ-DIFFERENT-REQUIREMENTS - Verify that annotations with different requirement IDs are preserved
+ * @req REQ-CATCH-BLOCK-HANDLING - Verify that catch block annotations are not incorrectly treated as redundant
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/no-redundant-annotation";
@@ -35,6 +36,10 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
       {
         name: "[REQ-SCOPE-ANALYSIS] preserves annotations on both branch and statement when they intentionally duplicate each other",
         code: `function example() {\n  if (condition) { // @story docs/stories/007.0-EXAMPLE.story.md @req REQ-BRANCH\n    // @story docs/stories/007.0-EXAMPLE.story.md\n    // @req REQ-BRANCH\n    doBranchWork();\n  }\n}`,
+      },
+      {
+        name: "[REQ-CATCH-BLOCK-HANDLING] preserves catch block annotation from issue #6 scenario",
+        code: `async function example() {\n  try {\n    // @story prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md\n    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY\n    if (isSafeVersion({ version, vulnerabilityData })) {\n      return version;\n    }\n\n    // @story prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md\n    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY\n    if (!vulnerabilityData.isVulnerable) {\n      return version;\n    }\n  } catch (error) {\n    // @story prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md\n    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY\n    return null;\n  }\n}`,
       },
     ],
     invalid: [

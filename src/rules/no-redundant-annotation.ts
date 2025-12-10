@@ -465,6 +465,11 @@ const rule: Rule.RuleModule = {
           );
         }
 
+        // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-CATCH-BLOCK-HANDLING
+        if (parent && parent.type === "CatchClause") {
+          return;
+        }
+
         const scopePairs = collectScopePairs(
           context,
           parent,

@@ -1,15 +1,14 @@
 ## NOW
 
-- [ ] Strengthen the existing large-workspace performance tests so they enforce a clear maximum runtime for the maintenance tools on a realistic big project, by encoding explicit time limits in the tests and keeping all current behavior and assertions intact.
+- [ ] Add a new no-redundant-annotation test case that encodes the try/if/else-if/catch scenario from story 027.0 and verifies that the catch block’s traceability annotation is not reported as redundant, tagging the test with the appropriate story and requirement IDs.
 
 ## NEXT
 
-- [ ] Add a short developer-facing documentation section that explains the purpose of the performance tests, the configured time limits they enforce, and how to interpret and act on a performance test failure when working on the maintenance tools or rules.
-- [ ] Extend the performance test coverage to include at least one additional realistic scenario for the maintenance CLI or plugin (such as a workspace with many small files or deeply nested directories), using the same explicit time-limit approach to guard against regressions in that pattern.
-- [ ] Clarify in the internal development documentation which runtime verification commands developers should run before merging substantial changes, including how these commands relate to the performance guarantees encoded in the tests.
+- [ ] If the new test fails, adjust the redundant-annotation rule and its scope-analysis helpers so that catch blocks are treated as separate execution paths and the test passes without introducing false negatives for other redundancy scenarios.
+- [ ] Update the story file for 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION to mark the catch-block handling acceptance criterion and any related Definition of Done items as complete, explicitly referencing the new test as evidence.
+- [ ] Add an integration-level scenario that runs the redundant-annotation rule over a small file containing the same try/if/else-if/catch pattern and confirms no redundantAnnotation diagnostics are produced in that full-file context.
 
 ## LATER
 
-- [ ] Periodically revisit and, if appropriate, tighten the performance time limits in the tests as the implementation becomes more efficient, ensuring they remain challenging but realistic for typical CI environments.
-- [ ] Introduce targeted performance micro-benchmarks for the most critical helper functions used by the maintenance tools or hot-path rule helpers, so that algorithmic regressions are caught earlier and more locally than full-workspace tests.
-- [ ] Look for any remaining runtime edge cases in the maintenance CLI (such as extremely large numbers of files or unusual directory structures) and, where needed, add focused tests or small defensive checks so that behavior remains predictable and robust under stress.
+- [ ] Review the redundant-annotation tests to see if there are other complex control-flow patterns (e.g., nested try/finally or multiple catch clauses) that should be covered explicitly to prevent similar regressions.
+- [ ] Consider adding a short note to the migration guide or rule documentation clarifying that catch blocks are treated as separate execution paths and will not have their annotations stripped as redundant when they intentionally repeat a requirement for error handling paths.

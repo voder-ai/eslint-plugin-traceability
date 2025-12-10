@@ -117,4 +117,47 @@ function process(value) {
       "@req REQ-PROCESS\n     */\n    return",
     );
   });
+
+  it("[REQ-CATCH-BLOCK-HANDLING] does not report redundant annotations for try/if/else-if/catch pattern from story 027.0 (regression from issue #6)", async () => {
+    const code = `// @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md
+// @req REQ-SAFE-ONLY
+async function filterVulnerableVersions(versionInfo, safeVersions) {
+  try {
+    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md
+    // @req REQ-SAFE-ONLY
+    if (!versionInfo) {
+      return [];
+    } else if (!safeVersions || safeVersions.length === 0) {
+      return versionInfo;
+    }
+
+    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md
+    // @req REQ-SAFE-ONLY
+    return versionInfo.filter(v => safeVersions.includes(v));
+  } catch (error) {
+    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md
+    // @req REQ-SAFE-ONLY
+    return [];
+  }
+}
+`;
+
+    const config = {
+      rules: {
+        "traceability/no-redundant-annotation": ["warn"],
+      },
+    };
+
+    const result = await lintTextWithConfig(
+      code,
+      "filter-vulnerable-versions.js",
+      config,
+    );
+
+    expect(
+      result.messages.filter(
+        (m) => m.ruleId === "traceability/no-redundant-annotation",
+      ).length,
+    ).toBe(0);
+  });
 });

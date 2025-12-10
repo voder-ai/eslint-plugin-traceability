@@ -145,7 +145,7 @@ These performance tests are intentionally heavier than unit tests and should not
     - `src/maintenance/update.ts`
     - `src/maintenance/batch.ts`
     - `src/maintenance/report.ts`
-     - `src/maintenance/utils.ts`
+    - `src/maintenance/utils.ts`
     - `src/maintenance/cli.ts`, `src/maintenance/commands.ts`, or `src/maintenance/flags.ts`
   - Any change to `@story` parsing, path resolution, or file traversal utilities used by these modules.
 
