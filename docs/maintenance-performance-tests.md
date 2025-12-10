@@ -64,7 +64,7 @@ To keep tests reliable while still exercising realistic "large workspace" behavi
      - `generateMaintenanceReport(workspaceRoot)`
    - **Expectation**:
      - All operations complete successfully and return correct results on this dataset.
-     - Wall-clock runtime for the combined detection/verification/reporting path on a CI-class machine remains **comfortably under ~5 seconds**.
+     - Wall-clock runtime for each detection, verification, and reporting operation on a CI-class machine remains **comfortably under ~5 seconds**, with this **5 second per-operation budget** enforced via test constants.
      - No excessive memory usage (no attempts to load the entire workspace contents into a single, long-lived in-memory structure).
 
 2. **Large update workspace (in-place rewrite flows)**
@@ -76,7 +76,7 @@ To keep tests reliable while still exercising realistic "large workspace" behavi
      - `batchUpdateAnnotations(workspaceRoot, mappings)`
    - **Expectation**:
      - All matching annotations are updated correctly and idempotently.
-     - Total runtime for a representative update (single mapping) remains **comfortably under ~5 seconds**.
+     - Total runtime for each representative update operation (e.g. a single mapping) remains **comfortably under ~5 seconds**, matching the **5 second per-operation budget** codified in the test constants.
      - The API remains safe to use in CI and pre-commit hooks for workspaces of this order of magnitude.
 
 3. **CLI-level large workspace scenarios**
@@ -86,7 +86,7 @@ To keep tests reliable while still exercising realistic "large workspace" behavi
      - `runMaintenanceCli(["node", "traceability-maint", "detect", "--root", <workspaceRoot>, "--json"])`.
      - Optionally, additional coverage for `report` and `update` subcommands using the same fixture.
    - **Expectation**:
-     - CLI commands complete within a generous time budget (aligned with the ~5 second target for core APIs on this dataset).
+     - CLI commands complete within a generous time budget aligned with the **5 second per-operation limit** for the corresponding core APIs on this dataset.
      - Exit codes follow the contract (0 for clean, 1 for stale, 2 for usage errors).
      - JSON output is well-formed and includes the expected number of stale paths for the large fixture.
 
@@ -148,7 +148,7 @@ These performance tests are intentionally heavier than unit tests and should not
     - `src/maintenance/update.ts`
     - `src/maintenance/batch.ts`
     - `src/maintenance/report.ts`
-    - `src/maintenance/utils.ts`
+     - `src/maintenance/utils.ts`
     - `src/maintenance/cli.ts`, `src/maintenance/commands.ts`, or `src/maintenance/flags.ts`
   - Any change to `@story` parsing, path resolution, or file traversal utilities used by these modules.
 
@@ -188,15 +188,20 @@ If any of these assertions fail, treat it as a correctness bug rather than a per
 
 ### Performance and timing expectations
 
-The tests are written to assert that operations complete within a **generous but finite** time budget. Guidelines:
+The tests are written to assert that operations complete within a **generous but finite** time budget.
 
-- For the synthetic ~500-file workspaces described above:
-  - Combined detection/verification/report/report paths should complete **comfortably under ~5 seconds** on a CI-class machine.
-  - Representative single-path update operations should also complete **comfortably under ~5 seconds**.
-- Test code typically:
-  - Measures wall-clock time around the operation under test.
-  - Asserts that the measured time is less than a threshold value.
-  - May log timings for informational purposes.
+For the synthetic ~500-file workspaces described above:
+
+- **Maximum wall-clock runtime per operation**:
+  - Each **individual maintenance or CLI operation** under test is required to complete within **5 seconds** of wall-clock time on a CI-class machine.
+  - This **5 second per-operation limit** is not just a guideline; it is **codified as constants** in:
+    - `tests/perf/maintenance-large-workspace.test.ts` (core maintenance APIs)
+    - `tests/perf/maintenance-cli-large-workspace.test.ts` (CLI entrypoints)
+  - Test code measures wall-clock time around the specific operation (e.g. one call to `detectStaleAnnotations`, one CLI invocation) and asserts that the measured duration is less than or equal to this constant.
+
+- **Expected behavior within that budget**:
+  - Combined detection/verification/reporting workflows, when considered as a sequence of individual operations, should have each step comfortably below the 5 second ceiling.
+  - Representative single-path update operations should also complete comfortably under the same 5 second per-operation limit.
 
 If a test fails due to a timeout or an explicit duration assertion:
 
@@ -227,13 +232,13 @@ If a test fails due to a timeout or an explicit duration assertion:
 ### What is acceptable to adjust
 
 - It is acceptable to:
-  - Tweak thresholds slightly if:
+  - Tweak the **5 second per-operation threshold** slightly in the test constants if:
     - CI hardware is changed and becomes consistently slower or faster.
     - There is evidence that variability near the threshold causes flaky failures.
   - Improve fixture generation code to be faster or simpler as long as the overall scale and behavior remain equivalent.
 
 - It is **not** acceptable to:
-  - Loosen thresholds merely to “make tests pass” without understanding the performance change.
+  - Loosen the **5 second per-operation** limit merely to “make tests pass” without understanding the performance change.
   - Reduce the size or complexity of the synthetic workspace in a way that stops reflecting realistic large-workspace behavior.
 
 Use these tests as a guardrail: if they fail, it should prompt a discussion and investigation into the trade-offs being made between new functionality and the scalability of the maintenance tools.

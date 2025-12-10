@@ -14,6 +14,9 @@ import {
 import { generateMaintenanceReport } from "../../src/maintenance/report";
 import { updateAnnotationReferences } from "../../src/maintenance/update";
 
+// Performance budget for large-workspace maintenance tests; documented in docs/maintenance-performance-tests.md.
+const LARGE_WORKSPACE_PERF_BUDGET_MS = 5000;
+
 /**
  * Shape of the synthetic large workspace:
  * - 10 modules (module-000 .. module-009)
@@ -88,7 +91,7 @@ describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOO
       expect(stale.length).toBeGreaterThan(0);
 
       // Guardrail: this operation should remain comfortably under ~5 seconds on CI hardware.
-      expect(durationMs).toBeLessThan(5000);
+      expect(durationMs).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
     } finally {
       workspace.cleanup();
     }
@@ -103,7 +106,7 @@ describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOO
 
       // With both valid and stale references, verification should report false.
       expect(result).toBe(false);
-      expect(durationMs).toBeLessThan(5000);
+      expect(durationMs).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
     } finally {
       workspace.cleanup();
     }
@@ -117,7 +120,7 @@ describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOO
       const durationMs = performance.now() - start;
 
       expect(report).not.toBe("");
-      expect(durationMs).toBeLessThan(5000);
+      expect(durationMs).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
     } finally {
       workspace.cleanup();
     }
@@ -138,7 +141,7 @@ describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOO
       const singleDuration = performance.now() - singleStart;
 
       expect(updatedCount).toBeGreaterThan(0);
-      expect(singleDuration).toBeLessThan(5000);
+      expect(singleDuration).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
 
       const batchStart = performance.now();
       const totalUpdated = batchUpdateAnnotations(workspace.root, [
@@ -154,7 +157,7 @@ describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOO
       const batchDuration = performance.now() - batchStart;
 
       expect(totalUpdated).toBeGreaterThanOrEqual(2);
-      expect(batchDuration).toBeLessThan(5000);
+      expect(batchDuration).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
     } finally {
       workspace.cleanup();
     }

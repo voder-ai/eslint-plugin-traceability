@@ -105,6 +105,10 @@ When changing this migration behavior, contributors should:
 
 In addition to the Jest-based CLI tests under `tests/maintenance/cli.test.ts` and `tests/perf/maintenance-cli-large-workspace.test.ts`, the `scripts/smoke-test.sh` script now runs an end-to-end flow: it packs and installs the plugin into a fresh temporary project, verifies that the ESLint plugin loads, and invokes the installed `traceability-maint` CLI binary for both a successful `detect --root .` run and an error-path `report --format yaml` run, asserting on exit codes and key messages. When maintainers change CLI behavior or exit codes, they must update both the Jest CLI tests and the smoke test assertions to keep end-to-end coverage in sync with the documented options and contracts.
 
+### Performance Tests and Runtime Guarantees
+
+The `tests/perf/*` suites encode performance expectations for the maintenance tools and key rules. In particular, the large-workspace maintenance and CLI tests enforce a 5 second per-operation budget via constants defined in those test files. Developers should run these performance tests before merging significant changes to the maintenance tools or the covered rules. See `docs/maintenance-performance-tests.md` and `docs/performance-tests-overview.md` for the primary references and detailed guidance.
+
 ## Related Documentation
 
 - [Story Files](stories/) - User story definitions

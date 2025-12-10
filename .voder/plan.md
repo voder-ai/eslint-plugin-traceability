@@ -1,13 +1,15 @@
 ## NOW
 
-- [ ] Ensure GitHub issue #6 is closed with a clear comment explaining that the redundant-annotation detection rule and catch-block handling fix have been implemented, released, and verified, so that the issue’s state is updated to CLOSED as required by Story 027.0’s acceptance criteria.
+- [ ] Strengthen the existing large-workspace performance tests so they enforce a clear maximum runtime for the maintenance tools on a realistic big project, by encoding explicit time limits in the tests and keeping all current behavior and assertions intact.
 
 ## NEXT
 
-- [ ] Update the Story 027.0 markdown file to mark the “Issue #6 Resolution” acceptance criterion and any related checklist items as complete, reflecting that the external GitHub issue is now closed.
-- [ ] Confirm that all tests associated with the redundant-annotation detection rule and annotation-scope analyzer still pass and that their traceability annotations reference Story 027.0 and its requirements correctly.
+- [ ] Add a short developer-facing documentation section that explains the purpose of the performance tests, the configured time limits they enforce, and how to interpret and act on a performance test failure when working on the maintenance tools or rules.
+- [ ] Extend the performance test coverage to include at least one additional realistic scenario for the maintenance CLI or plugin (such as a workspace with many small files or deeply nested directories), using the same explicit time-limit approach to guard against regressions in that pattern.
+- [ ] Clarify in the internal development documentation which runtime verification commands developers should run before merging substantial changes, including how these commands relate to the performance guarantees encoded in the tests.
 
 ## LATER
 
-- [ ] Add a brief note to the internal decision or incident documentation summarizing that Story 027.0 is now fully complete, including the external issue closure, so future maintainers understand why issue #6 remains closed.
-- [ ] Review other stories that depend on external trackers or releases to ensure their acceptance criteria are similarly kept in sync with current GitHub issue states and release history.
+- [ ] Periodically revisit and, if appropriate, tighten the performance time limits in the tests as the implementation becomes more efficient, ensuring they remain challenging but realistic for typical CI environments.
+- [ ] Introduce targeted performance micro-benchmarks for the most critical helper functions used by the maintenance tools or hot-path rule helpers, so that algorithmic regressions are caught earlier and more locally than full-workspace tests.
+- [ ] Look for any remaining runtime edge cases in the maintenance CLI (such as extremely large numbers of files or unusual directory structures) and, where needed, add focused tests or small defensive checks so that behavior remains predictable and robust under stress.

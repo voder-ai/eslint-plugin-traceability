@@ -8,6 +8,9 @@ import * as path from "path";
 import { performance } from "perf_hooks";
 import { runMaintenanceCli } from "../../src/maintenance/cli";
 
+// Performance budget documented in docs/maintenance-performance-tests.md
+const CLI_LARGE_WORKSPACE_PERF_BUDGET_MS = 5000;
+
 function createCliLargeWorkspace(): { root: string; cleanup: () => void } {
   const root = fs.mkdtempSync(
     path.join(os.tmpdir(), "traceability-cli-large-"),
@@ -75,7 +78,7 @@ describe("Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS
       const durationMs = performance.now() - start;
 
       expect(exitCode === 0 || exitCode === 1).toBe(true);
-      expect(durationMs).toBeLessThan(5000);
+      expect(durationMs).toBeLessThan(CLI_LARGE_WORKSPACE_PERF_BUDGET_MS);
 
       expect(logSpy).toHaveBeenCalledTimes(1);
       const payloadRaw = String(logSpy.mock.calls[0][0]);
@@ -114,7 +117,7 @@ describe("Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS
       const durationMs = performance.now() - start;
 
       expect(exitCode).toBe(0);
-      expect(durationMs).toBeLessThan(5000);
+      expect(durationMs).toBeLessThan(CLI_LARGE_WORKSPACE_PERF_BUDGET_MS);
 
       expect(logSpy).toHaveBeenCalledTimes(1);
       const payloadRaw = String(logSpy.mock.calls[0][0]);
@@ -150,7 +153,7 @@ describe("Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS
       const durationMs = performance.now() - start;
 
       expect(exitCode).toBe(1);
-      expect(durationMs).toBeLessThan(5000);
+      expect(durationMs).toBeLessThan(CLI_LARGE_WORKSPACE_PERF_BUDGET_MS);
 
       expect(logSpy).toHaveBeenCalledTimes(1);
       const message = String(logSpy.mock.calls[0][0]);
