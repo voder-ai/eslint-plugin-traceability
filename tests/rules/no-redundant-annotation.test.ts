@@ -41,6 +41,10 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
         name: "[REQ-CATCH-BLOCK-HANDLING] preserves catch block annotation from issue #6 scenario",
         code: `async function example() {\n  try {\n    // @story prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md\n    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY\n    if (isSafeVersion({ version, vulnerabilityData })) {\n      return version;\n    }\n\n    // @story prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md\n    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY\n    if (!vulnerabilityData.isVulnerable) {\n      return version;\n    }\n  } catch (error) {\n    // @story prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md\n    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY\n    return null;\n  }\n}`,
       },
+      {
+        name: "[REQ-CATCH-BLOCK-HANDLING] preserves annotations in nested catch blocks with repeated requirements",
+        code: `async function nestedCatches() {\n  try {\n    await checkPrimary();\n  } catch (outerError) {\n    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY\n    try {\n      await attemptRecovery(outerError);\n    } catch (innerError) {\n      // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY\n      await reportFailure(innerError);\n    }\n  }\n}`,
+      },
     ],
     invalid: [
       {
@@ -89,6 +93,12 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
         name: "[REQ-SUPPORTS-COVERAGE][REQ-DUPLICATION-DETECTION] flags redundant statement with multiple fully-covered @supports pairs",
         code: `/**\n * @story docs/stories/009.0-EXAMPLE.story.md\n * @supports REQ-SUP-A, REQ-SUP-B\n */\nfunction example() {\n  // @story docs/stories/009.0-EXAMPLE.story.md\n  // @supports REQ-SUP-A, REQ-SUP-B\n  const supported = checkSupport();\n}`,
         output: `/**\n * @story docs/stories/009.0-EXAMPLE.story.md\n * @supports REQ-SUP-A, REQ-SUP-B\n */\nfunction example() {\n  const supported = checkSupport();\n}`,
+        errors: [{ messageId: "redundantAnnotation" }],
+      },
+      {
+        name: "[REQ-SCOPE-ANALYSIS][REQ-STATEMENT-SIGNIFICANCE] flags redundant annotation in finally block that repeats try-path coverage",
+        code: `async function example() {\n  // @supports docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION\n  try {\n    await doWork();\n  } finally {\n    // @supports docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION\n    await cleanUp();\n  }\n}`,
+        output: `async function example() {\n  // @supports docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION\n  try {\n    await doWork();\n  } finally {\n    await cleanUp();\n  }\n}`,
         errors: [{ messageId: "redundantAnnotation" }],
       },
       // TODO: rule implementation exists; full invalid-case behavior tests pending refinement
