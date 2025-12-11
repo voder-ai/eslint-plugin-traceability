@@ -1,14 +1,14 @@
 ## NOW
 
-- [ ] Add a new no-redundant-annotation test case that encodes the try/if/else-if/catch scenario from story 027.0 and verifies that the catch block’s traceability annotation is not reported as redundant, tagging the test with the appropriate story and requirement IDs.
+- [ ] Update the user-facing documentation for the redundant-annotation rule so it explicitly states that catch blocks are treated as separate execution paths and that annotations in catch blocks which intentionally repeat try-path requirements are not considered redundant.
 
 ## NEXT
 
-- [ ] If the new test fails, adjust the redundant-annotation rule and its scope-analysis helpers so that catch blocks are treated as separate execution paths and the test passes without introducing false negatives for other redundancy scenarios.
-- [ ] Update the story file for 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION to mark the catch-block handling acceptance criterion and any related Definition of Done items as complete, explicitly referencing the new test as evidence.
-- [ ] Add an integration-level scenario that runs the redundant-annotation rule over a small file containing the same try/if/else-if/catch pattern and confirms no redundantAnnotation diagnostics are produced in that full-file context.
+- [ ] Add one or two additional redundant-annotation rule tests that cover more complex control-flow patterns such as nested try/finally blocks or multiple catch clauses to guard against future regressions.
+- [ ] Link story 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION from the redundant-annotation rule’s documentation section by briefly mentioning that the catch-block behavior was introduced to satisfy that story’s requirements.
+- [ ] Review the redundant-annotation rule’s examples to ensure there is at least one example showing a try/if/else-if/catch structure where the catch annotation is preserved, matching the documented behavior.
 
 ## LATER
 
-- [ ] Review the redundant-annotation tests to see if there are other complex control-flow patterns (e.g., nested try/finally or multiple catch clauses) that should be covered explicitly to prevent similar regressions.
-- [ ] Consider adding a short note to the migration guide or rule documentation clarifying that catch blocks are treated as separate execution paths and will not have their annotations stripped as redundant when they intentionally repeat a requirement for error handling paths.
+- [ ] Consider extracting any shared control-flow analysis logic used by the redundant-annotation rule into a reusable utility to keep the rule implementation small and focused while maintaining test coverage.
+- [ ] Evaluate whether additional configuration options are needed for redundant-annotation handling in non-standard control-flow constructs, and if so, design and document them as a separate story.

@@ -123,7 +123,7 @@ A typical migration path is:
 - Enable it as `"warn"` to get non-breaking guidance and auto-fixes for straightforward cases.
 - Optionally move to `"error"` once you want to strictly enforce `@supports` usage for all JSDoc blocks that are eligible for safe conversion.
 
-#### When to keep `@story` + `@req`
+#### When to keep `@story` + `req`
 
 Keep your current annotations if:
 
@@ -229,6 +229,8 @@ In all cases, the rule is conservative:
 
 The rule operates over both `@supports` and legacy `@story`/`@req` style annotations, so it continues to work even in mixed codebases during a long-running migration.
 
+In addition, `catch` blocks are treated as distinct execution paths: repeating the same `(story, requirement)` pair in a `catch` block is **not** considered redundant, because the error-handling path is typically validated and reasoned about separately from the main control flow.
+
 A simplified example, using an illustrative story path that represents a file in **your** documentation tree:
 
 Before (redundant duplication inside a branch):
@@ -270,6 +272,38 @@ if (cart.items.length === 0) {
   return 0;
 }
 ```
+
+#### Example: try/if/else-if/catch with non-redundant catch annotation
+
+The following example shows a `try` block with an `if` / `else if` chain that validates a safe operation, and a `catch` block that handles the error path for the **same** requirement. Both paths are annotated with the same `(story, requirement)` pair to make it clear that the requirement covers normal execution and error handling:
+
+```js
+async function performSafeOperation(input) {
+  try {
+    // @supports docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION
+    if (input == null) {
+      throw new Error("Missing input");
+    }
+
+    // @supports docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION
+    if (typeof input === "string") {
+      return await doSafeStringOperation(input);
+    } else if (Array.isArray(input)) {
+      return await doSafeArrayOperation(input);
+    }
+
+    return await doSafeFallbackOperation(input);
+  } catch (error) {
+    // This catch represents the error-handling path for the same safe-operation requirement.
+    // Even though the coverage matches the try/if/else-if chain above, it is *not* redundant:
+    // it documents how failures are handled for the same requirement.
+    // @supports docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION
+    return handleSafeOperationFailure(error, input);
+  }
+}
+```
+
+Here, `traceability/no-redundant-annotation` recognizes the `catch` block as a separate execution path from the main `try` body. The annotation in the `catch` remains intact and is **not** treated as redundant, even though it repeats the same `docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION` coverage as the guarded `if` / `else if` chain in the `try`. This behavior was introduced and validated as part of story `027.0-DEV-REDUNDANT-ANNOTATION-DETECTION (Detect and Remove Redundant Annotations)` to prevent regressions in real-world `try/if/else-if/catch` scenarios like the one discussed there.
 
 #### Safe migration workflow
 

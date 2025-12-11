@@ -187,3 +187,34 @@ Depending on your Prettier version and configuration, the exact layout of the `e
   - For most branch types, `traceability/require-branch-annotation` associates comments immediately before the branch keyword (such as `if`, `else`, `switch`, `case`) with that branch. Branches can be annotated either with a single `@supports` line (preferred), or with the older `@story`/`@req` pair for backward compatibility. The rule treats a valid `@supports` annotation as satisfying both the story and requirement presence checks.
   - For `catch` clauses and `else if` branches, the rule is formatter-aware and also looks at comments between the condition and the block, as well as the first comment-only lines inside the block body, so you do not need to fight Prettier if it moves your annotations.
   - When annotations exist in more than one place around an `else if` branch, the rule prefers comments immediately before the `else if` line, then comments between the condition and the block, and finally comments inside the block body, matching the behavior described in the API reference and stories `025.0` and `026.0`.
+
+## 7. Redundant annotations and catch blocks
+
+When `traceability/no-redundant-annotation` is enabled (for example, via the recommended preset), `catch` blocks are always treated as distinct execution paths. Repeating the same `(story, requirement)` pair in a `catch` block as in the corresponding `try` path is not considered redundant and will be preserved. This behavior is part of the improvements captured in story `027.0-DEV-REDUNDANT-ANNOTATION-DETECTION`.
+
+In the following example, running ESLint with `--fix` will not remove the `@supports` annotation on the `catch` block, even though it repeats the requirement from the `try` path, because it represents separate error-handling coverage.
+
+```js
+function filterSafeVersions(allVersions) {
+  try {
+    const stable = allVersions.filter((v) => !v.includes("-beta"));
+
+    // @supports docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION
+    if (stable.length > 0) {
+      return stable;
+    }
+    // @supports docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION
+    else if (allVersions.length > 0) {
+      // Fall back to all versions if we have no clearly stable ones
+      return allVersions;
+    }
+
+    // Fallback when the input list is empty
+    return [];
+  } catch (error) {
+    // @supports docs/stories/010.0-EXAMPLE.story.md REQ-SAFE-OPERATION
+    // traceability/no-redundant-annotation keeps this as separate error-handling coverage,
+    // even though it repeats the requirement from the try path.
+    return [];
+  }
+}

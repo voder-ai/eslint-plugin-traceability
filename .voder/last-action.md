@@ -1,384 +1,319 @@
 # Last Action Executed (Agentic)
 
-**Action:** Used tool: list_directory with input: {"dirPath":"tests"}
-Used tool: list_directory with input: {"dirPath":"docs"}
-Used tool: list_directory with input: {"dirPath":"docs/stories"}
-Used tool: list_directory with input: {"dirPath":"tests/perf"}
-Used tool: read_file with input: {"filePath":"docs/maintenance-performance-tests.md"}
+**Action:** Used tool: read_file with input: {"filePath":"tests/rules/no-redundant-annotation.test.ts"}
+Used tool: read_file with input: {"filePath":"docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md"}
+Used tool: read_file with input: {"filePath":"src/utils/annotation-scope-analyzer.ts"}
+Used tool: read_file with input: {"filePath":"src/rules/no-redundant-annotation.ts"}
+Used tool: search_file_content with input: {"filePath":"src/utils/branch-annotation-helpers.ts","pattern":"DEFAULT_BRANCH_TYPES","isRegex":false}
 Used tool: read_file with input: {"filePath":"package.json"}
-Used tool: read_file with input: {"filePath":"tests/perf/maintenance-large-workspace.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/perf/maintenance-cli-large-workspace.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/perf/require-branch-annotation-large-file.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/perf/valid-annotation-format-large-file.test.ts"}
-Used tool: read_file with input: {"filePath":"docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md"}
-Used tool: modify_file with input: {"filePath":"tests/perf/maintenance-large-workspace.test.ts","instruction":"After the existing imports from perf_hooks and maintenance modules, insert a new constant declaration:\n\nconst LARGE_WORKSPACE_PERF_BUDGET_MS = 5000;\n\nwith a preceding comment noting that this budget is documented in docs/maintenance-performance-tests.md. Then, replace all occurrences of `expect(durationMs).toBeLessThan(5000);` and `expect(singleDuration).toBeLessThan(5000);` and `expect(batchDuration).toBeLessThan(5000);` in this file so that they instead compare against `LARGE_WORKSPACE_PERF_BUDGET_MS` (e.g., `expect(durationMs).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);`). Do not change any other logic or text."}
-Used tool: modify_file with input: {"filePath":"tests/perf/maintenance-cli-large-workspace.test.ts","instruction":"After the existing imports from perf_hooks and runMaintenanceCli, insert a new constant declaration:\n\nconst CLI_LARGE_WORKSPACE_PERF_BUDGET_MS = 5000;\n\nwith a preceding comment noting that this budget is documented in docs/maintenance-performance-tests.md. Then, replace all occurrences of `expect(durationMs).toBeLessThan(5000);` in this file so that they instead compare against `CLI_LARGE_WORKSPACE_PERF_BUDGET_MS`. Do not change any other logic or text."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--testPathPattern","tests/perf"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--testPathPatterns","tests/perf"]}
-Used tool: modify_file with input: {"filePath":"docs/maintenance-performance-tests.md","instruction":"Update the \"Timing expectations\" and any other explicit references to time budgets to clarify that the large-workspace maintenance and CLI tests enforce a maximum wall-clock runtime of 5 seconds per operation, and that this value is codified as constants in `tests/perf/maintenance-large-workspace.test.ts` and `tests/perf/maintenance-cli-large-workspace.test.ts`. Ensure the doc explicitly states the 5s budget and ties it to those constants, keeping the existing structure and wording wherever possible."}
-Used tool: read_file with input: {"filePath":"tests/maintenance/detect-isolated.test.ts"}
-Used tool: read_file with input: {"filePath":"tests/maintenance/report.test.ts"}
-Used tool: generate_file with input: {"filePath":"docs/performance-tests-overview.md","content":"# Performance Test Suite Overview\n\nThis document explains the purpose of the performance tests, the time limits they enforce, and how to interpret and act on performance test failures when working on the maintenance tools or rules.\n\n## Scope\n\nThis overview focuses on the performance tests under `tests/perf`:\n\n- `tests/perf/maintenance-large-workspace.test.ts`\n- `tests/perf/maintenance-cli-large-workspace.test.ts`\n- `tests/perf/require-branch-annotation-large-file.test.ts`\n- `tests/perf/valid-annotation-format-large-file.test.ts`\n\nIt is closely related to `docs/maintenance-performance-tests.md`, which dives deeper into maintenance-tool performance scenarios.\n\n## Time Limits and Budgets\n\nThe large-workspace maintenance and CLI tests encode an explicit **5 second per-operation budget**:\n\n- `tests/perf/maintenance-large-workspace.test.ts` defines `LARGE_WORKSPACE_PERF_BUDGET_MS = 5000`.\n- `tests/perf/maintenance-cli-large-workspace.test.ts` defines `CLI_LARGE_WORKSPACE_PERF_BUDGET_MS = 5000`.\n\nEach operation under test (a single call to `detectStaleAnnotations`, `verifyAnnotations`, `generateMaintenanceReport`, `updateAnnotationReferences`, `batchUpdateAnnotations`, or one CLI invocation) must complete within this budget on CI-class hardware. The tests measure wall-clock time around the operation and assert that the duration is **less than** the configured budget.\n\nThe rule-level performance tests (`require-branch-annotation-large-file` and `valid-annotation-format-large-file`) use similar 5 second guardrails for analyzing synthetic large files.\n\n## When to Run Performance Tests\n\nRun the performance tests in these situations:\n\n- When changing code in:\n  - `src/maintenance/*`\n  - `src/utils/storyReferenceUtils.ts`\n  - `src/rules/require-branch-annotation.ts`\n  - `src/rules/valid-annotation-format.ts`\n- When modifying file traversal, annotation parsing, or batch update behavior.\n- When investigating or addressing reported slowdowns in maintenance tooling or rule execution.\n\nThey are heavier than unit tests and do **not** need to run on every edit. Use them before merging substantial changes or as part of periodic CI jobs.\n\n## Interpreting Failures\n\nIf a performance test fails:\n\n1. Check whether the failure is functional (unexpected result, error) or purely timing-related.\n2. For timing-related failures:\n   - Re-run the specific perf test locally to rule out transient slowdowns.\n   - Compare with recent changes in traversal, parsing, or update logic.\n   - Add temporary logging or timers around suspected hotspots to identify regressions.\n3. Only consider adjusting the 5 second budgets after understanding the cause and confirming that CI hardware characteristics have changed.\n\nFor deeper guidance on maintenance-specific scenarios and expectations, see `docs/maintenance-performance-tests.md`.\n"}
-Used tool: modify_file with input: {"filePath":"docs/jest-testing-guide.md","instruction":"In the section that talks about performance or long-running tests (or near the end if no such section exists), add a short subsection titled \"Performance Tests and Runtime Guarantees\". In that subsection, briefly explain that `tests/perf/*` encodes performance expectations for the maintenance tools and key rules, that the large-workspace maintenance and CLI tests enforce a 5 second per-operation budget (via constants in those files), and that developers should run these tests before merging significant changes to the maintenance tools or those rules. Mention `docs/maintenance-performance-tests.md` and `docs/performance-tests-overview.md` as the primary references. Keep wording concise and consistent with the existing guide style."}
-Used tool: run_command with input: {"command":"npm","args":["run","ci-verify:fast"]}
+Used tool: read_file with input: {"filePath":"src/utils/branch-annotation-helpers.ts"}
+Used tool: read_file with input: {"filePath":"tests/integration/no-redundant-annotation.integration.test.ts"}
+Used tool: modify_file with input: {"filePath":"tests/rules/no-redundant-annotation.test.ts","instruction":"Add coverage for REQ-CATCH-BLOCK-HANDLING by updating the file-level JSDoc and adding a new valid test case that encodes the try/if/else-if/catch scenario from story 027.0. The new test should verify that the catch block's traceability annotation is not reported as redundant (i.e., the code is in the `valid` array and does not specify errors). Place the new valid test near other preservation/no-false-positive scenarios. Use a test name that includes `[REQ-CATCH-BLOCK-HANDLING]` and describes the issue #6 scenario. The code snippet should closely follow the story's example with `@supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY` annotations on the try branches and catch block."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--testPathPattern","tests/rules/no-redundant-annotation.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--testPathPatterns","tests/rules/no-redundant-annotation.test.ts"]}
+Used tool: read_file with input: {"filePath":"tests/utils/annotation-scope-analyzer.test.ts"}
+Used tool: read_file with input: {"filePath":"docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md"}
+Used tool: modify_file with input: {"filePath":"src/rules/no-redundant-annotation.ts","instruction":"In the BlockStatement visitor inside the create() function, add a guard that skips redundancy analysis for blocks whose parent is a CatchClause, so that catch blocks are treated as distinct execution paths and their internal annotations are not considered redundant. Also add an inline @supports traceability comment referencing REQ-CATCH-BLOCK-HANDLING at this guard. Do not alter other behavior."}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--testPathPatterns","tests/rules/no-redundant-annotation.test.ts"]}
+Used tool: modify_file with input: {"filePath":"docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md","instruction":"Update the acceptance criteria checklist to mark \"No False Positives\" as completed ([x]) now that catch block handling is implemented and tested by the new no-redundant-annotation rule test. Leave the Issue #6 Resolution criterion unchecked. Do not change any other text."}
+Used tool: modify_file with input: {"filePath":"tests/integration/no-redundant-annotation.integration.test.ts","instruction":"Add a new integration test case that runs the no-redundant-annotation rule over a small file containing the try/if/else-if/catch pattern from story 027.0 (based on the regression example from issue #6) and asserts that no redundantAnnotation diagnostics are produced. Use a test name that includes \"[REQ-CATCH-BLOCK-HANDLING]\" and mention issue #6 in the description. Place this new test after the existing integration test. Ensure the code snippet uses @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY annotations on the try branches and the catch block, matching the story examples. Configure the rule as a warning and assert that result.messages has length 0 or does not contain the rule ID."}
 Used tool: get_git_status with input: {}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: tighten maintenance and CLI performance tests"}
+Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
+Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
 Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: run_command with input: {"command":"npm","args":["run","format","--","src/rules/no-redundant-annotation.ts","tests/integration/no-redundant-annotation.integration.test.ts","tests/rules/no-redundant-annotation.test.ts"]}
+Used tool: run_command with input: {"command":"npm","args":["run","lint","--","--max-warnings=0"]}
 Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
 Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
-Used tool: git_push with input: {}
-Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
-Used tool: modify_file with input: {"filePath":"tests/perf/maintenance-cli-large-workspace.test.ts","instruction":"After the existing createCliLargeWorkspace function, add a new helper function named createDeepNestedCliWorkspace that builds a more deeply nested directory structure (e.g., several levels of nested subdirectories) while still writing a small number of TypeScript files containing both valid and stale @story references and a single valid story file at the workspace root. Then, near the bottom of the file inside the existing describe block, add a new test case named \"[REQ-MAINT-DETECT] detect traverses deeply nested directories within a generous time budget\" that:\n\n- Calls createDeepNestedCliWorkspace to get { root, cleanup } and temporarily changes process.cwd() to the root (mirroring the existing tests' pattern).\n- Uses jest.spyOn(console, \"log\").mockImplementation(() => {}) to capture output.\n- Invokes runMaintenanceCli with the same detect --root <root> --json arguments as the first test.\n- Asserts that the exit code is 0 or 1, that durationMs is less than CLI_LARGE_WORKSPACE_PERF_BUDGET_MS, and that the parsed JSON payload has the expected shape (root string, stale array with at least one element).\n- Restores cwd, the spy, and calls cleanup in a finally block.\n\nKeep the new helper and test stylistically consistent with the existing ones, and reuse the existing CLI_LARGE_WORKSPACE_PERF_BUDGET_MS constant for the time budget rather than introducing a new constant."}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci","--testPathPatterns","tests/perf/maintenance-cli-large-workspace.test.ts"]}
-Used tool: modify_file with input: {"filePath":"docs/maintenance-performance-tests.md","instruction":"In the \"Test Locations and Commands\" section, update the listed Jest test paths and examples to reflect that the current performance tests live under `tests/perf` rather than `tests/maintenance/perf`. Specifically, change the bullet points and example commands so they mention `tests/perf/maintenance-large-workspace.test.ts`, `tests/perf/maintenance-cli-large-workspace.test.ts`, etc., and use `jest` examples that match the existing `npm test` usage. Keep the structure and intent of the section the same, just align paths/commands with the current repository layout."}
 Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"test: add deep nested CLI performance scenario and docs"}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
+Used tool: git_commit with input: {"message":"fix: avoid redundant-annotation false positives for catch blocks"}
 Used tool: git_push with input: {}
-Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
-Used tool: modify_file with input: {"filePath":"docs/performance-tests-overview.md","instruction":"At the end of the document, add a new section titled \"Recommended Runtime Verification Commands\". In that section, briefly list the key npm scripts and Jest invocations developers should run before merging substantial changes to the maintenance tools or rules, for example:\n\n- `npm run ci-verify:fast` for a quick but meaningful gate during development.\n- `npm run ci-verify:full` when you want to mirror the full CI pipeline locally (including coverage, audits, and performance-sensitive tests under `tests/perf`).\n- `npm test -- --runInBand --ci --testPathPatterns tests/perf` to focus specifically on the performance suites when investigating or tuning performance.\n\nAlso mention that `ci-verify:full` already runs Jest with coverage (which includes the performance tests), so passing that command implies that performance guarantees are currently being met."}
-Used tool: git_add_all with input: {}
-Used tool: git_commit with input: {"message":"docs: document performance tests and runtime verification commands"}
-Used tool: run_command with input: {"command":"npm","args":["run","build"]}
-Used tool: run_command with input: {"command":"npm","args":["test","--","--runInBand","--ci"]}
-Used tool: run_command with input: {"command":"npm","args":["run","lint"]}
-Used tool: run_command with input: {"command":"npm","args":["run","type-check"]}
-Used tool: run_command with input: {"command":"npm","args":["run","format:check"]}
-Used tool: git_push with input: {}
+Used tool: get_github_pipeline_status with input: {}
 Used tool: wait_for_github_workflow with input: {"workflowName":"CI/CD Pipeline","timeout":600000}
 
 **Response:**
 
 ```
-Here’s what was implemented for the **NOW** and **NEXT** sections, and the updated plan.
+Here’s what I implemented for the **##NOW** and **##NEXT** items, and the updated plan with checkboxes.
 
 ---
 
-## What I implemented
+## What I changed
 
-### 1) NOW – Strengthen large-workspace performance tests
+### 1) New rule-level test for catch-block handling (##NOW)
 
-**Goal:** Enforce a clear max runtime for maintenance tools on a realistic big project, via explicit time limits in tests.
+**File:** `tests/rules/no-redundant-annotation.test.ts`
 
-**Changes:**
+- Extended the file-level JSDoc to include the new requirement:
 
-1. **Core maintenance perf tests**
-
-   - File: `tests/perf/maintenance-large-workspace.test.ts`
-   - Added a shared performance budget constant:
-     ```ts
-     // Performance budget for large-workspace maintenance tests; documented in docs/maintenance-performance-tests.md.
-     const LARGE_WORKSPACE_PERF_BUDGET_MS = 5000;
-     ```
-   - Updated all timing assertions to reference the constant instead of a magic number:
-     ```ts
-     expect(durationMs).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
-     expect(singleDuration).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
-     expect(batchDuration).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
-     ```
-
-2. **CLI maintenance perf tests**
-
-   - File: `tests/perf/maintenance-cli-large-workspace.test.ts`
-   - Added a CLI-specific budget constant:
-     ```ts
-     // Performance budget documented in docs/maintenance-performance-tests.md
-     const CLI_LARGE_WORKSPACE_PERF_BUDGET_MS = 5000;
-     ```
-   - Updated all timing assertions to reference the constant:
-     ```ts
-     expect(durationMs).toBeLessThan(CLI_LARGE_WORKSPACE_PERF_BUDGET_MS);
-     ```
-
-3. **Documentation alignment (NOW scope)**
-
-   - File: `docs/maintenance-performance-tests.md`
-   - Clarified that:
-     - There is a **5 second per-operation budget** for large-workspace maintenance operations (detect, verify, report, updates).
-     - This is **codified as constants** in:
-       - `tests/perf/maintenance-large-workspace.test.ts`
-       - `tests/perf/maintenance-cli-large-workspace.test.ts`
-     - Tests measure wall-clock time around each operation and assert it’s below this threshold.
-
-4. **Verification for NOW**
-
-   - Ran perf-only Jest tests:
-     ```bash
-     npm test -- --runInBand --ci --testPathPatterns tests/perf
-     ```
-     → All 4 perf suites passed.
-   - Ran fast CI bundle:
-     ```bash
-     npm run ci-verify:fast
-     ```
-   - Full checks before push:
-     ```bash
-     npm run build
-     npm test -- --runInBand --ci
-     npm run lint
-     npm run type-check
-     npm run format:check
-     ```
-   - Commit: `test: tighten maintenance and CLI performance tests`
-   - Push triggered CI (`CI/CD Pipeline`) and the run completed successfully.
-
-**Result:** Large-workspace maintenance tests now encode and enforce a 5-second per-operation time limit via explicit constants, with docs explicitly tying to that limit.
-
----
-
-### 2) NEXT-1 – Developer-facing docs on perf tests & time limits
-
-**Goal:** Explain purpose of perf tests, configured time limits, and how to interpret failures.
-
-**Changes:**
-
-1. **Dedicated overview doc**
-
-   - New file: `docs/performance-tests-overview.md`
-   - Content highlights:
-     - Scope: `tests/perf/*` suites (maintenance and rule-level performance tests).
-     - Explains:
-       - 5-second per-operation budget and where constants live:
-         - `LARGE_WORKSPACE_PERF_BUDGET_MS` in `maintenance-large-workspace.test.ts`
-         - `CLI_LARGE_WORKSPACE_PERF_BUDGET_MS` in `maintenance-cli-large-workspace.test.ts`
-       - Which scenarios are covered (large workspaces and large annotated files).
-       - When to run perf tests and how to interpret timing failures.
-     - Points to `docs/maintenance-performance-tests.md` for deeper maintenance-specific details.
-
-2. **Existing maintenance perf doc clarified**
-
-   - File: `docs/maintenance-performance-tests.md`
-   - Clarified:
-     - 5-second **per operation** limit as a hard constraint, not just a guideline.
-     - Explicit reference to the test constants:
-       - `tests/perf/maintenance-large-workspace.test.ts`
-       - `tests/perf/maintenance-cli-large-workspace.test.ts`
-     - Updated **Test Locations and Commands** to reflect current Jest layout:
-       - Core API perf: `tests/perf/maintenance-large-workspace.test.ts`
-       - CLI perf: `tests/perf/maintenance-cli-large-workspace.test.ts`
-       - Example commands using `npx jest` on `tests/perf/...`.
-
-3. **Jest testing guide hook-in**
-
-   - File: `docs/jest-testing-guide.md`
-   - Added a short subsection:
-     - **“Performance Tests and Runtime Guarantees”**
-     - Explains that:
-       - `tests/perf/*` encode performance expectations for maintenance tools and key rules.
-       - Large-workspace maintenance and CLI tests enforce a 5s per-operation budget via constants.
-       - Developers should run these tests before merging significant changes to the maintenance tools or the covered rules.
-       - References: `docs/maintenance-performance-tests.md`, `docs/performance-tests-overview.md`.
-
-4. **Verification for NEXT-1**
-
-   - Checks executed as part of later steps:
-     - `npm run build`
-     - `npm test -- --runInBand --ci`
-     - `npm run lint`
-     - `npm run type-check`
-     - `npm run format:check`
-
-**Result:** Internal developer docs now clearly explain the purpose of perf tests, the enforced time limits, and how to act on failures.
-
----
-
-### 3) NEXT-2 – Additional realistic perf scenario for CLI / plugin
-
-**Goal:** Extend perf coverage with an additional realistic scenario (deeply nested directories) using the same time-budget approach.
-
-**Changes:**
-
-- File: `tests/perf/maintenance-cli-large-workspace.test.ts`
-
-1. **New deep-nested workspace helper**
-
-   ```ts
-   function createDeepNestedCliWorkspace(): { root: string; cleanup: () => void } {
-     const root = fs.mkdtempSync(
-       path.join(os.tmpdir(), "traceability-cli-deep-nested-"),
-     );
-
-     // Create a deeply nested directory structure with a small number of files.
-     for (let branchIndex = 0; branchIndex < 3; branchIndex += 1) {
-       const level1 = path.join(
-         root,
-         `branch-${branchIndex.toString().padStart(3, "0")}`,
-       );
-       fs.mkdirSync(level1);
-
-       const level2 = path.join(level1, "deep", "nested", "structure");
-       fs.mkdirSync(path.join(level1, "deep"), { recursive: true });
-       fs.mkdirSync(path.join(level1, "deep", "nested"), { recursive: true });
-       fs.mkdirSync(level2, { recursive: true });
-
-       for (let fileIndex = 0; fileIndex < 3; fileIndex += 1) {
-         const filePath = path.join(
-           level2,
-           `deep-file-${fileIndex.toString().padStart(3, "0")}.ts`,
-         );
-         const validStory = "cli-valid.story.md";
-         const staleStory = "cli-deep-stale.story.md";
-         const content = `/**
- * @story ${validStory}
- * @story ${staleStory}
+```ts
+/**
+ * Tests for: docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md
+ * @story docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md
+ * @req REQ-SCOPE-ANALYSIS ...
+ * @req REQ-DIFFERENT-REQUIREMENTS ...
+ * @req REQ-CATCH-BLOCK-HANDLING - Verify that catch block annotations are not incorrectly treated as redundant
  */
-export function cli_deep_example_${branchIndex}_${fileIndex}() {}
-`;
-         fs.writeFileSync(filePath, content, "utf8");
-       }
-     }
+```
 
-     // Valid story at root
-     fs.writeFileSync(
-       path.join(root, "cli-valid.story.md"),
-       "# cli valid",
-       "utf8",
-     );
+- Added a **new valid test case** capturing the story 027.0 / issue #6 catch scenario:
 
-     return {
-       root,
-       cleanup: () => {
-         fs.rmSync(root, { recursive: true, force: true });
-       },
-     };
-   }
-   ```
+```ts
+{
+  name: "[REQ-CATCH-BLOCK-HANDLING] preserves catch block annotation from issue #6 scenario",
+  code: `async function example() {
+  try {
+    // @story prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md
+    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY
+    if (isSafeVersion({ version, vulnerabilityData })) {
+      return version;
+    }
 
-2. **New deep-nested CLI perf test**
+    // @story prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md
+    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY
+    if (!vulnerabilityData.isVulnerable) {
+      return version;
+    }
+  } catch (error) {
+    // @story prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.story.md
+    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY
+    return null;
+  }
+}`,
+}
+```
 
-   - Added to the same `describe` block:
+- This test lives in the `valid` array, so it asserts **no `no-redundant-annotation` errors** for that pattern.
 
-   ```ts
-   it("[REQ-MAINT-DETECT] detect traverses deeply nested directories within a generous time budget", () => {
-     const { root, cleanup } = createDeepNestedCliWorkspace();
-     const originalCwd = process.cwd();
-     process.chdir(root);
-
-     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
-
-     try {
-       const start = performance.now();
-       const exitCode = runMaintenanceCli([
-         "node",
-         "traceability-maint",
-         "detect",
-         "--root",
-         root,
-         "--json",
-       ]);
-       const durationMs = performance.now() - start;
-
-       expect(exitCode === 0 || exitCode === 1).toBe(true);
-       expect(durationMs).toBeLessThan(CLI_LARGE_WORKSPACE_PERF_BUDGET_MS);
-
-       expect(logSpy).toHaveBeenCalledTimes(1);
-       const payloadRaw = String(logSpy.mock.calls[0][0]);
-       const payload = JSON.parse(payloadRaw) as {
-         root: string;
-         stale: string[];
-       };
-       expect(payload.root).toBe(root);
-       expect(Array.isArray(payload.stale)).toBe(true);
-       expect(payload.stale.length).toBeGreaterThan(0);
-     } finally {
-       logSpy.mockRestore();
-       process.chdir(originalCwd);
-       cleanup();
-     }
-   });
-   ```
-
-   - This:
-     - Uses the same 5s CLI budget constant.
-     - Exercises deep nested directory traversal with both valid and stale `@story` references.
-     - Validates both runtime and JSON output structure.
-
-3. **Verification for NEXT-2**
-
-   - Focused test:
-     ```bash
-     npm test -- --runInBand --ci --testPathPatterns tests/perf/maintenance-cli-large-workspace.test.ts
-     ```
-   - Full suite and quality checks (covered again in NEXT-3 section).
-
-- Commit: `test: add deep nested CLI performance scenario and docs`
-
-**Result:** Perf coverage now includes a deep nested-directory CLI scenario, guarding against regressions in traversal behavior as well as flat large-workspace scenarios.
+Initially this test failed (rule reported a redundant annotation in the catch block), which triggered the NEXT-step change below.
 
 ---
 
-### 4) NEXT-3 – Clarify runtime verification commands in internal docs
+### 2) Rule change to treat catch blocks as distinct execution paths (##NEXT – first bullet)
 
-**Goal:** Document which runtime verification commands to run before merging substantial changes, and how they relate to performance guarantees.
+**File:** `src/rules/no-redundant-annotation.ts`
 
-**Changes:**
+In the `create()` visitor for `BlockStatement`, I added a **guard to skip catch blocks**:
 
-1. **Performance tests overview – runtime commands**
+```ts
+BlockStatement(node: any) {
+  const parent = (node as any).parent;
 
-   - File: `docs/performance-tests-overview.md`
-   - Added section: **“Recommended Runtime Verification Commands”**
-   - Lists and explains:
+  if (process.env.TRACEABILITY_DEBUG === "1") {
+    console.log(
+      "[no-redundant-annotation] BlockStatement parent=%s statements=%d",
+      parent && parent.type,
+      Array.isArray(node.body) ? node.body.length : 0,
+    );
+  }
 
-     ```text
-     - npm run ci-verify:fast
-       For a quick but meaningful verification gate during development.
+  // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-CATCH-BLOCK-HANDLING
+  if (parent && parent.type === "CatchClause") {
+    return;
+  }
 
-     - npm run ci-verify:full
-       To mirror the full CI pipeline locally (includes coverage, audits, and performance-sensitive tests under tests/perf).
+  const scopePairs = collectScopePairs(
+    context,
+    parent,
+    options.maxScopeDepth,
+  );
+  debugScopePairs(parent, scopePairs);
+  if (scopePairs.size === 0) return;
 
-     - npm test -- --runInBand --ci --testPathPatterns tests/perf
-       To focus specifically on the performance suites when investigating or tuning performance.
+  reportRedundantAnnotationsInBlock(context, node, scopePairs, options);
+},
+```
+
+This implements the story requirement that **catch blocks are distinct execution paths** whose annotations should *not* be stripped as redundant, even when they share the same requirement as try-branch annotations.
+
+The inline `@supports` comment ties this guard to:
+
+- `docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md`
+- `REQ-CATCH-BLOCK-HANDLING`
+
+After this change, the new rule test `[REQ-CATCH-BLOCK-HANDLING] preserves catch block annotation from issue #6 scenario` passes.
+
+---
+
+### 3) Update story 027.0 to mark catch-block handling as complete (##NEXT – second bullet)
+
+**File:** `docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md`
+
+- In the **Acceptance Criteria** checklist, I changed:
+
+```md
+- [ ] **No False Positives**: ...
+```
+
+to:
+
+```md
+- [x] **No False Positives**: Does not flag legitimate cases where duplicate-looking annotations serve different purposes (e.g., different requirement IDs, catch blocks as separate execution paths)
+```
+
+- Left **Issue #6 Resolution** as **unchecked**, as required:
+
+```md
+- [ ] **Issue #6 Resolution**: GitHub issue #6 is closed ...
+```
+
+- The story already documents the catch-block pattern and the real-world regression example (issue #6). With the new tests:
+
+  - `tests/rules/no-redundant-annotation.test.ts` with `[REQ-CATCH-BLOCK-HANDLING] ...`
+  - `tests/integration/no-redundant-annotation.integration.test.ts` with a matching pattern (see next section)
+
+  the requirement `REQ-CATCH-BLOCK-HANDLING` is now backed by explicit, traceable tests.
+
+The Definition of Done section remains unchanged except for the existing checkboxes; the external **GitHub issue #6 closure** is still outstanding and was not part of this implementation.
+
+---
+
+### 4) New integration-level scenario for the try/if/else-if/catch pattern (##NEXT – third bullet)
+
+**File:** `tests/integration/no-redundant-annotation.integration.test.ts`
+
+Added a second integration test:
+
+```ts
+it(
+  "[REQ-CATCH-BLOCK-HANDLING] does not report redundant annotations for try/if/else-if/catch pattern from story 027.0 (regression from issue #6)",
+  async () => {
+    const code = `// @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md
+// @req REQ-SAFE-ONLY
+async function filterVulnerableVersions(versionInfo, safeVersions) {
+  try {
+    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md
+    // @req REQ-SAFE-ONLY
+    if (!versionInfo) {
+      return [];
+    } else if (!safeVersions || safeVersions.length === 0) {
+      return versionInfo;
+    }
+
+    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md
+    // @req REQ-SAFE-ONLY
+    return versionInfo.filter(v => safeVersions.includes(v));
+  } catch (error) {
+    // @supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md
+    // @req REQ-SAFE-ONLY
+    return [];
+  }
+}
+`;
+
+    const config = {
+      rules: {
+        "traceability/no-redundant-annotation": ["warn"],
+      },
+    };
+
+    const result = await lintTextWithConfig(
+      code,
+      "filter-vulnerable-versions.js",
+      config,
+    );
+
+    expect(
+      result.messages.filter(
+        (m) => m.ruleId === "traceability/no-redundant-annotation",
+      ).length,
+    ).toBe(0);
+  },
+);
+```
+
+This uses the same **try + if + else-if + catch** structure and `@supports prompts/004.0-DEV-FILTER-VULNERABLE-VERSIONS.md REQ-SAFE-ONLY` annotations as the story’s regression example and asserts:
+
+- **No** `traceability/no-redundant-annotation` diagnostics anywhere, including the catch block.
+
+This complements the rule-level test by verifying the behavior via ESLint’s flat config pipeline.
+
+---
+
+### 5) Quality checks, commit, and CI
+
+After implementing the above:
+
+1. Ran focused tests for the new rule suite:
+
+   ```bash
+   npm test -- --runInBand --testPathPatterns tests/rules/no-redundant-annotation.test.ts
+   ```
+
+   → Passed.
+
+2. Ran the full Jest suite:
+
+   ```bash
+   npm test -- --runInBand
+   ```
+
+   → 55 suites, 479 tests all passing.
+
+3. Lint, type-check, build:
+
+   ```bash
+   npm run lint -- --max-warnings=0
+   npm run type-check
+   npm run build
+   ```
+
+   → All succeeded.
+
+4. Formatting:
+
+   - `npm run format:check` initially failed on the three touched files.
+   - Fixed with:
+
+     ```bash
+     npm run format -- src/rules/no-redundant-annotation.ts \
+       tests/integration/no-redundant-annotation.integration.test.ts \
+       tests/rules/no-redundant-annotation.test.ts
      ```
 
-   - Explicit note:
-     - `ci-verify:full` runs Jest with coverage **including perf tests**, so a passing run implies performance guarantees are currently respected.
+   - Re-ran:
 
-2. **Maintenance perf doc – commands alignment**
-
-   - File: `docs/maintenance-performance-tests.md`
-   - Updated **Test Locations and Commands** to:
-     - Reference `tests/perf/maintenance-large-workspace.test.ts` and `tests/perf/maintenance-cli-large-workspace.test.ts`.
-     - Show `npx jest tests/perf/...` examples aligned with how Jest is actually configured here.
-     - Retain mention of Vitest only as an “if your project uses Vitest instead” note.
-
-3. **Verification for NEXT-3 & final state**
-
-   - Ran:
      ```bash
-     npm run build
-     npm test -- --runInBand --ci
-     npm run lint
+     npm run lint -- --max-warnings=0
      npm run type-check
      npm run format:check
      ```
-   - Commits:
-     - `docs: document performance tests and runtime verification commands`
-   - Each push triggered the `CI/CD Pipeline` workflow on GitHub; all monitored runs completed with `conclusion: success`.
+
+     → All clean.
+
+5. Committed and pushed:
+
+   ```text
+   fix: avoid redundant-annotation false positives for catch blocks
+   ```
+
+   This is a user-visible bug fix (removes false positives), so `fix:` is appropriate.
+
+6. Pre-push hooks and CI:
+
+   - Local pre-push hook ran `npm run ci-verify:full` and `npm run security:secrets` successfully.
+   - After push, the **“CI/CD Pipeline”** GitHub Actions workflow (run ID `20116897370`) completed with **success** across the matrix and semantic-release stages.
 
 ---
 
-## Updated Plan
+## Updated plan with status
 
 ### NOW
 
-- [x] Strengthen the existing large-workspace performance tests so they enforce a clear maximum runtime for the maintenance tools on a realistic big project, by encoding explicit time limits in the tests and keeping all current behavior and assertions intact.
+- [x] Add a new no-redundant-annotation test case that encodes the try/if/else-if/catch scenario from story 027.0 and verifies that the catch block’s traceability annotation is not reported as redundant, tagging the test with the appropriate story and requirement IDs.
 
 ### NEXT
 
-- [x] Add a short developer-facing documentation section that explains the purpose of the performance tests, the configured time limits they enforce, and how to interpret and act on a performance test failure when working on the maintenance tools or rules.
-- [x] Extend the performance test coverage to include at least one additional realistic scenario for the maintenance CLI or plugin (such as a workspace with many small files or deeply nested directories), using the same explicit time-limit approach to guard against regressions in that pattern.
-- [x] Clarify in the internal development documentation which runtime verification commands developers should run before merging substantial changes, including how these commands relate to the performance guarantees encoded in the tests.
+- [x] If the new test fails, adjust the redundant-annotation rule and its scope-analysis helpers so that catch blocks are treated as separate execution paths and the test passes without introducing false negatives for other redundancy scenarios.
+- [x] Update the story file for 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION to mark the catch-block handling acceptance criterion and any related Definition of Done items as complete, explicitly referencing the new test as evidence.  
+  *(Implemented by marking “No False Positives” as complete and wiring tests to `REQ-CATCH-BLOCK-HANDLING` via traceability annotations.)*
+- [x] Add an integration-level scenario that runs the redundant-annotation rule over a small file containing the same try/if/else-if/catch pattern and confirms no redundantAnnotation diagnostics are produced in that full-file context.
 
-### LATER
+---
 
-- [ ] Periodically revisit and, if appropriate, tighten the performance time limits in the tests as the implementation becomes more efficient, ensuring they remain challenging but realistic for typical CI environments.
-- [ ] Introduce targeted performance micro-benchmarks for the most critical helper functions used by the maintenance tools or hot-path rule helpers, so that algorithmic regressions are caught earlier and more locally than full-workspace tests.
-- [ ] Look for any remaining runtime edge cases in the maintenance CLI (such as extremely large numbers of files or unusual directory structures) and, where needed, add focused tests or small defensive checks so that behavior remains predictable and robust under stress.
+### Remaining open work (out of scope for this request)
+
+- The story’s **Issue #6 Resolution** acceptance criterion (closing the external GitHub issue after a released version) is still **unchecked** and will need to be completed by closing the GitHub issue once a release including this fix has shipped.
 ```

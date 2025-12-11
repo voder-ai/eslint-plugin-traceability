@@ -290,7 +290,7 @@ The rule accepts an optional configuration object:
 - `requireDescribeStory` (boolean, optional) – When `true` (default), requires that each top-level `describe` block include a story reference somewhere in its description text (for example, a path such as `docs/stories/010.0-PAYMENTS.story.md` or a shorter project-specific alias that your team uses consistently).
 - `requireTestReqPrefix` (boolean, optional) – When `true` (default), requires each `it`/`test` block name to begin with a requirement identifier in square brackets, such as `[REQ-PAYMENTS-REFUND]`. The exact `REQ-` pattern is shared with the `valid-annotation-format` rule’s requirement ID checks.
 - `describePattern` (string, optional) – A JavaScript regular expression **source** (without leading and trailing `/`) that the `describe` description text must match when `requireDescribeStory` is enabled. This lets you enforce a project-specific format such as requiring a canonical story path or a `STORY-` style identifier in the `describe` string. If omitted, the default is equivalent to `"Story [0-9]+\\.[0-9]+-"`, which expects the description to include a story label such as `"Story 021.0-DEV-TEST-TRACEABILITY"`. You can override this to instead require full story paths or whatever story-labeling convention your project prefers.
-- `autoFixTestTemplate` (boolean, optional) – When `true` (default), allows the rule’s `--fix` mode to insert a file-level `@supports` placeholder template at the top of test files that are missing it. The template is intentionally non-semantic and includes TODO-style guidance so humans can later replace it with a real story path and requirement IDs; disabling this option prevents the rule from inserting the template automatically.
+- `autoFixTestTemplate` (boolean, optional) – When `true` (default), allows the rule’s `--fix` mode to insert a file-level `@supports` placeholder template at the top of test files that are missing it. The template is intentionally non-semantic and includes TODO-style guidance so humans can later replace it with a real story and requirement IDs; disabling this option prevents the rule from inserting the template automatically.
 - `autoFixTestPrefixFormat` (boolean, optional) – When `true` (default), enables safe normalization of malformed `[REQ-XXX]` prefixes in `it`/`test` names during `--fix`. The rule only rewrites prefixes that already contain a recognizable requirement identifier and limits changes to formatting concerns (spacing, square brackets vs. parentheses, underscore and dash usage, and letter casing) without fabricating new IDs or guessing requirement names.
 - `testSupportsTemplate` (string, optional) – Overrides the default file-level `@supports` placeholder template used when `autoFixTestTemplate` is enabled. This string should be a complete JSDoc-style block (for example, including `/**`, `*`, and `*/`) that encodes your project’s preferred TODO guidance or placeholder story path; it is inserted verbatim at the top of matching test files that lack a `@supports` annotation, and is never interpreted or expanded by the rule.
 
@@ -327,6 +327,8 @@ describe("Refunds flow docs/stories/010.0-PAYMENTS.story.md", () => {
 
 Description: Detects and optionally removes **redundant** traceability annotations on code that is already covered by an enclosing annotated scope. It focuses on simple, statement-level constructs—such as `return` statements, basic variable declarations, and other leaf statements—where repeating the same `@story` / `@req` / `@supports` information adds noise without improving coverage. When run with `--fix`, the rule offers safe auto-fixes that remove only the redundant comments while preserving all annotations that are required to maintain correct traceability.
 
+Catch blocks are treated as separate execution paths for traceability purposes, and annotations inside a `catch` block that intentionally repeat the requirements of the corresponding `try` path are not considered redundant and are never auto-removed. This behavior was introduced as part of story `027.0-DEV-REDUNDANT-ANNOTATION-DETECTION (Detect and Remove Redundant Annotations)` to avoid false positives on error-handling paths that implement the same requirement as the success path.
+
 The rule is designed to complement the core presence and validation rules: it never treats removing a redundant annotation as valid if doing so would leave the underlying requirement or story **uncovered** according to the plugin’s normal rules. It only targets comments whose traceability content is already implied by a surrounding function, method, or branch annotation.
 
 Options:
@@ -344,6 +346,9 @@ The rule accepts an optional configuration object:
 Behavior notes:
 
 - The rule only inspects comments that contain recognized traceability annotations (`@story`, `@req`, `@supports`) and are attached to simple statements (returns, expression statements, variable declarations, and similar leaf nodes). It intentionally does **not** attempt to de-duplicate annotations on functions, classes, or major branches, which remain the responsibility of the core rules. When a statement has multiple redundant traceability comments (for example, a small comment block that repeats both @story and @req lines), the rule reports a **single** diagnostic for that statement and, in fix mode, removes all of the redundant annotation comments associated with it in a single grouped fix.
+- **Catch blocks and error-handling paths**
+  - The rule never treats annotations inside a `catch` block as redundant, even when they repeat exactly the same `(story, requirement)` pairs that already cover the surrounding `try` statement or other enclosing branches.
+  - This preserves explicit traceability for error-handling logic, in line with the requirements captured in story `027.0-DEV-REDUNDANT-ANNOTATION-DETECTION`, and avoids collapsing success-path and failure-path coverage into a single, less precise annotation.
 - Auto-fix removes only the redundant traceability lines (and any now-empty comment delimiters when safe) while preserving surrounding non-traceability text in the same comment where possible.
 - When no enclosing scope with compatible coverage is found within `maxScopeDepth`, the annotation is not considered redundant and is left unchanged.
 
@@ -801,4 +806,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```
