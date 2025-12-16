@@ -25,6 +25,12 @@
 | **Enhanced Configuration**      | 010.1-DEV-CONFIGURABLE-PATTERNS | 010.2-DEV-MULTI-STORY-SUPPORT  | 024.0-DEV-IGNORE-INLINE-CODE-REFS        | 010.3-DEV-MIGRATE-TO-IMPLEMENTS | -                           |
 | **Quality Improvement**         | -                               | -                              | 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION | -                               | -                           |
 
+| **Formatter Compatibility** (Planned) | **Setup Plugin** | **Write Code** | **Validate Annotations**                           | **Fix Issues** | **Maintain Quality** |
+| ------------------------------------- | ---------------- | -------------- | -------------------------------------------------- | -------------- | -------------------- |
+| **Dual Position Support**             | -                | -              | 025.0-DEV-CATCH-ANNOTATION-POSITION                | -              | -                    |
+| **Dual Position Support**             | -                | -              | 026.0-DEV-ELSE-IF-ANNOTATION-POSITION              | -              | -                    |
+| **Unified Placement Standard**        | -                | -              | 028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION     | -              | -                    |
+
 | **Test Traceability** (Planned) | **Setup Plugin** | **Write Code** | **Validate Annotations**             | **Fix Issues**                     | **Maintain Quality** |
 | ------------------------------- | ---------------- | -------------- | ------------------------------------ | ---------------------------------- | -------------------- |
 | **Parser Improvements**         | -                | -              | 022.0-DEV-JSDOC-COEXISTENCE          | -                                  | -                    |
@@ -62,6 +68,21 @@
 **Total**: 15 stories covering complete basic traceability enforcement workflow with configuration flexibility, accurate annotation detection, quality improvements, and migration tooling
 
 **Note**: The preferred annotation is @supports, but @story and @req are supported for backward compatibility and will be deprecated in a future theme.
+
+### Formatter Compatibility (Planned)
+
+**Goal**: Ensure the plugin works seamlessly with popular code formatters like Prettier, allowing developers to maintain both code quality and traceability without conflicts. Establish a clear, consistent annotation placement standard that eliminates visual ambiguity.
+**Success Metric**: Developers can use Prettier (or other formatters) without breaking traceability validation, and annotation placement is visually unambiguous across all block types.
+**Scope**: Support dual annotation positions for formatter compatibility, then establish unified "first-line-inside-brace" placement standard for all block types with auto-fix migration capability.
+
+**Stories by Category:**
+
+- **Dual Position Support**: 025.0-DEV-CATCH-ANNOTATION-POSITION (catch clause dual positions for Prettier compatibility), 026.0-DEV-ELSE-IF-ANNOTATION-POSITION (else-if dual positions for Prettier compatibility)
+- **Unified Placement Standard**: 028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION (standardize on inside-brace placement for all blocks, superseding dual-position workarounds)
+
+**Total**: 3 stories covering formatter compatibility workarounds and unified placement standard
+
+**Note**: Stories 025.0 and 026.0 provide immediate Prettier compatibility through dual-position support. Story 028.0 establishes the long-term architectural vision of standardized inside-brace placement for all block types, superseding the dual-position approach with a simpler, more consistent rule.
 
 ### Test Traceability (Planned)
 
@@ -130,6 +151,30 @@
 - What information should be included in error messages to help developers fix annotation issues quickly?
 - Which annotation errors can be auto-fixed safely (missing @supports template, broken file paths)?
 - How should the plugin integrate with existing ESLint configurations and other rules?
+
+### **Formatter Compatibility Questions:**
+
+**Annotation Placement:**
+
+- Should annotation placement be standardized across all block types for consistency?
+- What placement rule eliminates visual ambiguity about annotation scope?
+- How can the plugin work seamlessly with Prettier and other code formatters?
+- Should annotations appear before opening braces or as first line inside braces?
+- What migration path allows projects to adopt new placement standards without breaking changes?
+
+**Formatter Integration:**
+
+- Which formatters need special consideration for annotation placement?
+- How should the plugin detect and adapt to formatter preferences?
+- What auto-fix strategies work reliably with formatter behavior?
+- Should the plugin provide configuration options for different formatter ecosystems?
+
+**Developer Experience:**
+
+- How can placement rules be simple enough to teach new developers easily?
+- What visual patterns make annotation scope immediately clear?
+- How can the plugin prevent conflicts between linting and formatting?
+- Should projects be able to opt-in to new standards while maintaining backward compatibility?
 
 ### **Test Traceability Questions:**
 
