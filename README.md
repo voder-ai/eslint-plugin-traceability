@@ -148,27 +148,29 @@ This enables you to verify requirements systematically rather than trying to rem
 ```javascript
 switch (severity) {
   // @supports docs/stories/logging.md REQ-SEVERITY-LEVELS
-  case 'low':
-    logLevel = 'info';
-    break;
-  // @supports docs/stories/logging.md REQ-SEVERITY-LEVELS  
-  case 'moderate':
-    logLevel = 'warn';
+  case "low":
+    logLevel = "info";
     break;
   // @supports docs/stories/logging.md REQ-SEVERITY-LEVELS
-  case 'high':
-    logLevel = 'error';
+  case "moderate":
+    logLevel = "warn";
+    break;
+  // @supports docs/stories/logging.md REQ-SEVERITY-LEVELS
+  case "high":
+    logLevel = "error";
     break;
 }
 ```
 
 **Verification process:**
+
 - Search finds 3 annotations
 - Verify each: "Does this case handle REQ-SEVERITY-LEVELS correctly?"
 - Time: ~30 seconds per case, ~90 seconds total
 - Can be split across team members
 
 **Without explicit annotations:**
+
 - Must read entire switch to understand what it does
 - Must remember which requirement you're checking
 - Cannot split the work effectively

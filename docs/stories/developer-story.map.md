@@ -25,11 +25,11 @@
 | **Enhanced Configuration**      | 010.1-DEV-CONFIGURABLE-PATTERNS | 010.2-DEV-MULTI-STORY-SUPPORT  | 024.0-DEV-IGNORE-INLINE-CODE-REFS        | 010.3-DEV-MIGRATE-TO-IMPLEMENTS | -                           |
 | **Quality Improvement**         | -                               | -                              | 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION | -                               | -                           |
 
-| **Formatter Compatibility** (Planned) | **Setup Plugin** | **Write Code** | **Validate Annotations**                           | **Fix Issues** | **Maintain Quality** |
-| ------------------------------------- | ---------------- | -------------- | -------------------------------------------------- | -------------- | -------------------- |
-| **Dual Position Support**             | -                | -              | 025.0-DEV-CATCH-ANNOTATION-POSITION                | -              | -                    |
-| **Dual Position Support**             | -                | -              | 026.0-DEV-ELSE-IF-ANNOTATION-POSITION              | -              | -                    |
-| **Unified Placement Standard**        | -                | -              | 028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION     | -              | -                    |
+| **Formatter Compatibility** (Planned) | **Setup Plugin** | **Write Code** | **Validate Annotations**                       | **Fix Issues** | **Maintain Quality** |
+| ------------------------------------- | ---------------- | -------------- | ---------------------------------------------- | -------------- | -------------------- |
+| **Dual Position Support**             | -                | -              | 025.0-DEV-CATCH-ANNOTATION-POSITION            | -              | -                    |
+| **Dual Position Support**             | -                | -              | 026.0-DEV-ELSE-IF-ANNOTATION-POSITION          | -              | -                    |
+| **Unified Placement Standard**        | -                | -              | 028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION | -              | -                    |
 
 | **Test Traceability** (Planned) | **Setup Plugin** | **Write Code** | **Validate Annotations**             | **Fix Issues**                     | **Maintain Quality** |
 | ------------------------------- | ---------------- | -------------- | ------------------------------------ | ---------------------------------- | -------------------- |

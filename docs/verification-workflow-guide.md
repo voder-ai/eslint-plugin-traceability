@@ -67,7 +67,7 @@ For each search result, open the file and review the annotated code:
 // @supports docs/stories/auth.md REQ-AUTH-VALIDATION
 function validateCredentials(username, password) {
   if (!username || !password) {
-    throw new Error('Missing credentials');
+    throw new Error("Missing credentials");
   }
   // ... validation logic
 }
@@ -80,7 +80,7 @@ function validateCredentials(username, password) {
 ```javascript
 // @supports docs/stories/auth.md REQ-AUTH-VALIDATION
 if (session.expired) {
-  throw new Error('Session expired');
+  throw new Error("Session expired");
 }
 ```
 
@@ -131,19 +131,19 @@ function formatLogEntry(level, message, metadata) {
 ```javascript
 switch (logLevel) {
   // @supports docs/stories/logging.md REQ-LOG-LEVELS
-  case 'debug':
+  case "debug":
     logger.debug(message);
     break;
   // @supports docs/stories/logging.md REQ-LOG-LEVELS
-  case 'info':
+  case "info":
     logger.info(message);
     break;
   // @supports docs/stories/logging.md REQ-LOG-LEVELS
-  case 'warn':
+  case "warn":
     logger.warn(message);
     break;
   // @supports docs/stories/logging.md REQ-LOG-LEVELS
-  case 'error':
+  case "error":
     logger.error(message);
     break;
 }
@@ -163,11 +163,11 @@ switch (logLevel) {
 
 ```javascript
 // @supports docs/stories/security.md REQ-ACCESS-CONTROL
-if (user.role === 'admin') {
+if (user.role === "admin") {
   return fullAccess();
 }
 // @supports docs/stories/security.md REQ-ACCESS-CONTROL
-else if (user.role === 'editor') {
+else if (user.role === "editor") {
   return editAccess();
 }
 // @supports docs/stories/security.md REQ-ACCESS-CONTROL
@@ -193,11 +193,11 @@ try {
   await processPayment(order);
 } catch (error) {
   // @supports docs/stories/payments.md REQ-PAYMENT-ERROR-HANDLING
-  if (error.code === 'INSUFFICIENT_FUNDS') {
+  if (error.code === "INSUFFICIENT_FUNDS") {
     return handleInsufficientFunds(order);
   }
   // @supports docs/stories/payments.md REQ-PAYMENT-ERROR-HANDLING
-  else if (error.code === 'NETWORK_ERROR') {
+  else if (error.code === "NETWORK_ERROR") {
     return retryPayment(order);
   }
   // @supports docs/stories/payments.md REQ-PAYMENT-ERROR-HANDLING
@@ -242,7 +242,6 @@ Verification indices enable splitting work across team members:
    ```
 
 2. **Verify each implementation:**
-
    - Does the code match the annotation claim?
    - Is the implementation correct?
    - Are all required cases covered?
@@ -283,7 +282,7 @@ grep -r "REQ-AUTH-METHOD" src/
 
 ```javascript
 // @supports docs/stories/payments.md REQ-PAYMENT-RETRY
-if (error.code === 'NETWORK_ERROR') {
+if (error.code === "NETWORK_ERROR") {
   return retryPayment();
 }
 // @supports docs/stories/payments.md REQ-PAYMENT-RETRY
@@ -315,10 +314,10 @@ function logError(error) {
 // @supports docs/stories/logging.md REQ-LOG-LEVELS
 // (applies to all cases below)
 switch (logLevel) {
-  case 'debug':
+  case "debug":
     logger.debug(message);
     break;
-  case 'info':
+  case "info":
     logger.info(message);
     break;
 }
