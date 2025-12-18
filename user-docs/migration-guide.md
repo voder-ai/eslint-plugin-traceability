@@ -354,6 +354,46 @@ The full API reference documents all options, but the most important knobs for m
 
 For most teams, the defaults in the recommended preset are a good starting point; you can then tune these options incrementally as your traceability style and `@supports` usage stabilize.
 
+### 3.4 Inside-brace branch annotation placement (optional)
+
+Story 028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION introduces an **inside-brace** placement standard for branch annotations. Instead of placing annotations directly above a branch, you can configure `traceability/require-branch-annotation` to look for annotations as the first comment-only lines **inside** each block body.
+
+The feature is controlled by the `annotationPlacement` option on `require-branch-annotation`:
+
+```js
+// eslint.config.js (flat config example)
+import traceability from "eslint-plugin-traceability";
+
+export default [
+  traceability.configs.recommended,
+  {
+    rules: {
+      "traceability/require-branch-annotation": [
+        "error",
+        {
+          annotationPlacement: "inside", // "before" (default) or "inside"
+        },
+      ],
+    },
+  },
+];
+```
+
+With `annotationPlacement: "inside"`, the rule expects annotations in these locations:
+
+- `if` / `else if` / `else`: first comment-only lines inside the `{ ... }` block.
+- Loops: first comment-only lines inside the loop body.
+- `try` / `catch` / `finally`: first comment-only lines inside the corresponding block body.
+- `switch` cases: first comment-only lines inside the `case` body when it is a block (`case 'a': { ... }`).
+
+Before-brace annotations are still honored when you leave `annotationPlacement` at the default value (`"before"`), so you can migrate gradually:
+
+1. **Start in default mode** — keep `annotationPlacement` unspecified (or set to `"before"`) and continue using your existing `// @story` / `// @req` comments above branches.
+2. **Introduce inside-brace style for new code** — when adding or refactoring branches, place annotations on the first comment-only line inside the block body. This layout plays nicely with Prettier and is what the rule’s auto-fix uses for `if`/`else if` and similar branches.
+3. **Opt-in to `annotationPlacement: "inside"`** — once your codebase is mostly using inside-brace annotations, enable the option. Branches that still rely only on before-brace comments will be reported as missing annotations in inside mode, and the rule’s autofix can insert placeholders at the correct inside location to help you complete the migration.
+
+The default configuration in 1.x keeps `annotationPlacement` at `"before"` for backward compatibility, so existing projects do not need to change anything unless they want the new inside-brace behavior.
+
 ## 4. Test and Validate
 
 Run your test suite to confirm everything passes:

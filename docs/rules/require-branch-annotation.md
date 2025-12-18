@@ -8,7 +8,7 @@ Ensures that significant code branches (if/else, switch cases, loops, try/catch)
 
 ## Rule Details
 
-This rule checks for JSDoc or inline comments associated with significant code branches and ensures both `@story` and `@req` annotations are present. For most branch types, the rule expects these annotations in comments immediately preceding the branch node. For `CatchClause` nodes, the rule is more flexible and also accepts annotations placed as the first comment-only lines inside the catch block body, to stay compatible with formatters such as Prettier that may move `catch` comments into the block.
+This rule checks for JSDoc or inline comments associated with significant code branches and ensures both `@story` and `@req` annotations are present. By default it expects annotations in comments immediately preceding the branch node (`annotationPlacement: "before"`), but when configured with `annotationPlacement: "inside"` it instead looks for annotations as the first comment-only lines inside each branch block (if/else, loops, try/catch, and switch cases).
 
 ### Catch clause annotation positions
 
@@ -75,6 +75,48 @@ module.exports = {
 };
 ```
 
+Property: `annotationPlacement` (string)  
+Default: `"before"`  
+Allowed values: `"before" | "inside"`
+
+- `"before"` (default) — legacy behavior. Annotations are read from comments immediately before the branch node. Catch and else-if branches retain their formatter-aware dual-position behavior from Stories 025.0 and 026.0.
+- `"inside"` — inside-brace standard from Story 028.0. Annotations are read from the first contiguous comment-only lines inside the branch block:
+  - `if` / `else if` / `else` blocks: comments immediately inside the `{ ... }` body.
+  - Loops (`for` / `for...of` / `for...in` / `while` / `do...while`): comments immediately inside the loop body.
+  - `try`/`catch`/`finally`: comments inside the corresponding block body. Existing before-try / before-catch comments are ignored for placement validation in this mode.
+  - `switch` cases: comments inside the case body when it is a block (`case 'a': { ... }`); if there is no block, the rule falls back to line-based scanning inside the case range.
+
+When `annotationPlacement: "inside"` is enabled, annotations that appear _only_ before the branch keyword are treated as missing for placement purposes and will trigger the usual `missingAnnotation` diagnostics with autofixes that insert placeholders at the inside location. This allows a gradual migration from before-brace to inside-brace annotations without breaking the default configuration.
+
+Example (inside placement for a switch statement):
+
+```js
+// .eslintrc.js
+module.exports = {
+  rules: {
+    "traceability/require-branch-annotation": [
+      "error",
+      {
+        annotationPlacement: "inside",
+      },
+    ],
+  },
+};
+
+switch (status) {
+  case "pending": {
+    // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+    // @req REQ-SWITCH-PENDING-INSIDE
+    handlePending();
+  }
+  default: {
+    // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+    // @req REQ-SWITCH-DEFAULT-INSIDE
+    handleDefault();
+  }
+}
+```
+
 ### Examples
 
 #### Correct
@@ -111,4 +153,3 @@ module.exports = {
 };
 
 // Error: Value "InvalidType" should be equal to one of the allowed values.
-```
