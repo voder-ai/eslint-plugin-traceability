@@ -50,14 +50,12 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
   });
 
   it("should gather SwitchCase comment text via gatherBranchCommentText (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
-    // Fake SourceCode-like object with lines aligned to PRE_COMMENT_OFFSET logic
     const sourceCode: any = {
-      lines: [
-        "// @story first part",
-        "// continuation second part",
-        "case 1:",
-      ],
-      getCommentsBefore: () => [],
+      lines: [],
+      getCommentsBefore: jest.fn().mockReturnValue([
+        { value: "@story first part" },
+        { value: "@req REQ-FIRST" },
+      ]),
       getText: jest.fn(),
     };
 
@@ -72,8 +70,7 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
 
     const text = gatherBranchCommentText(sourceCode as any, switchCaseNode as any);
 
-    // Expect combined text using space separator and preserving leading //
-    expect(text).toBe("// @story first part // continuation second part");
+    expect(text).toBe("@story first part @req REQ-FIRST");
   });
 
   it("should gather comment text for CatchClause and loop nodes via gatherBranchCommentText (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
@@ -228,6 +225,62 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
     );
     expect(insideText).toContain("@req REQ-CATCH-INSIDE");
     expect(insideText).not.toContain("before-catch should be ignored");
+  });
+
+  it("[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] uses inside-switch comments when annotationPlacement is 'inside' and ignores before-case annotations", () => {
+    const sourceCode: any = {
+      lines: [
+        "// @story before-switch should be ignored in inside mode",
+        "switch (value) {",
+        "  case 'a': {",
+        "    // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md",
+        "    // @req REQ-SWITCH-INSIDE",
+        "    doSomething();",
+        "  }",
+        "}",
+      ],
+      getCommentsBefore: jest
+        .fn()
+        .mockReturnValue([
+          { value: "@story before-switch should be ignored in inside mode" },
+        ]),
+    };
+
+    const switchCaseNode: any = {
+      type: "SwitchCase",
+      loc: {
+        start: { line: 3, column: 2 },
+        end: { line: 7, column: 4 },
+      },
+      consequent: [
+        {
+          type: "BlockStatement",
+          loc: {
+            start: { line: 3, column: 16 },
+            end: { line: 7, column: 4 },
+          },
+        },
+      ],
+    };
+
+    const parent: any = {
+      type: "SwitchStatement",
+      discriminant: { type: "Identifier", name: "value" },
+      cases: [switchCaseNode],
+    };
+
+    const insideText = gatherBranchCommentText(
+      sourceCode as any,
+      switchCaseNode,
+      parent,
+      "inside" as AnnotationPlacement,
+    );
+
+    expect(insideText).toContain(
+      "@story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md",
+    );
+    expect(insideText).toContain("@req REQ-SWITCH-INSIDE");
+    expect(insideText).not.toContain("before-switch should be ignored");
   });
 });
 
@@ -473,5 +526,62 @@ describe("gatherBranchCommentText annotationPlacement wiring (Story 028.0-DEV-AN
     );
     expect(insideText).toContain("@req REQ-TRY-INSIDE");
     expect(insideText).not.toContain("REQ-BEFORE-TRY");
+  });
+
+  it("[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] honors before-case annotations for SwitchCase in default placement mode", () => {
+    const sourceCode: any = {
+      lines: [
+        "// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md",
+        "// @req REQ-SWITCH-BEFORE",
+        "switch (value) {",
+        "  case 'a':",
+        "    doSomething();",
+        "}",
+      ],
+      getCommentsBefore: jest
+        .fn()
+        .mockReturnValue([
+          {
+            value:
+              "@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md",
+          },
+          { value: "@req REQ-SWITCH-BEFORE" },
+        ]),
+    };
+
+    const switchCaseNode: any = {
+      type: "SwitchCase",
+      loc: {
+        start: { line: 4, column: 2 },
+        end: { line: 5, column: 18 },
+      },
+      consequent: [
+        {
+          type: "ExpressionStatement",
+          loc: {
+            start: { line: 5, column: 4 },
+            end: { line: 5, column: 18 },
+          },
+        },
+      ],
+    };
+
+    const parent: any = {
+      type: "SwitchStatement",
+      discriminant: { type: "Identifier", name: "value" },
+      cases: [switchCaseNode],
+    };
+
+    const beforeText = gatherBranchCommentText(
+      sourceCode as any,
+      switchCaseNode,
+      parent,
+      "before" as AnnotationPlacement,
+    );
+
+    expect(beforeText).toContain(
+      "@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md",
+    );
+    expect(beforeText).toContain("@req REQ-SWITCH-BEFORE");
   });
 });

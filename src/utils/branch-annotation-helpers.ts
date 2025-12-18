@@ -5,7 +5,7 @@ import {
   gatherElseIfCommentText,
   isElseIfBranch,
 } from "./branch-annotation-if-helpers";
-const PRE_COMMENT_OFFSET = 2; // number of lines above branch to inspect for comments
+import { gatherSwitchCaseCommentText } from "./branch-annotation-switch-helpers";
 
 /**
  * Valid branch types for require-branch-annotation rule.
@@ -356,40 +356,12 @@ function gatherSimpleIfCommentText(
   return "";
 }
 
-/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-function gatherSwitchCaseCommentText(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-): string {
-  const lines = sourceCode.lines;
-  const startLine = node.loc.start.line;
-  let i = startLine - PRE_COMMENT_OFFSET;
-  const comments: string[] = [];
-  while (i >= 0 && /^\s*(\/\/|\/\*)/.test(lines[i])) {
-    comments.unshift(lines[i].trim());
-    i--;
-  }
-  return comments.join(" ");
-}
-
-/**
- * Helper that gathers comment text for non-IfStatement branch types using
- * straightforward behavior (SwitchCase, CatchClause, and loop statements).
- * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @supports REQ-COMMENT-ASSOCIATION
- * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports REQ-PLACEMENT-CONFIG
- */
-function gatherNonIfBranchCommentText(
+function handleTryCatchBranch(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
   context: { annotationPlacement: AnnotationPlacement; beforeText: string },
 ): string | null {
   const { annotationPlacement, beforeText } = context;
-
-  if (node.type === "SwitchCase") {
-    return gatherSwitchCaseCommentText(sourceCode, node);
-  }
 
   if (node.type === "TryStatement") {
     if (annotationPlacement === "inside") {
@@ -411,6 +383,16 @@ function gatherNonIfBranchCommentText(
     );
   }
 
+  return null;
+}
+
+function handleLoopBranch(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  context: { annotationPlacement: AnnotationPlacement; beforeText: string },
+): string | null {
+  const { annotationPlacement, beforeText } = context;
+
   if (
     node.type === "ForStatement" ||
     node.type === "ForInStatement" ||
@@ -424,6 +406,42 @@ function gatherNonIfBranchCommentText(
       annotationPlacement,
       beforeText,
     );
+  }
+
+  return null;
+}
+
+/**
+ * Helper that gathers comment text for non-IfStatement branch types using
+ * straightforward behavior (SwitchCase, CatchClause, and loop statements).
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @supports REQ-COMMENT-ASSOCIATION
+ * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ * @supports REQ-PLACEMENT-CONFIG
+ */
+function gatherNonIfBranchCommentText(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  context: { annotationPlacement: AnnotationPlacement; beforeText: string },
+): string | null {
+  if (node.type === "SwitchCase") {
+    const { annotationPlacement, beforeText } = context;
+    return gatherSwitchCaseCommentText(
+      sourceCode,
+      node,
+      annotationPlacement,
+      beforeText,
+    );
+  }
+
+  const tryCatchResult = handleTryCatchBranch(sourceCode, node, context);
+  if (tryCatchResult != null) {
+    return tryCatchResult;
+  }
+
+  const loopResult = handleLoopBranch(sourceCode, node, context);
+  if (loopResult != null) {
+    return loopResult;
   }
 
   return null;

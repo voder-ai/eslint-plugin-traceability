@@ -226,6 +226,22 @@ if (condition) {}`,
         options: [{ annotationPlacement: "inside" }],
       },
       {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] switch cases annotated inside block under annotationPlacement: 'inside' (Story 028.0)",
+        code: `switch (value) {
+  case 'a': {
+    // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+    // @req REQ-SWITCH-CASE-INSIDE
+    doSomething();
+  }
+  default: {
+    // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+    // @req REQ-SWITCH-DEFAULT-INSIDE
+    doDefault();
+  }
+}`,
+        options: [{ annotationPlacement: "inside" }],
+      },
+      {
         name: "[REQ-SUPPORTS-ALTERNATIVE] if-statement with only @supports annotation is treated as fully annotated",
         code: `// @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
 if (shouldHandleAlternative) {
@@ -599,6 +615,26 @@ if (a) {
   doB();
 } else {
   doC();
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-case annotations ignored when annotationPlacement: 'inside' for SwitchCase",
+        code: `switch (value) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-SWITCH-BEFORE
+  case 'a': {
+    doSomething();
+  }
+}`,
+        options: [{ annotationPlacement: "inside" }],
+        output: `switch (value) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-SWITCH-BEFORE
+  // @story <story-file>.story.md
+  case 'a': {
+    doSomething();
+  }
 }`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
