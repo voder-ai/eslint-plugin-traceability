@@ -86,13 +86,14 @@ function initAuth() {
 
 ### traceability/require-branch-annotation
 
-Description: Ensures significant code branches (if/else chains, loops, switch cases, try/catch) have traceability coverage, typically via a single `@supports` line, while still accepting legacy `@story` and `@req` annotations in nearby comments. When you adopt multi-story `@supports` annotations, a single `@supports <storyPath> <REQ-ID>...` line placed in any of the valid branch comment locations is treated as satisfying both the story and requirement presence checks for that branch, while detailed format validation of the `@supports` value (including story paths and requirement IDs) continues to be handled by `traceability/valid-annotation-format`, `traceability/valid-story-reference`, and `traceability/valid-req-reference`.
+Description: Ensures significant code branches (if/else chains, loops, switch cases, try/catch) have traceability coverage, typically via a single `@supports` line, while still accepting legacy `@story` and `@req` annotations in nearby comments. When you adopt multi-story `@supports` annotations, a single `@supports <storyPath> <REQ-ID>...` line placed in any of the valid branch comment locations is treated as satisfying both the story and requirement presence checks for that branch, while detailed format validation of the `@supports` value (including story paths and requirement IDs) continues to be handled by `traceability/valid-annotation-format`, `traceability/valid-story-reference`, and `traceability/valid-req-reference`. The rule supports a configurable placement mode for branch annotations via `annotationPlacement: "before" | "inside"`, defaulting to `"before"` for backward compatibility.
 
 For most branches, the rule looks for annotations in comments immediately preceding the branch keyword (for example, the line above an `if` or `for` statement). For `catch` clauses and `else if` branches, the rule is formatter-aware and accepts annotations in additional positions that common formatters like Prettier use when they reflow code.
 
 Options:
 
 - `branchTypes` (string[], optional) – AST node types that are treated as significant branches for annotation enforcement. Allowed values: "IfStatement", "SwitchCase", "TryStatement", "CatchClause", "ForStatement", "ForOfStatement", "ForInStatement", "WhileStatement", "DoWhileStatement". Default: ["IfStatement", "SwitchCase", "TryStatement", "CatchClause", "ForStatement", "ForOfStatement", "ForInStatement", "WhileStatement", "DoWhileStatement"]. If an invalid branch type is provided, the rule reports a configuration error for each invalid value.
+- `annotationPlacement` ("before" | "inside", optional) – Controls whether the rule looks for annotations immediately before branches (`"before"`, the default and backward-compatible behavior) or requires annotations as the first comment lines inside branch bodies where supported (`"inside"`). When set to `"inside"`, the rule prefers comments at the top of the block bodies for simple `if`/`else if` branches, loops, `catch` clauses, and `try` blocks, while continuing to treat any existing before-branch comments as diagnostics in that mode.
 
 Behavior notes:
 
@@ -108,6 +109,11 @@ Behavior notes:
     - The first comment-only lines inside the consequent block body, which is where formatters like Prettier often move comments when they wrap long `else if` conditions. For a concrete before/after example of this formatter-aware behavior, see [user-docs/examples.md](examples.md) (section **6. Branch annotations with if/else/else-if and Prettier**).
   - When annotations appear in more than one of these locations, the rule prefers the comments immediately before the `else if` line, then comments between the condition and the block, and finally comments inside the block body. This precedence is designed to closely mirror real-world formatter behavior and matches the formatter-aware scenarios described in stories 025.0 and 026.0.
   - When auto-fixing missing annotations on an `else if` branch, the rule inserts placeholder comments as the first comment-only line inside the consequent block body (just after the opening `{`), which is a stable location under Prettier and similar formatters. As with catch clauses, a single `@supports` annotation placed in any of these accepted locations is treated as equivalent to having both `@story` and `@req` comments for that branch, with deep format and existence checks delegated to the other validation rules.
+
+Placement modes:
+
+- `"before"` mode preserves the existing semantics described above, including the dual-position behavior for `catch` and `else if` branches where comments immediately before the branch and the first comment-only lines inside the block are both acceptable and validated according to their existing precedence rules.
+- `"inside"` mode standardizes on the first comment-only lines inside supported branch blocks (`if`/`else if`, loops, `catch`, and `try`) for validation and auto-fix insertion. This placement is designed to work well with Prettier and other formatters, while the current implementation still treats many before-branch annotations as needing migration and may, in corner cases where it cannot confidently rewrite placement, insert new placeholder comments above the branch rather than moving existing ones.
 
 For a concrete illustration of how these rules interact with Prettier, see the formatter-aware if/else/else-if example in [user-docs/examples.md](examples.md) (section **6. Branch annotations with if/else/else-if and Prettier**), which shows both the hand-written and formatted code that the rule considers valid.
 
@@ -806,4 +812,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```
