@@ -123,9 +123,7 @@ Traceability annotations are typically placed immediately adjacent to the code t
   - As JSDoc blocks immediately preceding the function, or
   - As line comments placed directly before the function declaration or expression.
 
-  Function-level rules now support the same placement configuration model as branches:
-  - By default, annotations are still placed immediately before the function (JSDoc or line comments).
-  - When you configure `annotationPlacement: "inside"` on `traceability/require-story-annotation`, the rule prefers annotations as the first comment-only lines inside the function or method body, mirroring the branch-level inside-brace standard from Story 028.0. Declaration-only shapes such as `TSDeclareFunction` and `TSMethodSignature` remain before-function only, since they have no executable body.
+  This placement is stable and supported for all current versions. Future versions may introduce an **inside-brace** placement mode for function bodies (similar to branch blocks) to align function annotations with the branch-level `"inside"` standard, but that behaviour is not yet implemented in the current release.
 
 For full configuration details and migration guidance between placement styles, see:
 
