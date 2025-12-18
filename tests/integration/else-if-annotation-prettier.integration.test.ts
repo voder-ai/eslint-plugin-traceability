@@ -5,17 +5,12 @@
  */
 import path from "path";
 import { spawnSync } from "child_process";
+import { formatWithPrettier } from "./prettier-test-helpers";
 
 describe("Else-if annotations with Prettier (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION)", () => {
   const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
   const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
   const configPath = path.resolve(__dirname, "../../eslint.config.js");
-  const prettierPackageJson = require.resolve("prettier/package.json");
-  const prettierCliPath = path.join(
-    path.dirname(prettierPackageJson),
-    "bin",
-    "prettier.cjs",
-  );
 
   function runEslintWithRequireBranchAnnotation(code: string) {
     const args = [
@@ -41,25 +36,6 @@ describe("Else-if annotations with Prettier (Story 026.0-DEV-ELSE-IF-ANNOTATION-
       encoding: "utf-8",
       input: code,
     });
-  }
-
-  function formatWithPrettier(source: string): string {
-    const result = spawnSync(
-      process.execPath,
-      [prettierCliPath, "--parser", "typescript"],
-      {
-        encoding: "utf-8",
-        input: source,
-      },
-    );
-
-    if (result.status !== 0) {
-      throw new Error(
-        `Prettier formatting failed: ${result.stderr || result.stdout}`,
-      );
-    }
-
-    return result.stdout;
   }
 
   it("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-BEFORE] accepts code where annotations start before else-if but are moved between condition and body by Prettier", () => {

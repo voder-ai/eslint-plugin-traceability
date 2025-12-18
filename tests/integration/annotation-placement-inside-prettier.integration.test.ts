@@ -5,27 +5,21 @@
  */
 import path from "path";
 import { spawnSync } from "child_process";
+import { formatWithPrettier as sharedFormatWithPrettier } from "./prettier-test-helpers";
 
 describe("annotationPlacement: 'inside' with Prettier (Story 028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION)", () => {
   const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
   const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
   const configPath = path.resolve(__dirname, "../../eslint.config.js");
-  const prettierPackageJson = require.resolve("prettier/package.json");
-  const prettierCliPath = path.join(
-    path.dirname(prettierPackageJson),
-    "bin",
-    "prettier.cjs",
-  );
 
-  function runEslintWithInsidePlacement(code: string, _filename: string) {
-    // Pin stdin filename to a tsconfig-included path to satisfy @typescript-eslint/parser's project lookup in these integration tests.
-    const args = [
+  function buildInsidePlacementArgs(stdinFilename: string): string[] {
+    return [
       "--no-config-lookup",
       "--config",
       configPath,
       "--stdin",
       "--stdin-filename",
-      "src/annotation-placement-inside.ts",
+      stdinFilename,
       "--rule",
       "no-unused-vars:off",
       "--rule",
@@ -37,6 +31,11 @@ describe("annotationPlacement: 'inside' with Prettier (Story 028.0-DEV-ANNOTATIO
       "--rule",
       'traceability/require-branch-annotation:["error",{"annotationPlacement":"inside"}]',
     ];
+  }
+
+  function runEslintWithInsidePlacement(code: string, _filename: string) {
+    // Pin stdin filename to a tsconfig-included path to satisfy @typescript-eslint/parser's project lookup in these integration tests.
+    const args = buildInsidePlacementArgs("src/annotation-placement-inside.ts");
 
     return spawnSync(process.execPath, [eslintCliPath, ...args], {
       encoding: "utf-8",
@@ -45,22 +44,7 @@ describe("annotationPlacement: 'inside' with Prettier (Story 028.0-DEV-ANNOTATIO
   }
 
   function formatWithPrettier(source: string): string {
-    const result = spawnSync(
-      process.execPath,
-      [prettierCliPath, "--parser", "typescript"],
-      {
-        encoding: "utf-8",
-        input: source,
-      },
-    );
-
-    if (result.status !== 0) {
-      throw new Error(
-        `Prettier formatting failed: ${result.stderr || result.stdout}`,
-      );
-    }
-
-    return result.stdout;
+    return sharedFormatWithPrettier(source, { parser: "typescript" });
   }
 
   it("[REQ-PRETTIER-STABLE][REQ-INSIDE-BRACE-PLACEMENT] accepts formatted code with inside-brace annotations for if/else and loops", () => {

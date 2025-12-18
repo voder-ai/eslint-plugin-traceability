@@ -5,17 +5,12 @@
  */
 import path from "path";
 import { spawnSync } from "child_process";
+import { formatWithPrettier } from "./prettier-test-helpers";
 
 describe("CatchClause annotations with Prettier (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)", () => {
   const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
   const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
   const configPath = path.resolve(__dirname, "../../eslint.config.js");
-  const prettierPackageJson = require.resolve("prettier/package.json");
-  const prettierCliPath = path.join(
-    path.dirname(prettierPackageJson),
-    "bin",
-    "prettier.cjs",
-  );
 
   function runEslintWithRequireBranchAnnotation(code: string) {
     const args = [
@@ -41,25 +36,6 @@ describe("CatchClause annotations with Prettier (Story 025.0-DEV-CATCH-ANNOTATIO
       encoding: "utf-8",
       input: code,
     });
-  }
-
-  function formatWithPrettier(source: string): string {
-    const result = spawnSync(
-      process.execPath,
-      [prettierCliPath, "--parser", "typescript"],
-      {
-        encoding: "utf-8",
-        input: source,
-      },
-    );
-
-    if (result.status !== 0) {
-      throw new Error(
-        `Prettier formatting failed: ${result.stderr || result.stdout}`,
-      );
-    }
-
-    return result.stdout;
   }
 
   it("[REQ-PRETTIER-COMPATIBILITY-BEFORE] accepts code where annotations start before catch but are moved inside by Prettier", () => {
