@@ -390,4 +390,88 @@ describe("gatherBranchCommentText annotationPlacement wiring (Story 028.0-DEV-AN
       "docs/stories/026.0-DEV-BRANCH-ANNOTATIONS-ELSE-BRANCHES.story.md",
     );
   });
+
+  it("[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] honors configured placement for TryStatement branches in try/finally patterns", () => {
+    const sourceCode: any = {
+      lines: [
+        "function demoTry() {", // 1
+        "  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md", // 2 (before try)
+        "  // @req REQ-BEFORE-TRY", // 3
+        "  try {", // 4
+        "    // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md", // 5 (inside try)
+        "    // @req REQ-TRY-INSIDE", // 6
+        "    doWork();", // 7
+        "  } finally {", // 8
+        "    cleanup();", // 9
+        "  }", // 10
+        "}", // 11
+      ],
+      getCommentsBefore: jest.fn().mockImplementation((node: any) => {
+        if (node && node.loc && node.loc.start && node.loc.start.line === 4) {
+          return [
+            {
+              value:
+                "@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md",
+            },
+            { value: "@req REQ-BEFORE-TRY" },
+          ];
+        }
+        return [];
+      }),
+    };
+
+    const tryNode: any = {
+      type: "TryStatement",
+      loc: {
+        start: { line: 4, column: 2 },
+        end: { line: 9, column: 3 },
+      },
+      block: {
+        type: "BlockStatement",
+        loc: {
+          start: { line: 4, column: 8 },
+          end: { line: 7, column: 3 },
+        },
+      },
+      handler: null,
+      finalizer: {
+        type: "BlockStatement",
+        loc: {
+          start: { line: 8, column: 12 },
+          end: { line: 9, column: 3 },
+        },
+      },
+    };
+
+    const parent: any = {
+      type: "BlockStatement",
+      body: [tryNode],
+    };
+
+    const beforeText = gatherBranchCommentText(
+      sourceCode as any,
+      tryNode,
+      parent,
+      "before" as AnnotationPlacement,
+    );
+
+    expect(beforeText).toContain(
+      "@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md",
+    );
+    expect(beforeText).toContain("@req REQ-BEFORE-TRY");
+    expect(beforeText).not.toContain("REQ-TRY-INSIDE");
+
+    const insideText = gatherBranchCommentText(
+      sourceCode as any,
+      tryNode,
+      parent,
+      "inside" as AnnotationPlacement,
+    );
+
+    expect(insideText).toContain(
+      "@story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md",
+    );
+    expect(insideText).toContain("@req REQ-TRY-INSIDE");
+    expect(insideText).not.toContain("REQ-BEFORE-TRY");
+  });
 });

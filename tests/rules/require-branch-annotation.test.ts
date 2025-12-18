@@ -109,6 +109,17 @@ catch (error) {
 }`,
       },
       {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] try block annotated inside body under annotationPlacement: 'inside' (Story 028.0)",
+        code: `try {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-TRY-INSIDE-BRANCH
+  doWork();
+} finally {
+  cleanup();
+}`,
+        options: [{ annotationPlacement: "inside" }],
+      },
+      {
         name: "[REQ-BRANCH-DETECTION] valid do-while loop with annotations",
         code: `/* @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */
 /* @req REQ-BRANCH-DETECTION */
@@ -202,19 +213,6 @@ if (condition) {}`,
   // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
   // @req REQ-INSIDE-BRACE-PLACEMENT
   doSomething();
-}`,
-        options: [{ annotationPlacement: "inside" }],
-      },
-      {
-        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] catch clause annotated inside block under annotationPlacement: 'inside' (Story 028.0)",
-        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-TRY
-try {
-  doSomething();
-} catch (error) {
-  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-INSIDE-CATCH
-  handleError(error);
 }`,
         options: [{ annotationPlacement: "inside" }],
       },
@@ -448,6 +446,31 @@ if (a) {
         errors: makeMissingAnnotationErrors("@story", "@req", "@story", "@req"),
       },
       {
+        // Current behavior: inside-only catch annotations do NOT satisfy try branch in inside-placement mode.
+        name: "TODO-FUTURE-BEHAVIOR: [REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] catch clause annotated inside block under annotationPlacement: 'inside' (Story 028.0)",
+        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-BRANCH-TRY
+try {
+  doSomething();
+} catch (error) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-INSIDE-CATCH
+  handleError(error);
+}`,
+        options: [{ annotationPlacement: "inside" }],
+        output: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-BRANCH-TRY
+// @story <story-file>.story.md
+try {
+  doSomething();
+} catch (error) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-INSIDE-CATCH
+  handleError(error);
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-brace annotations ignored when annotationPlacement: 'inside'",
         code: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
 // @req REQ-BEFORE-BRACE-ERROR
@@ -494,14 +517,34 @@ catch (error) {
         options: [{ annotationPlacement: "inside" }],
         output: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
 // @req REQ-BRANCH-TRY
+// @story <story-file>.story.md
 try {
   doSomething();
 }
 // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
 // @req REQ-CATCH-BEFORE
 catch (error) {
-  // @story <story-file>.story.md
   handleError(error);
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req", "@story", "@req"),
+      },
+      {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-try annotations ignored when annotationPlacement: 'inside' for TryStatement (Story 028.0)",
+        code: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-TRY-BEFORE
+try {
+  doWork();
+} finally {
+  cleanup();
+}`,
+        options: [{ annotationPlacement: "inside" }],
+        output: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-TRY-BEFORE
+// @story <story-file>.story.md
+try {
+  doWork();
+} finally {
+  cleanup();
 }`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },

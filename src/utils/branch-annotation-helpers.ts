@@ -224,6 +224,39 @@ function getInsideCatchCommentText(
 }
 
 /**
+ * Gather comment text from the first contiguous comment lines inside a TryStatement block body.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG
+ */
+function getInsideTryBlockCommentText(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+): string {
+  const block = node && node.block;
+  if (
+    !block ||
+    block.type !== "BlockStatement" ||
+    !block.loc ||
+    !block.loc.start ||
+    !block.loc.end ||
+    typeof block.loc.start.line !== "number" ||
+    typeof block.loc.end.line !== "number"
+  ) {
+    return "";
+  }
+
+  const lines = sourceCode.lines;
+  const startIndex = block.loc.start.line - 1;
+  const endIndex = block.loc.end.line - 1;
+
+  const insideText = scanCommentLinesInRange(lines, startIndex + 1, endIndex);
+  if (insideText) {
+    return insideText;
+  }
+
+  return "";
+}
+
+/**
  * Gather annotation text for CatchClause nodes, supporting both before-catch and inside-catch positions.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
  * @req REQ-DUAL-POSITION-DETECTION
@@ -356,6 +389,17 @@ function gatherNonIfBranchCommentText(
 
   if (node.type === "SwitchCase") {
     return gatherSwitchCaseCommentText(sourceCode, node);
+  }
+
+  if (node.type === "TryStatement") {
+    if (annotationPlacement === "inside") {
+      const insideText = getInsideTryBlockCommentText(sourceCode, node);
+      if (insideText) {
+        return insideText;
+      }
+      return "";
+    }
+    return beforeText;
   }
 
   if (node.type === "CatchClause") {
