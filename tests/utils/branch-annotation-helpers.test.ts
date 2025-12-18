@@ -124,6 +124,60 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
     expect(sourceCodeLoop.getCommentsBefore).toHaveBeenCalledWith(forNode);
     expect(loopText).toBe("@story loop branch story loop details");
   });
+
+  it("[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] uses inside-catch comments when annotationPlacement is 'inside' and ignores before-catch annotations", () => {
+    const sourceCode: any = {
+      lines: [
+        "// @story before-catch should be ignored in inside mode",
+        "try {",
+        "  doSomething();",
+        "}",
+        "catch (error) {",
+        "  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md",
+        "  // @req REQ-CATCH-INSIDE",
+        "  handleError(error);",
+        "}",
+      ],
+      getCommentsBefore: jest
+        .fn()
+        .mockReturnValue([
+          { value: "@story before-catch should be ignored in inside mode" },
+        ]),
+    };
+
+    const catchNode: any = {
+      type: "CatchClause",
+      loc: {
+        start: { line: 5, column: 0 },
+        end: { line: 8, column: 1 },
+      },
+      body: {
+        type: "BlockStatement",
+        loc: {
+          start: { line: 5, column: 14 },
+          end: { line: 8, column: 1 },
+        },
+      },
+    };
+
+    const parent: any = {
+      type: "TryStatement",
+      handler: catchNode,
+    };
+
+    const insideText = gatherBranchCommentText(
+      sourceCode as any,
+      catchNode,
+      parent,
+      "inside" as AnnotationPlacement,
+    );
+
+    expect(insideText).toContain(
+      "@story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md",
+    );
+    expect(insideText).toContain("@req REQ-CATCH-INSIDE");
+    expect(insideText).not.toContain("before-catch should be ignored");
+  });
 });
 
 /**

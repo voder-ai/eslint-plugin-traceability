@@ -197,21 +197,10 @@ function isElseIfBranch(node: any, parent: any | undefined): boolean {
     parent.alternate === node
   );
 }
-/**
- * Gather annotation text for CatchClause nodes, supporting both before-catch and inside-catch positions.
- * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
- * @req REQ-DUAL-POSITION-DETECTION
- * @req REQ-FALLBACK-LOGIC
- */
-function gatherCatchClauseCommentText(
+function getInsideCatchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
-  beforeText: string,
 ): string {
-  if (/@story\b/.test(beforeText) || /@req\b/.test(beforeText)) {
-    return beforeText;
-  }
-
   const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
   if (node.body && typeof getCommentsInside === "function") {
     try {
@@ -235,6 +224,42 @@ function gatherCatchClauseCommentText(
     if (insideText) {
       return insideText;
     }
+  }
+
+  return "";
+}
+
+/**
+ * Gather annotation text for CatchClause nodes, supporting both before-catch and inside-catch positions.
+ * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
+ * @req REQ-DUAL-POSITION-DETECTION
+ * @req REQ-FALLBACK-LOGIC
+ */
+function gatherCatchClauseCommentText(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  annotationPlacement: AnnotationPlacement,
+  beforeText: string,
+): string {
+  if (annotationPlacement === "inside") {
+    const insideText = getInsideCatchCommentText(sourceCode, node);
+    if (insideText) {
+      return insideText;
+    }
+    return "";
+  }
+
+  if (
+    /@story\b/.test(beforeText) ||
+    /@req\b/.test(beforeText) ||
+    /@supports\b/.test(beforeText)
+  ) {
+    return beforeText;
+  }
+
+  const insideText = getInsideCatchCommentText(sourceCode, node);
+  if (insideText) {
+    return insideText;
   }
 
   return beforeText;
@@ -494,7 +519,12 @@ export function gatherBranchCommentText(
   const beforeText = beforeComments.map(extractCommentValue).join(" ");
 
   if (node.type === "CatchClause") {
-    return gatherCatchClauseCommentText(sourceCode, node, beforeText);
+    return gatherCatchClauseCommentText(
+      sourceCode,
+      node,
+      annotationPlacement,
+      beforeText,
+    );
   }
 
   /**

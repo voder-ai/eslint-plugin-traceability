@@ -206,6 +206,19 @@ if (condition) {}`,
         options: [{ annotationPlacement: "inside" }],
       },
       {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] catch clause annotated inside block under annotationPlacement: 'inside' (Story 028.0)",
+        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-BRANCH-TRY
+try {
+  doSomething();
+} catch (error) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-INSIDE-CATCH
+  handleError(error);
+}`,
+        options: [{ annotationPlacement: "inside" }],
+      },
+      {
         name: "[REQ-SUPPORTS-ALTERNATIVE] if-statement with only @supports annotation is treated as fully annotated",
         code: `// @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
 if (shouldHandleAlternative) {
@@ -438,6 +451,32 @@ if (condition) {
 if (condition) {
   // @story <story-file>.story.md
   doSomething();
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-catch annotations ignored when annotationPlacement: 'inside' for CatchClause",
+        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-BRANCH-TRY
+try {
+  doSomething();
+}
+// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-CATCH-BEFORE
+catch (error) {
+  handleError(error);
+}`,
+        options: [{ annotationPlacement: "inside" }],
+        output: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-BRANCH-TRY
+try {
+  doSomething();
+}
+// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-CATCH-BEFORE
+catch (error) {
+  // @story <story-file>.story.md
+  handleError(error);
 }`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
