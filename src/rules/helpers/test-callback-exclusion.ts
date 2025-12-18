@@ -22,6 +22,7 @@ import type { TSESTree } from "@typescript-eslint/utils";
 interface CallbackExclusionOptions {
   excludeTestCallbacks?: boolean;
   additionalTestHelperNames?: string[];
+  annotationPlacement?: "before" | "inside";
 }
 
 type TraceabilityNodeWithParent = TSESTree.Node & {

@@ -40,6 +40,7 @@ import {
 interface ReportOptions extends CallbackExclusionOptions {
   annotationTemplateOverride?: string;
   autoFixToggle?: boolean;
+  annotationPlacement?: "before" | "inside";
 }
 
 /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
@@ -292,8 +293,61 @@ function hasStoryAnnotation(sourceCode: any, node: any): boolean {
   return false;
 }
 
-// Placement-aware alias reserved for future inside-brace function placement.
-const hasStoryAnnotationWithPlacement = hasStoryAnnotation;
+/**
+ * Placement-aware story detection helper used by core reporting.
+ *
+ * When annotationPlacement is "inside" and the node supports inside-brace
+ * semantics, this helper only treats annotations found on the first
+ * comment-only lines inside the function or method body as satisfying the
+ * requirement. JSDoc and before-function comments are intentionally ignored so
+ * that misplaced annotations are reported as violations under the inside
+ * standard.
+ *
+ * For nodes that do not support inside placement (such as TS declarations,
+ * signature-only nodes, or functions without block bodies), this helper
+ * delegates to the existing hasStoryAnnotation heuristics so that they
+ * continue to rely on before-function placement.
+ *
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG
+ */
+function hasStoryAnnotationWithPlacement(
+  sourceCode: any,
+  node: any,
+  annotationPlacement: "before" | "inside",
+): boolean {
+  // Backward-compatible default: use existing heuristics when placement is
+  // "before" or when the function does not support inside-brace semantics.
+  if (
+    annotationPlacement !== "inside" ||
+    !_supportsInsidePlacementForFunction(node)
+  ) {
+    return hasStoryAnnotation(sourceCode, node);
+  }
+
+  try {
+    const insideText = _getFunctionInsideBodyCommentText(sourceCode, node);
+    if (
+      typeof insideText === "string" &&
+      (insideText.includes("@story") || insideText.includes("@supports"))
+    ) {
+      return true;
+    }
+  } catch (error) {
+    if (process.env.TRACEABILITY_DEBUG === "1") {
+      // Debug logging only when explicitly enabled for troubleshooting helper failures.
+      console.error(
+        "[traceability] hasStoryAnnotationWithPlacement failed for node",
+        (error as Error)?.message ?? error,
+      );
+    }
+  }
+
+  // In inside-placement mode for block-bodied functions and methods we
+  // intentionally do not fall back to before-function heuristics; callers
+  // should treat this as a missing annotation so that misplaced comments are
+  // reported as violations.
+  return false;
+}
 
 /**
  * Determine AST node where annotation should be inserted
@@ -489,6 +543,7 @@ function reportMissing(
   coreReportMissing(
     {
       hasStoryAnnotation,
+      hasStoryAnnotationWithPlacement,
       getReportedFunctionName,
       resolveAnnotationTargetNode,
       getNameNodeForReport,
@@ -514,6 +569,7 @@ function reportMethod(
   coreReportMethod(
     {
       hasStoryAnnotation,
+      hasStoryAnnotationWithPlacement,
       getReportedFunctionName,
       resolveAnnotationTargetNode,
       getNameNodeForReport,

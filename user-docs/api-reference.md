@@ -26,7 +26,7 @@ For function-level traceability, the plugin exposes a unified rule and two legac
 - `traceability/require-traceability` is the **canonical function-level rule** for new configurations. It ensures functions and methods have both story coverage and requirement coverage, and it accepts either `@supports` (preferred) or legacy `@story` / `@req` annotations.
 - `traceability/require-story-annotation` and `traceability/require-req-annotation` are **backward-compatible aliases** that focus on the story and requirement aspects separately. They are retained for existing configurations and share the same underlying implementation model as the unified rule, but new ESLint configs should normally rely on `traceability/require-traceability` rather than enabling these legacy keys directly.
 
-All three rule keys can still be configured individually if you need fine-grained control (for example, to tune severities separately), but the recommended and strict presets enable `traceability/require-traceability` by default and keep the legacy keys primarily for projects that adopted them before the unified rule existed. Current releases only support `annotationPlacement` on the branch-level rule; function-level rules continue to use before-function annotations, as described below.
+All three rule keys can still be configured individually if you need fine-grained control (for example, to tune severities separately), but the recommended and strict presets enable `traceability/require-traceability` by default and keep the legacy keys primarily for projects that adopted them before the unified rule existed. Current releases support `annotationPlacement` on both the branch-level rule and the function-level rules, so you can standardize on inside-brace placement for if/else/try/catch/switch/function/loop blocks. When you leave `annotationPlacement` unspecified, all rules default to the historical before-function/before-branch behavior for backward compatibility.
 
 ### traceability/require-traceability
 
@@ -44,6 +44,7 @@ Options:
 - `methodAnnotationTemplate` (string, optional) – Overrides the default placeholder JSDoc used when inserting missing `@story` annotations for class methods and TypeScript method signatures. When omitted or blank, falls back to `annotationTemplate` if provided, otherwise the built-in template.
 - `autoFix` (boolean, optional) – When set to `false`, disables all automatic fix behavior for this rule while retaining its suggestions and diagnostics. When omitted or `true`, the rule behaves as before, inserting placeholder annotations in `--fix` mode.
 - `excludeTestCallbacks` (boolean, optional) – When `true` (default), excludes anonymous arrow functions that are direct callbacks to common test framework functions (for example, Jest/Mocha/Vitest `describe`/`it`/`test`/`beforeEach`/`afterEach`/`beforeAll`/`afterAll`, plus focused/skipped/concurrent variants such as `fdescribe`, `xdescribe`, `fit`, `xit`, `test.concurrent`, `describe.concurrent`) from function-level annotation requirements. This assumes those test files are already covered by file-level `@supports` annotations and `traceability/require-test-traceability`. When set to `false`, these callbacks are treated like any other arrow function and must be annotated when in-scope.
+- `annotationPlacement` ("before" | "inside", optional)  Controls whether the rule treats before-function comments as the source of annotations (`"before"`, the default and backward-compatible behavior) or instead requires annotations as the first comment-only lines inside function and method bodies (`"inside"`). In `"inside"` mode, JSDoc and before-function comments are ignored for block-bodied functions and methods, and only inside-body comments are considered; declaration-only nodes (e.g., TS signatures) continue to use before-node annotations.
 
 Default Severity: `error`
 Example:
@@ -70,6 +71,7 @@ Options:
 
 - `scope` (string[], optional) – Controls which function-like node types are required to have @req annotations. Allowed values: "FunctionDeclaration", "FunctionExpression", "MethodDefinition", "TSDeclareFunction", "TSMethodSignature". Default: ["FunctionDeclaration", "FunctionExpression", "MethodDefinition", "TSDeclareFunction", "TSMethodSignature"].
 - `exportPriority` ("all" | "exported" | "non-exported", optional) – Controls whether the rule checks all functions, only exported ones, or only non-exported ones. Default: "all".
+- `annotationPlacement` ("before" | "inside", optional)  Controls whether the rule treats before-function comments as the source of annotations (`"before"`, the default and backward-compatible behavior) or instead requires annotations as the first comment-only lines inside function and method bodies (`"inside"`). In `"inside"` mode, JSDoc and before-function comments are ignored for block-bodied functions and methods, and only inside-body comments are considered; declaration-only nodes (e.g., TS signatures) continue to use before-node annotations.
 
 Default Severity: `error`
 Example (with both `@story` and `@req`, as typically used when both rules are enabled):
@@ -812,4 +814,3 @@ In CI:
 
 ```bash
 npm run traceability:verify
-```

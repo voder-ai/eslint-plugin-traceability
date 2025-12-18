@@ -136,6 +136,26 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         code: `class C {\n  /** @req REQ-EXAMPLE */\n  m() {}\n}`,
         options: [{ exportPriority: "non-exported" }],
       },
+      {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-ALL-BLOCK-TYPES] function-level @supports requirement inside body is valid when annotationPlacement is 'inside'",
+        code: `function withInsideReq() {\n  // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-FN-INSIDE\n  return 1;\n}`,
+        options: [{ annotationPlacement: "inside" }],
+      },
+      withTsLanguageOptions({
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-ALL-BLOCK-TYPES] method-level @req inside body is valid when annotationPlacement is 'inside'",
+        code: `class C {\n  method() {\n    // @req REQ-METHOD-INSIDE\n    return 1;\n  }\n}`,
+        options: [{ annotationPlacement: "inside" }],
+      }),
+      {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT] before-function @req remains valid when annotationPlacement is 'inside' (REQ-REQ-PLACEMENT-BC)",
+        code: `/**\n * @req REQ-BEFORE-FN\n */\nfunction beforeReqOnly() {\n  return 1;\n}`,
+        options: [{ annotationPlacement: "inside" }],
+      },
+      withTsLanguageOptions({
+        name: "[REQ-INSIDE-BRACE-PLACEMENT] before-method @req remains valid when annotationPlacement is 'inside' (REQ-REQ-PLACEMENT-BC)",
+        code: `class C {\n  /**\n   * @req REQ-BEFORE-METHOD\n   */\n  method() {\n    return 1;\n  }\n}`,
+        options: [{ annotationPlacement: "inside" }],
+      }),
     ],
     invalid: [
       {

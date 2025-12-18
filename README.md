@@ -117,6 +117,8 @@ Traceability annotations are typically placed immediately adjacent to the code t
   }
   ```
 
+  The `annotationPlacement` option is also supported by the function-level rules (`traceability/require-story-annotation` and `traceability/require-req-annotation`) when you configure them directly. In `"inside"` mode, these rules treat only the first comment-only lines inside function and method bodies as satisfying the annotation requirement; JSDoc and before-function comments are ignored for block-bodied functions and methods, while TypeScript declarations and signature-only nodes continue to use before-node annotations.
+
 - **Function-level (`traceability/require-story-annotation`, `traceability/require-req-annotation`)**
 
   Function-level rules continue to accept annotations:

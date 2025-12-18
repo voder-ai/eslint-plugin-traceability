@@ -104,6 +104,40 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
     });
   });
 
+  it("[REQ-INSIDE-BRACE-PLACEMENT][REQ-ALL-BLOCK-TYPES] unified rule and aliases accept inside-brace annotations when annotationPlacement is 'inside'", async () => {
+    const codeWithInsideAnnotations = `function foo() {\n  // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-FN-INSIDE\n  return 1;\n}`;
+
+    const config = [
+      {
+        rules: {
+          "traceability/require-traceability": "error",
+          "traceability/require-story-annotation": [
+            "error",
+            {
+              annotationPlacement: "inside",
+            },
+          ],
+          "traceability/require-req-annotation": [
+            "error",
+            {
+              annotationPlacement: "inside",
+            },
+          ],
+        },
+      },
+    ];
+
+    const result = await lintTextWithConfig(
+      codeWithInsideAnnotations,
+      "example.js",
+      config,
+    );
+
+    const ruleIds = result.messages.map((m) => m.ruleId);
+    expect(ruleIds).not.toContain("traceability/require-story-annotation");
+    expect(ruleIds).not.toContain("traceability/require-req-annotation");
+  });
+
   it("[REQ-PRESETS-CANONICAL-RULE] recommended preset surfaces unified and legacy diagnostics together for missing annotations", async () => {
     const result = await lintTextWithConfig(
       codeMissingAll,

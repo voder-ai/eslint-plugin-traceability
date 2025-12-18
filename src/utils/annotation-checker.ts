@@ -1,5 +1,9 @@
 import { getNodeName } from "../rules/helpers/require-story-utils";
 import { hasReqAnnotation } from "./reqAnnotationDetection";
+import {
+  getFunctionInsideBodyCommentText,
+  supportsInsidePlacementForFunction,
+} from "./function-annotation-helpers";
 
 /**
  * Helper to retrieve the JSDoc comment for a node.
@@ -198,10 +202,32 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
 export function checkReqAnnotation(
   context: any,
   node: any,
-  options?: { enableFix?: boolean },
+  options?: {
+    enableFix?: boolean;
+    annotationPlacement?: "before" | "inside";
+  },
 ) {
   const { enableFix = true } = options ?? {};
+  const annotationPlacement: "before" | "inside" =
+    options?.annotationPlacement === "inside" ||
+    options?.annotationPlacement === "before"
+      ? options.annotationPlacement
+      : "before";
   const sourceCode = context.getSourceCode();
+
+  if (
+    annotationPlacement === "inside" &&
+    supportsInsidePlacementForFunction(node)
+  ) {
+    const insideText = getFunctionInsideBodyCommentText(sourceCode, node);
+    if (
+      typeof insideText === "string" &&
+      (insideText.includes("@req") || insideText.includes("@supports"))
+    ) {
+      return;
+    }
+  }
+
   const jsdoc = getJsdocComment(sourceCode, node);
   const leading = getLeadingComments(node);
   const comments = getCommentsBefore(sourceCode, node);

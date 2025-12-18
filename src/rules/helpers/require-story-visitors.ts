@@ -41,6 +41,7 @@ function buildFunctionDeclarationVisitor(
       options: {
         annotationTemplateOverride: options.annotationTemplate,
         autoFixToggle: options.autoFix,
+        annotationPlacement: options.annotationPlacement,
       },
     });
   }
@@ -82,6 +83,7 @@ function buildFunctionExpressionVisitor(
       options: {
         annotationTemplateOverride: options.annotationTemplate,
         autoFixToggle: options.autoFix,
+        annotationPlacement: options.annotationPlacement,
       },
     });
   }
@@ -115,6 +117,7 @@ function buildArrowFunctionVisitor(
       options: {
         annotationTemplateOverride: options.annotationTemplate,
         autoFixToggle: options.autoFix,
+        annotationPlacement: options.annotationPlacement,
       },
     });
   }
@@ -147,6 +150,7 @@ function buildTSDeclareFunctionVisitor(
       options: {
         annotationTemplateOverride: options.annotationTemplate,
         autoFixToggle: options.autoFix,
+        annotationPlacement: options.annotationPlacement,
       },
     });
   }
@@ -181,6 +185,7 @@ function buildTSMethodSignatureVisitor(
         annotationTemplateOverride:
           options.methodAnnotationTemplate ?? options.annotationTemplate,
         autoFixToggle: options.autoFix,
+        annotationPlacement: options.annotationPlacement,
       },
     });
   }
@@ -213,6 +218,7 @@ function buildMethodDefinitionVisitor(
         annotationTemplateOverride:
           options.methodAnnotationTemplate ?? options.annotationTemplate,
         autoFixToggle: options.autoFix,
+        annotationPlacement: options.annotationPlacement,
       },
     });
   }

@@ -21,6 +21,52 @@ import {
   shouldProcessNode,
 } from "./helpers/require-story-helpers";
 
+function getNormalizedOptions(context: Rule.RuleContext) {
+  const sourceCode = context.getSourceCode();
+  const opts = (context.options && context.options[0]) || {};
+  const scope = opts.scope || DEFAULT_SCOPE;
+  const exportPriority = opts.exportPriority || "all";
+  const annotationTemplate =
+    typeof opts.annotationTemplate === "string" &&
+    opts.annotationTemplate.trim().length > 0
+      ? opts.annotationTemplate.trim()
+      : undefined;
+  const methodAnnotationTemplate =
+    typeof opts.methodAnnotationTemplate === "string" &&
+    opts.methodAnnotationTemplate.trim().length > 0
+      ? opts.methodAnnotationTemplate.trim()
+      : undefined;
+  const autoFix = typeof opts.autoFix === "boolean" ? opts.autoFix : true;
+  const excludeTestCallbacks =
+    typeof opts.excludeTestCallbacks === "boolean"
+      ? opts.excludeTestCallbacks
+      : true;
+  const additionalTestHelperNames =
+    Array.isArray(opts.additionalTestHelperNames) &&
+    opts.additionalTestHelperNames.every(
+      (name: unknown) => typeof name === "string",
+    )
+      ? opts.additionalTestHelperNames
+      : undefined;
+  const rawAnnotationPlacement = (opts as any).annotationPlacement;
+  const annotationPlacement: "before" | "inside" =
+    rawAnnotationPlacement === "inside" || rawAnnotationPlacement === "before"
+      ? rawAnnotationPlacement
+      : "before";
+
+  return {
+    sourceCode,
+    scope,
+    exportPriority,
+    annotationTemplate,
+    methodAnnotationTemplate,
+    autoFix,
+    excludeTestCallbacks,
+    additionalTestHelperNames,
+    annotationPlacement,
+  } as const;
+}
+
 /**
  * ESLint rule to require @story annotations on functions/methods.
  *
@@ -79,6 +125,12 @@ const rule: Rule.RuleModule = {
             items: { type: "string" },
             uniqueItems: true,
           },
+          /**
+           * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT REQ-ALL-BLOCK-TYPES
+           */
+          annotationPlacement: {
+            enum: ["before", "inside"],
+          },
         },
         additionalProperties: false,
       },
@@ -94,32 +146,17 @@ const rule: Rule.RuleModule = {
    * @req REQ-AUTOFIX-MISSING - The create hook wires in visitors that are capable of providing auto-fix suggestions for missing @story annotations.
    */
   create(context) {
-    const sourceCode = context.getSourceCode();
-    const opts = (context.options && context.options[0]) || {};
-    const scope = opts.scope || DEFAULT_SCOPE;
-    const exportPriority = opts.exportPriority || "all";
-    const annotationTemplate =
-      typeof opts.annotationTemplate === "string" &&
-      opts.annotationTemplate.trim().length > 0
-        ? opts.annotationTemplate.trim()
-        : undefined;
-    const methodAnnotationTemplate =
-      typeof opts.methodAnnotationTemplate === "string" &&
-      opts.methodAnnotationTemplate.trim().length > 0
-        ? opts.methodAnnotationTemplate.trim()
-        : undefined;
-    const autoFix = typeof opts.autoFix === "boolean" ? opts.autoFix : true;
-    const excludeTestCallbacks =
-      typeof opts.excludeTestCallbacks === "boolean"
-        ? opts.excludeTestCallbacks
-        : true;
-    const additionalTestHelperNames =
-      Array.isArray(opts.additionalTestHelperNames) &&
-      opts.additionalTestHelperNames.every(
-        (name: unknown) => typeof name === "string",
-      )
-        ? opts.additionalTestHelperNames
-        : undefined;
+    const {
+      sourceCode,
+      scope,
+      exportPriority,
+      annotationTemplate,
+      methodAnnotationTemplate,
+      autoFix,
+      excludeTestCallbacks,
+      additionalTestHelperNames,
+      annotationPlacement,
+    } = getNormalizedOptions(context);
 
     /**
      * Optional debug logging for troubleshooting this rule.
@@ -141,6 +178,7 @@ const rule: Rule.RuleModule = {
       shouldProcessNode(node, scope, exportPriority, {
         excludeTestCallbacks,
         additionalTestHelperNames,
+        annotationPlacement,
       });
 
     // Delegate visitor construction to helper to keep this file concise.
@@ -153,6 +191,7 @@ const rule: Rule.RuleModule = {
       autoFix,
       excludeTestCallbacks,
       additionalTestHelperNames,
+      annotationPlacement,
     });
   },
 };

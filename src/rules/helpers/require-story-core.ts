@@ -119,6 +119,7 @@ import type { Rule } from "eslint";
 type CoreReportOptions = {
   annotationTemplateOverride?: string;
   autoFixToggle?: boolean;
+  annotationPlacement?: "before" | "inside";
 };
 
 type ReportDeps = {
@@ -139,6 +140,11 @@ type ReportDeps = {
   shouldApplyAutoFix: (_autoFix: boolean | undefined) => boolean;
   createAddStoryFix: (_target: any, _annotationTemplate: string) => any;
   createMethodFix: (_node: any, _annotationTemplate: string) => any;
+  hasStoryAnnotationWithPlacement?: (
+    _sourceCode: any,
+    _node: any,
+    _placement: "before" | "inside",
+  ) => boolean;
 };
 
 /**
@@ -230,18 +236,19 @@ export function coreReportMissing(
   withSafeReporting("coreReportMissing", () => {
     const annotationPlacement = resolveAnnotationPlacement(options);
 
-    if (
-      typeof (deps as any).hasStoryAnnotationWithPlacement === "function" &&
-      (deps as any).hasStoryAnnotationWithPlacement(
-        sourceCode,
-        node,
-        annotationPlacement,
-      )
-    ) {
-      return;
-    }
+    const hasWithPlacement = (deps as any).hasStoryAnnotationWithPlacement as
+      | ((
+          _sourceCode: any,
+          _node: any,
+          _placement: "before" | "inside",
+        ) => boolean)
+      | undefined;
 
-    if (deps.hasStoryAnnotation(sourceCode, node)) {
+    if (typeof hasWithPlacement === "function") {
+      if (hasWithPlacement(sourceCode, node, annotationPlacement)) {
+        return;
+      }
+    } else if (deps.hasStoryAnnotation(sourceCode, node)) {
       return;
     }
 

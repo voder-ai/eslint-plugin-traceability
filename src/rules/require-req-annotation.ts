@@ -7,9 +7,8 @@
  * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of which exports are checked
  * @req REQ-EXPORT-PRIORITY - Allow configuration of export priority behavior
  *
- * Note: This rule accepts annotationPlacement for configuration parity with
- * require-story-annotation, but currently still requires annotations before
- * the function (no inside-function support yet).
+ * This rule honors the same `annotationPlacement` semantics as
+ * `require-story-annotation` for block-bodied functions and methods.
  */
 import type { Rule } from "eslint";
 import {
@@ -87,9 +86,16 @@ const rule: Rule.RuleModule = {
     const scope =
       Array.isArray(rawScope) && rawScope.length > 0 ? rawScope : DEFAULT_SCOPE;
     const exportPriority = options?.exportPriority ?? "all";
+    const rawAnnotationPlacement = options?.annotationPlacement;
+    const annotationPlacement: "before" | "inside" =
+      rawAnnotationPlacement === "inside" || rawAnnotationPlacement === "before"
+        ? rawAnnotationPlacement
+        : "before";
 
     const shouldCheck = (node: any): boolean =>
-      shouldProcessNode(node, scope, exportPriority);
+      shouldProcessNode(node, scope, exportPriority, {
+        annotationPlacement,
+      });
 
     /**
      * Helper to conditionally run the annotation check only when the node
@@ -97,7 +103,10 @@ const rule: Rule.RuleModule = {
      */
     const runCheck = (node: any) => {
       if (!shouldCheck(node)) return;
-      checkReqAnnotation(context, node, { enableFix: false });
+      checkReqAnnotation(context, node, {
+        enableFix: false,
+        annotationPlacement,
+      });
     };
 
     return {

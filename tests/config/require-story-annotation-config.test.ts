@@ -16,6 +16,7 @@ describe("ESLint Configuration Rule Options (Story 002.0-DEV-ESLINT-CONFIG)", ()
     const schema = ((requireStoryAnnotation.meta as any).schema as any)[0];
     expect(schema.properties).toHaveProperty("scope");
     expect(schema.properties).toHaveProperty("exportPriority");
+    expect(schema.properties).toHaveProperty("annotationPlacement");
     expect(schema.additionalProperties).toBe(false);
   });
 });
