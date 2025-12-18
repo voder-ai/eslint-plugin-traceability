@@ -3,6 +3,7 @@ import {
   gatherBranchCommentText,
   reportMissingStory,
   reportMissingReq,
+  AnnotationPlacement,
 } from "./branch-annotation-helpers";
 
 /**
@@ -33,10 +34,14 @@ function getIndentAndInsertPosForLine(
   return { indent, insertPos };
 }
 
-/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */
 function getBaseBranchIndentAndInsertPos(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
+  _annotationPlacement: AnnotationPlacement,
 ): { indent: string; insertPos: number } {
   let { indent, insertPos } = getIndentAndInsertPosForLine(
     sourceCode,
@@ -82,29 +87,44 @@ function getBaseBranchIndentAndInsertPos(
 }
 
 /**
- * Compute annotation-related metadata for a branch node.
+ * Compute which annotations are missing for a branch based on its gathered comment text.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
- * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports REQ-DUAL-POSITION-DETECTION
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
-function getBranchAnnotationInfo(
+function getBranchMissingFlags(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
-  parent?: any,
-): {
-  missingStory: boolean;
-  missingReq: boolean;
-  indent: string;
-  insertPos: number;
-} {
-  const text = gatherBranchCommentText(sourceCode, node, parent);
+  parent: any | undefined,
+  annotationPlacement: AnnotationPlacement,
+): { missingStory: boolean; missingReq: boolean } {
+  const text = gatherBranchCommentText(
+    sourceCode,
+    node,
+    parent,
+    annotationPlacement,
+  );
   const hasSupports = /@supports\b/.test(text);
   const missingStory = !/@story\b/.test(text) && !hasSupports;
   const missingReq = !/@req\b/.test(text) && !hasSupports;
+  return { missingStory, missingReq };
+}
 
-  let { indent, insertPos } = getBaseBranchIndentAndInsertPos(sourceCode, node);
+/**
+ * Compute indentation and insert position used for auto-fix insertion on a branch.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */
+function getBranchIndentAndInsertPos(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  parent: any | undefined,
+  annotationPlacement: AnnotationPlacement,
+): { indent: string; insertPos: number } {
+  let { indent, insertPos } = getBaseBranchIndentAndInsertPos(
+    sourceCode,
+    node,
+    annotationPlacement,
+  );
 
   if (
     node.type === "IfStatement" &&
@@ -127,6 +147,41 @@ function getBranchAnnotationInfo(
     insertPos = commentLineInfo.insertPos;
   }
 
+  return { indent, insertPos };
+}
+
+/**
+ * Compute annotation-related metadata for a branch node.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
+ * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */
+function getBranchAnnotationInfo(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  parent: any | undefined,
+  annotationPlacement: AnnotationPlacement,
+): {
+  missingStory: boolean;
+  missingReq: boolean;
+  indent: string;
+  insertPos: number;
+} {
+  const { missingStory, missingReq } = getBranchMissingFlags(
+    sourceCode,
+    node,
+    parent,
+    annotationPlacement,
+  );
+  const { indent, insertPos } = getBranchIndentAndInsertPos(
+    sourceCode,
+    node,
+    parent,
+    annotationPlacement,
+  );
   return { missingStory, missingReq, indent, insertPos };
 }
 
@@ -136,6 +191,7 @@ function getBranchAnnotationInfo(
  * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
 export function reportMissingAnnotations(
   context: Rule.RuleContext,
@@ -144,10 +200,18 @@ export function reportMissingAnnotations(
 ): void {
   const sourceCode = context.getSourceCode();
 
+  const rawOptions: any = context.options && context.options[0];
+  const annotationPlacement: AnnotationPlacement =
+    rawOptions &&
+    (rawOptions.annotationPlacement === "inside" ||
+      rawOptions.annotationPlacement === "before")
+      ? rawOptions.annotationPlacement
+      : "before";
+
   const parent = (node as any).parent;
 
   const { missingStory, missingReq, indent, insertPos } =
-    getBranchAnnotationInfo(sourceCode, node, parent);
+    getBranchAnnotationInfo(sourceCode, node, parent, annotationPlacement);
 
   const actions: Array<{ missing: boolean; fn: Function; args: any[] }> = [
     {

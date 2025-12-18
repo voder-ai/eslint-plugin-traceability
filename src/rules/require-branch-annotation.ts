@@ -9,6 +9,7 @@ import type { Rule } from "eslint";
 import {
   validateBranchTypes,
   reportMissingAnnotations,
+  AnnotationPlacement,
 } from "../utils/branch-annotation-helpers";
 
 /**
@@ -125,6 +126,12 @@ const rule: Rule.RuleModule = {
             items: { type: "string" },
             uniqueItems: true,
           },
+          /**
+           * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
+           */
+          annotationPlacement: {
+            enum: ["before", "inside"],
+          },
         },
         additionalProperties: false,
       },
@@ -151,6 +158,19 @@ const rule: Rule.RuleModule = {
       return branchTypesOrListener;
     }
     const branchTypes = branchTypesOrListener;
+
+    /**
+     * Resolve annotation placement configuration with backward-compatible default.
+     *
+     * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
+     */
+    const rawOptions: any = context.options[0] || {};
+    const _annotationPlacement: AnnotationPlacement =
+      rawOptions.annotationPlacement === "inside" ||
+      rawOptions.annotationPlacement === "before"
+        ? rawOptions.annotationPlacement
+        : "before";
+
     const storyFixCountRef = { count: 0 };
     const handlers: Rule.RuleListener = {};
     branchTypes.forEach((type) => {

@@ -3,15 +3,19 @@
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
  * @req REQ-BRANCH-DETECTION - Verify require-branch-annotation rule enforces branch annotations
  * @req REQ-ERROR-SPECIFIC - Branch-level missing-annotation error messages are specific and informative
  * @req REQ-ERROR-CONSISTENCY - Branch-level missing-annotation error messages follow shared conventions
  * @req REQ-ERROR-SUGGESTION - Branch-level missing-annotation errors include suggestions when applicable
  * @req REQ-NESTED-HANDLING - Nested branch annotations are correctly enforced without duplicative reporting
  * @req REQ-SUPPORTS-ALTERNATIVE - Branches annotated only with @supports are treated as fully annotated
+ * @req REQ-PLACEMENT-CONFIG - Rule supports configurable annotation placement modes
+ * @req REQ-DEFAULT-BACKWARD-COMPAT - Default placement remains backward compatible with existing behavior
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION REQ-NESTED-HANDLING REQ-SUPPORTS-ALTERNATIVE
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION
  * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF REQ-POSITION-PRIORITY-ELSE-IF REQ-PRETTIER-AUTOFIX-ELSE-IF
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-branch-annotation";
@@ -184,6 +188,20 @@ if (outer) {
 // @req REQ-BRANCH-DETECTION
 if (condition) {}`,
         options: [{ branchTypes: ["IfStatement", "SwitchCase"] }],
+      },
+      {
+        name: "[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] if-statement with before-brace annotations using annotationPlacement: 'before'",
+        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-PLACEMENT-CONFIG
+if (condition) {}`,
+        options: [{ annotationPlacement: "before" }],
+      },
+      {
+        name: "[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] if-statement with before-brace annotations using annotationPlacement: 'inside' (temporary backward-compatible behavior)",
+        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+// @req REQ-PLACEMENT-CONFIG
+if (condition) {}`,
+        options: [{ annotationPlacement: "inside" }],
       },
       {
         name: "[REQ-SUPPORTS-ALTERNATIVE] if-statement with only @supports annotation is treated as fully annotated",

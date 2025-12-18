@@ -26,6 +26,13 @@ export const DEFAULT_BRANCH_TYPES = [
 export type BranchType = (typeof DEFAULT_BRANCH_TYPES)[number];
 
 /**
+ * Placement options for branch annotations relative to their associated branch.
+ * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ * @req REQ-PLACEMENT-CONFIG - Allow configuration of annotation placement (before/inside)
+ */
+export type AnnotationPlacement = "before" | "inside";
+
+/**
  * Validate branchTypes configuration option and return branch types to enforce,
  * or return an ESLint listener if configuration is invalid.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
@@ -402,11 +409,13 @@ function gatherSwitchCaseCommentText(
  * @req REQ-COMMENT-ASSOCIATION - Associate inline comments with their corresponding code branches
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
 export function gatherBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
   parent?: any,
+  _annotationPlacement: AnnotationPlacement = "before",
 ): string {
   /**
    * Conditional branch for SwitchCase nodes that may include inline comments.
