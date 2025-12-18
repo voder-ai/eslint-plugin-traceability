@@ -14,6 +14,10 @@ import {
   fallbackTextBeforeHasStory,
 } from "./require-story-io";
 import { getNodeName } from "./require-story-utils";
+import {
+  getFunctionInsideBodyCommentText as _getFunctionInsideBodyCommentText,
+  supportsInsidePlacementForFunction as _supportsInsidePlacementForFunction,
+} from "../../utils/function-annotation-helpers";
 
 import {
   DEFAULT_SCOPE,
@@ -288,6 +292,9 @@ function hasStoryAnnotation(sourceCode: any, node: any): boolean {
   return false;
 }
 
+// Placement-aware alias reserved for future inside-brace function placement.
+const hasStoryAnnotationWithPlacement = hasStoryAnnotation;
+
 /**
  * Determine AST node where annotation should be inserted
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -537,6 +544,7 @@ export {
   commentsBeforeHasStory,
   leadingCommentsHasStory,
   hasStoryAnnotation,
+  hasStoryAnnotationWithPlacement,
   getNodeName,
   extractName,
   resolveTargetNode,

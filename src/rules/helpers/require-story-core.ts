@@ -201,6 +201,13 @@ function createMissingStoryReportDescriptor(config: {
   };
 }
 
+function resolveAnnotationPlacement(
+  options?: CoreReportOptions,
+): "before" | "inside" {
+  const raw = (options as any)?.annotationPlacement;
+  return raw === "inside" || raw === "before" ? raw : "before";
+}
+
 /**
  * Core helper to report a missing @story annotation for a function-like node.
  * This reporting utility delegates behavior to injected dependencies so that
@@ -221,6 +228,19 @@ export function coreReportMissing(
   const { node, target: passedTarget, options = {} } = config;
 
   withSafeReporting("coreReportMissing", () => {
+    const annotationPlacement = resolveAnnotationPlacement(options);
+
+    if (
+      typeof (deps as any).hasStoryAnnotationWithPlacement === "function" &&
+      (deps as any).hasStoryAnnotationWithPlacement(
+        sourceCode,
+        node,
+        annotationPlacement,
+      )
+    ) {
+      return;
+    }
+
     if (deps.hasStoryAnnotation(sourceCode, node)) {
       return;
     }

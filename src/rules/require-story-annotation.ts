@@ -24,6 +24,10 @@ import {
 /**
  * ESLint rule to require @story annotations on functions/methods.
  *
+ * This rule participates in Story 028.0 placement standardization by supporting
+ * configurable annotation placement, including inside-brace function annotations
+ * when configured.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md

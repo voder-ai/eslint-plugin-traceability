@@ -6,6 +6,10 @@
  * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
  * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of which exports are checked
  * @req REQ-EXPORT-PRIORITY - Allow configuration of export priority behavior
+ *
+ * Note: This rule accepts annotationPlacement for configuration parity with
+ * require-story-annotation, but currently still requires annotations before
+ * the function (no inside-function support yet).
  */
 import type { Rule } from "eslint";
 import {
@@ -19,6 +23,7 @@ type Options = [
   {
     scope?: (typeof DEFAULT_SCOPE)[number][];
     exportPriority?: (typeof EXPORT_PRIORITY_VALUES)[number];
+    annotationPlacement?: "before" | "inside";
   }?,
 ];
 
@@ -60,6 +65,9 @@ const rule: Rule.RuleModule = {
           },
           exportPriority: {
             enum: EXPORT_PRIORITY_VALUES,
+          },
+          annotationPlacement: {
+            enum: ["before", "inside"],
           },
         },
         additionalProperties: false,
