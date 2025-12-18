@@ -219,6 +219,15 @@ try {
         options: [{ annotationPlacement: "inside" }],
       },
       {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] for-of loop annotated inside block under annotationPlacement: 'inside' (Story 028.0)",
+        code: `for (const item of items) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-LOOP-INSIDE
+  process(item);
+}`,
+        options: [{ annotationPlacement: "inside" }],
+      },
+      {
         name: "[REQ-SUPPORTS-ALTERNATIVE] if-statement with only @supports annotation is treated as fully annotated",
         code: `// @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
 if (shouldHandleAlternative) {
@@ -451,6 +460,22 @@ if (condition) {
 if (condition) {
   // @story <story-file>.story.md
   doSomething();
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-loop annotations ignored when annotationPlacement: 'inside' for loops",
+        code: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-LOOP-BEFORE
+for (const item of items) {
+  process(item);
+}`,
+        options: [{ annotationPlacement: "inside" }],
+        output: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-LOOP-BEFORE
+// @story <story-file>.story.md
+for (const item of items) {
+  process(item);
 }`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },

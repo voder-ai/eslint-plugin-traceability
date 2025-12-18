@@ -1,26 +1,13 @@
 import type { Rule } from "eslint";
-import { scanCommentLinesInRange } from "./branch-annotation-helpers";
+import {
+  scanCommentLinesInRange,
+  type AnnotationPlacement,
+} from "./branch-annotation-helpers";
 
-/**
- * Gather annotation text for loop branches, supporting annotations either on the
- * loop statement itself or on the first comment lines inside the loop body.
- * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-LOOP-ANNOTATION
- * @req REQ-LOOP-PLACEMENT-FLEXIBLE
- */
-export function gatherLoopCommentText(
+function getInsideLoopCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
-  beforeText: string,
 ): string {
-  if (
-    /@story\b/.test(beforeText) ||
-    /@req\b/.test(beforeText) ||
-    /@supports\b/.test(beforeText)
-  ) {
-    return beforeText;
-  }
-
   const body = node.body;
   if (
     body &&
@@ -42,6 +29,43 @@ export function gatherLoopCommentText(
     ) {
       return insideText;
     }
+  }
+
+  return "";
+}
+
+/**
+ * Gather annotation text for loop branches, supporting annotations either on the
+ * loop statement itself or on the first comment lines inside the loop body.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @req REQ-LOOP-ANNOTATION
+ * @req REQ-LOOP-PLACEMENT-FLEXIBLE
+ */
+export function gatherLoopCommentText(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  annotationPlacement: AnnotationPlacement,
+  beforeText: string,
+): string {
+  if (annotationPlacement === "inside") {
+    const insideText = getInsideLoopCommentText(sourceCode, node);
+    if (insideText) {
+      return insideText;
+    }
+    return "";
+  }
+
+  if (
+    /@story\b/.test(beforeText) ||
+    /@req\b/.test(beforeText) ||
+    /@supports\b/.test(beforeText)
+  ) {
+    return beforeText;
+  }
+
+  const insideText = getInsideLoopCommentText(sourceCode, node);
+  if (insideText) {
+    return insideText;
   }
 
   return beforeText;

@@ -125,6 +125,57 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
     expect(loopText).toBe("@story loop branch story loop details");
   });
 
+  it("[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] uses inside-loop comments when annotationPlacement is 'inside' and ignores before-loop annotations", () => {
+    const sourceCode: any = {
+      lines: [
+        "// @story before-loop should be ignored in inside mode",
+        "for (const item of items) {",
+        "  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md",
+        "  // @req REQ-LOOP-INSIDE",
+        "  process(item);",
+        "}",
+      ],
+      getCommentsBefore: jest
+        .fn()
+        .mockReturnValue([
+          { value: "@story before-loop should be ignored in inside mode" },
+        ]),
+    };
+
+    const loopNode: any = {
+      type: "ForOfStatement",
+      loc: {
+        start: { line: 2, column: 0 },
+        end: { line: 5, column: 1 },
+      },
+      body: {
+        type: "BlockStatement",
+        loc: {
+          start: { line: 2, column: 27 },
+          end: { line: 5, column: 1 },
+        },
+      },
+    };
+
+    const parent: any = {
+      type: "BlockStatement",
+      body: [loopNode],
+    };
+
+    const insideText = gatherBranchCommentText(
+      sourceCode as any,
+      loopNode,
+      parent,
+      "inside" as AnnotationPlacement,
+    );
+
+    expect(insideText).toContain(
+      "@story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md",
+    );
+    expect(insideText).toContain("@req REQ-LOOP-INSIDE");
+    expect(insideText).not.toContain("before-loop should be ignored");
+  });
+
   it("[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] uses inside-catch comments when annotationPlacement is 'inside' and ignores before-catch annotations", () => {
     const sourceCode: any = {
       lines: [

@@ -492,6 +492,57 @@ function gatherSwitchCaseCommentText(
   return comments.join(" ");
 }
 
+function gatherBranchCommentTextByType(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  parent: any | undefined,
+  context: { annotationPlacement: AnnotationPlacement; beforeText: string },
+): string | null {
+  const { annotationPlacement, beforeText } = context;
+
+  if (node.type === "SwitchCase") {
+    return gatherSwitchCaseCommentText(sourceCode, node);
+  }
+
+  if (node.type === "CatchClause") {
+    return gatherCatchClauseCommentText(
+      sourceCode,
+      node,
+      annotationPlacement,
+      beforeText,
+    );
+  }
+
+  if (node.type === "IfStatement") {
+    if (isElseIfBranch(node, parent)) {
+      return gatherElseIfCommentText(sourceCode, node, parent, beforeText);
+    }
+    return gatherSimpleIfCommentText(
+      sourceCode,
+      node,
+      annotationPlacement,
+      beforeText,
+    );
+  }
+
+  if (
+    node.type === "ForStatement" ||
+    node.type === "ForInStatement" ||
+    node.type === "ForOfStatement" ||
+    node.type === "WhileStatement" ||
+    node.type === "DoWhileStatement"
+  ) {
+    return gatherLoopCommentText(
+      sourceCode,
+      node,
+      annotationPlacement,
+      beforeText,
+    );
+  }
+
+  return null;
+}
+
 /**
  * Gather leading comment text for a branch node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
@@ -506,63 +557,16 @@ export function gatherBranchCommentText(
   parent?: any,
   annotationPlacement: AnnotationPlacement = "before",
 ): string {
-  /**
-   * Conditional branch for SwitchCase nodes that may include inline comments.
-   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-TRACEABILITY-SWITCHCASE-COMMENTS - Trace collection of preceding comments for SwitchCase
-   */
-  if (node.type === "SwitchCase") {
-    return gatherSwitchCaseCommentText(sourceCode, node);
-  }
-
   const beforeComments = sourceCode.getCommentsBefore(node) || [];
   const beforeText = beforeComments.map(extractCommentValue).join(" ");
 
-  if (node.type === "CatchClause") {
-    return gatherCatchClauseCommentText(
-      sourceCode,
-      node,
-      annotationPlacement,
-      beforeText,
-    );
-  }
+  const handled = gatherBranchCommentTextByType(sourceCode, node, parent, {
+    annotationPlacement,
+    beforeText,
+  });
 
-  /**
-   * Conditional branch for IfStatement nodes, distinguishing between else-if branches
-   * (which preserve dual-position behavior) and simple if-branches that can honor
-   * the configured annotation placement (before or inside braces).
-   * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
-   * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-   * @supports REQ-DUAL-POSITION-DETECTION
-   * @supports REQ-INSIDE-BRACE-PLACEMENT
-   * @supports REQ-PLACEMENT-CONFIG
-   * @supports REQ-DEFAULT-BACKWARD-COMPAT
-   */
-  if (node.type === "IfStatement") {
-    if (isElseIfBranch(node, parent)) {
-      return gatherElseIfCommentText(sourceCode, node, parent, beforeText);
-    }
-    return gatherSimpleIfCommentText(
-      sourceCode,
-      node,
-      annotationPlacement,
-      beforeText,
-    );
-  }
-
-  /**
-   * Conditional branch for loop nodes that may include annotations either on the loop
-   * statement itself or at the top of the loop body, allowing flexible placement.
-   * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-ANNOTATION REQ-LOOP-PLACEMENT-FLEXIBLE
-   */
-  if (
-    node.type === "ForStatement" ||
-    node.type === "ForInStatement" ||
-    node.type === "ForOfStatement" ||
-    node.type === "WhileStatement" ||
-    node.type === "DoWhileStatement"
-  ) {
-    return gatherLoopCommentText(sourceCode, node, beforeText);
+  if (handled != null) {
+    return handled;
   }
 
   return beforeText;

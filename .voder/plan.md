@@ -1,6 +1,6 @@
 ## NOW
 
-- [ ] Extend the inside-brace placement mode to catch clauses by updating the branch-annotation helpers and rule so that, when inside placement is selected, catch blocks require their annotations on the first comment line inside the catch block (ignoring before-catch annotations), auto-fixes insert missing annotations at that inside position, and new unit tests verify both valid and invalid catch-block scenarios under inside placement.
+- [x] Extend the inside-brace placement mode to catch clauses by updating the branch-annotation helpers and rule so that, when inside placement is selected, catch blocks require their annotations on the first comment line inside the catch block (ignoring before-catch annotations), auto-fixes insert missing annotations at that inside position, and new unit tests verify both valid and invalid catch-block scenarios under inside placement.
 
 ## NEXT
 
