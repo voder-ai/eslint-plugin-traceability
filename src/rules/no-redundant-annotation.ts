@@ -122,7 +122,19 @@ function getScopePairs(
 
   // Branch-style scope: use the branch helpers to collect comment text.
   if (DEFAULT_BRANCH_TYPES.includes(scopeNode.type)) {
-    const text = gatherBranchCommentText(sourceCode as any, scopeNode, parent);
+    /**
+     * Inside-brace annotations used as branch-level indicators (inside placement
+     * mode) should not be folded into scopePairs for redundancy purposes; only
+     * before-brace annotations define the covering scope here.
+     *
+     * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-NON-REDUNDANT-INSIDE REQ-PLACEMENT-CONFIG
+     */
+    const text = gatherBranchCommentText(
+      sourceCode as any,
+      scopeNode,
+      parent,
+      "before",
+    );
     return extractStoryReqPairsFromText(text);
   }
 

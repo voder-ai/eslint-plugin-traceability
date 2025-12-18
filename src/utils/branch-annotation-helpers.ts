@@ -240,6 +240,70 @@ function gatherCatchClauseCommentText(
   return beforeText;
 }
 
+/**
+ * Gather annotation text for simple IfStatement branches, honoring the configured placement.
+ * When placement is "before", this helper preserves the existing behavior by returning the
+ * leading comment text unchanged. When placement is "inside", it switches to inside-brace
+ * semantics and scans for comments at the top of the consequent block.
+ * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ * @supports REQ-INSIDE-BRACE-PLACEMENT
+ * @supports REQ-PLACEMENT-CONFIG
+ * @supports REQ-DEFAULT-BACKWARD-COMPAT
+ */
+function gatherSimpleIfCommentText(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  annotationPlacement: AnnotationPlacement,
+  beforeText: string,
+): string {
+  if (annotationPlacement === "before") {
+    return beforeText;
+  }
+
+  if (annotationPlacement !== "inside") {
+    return beforeText;
+  }
+
+  if (!node.consequent || node.consequent.type !== "BlockStatement") {
+    return "";
+  }
+
+  const consequent = node.consequent;
+  const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
+
+  if (typeof getCommentsInside === "function") {
+    try {
+      const insideComments =
+        (getCommentsInside as (_node: any) => any[])(consequent) || [];
+      const insideText = insideComments.map(extractCommentValue).join(" ");
+      if (insideText) {
+        return insideText;
+      }
+    } catch {
+      // fall through to line-based fallback
+    }
+  }
+
+  if (
+    consequent.loc &&
+    consequent.loc.start &&
+    consequent.loc.end &&
+    typeof consequent.loc.start.line === "number" &&
+    typeof consequent.loc.end.line === "number"
+  ) {
+    const lines = sourceCode.lines;
+    const startIndex = consequent.loc.start.line - 1;
+    const endIndex = consequent.loc.end.line - 1;
+
+    const insideText = scanCommentLinesInRange(lines, startIndex + 1, endIndex);
+    if (insideText) {
+      return insideText;
+    }
+  }
+
+  return "";
+}
+
 /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 function scanElseIfPrecedingComments(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -415,7 +479,7 @@ export function gatherBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
   parent?: any,
-  _annotationPlacement: AnnotationPlacement = "before",
+  annotationPlacement: AnnotationPlacement = "before",
 ): string {
   /**
    * Conditional branch for SwitchCase nodes that may include inline comments.
@@ -434,13 +498,26 @@ export function gatherBranchCommentText(
   }
 
   /**
-   * Conditional branch for IfStatement else-if nodes that may include inline comments
-   * after the else-if condition but before the consequent body.
+   * Conditional branch for IfStatement nodes, distinguishing between else-if branches
+   * (which preserve dual-position behavior) and simple if-branches that can honor
+   * the configured annotation placement (before or inside braces).
    * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+   * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
    * @supports REQ-DUAL-POSITION-DETECTION
+   * @supports REQ-INSIDE-BRACE-PLACEMENT
+   * @supports REQ-PLACEMENT-CONFIG
+   * @supports REQ-DEFAULT-BACKWARD-COMPAT
    */
   if (node.type === "IfStatement") {
-    return gatherElseIfCommentText(sourceCode, node, parent, beforeText);
+    if (isElseIfBranch(node, parent)) {
+      return gatherElseIfCommentText(sourceCode, node, parent, beforeText);
+    }
+    return gatherSimpleIfCommentText(
+      sourceCode,
+      node,
+      annotationPlacement,
+      beforeText,
+    );
   }
 
   /**

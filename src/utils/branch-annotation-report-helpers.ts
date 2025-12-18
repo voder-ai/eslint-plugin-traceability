@@ -87,6 +87,74 @@ function getBaseBranchIndentAndInsertPos(
 }
 
 /**
+ * Determine whether a node represents an else-if branch that should be used for
+ * determining comment insertion position.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ */
+function isElseIfBranchForInsert(node: any, parent: any | undefined): boolean {
+  return (
+    node &&
+    node.type === "IfStatement" &&
+    parent &&
+    parent.type === "IfStatement" &&
+    parent.alternate === node
+  );
+}
+
+type IfIndentContext = { indent: string; insertPos: number };
+
+/**
+ * Compute indentation and insert position for IfStatement branches, handling
+ * both simple if and else-if cases, respecting the configured annotation
+ * placement and indentation rules.
+ * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG REQ-INDENTATION-CORRECT
+ */
+function getIfStatementIndentAndInsertPos(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  options: {
+    parent: any | undefined;
+    annotationPlacement: AnnotationPlacement;
+  },
+  context: IfIndentContext,
+): IfIndentContext {
+  const { parent, annotationPlacement } = options;
+  let { indent, insertPos } = context;
+
+  const hasBlockConsequent =
+    node.consequent &&
+    node.consequent.type === "BlockStatement" &&
+    node.consequent.loc &&
+    node.consequent.loc.start;
+
+  if (!hasBlockConsequent) {
+    return context;
+  }
+
+  const isElseIf = isElseIfBranchForInsert(node, parent);
+  const isSimpleIfInsidePlacement =
+    annotationPlacement === "inside" && !isElseIf;
+
+  if (isSimpleIfInsidePlacement || isElseIf) {
+    const commentLine = node.consequent.loc.start.line + 1;
+    const commentLineInfo = getIndentAndInsertPosForLine(
+      sourceCode,
+      commentLine,
+      indent,
+    );
+
+    indent = commentLineInfo.indent;
+    insertPos = commentLineInfo.insertPos;
+
+    context.indent = indent;
+    context.insertPos = insertPos;
+  }
+
+  return context;
+}
+
+/**
  * Compute which annotations are missing for a branch based on its gathered comment text.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
@@ -120,31 +188,24 @@ function getBranchIndentAndInsertPos(
   parent: any | undefined,
   annotationPlacement: AnnotationPlacement,
 ): { indent: string; insertPos: number } {
-  let { indent, insertPos } = getBaseBranchIndentAndInsertPos(
+  const { indent, insertPos } = getBaseBranchIndentAndInsertPos(
     sourceCode,
     node,
     annotationPlacement,
   );
 
-  if (
-    node.type === "IfStatement" &&
-    parent &&
-    parent.type === "IfStatement" &&
-    parent.alternate === node &&
-    node.consequent &&
-    node.consequent.type === "BlockStatement" &&
-    node.consequent.loc &&
-    node.consequent.loc.start
-  ) {
-    const commentLine = node.consequent.loc.start.line + 1;
-    const commentLineInfo = getIndentAndInsertPosForLine(
+  if (node.type === "IfStatement") {
+    const context: IfIndentContext = { indent, insertPos };
+    const updatedContext = getIfStatementIndentAndInsertPos(
       sourceCode,
-      commentLine,
-      indent,
+      node,
+      { parent, annotationPlacement },
+      context,
     );
-
-    indent = commentLineInfo.indent;
-    insertPos = commentLineInfo.insertPos;
+    return {
+      indent: updatedContext.indent,
+      insertPos: updatedContext.insertPos,
+    };
   }
 
   return { indent, insertPos };

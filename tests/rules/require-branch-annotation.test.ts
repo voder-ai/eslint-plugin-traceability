@@ -197,10 +197,12 @@ if (condition) {}`,
         options: [{ annotationPlacement: "before" }],
       },
       {
-        name: "[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] if-statement with before-brace annotations using annotationPlacement: 'inside' (temporary backward-compatible behavior)",
-        code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-PLACEMENT-CONFIG
-if (condition) {}`,
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] if-statement annotated inside block under annotationPlacement: 'inside' (Story 028.0)",
+        code: `if (condition) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-INSIDE-BRACE-PLACEMENT
+  doSomething();
+}`,
         options: [{ annotationPlacement: "inside" }],
       },
       {
@@ -422,6 +424,22 @@ if (a) {
   doB();
 }`,
         errors: makeMissingAnnotationErrors("@story", "@req", "@story", "@req"),
+      },
+      {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-brace annotations ignored when annotationPlacement: 'inside'",
+        code: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-BEFORE-BRACE-ERROR
+if (condition) {
+  doSomething();
+}`,
+        options: [{ annotationPlacement: "inside" }],
+        output: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-BEFORE-BRACE-ERROR
+if (condition) {
+  // @story <story-file>.story.md
+  doSomething();
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
       },
     ],
   });
