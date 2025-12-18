@@ -153,3 +153,4 @@ module.exports = {
 };
 
 // Error: Value "InvalidType" should be equal to one of the allowed values.
+```

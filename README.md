@@ -89,6 +89,47 @@ export default [
 ];
 ```
 
+### Annotation Placement
+
+Traceability annotations are typically placed immediately adjacent to the code they index. The plugin exposes explicit placement options for branch-level rules and a stable, conventional placement for function-level rules.
+
+- **Branch-level (`traceability/require-branch-annotation`)**
+
+  `require-branch-annotation` supports an `annotationPlacement` option:
+  - `"before"` – Annotation appears **immediately before** the branch statement (default).
+  - `"inside"` – Annotation appears as the **first comment-only lines inside** the branch block.
+
+  In `"inside"` mode, the rule expects the annotation to be the first meaningful content inside blocks for `if` / `else` / loops / `try` / `catch` / `finally` / `switch` cases.
+
+  Example (`if` statement):
+
+  ```js
+  // annotationPlacement: "before"
+  // @supports docs/stories/auth.md REQ-AUTH-VALIDATION
+  if (isValidUser(user)) {
+    performLogin(user);
+  }
+
+  // annotationPlacement: "inside"
+  if (isValidUser(user)) {
+    // @supports docs/stories/auth.md REQ-AUTH-VALIDATION
+    performLogin(user);
+  }
+  ```
+
+- **Function-level (`traceability/require-story-annotation`, `traceability/require-req-annotation`)**
+
+  Function-level rules continue to accept annotations:
+  - As JSDoc blocks immediately preceding the function, or
+  - As line comments placed directly before the function declaration or expression.
+
+  This placement is stable and supported for all current versions. Future versions may introduce an **inside-brace** placement mode for function bodies (similar to branch blocks) to align function annotations with the branch-level `"inside"` standard.
+
+For full configuration details and migration guidance between placement styles, see:
+
+- `traceability/require-branch-annotation` rule docs: [docs/rules/require-branch-annotation.md](docs/rules/require-branch-annotation.md)
+- Migration guide: [user-docs/migration-guide.md](user-docs/migration-guide.md)
+
 ### Available Rules
 
 The plugin exposes several rules. For **new configurations**, the unified function-level rule and `@supports` annotations are the canonical choice; the `@story` and `@req` forms remain available primarily for backward compatibility and gradual migration.

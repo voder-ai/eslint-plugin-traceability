@@ -6,6 +6,7 @@ import {
   isElseIfBranch,
 } from "./branch-annotation-if-helpers";
 import { gatherSwitchCaseCommentText } from "./branch-annotation-switch-helpers";
+import { createStoryFixer } from "./branch-annotation-story-fix-helpers";
 
 /**
  * Valid branch types for require-branch-annotation rule.
@@ -569,26 +570,30 @@ export function reportMissingStory(
     indent: string;
     insertPos: number;
     storyFixCountRef: { count: number };
+    annotationPlacement: AnnotationPlacement;
+    sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>;
   },
 ): void {
-  const { indent, insertPos, storyFixCountRef } = options;
+  const {
+    indent,
+    insertPos,
+    storyFixCountRef,
+    annotationPlacement,
+    sourceCode,
+  } = options;
   /**
    * Conditional branch deciding whether to offer an auto-fix for the missing story.
    * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
    * @req REQ-TRACEABILITY-FIX-DECISION - Trace decision to provide fixer for missing @story
    */
   if (storyFixCountRef.count === 0) {
-    /**
-     * Fixer that inserts a default @story tag above the branch.
-     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-     * @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer function used to insert missing @story
-     */
-    function insertStoryFixer(fixer: any) {
-      return fixer.insertTextBeforeRange(
-        [insertPos, insertPos],
-        `${indent}// @story <story-file>.story.md\n`,
-      );
-    }
+    const insertStoryFixer = createStoryFixer({
+      annotationPlacement,
+      sourceCode,
+      node,
+      insertPos,
+      indent,
+    });
 
     context.report({
       node,

@@ -5,6 +5,10 @@ import {
   reportMissingReq,
   AnnotationPlacement,
 } from "./branch-annotation-helpers";
+import {
+  computeInsideBaseIndentAndInsertPos,
+  applyInsidePlacementOverridesForBranch,
+} from "./branch-annotation-indent-helpers";
 
 /**
  * Compute indentation and insert position for the start of a given 1-based line
@@ -35,19 +39,64 @@ function getIndentAndInsertPosForLine(
 }
 
 /**
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ * Compute indentation and insert position for the first "inner" line of a
+ * BlockStatement, used for inside-brace insertion.
+ * Falls back to the block's own line with one extra indent step if it has no
+ * body statements.
  */
-function getBaseBranchIndentAndInsertPos(
+function getInsideBlockIndentAndInsertPos(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  blockNode: any,
+  baseFallbackIndent: string,
+): { indent: string; insertPos: number } {
+  let indent = baseFallbackIndent;
+  let insertPos = sourceCode.getIndexFromLoc({
+    line: blockNode.loc.start.line,
+    column: 0,
+  });
+
+  const bodyStatements: any[] | undefined = Array.isArray(blockNode.body)
+    ? blockNode.body
+    : undefined;
+  const firstStatement: any | undefined =
+    bodyStatements && bodyStatements.length > 0 ? bodyStatements[0] : undefined;
+
+  if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
+    const firstLine = firstStatement.loc.start.line;
+    const firstLineInfo = getIndentAndInsertPosForLine(
+      sourceCode,
+      firstLine,
+      baseFallbackIndent,
+    );
+    indent = firstLineInfo.indent;
+    insertPos = firstLineInfo.insertPos;
+  } else if (blockNode.loc && blockNode.loc.start) {
+    const blockLine = blockNode.loc.start.line;
+    const blockLineInfo = getIndentAndInsertPosForLine(
+      sourceCode,
+      blockLine,
+      baseFallbackIndent,
+    );
+    const innerIndent = `${blockLineInfo.indent}  `;
+    indent = innerIndent;
+    insertPos = blockLineInfo.insertPos;
+  }
+
+  return { indent, insertPos };
+}
+
+/**
+ * Apply the base catch-clause indentation/insert-position fallback used by
+ * getBaseBranchIndentAndInsertPos when no inside-placement override is applied.
+ */
+function applyCatchClauseBaseIndentFallback(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
-  _annotationPlacement: AnnotationPlacement,
+  currentIndent: string,
+  currentInsertPos: number,
 ): { indent: string; insertPos: number } {
-  let { indent, insertPos } = getIndentAndInsertPosForLine(
-    sourceCode,
-    node.loc.start.line,
-    "",
-  );
+  let indent = currentIndent;
+  let insertPos = currentInsertPos;
 
   if (node.type === "CatchClause" && node.body) {
     const bodyNode: any = node.body;
@@ -84,6 +133,47 @@ function getBaseBranchIndentAndInsertPos(
   }
 
   return { indent, insertPos };
+}
+
+/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */
+function getBaseBranchIndentAndInsertPos(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  annotationPlacement: AnnotationPlacement,
+): { indent: string; insertPos: number } {
+  let { indent, insertPos } = getIndentAndInsertPosForLine(
+    sourceCode,
+    node.loc.start.line,
+    "",
+  );
+
+  const indentHelpers = {
+    getInsideBlockIndentAndInsertPos,
+    getIndentAndInsertPosForLine,
+  };
+
+  const insideBase = computeInsideBaseIndentAndInsertPos(
+    {
+      sourceCode,
+      node,
+      annotationPlacement,
+      currentIndent: indent,
+    },
+    indentHelpers,
+  );
+  if (insideBase) {
+    return insideBase;
+  }
+
+  return applyCatchClauseBaseIndentFallback(
+    sourceCode,
+    node,
+    indent,
+    insertPos,
+  );
 }
 
 /**
@@ -191,11 +281,12 @@ function getBranchIndentAndInsertPos(
   parent: any | undefined,
   annotationPlacement: AnnotationPlacement,
 ): { indent: string; insertPos: number } {
-  const { indent, insertPos } = getBaseBranchIndentAndInsertPos(
+  const base = getBaseBranchIndentAndInsertPos(
     sourceCode,
     node,
     annotationPlacement,
   );
+  let { indent, insertPos } = base;
 
   if (node.type === "IfStatement") {
     const context: IfIndentContext = { indent, insertPos };
@@ -209,6 +300,24 @@ function getBranchIndentAndInsertPos(
       indent: updatedContext.indent,
       insertPos: updatedContext.insertPos,
     };
+  }
+
+  const indentHelpers = {
+    getInsideBlockIndentAndInsertPos,
+    getIndentAndInsertPosForLine,
+  };
+
+  const insideOverride = applyInsidePlacementOverridesForBranch(
+    {
+      sourceCode,
+      node,
+      indent,
+      annotationPlacement,
+    },
+    indentHelpers,
+  );
+  if (insideOverride) {
+    return insideOverride;
   }
 
   return { indent, insertPos };
@@ -249,12 +358,32 @@ function getBranchAnnotationInfo(
   return { missingStory, missingReq, indent, insertPos };
 }
 
+function processMissingAnnotationActions(
+  context: Rule.RuleContext,
+  node: any,
+  actions: Array<{ missing: boolean; fn: Function; args: any[] }>,
+): void {
+  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+  function processAction(item: {
+    missing: boolean;
+    fn: Function;
+    args: any[];
+  }) {
+    if (item.missing) {
+      item.fn(...item.args);
+    }
+  }
+
+  actions.forEach(processAction);
+}
+
 /**
  * Report missing annotations on a branch node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
 export function reportMissingAnnotations(
@@ -281,7 +410,17 @@ export function reportMissingAnnotations(
     {
       missing: missingStory,
       fn: reportMissingStory,
-      args: [context, node, { indent, insertPos, storyFixCountRef }],
+      args: [
+        context,
+        node,
+        {
+          indent,
+          insertPos,
+          storyFixCountRef,
+          annotationPlacement,
+          sourceCode,
+        },
+      ],
     },
     {
       missing: missingReq,
@@ -290,16 +429,5 @@ export function reportMissingAnnotations(
     },
   ];
 
-  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-  function processAction(item: {
-    missing: boolean;
-    fn: Function;
-    args: any[];
-  }) {
-    if (item.missing) {
-      item.fn(...item.args);
-    }
-  }
-
-  actions.forEach(processAction);
+  processMissingAnnotationActions(context, node, actions);
 }

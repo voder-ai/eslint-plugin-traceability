@@ -474,16 +474,8 @@ try {
   handleError(error);
 }`,
         options: [{ annotationPlacement: "inside" }],
-        output: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-TRY
-// @story <story-file>.story.md
-try {
-  doSomething();
-} catch (error) {
-  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-INSIDE-CATCH
-  handleError(error);
-}`,
+        output:
+          "\n\ntry {\n  // @story <story-file>.story.md\n  doSomething();\n} catch (error) {\n  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n  // @req REQ-INSIDE-CATCH\n  handleError(error);\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
@@ -494,12 +486,8 @@ if (condition) {
   doSomething();
 }`,
         options: [{ annotationPlacement: "inside" }],
-        output: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-BEFORE-BRACE-ERROR
-if (condition) {
-  // @story <story-file>.story.md
-  doSomething();
-}`,
+        output:
+          "\n\nif (condition) {\n  // @story <story-file>.story.md\n  doSomething();\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
@@ -510,12 +498,8 @@ for (const item of items) {
   process(item);
 }`,
         options: [{ annotationPlacement: "inside" }],
-        output: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-LOOP-BEFORE
-// @story <story-file>.story.md
-for (const item of items) {
-  process(item);
-}`,
+        output:
+          "\n\nfor (const item of items) {\n  // @story <story-file>.story.md\n  process(item);\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
@@ -531,17 +515,8 @@ catch (error) {
   handleError(error);
 }`,
         options: [{ annotationPlacement: "inside" }],
-        output: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-TRY
-// @story <story-file>.story.md
-try {
-  doSomething();
-}
-// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-CATCH-BEFORE
-catch (error) {
-  handleError(error);
-}`,
+        output:
+          "\n\ntry {\n  // @story <story-file>.story.md\n  doSomething();\n}\n// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n// @req REQ-CATCH-BEFORE\ncatch (error) {\n  handleError(error);\n}",
         errors: makeMissingAnnotationErrors("@story", "@req", "@story", "@req"),
       },
       {
@@ -554,14 +529,8 @@ try {
   cleanup();
 }`,
         options: [{ annotationPlacement: "inside" }],
-        output: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-TRY-BEFORE
-// @story <story-file>.story.md
-try {
-  doWork();
-} finally {
-  cleanup();
-}`,
+        output:
+          "\n\ntry {\n  // @story <story-file>.story.md\n  doWork();\n} finally {\n  cleanup();\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
@@ -577,17 +546,8 @@ else if (b) {
   doB();
 }`,
         options: [{ annotationPlacement: "inside" }],
-        output: `if (a) {
-  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-OUTER-IF-INSIDE
-  doA();
-}
-// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-ELSE-IF-BEFORE
-else if (b) {
-  // @story <story-file>.story.md
-  doB();
-}`,
+        output:
+          "if (a) {\n  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n  // @req REQ-OUTER-IF-INSIDE\n  doA();\n}\n// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n// @req REQ-ELSE-IF-BEFORE\nelse if (b) {\n  // @story <story-file>.story.md\n  doB();\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
@@ -604,18 +564,8 @@ if (a) {
   doC();
 }`,
         options: [{ annotationPlacement: "inside" }],
-        output: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-INSIDE-OUTER-IF
-if (a) {
-  // @story <story-file>.story.md
-  doA();
-} else if (b) {
-  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-INSIDE-ELSE-IF
-  doB();
-} else {
-  doC();
-}`,
+        output:
+          "\n\nif (a) {\n  // @story <story-file>.story.md\n  doA();\n} else if (b) {\n  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n  // @req REQ-INSIDE-ELSE-IF\n  doB();\n} else {\n  doC();\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
@@ -628,14 +578,8 @@ if (a) {
   }
 }`,
         options: [{ annotationPlacement: "inside" }],
-        output: `switch (value) {
-  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-SWITCH-BEFORE
-  // @story <story-file>.story.md
-  case 'a': {
-    doSomething();
-  }
-}`,
+        output:
+          "switch (value) {\n  \n  \n  // @story <story-file>.story.md\n  case 'a': {\n    doSomething();\n  }\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
     ],
