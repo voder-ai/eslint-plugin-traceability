@@ -5,7 +5,7 @@
  * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of branch types for annotation enforcement
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE
  */
-import { validateBranchTypes, DEFAULT_BRANCH_TYPES, gatherBranchCommentText } from "../../src/utils/branch-annotation-helpers";
+import { validateBranchTypes, DEFAULT_BRANCH_TYPES, gatherBranchCommentText, AnnotationPlacement } from "../../src/utils/branch-annotation-helpers";
 import type { Rule } from "eslint";
 
 describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
@@ -123,5 +123,54 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
     const loopText = gatherBranchCommentText(sourceCodeLoop as any, forNode as any);
     expect(sourceCodeLoop.getCommentsBefore).toHaveBeenCalledWith(forNode);
     expect(loopText).toBe("@story loop branch story loop details");
+  });
+});
+
+/**
+ * Tests for annotationPlacement wiring at helper level
+ * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-DEFAULT-BACKWARD-COMPAT
+ */
+describe("gatherBranchCommentText annotationPlacement wiring (Story 028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION)", () => {
+  it("[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] treats 'before' and 'inside' placement the same for existing behavior", () => {
+    const sourceCode: any = {
+      lines: [],
+      getCommentsBefore: jest.fn().mockReturnValue([
+        { value: "@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md" },
+      ]),
+    };
+
+    const ifNode: any = {
+      type: "IfStatement",
+      loc: { start: { line: 1 } },
+      consequent: {
+        type: "BlockStatement",
+        loc: { start: { line: 1 }, end: { line: 3 } },
+      },
+    };
+
+    const parent: any = {
+      type: "IfStatement",
+      alternate: ifNode,
+    };
+
+    const beforeText = gatherBranchCommentText(
+      sourceCode as any,
+      ifNode,
+      parent,
+      "before" as AnnotationPlacement,
+    );
+    const insideText = gatherBranchCommentText(
+      sourceCode as any,
+      ifNode,
+      parent,
+      "inside" as AnnotationPlacement,
+    );
+
+    expect(beforeText).toBe(insideText);
+    expect(beforeText).toContain(
+      "@story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md",
+    );
   });
 });
