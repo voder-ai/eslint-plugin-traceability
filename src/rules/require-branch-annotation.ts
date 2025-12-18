@@ -173,6 +173,7 @@ const rule: Rule.RuleModule = {
 
     const storyFixCountRef = { count: 0 };
     const handlers: Rule.RuleListener = {};
+
     branchTypes.forEach((type) => {
       /**
        * Handler for a specific branch node type.

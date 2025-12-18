@@ -505,6 +505,60 @@ catch (error) {
 }`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
+      {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-else-if annotations ignored when annotationPlacement: 'inside' for else-if branch (Story 028.0)",
+        code: `if (a) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-OUTER-IF-INSIDE
+  doA();
+}
+// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-ELSE-IF-BEFORE
+else if (b) {
+  doB();
+}`,
+        options: [{ annotationPlacement: "inside" }],
+        output: `if (a) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-OUTER-IF-INSIDE
+  doA();
+}
+// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-ELSE-IF-BEFORE
+else if (b) {
+  // @story <story-file>.story.md
+  doB();
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] else-if branch annotated inside block but initial if branch missing annotation under annotationPlacement: 'inside' (Story 028.0)",
+        code: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-INSIDE-OUTER-IF
+if (a) {
+  doA();
+} else if (b) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-INSIDE-ELSE-IF
+  doB();
+} else {
+  doC();
+}`,
+        options: [{ annotationPlacement: "inside" }],
+        output: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+// @req REQ-INSIDE-OUTER-IF
+if (a) {
+  // @story <story-file>.story.md
+  doA();
+} else if (b) {
+  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+  // @req REQ-INSIDE-ELSE-IF
+  doB();
+} else {
+  doC();
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
     ],
   });
 

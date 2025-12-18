@@ -136,7 +136,10 @@ function getIfStatementIndentAndInsertPos(
   const isSimpleIfInsidePlacement =
     annotationPlacement === "inside" && !isElseIf;
 
-  if (isSimpleIfInsidePlacement || isElseIf) {
+  if (
+    annotationPlacement === "inside" &&
+    (isSimpleIfInsidePlacement || isElseIf)
+  ) {
     const commentLine = node.consequent.loc.start.line + 1;
     const commentLineInfo = getIndentAndInsertPosForLine(
       sourceCode,

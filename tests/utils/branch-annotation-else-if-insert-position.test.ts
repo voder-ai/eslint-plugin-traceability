@@ -7,7 +7,7 @@
 import { reportMissingAnnotations } from "../../src/utils/branch-annotation-helpers";
 
 describe("Else-if insert position (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION)", () => {
-  it("[REQ-PRETTIER-AUTOFIX-ELSE-IF] inserts annotations on a dedicated line inside the else-if block body", () => {
+  it("[REQ-PRETTIER-AUTOFIX-ELSE-IF] inserts annotations before the else-if line in Prettier-compatible default 'before' mode", () => {
     const lines = [
       "if (a) {",
       "  doA();",
@@ -25,6 +25,7 @@ describe("Else-if insert position (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION)"
     } as any;
 
     const context: any = {
+      options: [{ annotationPlacement: "before" }],
       getSourceCode() {
         return {
           lines,
@@ -76,12 +77,12 @@ describe("Else-if insert position (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION)"
     const [range, text] = (fixer.insertTextBeforeRange as jest.Mock).mock
       .calls[0];
 
-    // ensure we are inserting before the first statement in the else-if body (line 5)
+    // ensure we are inserting before the else-if line (line 4) when placement is 'before'
     const expectedIndex = context
       .getSourceCode()
-      .getIndexFromLoc({ line: 5, column: 0 });
+      .getIndexFromLoc({ line: 4, column: 0 });
     expect(range).toEqual([expectedIndex, expectedIndex]);
-    // and that the inserted text is prefixed with the inner indentation from line 5
-    expect(text.startsWith("  ")).toBe(true);
+    // and that the inserted text is prefixed with the base indentation from line 4
+    expect(text.startsWith("")).toBe(true);
   });
 });

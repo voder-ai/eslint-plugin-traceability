@@ -300,4 +300,94 @@ describe("gatherBranchCommentText annotationPlacement wiring (Story 028.0-DEV-AN
     expect(insideText).toContain("@req REQ-INSIDE");
     expect(insideText).not.toContain("@req REQ-BEFORE");
   });
+
+  it("[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] honors Story 028.0 inside-placement semantics for else-if branches while preserving Story 026.0 before-else behavior", () => {
+    const sourceCode: any = {
+      lines: [
+        "function demoElseIf(x) {", // 1
+        "  if (x === 1) {", // 2
+        "    // @story inside-if", // 3
+        "    doOne();", // 4
+        "  }", // 5
+        "  // @story docs/stories/026.0-DEV-BRANCH-ANNOTATIONS-ELSE-BRANCHES.story.md", // 6 (before else-if)
+        "  // @req REQ-BEFORE-ELSE", // 7
+        "  else if (x === 2) {", // 8
+        "    // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md", // 9 (inside else-if)
+        "    // @req REQ-ELSE-IF-INSIDE", // 10
+        "    doTwo();", // 11
+        "  }", // 12
+        "}", // 13
+      ],
+      getCommentsBefore: jest.fn().mockImplementation((node: any) => {
+        // Simulate ESLint getCommentsBefore only returning comments that are truly
+        // "before" the node they are querying.
+        // Our chain has:
+        // - before-if comments not used in this test
+        // - line 6-7 as before-else-if comments
+        if (node && node.loc && node.loc.start && node.loc.start.line === 2) {
+          // before the initial if (not used in assertions here)
+          return [
+            { value: "@story BEFORE-IF" },
+            { value: "@req REQ-BEFORE-IF" },
+          ];
+        }
+        if (node && node.loc && node.loc.start && node.loc.start.line === 8) {
+          // before the else-if branch (Story 026.0 semantics)
+          return [
+            {
+              value:
+                "@story docs/stories/026.0-DEV-BRANCH-ANNOTATIONS-ELSE-BRANCHES.story.md",
+            },
+            { value: "@req REQ-BEFORE-ELSE" },
+          ];
+        }
+        return [];
+      }),
+    };
+
+    const elseIfNode: any = {
+      type: "IfStatement",
+      loc: {
+        start: { line: 8, column: 2 },
+        end: { line: 12, column: 3 },
+      },
+      consequent: {
+        type: "BlockStatement",
+        loc: {
+          start: { line: 8, column: 22 },
+          end: { line: 12, column: 3 },
+        },
+      },
+    };
+
+    const parent: any = {
+      type: "IfStatement",
+      alternate: elseIfNode,
+    };
+
+    const beforeText = gatherBranchCommentText(
+      sourceCode as any,
+      elseIfNode,
+      parent,
+      "before" as AnnotationPlacement,
+    );
+
+    expect(beforeText).toContain(
+      "@story docs/stories/026.0-DEV-BRANCH-ANNOTATIONS-ELSE-BRANCHES.story.md",
+    );
+    expect(beforeText).toContain("@req REQ-BEFORE-ELSE");
+
+    const insideText = gatherBranchCommentText(
+      sourceCode as any,
+      elseIfNode,
+      parent,
+      "inside" as AnnotationPlacement,
+    );
+
+    expect(insideText).toBe("");
+    expect(insideText).not.toContain("REQ-BEFORE-ELSE");
+    expect(insideText).not.toContain(
+      "docs/stories/026.0-DEV-BRANCH-ANNOTATIONS-ELSE-BRANCHES.story.md",
+    );
+  });
 });

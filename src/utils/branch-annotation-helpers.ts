@@ -1,6 +1,10 @@
 import type { Rule } from "eslint";
 import { reportMissingAnnotations } from "./branch-annotation-report-helpers";
 import { gatherLoopCommentText } from "./branch-annotation-loop-helpers";
+import {
+  gatherElseIfCommentText,
+  isElseIfBranch,
+} from "./branch-annotation-if-helpers";
 const PRE_COMMENT_OFFSET = 2; // number of lines above branch to inspect for comments
 
 /**
@@ -187,16 +191,6 @@ export function scanCommentLinesInRange(
   return comments.join(" ");
 }
 
-/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-function isElseIfBranch(node: any, parent: any | undefined): boolean {
-  return (
-    node &&
-    node.type === "IfStatement" &&
-    parent &&
-    parent.type === "IfStatement" &&
-    parent.alternate === node
-  );
-}
 function getInsideCatchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
@@ -330,153 +324,6 @@ function gatherSimpleIfCommentText(
 }
 
 /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-function scanElseIfPrecedingComments(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-): string {
-  const lines = sourceCode.lines;
-
-  if (!node.loc || !node.loc.start || typeof node.loc.start.line !== "number") {
-    return "";
-  }
-
-  const startLine = node.loc.start.line - 1;
-  const comments: string[] = [];
-  let i = startLine - 1;
-  let scanned = 0;
-
-  while (i >= 0 && scanned < PRE_COMMENT_OFFSET) {
-    const commentText = getCommentTextAtLine(lines, i);
-    if (!commentText) {
-      break;
-    }
-
-    comments.unshift(commentText);
-    i--;
-    scanned++;
-  }
-
-  return comments.join(" ");
-}
-
-/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-function hasValidElseIfBlockLoc(node: any): boolean {
-  const hasBlockConsequent =
-    node.consequent &&
-    node.consequent.type === "BlockStatement" &&
-    node.consequent.loc &&
-    node.consequent.loc.start;
-
-  return !!(
-    node.test &&
-    node.test.loc &&
-    node.test.loc.end &&
-    hasBlockConsequent
-  );
-}
-
-/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-function scanElseIfBetweenConditionAndBody(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-): string {
-  const lines = sourceCode.lines;
-  const conditionEndLine: number = node.test.loc.end.line;
-  const consequentStartLine: number = node.consequent.loc.start.line;
-
-  // Lines in sourceCode are 0-based indexes, but loc.line values are 1-based.
-  // We want to scan comments strictly between the condition and the
-  // consequent body, so we start at the line after the condition's end and
-  // stop at the line immediately before the consequent's starting line.
-  const startIndex = conditionEndLine; // already the next logical line index when 0-based
-  const endIndexExclusive = consequentStartLine - 1;
-
-  if (endIndexExclusive <= startIndex) {
-    return "";
-  }
-
-  return scanCommentLinesInRange(lines, startIndex, endIndexExclusive - 1);
-}
-
-/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
-function scanElseIfInsideBlockComments(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-): string {
-  const lines = sourceCode.lines;
-  const consequentStartLine: number = node.consequent.loc.start.line;
-
-  const comments: string[] = [];
-  // Intentionally start from the block's start line (using the same 1-based line value as provided by the parser)
-  // so that, when indexing into sourceCode.lines, this corresponds to the first logical line inside the block body
-  // for typical formatter layouts.
-  let lineIndex = consequentStartLine;
-
-  while (lineIndex < lines.length) {
-    if (!collectCommentLine(lines, lineIndex, comments)) {
-      break;
-    }
-    lineIndex++;
-  }
-
-  return comments.join(" ");
-}
-
-/**
- * Gather annotation text for IfStatement else-if branches, supporting comments placed
- * before the else keyword, between the else-if condition and the consequent body,
- * and in the first comment-only lines inside the consequent block body.
- * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports REQ-DUAL-POSITION-DETECTION
- * @supports REQ-FALLBACK-LOGIC
- */
-function gatherElseIfCommentText(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-  parent: any | undefined,
-  beforeText: string,
-): string {
-  if (
-    beforeText &&
-    (/@story\b/.test(beforeText) ||
-      /@req\b/.test(beforeText) ||
-      /@supports\b/.test(beforeText))
-  ) {
-    return beforeText;
-  }
-
-  if (!isElseIfBranch(node, parent)) {
-    return beforeText;
-  }
-
-  const beforeElseText = scanElseIfPrecedingComments(sourceCode, node);
-  if (
-    beforeElseText &&
-    (/@story\b/.test(beforeElseText) ||
-      /@req\b/.test(beforeElseText) ||
-      /@supports\b/.test(beforeElseText))
-  ) {
-    return beforeElseText;
-  }
-
-  if (!hasValidElseIfBlockLoc(node)) {
-    return beforeText;
-  }
-
-  const betweenText = scanElseIfBetweenConditionAndBody(sourceCode, node);
-  if (betweenText) {
-    return betweenText;
-  }
-
-  const insideText = scanElseIfInsideBlockComments(sourceCode, node);
-  if (insideText) {
-    return insideText;
-  }
-
-  return beforeText;
-}
-
-/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
 function gatherSwitchCaseCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
@@ -492,10 +339,17 @@ function gatherSwitchCaseCommentText(
   return comments.join(" ");
 }
 
-function gatherBranchCommentTextByType(
+/**
+ * Helper that gathers comment text for non-IfStatement branch types using
+ * straightforward behavior (SwitchCase, CatchClause, and loop statements).
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @supports REQ-COMMENT-ASSOCIATION
+ * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ * @supports REQ-PLACEMENT-CONFIG
+ */
+function gatherNonIfBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
-  parent: any | undefined,
   context: { annotationPlacement: AnnotationPlacement; beforeText: string },
 ): string | null {
   const { annotationPlacement, beforeText } = context;
@@ -506,18 +360,6 @@ function gatherBranchCommentTextByType(
 
   if (node.type === "CatchClause") {
     return gatherCatchClauseCommentText(
-      sourceCode,
-      node,
-      annotationPlacement,
-      beforeText,
-    );
-  }
-
-  if (node.type === "IfStatement") {
-    if (isElseIfBranch(node, parent)) {
-      return gatherElseIfCommentText(sourceCode, node, parent, beforeText);
-    }
-    return gatherSimpleIfCommentText(
       sourceCode,
       node,
       annotationPlacement,
@@ -541,6 +383,87 @@ function gatherBranchCommentTextByType(
   }
 
   return null;
+}
+
+/**
+ * Helper that gathers comment text for IfStatement branches, including both
+ * simple if and else-if specific logic.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @supports REQ-COMMENT-ASSOCIATION
+ * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * @supports REQ-DUAL-POSITION-DETECTION
+ * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ * @supports REQ-PLACEMENT-CONFIG
+ * @supports REQ-DEFAULT-BACKWARD-COMPAT
+ */
+function gatherIfBranchCommentText(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  parent: any | undefined,
+  context: { annotationPlacement: AnnotationPlacement; beforeText: string },
+): string | null {
+  const { annotationPlacement, beforeText } = context;
+
+  if (node.type !== "IfStatement") {
+    return null;
+  }
+
+  if (isElseIfBranch(node, parent)) {
+    return gatherElseIfCommentText(sourceCode, node, parent, {
+      annotationPlacement,
+      beforeText,
+    });
+  }
+
+  return gatherSimpleIfCommentText(
+    sourceCode,
+    node,
+    annotationPlacement,
+    beforeText,
+  );
+}
+
+/**
+ * Internal helper that performs type-based dispatch for gathering branch comment text.
+ * This keeps the public gatherBranchCommentTextByType wrapper small for ESLint limits.
+ * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * @supports REQ-COMMENT-ASSOCIATION
+ * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * @supports REQ-DUAL-POSITION-DETECTION
+ * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ * @supports REQ-PLACEMENT-CONFIG
+ */
+function gatherBranchCommentTextByTypeInternal(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  parent: any | undefined,
+  context: { annotationPlacement: AnnotationPlacement; beforeText: string },
+): string | null {
+  const nonIfResult = gatherNonIfBranchCommentText(sourceCode, node, context);
+  if (nonIfResult != null) {
+    return nonIfResult;
+  }
+
+  const ifResult = gatherIfBranchCommentText(sourceCode, node, parent, context);
+  if (ifResult != null) {
+    return ifResult;
+  }
+
+  return null;
+}
+
+function gatherBranchCommentTextByType(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  node: any,
+  parent: any | undefined,
+  context: { annotationPlacement: AnnotationPlacement; beforeText: string },
+): string | null {
+  return gatherBranchCommentTextByTypeInternal(
+    sourceCode,
+    node,
+    parent,
+    context,
+  );
 }
 
 /**
