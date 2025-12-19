@@ -259,7 +259,7 @@ describe('Vitest suite', () => {
         errors: [
           {
             messageId: "missingStory",
-            suggestions: 1,
+            suggestions: 1 as any, // satisfy TypeScript's SuggestionOutput[] typing while asserting suggestion count
           },
         ],
       },
