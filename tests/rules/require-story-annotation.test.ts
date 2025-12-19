@@ -259,6 +259,7 @@ describe('Vitest suite', () => {
         errors: [
           {
             messageId: "missingStory",
+            suggestions: 1,
           },
         ],
       },
