@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Unit tests for else-if insert position calculation.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md

@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Unit tests for branch annotation helpers
  * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md

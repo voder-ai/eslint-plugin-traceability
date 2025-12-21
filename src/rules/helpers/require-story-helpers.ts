@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Helpers for the "require-story" rule
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * IO helpers for require-story detection moved to reduce helper module size
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

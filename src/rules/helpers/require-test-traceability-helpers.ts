@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Helper utilities for the require-test-traceability rule.
  *

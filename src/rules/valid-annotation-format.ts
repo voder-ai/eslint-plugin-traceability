@@ -24,7 +24,9 @@ function handleImplementsLine(
   },
 ): PendingAnnotation | null {
   const { context, comment, options } = deps;
-  const isImplements = /@supports\b/.test(normalized);
+  // Only match `@supports` at the START of the normalized line to avoid
+  // false matches when this keyword appears in prose
+  const isImplements = /^@supports\b/.test(normalized);
   if (!isImplements) {
     return pending;
   }
@@ -44,8 +46,10 @@ function handleStoryOrReqLine(
   },
 ): PendingAnnotation | null {
   const { context, comment, options } = deps;
-  const isStory = /@story\b/.test(normalized);
-  const isReq = /@req\b/.test(normalized);
+  // Only match `@story`/`@req` at the START of the normalized line to avoid
+  // false matches when these keywords appear in prose (e.g., "@returns ... `@story` annotations")
+  const isStory = /^@story\b/.test(normalized);
+  const isReq = /^@req\b/.test(normalized);
 
   if (!isStory && !isReq) {
     return pending;
@@ -136,7 +140,7 @@ function processCommentLine({
     return afterStoryOrReq;
   }
 
-  // Implement JSDoc tag coexistence behavior: terminate @story/@req values when a new non-traceability JSDoc tag line (e.g., @param, @returns) is encountered.
+  // Implement JSDoc tag coexistence behavior: terminate `@story`/`@req` values when a new non-traceability JSDoc tag line (e.g., @param, @returns) is encountered.
   // @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md REQ-ANNOTATION-TERMINATION REQ-CONTINUATION-LOGIC
   if (isNonTraceabilityJSDocTagLine(normalized)) {
     finalizePendingAnnotation(context, comment, options, pending);
@@ -153,13 +157,13 @@ function processCommentLine({
 }
 
 /**
- * Process a single comment node and validate any @story/@req/@supports annotations it contains.
+ * Process a single comment node and validate any `@story`/`@req`/`@supports` annotations it contains.
  *
- * Supports @story and @req annotations whose values span multiple lines within the same
+ * Supports `@story` and `@req` annotations whose values span multiple lines within the same
  * comment block, collapsing whitespace so that the logical value can be
  * validated against the configured patterns.
  *
- * @supports annotations are validated immediately per-line and are not
+ * `@supports` annotations are validated immediately per-line and are not
  * accumulated into pending multi-line state.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
@@ -247,8 +251,8 @@ export default {
     },
     schema: getRuleSchema(),
     /**
-     * This rule's fixable support is limited to safe @story path suffix normalization per Story 008.0.
-     * Fixes are limited strictly to adjusting the suffix portion of the @story path (e.g., adding
+     * This rule's fixable support is limited to safe `@story` path suffix normalization per Story 008.0.
+     * Fixes are limited strictly to adjusting the suffix portion of the `@story` path (e.g., adding
      * `.md` or `.story.md`), preserving all other comment text and whitespace exactly as written.
      *
      * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -280,7 +284,7 @@ export default {
 
     return {
       /**
-       * Program-level handler that inspects all comments for @story, @req, and @supports tags
+       * Program-level handler that inspects all comments for `@story`, `@req`, and `@supports` tags
        *
        * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
        * @story docs/stories/008.0-DEV-AUTO-FIX.story.md

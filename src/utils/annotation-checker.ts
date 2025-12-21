@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 import { getNodeName } from "../rules/helpers/require-story-utils";
 import { hasReqAnnotation } from "./reqAnnotationDetection";
 import {

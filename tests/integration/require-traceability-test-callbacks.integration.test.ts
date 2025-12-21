@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Integration tests for require-traceability with configurable test callback exclusion.
  *

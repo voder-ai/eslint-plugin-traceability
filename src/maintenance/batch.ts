@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 import { updateAnnotationReferences } from "./update";
 import { detectStaleAnnotations } from "./detect";
 

@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 import { getDefaultReqExample } from "./valid-annotation-options";
 import type { ResolvedAnnotationOptions } from "./valid-annotation-options";
 

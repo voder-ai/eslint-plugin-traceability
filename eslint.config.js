@@ -109,11 +109,11 @@ module.exports = [
       "no-undef": "off",
       "no-console": "off",
       "no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
-      // ...(plugin.rules
-      //   ? {
-      //       "traceability/valid-annotation-format": "error",
-      //     }
-      //   : {}),
+      ...(plugin.rules
+        ? {
+            "traceability/valid-annotation-format": "error",
+          }
+        : {}),
     },
   },
   {
@@ -139,9 +139,9 @@ module.exports = [
       "no-implied-eval": "error",
       "no-new-func": "error",
       "no-new-wrappers": "error",
-      // ...(plugin.rules ? {
-      //   "traceability/valid-annotation-format": "error",
-      // } : {}),
+      ...(plugin.rules ? {
+        "traceability/valid-annotation-format": "error",
+      } : {}),
     },
   },
   {

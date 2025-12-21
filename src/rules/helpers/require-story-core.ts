@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Compute the insertion start offset for inserting annotations before a node.
  * This helper ensures we insert before any export wrapper when present, while

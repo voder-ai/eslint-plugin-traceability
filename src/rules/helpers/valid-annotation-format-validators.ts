@@ -7,9 +7,9 @@
  * to read while still preserving all existing behavior.
  *
  * The implementation in this module supports:
- * - validation of @story annotations
- * - validation of @req annotations
- * - validation of @implements/@supports-style annotations
+ * - validation of `@story` annotations
+ * - validation of `@req` annotations
+ * - validation of `@implements`/`@supports`-style annotations
  * - safe, minimal auto-fixes for certain invalid formats
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
@@ -51,9 +51,9 @@ import type { PendingAnnotation } from "./valid-annotation-format-internal";
 import { getResolvedDefaults } from "./valid-annotation-options";
 
 /**
- * Report an invalid @story annotation without applying a fix.
+ * Report an invalid `@story` annotation without applying a fix.
  *
- * The invalid @story annotation is detected and reported but left unchanged.
+ * The invalid `@story` annotation is detected and reported but left unchanged.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -74,10 +74,10 @@ export function reportInvalidStoryFormat(
 }
 
 /**
- * Compute the text replacement for an invalid @story annotation within a comment.
+ * Compute the text replacement for an invalid `@story` annotation within a comment.
  *
  * This helper:
- *   - finds the @story tag in the raw comment text,
+ *   - finds the `@story` tag in the raw comment text,
  *   - computes the character range of its value,
  *   - and returns an ESLint fix that replaces only that range.
  *
@@ -127,7 +127,7 @@ export function createStoryFix(
 }
 
 /**
- * Report an invalid @story annotation and attempt a minimal, safe auto-fix
+ * Report an invalid `@story` annotation and attempt a minimal, safe auto-fix
  * for common path suffix issues by locating and replacing the path text
  * within the original comment.
  *
@@ -176,10 +176,10 @@ export function reportInvalidStoryFormatWithFix(
 }
 
 /**
- * Validate a @story annotation value and report detailed errors when needed.
+ * Validate a `@story` annotation value and report detailed errors when needed.
  * Where safe and unambiguous, apply an automatic fix for missing suffixes.
  *
- * Processing of @story values includes:
+ * Processing of `@story` values includes:
  *   - trimming whitespace,
  *   - collapsing multi-line text,
  *   - matching against the configured story regex,
@@ -247,7 +247,7 @@ export function validateStoryAnnotation(
 }
 
 /**
- * Validate a @req annotation value and report detailed errors when needed.
+ * Validate a `@req` annotation value and report detailed errors when needed.
  *
  * This behavior covers:
  *   - detecting missing identifiers,
@@ -281,36 +281,47 @@ export function validateReqAnnotation(
     return;
   }
 
-  const collapsed = collapseAnnotationValue(trimmed);
-  // Allow mixed @req/@supports lines to pass without additional @req validation,
-  // while still validating simple multi-line @req identifiers that collapse
-  // to a single token.
-  if (collapsed.includes("@supports")) {
+  // Allow mixed `@req`/`@supports` lines to pass without additional `@req` validation.
+  if (trimmed.includes("@supports")) {
     return;
   }
 
-  const reqPattern = options.reqPattern;
+  const tokens = trimmed.split(/\s+/).filter(Boolean);
+  let reqId = tokens[0] || trimmed;
+
+  for (let index = 1; index < tokens.length; index += 1) {
+    const token = tokens[index];
+    if (token === "-" || token === "–" || token === "—") break;
+
+    const candidate = `${reqId}${token}`;
+    if (reqId.endsWith("-") || options.reqPattern.test(candidate)) {
+      reqId = candidate;
+      continue;
+    }
+
+    break;
+  }
 
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
   // @req REQ-REQ-FORMAT - Flag @req identifiers that do not match the configured pattern
-  if (!reqPattern.test(collapsed)) {
+  if (!options.reqPattern.test(reqId)) {
     context.report({
       node: comment as any,
       messageId: "invalidReqFormat",
-      data: { details: buildReqErrorMessage("invalid", collapsed, options) },
+      data: { details: buildReqErrorMessage("invalid", reqId, options) },
     });
   }
 }
 
 /**
- * Validate an @supports annotation value and report detailed errors when needed.
+ * Validate an `@supports` annotation value and report detailed errors when needed.
  *
  * Expected format:
- *   @supports <storyPath> <REQ-ID> [<REQ-ID> ...]
+ *   `@supports <storyPath> <REQ-ID> [<REQ-ID> ...]`
  *
  * Validation rules:
  *   - Value must include at least a story path and one requirement ID.
- *   - Story path must match the same storyPattern used for @story (no auto-fix).
+ *   - Story path must match the same storyPattern used for `@story` (no auto-fix).
  *   - Each subsequent token must match reqPattern and is validated individually.
  *
  * Story path issues are reported with "invalidImplementsFormat" and

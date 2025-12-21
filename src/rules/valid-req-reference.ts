@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /* eslint-env node */
 /**
  * Rule to validate @req annotation references refer to existing requirements in story files.

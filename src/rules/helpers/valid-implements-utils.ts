@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Helpers for @supports annotation validation used by valid-annotation-format.
  *

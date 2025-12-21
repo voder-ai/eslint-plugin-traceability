@@ -21,7 +21,7 @@ export interface PendingAnnotation {
  * boundaries), keeps any annotation tags that appear later in the line, and
  * supports common JSDoc styles such as leading "*".
  *
- * It detects @story, @req, and @supports tags while preserving the rest
+ * It detects `@story`, `@req`, and `@supports` tags while preserving the rest
  * of the line for downstream logic.
  */
 export function normalizeCommentLine(rawLine: string): string {
@@ -52,7 +52,7 @@ export function normalizeCommentLine(rawLine: string): string {
  * Detect whether a normalized comment line starts with a non-traceability JSDoc tag.
  *
  * This is used to distinguish regular JSDoc tags (e.g. @param, @returns) from
- * traceability-related annotations such as @story, @req, and @supports.
+ * traceability-related annotations such as `@story`, `@req`, and `@supports`.
  *
  * Supports coexistence with JSDoc by:
  * - Detecting boundaries between traceability tags and other tags

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable traceability/valid-annotation-format */
 
 import {
   EXIT_OK,

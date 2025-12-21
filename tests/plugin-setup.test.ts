@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Tests for: docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md

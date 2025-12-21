@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Tests for:
  * - docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md

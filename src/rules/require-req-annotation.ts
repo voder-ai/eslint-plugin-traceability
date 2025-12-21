@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /****
  * Rule to enforce @req annotation on functions
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

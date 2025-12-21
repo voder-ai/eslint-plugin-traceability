@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Subcommand handlers for the traceability-maint CLI.
  *

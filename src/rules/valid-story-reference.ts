@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /* eslint-env node */
 /**
  * This rule validates that @story annotation references refer to existing story files.

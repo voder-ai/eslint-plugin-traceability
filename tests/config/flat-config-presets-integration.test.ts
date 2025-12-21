@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Tests for: docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
  * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md

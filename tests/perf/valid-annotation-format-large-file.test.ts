@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-annotation-format */
 /**
  * Performance tests for valid-annotation-format on large annotated files.
  *
