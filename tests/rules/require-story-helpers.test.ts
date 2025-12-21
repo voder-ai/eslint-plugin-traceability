@@ -11,7 +11,6 @@ import {
 import {
   getAnnotationTemplate,
   resolveTargetNode,
-  getNodeName,
   shouldProcessNode,
   linesBeforeHasStory,
   fallbackTextBeforeHasStory,
@@ -19,6 +18,7 @@ import {
   DEFAULT_SCOPE,
   reportMissing,
 } from "../../src/rules/helpers/require-story-helpers";
+import { getNodeName } from "../../src/rules/helpers/require-story-utils";
 
 describe("Require Story Helpers (Story 003.0)", () => {
   test("createAddStoryFix uses parent range start when available", () => {
