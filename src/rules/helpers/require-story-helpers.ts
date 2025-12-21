@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Helpers for the "require-story" rule
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -177,6 +176,7 @@ function requiresOwnFunctionAnnotation(
 
 /**
  * Determine if a node is in an export declaration
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Check node ancestry to find export declarations
  */
@@ -195,7 +195,8 @@ function isExportedNode(node: any): boolean {
 }
 
 /**
- * Check whether the JSDoc associated with node contains @story
+ * Check whether the JSDoc associated with node contains `@story`
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Extract JSDoc based detection into helper
  */
@@ -212,7 +213,8 @@ function jsdocHasStory(sourceCode: any, node: any): boolean {
 }
 
 /**
- * Check whether comments returned by sourceCode.getCommentsBefore contain @story
+ * Check whether comments returned by sourceCode.getCommentsBefore contain `@story`
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Extract comment-before detection into helper
  */
@@ -230,7 +232,8 @@ function commentsBeforeHasStory(sourceCode: any, node: any): boolean {
 }
 
 /**
- * Check whether leadingComments attached to the node contain @story
+ * Check whether leadingComments attached to the node contain `@story`
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Extract leadingComments detection into helper
  */
@@ -245,8 +248,9 @@ function leadingCommentsHasStory(node: any): boolean {
 }
 
 /**
- * Check if @story annotation already present in JSDoc or preceding comments
+ * Check if `@story` annotation already present in JSDoc or preceding comments.
  * Consolidates a variety of heuristics through smaller helpers.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Detect existing story annotations in JSDoc or comments
  */
@@ -352,6 +356,7 @@ function hasStoryAnnotationWithPlacement(
 
 /**
  * Determine AST node where annotation should be inserted
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Determine correct insertion target for annotation
  */
@@ -384,6 +389,7 @@ function resolveTargetNode(sourceCode: any, node: any): any {
 
 /**
  * Extract a direct Identifier name when available on the given node.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Extract direct Identifier-based names from nodes
  */
@@ -401,6 +407,7 @@ function getDirectIdentifierName(node: any): string | null {
 
 /**
  * Normalize container nodes that expose names via id/key properties.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Normalize container id/key-based names into a single helper
  */
@@ -436,6 +443,7 @@ function getContainerKeyOrIdName(node: any): string | null {
 
 /**
  * Small utility to walk the node and its parents to extract an Identifier or key name.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Walk node and parents to find Identifier/Key name
  */
@@ -496,6 +504,7 @@ function shouldProcessNode(
 
 /**
  * Resolve the effective function name to report for a node.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Centralize reported function name resolution
  */
@@ -506,6 +515,7 @@ function getReportedFunctionName(node: any): string {
 
 /**
  * Determine the most appropriate AST node to anchor error location for a report.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Normalize name node selection for error reporting
  */
@@ -522,8 +532,9 @@ function getNameNodeForReport(node: any): any {
 }
 
 /**
- * Resolve the node that should receive the @story annotation,
+ * Resolve the node that should receive the `@story` annotation,
  * respecting an explicitly passed target when provided.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Centralize annotation target node resolution
  */
@@ -589,6 +600,7 @@ function reportMethod(
 
 /**
  * Explicit exports for require-story-annotation helpers.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED
  */

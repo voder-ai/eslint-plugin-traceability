@@ -1,16 +1,15 @@
 ## NOW
 
 ### Rule 1: valid-annotation-format (Format Validation)
-- [ ] Enable `traceability/valid-annotation-format` at `error` for `src/**` and `tests/**`
-- [ ] Run linter to identify all files with format violations
-- [ ] Add `/* eslint-disable traceability/valid-annotation-format */` to top of each violating file
-- [ ] Commit: "chore(lint): enable valid-annotation-format with file suppressions"
-- [ ] For each suppressed file (one at a time):
-  - [ ] Remove the eslint-disable comment from the file
-  - [ ] Fix all format violations (or fix plugin bugs if errors are incorrect)
-  - [ ] Run linter to verify file now passes
-  - [ ] Run all tests to ensure no breakage
-  - [ ] Commit: "fix(traceability): correct annotation format in [filename]"
+- [x] Enable `traceability/valid-annotation-format` at `error` for `src/**` and `tests/**`
+- [x] Run linter to identify all files with format violations
+- [x] Add `/* eslint-disable traceability/valid-annotation-format */` to top of each violating file (baseline)
+- [x] Commit and push baseline + plugin fixes (completed in `fix(rules): harden valid-annotation-format parsing`)
+- [ ] For each suppressed file (one at a time, one commit per file):
+  - [ ] Remove the `/* eslint-disable traceability/valid-annotation-format */` comment from the file
+  - [ ] Fix all `traceability/valid-annotation-format` violations in that file
+  - [ ] Run `npm run lint` (and optionally `npm test` if the file is non-trivial)
+  - [ ] Commit: "fix(traceability): remove valid-annotation-format suppression in [filename]"
 - [ ] Verify no files remain with suppressions for this rule
 
 ### Rule 2: valid-story-reference (Story File Validation)

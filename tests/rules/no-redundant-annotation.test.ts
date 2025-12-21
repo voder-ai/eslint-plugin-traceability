@@ -7,6 +7,7 @@
  * @req REQ-SAFE-REMOVAL - Verify that auto-fix removes only redundant annotations and preserves code
  * @req REQ-DIFFERENT-REQUIREMENTS - Verify that annotations with different requirement IDs are preserved
  * @req REQ-CATCH-BLOCK-HANDLING - Verify that catch block annotations are not incorrectly treated as redundant
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-DUPLICATION-DETECTION REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL REQ-DIFFERENT-REQUIREMENTS REQ-CATCH-BLOCK-HANDLING REQ-SUPPORTS-COVERAGE REQ-SCOPE-INHERITANCE REQ-CONFIGURABLE-STRICTNESS
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/no-redundant-annotation";

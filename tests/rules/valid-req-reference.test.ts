@@ -8,6 +8,8 @@
  * @req REQ-ERROR-SPECIFIC - Verify requirement-level errors identify the exact missing requirement
  * @req REQ-ERROR-CONTEXT - Verify requirement-level errors include relevant story path context
  * @req REQ-ERROR-CONSISTENCY - Verify requirement-level error messages are consistent across cases
+ * @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE REQ-DEEP-BULLET REQ-DEEP-IMPLEMENTS REQ-DEEP-MATCH
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONTEXT REQ-ERROR-CONSISTENCY
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/valid-req-reference";
