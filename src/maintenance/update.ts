@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import * as fs from "fs";
 import { getAllFiles } from "./utils";
 

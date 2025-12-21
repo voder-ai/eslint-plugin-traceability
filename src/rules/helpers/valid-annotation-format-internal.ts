@@ -39,13 +39,25 @@ export function normalizeCommentLine(rawLine: string): string {
     " ".repeat(match.length),
   );
 
-  const annotationMatch = filtered.match(/@story\b|@req\b|@supports\b/);
-  if (!annotationMatch || annotationMatch.index === undefined) {
-    const withoutLeadingStar = filtered.replace(/^\*\s?/, "");
+  // Remove leading star first to normalize JSDoc format
+  const withoutLeadingStar = filtered.replace(/^\*\s?/, "");
+
+  // Check if the line starts with a non-traceability JSDoc tag (e.g., @param, @returns)
+  // If so, return the whole line as-is to avoid false positives where annotation
+  // keywords appear in the tag's description (e.g., "`@returns` ... `@story` annotations")
+  if (/^@(?!story\b|req\b|supports\b)/.test(withoutLeadingStar)) {
     return withoutLeadingStar;
   }
 
-  return filtered.slice(annotationMatch.index);
+  // Otherwise, check for traceability annotations and slice to them if found
+  const annotationMatch = withoutLeadingStar.match(
+    /@story\b|@req\b|@supports\b/,
+  );
+  if (!annotationMatch || annotationMatch.index === undefined) {
+    return withoutLeadingStar;
+  }
+
+  return withoutLeadingStar.slice(annotationMatch.index);
 }
 
 /**

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bundle>
+  <projectRoot>/Users/tomhoward/Projects/eslint-plugin-traceability</projectRoot>
+  <mode>copilot</mode>
+  <foundationGate>
+    <thresholdPercentage>80</thresholdPercentage>
+    <isFoundationAcceptable>false</isFoundationAcceptable>
+    <failingDimensions>
+      <dimensionId>dependencies</dimensionId>
+      <dimensionId>code-quality</dimensionId>
+      <dimensionId>version-control</dimensionId>
+    </failingDimensions>
+    <reason>Functionality assessment skipped because the following dimensions are below 80%: dependencies, code-quality, version-control.</reason>
+  </foundationGate>
+  <nonFunctionalDimensions>
+    <dimension>
+      <id>dependencies</id>
+      <label>Dependencies</label>
+      <percentage>40</percentage>
+      <issues>
+        <issue>@eslint/js: current 9.39.1 &lt; latest 9.39.2 (mature upgrade available)</issue>
+        <issue>@semantic-release/npm: current 13.1.2 &lt; latest 13.1.3 (mature upgrade available)</issue>
+        <issue>eslint: current 9.39.1 &lt; latest 9.39.2 (mature upgrade available)</issue>
+      </issues>
+    </dimension>
+    <dimension>
+      <id>testing</id>
+      <label>Testing</label>
+      <percentage>92</percentage>
+      <issues>
+        <issue>2 test files missing @supports annotations (no-redundant-annotation.test.ts, valid-req-reference.test.ts)</issue>
+        <issue>Test command runs in non-interactive mode only with --ci --bail flags (acceptable but not explicit --no-watch)</issue>
+        <issue>36 instances of generic test data names (foo, bar, user123) - consider more meaningful names</issue>
+        <issue>1 formatting issue in src/rules/helpers/valid-annotation-format-internal.ts (minor, not blocking)</issue>
+      </issues>
+    </dimension>
+    <dimension>
+      <id>execution</id>
+      <label>Execution</label>
+      <percentage>88</percentage>
+      <issues>
+        <issue>Build Process (20%): 95% - Build completes successfully with TypeScript compilation producing correct outputs in lib/. Minor lint warning present in src/maintenance/update.ts about unused eslint-disable directive.</issue>
+        <issue>Execution Environment (25%): 100% - Plugin loads correctly as ESLint library, CLI executable works, smoke test passes (creates temp dir, installs package, verifies loading, tests CLI commands). Proper temp directory usage in tests. Application type: ESLint plugin library with CLI.</issue>
+        <issue>Runtime Behavior (25%): 95% - All 513 tests pass successfully. Core functionality validated through comprehensive test suite. CLI integration tests verify plugin registers and enforces rules correctly. Error handling present with try-catch blocks. Minor formatting issue detected in one file (valid-annotation-format-internal.ts).</issue>
+        <issue>Performance (15%): 85% - Caching implemented for filesystem checks (fileExistStatusCache) and requirement ID lookups (reqCache in valid-req-reference-helpers.ts). No N+1 query patterns (not a database application). Minor concern: regex.exec in while loops processes file contents but appears reasonable for single-pass parsing. Object creation in loops exists but limited to result objects.</issue>
+        <issue>End-to-End (15%): 90% - Complete test suite executes locally (56 test suites, 513 tests in ~7s). Integration tests validate CLI behavior and plugin registration. Smoke test verifies end-to-end package installation and usage. Tests use proper temp directories. Type checking passes cleanly.</issue>
+      </issues>
+    </dimension>
+    <dimension>
+      <id>code-quality</id>
+      <label>Code Quality</label>
+      <percentage>73</percentage>
+      <issues>
+        <issue>Linting: 1 unused eslint-disable directive warning (should be removed), linting halted on warnings, 28 eslint-disable directives found across src/</issue>
+        <issue>Formatting: 1 file formatting issue (src/rules/helpers/valid-annotation-format-internal.ts) causes check failure</issue>
+        <issue>Type Checking: Passes with no errors</issue>
+        <issue>Complexity: 1 source file (require-story-helpers.ts) exceeds max-lines limit (306 lines > 300 max); 6 files exceed 450-line limit suggesting need for refactoring (branch-annotation-helpers.ts:659, prefer-implements-annotation.ts:658, require-story-helpers.ts:616, valid-annotation-options.ts:536, no-redundant-annotation.ts:499, valid-req-reference-helpers.ts:453)</issue>
+        <issue>Duplication: 47 clones detected, 2.88% duplicated lines, 4.17% duplicated tokens - mostly in tests (acceptable) but some in src utilities (branch-annotation-helpers, require-story-visitors, require-story-core)</issue>
+        <issue>Code Smells: Multiple files exceed complexity/size limits, magic numbers and max-params disabled in tests (acceptable), no eval/implied-eval issues</issue>
+        <issue>AI Slop: 1 unused suppression directive indicates potential cleanup debt; 28 eslint-disable directives across src/ may hide quality issues</issue>
+        <issue>Suppressions: 28 eslint-disable directives in src/ files, 1 unused suppression in update.ts that should be removed, no TypeScript suppressions (@ts-ignore/@ts-nocheck) detected</issue>
+      </issues>
+    </dimension>
+    <dimension>
+      <id>version-control</id>
+      <label>Version Control</label>
+      <percentage>30</percentage>
+      <issues>
+        <issue>PENALTY CALCULATION:</issue>
+        <issue>Baseline: 90%</issue>
+        <issue>Missing pre-commit hooks: -30%</issue>
+        <issue>Missing pre-push hooks: -30%</issue>
+        <issue>Total penalties: -60% → Final score: 30%</issue>
+        <issue>Working tree has uncommitted changes outside .voder/ (2 modified files: src/maintenance/batch.ts, src/rules/helpers/valid-annotation-format-internal.ts)</issue>
+        <issue>Working tree has untracked assessment files in .voder/ (4 files)</issue>
+        <issue>Current branch: main (trunk-based development followed)</issue>
+        <issue>No unpushed commits detected</issue>
+        <issue>Build outputs correctly ignored (lib/, dist/, build/ in .gitignore)</issue>
+        <issue>No built artifacts tracked in version control</issue>
+        <issue>No generated test projects detected in version control</issue>
+        <issue>.voder/ is NOT entirely ignored (correctly tracked)</issue>
+        <issue>Only sample hooks present (.git/hooks/pre-commit.sample, .git/hooks/pre-push.sample) - no active pre-commit or pre-push hooks configured</issue>
+      </issues>
+    </dimension>
+    <dimension>
+      <id>documentation</id>
+      <label>Documentation</label>
+      <percentage>85</percentage>
+      <issues>
+        <issue>Link Format: README line 134 contains malformed nested link 'migration guide ([user-docs/migration-guide.md](user-docs/migration-guide.md))' - should use standard markdown link format</issue>
+        <issue>Code Documentation: require-traceability.ts (81 lines, rule composition wrapper) lacks function-level @story/@req/@supports annotations on named exported functions and significant branches despite project enforcing traceability annotations on all functions</issue>
+        <issue>Requirements Documentation: No comprehensive list of user-facing features/requirements visible in user-docs/ - users cannot easily map which requirements the plugin satisfies</issue>
+      </issues>
+    </dimension>
+    <dimension>
+      <id>security</id>
+      <label>Security</label>
+      <percentage>100</percentage>
+      <issues>
+      </issues>
+    </dimension>
+    <dimension>
+      <id>problems</id>
+      <label>Problems</label>
+      <percentage>100</percentage>
+      <issues>
+        <issue>No unresolved problems found</issue>
+        <issue>Open problems: 0</issue>
+        <issue>Known-error problems: 0</issue>
+        <issue>Closed problems: 0</issue>
+        <issue>Ready for new story development</issue>
+      </issues>
+    </dimension>
+    <dimension>
+      <id>pipeline</id>
+      <label>Pipeline</label>
+      <percentage>90</percentage>
+      <issues>
+        <issue>PENALTY CALCULATION:</issue>
+        <issue>Baseline: 90%</issue>
+        <issue>Total penalties: -0% → Final score: 90%</issue>
+        <issue>Pipeline Status: ✓ Latest run successful (20409291592) for commit 7c914f100b93923bec63f97dfa122e1c4686ecff on main branch</issue>
+        <issue>Configuration: ✓ Single unified workflow runs quality checks (build, tests, type-check, lint, format, duplication, traceability, security audit) across Node 18/20/22/24 matrix</issue>
+        <issue>Continuous Deployment: ✓ Automated semantic-release publishes to npm on main branch pushes (no manual gates, no tag-only triggers) - published v1.21.1</issue>
+        <issue>Post-Deployment: ✓ Smoke test validates published package (loads plugin, verifies version, tests ESLint config, tests CLI tool)</issue>
+        <issue>Security: ✓ npm audit (prod+dev), security:secrets (secretlint), safety:deps checks included</issue>
+        <issue>Actions: ✓ Modern versions (actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4)</issue>
+        <issue>Log Analysis: ✓ semantic-release successfully published v1.21.1 to npm and created GitHub release, smoke test passed validating package functionality</issue>
+      </issues>
+    </dimension>
+  </nonFunctionalDimensions>
+  <functionality>
+    <ran>false</ran>
+  </functionality>
+</bundle>
