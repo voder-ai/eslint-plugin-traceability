@@ -122,7 +122,6 @@ Traceability annotations are typically placed immediately adjacent to the code t
 - **Function-level (`traceability/require-story-annotation`, `traceability/require-req-annotation`)**
 
   Function-level rules support both before-function and inside-body placement, controlled by the same `annotationPlacement` option described above:
-
   - `"before"` – Annotations are written as JSDoc blocks immediately preceding the function, or as line comments placed directly before the function declaration or expression.
   - `"inside"` – Annotations are expected to appear on the first comment-only lines inside function and method bodies; comments before the function are ignored for block-bodied functions in this mode, while TypeScript declarations and signature-only nodes still rely on before-node annotations.
 
