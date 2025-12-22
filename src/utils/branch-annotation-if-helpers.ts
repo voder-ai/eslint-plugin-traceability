@@ -187,3 +187,80 @@ export function gatherElseIfCommentText(
 
   return beforeText;
 }
+/**
+ * Try to get comments from inside a node using getCommentsInside if available.
+ */
+function tryGetCommentsInsideNode(sourceCode: any, consequent: any): string {
+  const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
+
+  if (typeof getCommentsInside !== "function") {
+    return "";
+  }
+
+  try {
+    const insideComments =
+      (getCommentsInside as (_node: any) => any[])(consequent) || [];
+    const extractCommentValue = (c: any) => c.value;
+    return insideComments.map(extractCommentValue).join(" ");
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Scan for comments at the start of a block using line-based fallback.
+ */
+function scanBlockStartComments(sourceCode: any, consequent: any): string {
+  if (
+    !consequent.loc ||
+    !consequent.loc.start ||
+    !consequent.loc.end ||
+    typeof consequent.loc.start.line !== "number" ||
+    typeof consequent.loc.end.line !== "number"
+  ) {
+    return "";
+  }
+
+  const lines = sourceCode.lines;
+  const startIndex = consequent.loc.start.line - 1;
+  const endIndex = consequent.loc.end.line - 1;
+
+  const comments: string[] = [];
+  const lastIndex = Math.min(endIndex, lines.length - 1);
+  let i = startIndex + 1;
+
+  while (i <= lastIndex) {
+    const line = lines[i];
+    if (!line || !line.trim() || !/^\s*(\/\/|\/\*)/.test(line)) {
+      break;
+    }
+    comments.push(line.trim());
+    i++;
+  }
+
+  return comments.join(" ");
+}
+
+export function gatherSimpleIfCommentText(
+  sourceCode: any,
+  node: any,
+  annotationPlacement: "before" | "inside",
+  beforeText: string,
+): string {
+  if (annotationPlacement !== "inside") {
+    return beforeText;
+  }
+
+  if (!node.consequent || node.consequent.type !== "BlockStatement") {
+    return "";
+  }
+
+  const consequent = node.consequent;
+
+  const insideText = tryGetCommentsInsideNode(sourceCode, consequent);
+  if (insideText) {
+    return insideText;
+  }
+
+  return scanBlockStartComments(sourceCode, consequent);
+}

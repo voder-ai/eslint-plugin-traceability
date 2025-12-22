@@ -1,5 +1,4 @@
 /* eslint-disable traceability/valid-annotation-format */
-/* eslint-env node */
 /**
  * Helper utilities for the "valid-req-reference" rule.
  *

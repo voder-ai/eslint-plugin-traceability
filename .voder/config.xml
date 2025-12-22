@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thresholds>
+  <model>fixed</model>
+  <defaultNonFunctionalThreshold>80</defaultNonFunctionalThreshold>
+  <testing>70</testing>
+  <execution>80</execution>
+  <code-quality>70</code-quality>
+  <dependencies>80</dependencies>
+  <version-control>90</version-control>
+  <documentation>50</documentation>
+  <security>80</security>
+  <problems>80</problems>
+  <pipeline>80</pipeline>
+</thresholds>

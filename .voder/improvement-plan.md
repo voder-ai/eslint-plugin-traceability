@@ -1,27 +1,30 @@
 # Improvement Plan
 
-Focus area: Foundation gate failures blocking functionality assessment
-Priority: Three dimensions (version-control 30%, dependencies 40%, code-quality 73%) are below the 80% threshold, preventing functionality assessment. Version-control has the largest gap (-50%) due to missing pre-commit/pre-push hooks and uncommitted changes. Addressing this first will improve development workflow and unblock the foundation gate.
+Focus area: Code Quality & Documentation Refinement
+Priority: Foundation is acceptable (all dimensions ≥80%), but code-quality at 73% is weakest dimension. Functionality at 96.6% with minor gaps. Address quality issues before new features.
 
 ## NOW
 
-- Install pre-commit and pre-push hooks to enforce quality gates, then commit the 2 modified files (src/maintenance/batch.ts, src/rules/helpers/valid-annotation-format-internal.ts) and 4 untracked .voder/ files. Fix the formatting issue in valid-annotation-format-internal.ts and remove the unused eslint-disable directive in src/maintenance/update.ts before committing.
+- Refactor 4 files exceeding max-lines limit (branch-annotation-helpers.ts at 659, prefer-implements-annotation.ts at 658, valid-annotation-options.ts at 536, no-redundant-annotation.ts at 499). Extract cohesive modules to improve maintainability and reduce complexity. Target ≤450 lines per file.
   - Category: non-functional
-  - Reason: Version-control dimension scores only 30% due to -60% penalties from missing hooks. Installing hooks prevents quality regressions and aligns with project requirement to never bypass pre-commit hooks. Uncommitted changes must be resolved to establish clean baseline.
-  - Success criteria: Active pre-commit and pre-push hooks installed in .git/hooks/, working tree clean (no modified/untracked files outside .voder/), version-control dimension score ≥80%, formatting check passes, no unused eslint suppressions.
-  - Dimension: version-control
+  - Reason: code-quality dimension at 73% primarily due to complexity/size violations. Files exceeding limits by 46% indicate god object pattern. Addressing this improves readability, testability, and reduces duplication risk.
+  - Success criteria: All source files ≤450 lines. Extracted modules have clear single responsibilities. All tests pass. No new linting errors. code-quality dimension rises to ≥80%.
+  - Dimension: code-quality
 
 ## NEXT
 
-- Upgrade @eslint/js from 9.39.1 to 9.39.2, @semantic-release/npm from 13.1.2 to 13.1.3, and eslint from 9.39.1 to 9.39.2. Run full test suite and quality checks after upgrade.
-- Fix formatting issue in src/rules/helpers/valid-annotation-format-internal.ts (if not already fixed in NOW), remove unused eslint-disable directive in src/maintenance/update.ts, and refactor require-story-helpers.ts to reduce line count from 306 to ≤300 lines.
-- Add @supports annotations to no-redundant-annotation.test.ts and valid-req-reference.test.ts to document which features/stories each test validates.
+- Remove 26 eslint-disable directives for traceability/valid-annotation-format in src/ files. Ensure plugin source code conforms to its own rules or document justified exceptions in configuration.
+- Replace 3 deprecated eslint-env comments with modern ESLint flat config globals declarations.
+- Update README line 133 link from internal docs/rules/ to user-facing documentation (user-docs/ or published site). Ensure all README links point to public resources.
+- Update jsdocHasStory, commentsBeforeHasStory, leadingCommentsHasStory functions to check @supports in addition to @story. Align with scanLinesForMarker implementation.
+- Change default auto-fix template from @story to @supports. Update tests and documentation to reflect @supports as primary annotation format.
+- Push 4 commits currently ahead of origin/main to synchronize remote repository.
 
 ## LATER
 
-- Refactor 5 additional files exceeding 450-line limit (branch-annotation-helpers.ts:659, prefer-implements-annotation.ts:658, require-story-core.ts:616, valid-annotation-options.ts:536, no-redundant-annotation.ts:499, valid-req-reference-helpers.ts:453) to improve maintainability
-- Address code duplication in src utilities (branch-annotation-helpers, require-story-visitors, require-story-core) to reduce technical debt below 2% duplicated lines
-- Add @story/@req/@supports annotations to require-traceability.ts to enforce consistent traceability documentation
-- Create comprehensive requirements documentation in user-docs/ mapping user-facing features to satisfied requirements
-- Fix malformed nested link in README line 134 for migration guide reference
-- Review and reduce 28 eslint-disable directives in src/ to ensure no quality issues are hidden
+- Create missing rule documentation file (docs/rules/require-test-traceability.md) to complete story 020.0
+- Add explicit test coverage for edge cases in stories 002.0 (config error handling) and 004.0 (ternary/arrow/logical operators)
+- Reduce code duplication from 4.16% to <3% by extracting shared patterns in require-story-visitors.ts and require-story-core.ts
+- Enhance story 010.0 with explicit markdown section parsing instead of regex-based approach
+- Complete Definition of Done checklists for stories with unchecked items (code review, integration testing)
+- Investigate performance optimization opportunities for fs.readFileSync usage in hot paths

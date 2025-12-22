@@ -5,9 +5,19 @@ import { gatherLoopCommentText } from "./branch-annotation-loop-helpers";
 import {
   gatherElseIfCommentText,
   isElseIfBranch,
+  gatherSimpleIfCommentText,
 } from "./branch-annotation-if-helpers";
 import { gatherSwitchCaseCommentText } from "./branch-annotation-switch-helpers";
 import { createStoryFixer } from "./branch-annotation-story-fix-helpers";
+import {
+  getInsideCatchCommentText,
+  getInsideTryBlockCommentText,
+} from "./branch-annotation-catch-helpers";
+import { validateBranchTypes as validateBranchTypesImpl } from "./branch-validation";
+import {
+  extractCommentValue,
+  collectCommentLine,
+} from "./comment-text-helpers";
 
 /**
  * Valid branch types for require-branch-annotation rule.
@@ -47,110 +57,7 @@ export type AnnotationPlacement = "before" | "inside";
 export function validateBranchTypes(
   context: Rule.RuleContext,
 ): BranchType[] | Rule.RuleListener {
-  const options: any = context.options[0] || {};
-
-  /**
-   * Conditional branch checking whether branchTypes option was provided.
-   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-TRACEABILITY-CONDITIONAL - Trace configuration branch existence check
-   */
-  if (Array.isArray(options.branchTypes)) {
-    /**
-     * Predicate to determine whether a provided branch type is invalid.
-     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-     * @req REQ-TRACEABILITY-FILTER-CALLBACK - Trace filter callback for invalid branch type detection
-     */
-    function isInvalidType(t: any): boolean {
-      return !DEFAULT_BRANCH_TYPES.includes(t as BranchType);
-    }
-
-    const invalidTypes = options.branchTypes.filter(isInvalidType);
-    /**
-     * Conditional branch checking whether any invalid types were found.
-     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-     * @req REQ-TRACEABILITY-INVALID-DETECTION - Trace handling when invalid types are detected
-     */
-    if (invalidTypes.length > 0) {
-      /**
-       * Program listener produced when configuration is invalid.
-       * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-       * @req REQ-TRACEABILITY-PROGRAM-LISTENER - Trace Program listener reporting invalid config values
-       */
-      function ProgramHandler(node: any) {
-        /**
-         * Report a single invalid type for the given Program node.
-         * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-         * @req REQ-TRACEABILITY-FOR-EACH-CALLBACK - Trace reporting for each invalid type
-         */
-        function reportInvalidType(t: any) {
-          context.report({
-            node,
-            message: `Value "${t}" should be equal to one of the allowed values: ${DEFAULT_BRANCH_TYPES.join(
-              ", ",
-            )}`,
-          });
-        }
-        invalidTypes.forEach(reportInvalidType);
-      }
-      return { Program: ProgramHandler };
-    }
-  }
-
-  return Array.isArray(options.branchTypes)
-    ? (options.branchTypes as BranchType[])
-    : Array.from(DEFAULT_BRANCH_TYPES);
-}
-
-/**
- * Extract the raw value from a comment node.
- * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-TRACEABILITY-MAP-CALLBACK - Trace mapping of comment nodes to their text values
- */
-function extractCommentValue(_c: any): string {
-  return _c.value;
-}
-
-/**
- * Extract trimmed comment text for a given source line index or return null
- * when the line is blank or not a comment. This helper centralizes the
- * formatter-aware rules used by branch helpers when scanning for contiguous
- * comment lines around branches.
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
- * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
- * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF
- */
-function getCommentTextAtLine(lines: string[], index: number): string | null {
-  const line = lines[index];
-  if (!line || !line.trim()) {
-    return null;
-  }
-  if (!/^\s*(\/\/|\/\*)/.test(line)) {
-    return null;
-  }
-
-  return line.trim();
-}
-
-/**
- * Collect a single contiguous comment line at the given index, appending its
- * trimmed text to the accumulator. Returns true when a valid comment was
- * collected and false when scanning should stop (blank or non-comment line).
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
- * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
- * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF
- */
-function collectCommentLine(
-  lines: string[],
-  index: number,
-  comments: string[],
-): boolean {
-  const commentText = getCommentTextAtLine(lines, index);
-  if (!commentText) {
-    return false;
-  }
-
-  comments.push(commentText);
-  return true;
+  return validateBranchTypesImpl(context, DEFAULT_BRANCH_TYPES);
 }
 
 /**
@@ -191,71 +98,6 @@ export function scanCommentLinesInRange(
   }
 
   return comments.join(" ");
-}
-
-function getInsideCatchCommentText(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-): string {
-  const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
-  if (node.body && typeof getCommentsInside === "function") {
-    try {
-      const insideComments =
-        (getCommentsInside as (_node: any) => any[])(node.body) || [];
-      const insideText = insideComments.map(extractCommentValue).join(" ");
-      if (insideText) {
-        return insideText;
-      }
-    } catch {
-      // fall through to line-based fallback
-    }
-  }
-
-  if (node.body && node.body.loc && node.body.loc.start && node.body.loc.end) {
-    const lines = sourceCode.lines;
-    const startIndex = node.body.loc.start.line - 1;
-    const endIndex = node.body.loc.end.line - 1;
-
-    const insideText = scanCommentLinesInRange(lines, startIndex + 1, endIndex);
-    if (insideText) {
-      return insideText;
-    }
-  }
-
-  return "";
-}
-
-/**
- * Gather comment text from the first contiguous comment lines inside a TryStatement block body.
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG
- */
-function getInsideTryBlockCommentText(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-): string {
-  const block = node && node.block;
-  if (
-    !block ||
-    block.type !== "BlockStatement" ||
-    !block.loc ||
-    !block.loc.start ||
-    !block.loc.end ||
-    typeof block.loc.start.line !== "number" ||
-    typeof block.loc.end.line !== "number"
-  ) {
-    return "";
-  }
-
-  const lines = sourceCode.lines;
-  const startIndex = block.loc.start.line - 1;
-  const endIndex = block.loc.end.line - 1;
-
-  const insideText = scanCommentLinesInRange(lines, startIndex + 1, endIndex);
-  if (insideText) {
-    return insideText;
-  }
-
-  return "";
 }
 
 /**
@@ -304,59 +146,6 @@ function gatherCatchClauseCommentText(
  * @supports REQ-PLACEMENT-CONFIG
  * @supports REQ-DEFAULT-BACKWARD-COMPAT
  */
-function gatherSimpleIfCommentText(
-  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
-  node: any,
-  annotationPlacement: AnnotationPlacement,
-  beforeText: string,
-): string {
-  if (annotationPlacement === "before") {
-    return beforeText;
-  }
-
-  if (annotationPlacement !== "inside") {
-    return beforeText;
-  }
-
-  if (!node.consequent || node.consequent.type !== "BlockStatement") {
-    return "";
-  }
-
-  const consequent = node.consequent;
-  const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
-
-  if (typeof getCommentsInside === "function") {
-    try {
-      const insideComments =
-        (getCommentsInside as (_node: any) => any[])(consequent) || [];
-      const insideText = insideComments.map(extractCommentValue).join(" ");
-      if (insideText) {
-        return insideText;
-      }
-    } catch {
-      // fall through to line-based fallback
-    }
-  }
-
-  if (
-    consequent.loc &&
-    consequent.loc.start &&
-    consequent.loc.end &&
-    typeof consequent.loc.start.line === "number" &&
-    typeof consequent.loc.end.line === "number"
-  ) {
-    const lines = sourceCode.lines;
-    const startIndex = consequent.loc.start.line - 1;
-    const endIndex = consequent.loc.end.line - 1;
-
-    const insideText = scanCommentLinesInRange(lines, startIndex + 1, endIndex);
-    if (insideText) {
-      return insideText;
-    }
-  }
-
-  return "";
-}
 
 function handleTryCatchBranch(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,

@@ -8,6 +8,7 @@
  * @req REQ-EXAMPLE-MESSAGES - Support optional example strings in error messages
  * @req REQ-SCHEMA-VALIDATION - Use JSON Schema to validate configuration options
  */
+import { resolvePattern, resolveExample } from "./pattern-validators";
 export interface AnnotationRuleOptions {
   story?: {
     /**
@@ -161,125 +162,6 @@ export function getOptionErrors(): string[] {
  * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
  * @req REQ-PATTERN-CONFIG - Provide consistent regex validation diagnostics
  */
-function buildInvalidRegexError(field: string, pattern: string): string {
-  return `Invalid regular expression for option "${field}": "${pattern}"`;
-}
-
-/**
- * Normalize raw rule options into a single AnnotationRuleOptions object.
- *
- * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
- * @req REQ-PATTERN-CONFIG
- * @req REQ-BACKWARD-COMPAT
- */
-function normalizeUserOptions(
-  rawOptions: unknown[],
-): AnnotationRuleOptions | undefined {
-  if (!rawOptions || rawOptions.length === 0) {
-    return undefined;
-  }
-
-  const first = rawOptions[0];
-  if (!first || typeof first !== "object") {
-    return undefined;
-  }
-
-  return first as AnnotationRuleOptions;
-}
-
-interface ResolvePatternArgs {
-  nestedPattern: string | undefined;
-  nestedFieldName: string;
-  flatPattern: string | undefined;
-  flatFieldName: string;
-  defaultPattern: RegExp;
-}
-
-/**
- * Resolve a user-configured regex pattern, handling both nested and flat
- * configuration shapes and accumulating validation errors.
- *
- * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
- * @req REQ-PATTERN-CONFIG
- * @req REQ-REGEX-VALIDATION
- * @req REQ-BACKWARD-COMPAT
- */
-function resolvePattern({
-  nestedPattern,
-  nestedFieldName,
-  flatPattern,
-  flatFieldName,
-  defaultPattern,
-}: ResolvePatternArgs): RegExp {
-  const effective =
-    typeof nestedPattern === "string"
-      ? { value: nestedPattern, field: nestedFieldName }
-      : typeof flatPattern === "string"
-        ? { value: flatPattern, field: flatFieldName }
-        : null;
-
-  if (!effective) {
-    return defaultPattern;
-  }
-
-  try {
-    return new RegExp(effective.value);
-  } catch {
-    optionErrors.push(buildInvalidRegexError(effective.field, effective.value));
-    return defaultPattern;
-  }
-}
-
-/**
- * Resolve an example string, preferring nested over flat configuration,
- * and falling back to the provided default when necessary.
- *
- * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
- * @req REQ-EXAMPLE-MESSAGES
- * @req REQ-BACKWARD-COMPAT
- */
-function resolveExample(
-  nestedExample: string | undefined,
-  flatExample: string | undefined,
-  defaultExample: string,
-): string {
-  if (typeof nestedExample === "string" && nestedExample.trim()) {
-    return nestedExample;
-  }
-
-  if (typeof flatExample === "string" && flatExample.trim()) {
-    return flatExample;
-  }
-
-  return defaultExample;
-}
-
-/**
- * Extract and normalize user-provided options from the raw ESLint
- * options array into an AnnotationRuleOptions object.
- *
- * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
- * @req REQ-PATTERN-CONFIG - Accept structured configuration for patterns
- * @req REQ-BACKWARD-COMPAT - Tolerate missing or malformed options
- */
-function getUserOptions(
-  rawOptions: unknown[],
-): AnnotationRuleOptions | undefined {
-  return normalizeUserOptions(rawOptions);
-}
-
-/**
- * Resolve the auto-fix flag, defaulting to true when the option
- * is not explicitly provided by the user.
- *
- * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
- * @req REQ-PATTERN-CONFIG - Support configuration of fix behavior
- * @req REQ-BACKWARD-COMPAT - Preserve default auto-fix behavior
- */
-function resolveAutoFixFlag(user: AnnotationRuleOptions | undefined): boolean {
-  const autoFixFlag = user?.autoFix;
-  return typeof autoFixFlag === "boolean" ? autoFixFlag : true;
-}
 
 /**
  * Resolve the story path pattern from nested or flat configuration
@@ -300,6 +182,7 @@ function resolveStoryPattern(
     flatPattern: flatStoryPattern,
     flatFieldName: "storyPathPattern",
     defaultPattern: getDefaultStoryPattern(),
+    errors: optionErrors,
   });
 }
 
@@ -322,6 +205,7 @@ function resolveReqPattern(
     flatPattern: flatReqPattern,
     flatFieldName: "requirementIdPattern",
     defaultPattern: getDefaultReqPattern(),
+    errors: optionErrors,
   });
 }
 
@@ -452,7 +336,8 @@ function resolveOptionsInternal(
   const { nestedReqPattern, flatReqPattern } = getReqPatternInputs(user);
   const { nestedReqExample, flatReqExample } = getReqExampleInputs(user);
 
-  const autoFix = resolveAutoFixFlag(user);
+  const autoFixFlag = user?.autoFix;
+  const autoFix = typeof autoFixFlag === "boolean" ? autoFixFlag : true;
 
   const storyPattern = resolveStoryPattern(
     nestedStoryPattern,
@@ -488,7 +373,10 @@ export function resolveOptions(
 ): ResolvedAnnotationOptions {
   optionErrors = [];
 
-  const user = getUserOptions(rawOptions);
+  const user =
+    rawOptions && rawOptions.length > 0 && typeof rawOptions[0] === "object"
+      ? (rawOptions[0] as AnnotationRuleOptions)
+      : undefined;
   const resolved = resolveOptionsInternal(user);
 
   resolvedDefaults = resolved;

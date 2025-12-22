@@ -25,6 +25,10 @@
  */
 import type { Rule } from "eslint";
 import { normalizeCommentLine } from "./helpers/valid-annotation-format-internal";
+import {
+  processInlineComments,
+  type LineComment,
+} from "./helpers/prefer-implements-inline";
 
 // Maximum number of distinct @story paths allowed before treating as "multi-story".
 // @req REQ-MULTI-STORY-DETECT - Centralized threshold constant for detecting multi-story patterns
@@ -324,235 +328,17 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
 }
 
 /**
- * Helpers for processing inline `//` comments that contain legacy
- * @story + @req patterns.
- */
-
-type LineComment = { type: "Line" } & any;
-
-/**
- * Extract the leading whitespace and `//` prefix from a line comment's full
- * source text so that new inline annotations can be inserted with matching
- * indentation and formatting.
+ * ESLint rule: prefer-implements-annotation
+ *
+ * Recommend migrating from legacy `@story` + `@req` annotations to the
+ * newer `@supports` format. This rule is **disabled by default** and
+ * is intended as an optional, opt-in migration aid.
  *
  * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-MIGRATE-INLINE
+ * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage
+ * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
+ * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy @story/@req annotations valid when the rule is disabled
  */
-function getLinePrefixFromText(fullText: string): string {
-  const match = fullText.match(/^(\s*\/\/\s*)/);
-  return match ? match[1] : "";
-}
-
-/**
- * Attempt to construct an inline auto-fix that replaces a contiguous
- * sequence of `@story` and `@req` line comments with a single `@supports`
- * annotation while preserving the original comment prefix.
- *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-MIGRATE-INLINE
- */
-function tryBuildInlineAutoFix(
-  context: Rule.RuleContext,
-  comments: LineComment[],
-  storyIndex: number,
-  reqIndices: number[],
-): Rule.ReportFixer | null {
-  const sourceCode = context.getSourceCode();
-
-  const storyComment = comments[storyIndex];
-  const storyNormalized = normalizeCommentLine(storyComment.value || "");
-  if (!storyNormalized || !/^@story\b/.test(storyNormalized)) {
-    return null;
-  }
-
-  const storyParts = storyNormalized.split(/\s+/);
-  if (storyParts.length !== MIN_STORY_TOKENS) {
-    return null;
-  }
-  const storyPath = storyParts[1];
-
-  const reqIds: string[] = [];
-  for (const idx of reqIndices) {
-    const reqComment = comments[idx];
-    const reqNormalized = normalizeCommentLine(reqComment.value || "");
-    if (!reqNormalized || !/^@req\b/.test(reqNormalized)) {
-      return null;
-    }
-    const reqParts = reqNormalized.split(/\s+/);
-    if (reqParts.length !== MIN_REQ_TOKENS) {
-      return null;
-    }
-    reqIds.push(reqParts[1]);
-  }
-
-  if (!reqIds.length) {
-    return null;
-  }
-
-  const fullText = sourceCode.text.slice(
-    storyComment.range[0],
-    storyComment.range[1],
-  );
-  const linePrefix = getLinePrefixFromText(fullText);
-
-  const implAnnotation = `@supports ${storyPath} ${reqIds.join(" ")}`;
-  const implLine = `${linePrefix}${implAnnotation}`;
-
-  const start = storyComment.range[0];
-  const end = comments[reqIndices[reqIndices.length - 1]].range[1];
-
-  return (fixer) => fixer.replaceTextRange([start, end], implLine);
-}
-
-/**
- * Coordinate detection and optional migration of a single inline `@story`
- * comment and its following `@req` comments, reporting diagnostics and
- * scheduling auto-fixes where safe.
- *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-MIGRATE-INLINE
- */
-function collectReqIndicesAfterStory(
-  group: LineComment[],
-  startIndex: number,
-): { reqIndices: number[]; nextIndex: number } {
-  const n = group.length;
-  const reqIndices: number[] = [];
-  let j = startIndex + 1;
-
-  while (j < n) {
-    const next = group[j];
-    const nextNormalized = normalizeCommentLine(next.value || "");
-    if (!nextNormalized || /^@supports\b/.test(nextNormalized)) {
-      break;
-    }
-    if (/^@req\b/.test(nextNormalized)) {
-      reqIndices.push(j);
-      j += 1;
-      continue;
-    }
-    break;
-  }
-
-  return { reqIndices, nextIndex: j };
-}
-
-function handleInlineStorySequence(
-  context: Rule.RuleContext,
-  group: LineComment[],
-  startIndex: number,
-): number {
-  const current = group[startIndex];
-  const normalized = normalizeCommentLine(current.value || "");
-
-  if (!normalized || !/^@story\b/.test(normalized)) {
-    return startIndex + 1;
-  }
-
-  if (/^@supports\b/.test(normalized)) {
-    return startIndex + 1;
-  }
-
-  const storyIndex = startIndex;
-  const { reqIndices, nextIndex } = collectReqIndicesAfterStory(
-    group,
-    startIndex,
-  );
-
-  if (reqIndices.length === 0) {
-    context.report({
-      node: current as any,
-      messageId: "preferImplements",
-    });
-    return startIndex + 1;
-  }
-
-  const fix = tryBuildInlineAutoFix(context, group, storyIndex, reqIndices);
-
-  if (fix) {
-    context.report({
-      node: current as any,
-      messageId: "preferImplements",
-      fix,
-    });
-  } else {
-    context.report({
-      node: current as any,
-      messageId: "preferImplements",
-    });
-  }
-
-  return nextIndex;
-}
-
-/**
- * Process a contiguous group of inline line comments, identifying legacy
- * `@story`/`@req` sequences and scheduling the corresponding diagnostics
- * and potential auto-fixes for migration to `@supports`.
- *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-MIGRATE-INLINE
- */
-function advanceInlineGroupIndex(
-  context: Rule.RuleContext,
-  group: LineComment[],
-  currentIndex: number,
-): number {
-  const current = group[currentIndex];
-  const normalized = normalizeCommentLine(current.value || "");
-  if (!normalized || !/^@story\b/.test(normalized)) {
-    return currentIndex + 1;
-  }
-
-  return handleInlineStorySequence(context, group, currentIndex);
-}
-
-function processInlineGroup(
-  context: Rule.RuleContext,
-  group: LineComment[],
-): void {
-  if (group.length === 0) return;
-
-  let i = 0;
-
-  while (i < group.length) {
-    i = advanceInlineGroupIndex(context, group, i);
-  }
-}
-
-/**
- * Scan sequences of Line comments for inline legacy @story/@req patterns and
- * report diagnostics and optional auto-fixes.
- */
-function processInlineComments(
-  context: Rule.RuleContext,
-  lineComments: LineComment[],
-): void {
-  if (!lineComments.length) return;
-
-  // Group by contiguous line numbers
-  let group: LineComment[] = [lineComments[0]];
-
-  const flushGroup = () => {
-    processInlineGroup(context, group);
-    group = [];
-  };
-
-  for (let idx = 1; idx < lineComments.length; idx++) {
-    const prev = lineComments[idx - 1];
-    const curr = lineComments[idx];
-    if (
-      curr.loc.start.line === prev.loc.start.line + 1 &&
-      curr.loc.start.column === prev.loc.start.column
-    ) {
-      group.push(curr);
-    } else {
-      flushGroup();
-      group.push(curr);
-    }
-  }
-  flushGroup();
-}
 
 /**
  * ESLint rule: prefer-implements-annotation
