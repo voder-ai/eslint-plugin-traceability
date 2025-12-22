@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Subcommand handlers for the traceability-maint CLI.
  *
@@ -20,7 +19,7 @@ export const EXIT_STALE = 1;
 export const EXIT_USAGE = 2;
 
 /**
- * Handle the `detect` subcommand for stale @story annotations.
+ * Handle the `detect` subcommand for stale story annotations.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-DETECT - CLI surface for detection of stale annotations
  * @req REQ-MAINT-SAFE - Return specific exit codes for stale vs clean states
@@ -103,7 +102,7 @@ export function handleReport(normalized: NormalizedCliArgs): number {
 }
 
 /**
- * Handle the `update` subcommand to rewrite @story annotation references.
+ * Handle the `update` subcommand to rewrite story annotation references.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-UPDATE - CLI surface for updating annotation references
  * @req REQ-MAINT-SAFE - Provide dry-run mode and explicit parameter checks
