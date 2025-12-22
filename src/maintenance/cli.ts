@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable traceability/valid-annotation-format */
 
 import {
   EXIT_OK,
@@ -27,7 +26,6 @@ export function runMaintenanceCli(rawArgv: string[]): number {
 
   if (!command || command === "-h" || command === "--help") {
     // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
-    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Branch to show usage when no command or help flag is provided; handle help requests safely and provide discoverable usage output
     printHelp();
     return EXIT_OK;
   }
@@ -38,34 +36,33 @@ export function runMaintenanceCli(rawArgv: string[]): number {
 
   try {
     // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
-    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Catch unexpected errors and surface concise diagnostics without crashing
     switch (command) {
       case "detect":
-        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - Branch to dispatch to detection handler when 'detect' is requested; dispatch to detection handler
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
         return handleDetect(normalized);
       case "verify":
-        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-VERIFY - Branch to dispatch to verification handler when 'verify' is requested; dispatch to verification handler
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-VERIFY
         return handleVerify(normalized);
       case "report":
-        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT - Branch to dispatch to reporting handler when 'report' is requested; dispatch to reporting handler
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT
         return handleReport(normalized);
       case "update": {
-        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE - Branch to dispatch to update handler when 'update' is requested; dispatch to update handler
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
         const result = handleUpdate(normalized);
         if (result === EXIT_USAGE) {
-          // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Print help on usage errors from update; help branch for update usage errors
+          // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
           printHelp();
         }
         return result;
       }
       default:
-        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Branch for unknown commands to emit diagnostics and safe usage guidance; handle unknown commands safely with diagnostics
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
         console.error(`Unknown command: ${command}`);
         printHelp();
         return EXIT_USAGE;
     }
   } catch (error: unknown) {
-    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Catch-all error branch to prevent crashes and provide concise diagnostics; catch unexpected errors and surface concise diagnostics without crashing
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
     const message =
       error instanceof Error
         ? error.message
@@ -81,7 +78,7 @@ export function runMaintenanceCli(rawArgv: string[]): number {
  * @req REQ-MAINT-SAFE - Provide discoverable CLI usage information
  */
 function printHelp(): void {
-  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Help branch ensures users can discover maintenance CLI usage safely; provide discoverable CLI usage information
+  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
   console.log(`traceability-maint - Traceability annotation maintenance tools
 
 Usage:
