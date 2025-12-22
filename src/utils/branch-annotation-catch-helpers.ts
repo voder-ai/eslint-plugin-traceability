@@ -5,8 +5,14 @@ import { extractCommentValue } from "./comment-text-helpers";
 /**
  * Gather comment text from inside a CatchClause body.
  *
+ * Uses dual-position detection strategy: first attempts getCommentsInside API,
+ * then falls back to line-based scanning if API is unavailable or returns empty.
+ *
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
  * @req REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
+ * @param sourceCode - ESLint source code object providing comment access APIs
+ * @param node - CatchClause AST node whose body will be scanned for comments
+ * @returns Concatenated comment text from inside the catch body, or empty string if none found
  */
 export function getInsideCatchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -42,7 +48,10 @@ export function getInsideCatchCommentText(
 
 /**
  * Gather comment text from the first contiguous comment lines inside a TryStatement block body.
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
+ * @param sourceCode - ESLint source code object providing line access
+ * @param node - TryStatement AST node whose block will be scanned for comments
+ * @returns Concatenated comment text from inside the try block, or empty string if none found
  */
 export function getInsideTryBlockCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,

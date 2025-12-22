@@ -189,16 +189,17 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
 
 /**
  * Helper to check @req annotation presence on TS declare functions and method signatures.
+ *
  * This helper is intentionally scope/exportPriority agnostic and focuses solely
  * on detection and reporting of @req annotations for the given node.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
  * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation
  * @req REQ-ANNOTATION-REPORTING - Report missing @req annotation to context
  * @param context - ESLint rule context used to obtain source and report problems
  * @param node - Function-like AST node whose surrounding comments should be inspected
- * @param options - Optional configuration controlling behaviour (e.g., enableFix)
- * @returns void
+ * @param options - Optional configuration controlling behaviour (e.g., enableFix, annotationPlacement)
  */
 export function checkReqAnnotation(
   context: any,

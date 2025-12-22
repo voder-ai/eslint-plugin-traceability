@@ -9,7 +9,7 @@ import type { AnnotationPlacement } from "./branch-annotation-helpers";
  * within ESLint's max-lines-per-function limits.
  *
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG REQ-INDENTATION-CORRECT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG REQ-INDENTATION-CORRECT
  */
 
 type SourceCode = ReturnType<Rule.RuleContext["getSourceCode"]>;

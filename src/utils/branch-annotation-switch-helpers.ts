@@ -9,8 +9,8 @@ import {
  * Gather comment text from the first contiguous comment lines "inside" a SwitchCase body.
  * Prefers a BlockStatement consequent when present, with a fallback to the entire case range.
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports REQ-INSIDE-BRACE-PLACEMENT
- * @supports REQ-PLACEMENT-CONFIG
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
 function getInsideSwitchCaseCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -58,10 +58,16 @@ function getInsideSwitchCaseCommentText(
 /**
  * Gather annotation text for SwitchCase branches, honoring the configured placement
  * while preserving legacy before-branch behavior in the default mode.
+ *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports REQ-PLACEMENT-CONFIG
- * @supports REQ-INSIDE-BRACE-PLACEMENT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
+ * @param sourceCode - ESLint source code object for accessing line/comment data
+ * @param node - SwitchCase AST node to gather annotations from
+ * @param annotationPlacement - Placement mode ("inside" or "before")
+ * @param beforeText - Pre-gathered text from before the case statement
+ * @returns Combined annotation text based on placement mode and detected annotations
  */
 export function gatherSwitchCaseCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,

@@ -142,9 +142,7 @@ function gatherCatchClauseCommentText(
  * leading comment text unchanged. When placement is "inside", it switches to inside-brace
  * semantics and scans for comments at the top of the consequent block.
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports REQ-INSIDE-BRACE-PLACEMENT
- * @supports REQ-PLACEMENT-CONFIG
- * @supports REQ-DEFAULT-BACKWARD-COMPAT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
  */
 
 function handleTryCatchBranch(

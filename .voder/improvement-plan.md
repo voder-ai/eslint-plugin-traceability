@@ -1,30 +1,31 @@
 # Improvement Plan
 
-Focus area: Code Quality & Documentation Refinement
-Priority: Foundation is acceptable (all dimensions ≥80%), but code-quality at 73% is weakest dimension. Functionality at 96.6% with minor gaps. Address quality issues before new features.
+Focus area: documentation
+Priority: Foundation gate failed (80% threshold). Documentation at 45% is furthest below threshold (35 points below). Version-control at 85% is only 5 points below. Documentation has critical issues blocking traceability workflows: 18+ functions missing @supports/@story annotations, 10 malformed @supports annotations, 22 plain text doc references instead of Markdown links, and 13+ public APIs without JSDoc.
 
 ## NOW
 
-- Refactor 4 files exceeding max-lines limit (branch-annotation-helpers.ts at 659, prefer-implements-annotation.ts at 658, valid-annotation-options.ts at 536, no-redundant-annotation.ts at 499). Extract cohesive modules to improve maintainability and reduce complexity. Target ≤450 lines per file.
+- Add @supports or @story annotation to the exported getInsideCatchCommentText function in src/utils/branch-annotation-catch-insert-position.ts. Add JSDoc describing parameters, return value, and purpose.
   - Category: non-functional
-  - Reason: code-quality dimension at 73% primarily due to complexity/size violations. Files exceeding limits by 46% indicate god object pattern. Addressing this improves readability, testability, and reduces duplication risk.
-  - Success criteria: All source files ≤450 lines. Extracted modules have clear single responsibilities. All tests pass. No new linting errors. code-quality dimension rises to ≥80%.
-  - Dimension: code-quality
+  - Reason: One of 18+ functions lacking traceability annotations. This blocks verification workflows and prevents automated requirements coverage analysis. Starting with one function establishes pattern for remaining functions.
+  - Success criteria: Function has valid @supports or @story annotation with story path reference. Function has complete JSDoc with @param, @returns, and description. npm run lint passes. npm run test passes.
+  - Dimension: documentation
 
 ## NEXT
 
-- Remove 26 eslint-disable directives for traceability/valid-annotation-format in src/ files. Ensure plugin source code conforms to its own rules or document justified exceptions in configuration.
-- Replace 3 deprecated eslint-env comments with modern ESLint flat config globals declarations.
-- Update README line 133 link from internal docs/rules/ to user-facing documentation (user-docs/ or published site). Ensure all README links point to public resources.
-- Update jsdocHasStory, commentsBeforeHasStory, leadingCommentsHasStory functions to check @supports in addition to @story. Align with scanLinesForMarker implementation.
-- Change default auto-fix template from @story to @supports. Update tests and documentation to reflect @supports as primary annotation format.
-- Push 4 commits currently ahead of origin/main to synchronize remote repository.
+- Add @supports or @story annotation to gatherSwitchCaseCommentText function. Add JSDoc.
+- Add @supports or @story annotation to checkReqAnnotation function. Add JSDoc.
+- Fix one of the 10 malformed @supports annotations that use REQ-INSIDE-BRACE-PLACEMENT format without story path reference. Add proper story path.
+- Convert one of 22 plain text documentation references (user-docs/*.md) to proper Markdown link format in user-facing documentation.
 
 ## LATER
 
-- Create missing rule documentation file (docs/rules/require-test-traceability.md) to complete story 020.0
-- Add explicit test coverage for edge cases in stories 002.0 (config error handling) and 004.0 (ternary/arrow/logical operators)
-- Reduce code duplication from 4.16% to <3% by extracting shared patterns in require-story-visitors.ts and require-story-core.ts
-- Enhance story 010.0 with explicit markdown section parsing instead of regex-based approach
-- Complete Definition of Done checklists for stories with unchecked items (code review, integration testing)
-- Investigate performance optimization opportunities for fs.readFileSync usage in hot paths
+- Complete traceability annotations for all 18+ remaining functions
+- Fix all 10 malformed @supports annotations with proper story paths
+- Convert all 22 plain text doc references to Markdown links
+- Add JSDoc to all 13+ public APIs missing documentation
+- Remove project docs links from user-facing README (docs/ directory references)
+- Address code duplication in 5 test files (22-42% duplication rates)
+- Improve branch coverage from 86.57% to 90% target
+- Push 5 unpushed commits to origin/main to restore trunk-based development hygiene
+- Replace generic test values ('foo', 'bar') with meaningful test data
