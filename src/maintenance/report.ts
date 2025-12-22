@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import { detectStaleAnnotations } from "./detect";
 
 /**
@@ -11,8 +10,8 @@ import { detectStaleAnnotations } from "./detect";
  */
 export function generateMaintenanceReport(codebasePath: string): string {
   const staleAnnotations = detectStaleAnnotations(codebasePath);
-  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - When no stale annotations are found, return empty string to indicate no actions required
-  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT - When stale annotations exist, produce a newline-separated report
+  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT
   if (staleAnnotations.length === 0) {
     return "";
   }
