@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import * as fs from "fs";
 import * as path from "path";
 import { getAllFiles } from "./utils";
@@ -65,7 +64,7 @@ function processFileForStaleAnnotations(
     content = fs.readFileSync(file, "utf8");
   } catch {
     // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Swallow file read failures without aborting detection
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
     return;
   }
 
@@ -110,7 +109,7 @@ function handleStoryMatch(
 
   // If both candidates are out-of-project, do not mark as stale and skip FS checks
   if (inProjectCandidates.length === 0) {
-    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - No in-project candidates means nothing to check or mark stale
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     return;
   }
 
@@ -146,7 +145,7 @@ function getInProjectCandidates(
     );
   } catch {
     // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Treat boundary enforcement failures as out-of-project
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
     projectBoundary = {
       isWithinProject: false,
       candidate: storyProjectCandidate,
@@ -161,7 +160,7 @@ function getInProjectCandidates(
     );
   } catch {
     // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
-    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Treat boundary enforcement failures as out-of-project
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
     codebaseBoundary = {
       isWithinProject: false,
       candidate: storyCodebaseCandidate,
@@ -170,11 +169,11 @@ function getInProjectCandidates(
 
   const inProjectCandidates: string[] = [];
   if (projectBoundary.isWithinProject) {
-    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - Collect project-relative in-project candidate
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     inProjectCandidates.push(projectBoundary.candidate);
   }
   if (codebaseBoundary.isWithinProject) {
-    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT - Collect workspace-root-relative in-project candidate
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
     inProjectCandidates.push(codebaseBoundary.candidate);
   }
 
@@ -193,7 +192,7 @@ function anyInProjectCandidateExists(inProjectCandidates: string[]): boolean {
     (p) => {
       const exists = fs.existsSync(p);
       if (!exists) {
-        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE - Safely handle non-existent candidate without throwing
+        // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
       }
       return exists;
     },
