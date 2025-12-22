@@ -1,7 +1,6 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Inline comment processing for prefer-implements-annotation rule.
- * Handles migration of inline // @story and // @req patterns to // @supports.
+ * Handles migration of inline comment story and requirement patterns to supports format.
  *
  * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
  * @req REQ-MIGRATE-INLINE
@@ -176,8 +175,8 @@ function processInlineGroup(
 }
 
 /**
- * Scan sequences of Line comments for inline legacy @story/@req patterns and
- * report diagnostics and optional auto-fixes.
+ * Scan sequences of Line comments for inline legacy story and requirement patterns
+ * and report diagnostics with optional auto-fixes.
  */
 export function processInlineComments(
   context: Rule.RuleContext,
