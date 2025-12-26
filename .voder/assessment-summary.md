@@ -7,19 +7,19 @@ Mode: copilot
 
 Threshold: 80%
 Foundation acceptable: false
-Reason: Functionality assessment skipped because the following dimensions are below 80%: version-control, documentation.
+Reason: Functionality assessment skipped because the following dimensions are below 80%: documentation, dependencies, code-quality, version-control.
 
 ## Non-functional dimensions
 
-- Dependencies (dependencies): 100%
-- Testing (testing): 95%
-- Execution (execution): 85%
-- Code Quality (code-quality): 73%
-- Version Control (version-control): 35%
 - Documentation (documentation): 45%
-- Security (security): 100%
+- Dependencies (dependencies): 60%
+- Testing (testing): 100%
+- Execution (execution): 100%
+- Code Quality (code-quality): 67%
+- Version Control (version-control): 52%
+- Security (security): 95%
 - Problems (problems): 100%
-- Pipeline (pipeline): 85%
+- Pipeline (pipeline): 88%
 
 ## Functionality
 

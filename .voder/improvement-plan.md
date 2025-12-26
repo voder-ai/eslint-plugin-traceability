@@ -1,31 +1,23 @@
 # Improvement Plan
 
-Focus area: documentation
-Priority: Foundation gate failed (80% threshold). Documentation at 45% is furthest below threshold (35 points below). Version-control at 85% is only 5 points below. Documentation has critical issues blocking traceability workflows: 18+ functions missing @supports/@story annotations, 10 malformed @supports annotations, 22 plain text doc references instead of Markdown links, and 13+ public APIs without JSDoc.
+Focus area: Documentation link integrity and code traceability
+Priority: Documentation dimension is at 45% (35 points below 80% threshold), furthest from foundation. Two CRITICAL broken links in README.md reference docs/ files not published with npm package, breaking user experience. One file lacks proper traceability annotations.
 
 ## NOW
 
-- Add @supports or @story annotation to the exported getInsideCatchCommentText function in src/utils/branch-annotation-catch-insert-position.ts. Add JSDoc describing parameters, return value, and purpose.
+- Replace README.md line 132 markdown link to docs/rules/require-branch-annotation.md with a reference to user-docs/ content or GitHub repository link, since docs/ directory is excluded from published package
   - Category: non-functional
-  - Reason: One of 18+ functions lacking traceability annotations. This blocks verification workflows and prevents automated requirements coverage analysis. Starting with one function establishes pattern for remaining functions.
-  - Success criteria: Function has valid @supports or @story annotation with story path reference. Function has complete JSDoc with @param, @returns, and description. npm run lint passes. npm run test passes.
+  - Reason: CRITICAL: Link breaks for npm package users because docs/ directory not included in package.json files field
+  - Success criteria: README.md line 132 contains valid link accessible to npm package users (either user-docs/ file or GitHub URL), npm pack test confirms link works for installed package users
   - Dimension: documentation
 
 ## NEXT
 
-- Add @supports or @story annotation to gatherSwitchCaseCommentText function. Add JSDoc.
-- Add @supports or @story annotation to checkReqAnnotation function. Add JSDoc.
-- Fix one of the 10 malformed @supports annotations that use REQ-INSIDE-BRACE-PLACEMENT format without story path reference. Add proper story path.
-- Convert one of 22 plain text documentation references (user-docs/*.md) to proper Markdown link format in user-facing documentation.
+- Replace README.md line 283 markdown link to docs/verification-workflow-guide.md with reference to user-docs/ content or GitHub repository link, since docs/ directory is excluded from published package
+- Add proper JSDoc @story or @supports annotations to src/rules/require-traceability.ts file header to match traceability standards of other 55 source files
 
 ## LATER
 
-- Complete traceability annotations for all 18+ remaining functions
-- Fix all 10 malformed @supports annotations with proper story paths
-- Convert all 22 plain text doc references to Markdown links
-- Add JSDoc to all 13+ public APIs missing documentation
-- Remove project docs links from user-facing README (docs/ directory references)
-- Address code duplication in 5 test files (22-42% duplication rates)
-- Improve branch coverage from 86.57% to 90% target
-- Push 5 unpushed commits to origin/main to restore trunk-based development hygiene
-- Replace generic test values ('foo', 'bar') with meaningful test data
+- Monitor for additional docs/ references in user-facing documentation that may break for package users
+- Consider consolidating developer documentation (docs/) vs user documentation (user-docs/) structure for clarity
+- Evaluate whether docs/rules/ content should be moved to user-docs/ or remain development-only

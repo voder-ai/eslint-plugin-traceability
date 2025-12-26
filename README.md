@@ -129,7 +129,7 @@ Traceability annotations are typically placed immediately adjacent to the code t
 
 For full configuration details and migration guidance between placement styles, see:
 
-- `traceability/require-branch-annotation` rule docs: [docs/rules/require-branch-annotation.md](docs/rules/require-branch-annotation.md)
+- `traceability/require-branch-annotation` rule docs: [docs/rules/require-branch-annotation.md](https://github.com/voder-ai/eslint-plugin-traceability/blob/main/docs/rules/require-branch-annotation.md)
 - Migration guide: [user-docs/migration-guide.md](user-docs/migration-guide.md)
 
 ### Available Rules
@@ -280,7 +280,7 @@ Removing "duplicate" annotations would break the verification workflow by forcin
 
 ## Verification Workflow Guide
 
-For detailed verification workflows, examples, and best practices, see the [Verification Workflow Guide](docs/verification-workflow-guide.md).
+For detailed verification workflows, examples, and best practices, see the [Verification Workflow Guide](https://github.com/voder-ai/eslint-plugin-traceability/blob/main/docs/verification-workflow-guide.md).
 
 ## API Reference
 

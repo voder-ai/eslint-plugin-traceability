@@ -2,6 +2,14 @@
  * Composite ESLint rule that enforces both story and requirement traceability
  * annotations on functions and methods.
  *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED - Require both @story and @req annotations via composition
+ * @req REQ-FUNCTION-DETECTION - Detect functions via composed rules
+ * @req REQ-CONFIGURABLE-SCOPE - Support scope configuration through underlying rules
+ * @req REQ-EXPORT-PRIORITY - Support export priority through underlying rules
+ * @req REQ-ERROR-LOCATION - Report errors at function locations via composed rules
+ * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript syntax via composed rules
+ *
  * Implements Story 003.0-DEV-FUNCTION-ANNOTATIONS with:
  * - REQ-ANNOTATION-REQUIRED
  * - REQ-FUNCTION-DETECTION

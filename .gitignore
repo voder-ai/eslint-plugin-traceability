@@ -163,3 +163,9 @@ coverage-tmp/
 # ESLint complexity JSON reports
 eslint-complexity-report.json
 eslint-complexity-report-detailed.json
+
+# Secretlint reports
+secretlint-report.json
+
+# NPM configuration with auth tokens
+.npmrc

@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Compute the insertion start offset for inserting annotations before a node.
  * This helper ensures we insert before any export wrapper when present, while
@@ -34,18 +33,18 @@ function getInsertionStart(candidate: any): number {
 }
 
 /**
- * Create a fixer function that inserts a @story annotation before the target node.
+ * Create a fixer function that inserts a `@story` annotation before the target node.
  * This fixer is responsible for placing the annotation immediately before the
  * resolved target node in the source code.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Provide automatic fix function for missing @story annotations
+ * @req REQ-AUTOFIX - Provide automatic fix function for missing `@story` annotations
  */
 export function createAddStoryFix(target: any, annotationTemplate: string) {
   /**
-   * Fixer that inserts a @story annotation before the target node.
+   * Fixer that inserts a `@story` annotation before the target node.
    * This inner fixer is used by ESLint to apply the actual code modification.
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-AUTOFIX - Provide automatic fix function for missing @story annotations
+   * @req REQ-AUTOFIX - Provide automatic fix function for missing `@story` annotations
    */
 
   function addStoryFixer(fixer: any) {
@@ -60,14 +59,14 @@ export function createAddStoryFix(target: any, annotationTemplate: string) {
 
 /**
  * Create a fixer function for class method annotations.
- * This helper ensures that the @story annotation is inserted with appropriate
+ * This helper ensures that the `@story` annotation is inserted with appropriate
  * indentation and placement before a class method declaration.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
  */
 export function createMethodFix(node: any, annotationTemplate: string) {
   /**
-   * Fixer that inserts a @story annotation before a method node.
+   * Fixer that inserts a `@story` annotation before a method node.
    * This inner fixer handles inserting the annotation with method-friendly
    * formatting and spacing.
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -85,7 +84,7 @@ export function createMethodFix(node: any, annotationTemplate: string) {
 }
 
 /**
- * Default set of node types to check for missing @story annotations.
+ * Default set of node types to check for missing `@story` annotations.
  * This default scope covers common function-like declarations used in typical
  * TypeScript and JavaScript codebases.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -169,7 +168,7 @@ function withSafeReporting(label: string, fn: () => void): void {
 }
 
 /**
- * Build the shared ESLint report descriptor for a missing @story annotation.
+ * Build the shared ESLint report descriptor for a missing story annotation.
  * This keeps the core helpers focused on computing names, targets, and
  * templates while centralizing the diagnostic wiring.
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ERROR-SPECIFIC
@@ -216,7 +215,7 @@ function resolveAnnotationPlacement(
 }
 
 /**
- * Core helper to report a missing @story annotation for a function-like node.
+ * Core helper to report a missing `@story` annotation for a function-like node.
  * This reporting utility delegates behavior to injected dependencies so that
  * higher-level helpers can stay small while sharing error-reporting logic.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -277,7 +276,7 @@ export function coreReportMissing(
 }
 
 /**
- * Core helper to report a missing @story annotation for a method-like node.
+ * Core helper to report a missing `@story` annotation for a method-like node.
  * This method-focused reporting utility uses injected dependencies while
  * keeping this module centered on core error-reporting behavior.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

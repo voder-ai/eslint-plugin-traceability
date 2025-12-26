@@ -82,8 +82,6 @@
   - [ ] Commit: "feat(traceability): add test annotations in [filename]"
 - [ ] Verify no test files remain with suppressions for this rule
 
-## LATER
-
 ### Rule 7: no-redundant-annotation (Quality Rule)
 - [ ] Enable `traceability/no-redundant-annotation` at `warn` for all files
 - [ ] Run linter to identify files with redundant annotations
