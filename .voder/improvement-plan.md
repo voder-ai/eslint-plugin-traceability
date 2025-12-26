@@ -1,23 +1,25 @@
 # Improvement Plan
 
-Focus area: Documentation link integrity and code traceability
-Priority: Documentation dimension is at 45% (35 points below 80% threshold), furthest from foundation. Two CRITICAL broken links in README.md reference docs/ files not published with npm package, breaking user experience. One file lacks proper traceability annotations.
+Focus area: version-control
+Priority: Version Control dimension at 40% (40 points below foundation threshold). Foundation gate failed, blocking functionality assessment. Immediate action: push 5 unpushed commits, add secretlint-report.json to .gitignore, then implement post-deployment verification to unlock foundation gate.
 
 ## NOW
 
-- Replace README.md line 132 markdown link to docs/rules/require-branch-annotation.md with a reference to user-docs/ content or GitHub repository link, since docs/ directory is excluded from published package
+- Push the 5 unpushed commits on main branch to origin to eliminate -10% penalty
   - Category: non-functional
-  - Reason: CRITICAL: Link breaks for npm package users because docs/ directory not included in package.json files field
-  - Success criteria: README.md line 132 contains valid link accessible to npm package users (either user-docs/ file or GitHub URL), npm pack test confirms link works for installed package users
-  - Dimension: documentation
+  - Reason: Unpushed commits create deployment risk and reduce version-control score by 10%. This is the fastest penalty to eliminate.
+  - Success criteria: git status shows 'Your branch is up to date with origin/main' and no unpushed commits remain
+  - Dimension: version-control
 
 ## NEXT
 
-- Replace README.md line 283 markdown link to docs/verification-workflow-guide.md with reference to user-docs/ content or GitHub repository link, since docs/ directory is excluded from published package
-- Add proper JSDoc @story or @supports annotations to src/rules/require-traceability.ts file header to match traceability standards of other 55 source files
+- Add secretlint-report.json to .gitignore and remove it from version control
+- Create independent post-deployment verification step that validates published package functionality after semantic-release completes
+- Review and address penalties in dependencies dimension to reach 80% threshold
+- Review and address penalties in code-quality dimension to reach 80% threshold
 
 ## LATER
 
-- Monitor for additional docs/ references in user-facing documentation that may break for package users
-- Consider consolidating developer documentation (docs/) vs user documentation (user-docs/) structure for clarity
-- Evaluate whether docs/rules/ content should be moved to user-docs/ or remain development-only
+- Implement automated package validation that tests installation and execution of published package versions
+- Add release verification dashboard or reporting mechanism to track deployment health
+- Consider adding canary deployment verification before full release propagation

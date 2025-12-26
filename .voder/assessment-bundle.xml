@@ -6,47 +6,63 @@
     <thresholdPercentage>80</thresholdPercentage>
     <isFoundationAcceptable>false</isFoundationAcceptable>
     <failingDimensions>
-      <dimensionId>documentation</dimensionId>
       <dimensionId>dependencies</dimensionId>
       <dimensionId>code-quality</dimensionId>
       <dimensionId>version-control</dimensionId>
     </failingDimensions>
-    <reason>Functionality assessment skipped because the following dimensions are below 80%: documentation, dependencies, code-quality, version-control.</reason>
+    <reason>Functionality assessment skipped because the following dimensions are below 80%: dependencies, code-quality, version-control.</reason>
   </foundationGate>
   <nonFunctionalDimensions>
     <dimension>
       <id>documentation</id>
       <label>Documentation</label>
-      <percentage>45</percentage>
+      <percentage>78</percentage>
       <issues>
         <issue>PENALTY CALCULATION:</issue>
-        <issue>Link Format and Integrity: -40% (2 CRITICAL instances)</issue>
-        <issue>Code Traceability: -15% (1 file missing)</issue>
-        <issue>Total penalties: -55% → Final score: 45%</issue>
+        <issue>README Attribution: 0% (PASS)</issue>
+        <issue>Version Currency: 0% (PASS - semantic-release detected, Git tag v1.21.1 is current)</issue>
+        <issue>Link Format and Integrity: -7%</issue>
+        <issue>License Consistency: 0% (PASS)</issue>
+        <issue>Code Traceability: 0% (PASS - all 56 source files have annotations)</issue>
+        <issue>API Documentation Quality: 0% (PASS)</issue>
+        <issue>Technical Documentation Accuracy: 0% (PASS)</issue>
+        <issue>Documentation Organization: 0% (PASS)</issue>
+        <issue>GitHub Links to Internal Docs: -15%</issue>
+        <issue>Total penalties: -22% → Final score: 78%</issue>
         <issue></issue>
         <issue>DETAILED FINDINGS:</issue>
         <issue></issue>
-        <issue>README Attribution: ✅ PASS - Attribution section present at lines 9-11 with proper credit to voder.ai and link to https://voder.ai</issue>
+        <issue>README Attribution: ✅ PASS - Contains proper attribution section acknowledging voder.ai with link to https://voder.ai</issue>
         <issue></issue>
-        <issue>Version Currency: ✅ PASS - Semantic-release project correctly configured. Git tags show v1.21.1 as current version. package.json version (1.0.5) is intentionally stale (expected behavior for semantic-release). CHANGELOG.md correctly directs users to GitHub Releases for version history.</issue>
+        <issue>Version Currency: ✅ PASS - Project uses semantic-release (detected .releaserc.json). Package.json version (1.0.5) is intentionally stale (correct behavior). Git tag shows current version v1.21.1. CHANGELOG.md correctly directs users to GitHub Releases for version history.</issue>
         <issue></issue>
-        <issue>Link Format and Integrity: ❌ CRITICAL VIOLATIONS FOUND</issue>
-        <issue>- README.md line 132: Markdown link to docs/rules/require-branch-annotation.md (NOT published with package - docs/ excluded from package.json files field) -20%</issue>
-        <issue>- README.md line 283: Markdown link to docs/verification-workflow-guide.md (NOT published with package - docs/ excluded from package.json files field) -20%</issue>
-        <issue>These links will break for users who install the package via npm, as docs/ directory is not included in published artifacts.</issue>
-        <issue>ACCEPTABLE REFERENCES:</issue>
-        <issue>- Code examples using backticks for story paths (e.g., `docs/stories/auth.md`) are CORRECT - these describe user configuration</issue>
-        <issue>- user-docs/api-reference.md references to `docs/stories` directory with backticks are CORRECT - describes where users create their specifications</issue>
+        <issue>Link Format and Integrity: ⚠️ PARTIAL FAIL (-7%)</issue>
+        <issue>- README contains backtick-formatted references to user configuration files/directories (e.g., `docs/stories/`, `docs/decisions/`) - CORRECT, no penalty</issue>
+        <issue>- README contains code examples with @supports annotations showing docs/stories/ paths - CORRECT, these are example annotations users would write, not documentation links</issue>
+        <issue>- user-docs/api-reference.md contains backtick references to docs/stories/ in configuration examples - CORRECT, these describe where users create their own story files</issue>
+        <issue>- However, README contains 2 markdown links to GitHub URLs for docs/ directory files:</issue>
+        <issue>1. Line 133: [docs/rules/require-branch-annotation.md](https://github.com/voder-ai/eslint-plugin-traceability/blob/main/docs/rules/require-branch-annotation.md)</issue>
+        <issue>2. Line 283: [Verification Workflow Guide](https://github.com/voder-ai/eslint-plugin-traceability/blob/main/docs/verification-workflow-guide.md)</issue>
+        <issue>- These GitHub links reference the project's internal docs/ directory which is NOT published with the npm package (verified: package.json "files" field includes only lib, README.md, LICENSE, SECURITY.md, user-docs, CHANGELOG.md)</issue>
+        <issue>- GitHub links that reference internal docs are effectively broken for npm package users who don't have access to the repository</issue>
+        <issue>- Penalty: -7% for 2 instances of markdown links to unpublished internal documentation</issue>
         <issue></issue>
-        <issue>License Consistency: ✅ PASS - package.json declares "MIT" license (SPDX compliant). LICENSE file contains proper MIT license text with copyright notice for voder.ai 2025. License information is consistent.</issue>
+        <issue>License Consistency: ✅ PASS - package.json declares "MIT" license, LICENSE file contains proper MIT License text with 2025 voder.ai copyright. SPDX format used correctly.</issue>
         <issue></issue>
-        <issue>Code Traceability: ⚠️ MINOR ISSUE - Most source files (55/56) have comprehensive traceability annotations. Found 1 file without proper file-level traceability: src/rules/require-traceability.ts has inline comment-style annotations but lacks JSDoc @story or @supports annotations in file header. -15%</issue>
+        <issue>Code Traceability: ✅ PASS - All 56 source TypeScript files contain traceability annotations (@supports, @story, or @req). Sample inspection shows proper usage of both modern @supports format and legacy @story/@req format. Functions and significant code branches have annotations. Format appears consistent and parseable.</issue>
         <issue></issue>
-        <issue>API Documentation Quality: ✅ PASS - Exported functions have comprehensive JSDoc documentation with @param, @returns, @throws tags. TypeScript type annotations present. Usage examples provided in user-docs/. Public APIs are well-documented.</issue>
+        <issue>API Documentation Quality: ✅ PASS - Exported functions and rules have comprehensive JSDoc documentation. API Reference document (user-docs/api-reference.md) provides detailed documentation of all rules with descriptions, options, defaults, and examples. Public APIs have @param, descriptions, and usage examples.</issue>
         <issue></issue>
-        <issue>Technical Documentation Accuracy: ✅ PASS - Setup instructions match actual requirements (Node.js versions, ESLint v9+). Feature descriptions match implementation. No hardcoded version numbers in semantic-release project (correct). Configuration examples appear valid.</issue>
+        <issue>Technical Documentation Accuracy: ✅ PASS - README setup instructions match package structure. Configuration examples use correct ESLint v9 flat config format. Feature descriptions align with actual exported rules. Code examples show proper annotation syntax. Documentation correctly explains semantic-release version strategy.</issue>
         <issue></issue>
-        <issue>Documentation Organization: ✅ PASS - README.md exists with comprehensive content. CHANGELOG.md exists and correctly directs to GitHub Releases. LICENSE file present. user-docs/ directory well-organized with 5 markdown files. Clear separation between user-facing documentation (user-docs/) and project development documentation (docs/).</issue>
+        <issue>Documentation Organization: ✅ PASS - README.md exists with logical sections (Attribution, Installation, Usage, Rules, Examples, Testing, Security). CHANGELOG.md exists and explains semantic-release strategy. LICENSE file present. user-docs/ directory contains 5 organized guides (eslint-9-setup-guide.md, api-reference.md, traceability-overview.md, migration-guide.md, examples.md). Clear separation between user-facing docs (root + user-docs/) and project docs (docs/).</issue>
+        <issue></issue>
+        <issue>GitHub Links to Internal Docs: ❌ FAIL (-15% ADDITIONAL PENALTY)</issue>
+        <issue>- README contains 2 GitHub URL links to files in docs/ directory that are NOT published with npm package</issue>
+        <issue>- These links work on GitHub but are broken for npm package users</issue>
+        <issue>- Users installing via npm cannot access these referenced files</issue>
+        <issue>- Files should either be moved to user-docs/ and links updated, or links removed</issue>
+        <issue>- This is a CRITICAL documentation integrity issue for npm package users</issue>
       </issues>
     </dimension>
     <dimension>
@@ -61,8 +77,11 @@
     <dimension>
       <id>testing</id>
       <label>Testing</label>
-      <percentage>100</percentage>
+      <percentage>92</percentage>
       <issues>
+        <issue>Branch coverage at 86.52% is below the 90% threshold defined in jest.config.js (only 6.5% below target)</issue>
+        <issue>7 functions uncovered (358/365 covered, 98.08% function coverage)</issue>
+        <issue>Minor: 35 timing-related assertions (toBeGreaterThan/toBeLessThan) which could indicate performance tests rather than behavior tests - acceptable if testing performance characteristics</issue>
       </issues>
     </dimension>
     <dimension>
@@ -70,72 +89,57 @@
       <label>Execution</label>
       <percentage>100</percentage>
       <issues>
-        <issue>Build Process: Build completes successfully without errors. TypeScript compilation produces correct outputs in lib/ directory with proper .d.ts type definitions.</issue>
-        <issue>Execution Environment: Excellent test isolation using temp directories (mktemp, fs.mkdtempSync). Smoke tests properly test both plugin and CLI functionality in isolated environments. No evidence of running CLI directly against repository.</issue>
-        <issue>Runtime Behavior: All 513 tests pass across 56 test suites. Core functionality works correctly (ESLint plugin rules + CLI maintenance tools). Error handling is appropriate with clear error messages. Input validation present for CLI flags. No silent failures detected.</issue>
-        <issue>Performance: Appropriate caching implemented for filesystem checks (fileExistStatusCache) and requirement IDs (reqCache). No N+1 query issues. No unnecessary object creation in hot paths. Memory management is appropriate for a static analysis tool.</issue>
-        <issue>End-to-End: Complete workflow validation through smoke tests (install → verify plugin → test CLI). Integration tests cover success and error paths. CLI commands (detect, verify, report, update) all tested with proper isolation.</issue>
+        <issue>Build Process: Build completes successfully with TypeScript compilation. Build outputs verified in lib/ directory with correct structure (11 rules, 2 configs). Build artifacts are functional and can be required.</issue>
+        <issue>Execution Environment: Smoke tests pass successfully with isolated temp directory testing for CLI tool. Tests validate both success and error paths. ESLint plugin loads correctly. Application type: ESLint Plugin + CLI maintenance tool.</issue>
+        <issue>Runtime Behavior: 513 tests pass successfully, demonstrating comprehensive coverage of core functionality. Error handling validated through CLI error path tests. Input validation present (e.g., format parameter validation). No silent failures detected - errors properly surfaced.</issue>
+        <issue>Performance: Caching implemented appropriately for expensive operations (filesystem checks in storyReferenceUtils.ts, requirement ID lookups in valid-req-reference-helpers.ts). No N+1 query patterns. No memory leak concerns (no event listeners or persistent connections to clean up). Resource management appropriate for file-based ESLint plugin.</issue>
+        <issue>End-to-End: Full CI verification passes (ci-verify script). Complete workflow validation through smoke tests using isolated temp directories. Integration tests pass. All quality checks execute successfully locally.</issue>
       </issues>
     </dimension>
     <dimension>
       <id>code-quality</id>
       <label>Code Quality</label>
-      <percentage>67</percentage>
+      <percentage>65</percentage>
       <issues>
-        <issue>Linting: Configured with complexity max 16 and max-lines 450. 21 eslint-disable suppressions across source files (minimal, acceptable level).</issue>
-        <issue>Formatting: Integrated in pre-commit hook via lint-staged (auto-formats staged files).</issue>
-        <issue>Type Checking: TypeScript strict mode ENABLED (strict: true). No @ts-nocheck suppressions found. Strong type safety.</issue>
-        <issue>Complexity: Configured at max 16 (reasonable). No complexity rule suppressions in source files.</issue>
-        <issue>Duplication: Source code duplication minimal (1 file at 10.86%). Test files show higher duplication (22-42% in 6 files) but test duplication is often acceptable due to fixture patterns. Applied penalty only for source duplication: -5%.</issue>
-        <issue>File Sizes: 14 source files in 300-500 line range (approaching large file threshold). Files include valid-req-reference-helpers.ts (452), branch-annotation-helpers.ts (446), prefer-implements-annotation.ts (444), valid-annotation-options.ts (434), valid-annotation-format-validators.ts (392), valid-story-reference.ts (390), require-test-traceability-helpers.ts (373), redundancy-detector.ts (353), index.ts (348), storyReferenceUtils.ts (331), valid-annotation-format.ts (322), require-story-core.ts (321), flags.ts (316). Total penalty: -28%.</issue>
-        <issue>Git Hooks: Pre-commit runs lint-staged (format + lint on staged files, fast). Pre-push runs ci-verify:full + security:secrets (comprehensive checks mirroring CI). Well-configured.</issue>
-        <issue>Build/Tooling: No prelint/preformat anti-patterns found. Scripts properly centralized in package.json.</issue>
-        <issue>Suppressions: 21 total eslint-disable directives (1 per file in 20 files). This is minimal and acceptable (under 5-10 threshold for penalty). No file-level disables.</issue>
-        <issue>Scripts Audit: 3 unused output files in scripts/ (eslint-suppressions-report.md, traceability-report.md, tsc-output.md) - appear to be report outputs, not scripts. No penalty.</issue>
-        <issue>Temporary Files: No temporary .patch, .diff, .bak files found.</issue>
-        <issue>ADR Compliance: 12 ADRs total (10 accepted, 2 proposed). TypeScript and Jest usage aligns with ADRs 001 and 002 (accepted). Semantic-release and GitHub Actions align with ADRs 006 and 005 (accepted). No violations detected.</issue>
+        <issue>Linting: PASS - All linting checks pass with no warnings, ESLint configured with complexity max 16, max-lines 450, max-lines-per-function 45</issue>
+        <issue>Formatting: PASS - All files formatted correctly with Prettier</issue>
+        <issue>Type Checking: PASS - TypeScript strict mode ENABLED, no @ts-nocheck/@ts-ignore suppressions found</issue>
+        <issue>Tests: PASS - 513 tests passing, comprehensive test coverage</issue>
+        <issue>Complexity: Configuration reasonable (max 16), no complexity rule suppressions found</issue>
+        <issue>Duplication: LOW - Maximum 6.67% token duplication in one test file, well under 10% threshold</issue>
+        <issue>File Size: CRITICAL - 14 files exceed 300 lines (300-500 line range, -2% each = -28% total penalty). Files: valid-req-reference-helpers.ts (452), branch-annotation-helpers.ts (446), prefer-implements-annotation.ts (444), branch-annotation-report-helpers.ts (434), valid-annotation-options.ts (424), valid-annotation-format-validators.ts (392), valid-story-reference.ts (390), require-test-traceability-helpers.ts (373), redundancy-detector.ts (353), index.ts (348), storyReferenceUtils.ts (331), valid-annotation-format.ts (322), require-story-core.ts (321), flags.ts (316). These should be refactored into smaller, focused modules.</issue>
+        <issue>Suppressions: MODERATE - 21 files with block-level eslint-disable for traceability/valid-annotation-format rule (-7% penalty). Self-dogfooding issue: plugin's own implementation suppresses its own traceability rule. Files should be updated to comply with the rule rather than suppress it.</issue>
+        <issue>Build/Tooling: PASS - Git hooks properly configured (pre-commit for fast lint-staged, pre-push for full ci-verify), no anti-patterns detected</issue>
+        <issue>Scripts Audit: PASS - All scripts in scripts/ directory are referenced in package.json, no unused scripts found</issue>
+        <issue>Temporary Files: PASS - No temporary development files (.patch, .diff, .bak, etc.) found</issue>
+        <issue>ADR Compliance: 12 ADRs found (mix of accepted and proposed), code appears to follow documented decisions for TypeScript, Jest, GitHub Actions, semantic-release</issue>
       </issues>
     </dimension>
     <dimension>
       <id>version-control</id>
       <label>Version Control</label>
-      <percentage>52</percentage>
+      <percentage>40</percentage>
       <issues>
         <issue>PENALTY CALCULATION:</issue>
         <issue>Baseline: 90%</issue>
-        <issue>Generated report file tracked (secretlint-report.json): -20%</issue>
-        <issue>secretlint-report.json not in .gitignore: -8%</issue>
-        <issue>Unpushed commits (1 commit ahead of origin): -10%</issue>
-        <issue>Total penalties: -38% → Final score: 52%</issue>
-        <issue>Repository has 1 unpushed commit: 8dcc194 "test: fix error message formatting in require-story-annotation" - must be pushed to origin</issue>
-        <issue>Generated report file secretlint-report.json is tracked in version control - should be in .gitignore and removed from git history</issue>
-        <issue>Working directory is clean (no uncommitted changes outside .voder/)</issue>
-        <issue>Currently on main branch (trunk-based development)</issue>
-        <issue>.voder/ directory properly tracked (13 files)</issue>
-        <issue>.voder/traceability/ correctly ignored in .gitignore</issue>
-        <issue>lib/ directory exists locally but NOT tracked (correctly ignored)</issue>
-        <issue>Pre-commit hook configured with fast checks (lint-staged with prettier + eslint on staged files only)</issue>
-        <issue>Pre-push hook configured with comprehensive checks (ci-verify:full + security:secrets)</issue>
-        <issue>Perfect hook/pipeline parity: pre-push runs identical checks to CI workflow</issue>
-        <issue>Modern husky v9+ setup with automatic installation via prepare script</issue>
-        <issue>Single unified CI/CD workflow with quality gates and automated publishing</issue>
-        <issue>Semantic-release publishes automatically on push to main (no manual approval)</issue>
-        <issue>Post-deployment smoke test verifies published package</issue>
-        <issue>GitHub Actions all at current versions (v4)</issue>
-        <issue>Security scanning included in CI (secretlint)</issue>
-        <issue>No deprecation warnings in workflows or hook tools</issue>
+        <issue>Unpushed commits (5 commits not pushed to origin): -10%</issue>
+        <issue>secretlint-report.json tracked in git (generated report file): -20%</issue>
+        <issue>No post-deployment verification (no smoke tests after publishing): -10%</issue>
+        <issue>No automated validation of published packages: -10%</issue>
+        <issue>Total penalties: -50% → Final score: 40%</issue>
+        <issue>FINDINGS: Working directory clean (excluding .voder/). Currently on main branch (trunk-based development). .voder/ directory properly configured (.voder/traceability/ ignored, directory itself tracked with 13 files). No built artifacts in git. Pre-commit hook exists with lint-staged (fast formatting/linting). Pre-push hook exists and runs ci-verify:full plus security:secrets (mirrors CI checks). Hook tool modern husky v9+ with prepare script. Semantic-release configured for automated versioning and publishing. CI workflow properly structured with quality gates first, then semantic-release on main branch Node 22.14.0 job. Actions up to date (checkout@v4, setup-node@v4, upload-artifact@v4). No deprecated actions or workflow syntax. Single unified workflow handles quality checks and publishing. Pipeline runs on push to main (continuous integration). Security scanning included (secretlint). However, smoke test only runs after semantic-release publishes (line 150-154), not as independent post-deployment verification, and secretlint-report.json is tracked in git when it should be gitignored per lines 156-158 pattern. 5 unpushed commits detected requiring immediate push.</issue>
       </issues>
     </dimension>
     <dimension>
       <id>security</id>
       <label>Security</label>
-      <percentage>95</percentage>
+      <percentage>98</percentage>
       <issues>
-        <issue>Dependency Vulnerabilities (40%): 100% - Zero vulnerabilities reported by npm audit. Historical vulnerabilities properly documented and resolved. No audit filtering needed.</issue>
-        <issue>Code Security Review (25%): 95% - child_process usage in scripts properly controlled with fixed command arrays (no shell injection). No hardcoded secrets, SQL injection, or XSS vulnerabilities found. Minor: child_process usage could include more validation of environment.</issue>
-        <issue>Configuration Security (15%): 100% - .env files properly gitignored and not tracked. Secretlint configured and running. SECURITY.md documents security policy. No secrets in configuration files.</issue>
-        <issue>Build and Deployment Security (10%): 100% - CI/CD pipeline uses scoped job permissions (ADR-001). Secret scanning via secretlint enforced. npm audit blocks releases on high-severity production vulnerabilities. Proper NPM_TOKEN handling.</issue>
-        <issue>Policy Compliance (10%): 100% - Full compliance with vulnerability management policy. Historical security incidents properly documented with status tracking. 14-day acceptance criteria properly applied and monitored.</issue>
+        <issue>Dependency Vulnerabilities (40%): 100% - Zero vulnerabilities in both production and dev dependencies. Historical semantic-release/npm incident fully resolved. No new vulnerabilities detected.</issue>
+        <issue>Code Security Review (25%): 100% - No hardcoded secrets found. No SQL injection patterns (project doesn't use databases). No XSS vulnerabilities (not a web application). No dangerous eval or child_process usage in source code. Regex.exec usage is safe.</issue>
+        <issue>Configuration Security (15%): 95% - .env files properly gitignored and not tracked in git history. .env.example exists with safe template. Security overrides configured for known vulnerable transitive dependencies (glob, tar, semver, etc.). Minor: Could document .env.example purpose more explicitly.</issue>
+        <issue>Build and Deployment Security (10%): 100% - CI/CD pipeline follows least-privilege principle with job-level permission scoping. Secret scanning enforced via secretlint. NPM_TOKEN properly scoped and validated. No secrets in build configuration. Smoke tests verify published packages.</issue>
+        <issue>Policy Compliance (10%): 100% - Full adherence to vulnerability management policy. Security incidents properly documented using template. Known-error incident resolved and documented. Monitoring via nightly dependency-health job. dry-aged-deps reports no pending updates. No conflicting automation tools.</issue>
       </issues>
     </dimension>
     <dimension>
@@ -153,97 +157,20 @@
     <dimension>
       <id>pipeline</id>
       <label>Pipeline</label>
-      <percentage>88</percentage>
+      <percentage>98</percentage>
       <issues>
         <issue>PENALTY CALCULATION:</issue>
-        <issue>Pipeline not run for latest commit: -15% (scheduled daily, latest was yesterday)</issue>
-        <issue>No concurrency control: -2% (can waste resources with duplicate runs)</issue>
-        <issue>Total penalties: -17% → Final score: 83%</issue>
+        <issue>No concurrency control: -2%</issue>
+        <issue>Total penalties: -2% → Final score: 98%</issue>
         <issue></issue>
         <issue>DETAILED FINDINGS:</issue>
-        <issue></issue>
-        <issue>Pipeline Configuration:</issue>
-        <issue>✓ Single unified workflow (ci-cd.yml) handles quality gates AND publishing</issue>
-        <issue>✓ Modern GitHub Actions (checkout@v4, setup-node@v4)</issue>
-        <issue>✓ No deprecated actions or deprecation warnings</issue>
-        <issue>✓ Comprehensive quality checks via ci-verify:full: traceability, safety:deps, audit, build, type-check, lint, duplication, test with coverage, format:check, secret scanning</issue>
-        <issue>✓ Matrix strategy testing across Node 18, 20, 22, 24</issue>
-        <issue>✓ Dependency caching enabled</issue>
-        <issue>⚠ No concurrency control configured (-2%)</issue>
-        <issue></issue>
-        <issue>Continuous Deployment:</issue>
-        <issue>✓ Fully automated semantic-release on main branch pushes</issue>
-        <issue>✓ No manual approval gates or workflow_dispatch triggers</issue>
-        <issue>✓ No tag-based workflows (no manual tag creation required)</issue>
-        <issue>✓ Publishing only on Node 22.14.0 to avoid duplicate releases</issue>
-        <issue>✓ Graceful handling of missing NPM_TOKEN without failing CI</issue>
-        <issue>✓ Proper guards ensure semantic-release only runs in CI on main pushes</issue>
-        <issue></issue>
-        <issue>Quality Gates:</issue>
-        <issue>✓ Build verification (tsc build)</issue>
-        <issue>✓ Type checking (tsc --noEmit)</issue>
-        <issue>✓ Linting (eslint with max-warnings=0)</issue>
-        <issue>✓ Testing (jest with coverage)</issue>
-        <issue>✓ Formatting check (prettier)</issue>
-        <issue>✓ Security scanning (npm audit, secret scanning, safety:deps)</issue>
-        <issue>✓ Traceability validation</issue>
-        <issue>✓ Code duplication detection</issue>
-        <issue>All 6+ quality gates present and comprehensive</issue>
-        <issue></issue>
-        <issue>Post-Deployment Verification:</issue>
-        <issue>✓ Smoke test script validates published package</issue>
-        <issue>✓ Runs only when new release published</issue>
-        <issue>✓ Tests installation of published version</issue>
-        <issue>Note: Health checks not applicable (library package, not service)</issue>
-        <issue></issue>
-        <issue>Pipeline Status and History:</issue>
-        <issue>✓ Last 10 runs: 100% success rate (0 failures)</issue>
-        <issue>✓ Latest pipeline run: successful</issue>
-        <issue>⚠ Pipeline not run for latest local commit (-15%)</issue>
-        <issue>- Latest commit: 8dcc194ba3c7f2b5b872a8d9693feafe09403931</issue>
-        <issue>- Latest pipeline: 4fde9b7030ebdfdf9b0f75d630ba835166ecff11</issue>
-        <issue>- Reason: Scheduled daily runs, latest was 2025-12-26T01:00:35Z</issue>
-        <issue>- This is expected for assessment-generated commits between scheduled runs</issue>
-        <issue></issue>
-        <issue>Hook/Pipeline Parity:</issue>
-        <issue>✓ EXCELLENT ALIGNMENT: Pre-push hook runs identical checks to CI pipeline</issue>
-        <issue>✓ Both execute: npm run ci-verify:full + npm run security:secrets</issue>
-        <issue>✓ ci-verify:full includes: traceability, build, type-check, lint, duplication, test with coverage, format:check, security audits</issue>
-        <issue>✓ Pre-commit hook runs lint-staged for fast formatting + linting on staged files</issue>
-        <issue>✓ Hooks provide fast local feedback before push</issue>
-        <issue>✓ Pipeline provides comprehensive verification</issue>
-        <issue>✓ Perfect parity ensures local checks mirror CI requirements</issue>
-        <issue></issue>
-        <issue>Modern CI/CD Practices:</issue>
-        <issue>✓ Dependency caching (npm cache in setup-node)</issue>
-        <issue>✓ Matrix builds for multi-version Node.js testing</issue>
-        <issue>✓ Artifact uploads for debugging and analysis</issue>
-        <issue>✓ Conditional execution guards for semantic-release</issue>
-        <issue>✓ Scheduled daily dependency health checks</issue>
-        <issue>⚠ No concurrency control (minor optimization opportunity)</issue>
-        <issue></issue>
-        <issue>STRENGTHS:</issue>
-        <issue>• Single unified workflow for all quality + deployment</issue>
-        <issue>• Fully automated continuous deployment via semantic-release</issue>
-        <issue>• Comprehensive quality gates (8+ checks)</issue>
-        <issue>• Perfect hook/pipeline parity via ci-verify:full</issue>
-        <issue>• Matrix testing across 4 Node.js versions</issue>
-        <issue>• Post-deployment smoke testing</issue>
-        <issue>• 100% pipeline success rate (last 10 runs)</issue>
-        <issue>• Modern GitHub Actions (v4)</issue>
-        <issue>• No manual approval gates or triggers</issue>
-        <issue></issue>
-        <issue>MINOR IMPROVEMENTS:</issue>
-        <issue>• Add concurrency control to prevent duplicate workflow runs</issue>
-        <issue>• Consider pushing latest commit to trigger pipeline verification</issue>
-        <issue></issue>
-        <issue>ASSESSMENT BOOST:</issue>
-        <issue>+5% bonus for exceptional CI/CD implementation:</issue>
-        <issue>• Perfect hook/pipeline parity (developers and CI run identical checks)</issue>
-        <issue>• Single unified workflow (no fragmentation)</issue>
-        <issue>• Comprehensive quality gates (8+ checks)</issue>
-        <issue>• Fully automated deployment</issue>
-        <issue>Final adjusted score: 83% base + 5% bonus = 88%</issue>
+        <issue>Pipeline Configuration: Single unified workflow (ci-cd.yml) with no duplication. Uses modern GitHub Actions @v4. No deprecated actions or syntax found. Workflow runs comprehensive quality checks via consolidated ci-verify:full script.</issue>
+        <issue>Continuous Deployment: Fully automated via semantic-release on main branch pushes. No manual approval gates, no tag-based workflows, no workflow_dispatch triggers. Semantic-release runs only on Node 22.14.0 matrix job after all quality checks pass. Proper guards prevent local execution.</issue>
+        <issue>Quality Gates: All 6 quality checks present via ci-verify:full script: build (npm run build), tests (npm run test --coverage), linting (npm run lint --max-warnings=0), type-check (npm run type-check), format-check (npm run format:check), security scanning (npm audit + npm run security:secrets). Consolidated script follows DRY principle.</issue>
+        <issue>Post-Deployment Verification: Smoke test (scripts/smoke-test.sh) runs after successful semantic-release publish, validating published package installation and basic functionality.</issue>
+        <issue>Pipeline Status and History: Latest pipeline run successful. Recent stability excellent (10/10 success, 0 failures). Pipeline runs on schedule (daily cron) and on main branch pushes. Latest local commit not yet pushed (no issue).</issue>
+        <issue>Modern CI/CD Practices: Matrix strategy for multi-version testing (Node 18, 20, 22, 24). Dependency caching via setup-node cache. No concurrency control configured (minor optimization opportunity).</issue>
+        <issue>Hook/Pipeline Parity: Pre-push hook runs ci-verify:full and security:secrets, exactly matching CI pipeline checks. Perfect parity ensures local quality gates match CI enforcement.</issue>
       </issues>
     </dimension>
   </nonFunctionalDimensions>
