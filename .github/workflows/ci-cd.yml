@@ -153,6 +153,15 @@ jobs:
           chmod +x scripts/smoke-test.sh
           ./scripts/smoke-test.sh "${{ steps.semantic-release.outputs.new_release_version }}"
 
+      # Post-deployment verification step that validates the published
+      # package is fully functional on npm registry after semantic-release completes.
+      # @story 060.0-DEV-POST-DEPLOYMENT-VERIFICATION.story.md
+      - name: Post-deployment verification
+        if: steps.semantic-release.outputs.new_release_published == 'true'
+        run: |
+          chmod +x scripts/post-deployment-verify.sh
+          ./scripts/post-deployment-verify.sh "${{ steps.semantic-release.outputs.new_release_version }}"
+
   dependency-health:
     if: ${{ github.event_name == 'schedule' }}
     name: Dependency Health Check
