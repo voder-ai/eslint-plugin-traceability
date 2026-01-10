@@ -51,8 +51,7 @@
     "debug:require-story": "node scripts/debug-require-story.js",
     "debug:repro": "node scripts/debug-repro.js",
     "report:eslint-suppressions": "node scripts/report-eslint-suppressions.js",
-    "check:scripts": "node scripts/validate-scripts-nonempty.js",
-    "voder": "voder --help"
+    "check:scripts": "node scripts/validate-scripts-nonempty.js"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,md}": [
@@ -99,9 +98,6 @@
     "semantic-release": "25.0.2",
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3"
-  },
-  "optionalDependencies": {
-    "@voder-ai/voder-ai": "^5.6.1"
   },
   "peerDependencies": {
     "eslint": "^9.0.0"
