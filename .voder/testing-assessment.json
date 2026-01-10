@@ -1,0 +1,478 @@
+{
+  "status": "healthy",
+  "summary": "Jest suite runs cleanly (56 suites, 513 tests) with high coverage and extensive traceability annotations; coverage gaps are limited to one zero-coverage maintenance parser and a handful of low-branch helpers.",
+  "score": 86,
+  "reasoning": [
+    "`npm test` passed all 56 suites/513 tests, indicating stable execution across rule, utils, maintenance, perf, config, and CLI flows.",
+    "Coverage run succeeded with strong overall metrics (statements/lines 95.61%, functions 98.08%, branches 86.65%) and configured thresholds met.",
+    "Tests show clear AAA/RuleTester structures with behavior-focused cases (rule violations, autofix output, CLI integration).",
+    "Traceability is well represented with 234 @supports annotations across test sources.",
+    "One source file remains at 0% coverage (`src/maintenance/storyParser.ts`) and several helpers have low branch coverage."
+  ],
+  "improvement_path": [
+    {
+      "item": "Add targeted tests for `src/maintenance/storyParser.ts` to cover parsing behaviors and edge cases.",
+      "estimatedScoreImpactPct": 6,
+      "rationale": "Eliminates the only 0% coverage file and raises confidence in maintenance tooling."
+    },
+    {
+      "item": "Increase branch coverage in low-branch helpers (`src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`).",
+      "estimatedScoreImpactPct": 4,
+      "rationale": "Targets known weak branches without large test overhead."
+    },
+    {
+      "item": "Add explicit scripts for unit vs integration runs (e.g., `test:unit`, `test:integration`) using Jest `--testPathPatterns`.",
+      "estimatedScoreImpactPct": 2,
+      "rationale": "Enables faster focused runs and clearer test segmentation."
+    }
+  ],
+  "projectType": {
+    "type": "library",
+    "rationale": [
+      "Package exports compiled plugin entrypoints (`main`/`types` -> `lib/src`), indicating a distributable library.",
+      "Peer dependency on `eslint` and tests focused on ESLint rules/configs align with plugin library behavior.",
+      "A maintenance CLI exists via `bin`, but core deliverable is the ESLint plugin."
+    ]
+  },
+  "testTypes": {
+    "classifications": [
+      {
+        "testFile": "tests/plugin-setup.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/plugin-setup-error.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/perf/require-branch-annotation-large-file.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/perf/maintenance-cli-large-workspace.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/perf/maintenance-large-workspace.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/perf/valid-annotation-format-large-file.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/maintenance/cli.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/maintenance/report.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/maintenance/batch.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/maintenance/update.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/maintenance/detect-isolated.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/maintenance/detect.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/maintenance/index.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/maintenance/update-isolated.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/cli-error-handling.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/utils/branch-annotation-catch-position.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/utils/branch-annotation-else-if-position.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/utils/annotation-scope-analyzer.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/utils/branch-annotation-helpers.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/utils/branch-annotation-else-if-insert-position.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/utils/branch-annotation-catch-insert-position.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/utils/req-annotation-detection.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/utils/annotation-checker.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/utils/annotation-checker-autofix-behavior.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/plugin-default-export-and-configs.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-core.autofix.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-io-behavior.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-helpers.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/prefer-implements-annotation.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-helpers-edgecases.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/auto-fix-behavior-008.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/valid-annotation-format.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-visitors-edgecases.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/no-redundant-annotation.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/valid-req-reference.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-branch-annotation.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-utils.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-core-edgecases.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/valid-annotation-format-internal.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/valid-story-reference.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-annotation.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-test-traceability.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/error-reporting.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-io.edgecases.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-story-core.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/rules/require-req-annotation.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/config/require-story-annotation-config.test.ts",
+        "type": "unit"
+      },
+      {
+        "testFile": "tests/config/flat-config-presets-integration.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/config/eslint-config-validation.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/integration/catch-annotation-prettier.integration.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/integration/no-redundant-annotation.integration.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/integration/cli-integration.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/integration/require-traceability-aliases.integration.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/integration/else-if-annotation-prettier.integration.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/integration/annotation-placement-inside-prettier.integration.test.ts",
+        "type": "integration"
+      },
+      {
+        "testFile": "tests/integration/require-traceability-test-callbacks.integration.test.ts",
+        "type": "integration"
+      }
+    ],
+    "countsByType": {
+      "unit": 34,
+      "integration": 22,
+      "e2e": 0,
+      "unknown": 0
+    },
+    "examplesByType": {
+      "unit": [
+        "tests/rules/require-story-annotation.test.ts",
+        "tests/utils/annotation-checker.test.ts",
+        "tests/plugin-setup.test.ts"
+      ],
+      "integration": [
+        "tests/integration/cli-integration.test.ts",
+        "tests/maintenance/cli.test.ts",
+        "tests/perf/maintenance-large-workspace.test.ts"
+      ],
+      "e2e": [],
+      "unknown": []
+    },
+    "independentExecution": {
+      "unit": {
+        "script": null,
+        "canRunIndependently": false
+      },
+      "integration": {
+        "script": null,
+        "canRunIndependently": false
+      },
+      "e2e": {
+        "script": null,
+        "canRunIndependently": false
+      },
+      "unknown": {
+        "script": null,
+        "canRunIndependently": false
+      }
+    }
+  },
+  "discovery": {
+    "framework": "jest",
+    "testFilePatterns": [
+      "<rootDir>/tests/**/*.test.ts"
+    ],
+    "testFiles": [
+      "tests/plugin-setup.test.ts",
+      "tests/plugin-setup-error.test.ts",
+      "tests/perf/require-branch-annotation-large-file.test.ts",
+      "tests/perf/maintenance-cli-large-workspace.test.ts",
+      "tests/perf/maintenance-large-workspace.test.ts",
+      "tests/perf/valid-annotation-format-large-file.test.ts",
+      "tests/maintenance/cli.test.ts",
+      "tests/maintenance/report.test.ts",
+      "tests/maintenance/batch.test.ts",
+      "tests/maintenance/update.test.ts",
+      "tests/maintenance/detect-isolated.test.ts",
+      "tests/maintenance/detect.test.ts",
+      "tests/maintenance/index.test.ts",
+      "tests/maintenance/update-isolated.test.ts",
+      "tests/cli-error-handling.test.ts",
+      "tests/utils/branch-annotation-catch-position.test.ts",
+      "tests/utils/branch-annotation-else-if-position.test.ts",
+      "tests/utils/annotation-scope-analyzer.test.ts",
+      "tests/utils/branch-annotation-helpers.test.ts",
+      "tests/utils/branch-annotation-else-if-insert-position.test.ts",
+      "tests/utils/branch-annotation-catch-insert-position.test.ts",
+      "tests/utils/req-annotation-detection.test.ts",
+      "tests/utils/annotation-checker.test.ts",
+      "tests/utils/annotation-checker-autofix-behavior.test.ts",
+      "tests/plugin-default-export-and-configs.test.ts",
+      "tests/rules/require-story-core.autofix.test.ts",
+      "tests/rules/require-story-io-behavior.test.ts",
+      "tests/rules/require-story-helpers.test.ts",
+      "tests/rules/prefer-implements-annotation.test.ts",
+      "tests/rules/require-story-helpers-edgecases.test.ts",
+      "tests/rules/auto-fix-behavior-008.test.ts",
+      "tests/rules/valid-annotation-format.test.ts",
+      "tests/rules/require-story-visitors-edgecases.test.ts",
+      "tests/rules/no-redundant-annotation.test.ts",
+      "tests/rules/valid-req-reference.test.ts",
+      "tests/rules/require-branch-annotation.test.ts",
+      "tests/rules/require-story-utils.test.ts",
+      "tests/rules/require-story-core-edgecases.test.ts",
+      "tests/rules/valid-annotation-format-internal.test.ts",
+      "tests/rules/valid-story-reference.test.ts",
+      "tests/rules/require-story-annotation.test.ts",
+      "tests/rules/require-test-traceability.test.ts",
+      "tests/rules/error-reporting.test.ts",
+      "tests/rules/require-story-io.edgecases.test.ts",
+      "tests/rules/require-story-core.test.ts",
+      "tests/rules/require-req-annotation.test.ts",
+      "tests/config/require-story-annotation-config.test.ts",
+      "tests/config/flat-config-presets-integration.test.ts",
+      "tests/config/eslint-config-validation.test.ts",
+      "tests/integration/catch-annotation-prettier.integration.test.ts",
+      "tests/integration/no-redundant-annotation.integration.test.ts",
+      "tests/integration/cli-integration.test.ts",
+      "tests/integration/require-traceability-aliases.integration.test.ts",
+      "tests/integration/else-if-annotation-prettier.integration.test.ts",
+      "tests/integration/annotation-placement-inside-prettier.integration.test.ts",
+      "tests/integration/require-traceability-test-callbacks.integration.test.ts"
+    ],
+    "testFileCount": 56,
+    "testCaseCount": 513,
+    "sourceMapping": [
+      {
+        "testFile": "tests/rules/require-story-annotation.test.ts",
+        "sourceFile": "src/rules/require-story-annotation.ts"
+      },
+      {
+        "testFile": "tests/rules/valid-annotation-format.test.ts",
+        "sourceFile": "src/rules/valid-annotation-format.ts"
+      },
+      {
+        "testFile": "tests/utils/annotation-checker.test.ts",
+        "sourceFile": "src/utils/annotation-checker.ts"
+      },
+      {
+        "testFile": "tests/maintenance/cli.test.ts",
+        "sourceFile": "src/maintenance/cli.ts"
+      },
+      {
+        "testFile": "tests/integration/cli-integration.test.ts",
+        "sourceFile": "src/index.ts"
+      }
+    ]
+  },
+  "execution": {
+    "runAttempted": true,
+    "exitCode": 0,
+    "durationMs": 7212,
+    "stdout": "\n> eslint-plugin-traceability@1.0.5 test\n> jest --ci --bail\n\n",
+    "stderr": "PASS tests/rules/require-branch-annotation.test.ts\nPASS tests/rules/valid-annotation-format.test.ts\nPASS tests/rules/auto-fix-behavior-008.test.ts\nPASS tests/rules/require-story-annotation.test.ts\nPASS tests/utils/annotation-checker.test.ts\nPASS tests/perf/require-branch-annotation-large-file.test.ts\nPASS tests/rules/require-req-annotation.test.ts\nPASS tests/utils/annotation-scope-analyzer.test.ts\nPASS tests/integration/no-redundant-annotation.integration.test.ts\nPASS tests/plugin-default-export-and-configs.test.ts\nPASS tests/maintenance/batch.test.ts\nPASS tests/rules/no-redundant-annotation.test.ts\nPASS tests/rules/valid-story-reference.test.ts\nPASS tests/rules/require-test-traceability.test.ts\nPASS tests/integration/require-traceability-aliases.integration.test.ts\nPASS tests/config/eslint-config-validation.test.ts\nPASS tests/rules/require-story-core-edgecases.test.ts\nPASS tests/plugin-setup-error.test.ts\nPASS tests/rules/error-reporting.test.ts\nPASS tests/integration/else-if-annotation-prettier.integration.test.ts\nPASS tests/rules/valid-req-reference.test.ts\nPASS tests/utils/branch-annotation-helpers.test.ts\nPASS tests/config/flat-config-presets-integration.test.ts\nPASS tests/integration/require-traceability-test-callbacks.integration.test.ts\nPASS tests/rules/require-story-helpers.test.ts\nPASS tests/perf/maintenance-large-workspace.test.ts\nPASS tests/utils/annotation-checker-autofix-behavior.test.ts\nPASS tests/cli-error-handling.test.ts\nPASS tests/plugin-setup.test.ts\nPASS tests/maintenance/index.test.ts\nPASS tests/rules/require-story-helpers-edgecases.test.ts\nPASS tests/utils/req-annotation-detection.test.ts\nPASS tests/utils/branch-annotation-else-if-position.test.ts\nPASS tests/rules/prefer-implements-annotation.test.ts\nPASS tests/perf/valid-annotation-format-large-file.test.ts\nPASS tests/maintenance/detect-isolated.test.ts\nPASS tests/maintenance/cli.test.ts\nPASS tests/utils/branch-annotation-else-if-insert-position.test.ts\nPASS tests/maintenance/update-isolated.test.ts\nPASS tests/rules/require-story-io.edgecases.test.ts\nPASS tests/utils/branch-annotation-catch-insert-position.test.ts\nPASS tests/rules/require-story-core.test.ts\nPASS tests/rules/valid-annotation-format-internal.test.ts\nPASS tests/perf/maintenance-cli-large-workspace.test.ts\nPASS tests/utils/branch-annotation-catch-position.test.ts\nPASS tests/maintenance/update.test.ts\nPASS tests/rules/require-story-utils.test.ts\nPASS tests/config/require-story-annotation-config.test.ts\nPASS tests/maintenance/detect.test.ts\nPASS tests/maintenance/report.test.ts\nPASS tests/rules/require-story-core.autofix.test.ts\nPASS tests/rules/require-story-visitors-edgecases.test.ts\nPASS tests/rules/require-story-io-behavior.test.ts\nPASS tests/integration/catch-annotation-prettier.integration.test.ts\nPASS tests/integration/cli-integration.test.ts\nPASS tests/integration/annotation-placement-inside-prettier.integration.test.ts (5.798 s)\n\nTest Suites: 56 passed, 56 total\nTests:       513 passed, 513 total\nSnapshots:   0 total\nTime:        6.296 s, estimated 12 s\nRan all test suites.\n"
+  },
+  "coverage": {
+    "runAttempted": true,
+    "exitCode": 0,
+    "stdout": "\n> eslint-plugin-traceability@1.0.5 test\n> jest --ci --bail --coverage\n\n-----------------------------------------|---------|----------|---------|---------|---------------------------------------------------------------------------\nFile                                     | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                         \n-----------------------------------------|---------|----------|---------|---------|---------------------------------------------------------------------------\nAll files                                |   95.61 |    86.65 |   98.08 |   95.61 |                                                                           \n src                                     |   96.55 |    36.66 |     100 |   96.55 |                                                                           \n  index.ts                               |   96.55 |    36.66 |     100 |   96.55 | 112-113,176-177,256-263                                                   \n src/maintenance                         |   84.21 |    90.51 |   97.29 |   84.21 |                                                                           \n  batch.ts                               |     100 |      100 |     100 |     100 |                                                                           \n  cli.ts                                 |   95.28 |    86.66 |     100 |   95.28 | 65-69                                                                     \n  commands.ts                            |   91.92 |     87.5 |     100 |   91.92 | 47-55,146-149                                                             \n  detect.ts                              |    91.5 |     87.5 |     100 |    91.5 | 112-114,147-153,162-168                                                   \n  flags.ts                               |     100 |    93.47 |     100 |     100 | 4,201,220                                                                 \n  index.ts                               |     100 |      100 |     100 |     100 |                                                                           \n  report.ts                              |     100 |      100 |     100 |     100 |                                                                           \n  storyParser.ts                         |       0 |        0 |       0 |       0 | 1-146                                                                     \n  update.ts                              |     100 |      100 |     100 |     100 |                                                                           \n  utils.ts                               |   97.05 |    85.71 |     100 |   97.05 | 22-23                                                                     \n src/rules                               |    98.7 |    86.52 |     100 |    98.7 |                                                                           \n  no-redundant-annotation.ts             |      96 |       90 |     100 |      96 | 124-129                                                                   \n  prefer-implements-annotation.ts        |   99.32 |    86.79 |     100 |   99.32 | 89-91                                                                     \n  require-branch-annotation.ts           |   96.03 |    86.66 |     100 |   96.03 | 67-68,73-74,90-93                                                         \n  require-req-annotation.ts              |     100 |      100 |     100 |     100 |                                                                           \n  require-story-annotation.ts            |     100 |      100 |     100 |     100 |                                                                           \n  require-test-traceability.ts           |     100 |      100 |     100 |     100 |                                                                           \n  require-traceability.ts                |   97.75 |       50 |     100 |   97.75 | 81-82                                                                     \n  valid-annotation-format.ts             |   98.75 |    81.57 |     100 |   98.75 | 79-80,131-132                                                             \n  valid-req-reference.ts                 |     100 |      100 |     100 |     100 |                                                                           \n  valid-story-reference.ts               |   98.71 |    81.25 |     100 |   98.71 | 113,117-118,167-168                                                       \n src/rules/helpers                       |   96.54 |    86.12 |   96.89 |   96.54 |                                                                           \n  pattern-validators.ts                  |     100 |      100 |     100 |     100 |                                                                           \n  prefer-implements-inline.ts            |    90.9 |    62.16 |     100 |    90.9 | 48-49,53-54,62-63,72-73,110-111,117-118,141-142,161-162,204-206           \n  require-story-comment-detection.ts     |   87.07 |    83.01 |     100 |   87.07 | 90-91,103-104,106-107,110-111,113-119,164-171                             \n  require-story-core.ts                  |   96.57 |    92.68 |     100 |   96.57 | 31-33,161-166,252-253                                                     \n  require-story-helpers.ts               |     100 |      100 |   76.19 |     100 |                                                                           \n  require-story-io.ts                    |   96.12 |    87.27 |     100 |   96.12 | 190-196,209-210                                                           \n  require-story-name-extraction.ts       |   95.83 |     90.9 |     100 |   95.83 | 34-35,53,55-56                                                            \n  require-story-node-utils.ts            |     100 |      100 |     100 |     100 |                                                                           \n  require-story-utils.ts                 |   96.39 |    86.51 |     100 |   96.39 | 82,129-130,154-156,218-219                                                \n  require-story-visitors.ts              |     100 |       84 |     100 |     100 | 77,146,179,214                                                            \n  require-test-traceability-helpers.ts   |    94.1 |    61.81 |     100 |    94.1 | 85-87,154-156,158-161,174-175,189-190,221-222,264-267,355-356             \n  test-callback-exclusion.ts             |   98.73 |    96.66 |     100 |   98.73 | 109-110                                                                   \n  valid-annotation-format-internal.ts    |     100 |      100 |     100 |     100 |                                                                           \n  valid-annotation-format-validators.ts  |   96.17 |    83.33 |     100 |   96.17 | 102-103,111-112,155-162,301-303                                           \n  valid-annotation-options.ts            |     100 |      100 |     100 |     100 |                                                                           \n  valid-annotation-utils.ts              |    93.9 |    72.72 |     100 |    93.9 | 76-80,94-98                                                               \n  valid-implements-utils.ts              |     100 |    94.73 |     100 |     100 | 148                                                                       \n  valid-req-reference-helpers.ts         |   95.57 |    76.08 |     100 |   95.57 | 43-44,72,74-80,109-110,203-204,243-244,267-268,323-324                    \n  valid-story-reference-helpers.ts       |   94.18 |    88.88 |     100 |   94.18 | 101-105,117-121                                                           \n src/utils                               |   96.21 |    88.94 |   99.13 |   96.21 |                                                                           \n  annotation-checker.ts                  |     100 |    97.82 |     100 |     100 | 33                                                                        \n  annotation-scope-analyzer.ts           |     100 |      100 |     100 |     100 |                                                                           \n  branch-annotation-catch-helpers.ts     |   97.59 |    86.66 |     100 |   97.59 | 70-71                                                                     \n  branch-annotation-helpers.ts           |   97.75 |    92.64 |     100 |   97.75 | 78-79,259-260,302-304,345-347                                             \n  branch-annotation-if-helpers.ts        |   90.97 |    83.58 |   91.66 |   90.97 | 20-21,61-62,74-78,148-149,167-169,171-172,175-176,221-222,255-256,262-263 \n  branch-annotation-indent-helpers.ts    |   96.18 |    91.66 |     100 |   96.18 | 58-59,110-111,168-169,198-199,286-288                                     \n  branch-annotation-loop-helpers.ts      |     100 |    88.88 |     100 |     100 | 26-27                                                                     \n  branch-annotation-report-helpers.ts    |    94.7 |    83.33 |     100 |    94.7 | 75-84,123-133,223-224                                                     \n  branch-annotation-story-fix-helpers.ts |     100 |       80 |     100 |     100 | 35,39                                                                     \n  branch-annotation-switch-helpers.ts    |   85.56 |    70.58 |     100 |   85.56 | 39-41,45,47-56                                                            \n  branch-validation.ts                   |     100 |      100 |     100 |     100 |                                                                           \n  comment-text-helpers.ts                |   96.72 |       90 |     100 |   96.72 | 32-33                                                                     \n  function-annotation-helpers.ts         |   90.67 |    52.94 |     100 |   90.67 | 25-26,44-46,85-86,100-101,110-111                                         \n  redundancy-detector.ts                 |   91.21 |       75 |     100 |   91.21 | 39-40,96-97,103-104,116-124,185-194,197-198,276-277,342-343               \n  reqAnnotationDetection.ts              |     100 |     98.3 |     100 |     100 | 90                                                                        \n  storyReferenceUtils.ts                 |   99.09 |    97.05 |     100 |   99.09 | 171-173                                                                   \n-----------------------------------------|---------|----------|---------|---------|---------------------------------------------------------------------------\n\n",
+    "stderr": "PASS tests/rules/valid-annotation-format.test.ts\nPASS tests/rules/require-branch-annotation.test.ts\nPASS tests/rules/require-story-annotation.test.ts (5.763 s)\nPASS tests/rules/auto-fix-behavior-008.test.ts (6.112 s)\nPASS tests/integration/cli-integration.test.ts (6.317 s)\nPASS tests/perf/maintenance-large-workspace.test.ts\nPASS tests/integration/catch-annotation-prettier.integration.test.ts (6.738 s)\nPASS tests/integration/else-if-annotation-prettier.integration.test.ts\nPASS tests/cli-error-handling.test.ts\nPASS tests/perf/maintenance-cli-large-workspace.test.ts\nPASS tests/perf/require-branch-annotation-large-file.test.ts\nPASS tests/perf/valid-annotation-format-large-file.test.ts\nPASS tests/utils/annotation-checker.test.ts\nPASS tests/rules/no-redundant-annotation.test.ts\nPASS tests/rules/require-req-annotation.test.ts\nPASS tests/rules/valid-req-reference.test.ts\nPASS tests/integration/no-redundant-annotation.integration.test.ts\nPASS tests/config/flat-config-presets-integration.test.ts\nPASS tests/integration/require-traceability-aliases.integration.test.ts\nPASS tests/rules/prefer-implements-annotation.test.ts\nPASS tests/config/eslint-config-validation.test.ts\nPASS tests/rules/valid-story-reference.test.ts\nPASS tests/rules/require-test-traceability.test.ts\nPASS tests/rules/error-reporting.test.ts\nPASS tests/plugin-default-export-and-configs.test.ts\nPASS tests/rules/require-story-helpers.test.ts\nPASS tests/utils/annotation-scope-analyzer.test.ts\nPASS tests/maintenance/cli.test.ts\nPASS tests/plugin-setup-error.test.ts\nPASS tests/utils/branch-annotation-else-if-insert-position.test.ts\nPASS tests/rules/require-story-visitors-edgecases.test.ts\nPASS tests/integration/require-traceability-test-callbacks.integration.test.ts\nPASS tests/utils/branch-annotation-helpers.test.ts\nPASS tests/rules/require-story-core-edgecases.test.ts\nPASS tests/maintenance/batch.test.ts\nPASS tests/utils/branch-annotation-else-if-position.test.ts\nPASS tests/maintenance/detect-isolated.test.ts\nPASS tests/maintenance/update.test.ts\nPASS tests/maintenance/report.test.ts\nPASS tests/utils/annotation-checker-autofix-behavior.test.ts\nPASS tests/utils/branch-annotation-catch-position.test.ts\nPASS tests/maintenance/update-isolated.test.ts\nPASS tests/utils/branch-annotation-catch-insert-position.test.ts\nPASS tests/maintenance/detect.test.ts\nPASS tests/integration/annotation-placement-inside-prettier.integration.test.ts (10.884 s)\nPASS tests/rules/require-story-core.test.ts\nPASS tests/rules/require-story-core.autofix.test.ts\nPASS tests/rules/valid-annotation-format-internal.test.ts\nPASS tests/maintenance/index.test.ts\nPASS tests/plugin-setup.test.ts\nPASS tests/utils/req-annotation-detection.test.ts\nPASS tests/rules/require-story-io.edgecases.test.ts\nPASS tests/rules/require-story-utils.test.ts\nPASS tests/config/require-story-annotation-config.test.ts\nPASS tests/rules/require-story-io-behavior.test.ts\nPASS tests/rules/require-story-helpers-edgecases.test.ts\n\nTest Suites: 56 passed, 56 total\nTests:       513 passed, 513 total\nSnapshots:   0 total\nTime:        12.271 s\nRan all test suites.\n",
+    "summary": {
+      "statementsPct": 95.61,
+      "branchesPct": 86.65,
+      "functionsPct": 98.08,
+      "linesPct": 95.61
+    },
+    "thresholds": {
+      "configured": true,
+      "thresholds": {
+        "statements": 90,
+        "branches": 80,
+        "functions": 90,
+        "lines": 90
+      },
+      "met": true,
+      "failures": []
+    },
+    "gaps": {
+      "lowCoverageFiles": [
+        {
+          "file": "src/index.ts",
+          "linesPct": 96.55,
+          "statementsPct": 96.55,
+          "branchesPct": 36.66,
+          "functionsPct": 100
+        },
+        {
+          "file": "src/rules/require-traceability.ts",
+          "linesPct": 97.75,
+          "statementsPct": 97.75,
+          "branchesPct": 50,
+          "functionsPct": 100
+        },
+        {
+          "file": "src/rules/helpers/prefer-implements-inline.ts",
+          "linesPct": 90.9,
+          "statementsPct": 90.9,
+          "branchesPct": 62.16,
+          "functionsPct": 100
+        },
+        {
+          "file": "src/rules/helpers/require-test-traceability-helpers.ts",
+          "linesPct": 94.1,
+          "statementsPct": 94.1,
+          "branchesPct": 61.81,
+          "functionsPct": 100
+        },
+        {
+          "file": "src/utils/function-annotation-helpers.ts",
+          "linesPct": 90.67,
+          "statementsPct": 90.67,
+          "branchesPct": 52.94,
+          "functionsPct": 100
+        },
+        {
+          "file": "src/utils/branch-annotation-switch-helpers.ts",
+          "linesPct": 85.56,
+          "statementsPct": 85.56,
+          "branchesPct": 70.58,
+          "functionsPct": 100
+        }
+      ],
+      "zeroCoverageFiles": [
+        "src/maintenance/storyParser.ts"
+      ]
+    }
+  },
+  "traceability": {
+    "testFilesScanned": 56,
+    "supportsAnnotationCount": 234,
+    "byStory": {}
+  },
+  "quality": {
+    "findings": []
+  }
+}

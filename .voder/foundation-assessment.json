@@ -1,0 +1,54 @@
+{
+  "kind": "foundation-assessment-orchestration",
+  "version": 1,
+  "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
+  "plannedOrder": [],
+  "executedOrder": [],
+  "results": {
+    "testing": {
+      "key": "testing",
+      "executed": false,
+      "scorePct": null,
+      "status": null,
+      "summary": "Not executed due to orchestration failure.",
+      "artifactPath": null,
+      "report": null
+    },
+    "execution": {
+      "key": "execution",
+      "executed": false,
+      "scorePct": null,
+      "status": null,
+      "summary": "Not executed due to orchestration failure.",
+      "artifactPath": null,
+      "report": null
+    },
+    "functionality": {
+      "key": "functionality",
+      "executed": false,
+      "scorePct": null,
+      "status": null,
+      "summary": "Not executed due to orchestration failure.",
+      "artifactPath": null,
+      "report": null
+    }
+  },
+  "thresholds": {
+    "nonFunctionalScorePct": 75
+  },
+  "planningReadiness": {
+    "ready": false,
+    "reason": "Foundation assessment orchestration failed to run."
+  },
+  "overall": {
+    "passed": false,
+    "failedAssessment": null,
+    "failedScorePct": null
+  },
+  "gapsAndImprovements": {
+    "items": []
+  },
+  "error": {
+    "message": "Codex exited with code 1: Reading prompt from stdin...\nOpenAI Codex v0.77.0 (research preview)\n--------\nworkdir: /Users/tomhoward/Projects/eslint-plugin-traceability\nmodel: gpt-5.2-codex\nprovider: openai\napproval: never\nsandbox: danger-full-access\nreasoning effort: medium\nreasoning summaries: auto\nsession id: 019ba49f-d9f9-7330-8367-32d08638276b\n--------\nuser\nYou are Codex, invoked by voder to run a standalone testing assessment.\n\nTASK\n0) This is a READ-ONLY assessment (no code/test changes).\n   - You MUST NOT create, modify, or delete tracked/source-controlled files in the repository (including tests).\n   - You MAY run commands that generate typical untracked artifacts as part of normal test execution (e.g., coverage/, dist/, build/, .cache/, junit.xml, .nyc_output/), but do not intentionally edit tracked project files.\n1) Do all discovery, execution, and analysis yourself from the repository contents.\n   - Treat the PROJECT CONTEXT as minimal and non-authoritative; it is NOT a hint about scripts/frameworks.\n   - Do not rely on any voder-provided heuristic assessment; none is provided.\n2) Discover tests, determine how to run them, execute them, and collect coverage where feasible:\n   - Try common scripts/commands (e.g., `npm test`, `npm run test`, `npm run test:coverage`, `npx jest --coverage`, etc.) as appropriate.\n   - Capture pass/fail and duration.\n3) Read representative test files and evaluate test quality:\n   - Structure: GIVEN-WHEN-THEN / ARRANGE-ACT-ASSERT where applicable.\n   - Behavioral testing vs implementation-detail testing.\n   - Assertion quality and readability.\n4) Scan for @supports annotations to map stories/requirements and identify gaps.\n5) Classify test types (unit/integration/e2e) and whether they are segregated and independently runnable.\n6) Return a JSON report that matches the voder TestingAssessment shape (src/assess-testing/types.ts).\n   - You MUST include the FULL structured TestingAssessment JSON with ALL sections.\n   - Validation will FAIL if any required top-level section is missing or null/undefined.\n   - Required top-level fields include:\n     - status: \"healthy\" | \"at-risk\" | \"failing\"\n     - summary: string (non-empty)\n     - projectType: ProjectTypeAssessment\n     - discovery: TestDiscoveryAssessment\n     - testTypes: TestTypesAssessment\n     - execution: TestExecutionAssessment\n     - coverage: CoverageAssessment\n     - traceability: TestTraceabilityCoverage\n     - quality: { findings: TestQualityFinding[] }\n     - score: number (0-100; 75 = adequate)\n     - reasoning: string[] (explain the score)\n     - improvement_path: TestingImprovement[] (prioritized, highest impact first)\n   - Score requirements:\n     - score MUST be an integer from 0 to 100 (inclusive).\n     - 75 represents an adequate, acceptable baseline for a typical professional codebase.\n     - reasoning MUST explain why the score is what it is, as concrete bullet-like strings.\n     - improvement_path MUST be prioritized (highest impact first) and each item MUST include an estimated score impact (estimatedScoreImpactPct) and what to do (item).\n\nOUTPUT\nReturn ONLY the JSON object (no prose, no code fences, no XML).\nThe JSON must be valid and match the TestingAssessment schema exactly.\n\nPROJECT CONTEXT:\n{\n  \"rootDir\": \"/Users/tomhoward/Projects/eslint-plugin-traceability\",\n  \"notes\": [\n    \"Minimal context only. You must discover test frameworks, scripts, test locations, and project type yourself.\",\n    \"Do not assume voder provided any hints beyond the repository itself.\"\n  ]\n}\n\nPREVIOUS ASSESSMENT:\n{\n  \"status\": \"healthy\",\n  \"summary\": \"Jest suite runs cleanly (56 suites, 513 tests) with high coverage and extensive traceability annotations; coverage gaps are limited to one zero-coverage maintenance parser and a handful of low-branch helpers.\",\n  \"score\": 86,\n  \"reasoning\": [\n    \"`npm test` passed all 56 suites/513 tests, indicating stable execution across rule, utils, maintenance, perf, config, and CLI flows.\",\n    \"Coverage run succeeded with strong overall metrics (statements/lines 95.61%, functions 98.08%, branches 86.65%) and configured thresholds met.\",\n    \"Tests show clear AAA/RuleTester structures with behavior-focused cases (rule violations, autofix output, CLI integration).\",\n    \"Traceability is well represented with 234 @supports annotations across test sources.\",\n    \"One source file remains at 0% coverage (`src/maintenance/storyParser.ts`) and several helpers have low branch coverage.\"\n  ],\n  \"improvement_path\": [\n    {\n      \"item\": \"Add targeted tests for `src/maintenance/storyParser.ts` to cover parsing behaviors and edge cases.\",\n      \"estimatedScoreImpactPct\": 6,\n      \"rationale\": \"Eliminates the only 0% coverage file and raises confidence in maintenance tooling.\"\n    },\n    {\n      \"item\": \"Increase branch coverage in low-branch helpers (`src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`).\",\n      \"estimatedScoreImpactPct\": 4,\n      \"rationale\": \"Targets known weak branches without large test overhead.\"\n    },\n    {\n      \"item\": \"Add explicit scripts for unit vs integration runs (e.g., `test:unit`, `test:integration`) using Jest `--testPathPatterns`.\",\n      \"estimatedScoreImpactPct\": 2,\n      \"rationale\": \"Enables faster focused runs and clearer test segmentation.\"\n    }\n  ],\n  \"projectType\": {\n    \"type\": \"library\",\n    \"rationale\": [\n      \"Package exports compiled plugin entrypoints (`main`/`types` -> `lib/src`), indicating a distributable library.\",\n      \"Peer dependency on `eslint` and tests focused on ESLint rules/configs align with plugin library behavior.\",\n      \"A maintenance CLI exists via `bin`, but core deliverable is the ESLint plugin.\"\n    ]\n  },\n  \"testTypes\": {\n    \"classifications\": [\n      {\n        \"testFile\": \"tests/plugin-setup.test.ts\",\n        \"type\": \"unit\"\n      },\n      {\n        \"testFile\": \"tests/plugin-setup-error.test.ts\",\n        \"type\": \"unit\"\n      },\n      {\n        \"testFile\": \"tests/perf/require-branch-annotation-large-file.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/perf/maintenance-cli-large-workspace.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/perf/maintenance-large-workspace.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/perf/valid-annotation-format-large-file.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/maintenance/cli.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/maintenance/report.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/maintenance/batch.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/maintenance/update.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/maintenance/detect-isolated.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/maintenance/detect.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/maintenance/index.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/maintenance/update-isolated.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/cli-error-handling.test.ts\",\n        \"type\": \"integration\"\n      },\n      {\n        \"testFile\": \"tests/utils/branch-annotation-catch-position.test.ts\",\n        \"type\": \"unit\"\n      },\n      {\n        \"testFile\": \"tests/utils/branch-annotation-else-if-position.test.ts\",\n        \"type\": \"unit\"\n      },\n      {\n        \"testFile\": \"tests/utils/annotation-scope-analyzer.test.ts\",\n        \"type\": \"unit\"\n      },\n      {\n        \"testFile\": \"tests/utils/branch-annotation-helpers.test.ts\",\n        \"type\": \"unit\"\n      },\n      {\n        \"testFil (stderr preview truncated at 8000 chars)"
+  }
+}

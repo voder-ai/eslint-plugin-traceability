@@ -1,0 +1,28 @@
+{
+  "status": "healthy",
+  "summary": "Build succeeds and CLI help runs cleanly from a temp copy after fresh install; minor install-time warning from husky due to missing .git in temp copy.",
+  "score": 84,
+  "reasoning": [
+    "npm ci completed successfully in the temp copy, indicating dependencies resolve and install cleanly (with a non-fatal husky .git warning).",
+    "npm run build (tsc) completed without errors, producing compiled output in lib/.",
+    "The CLI entrypoint (lib/src/maintenance/cli.js --help) ran successfully, showing runtime can launch without critical errors.",
+    "No dedicated start/run script exists; runtime validation is limited to CLI help rather than executing a real rule flow."
+  ],
+  "improvement_path": [
+    {
+      "item": "Add a lightweight runtime smoke command that runs the plugin against a minimal fixture (read-only) and document it as the standard run/health check.",
+      "estimatedScoreImpactPct": 7,
+      "rationale": "Validates end-to-end execution beyond CLI help, reducing runtime uncertainty."
+    },
+    {
+      "item": "Provide a standard start/run script (e.g., npm run run:cli) that invokes the CLI with safe defaults.",
+      "estimatedScoreImpactPct": 4,
+      "rationale": "Establishes a consistent, discoverable runtime command for execution health checks."
+    },
+    {
+      "item": "Guard husky in non-git environments (e.g., prepare script conditional or HUSKY=0 guidance).",
+      "estimatedScoreImpactPct": 2,
+      "rationale": "Eliminates install-time warnings that can be misinterpreted as failures in clean temp environments."
+    }
+  ]
+}

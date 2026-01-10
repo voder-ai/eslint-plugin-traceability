@@ -1,0 +1,32 @@
+{
+  "cycleId": "20260102-120057-cycle-007",
+  "startedAt": "2026-01-02T12:00:57.226Z",
+  "completedAt": "2026-01-02T12:00:57.226Z",
+  "status": "completed",
+  "currentPhase": "assess",
+  "phases": {
+    "assess": {
+      "startedAt": "2026-01-02T12:00:57.226Z",
+      "completedAt": "2026-01-02T12:00:57.226Z",
+      "codexSessionId": null,
+      "result": {
+        "completedStories": [],
+        "incompleteStories": [
+          "003.0-DEV-FUNCTION-ANNOTATIONS"
+        ],
+        "traceabilityFiles": [
+          ".voder/traceability/003.0-DEV-FUNCTION-ANNOTATIONS.trace.md"
+        ],
+        "exitReason": "incomplete-story-found",
+        "firstIncompleteId": "003.0-DEV-FUNCTION-ANNOTATIONS",
+        "assessmentMethodsByStoryId": {
+          "003.0-DEV-FUNCTION-ANNOTATIONS": "codex"
+        }
+      }
+    }
+  },
+  "metadata": {
+    "voderVersion": "unknown",
+    "workingDirectory": "/Users/tomhoward/Projects/eslint-plugin-traceability"
+  }
+}
