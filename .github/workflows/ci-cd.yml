@@ -20,6 +20,7 @@ jobs:
       issues: write
       pull-requests: write
       id-token: write
+      packages: read
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -170,6 +171,8 @@ jobs:
   dependency-health:
     if: ${{ github.event_name == 'schedule' }}
     name: Dependency Health Check
+    permissions:
+      packages: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
