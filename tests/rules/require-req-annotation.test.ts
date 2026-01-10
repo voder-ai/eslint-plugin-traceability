@@ -93,6 +93,14 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] valid MethodDefinition with @req annotation",
         code: `class C {\n  /**\n   * @req REQ-EXAMPLE\n   */\n  m() {}\n}`,
       },
+      {
+        name: "[REQ-FUNCTION-DETECTION][Story 003.0] valid ArrowFunctionExpression with @req annotation",
+        code: `/** @req REQ-EXAMPLE */\nconst arrow = () => {};`,
+      },
+      {
+        name: "[REQ-FUNCTION-DETECTION][Story 003.0] valid exported ArrowFunctionExpression with @req annotation",
+        code: `/** @req REQ-EXAMPLE */\nexport const arrow = () => {};`,
+      },
       withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] valid TS FunctionExpression in variable declarator with @req",
         code: `const fn = /**\n * @req REQ-EXAMPLE\n */\nfunction () {};`,
@@ -187,6 +195,16 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on MethodDefinition in object literal",
         code: `const o = { m() {} };`,
         errors: [missingReq("m")],
+      },
+      {
+        name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on ArrowFunctionExpression",
+        code: `const arrow = () => {};`,
+        errors: [missingReq("arrow")],
+      },
+      {
+        name: "[REQ-FUNCTION-DETECTION][Story 003.0] missing @req on exported ArrowFunctionExpression",
+        code: `export const arrow = () => {};`,
+        errors: [missingReq("arrow")],
       },
       withTsLanguageOptions({
         name: "[REQ-TYPESCRIPT-SUPPORT][REQ-FUNCTION-DETECTION][Story 003.0] missing @req on TS FunctionExpression in variable declarator",

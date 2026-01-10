@@ -27,6 +27,57 @@ type Options = [
   }?,
 ];
 
+/**
+ * Build visitor handlers for require-req-annotation rule.
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-FUNCTION-DETECTION - Provide visitor construction for all function types
+ */
+function buildReqAnnotationVisitors(runCheck: (_node: any) => void) {
+  return {
+    /**
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-FUNCTION-DETECTION - Detect function declarations
+     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on function declarations
+     */
+    FunctionDeclaration: runCheck,
+    /**
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-FUNCTION-DETECTION - Detect function expressions
+     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on function expressions
+     */
+    FunctionExpression(node: any) {
+      if (node.parent && node.parent.type === "MethodDefinition") {
+        return;
+      }
+      runCheck(node);
+    },
+    /**
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-FUNCTION-DETECTION - Detect arrow function expressions
+     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on arrow function expressions
+     */
+    ArrowFunctionExpression: runCheck,
+    /**
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-FUNCTION-DETECTION - Detect method definitions
+     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on method definitions
+     */
+    MethodDefinition: runCheck,
+    /**
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript declare functions
+     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on TS declare functions
+     */
+    TSDeclareFunction: runCheck,
+    /**
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript method signatures
+     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on TS method signatures
+     */
+    TSMethodSignature: runCheck,
+  };
+}
+
 const rule: Rule.RuleModule = {
   meta: {
     type: "problem",
@@ -110,51 +161,7 @@ const rule: Rule.RuleModule = {
       });
     };
 
-    return {
-      /**
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-FUNCTION-DETECTION - Detect function declarations
-       * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on function declarations
-       */
-      FunctionDeclaration(node) {
-        runCheck(node);
-      },
-      /**
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-FUNCTION-DETECTION - Detect function expressions
-       * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on function expressions
-       */
-      FunctionExpression(node: any) {
-        if (node.parent && node.parent.type === "MethodDefinition") {
-          return;
-        }
-        runCheck(node);
-      },
-      /**
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-FUNCTION-DETECTION - Detect method definitions
-       * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on method definitions
-       */
-      MethodDefinition(node) {
-        runCheck(node);
-      },
-      /**
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript declare functions
-       * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on TS declare functions
-       */
-      TSDeclareFunction(node: any) {
-        runCheck(node);
-      },
-      /**
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript method signatures
-       * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on TS method signatures
-       */
-      TSMethodSignature(node: any) {
-        runCheck(node);
-      },
-    };
+    return buildReqAnnotationVisitors(runCheck);
   },
 };
 
