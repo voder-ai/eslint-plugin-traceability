@@ -675,7 +675,9 @@ Generates a simple, text-only report of stale `@story` annotations.
 
 ### `traceability-maint` CLI
 
-The `traceability-maint` CLI wraps the maintenance API for use in scripts and CI. It is typically available via `npx traceability-maint` or as an npm script.
+The `traceability-maint` CLI wraps the maintenance API for manual developer invocation. It is typically available via `npx traceability-maint` or as an npm script.
+
+**Important**: This CLI is designed for **manual developer execution only**. It should **not** be integrated into git hooks or CI pipelines for automatic maintenance operations. While the CLI is technically callable from scripts, maintenance operations like updating or detecting stale annotations are intended to be triggered manually by developers when needed, not automatically during the build or commit process.
 
 These tools are intentionally minimal and focused on stale **story** references only; requirement-level maintenance and more advanced filtering are planned but **not yet implemented**. The CLI currently focuses on stale `@story` annotations only. It does **not** build or consume a separate index file, and it does not yet support requirement-level maintenance.
 
