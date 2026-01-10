@@ -14,6 +14,9 @@ if [ ! -d "lib" ]; then
   exit 1
 fi
 
+# Store the project root before changing directories
+projectRoot=$(pwd)
+
 # Create a minimal test fixture in a temp directory
 workdir=$(mktemp -d)
 trap "rm -rf $workdir" EXIT
@@ -21,9 +24,9 @@ trap "rm -rf $workdir" EXIT
 cd "$workdir"
 
 # Create minimal ESLint config
-cat > eslint.config.js << 'EOF'
+cat > eslint.config.js << EOF
 const path = require('path');
-const plugin = require(path.join(process.cwd(), 'lib', 'src', 'index.js'));
+const plugin = require(path.join('${projectRoot}', 'lib', 'src', 'index.js'));
 
 module.exports = [
   {
