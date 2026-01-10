@@ -26,7 +26,7 @@ cd "$workdir"
 # Create minimal ESLint config
 cat > eslint.config.js << EOF
 const path = require('path');
-const plugin = require(path.join('${projectRoot}', 'lib', 'src', 'index.js'));
+const plugin = require(path.join('${projectRoot}', 'lib', 'index.js'));
 
 module.exports = [
   {
