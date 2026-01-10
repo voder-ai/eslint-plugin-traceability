@@ -33,7 +33,7 @@ module.exports = [
     files: ['**/*.ts', '**/*.js'],
     plugins: { traceability: plugin },
     rules: {
-      'traceability/require-story': ['error', { requireAnnotation: false }]
+      'traceability/require-story-annotation': 'error'
     }
   }
 ];
@@ -44,6 +44,7 @@ cat > test-file.ts << 'EOF'
 /**
  * Test function
  * @story docs/test-story.md
+ * @supports docs/test-story.md REQ-TEST
  */
 export function testFunction() {
   return true;
@@ -58,11 +59,13 @@ cat > docs/test-story.md << 'EOF'
 This is a minimal test story.
 EOF
 
-cd -
-
-# Run ESLint against the fixture
+# Run ESLint against the fixture from within the temp directory
 echo "✓ Loading plugin and checking fixture..."
-npx eslint --config "$workdir/eslint.config.js" "$workdir/test-file.ts" > /dev/null 2>&1
+npx eslint --config eslint.config.js test-file.ts > /dev/null 2>&1 || {
+  echo "❌ Error: ESLint check failed"
+  exit 1
+}
+cd "$projectRoot"
 
 # Verify CLI exists and can run help
 echo "✓ Verifying CLI availability..."
