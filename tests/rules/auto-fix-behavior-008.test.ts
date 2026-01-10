@@ -344,6 +344,65 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
     );
   });
 
+  describe("[REQ-AUTOFIX-IDEMPOTENT] and [REQ-AUTOFIX-SINGLE-APPLICATION] require-traceability", () => {
+    functionRuleTester.run(
+      "require-traceability --fix idempotent behavior",
+      requireTraceabilityRule,
+      {
+        valid: [
+          {
+            name: "[REQ-AUTOFIX-IDEMPOTENT] second run on already fixed function produces no changes",
+            code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-TEST\n */\nfunction fixedOnce() {}`,
+          },
+          {
+            name: "[REQ-AUTOFIX-SINGLE-APPLICATION] already annotated code does not receive duplicate annotations",
+            code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-TEST\n */\nfunction alreadyDone() {}`,
+          },
+        ],
+        invalid: [
+          {
+            name: "[REQ-AUTOFIX-IDEMPOTENT] first run adds annotation; subsequent run is a no-op for require-traceability",
+            code: `function needsFixOnce() {}`,
+            output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction needsFixOnce() {}`,
+            errors: [
+              {
+                messageId: "missingStory",
+                suggestions: [
+                  {
+                    desc: "Add traceability annotation for function 'needsFixOnce' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                    output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction needsFixOnce() {}`,
+                  },
+                ],
+              },
+              {
+                messageId: "missingReq",
+              },
+            ],
+          },
+          {
+            name: "[REQ-AUTOFIX-SINGLE-APPLICATION] does not duplicate annotations for require-traceability on subsequent runs",
+            code: `function singleApplication() {}`,
+            output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction singleApplication() {}`,
+            errors: [
+              {
+                messageId: "missingStory",
+                suggestions: [
+                  {
+                    desc: "Add traceability annotation for function 'singleApplication' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                    output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction singleApplication() {}`,
+                  },
+                ],
+              },
+              {
+                messageId: "missingReq",
+              },
+            ],
+          },
+        ],
+      },
+    );
+  });
+
   describe("[REQ-AUTOFIX-SELECTIVE] require-traceability autoFix toggle", () => {
     functionRuleTester.run(
       "require-traceability autoFix option",
