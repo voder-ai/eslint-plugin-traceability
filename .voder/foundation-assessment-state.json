@@ -1,12 +1,12 @@
 {
   "version": 2,
   "lastPlannedNonFunctionalOrder": [
-    "testing",
-    "execution"
+    "execution",
+    "testing"
   ],
   "lastScoresByKey": {
-    "testing": 86,
-    "execution": 86,
-    "functionality": 9
+    "execution": 90,
+    "testing": 88,
+    "functionality": 32
   }
 }

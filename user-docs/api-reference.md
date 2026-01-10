@@ -32,6 +32,31 @@ All three rule keys can still be configured individually if you need fine-graine
 
 Description: Unified function-level traceability rule that composes the behavior of `traceability/require-story-annotation` and `traceability/require-req-annotation`. When enabled, it enforces that in‑scope functions and methods carry both a story reference (`@story` or an equivalent `@supports` tag) and at least one requirement reference (`@req` or, when configured, `@supports`). The recommended flat‑config presets in this plugin enable `traceability/require-traceability` by default alongside the legacy rule keys for backward compatibility, so that existing configurations referring to `traceability/require-story-annotation` or `traceability/require-req-annotation` continue to work without change.
 
+When run with `--fix`, the rule delegates auto-fix behavior to its composed rules, primarily adding placeholder `@story` annotations for missing story coverage via the underlying `require-story-annotation` implementation. The rule supports the same `autoFix` option as the legacy rules, allowing you to disable automatic fixes while retaining diagnostics. All options (including `annotationTemplate`, `methodAnnotationTemplate`, `autoFix`, `scope`, `exportPriority`, `excludeTestCallbacks`, and `annotationPlacement`) are passed through to the composed rules, ensuring consistent behavior across the unified and legacy rule keys.
+
+Options:
+
+- `scope` (string[], optional) – Controls which function-like node types are required to have traceability annotations. Passed through to composed rules. Default behavior matches require-story-annotation defaults.
+- `exportPriority` ("all" | "exported" | "non-exported", optional) – Controls whether the rule checks all functions, only exported ones, or only non-exported ones. Passed through to composed rules. Default: "all".
+- `annotationTemplate` (string, optional) – Overrides the default placeholder JSDoc used when inserting missing `@story` annotations. Passed through to require-story-annotation. When omitted or blank, the built-in template from Story 008.0 is used.
+- `methodAnnotationTemplate` (string, optional) – Overrides the default placeholder JSDoc used for class methods and TypeScript method signatures. Passed through to require-story-annotation.
+- `autoFix` (boolean, optional) – When set to `false`, disables all automatic fix behavior for this rule while retaining its suggestions and diagnostics. When omitted or `true`, the rule behaves as before, inserting placeholder annotations in `--fix` mode. This option is passed through to the composed rules.
+- `excludeTestCallbacks` (boolean, optional) – When `true` (default), excludes anonymous arrow functions that are direct callbacks to common test framework functions from annotation requirements. Passed through to composed rules.
+- `annotationPlacement` ("before" | "inside", optional) – Controls whether annotations are expected before functions (`"before"`, default) or as the first lines inside function bodies (`"inside"`). Passed through to composed rules.
+
+Default Severity: `error`
+Example:
+
+```javascript
+/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED
+ */
+function initAuth() {
+  // authentication logic
+}
+```
+
 ### traceability/require-story-annotation
 
 Description: **Legacy function-level key:** This rule key is retained for backward compatibility and conceptually composes the same checks as `traceability/require-traceability`. New configurations should normally enable `traceability/require-traceability` instead and rely on this key only when you need to tune it independently. Ensures every function declaration has a traceability annotation, preferring `@supports` for story coverage while still accepting legacy `@story` annotations referencing the related user story. When you adopt multi-story `@supports` annotations, this rule also accepts `@supports` as an alternative way to prove story coverage, so either `@story` or at least one `@supports` tag will satisfy the presence check. When run with `--fix`, the rule inserts a single-line placeholder JSDoc `@story` annotation above missing functions, methods, TypeScript declare functions, and interface method signatures using a built-in template aligned with Story 008.0. This template is now configurable on a per-rule basis, and the rule exposes an explicit auto-fix toggle so you can choose between diagnostic-only behavior and automatic placeholder insertion. The default template remains aligned with Story 008.0, but you can now customize it per rule configuration and optionally disable auto-fix entirely when you only want diagnostics without edits.

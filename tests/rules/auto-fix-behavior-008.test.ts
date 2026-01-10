@@ -10,6 +10,7 @@
 import { RuleTester } from "eslint";
 import requireStoryRule from "../../src/rules/require-story-annotation";
 import validAnnotationFormatRule from "../../src/rules/valid-annotation-format";
+import requireTraceabilityRule from "../../src/rules/require-traceability";
 
 const functionRuleTester = new RuleTester({
   languageOptions: {
@@ -290,6 +291,92 @@ describe("Auto-fix behavior (Story 008.0-DEV-AUTO-FIX)", () => {
                 messageId: "invalidStoryFormat",
               },
             ],
+          },
+        ],
+      },
+    );
+  });
+
+  describe("[REQ-AUTOFIX-MISSING] require-traceability auto-fix", () => {
+    functionRuleTester.run(
+      "require-traceability --fix",
+      requireTraceabilityRule,
+      {
+        valid: [
+          {
+            name: "[REQ-AUTOFIX-MISSING] already annotated function is unchanged",
+            code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-EXAMPLE\n */\nfunction alreadyAnnotated() {}`,
+          },
+        ],
+        invalid: [
+          {
+            name: "[REQ-AUTOFIX-MISSING] adds @story before function when missing (via composed rule)",
+            code: `function autoFixMe() {}`,
+            output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction autoFixMe() {}`,
+            errors: [
+              {
+                messageId: "missingStory",
+                suggestions: [
+                  {
+                    desc: "Add traceability annotation for function 'autoFixMe' using @supports (preferred) or @story (legacy), for example: /** @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */",
+                    output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction autoFixMe() {}`,
+                  },
+                ],
+              },
+              {
+                messageId: "missingReq",
+              },
+            ],
+          },
+          {
+            name: "[REQ-AUTOFIX-SELECTIVE] does not insert annotations when autoFix is false",
+            code: `function fnNoFix() {}`,
+            output: null,
+            options: [
+              {
+                autoFix: false,
+              },
+            ],
+            errors: 2,
+          },
+        ],
+      },
+    );
+  });
+
+  describe("[REQ-AUTOFIX-SELECTIVE] require-traceability autoFix toggle", () => {
+    functionRuleTester.run(
+      "require-traceability autoFix option",
+      requireTraceabilityRule,
+      {
+        valid: [
+          {
+            name: "[REQ-AUTOFIX-SELECTIVE] annotated function passes validation",
+            code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-TEST\n */\nfunction complete() {}`,
+          },
+        ],
+        invalid: [
+          {
+            name: "[REQ-AUTOFIX-SELECTIVE] autoFix true enables automatic fixes",
+            code: `function needsFix() {}`,
+            output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction needsFix() {}`,
+            options: [
+              {
+                autoFix: true,
+              },
+            ],
+            errors: 2,
+          },
+          {
+            name: "[REQ-AUTOFIX-SELECTIVE] autoFix false disables automatic fixes",
+            code: `function diagnosticOnly() {}`,
+            output: null,
+            options: [
+              {
+                autoFix: false,
+              },
+            ],
+            errors: 2,
           },
         ],
       },

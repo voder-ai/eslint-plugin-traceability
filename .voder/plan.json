@@ -1,0 +1,82 @@
+{
+  "kind": "plan-next-work",
+  "version": 1,
+  "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
+  "generatedAt": null,
+  "input": {
+    "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
+    "hadFoundationAssessment": true,
+    "parsedOk": true
+  },
+  "thresholds": {
+    "nonFunctionalScorePct": 75
+  },
+  "readiness": {
+    "hadAllAssessments": true,
+    "failedAssessments": [
+      "execution"
+    ]
+  },
+  "buckets": {
+    "now": [
+      {
+        "id": "task-1",
+        "title": "Split build configuration (e.g., `tsconfig.build.json`) or adjust `tsconfig.json`/`build` script to exclude tests from the build output.",
+        "details": "Source: [execution] Split build configuration (e.g., `tsconfig.build.json`) or adjust `tsconfig.json`/`build` script to exclude tests from the build output.\nAssessment: execution\nEstimated impact: 45%",
+        "attribution": "execution",
+        "estimatedScoreImpactPct": 45,
+        "sourceItem": "[execution] Split build configuration (e.g., `tsconfig.build.json`) or adjust `tsconfig.json`/`build` script to exclude tests from the build output."
+      }
+    ],
+    "next": [
+      {
+        "id": "task-3",
+        "title": "Add a lightweight runtime smoke command that runs the CLI or a minimal ESLint invocation after build.",
+        "details": "Source: [execution] Add a lightweight runtime smoke command that runs the CLI or a minimal ESLint invocation after build.\nAssessment: execution\nEstimated impact: 10%",
+        "attribution": "execution",
+        "estimatedScoreImpactPct": 10,
+        "sourceItem": "[execution] Add a lightweight runtime smoke command that runs the CLI or a minimal ESLint invocation after build."
+      },
+      {
+        "id": "task-2",
+        "title": "Make installs resilient in non-git environments (e.g., set `HUSKY=0` in CI/build docs or guard `prepare`).",
+        "details": "Source: [execution] Make installs resilient in non-git environments (e.g., set `HUSKY=0` in CI/build docs or guard `prepare`).\nAssessment: execution\nEstimated impact: 5%",
+        "attribution": "execution",
+        "estimatedScoreImpactPct": 5,
+        "sourceItem": "[execution] Make installs resilient in non-git environments (e.g., set `HUSKY=0` in CI/build docs or guard `prepare`)."
+      },
+      {
+        "id": "task-4",
+        "title": "Add targeted tests to raise branch coverage in low-branch files (`src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`).",
+        "details": "Source: [testing] Add targeted tests to raise branch coverage in low-branch files (`src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`).\nAssessment: testing\nEstimated impact: 5%",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": 5,
+        "sourceItem": "[testing] Add targeted tests to raise branch coverage in low-branch files (`src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`)."
+      },
+      {
+        "id": "task-5",
+        "title": "Introduce a lightweight e2e-style smoke test that runs the plugin against a small fixture project via the CLI.",
+        "details": "Source: [testing] Introduce a lightweight e2e-style smoke test that runs the plugin against a small fixture project via the CLI.\nAssessment: testing\nEstimated impact: 3%",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": 3,
+        "sourceItem": "[testing] Introduce a lightweight e2e-style smoke test that runs the plugin against a small fixture project via the CLI."
+      }
+    ],
+    "later": [
+      {
+        "id": "task-6",
+        "title": "Populate `traceability.byStory` from @supports annotations to explicitly report coverage per story.",
+        "details": "Source: [testing] Populate `traceability.byStory` from @supports annotations to explicitly report coverage per story.\nAssessment: testing\nEstimated impact: 2%",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": 2,
+        "sourceItem": "[testing] Populate `traceability.byStory` from @supports annotations to explicitly report coverage per story."
+      }
+    ]
+  },
+  "summary": {
+    "nowCount": 1,
+    "nextCount": 4,
+    "laterCount": 1,
+    "human": "Plan: 1 NOW, 4 NEXT, 1 LATER. Top priority: Split build configuration (e.g., `tsconfig.build.json`) or adjust `tsconfig.json`/`build` script to exclude tests from the build output.."
+  }
+}

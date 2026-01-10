@@ -1,28 +1,27 @@
 {
   "status": "healthy",
-  "summary": "Build completes and CLI help runs cleanly from a temp copy after dependency install; only a minor install-time deprecation warning appears.",
-  "score": 86,
+  "summary": "Build and runtime smoke succeeded in a temp copy; the TypeScript build completes and the runtime smoke test confirms the plugin and CLI run cleanly.",
+  "score": 90,
   "reasoning": [
-    "npm ci completed successfully in the temp copy, indicating dependencies resolve and install cleanly (with a non-fatal semver-diff deprecation warning).",
-    "npm run build (tsc) completed without errors, producing compiled output in lib/.",
-    "The CLI entrypoint (lib/src/maintenance/cli.js --help) ran successfully, showing runtime can launch without critical errors.",
-    "No dedicated start/dev script exists; runtime validation is limited to CLI help rather than running the plugin against a real ESLint invocation."
+    "`npm ci` completed successfully; `prepare` ran without failing.",
+    "`npm run build` (`tsc -p tsconfig.build.json`) completed with no errors.",
+    "`npm run smoke:runtime` passed, confirming the built plugin loads and the CLI responds without errors."
   ],
   "improvement_path": [
     {
-      "item": "Add a lightweight runtime smoke command that runs the plugin against a minimal fixture (read-only) and document it as the standard run/health check.",
-      "estimatedScoreImpactPct": 7,
-      "rationale": "Validates end-to-end runtime behavior beyond CLI help, reducing uncertainty about real usage."
+      "item": "Make the `prepare` step a no-op in non-git environments (explicit guard or `HUSKY=0` guidance) to remove install-time noise.",
+      "estimatedScoreImpactPct": 3,
+      "rationale": "Eliminates non-fatal output that can be misread as a failure during fresh installs or CI."
     },
     {
-      "item": "Provide a standard run script (e.g., npm run run:cli) that invokes the CLI with safe defaults.",
+      "item": "Add a dedicated `run:smoke` script that chains `build` + `smoke:runtime` for a single execution health check.",
       "estimatedScoreImpactPct": 4,
-      "rationale": "Creates a consistent, discoverable runtime command for execution checks."
+      "rationale": "Reduces friction and avoids skipping required build steps before runtime validation."
     },
     {
-      "item": "Address install-time deprecation warning (semver-diff) via dependency update or replacement.",
-      "estimatedScoreImpactPct": 2,
-      "rationale": "Removes noise during installs that can be misread as failures in clean environments."
+      "item": "Document minimal runtime requirements (Node version + ESLint peer dependency) in an execution-health section.",
+      "estimatedScoreImpactPct": 3,
+      "rationale": "Clarifies prerequisites to prevent avoidable runtime failures for consumers."
     }
   ]
 }

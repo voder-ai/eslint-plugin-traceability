@@ -39,7 +39,7 @@ const rule: Rule.RuleModule = {
       recommended: "error",
     },
     hasSuggestions: true,
-    fixable: undefined,
+    fixable: "code",
     messages: {
       // Unified messageId for potential future direct use by this rule.
       missingTraceability:
@@ -49,12 +49,59 @@ const rule: Rule.RuleModule = {
       ...(storyRule.meta?.messages ?? {}),
       ...(reqRule.meta?.messages ?? {}),
     },
-    schema: [],
+    schema: [
+      {
+        type: "object",
+        properties: {
+          scope: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+          },
+          exportPriority: {
+            type: "string",
+            enum: ["all", "exported", "non-exported"],
+          },
+          annotationTemplate: {
+            type: "string",
+          },
+          methodAnnotationTemplate: {
+            type: "string",
+          },
+          autoFix: {
+            type: "boolean",
+            description:
+              "When false, disables automatic fix behavior while retaining diagnostics. When true (default), the rule inserts placeholder annotations in --fix mode.",
+          },
+          excludeTestCallbacks: {
+            type: "boolean",
+          },
+          annotationPlacement: {
+            type: "string",
+            enum: ["before", "inside"],
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
 
   create(context) {
-    const storyListeners = storyRule.create(context) || {};
-    const reqListeners = reqRule.create(context) || {};
+    // Create a modified context that passes through options to composed rules
+    // We need to preserve all context methods while modifying the options array
+    const options = context.options[0] || {};
+    const modifiedContext = Object.create(context, {
+      options: {
+        value: [options],
+        writable: false,
+        enumerable: true,
+        configurable: false,
+      },
+    });
+
+    const storyListeners = storyRule.create(modifiedContext as any) || {};
+    const reqListeners = reqRule.create(modifiedContext as any) || {};
 
     const mergedListener: Rule.RuleListener = {};
 
