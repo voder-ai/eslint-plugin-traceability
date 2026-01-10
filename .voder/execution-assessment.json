@@ -1,27 +1,27 @@
 {
   "status": "healthy",
-  "summary": "Build and runtime smoke succeeded in a temp copy; the TypeScript build completes and the runtime smoke test confirms the plugin and CLI run cleanly.",
+  "summary": "Temp-copy install, build, and runtime smoke all succeeded; only a non-fatal deprecation warning during npm ci.",
   "score": 90,
   "reasoning": [
-    "`npm ci` completed successfully; `prepare` ran without failing.",
-    "`npm run build` (`tsc -p tsconfig.build.json`) completed with no errors.",
-    "`npm run smoke:runtime` passed, confirming the built plugin loads and the CLI responds without errors."
+    "`npm ci` completed in a temp copy; `prepare` ran successfully with only a deprecated semver-diff warning.",
+    "`npm run build` (tsc -p tsconfig.build.json) completed with no errors.",
+    "`npm run smoke:runtime` passed, confirming the plugin loads and the CLI runs without critical errors."
   ],
   "improvement_path": [
     {
-      "item": "Make the `prepare` step a no-op in non-git environments (explicit guard or `HUSKY=0` guidance) to remove install-time noise.",
+      "item": "Guard the `prepare` step for non-git/CI contexts (or document `HUSKY=0`) to reduce install-time noise.",
       "estimatedScoreImpactPct": 3,
-      "rationale": "Eliminates non-fatal output that can be misread as a failure during fresh installs or CI."
+      "rationale": "Removes non-fatal warnings that can be misread as failures in clean installs."
     },
     {
-      "item": "Add a dedicated `run:smoke` script that chains `build` + `smoke:runtime` for a single execution health check.",
+      "item": "Add a dedicated `run:smoke` script that chains `build` + `smoke:runtime`.",
       "estimatedScoreImpactPct": 4,
-      "rationale": "Reduces friction and avoids skipping required build steps before runtime validation."
+      "rationale": "Simplifies a single execution-health check and reduces the chance of skipping required steps."
     },
     {
-      "item": "Document minimal runtime requirements (Node version + ESLint peer dependency) in an execution-health section.",
+      "item": "Document minimal runtime requirements (Node + ESLint peer dependency) in an execution-health section.",
       "estimatedScoreImpactPct": 3,
-      "rationale": "Clarifies prerequisites to prevent avoidable runtime failures for consumers."
+      "rationale": "Clarifies prerequisites to avoid avoidable runtime failures for consumers."
     }
   ]
 }

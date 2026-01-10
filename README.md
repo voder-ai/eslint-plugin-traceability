@@ -298,7 +298,7 @@ The `traceability-maint` CLI helps you maintain and audit `@story` annotations o
 
 - `detect` – Scan the workspace and detect `@story` annotations that reference missing story files.
 - `verify` – Verify that no stale `@story` annotations exist under the workspace root.
-- `report` – Generate a human-readable or JSON report of stale story references.
+- `report` – Generate a human-readable or JSON report of stale story references and circular dependencies.
 - `update` – Apply safe, scripted updates to `@story` annotations (e.g., when a story file is renamed).
 
 ### Usage
@@ -312,6 +312,9 @@ npx traceability-maint --help
 # Detect stale story references
 npx traceability-maint detect --root .
 
+# Detect with ESLint-style ignore patterns
+npx traceability-maint detect --root . --ignore-pattern node_modules --ignore-pattern dist
+
 # Verify that annotations are valid
 npx traceability-maint verify --root .
 
@@ -323,7 +326,45 @@ npx traceability-maint update \
   --root . \
   --from "stories/feature-authentication.story.md" \
   --to "stories/feature-auth-v2.story.md"
+
+# Update with ignore patterns to skip generated code
+npx traceability-maint update \
+  --root . \
+  --from "stories/old.story.md" \
+  --to "stories/new.story.md" \
+  --ignore-pattern dist
 ```
+
+### Options
+
+- `--root <path>` – Workspace root directory (defaults to current directory)
+- `--json` – Output results in JSON format
+- `--format <text|json>` – Report format (for `report` command)
+- `--from <path>` – Source story path (for `update` command)
+- `--to <path>` – Destination story path (for `update` command)
+- `--dry-run` – Preview changes without modifying files (for `update` command)
+- `--ignore-pattern <pattern>` – Path or directory to ignore (can be specified multiple times)
+
+### ESLint Configuration Integration
+
+The maintenance tools support integration with ESLint configuration through `--ignore-pattern` flags. This allows you to:
+
+- Skip generated code directories (e.g., `dist`, `build`)
+- Ignore dependency folders (e.g., `node_modules`)
+- Exclude test fixtures or temporary files
+
+Multiple patterns can be specified:
+
+```bash
+npx traceability-maint detect \
+  --ignore-pattern node_modules \
+  --ignore-pattern dist \
+  --ignore-pattern coverage
+```
+
+### Circular Reference Detection
+
+The `report` command now includes detection of circular `@story` references in your story files. Circular references occur when story files reference each other in a cycle (e.g., A → B → A or A → B → C → A). These are reported separately in the maintenance report output to help identify potential documentation issues.
 
 For a full description of options and JSON payloads, see the [Maintenance API and CLI](user-docs/api-reference.md#maintenance-api-and-cli) section in the API Reference.
 

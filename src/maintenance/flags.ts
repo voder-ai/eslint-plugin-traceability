@@ -107,6 +107,7 @@ export interface ParsedFlags {
   from?: string;
   to?: string;
   dryRun?: boolean;
+  ignorePatterns?: string[];
 }
 
 /**
@@ -253,6 +254,28 @@ function handleDryRunFlag(
 }
 
 /**
+ * Handle the --ignore-pattern flag, collecting ignore patterns for ESLint integration
+ *
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-UPDATE - Support ESLint configuration integration
+ */
+function handleIgnorePatternFlag(
+  flags: ParsedFlags,
+  args: string[],
+  index: number,
+): number {
+  if (args[index] !== "--ignore-pattern" || !isNextValueString(args, index)) {
+    return index;
+  }
+
+  if (!flags.ignorePatterns) {
+    flags.ignorePatterns = [];
+  }
+  flags.ignorePatterns.push(args[index + 1]);
+  return index + 1;
+}
+
+/**
  * Handle a single CLI argument and update the flags accordingly.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
@@ -287,6 +310,11 @@ function applyFlag(flags: ParsedFlags, args: string[], index: number): number {
   const afterDryRun = handleDryRunFlag(flags, args, index);
   if (afterDryRun !== index) {
     return afterDryRun;
+  }
+
+  const afterIgnorePattern = handleIgnorePatternFlag(flags, args, index);
+  if (afterIgnorePattern !== index) {
+    return afterIgnorePattern;
   }
 
   return index;

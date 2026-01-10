@@ -23,12 +23,16 @@ export const EXIT_USAGE = 2;
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-DETECT - CLI surface for detection of stale annotations
  * @req REQ-MAINT-SAFE - Return specific exit codes for stale vs clean states
+ * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
  * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE
  */
 export function handleDetect(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
   const root = flags.root;
-  const stale = detectStaleAnnotations(root);
+  const options = flags.ignorePatterns
+    ? { ignorePatterns: flags.ignorePatterns }
+    : undefined;
+  const stale = detectStaleAnnotations(root, options);
 
   if (flags.json) {
     // Emit JSON output to support consumption by external tools and scripts.
@@ -55,12 +59,16 @@ Run 'traceability-maint report' for a structured summary.`,
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-VERIFY - CLI surface for verification of annotations
  * @req REQ-MAINT-SAFE - Return distinct exit codes for verification failures
+ * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
  * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-VERIFY REQ-MAINT-SAFE
  */
 export function handleVerify(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
   const root = flags.root;
-  const valid = verifyAnnotations(root);
+  const options = flags.ignorePatterns
+    ? { ignorePatterns: flags.ignorePatterns }
+    : undefined;
+  const valid = verifyAnnotations(root, options);
 
   if (valid) {
     console.log(`All traceability annotations under ${root} are valid.`);
@@ -78,14 +86,18 @@ export function handleVerify(normalized: NormalizedCliArgs): number {
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-REPORT - CLI surface for human-readable maintenance reports
  * @req REQ-MAINT-SAFE - Support machine-readable formats for safe automation
+ * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
  * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT REQ-MAINT-SAFE
  */
 export function handleReport(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
   const root = flags.root;
   const format = flags.format ?? "text";
+  const options = flags.ignorePatterns
+    ? { ignorePatterns: flags.ignorePatterns }
+    : undefined;
 
-  const report = generateMaintenanceReport(root);
+  const report = generateMaintenanceReport(root, options);
 
   if (format === "json") {
     console.log(JSON.stringify({ root, report }));
@@ -111,6 +123,9 @@ export function handleReport(normalized: NormalizedCliArgs): number {
 export function handleUpdate(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
   const root = flags.root;
+  const options = flags.ignorePatterns
+    ? { ignorePatterns: flags.ignorePatterns }
+    : undefined;
 
   if (!flags.from || !flags.to) {
     console.error("'update' requires --from <oldPath> and --to <newPath>.");
@@ -123,7 +138,7 @@ export function handleUpdate(normalized: NormalizedCliArgs): number {
   if (flags.dryRun) {
     // For now, we cannot get a per-file diff without changing the maintenance API.
     // We conservatively reuse generateMaintenanceReport to indicate potential impact.
-    const beforeReport = generateMaintenanceReport(root);
+    const beforeReport = generateMaintenanceReport(root, options);
     const potentialChanges = beforeReport ? beforeReport.split("\n").length : 0;
     const summary = {
       root,
@@ -147,7 +162,7 @@ export function handleUpdate(normalized: NormalizedCliArgs): number {
     return EXIT_OK;
   }
 
-  const count = updateAnnotationReferences(root, from, to);
+  const count = updateAnnotationReferences(root, from, to, options);
 
   if (flags.json) {
     console.log(JSON.stringify({ root, from, to, updated: count }));

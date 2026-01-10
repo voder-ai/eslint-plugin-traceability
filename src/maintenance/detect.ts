@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { getAllFiles } from "./utils";
+import { getAllFiles, GetAllFilesOptions } from "./utils";
 import {
   isUnsafeStoryPath,
   enforceProjectBoundary,
@@ -11,10 +11,15 @@ import type { ProjectBoundaryCheckResult } from "../utils/storyReferenceUtils";
  * Detect stale annotation references that point to moved or deleted story files
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-DETECT - Detect stale annotation references
+ * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
  * @param codebasePath Path to the codebase root, treated as a workspace root and resolved against process.cwd().
+ * @param options Optional configuration including ESLint ignore patterns
  * @returns A de-duplicated array of stale @story paths (as strings) whose resolved targets no longer exist on disk.
  */
-export function detectStaleAnnotations(codebasePath: string): string[] {
+export function detectStaleAnnotations(
+  codebasePath: string,
+  options?: GetAllFilesOptions,
+): string[] {
   const cwd = process.cwd();
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-DETECT - Treat codebasePath as a workspace root resolved from process.cwd()
@@ -36,7 +41,8 @@ export function detectStaleAnnotations(codebasePath: string): string[] {
 
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-DETECT - Iterate over all files in the isolated workspace root
-  const files = getAllFiles(workspaceRoot);
+  // @req REQ-MAINT-UPDATE - Apply ESLint ignore patterns during file discovery
+  const files = getAllFiles(workspaceRoot, options);
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-DETECT - Loop over each workspace file to inspect its @story annotations
   for (const file of files) {

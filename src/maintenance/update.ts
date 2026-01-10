@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { getAllFiles } from "./utils";
+import { getAllFiles, GetAllFilesOptions } from "./utils";
 
 /**
  * Helper to process a single file for annotation reference updates
@@ -43,12 +43,14 @@ function processFileForAnnotationUpdates(
  * @param codebasePath Absolute or workspace-root path whose files will be updated in-place.
  * @param oldPath The original @story path to search for in annotation comments.
  * @param newPath The replacement @story path that will replace occurrences of oldPath.
+ * @param options Optional configuration including ESLint ignore patterns
  * @returns The number of @story annotations that were updated across the codebase.
  */
 export function updateAnnotationReferences(
   codebasePath: string,
   oldPath: string,
   newPath: string,
+  options?: GetAllFilesOptions,
 ): number {
   /**
    * Check that the provided codebase path exists and is a directory.
@@ -68,7 +70,7 @@ export function updateAnnotationReferences(
   const escapedOldPath = oldPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(`(@story\\s*)${escapedOldPath}`, "g");
 
-  const files = getAllFiles(codebasePath);
+  const files = getAllFiles(codebasePath, options);
   /**
    * Iterate over all files and replace annotation references
    * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
