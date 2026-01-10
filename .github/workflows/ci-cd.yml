@@ -38,6 +38,11 @@ jobs:
           node-version: ${{ matrix['node-version'] }}
           cache: npm
 
+      - name: Configure npm for GitHub Packages
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+          echo "@voder-ai:registry=https://npm.pkg.github.com" >> ~/.npmrc
+
       - name: Validate scripts non-empty
         run: node scripts/validate-scripts-nonempty.js
 
@@ -177,6 +182,11 @@ jobs:
         with:
           node-version: '22.14.0'
           cache: npm
+
+      - name: Configure npm for GitHub Packages
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+          echo "@voder-ai:registry=https://npm.pkg.github.com" >> ~/.npmrc
 
       - name: Validate scripts non-empty
         run: node scripts/validate-scripts-nonempty.js
