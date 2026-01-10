@@ -2,8 +2,8 @@
   "name": "eslint-plugin-traceability",
   "version": "1.0.5",
   "description": "A customizable ESLint plugin that enforces traceability annotations in your code, ensuring each implementation is linked to its requirement or test case.",
-  "main": "lib/src/index.js",
-  "types": "lib/src/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
     "lib",
     "README.md",
@@ -16,7 +16,7 @@
     "doc": "docs"
   },
   "bin": {
-    "traceability-maint": "lib/src/maintenance/cli.js"
+    "traceability-maint": "lib/maintenance/cli.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -46,7 +46,7 @@
     "security:secrets": "secretlint \"**/*\"",
     "smoke-test": "./scripts/smoke-test.sh",
     "smoke:runtime": "./scripts/runtime-smoke.sh",
-    "run:cli": "node lib/src/maintenance/cli.js",
+    "run:cli": "node lib/maintenance/cli.js",
     "debug:cli": "node scripts/cli-debug.js",
     "debug:require-story": "node scripts/debug-require-story.js",
     "debug:repro": "node scripts/debug-repro.js",

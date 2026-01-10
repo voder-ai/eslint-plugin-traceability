@@ -9,7 +9,7 @@ const js = require("@eslint/js");
 
 // Prefer loading the plugin from the source during development if available.
 // This allows running eslint directly against the src tree without a build step.
-// Fallback to the built plugin in lib/src for CI / production use.
+// Fallback to the built plugin in lib for CI / production use.
 // If neither exists and we are running in CI, throw an error to fail the build.
 // Otherwise warn and continue with an empty plugin object so local dev can proceed.
 let plugin;
@@ -19,13 +19,13 @@ try {
 } catch (eSrc) {
   try {
     // Fallback to built output (production / CI workflow)
-    plugin = require("./lib/src/index.js");
+    plugin = require("./lib/index.js");
   } catch (eLib) {
     const inCI = process.env.NODE_ENV === "ci" || process.env.CI === "true";
     if (inCI) {
       // In CI we want to fail fast if the plugin isn't built/installed.
       throw new Error(
-        "Traceability plugin not found. Expected ./src/index.js or ./lib/src/index.js to be present in CI."
+        "Traceability plugin not found. Expected ./src/index.js or ./lib/index.js to be present in CI."
       );
     } else {
       // Local dev: warn and continue without the plugin so eslint can still run.
