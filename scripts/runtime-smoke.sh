@@ -61,7 +61,7 @@ EOF
 
 # Run ESLint against the fixture from within the temp directory
 echo "✓ Loading plugin and checking fixture..."
-npx eslint --config eslint.config.js test-file.ts > /dev/null 2>&1 || {
+node "$projectRoot/node_modules/.bin/eslint" --config eslint.config.js test-file.ts > /dev/null 2>&1 || {
   echo "❌ Error: ESLint check failed"
   exit 1
 }
