@@ -71,11 +71,11 @@ cd "$projectRoot"
 
 # Verify CLI exists and can run help
 echo "✓ Verifying CLI availability..."
-if [ -f "lib/src/maintenance/cli.js" ]; then
-  node lib/src/maintenance/cli.js --help > /dev/null 2>&1
+if [ -f "lib/maintenance/cli.js" ]; then
+  node lib/maintenance/cli.js --help > /dev/null 2>&1
   echo "✓ CLI is functional"
 else
-  echo "❌ Error: CLI not found at lib/src/maintenance/cli.js"
+  echo "❌ Error: CLI not found at lib/maintenance/cli.js"
   exit 1
 fi
 
