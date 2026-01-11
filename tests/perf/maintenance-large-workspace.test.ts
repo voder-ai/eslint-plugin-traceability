@@ -134,18 +134,18 @@ describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOO
       const exampleNewPath = "updated-story-0000.story.md";
 
       const singleStart = performance.now();
-      const updatedCount = updateAnnotationReferences(
+      const updateResult = updateAnnotationReferences(
         workspace.root,
         exampleOldPath,
         exampleNewPath,
       );
       const singleDuration = performance.now() - singleStart;
 
-      expect(updatedCount).toBeGreaterThan(0);
+      expect(updateResult.count).toBeGreaterThan(0);
       expect(singleDuration).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
 
       const batchStart = performance.now();
-      const totalUpdated = batchUpdateAnnotations(workspace.root, [
+      const batchResult = batchUpdateAnnotations(workspace.root, [
         {
           oldPath: "stale-story-0001.story.md",
           newPath: "updated-story-0001.story.md",
@@ -157,7 +157,7 @@ describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOO
       ]);
       const batchDuration = performance.now() - batchStart;
 
-      expect(totalUpdated).toBeGreaterThanOrEqual(2);
+      expect(batchResult.count).toBeGreaterThanOrEqual(2);
       expect(batchDuration).toBeLessThan(LARGE_WORKSPACE_PERF_BUDGET_MS);
     } finally {
       workspace.cleanup();
