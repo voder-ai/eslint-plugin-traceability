@@ -114,6 +114,44 @@ export function handleReport(normalized: NormalizedCliArgs): number {
 }
 
 /**
+ * Handle dry-run mode for update command
+ * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+ * @req REQ-MAINT-SAFE
+ */
+function handleUpdateDryRun(
+  root: string,
+  from: string,
+  to: string,
+  flags: { ignorePatterns?: string[]; json?: boolean },
+): number {
+  const options = flags.ignorePatterns
+    ? { ignorePatterns: flags.ignorePatterns }
+    : undefined;
+  const beforeReport = generateMaintenanceReport(root, options);
+  const potentialChanges = beforeReport ? beforeReport.split("\n").length : 0;
+  const summary = {
+    root,
+    from,
+    to,
+    estimatedStaleCount: potentialChanges,
+  };
+
+  if (flags.json) {
+    console.log(JSON.stringify({ mode: "dry-run", ...summary }));
+  } else {
+    console.log("Dry run: no files were modified.");
+    console.log(
+      `Would update @story and @supports annotations from '${from}' to '${to}' under ${root}.`,
+    );
+    console.log(
+      `Estimated stale annotations before update: ${summary.estimatedStaleCount}.`,
+    );
+  }
+
+  return EXIT_OK;
+}
+
+/**
  * Handle the `update` subcommand to rewrite story annotation references.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-UPDATE - CLI surface for updating annotation references
@@ -136,39 +174,33 @@ export function handleUpdate(normalized: NormalizedCliArgs): number {
   const to = flags.to;
 
   if (flags.dryRun) {
-    // For now, we cannot get a per-file diff without changing the maintenance API.
-    // We conservatively reuse generateMaintenanceReport to indicate potential impact.
-    const beforeReport = generateMaintenanceReport(root, options);
-    const potentialChanges = beforeReport ? beforeReport.split("\n").length : 0;
-    const summary = {
-      root,
-      from,
-      to,
-      estimatedStaleCount: potentialChanges,
-    };
-
-    if (flags.json) {
-      console.log(JSON.stringify({ mode: "dry-run", ...summary }));
-    } else {
-      console.log("Dry run: no files were modified.");
-      console.log(
-        `Would update @story annotations from '${from}' to '${to}' under ${root}.`,
-      );
-      console.log(
-        `Estimated stale annotations before update: ${summary.estimatedStaleCount}.`,
-      );
-    }
-
-    return EXIT_OK;
+    return handleUpdateDryRun(root, from, to, {
+      ignorePatterns: flags.ignorePatterns,
+      json: flags.json,
+    });
   }
 
-  const count = updateAnnotationReferences(root, from, to, options);
+  const result = updateAnnotationReferences(root, from, to, options);
+
+  // Report malformed annotations if any were found
+  if (result.warnings.length > 0) {
+    console.error("\nWarnings - malformed annotations detected:");
+    result.warnings.forEach((warning) => console.error(`  ${warning}`));
+  }
 
   if (flags.json) {
-    console.log(JSON.stringify({ root, from, to, updated: count }));
+    console.log(
+      JSON.stringify({
+        root,
+        from,
+        to,
+        updated: result.count,
+        warnings: result.warnings,
+      }),
+    );
   } else {
     console.log(
-      `Updated ${count} @story annotation${count === 1 ? "" : "s"} from '${from}' to '${to}' under ${root}.`,
+      `Updated ${result.count} annotation${result.count === 1 ? "" : "s"} (@story and @supports) from '${from}' to '${to}' under ${root}.`,
     );
   }
 

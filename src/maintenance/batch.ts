@@ -8,26 +8,32 @@ import { GetAllFilesOptions } from "./utils";
  * @req REQ-MAINT-BATCH - Perform batch updates
  * @req REQ-MAINT-VERIFY - Verify annotation references
  * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
+ * @req REQ-MAINT-UPDATE#1 - Update @supports references alongside @story
  * @param codebasePath Absolute path to the workspace root where annotations will be updated.
  * @param mappings Array of mapping objects describing path changes, each containing an oldPath and newPath.
  * @param options Optional configuration including ESLint ignore patterns
- * @returns Total number of updated @story annotations across all mappings.
+ * @returns Object with total count of updated annotations and array of malformed annotation warnings
  */
 export function batchUpdateAnnotations(
   codebasePath: string,
   mappings: { oldPath: string; newPath: string }[],
   options?: GetAllFilesOptions,
-): number {
+): { count: number; warnings: string[] } {
   let totalUpdated = 0;
+  const allWarnings: string[] = [];
+
   for (const { oldPath, newPath } of mappings) {
-    totalUpdated += updateAnnotationReferences(
+    const result = updateAnnotationReferences(
       codebasePath,
       oldPath,
       newPath,
       options,
     );
+    totalUpdated += result.count;
+    allWarnings.push(...result.warnings);
   }
-  return totalUpdated;
+
+  return { count: totalUpdated, warnings: allWarnings };
 }
 
 /**
