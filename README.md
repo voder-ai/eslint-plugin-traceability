@@ -292,13 +292,13 @@ Practical usage examples and sample configurations are available in the [Example
 
 ## Maintenance CLI
 
-The `traceability-maint` CLI provides a batch update tool for maintaining `@story` annotation references when you reorganize story files.
+The `traceability-maint` CLI provides a batch update tool for maintaining `@story` and `@supports` annotation references when you reorganize story files.
 
 **Note**: Detection and verification of stale references are already handled by ESLint rules (`valid-story-reference`, `valid-req-reference`) during normal linting. The maintenance CLI's primary value is the **update** command, which can batch-update references across your codebase when story files are moved or renamed - something ESLint's auto-fix cannot do.
 
 ### Primary Command
 
-- `update` – Batch update `@story` annotations when a story file is renamed or moved (the key feature ESLint cannot provide)
+- `update` – Batch update `@story` and `@supports` annotations when a story file is renamed or moved (the key feature ESLint cannot provide)
 
 ### Supporting Commands
 
@@ -389,7 +389,7 @@ npx traceability-maint update \
 - You're reorganizing your story file structure
 
 **Use ESLint** for:
-- Detecting stale or invalid references (during development and CI)
+- Detecting stale or invalid references during development
 - Validating annotation format
 - Ongoing verification of traceability compliance
 

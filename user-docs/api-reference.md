@@ -555,7 +555,7 @@ The plugin exposes a maintenance API and CLI, `traceability-maint`, primarily fo
 
 **Note**: The CLI also includes `detect`, `verify`, and `report` commands for historical reasons, but these largely duplicate functionality already provided by ESLint rules (`valid-story-reference`, `valid-req-reference`) during normal linting. The primary value of the maintenance tools is the **update** command, which can perform bulk reference updates across your codebase - something ESLint's auto-fix cannot do.
 
-These tools are intentionally focused on `@story` references only. All maintenance functions operate only on the local filesystem under the provided root directory; they do not make any network calls or interact with external services. These are manual developer tools, not intended for CI pipelines or git hooks (ESLint rules handle validation in those contexts).
+These tools update both `@story` and `@supports` references when story files are moved or renamed. All maintenance functions operate only on the local filesystem under the provided root directory; they do not make any network calls or interact with external services. These are manual developer tools, not intended for automated pipelines (ESLint rules handle validation during development and builds).
 
 ### Programmatic Maintenance API
 
@@ -607,23 +607,27 @@ Scans the workspace for `@story` annotations that point to missing or out-of-pro
 
 #### `updateAnnotationReferences(rootDir, oldPath, newPath)`
 
-Performs a targeted text replacement of `@story` values across the workspace.
+Performs a targeted text replacement of `@story` and `@supports` values across the workspace, and detects malformed annotations.
 
 **Parameters:**
 
 - `rootDir` (string, required) – Workspace root to update in-place.
-- `oldPath` (string, required) – The story path to search for after `@story`.
+- `oldPath` (string, required) – The story path to search for in `@story` and `@supports` annotations.
 - `newPath` (string, required) – The replacement story path.
 
 **Returns:**
 
-- `number` – The count of `@story` annotations that were updated.
+- Object with:
+  - `count` (number) – The count of annotations (`@story` and `@supports`) that were updated.
+  - `warnings` (string[]) – Array of malformed annotation warnings found during processing.
 
 **Behavior notes:**
 
-- Only `@story` annotations are modified; `@req` annotations are never changed.
+- Both `@story` and `@supports` annotations are updated when they reference the old path.
+- For `@supports` annotations, the story path is updated while preserving the requirement IDs.
+- Malformed annotations (missing paths or requirement IDs) are detected and reported in warnings.
 - Files are only written when the content actually changes.
-- If `rootDir` does not exist or is not a directory, the function returns `0` without modifying anything.
+- If `rootDir` does not exist or is not a directory, the function returns `{ count: 0, warnings: [] }`.
 
 #### `batchUpdateAnnotations(rootDir, mappings)`
 
@@ -636,12 +640,14 @@ Runs multiple `updateAnnotationReferences` operations in sequence.
 
 **Returns:**
 
-- `number` – The total number of `@story` annotations updated across all mappings.
+- Object with:
+  - `count` (number) – The total number of annotations updated across all mappings.
+  - `warnings` (string[]) – Combined array of all malformed annotation warnings found.
 
 **Behavior notes:**
 
 - There is no special batching logic; this helper simply loops over the provided mappings.
-- For each mapping, it calls `updateAnnotationReferences(rootDir, oldPath, newPath)` and sums the counts.
+- For each mapping, it calls `updateAnnotationReferences(rootDir, oldPath, newPath)` and aggregates counts and warnings.
 
 #### `verifyAnnotations(rootDir)`
 
@@ -681,7 +687,7 @@ Generates a simple, text-only report of stale `@story` annotations.
 
 The `traceability-maint` CLI wraps the maintenance API for manual developer invocation when reorganizing story files. It is typically available via `npx traceability-maint`.
 
-**Important**: This CLI is designed for **manual developer execution only** when you need to batch-update references after moving or renaming story files. It should **not** be integrated into git hooks or CI pipelines - ESLint rules (`valid-story-reference`, `valid-req-reference`) already handle validation in those contexts.
+**Important**: This CLI is designed for **manual developer execution only** when you need to batch-update references after moving or renaming story files. It should **not** be integrated into automated pipelines - ESLint rules (`valid-story-reference`, `valid-req-reference`) already handle validation during development and builds.
 
 The CLI's **primary value** is the `update` command, which performs bulk reference updates that ESLint cannot do. The `detect`, `verify`, and `report` commands are included for historical compatibility but largely duplicate what ESLint already provides during normal linting.
 
