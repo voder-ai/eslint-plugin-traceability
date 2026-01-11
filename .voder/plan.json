@@ -2,7 +2,7 @@
   "kind": "plan-next-work",
   "version": 1,
   "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
-  "generatedAt": "2026-01-11T03:54:43.541Z",
+  "generatedAt": "2026-01-11T22:19:06.265Z",
   "input": {
     "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
     "hadFoundationAssessment": true,
@@ -33,80 +33,72 @@
   "buckets": {
     "now": [
       {
-        "id": "NOW-1",
-        "title": "Resolve REQ-MAINT-MANUAL-TRIGGER spec/doc conflict to unblock functionality assessment",
-        "details": "Update `docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md` to include explicit acceptance criteria for REQ-MAINT-MANUAL-TRIGGER and align wording with actual intended usage. Then reconcile conflicting guidance in `README.md` and `user-docs/api-reference.md` so manual-only vs CI usage is consistent with the requirement (either enforce manual-only in docs or revise the requirement to permit CI with guardrails).",
+        "id": "now-docs-manual-trigger",
+        "title": "Remove CI-oriented guidance from maintenance docs to satisfy manual-only requirement",
+        "details": "Edit `user-docs/api-reference.md` to remove or reframe CI-oriented statements (e.g., “JSON report suitable for CI” and the “In CI” example) so maintenance tooling is clearly documented as manual-only/no-automation per REQ-MAINT-MANUAL-TRIGGER#2. Ensure wording aligns with docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md expectations.",
         "attribution": "functionality",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "REQ-MAINT-MANUAL-TRIGGER conflicts with README guidance that suggests CI usage for reporting; documentation does not consistently enforce manual-only execution and no code constraint prevents CI or git hook use."
+        "estimatedScoreImpactPct": 64,
+        "sourceItem": "[functionality] Story 009.0-DEV-MAINTENANCE-TOOLS: Documentation in `user-docs/api-reference.md` includes CI-oriented guidance (e.g., \"JSON report suitable for CI\" and an \"In CI\" example), which conflicts with the manual-only/no-automation requirement."
       }
     ],
     "next": [
       {
-        "id": "NEXT-1",
-        "title": "Record decision on maintenance tool execution policy in MADR",
-        "details": "Add/adjust a decision in `docs/decisions/` (MADR 4.0) that states the agreed policy for maintenance tool execution (manual-only vs CI-allowed) and the rationale, then reference it from the story if needed for traceability.",
+        "id": "next-verify-maintenance-story",
+        "title": "Re-check story 009 traceability after doc update",
+        "details": "After updating `user-docs/api-reference.md`, re-run the functionality assessment (or targeted traceability checks if available) to confirm REQ-MAINT-MANUAL-TRIGGER#2 is complete and Story 009.0-DEV-MAINTENANCE-TOOLS becomes complete.",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "[functionality] Story 009.0-DEV-MAINTENANCE-TOOLS (REQ-MAINT-MANUAL-TRIGGER#2): `user-docs/api-reference.md` includes CI-oriented guidance (\"JSON report suitable for CI\" and an \"In CI\" example), which conflicts with the manual-only/no-automation requirement."
+      },
+      {
+        "id": "next-docs-cross-check",
+        "title": "Cross-check related maintenance docs for automation wording",
+        "details": "Review `README.md` sections that mention maintenance CLI/manual triggers to ensure they do not imply CI/automation and remain consistent with manual-only guidance.",
         "attribution": "functionality",
         "estimatedScoreImpactPct": null,
-        "sourceItem": "Added criteria REQ-MAINT-CLI#1 and REQ-MAINT-MANUAL-TRIGGER#1 because parsedStory lists explicit requirements without acceptance criteria."
+        "sourceItem": "[functionality] Story 009.0-DEV-MAINTENANCE-TOOLS: Documentation in `user-docs/api-reference.md` includes CI-oriented guidance (e.g., \"JSON report suitable for CI\" and an \"In CI\" example), which conflicts with the manual-only/no-automation requirement."
       },
       {
-        "id": "NEXT-2",
-        "title": "Add e2e smoke test running plugin via ESLint CLI on a fixture project",
-        "details": "Create a minimal fixture project and a Jest e2e test that invokes ESLint CLI with the plugin enabled, asserting expected rule output and exit code; wire into existing test scripts.",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": 3,
-        "sourceItem": "Introduce a small end-to-end smoke test that runs the plugin against a fixture project via the ESLint CLI."
-      },
-      {
-        "id": "NEXT-3",
-        "title": "Add branch-focused tests for low-coverage entrypoints/helpers",
-        "details": "Target conditional paths in `src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, and `src/utils/branch-annotation-switch-helpers.ts` with new unit tests to raise branch coverage and confidence.",
+        "id": "next-branch-coverage-hotspots",
+        "title": "Target low branch-coverage hotspots with focused tests",
+        "details": "Add branch-focused tests for `src/index.ts`, `src/maintenance/commands.ts`, and `src/rules/require-traceability.ts` to raise branch coverage and reduce testing gaps; prefer small, targeted cases covering conditional paths called out by coverage report.",
         "attribution": "testing",
         "estimatedScoreImpactPct": 5,
-        "sourceItem": "Add branch-focused tests for low-coverage entrypoints/helpers (e.g., `src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`)."
+        "sourceItem": "[testing] Branch coverage is notably low in a few key areas (e.g., `src/index.ts`, `src/rules/require-traceability.ts`, `src/maintenance/commands.ts`), leaving conditional paths less exercised despite overall high totals."
       },
       {
-        "id": "NEXT-4",
-        "title": "Normalize @supports usage for fixture references to avoid duplicate paths",
-        "details": "Review tests referencing fixtures and consolidate @supports annotations so each fixture path is consistently referenced (avoid duplicate `tests/fixtures/...` vs `../tests/fixtures/...`), improving traceability mapping.",
+        "id": "next-e2e-harness",
+        "title": "Introduce a minimal e2e harness for plugin+CLI workflow",
+        "details": "Define a lightweight end-to-end test that exercises an ESLint run with the plugin and a maintenance CLI command in a temp workspace, and wire it to a new `npm run test:e2e` script per SOA script contract rules.",
         "attribution": "testing",
-        "estimatedScoreImpactPct": 2,
-        "sourceItem": "Normalize @supports usage in tests that reference fixtures or examples to ensure consistent story/req mapping (avoid duplicate fixture paths)."
+        "estimatedScoreImpactPct": 5,
+        "sourceItem": "[testing] There is no dedicated end-to-end test layer; coverage is limited to unit and integration/performance tests, which leaves full-system workflows unverified in an e2e harness."
       }
     ],
     "later": [
       {
-        "id": "LATER-1",
-        "title": "Remove or replace deprecated semver-diff dependency",
-        "details": "Update `package.json` and any usage sites to replace or remove `semver-diff` and ensure installation no longer reports deprecation warnings.",
+        "id": "later-deprecation-warning",
+        "title": "Address semver-diff deprecation warning from npm ci",
+        "details": "Investigate `semver-diff` usage/dependency chain and update/replace to eliminate the deprecation warning during install; document any dependency decision per docs/decisions if needed.",
         "attribution": "execution",
-        "estimatedScoreImpactPct": 3,
-        "sourceItem": "Remove or replace deprecated `semver-diff` dependency to eliminate install-time warning."
+        "estimatedScoreImpactPct": 2,
+        "sourceItem": "[execution] `npm ci` completed successfully ... the only notable output was a deprecation warning for `semver-diff`."
       },
       {
-        "id": "LATER-2",
-        "title": "Add a run:smoke script chaining build + smoke:runtime",
-        "details": "Define `run:smoke` in `package.json` to run build then runtime smoke in one command; update docs if needed.",
-        "attribution": "execution",
-        "estimatedScoreImpactPct": 4,
-        "sourceItem": "Add a single `run:smoke` script to chain `build` + `smoke:runtime`."
-      },
-      {
-        "id": "LATER-3",
-        "title": "Document minimal runtime requirements for execution health",
-        "details": "Add a dedicated execution-health section (likely README) that states required Node and ESLint peer versions so runtime expectations are clear.",
-        "attribution": "execution",
+        "id": "later-branch-coverage-secondary",
+        "title": "Improve branch coverage across helper utilities",
+        "details": "Incrementally add tests for lower-coverage helpers (e.g., `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`).",
+        "attribution": "testing",
         "estimatedScoreImpactPct": 3,
-        "sourceItem": "Document minimal runtime requirements (Node + ESLint peer) in a dedicated execution-health section."
+        "sourceItem": "[testing] Branch coverage is notably low in a few key areas ... (coverage gaps list includes helpers with low branch coverage)."
       }
     ]
   },
   "summary": {
     "nowCount": 1,
     "nextCount": 4,
-    "laterCount": 3,
-    "human": "Focus on resolving the maintenance-tools manual-trigger requirement conflict to unblock functionality scoring, then shore up test coverage and e2e validation while cleaning up execution polish items.",
-    "nowRationale": "Functionality is at-risk solely because REQ-MAINT-MANUAL-TRIGGER is incomplete/conflicting; resolving the spec/doc inconsistency is the highest-leverage, immediately executable step that unlocks the path to 100% functionality, whereas other items only improve non-functional scores already above target."
+    "laterCount": 2,
+    "human": "Fix the single documentation conflict blocking functionality completion, then verify the story passes and tackle test gaps/e2e coverage for higher confidence.",
+    "nowRationale": "The functionality score is at-risk solely because Story 009’s manual-only requirement is violated by CI-oriented guidance in `user-docs/api-reference.md`. Removing or reframing that guidance is the smallest, highest-leverage change that directly unlocks functionality completion and the 100% target; all other items are secondary quality improvements."
   }
 }
