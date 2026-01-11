@@ -97,7 +97,7 @@ describe("ESLint Configuration Integration (Story 009.0-DEV-MAINTENANCE-TOOLS)",
         fs.writeFileSync(srcFile, "/** @story old.story.md */", "utf8");
 
         // Update with ignore patterns
-        const count = updateAnnotationReferences(
+        const result = updateAnnotationReferences(
           tmpDir,
           "old.story.md",
           "new.story.md",
@@ -105,7 +105,8 @@ describe("ESLint Configuration Integration (Story 009.0-DEV-MAINTENANCE-TOOLS)",
         );
 
         // Should only update src file, not node_modules
-        expect(count).toBe(1);
+        expect(result.count).toBe(1);
+        expect(result.warnings).toEqual([]);
 
         const srcContent = fs.readFileSync(srcFile, "utf8");
         expect(srcContent).toContain("new.story.md");

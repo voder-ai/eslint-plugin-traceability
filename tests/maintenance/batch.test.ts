@@ -24,9 +24,10 @@ describe("batchUpdateAnnotations (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     temp.cleanup();
   });
 
-  it("[REQ-MAINT-BATCH] should return 0 when no mappings applied", () => {
-    const count = batchUpdateAnnotations(temp.dir, []);
-    expect(count).toBe(0);
+  it("[REQ-MAINT-BATCH] should return 0 count when no mappings applied", () => {
+    const result = batchUpdateAnnotations(temp.dir, []);
+    expect(result.count).toBe(0);
+    expect(result.warnings).toEqual([]);
   });
 });
 

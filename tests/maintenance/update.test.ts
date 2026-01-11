@@ -10,11 +10,12 @@ import path from "path";
 import { updateAnnotationReferences } from "../../src/maintenance/update";
 
 describe("updateAnnotationReferences (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  it("[REQ-MAINT-UPDATE] should return 0 when no updates made", () => {
+  it("[REQ-MAINT-UPDATE] should return 0 count when no updates made", () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "update-test-"));
     try {
-      const count = updateAnnotationReferences(tmpDir, "old.md", "new.md");
-      expect(count).toBe(0);
+      const result = updateAnnotationReferences(tmpDir, "old.md", "new.md");
+      expect(result.count).toBe(0);
+      expect(result.warnings).toEqual([]);
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
