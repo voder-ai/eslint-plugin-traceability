@@ -1,17 +1,17 @@
 {
   "status": "healthy",
-  "summary": "Build and runtime smoke succeeded in a temp copy; only a non-fatal npm deprecation warning during install.",
+  "summary": "Build and runtime smoke succeeded from a temporary copy; only a non-fatal npm deprecation warning during install.",
   "score": 90,
   "reasoning": [
-    "`npm ci` completed in a temporary copy; `prepare` ran and Husky skipped cleanly outside git, with only a deprecated `semver-diff` warning.",
+    "`npm ci` completed in a temporary copy and `prepare` ran; only a deprecated `semver-diff` warning was emitted.",
     "`npm run build` (tsc -p tsconfig.build.json) finished without errors.",
     "`npm run smoke:runtime` passed, confirming plugin load and CLI execution without critical errors."
   ],
   "improvement_path": [
     {
-      "item": "Guard or document `prepare` to reduce install-time warnings for non-git contexts.",
+      "item": "Remove or replace deprecated `semver-diff` dependency to eliminate install-time warning.",
       "estimatedScoreImpactPct": 3,
-      "rationale": "Eliminates noise that can be misread as install failures in clean environments."
+      "rationale": "Reduces noise that can be misread as install failures in clean environments."
     },
     {
       "item": "Add a single `run:smoke` script to chain `build` + `smoke:runtime`.",

@@ -2,11 +2,15 @@
   "kind": "plan-next-work",
   "version": 1,
   "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
-  "generatedAt": null,
+  "generatedAt": "2026-01-11T03:54:43.541Z",
   "input": {
     "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
     "hadFoundationAssessment": true,
     "parsedOk": true
+  },
+  "targetState": {
+    "nonFunctionalScorePct": 75,
+    "functionalityScorePct": 100
   },
   "thresholds": {
     "nonFunctionalScorePct": 75
@@ -14,69 +18,95 @@
   "readiness": {
     "hadAllAssessments": true,
     "failedAssessments": [
-      "execution"
+      "functionality"
     ]
+  },
+  "generator": {
+    "kind": "codex",
+    "codex": {
+      "attempted": true,
+      "succeeded": true,
+      "failureKind": null,
+      "failureMessage": null
+    }
   },
   "buckets": {
     "now": [
       {
-        "id": "task-1",
-        "title": "Split build configuration (e.g., `tsconfig.build.json`) or adjust `tsconfig.json`/`build` script to exclude tests from the build output.",
-        "details": "Source: [execution] Split build configuration (e.g., `tsconfig.build.json`) or adjust `tsconfig.json`/`build` script to exclude tests from the build output.\nAssessment: execution\nEstimated impact: 45%",
-        "attribution": "execution",
-        "estimatedScoreImpactPct": 45,
-        "sourceItem": "[execution] Split build configuration (e.g., `tsconfig.build.json`) or adjust `tsconfig.json`/`build` script to exclude tests from the build output."
+        "id": "NOW-1",
+        "title": "Resolve REQ-MAINT-MANUAL-TRIGGER spec/doc conflict to unblock functionality assessment",
+        "details": "Update `docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md` to include explicit acceptance criteria for REQ-MAINT-MANUAL-TRIGGER and align wording with actual intended usage. Then reconcile conflicting guidance in `README.md` and `user-docs/api-reference.md` so manual-only vs CI usage is consistent with the requirement (either enforce manual-only in docs or revise the requirement to permit CI with guardrails).",
+        "attribution": "functionality",
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "REQ-MAINT-MANUAL-TRIGGER conflicts with README guidance that suggests CI usage for reporting; documentation does not consistently enforce manual-only execution and no code constraint prevents CI or git hook use."
       }
     ],
     "next": [
       {
-        "id": "task-3",
-        "title": "Add a lightweight runtime smoke command that runs the CLI or a minimal ESLint invocation after build.",
-        "details": "Source: [execution] Add a lightweight runtime smoke command that runs the CLI or a minimal ESLint invocation after build.\nAssessment: execution\nEstimated impact: 10%",
-        "attribution": "execution",
-        "estimatedScoreImpactPct": 10,
-        "sourceItem": "[execution] Add a lightweight runtime smoke command that runs the CLI or a minimal ESLint invocation after build."
+        "id": "NEXT-1",
+        "title": "Record decision on maintenance tool execution policy in MADR",
+        "details": "Add/adjust a decision in `docs/decisions/` (MADR 4.0) that states the agreed policy for maintenance tool execution (manual-only vs CI-allowed) and the rationale, then reference it from the story if needed for traceability.",
+        "attribution": "functionality",
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "Added criteria REQ-MAINT-CLI#1 and REQ-MAINT-MANUAL-TRIGGER#1 because parsedStory lists explicit requirements without acceptance criteria."
       },
       {
-        "id": "task-2",
-        "title": "Make installs resilient in non-git environments (e.g., set `HUSKY=0` in CI/build docs or guard `prepare`).",
-        "details": "Source: [execution] Make installs resilient in non-git environments (e.g., set `HUSKY=0` in CI/build docs or guard `prepare`).\nAssessment: execution\nEstimated impact: 5%",
-        "attribution": "execution",
-        "estimatedScoreImpactPct": 5,
-        "sourceItem": "[execution] Make installs resilient in non-git environments (e.g., set `HUSKY=0` in CI/build docs or guard `prepare`)."
-      },
-      {
-        "id": "task-4",
-        "title": "Add targeted tests to raise branch coverage in low-branch files (`src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`).",
-        "details": "Source: [testing] Add targeted tests to raise branch coverage in low-branch files (`src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`).\nAssessment: testing\nEstimated impact: 5%",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": 5,
-        "sourceItem": "[testing] Add targeted tests to raise branch coverage in low-branch files (`src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`)."
-      },
-      {
-        "id": "task-5",
-        "title": "Introduce a lightweight e2e-style smoke test that runs the plugin against a small fixture project via the CLI.",
-        "details": "Source: [testing] Introduce a lightweight e2e-style smoke test that runs the plugin against a small fixture project via the CLI.\nAssessment: testing\nEstimated impact: 3%",
+        "id": "NEXT-2",
+        "title": "Add e2e smoke test running plugin via ESLint CLI on a fixture project",
+        "details": "Create a minimal fixture project and a Jest e2e test that invokes ESLint CLI with the plugin enabled, asserting expected rule output and exit code; wire into existing test scripts.",
         "attribution": "testing",
         "estimatedScoreImpactPct": 3,
-        "sourceItem": "[testing] Introduce a lightweight e2e-style smoke test that runs the plugin against a small fixture project via the CLI."
+        "sourceItem": "Introduce a small end-to-end smoke test that runs the plugin against a fixture project via the ESLint CLI."
+      },
+      {
+        "id": "NEXT-3",
+        "title": "Add branch-focused tests for low-coverage entrypoints/helpers",
+        "details": "Target conditional paths in `src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, and `src/utils/branch-annotation-switch-helpers.ts` with new unit tests to raise branch coverage and confidence.",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": 5,
+        "sourceItem": "Add branch-focused tests for low-coverage entrypoints/helpers (e.g., `src/index.ts`, `src/rules/require-traceability.ts`, `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`)."
+      },
+      {
+        "id": "NEXT-4",
+        "title": "Normalize @supports usage for fixture references to avoid duplicate paths",
+        "details": "Review tests referencing fixtures and consolidate @supports annotations so each fixture path is consistently referenced (avoid duplicate `tests/fixtures/...` vs `../tests/fixtures/...`), improving traceability mapping.",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": 2,
+        "sourceItem": "Normalize @supports usage in tests that reference fixtures or examples to ensure consistent story/req mapping (avoid duplicate fixture paths)."
       }
     ],
     "later": [
       {
-        "id": "task-6",
-        "title": "Populate `traceability.byStory` from @supports annotations to explicitly report coverage per story.",
-        "details": "Source: [testing] Populate `traceability.byStory` from @supports annotations to explicitly report coverage per story.\nAssessment: testing\nEstimated impact: 2%",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": 2,
-        "sourceItem": "[testing] Populate `traceability.byStory` from @supports annotations to explicitly report coverage per story."
+        "id": "LATER-1",
+        "title": "Remove or replace deprecated semver-diff dependency",
+        "details": "Update `package.json` and any usage sites to replace or remove `semver-diff` and ensure installation no longer reports deprecation warnings.",
+        "attribution": "execution",
+        "estimatedScoreImpactPct": 3,
+        "sourceItem": "Remove or replace deprecated `semver-diff` dependency to eliminate install-time warning."
+      },
+      {
+        "id": "LATER-2",
+        "title": "Add a run:smoke script chaining build + smoke:runtime",
+        "details": "Define `run:smoke` in `package.json` to run build then runtime smoke in one command; update docs if needed.",
+        "attribution": "execution",
+        "estimatedScoreImpactPct": 4,
+        "sourceItem": "Add a single `run:smoke` script to chain `build` + `smoke:runtime`."
+      },
+      {
+        "id": "LATER-3",
+        "title": "Document minimal runtime requirements for execution health",
+        "details": "Add a dedicated execution-health section (likely README) that states required Node and ESLint peer versions so runtime expectations are clear.",
+        "attribution": "execution",
+        "estimatedScoreImpactPct": 3,
+        "sourceItem": "Document minimal runtime requirements (Node + ESLint peer) in a dedicated execution-health section."
       }
     ]
   },
   "summary": {
     "nowCount": 1,
     "nextCount": 4,
-    "laterCount": 1,
-    "human": "Plan: 1 NOW, 4 NEXT, 1 LATER. Top priority: Split build configuration (e.g., `tsconfig.build.json`) or adjust `tsconfig.json`/`build` script to exclude tests from the build output.."
+    "laterCount": 3,
+    "human": "Focus on resolving the maintenance-tools manual-trigger requirement conflict to unblock functionality scoring, then shore up test coverage and e2e validation while cleaning up execution polish items.",
+    "nowRationale": "Functionality is at-risk solely because REQ-MAINT-MANUAL-TRIGGER is incomplete/conflicting; resolving the spec/doc inconsistency is the highest-leverage, immediately executable step that unlocks the path to 100% functionality, whereas other items only improve non-functional scores already above target."
   }
 }

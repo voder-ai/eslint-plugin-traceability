@@ -292,40 +292,39 @@ Practical usage examples and sample configurations are available in the [Example
 
 ## Maintenance CLI
 
-The `traceability-maint` CLI helps you maintain and audit `@story` annotations outside of ESLint runs. It focuses on repository-wide checks for stale story references and safe batch updates.
+The `traceability-maint` CLI provides a batch update tool for maintaining `@story` annotation references when you reorganize story files.
 
-### Commands
+**Note**: Detection and verification of stale references are already handled by ESLint rules (`valid-story-reference`, `valid-req-reference`) during normal linting. The maintenance CLI's primary value is the **update** command, which can batch-update references across your codebase when story files are moved or renamed - something ESLint's auto-fix cannot do.
 
-- `detect` – Scan the workspace and detect `@story` annotations that reference missing story files.
-- `verify` – Verify that no stale `@story` annotations exist under the workspace root.
-- `report` – Generate a human-readable or JSON report of stale story references and circular dependencies.
-- `update` – Apply safe, scripted updates to `@story` annotations (e.g., when a story file is renamed).
+### Primary Command
+
+- `update` – Batch update `@story` annotations when a story file is renamed or moved (the key feature ESLint cannot provide)
+
+### Supporting Commands
+
+The CLI also includes `detect`, `verify`, and `report` commands for historical compatibility, but these largely duplicate what ESLint already provides during normal linting:
+
+- `detect` – Scan for `@story` annotations referencing missing files (ESLint rules already do this)
+- `verify` – Check for stale annotations (ESLint rules already do this)
+- `report` – Generate reports of stale references (ESLint output already provides this)
 
 ### Usage
 
-All commands are run from your project root:
+**Primary use case - batch update references:**
 
 ```bash
-# Show help and all options
-npx traceability-maint --help
-
-# Detect stale story references
-npx traceability-maint detect --root .
-
-# Detect with ESLint-style ignore patterns
-npx traceability-maint detect --root . --ignore-pattern node_modules --ignore-pattern dist
-
-# Verify that annotations are valid
-npx traceability-maint verify --root .
-
-# Generate a JSON report for CI pipelines
-npx traceability-maint report --root . --format json
-
 # Update references when a story file is renamed
 npx traceability-maint update \
   --root . \
   --from "stories/feature-authentication.story.md" \
   --to "stories/feature-auth-v2.story.md"
+
+# Preview changes first with --dry-run
+npx traceability-maint update \
+  --root . \
+  --from "stories/old.story.md" \
+  --to "stories/new.story.md" \
+  --dry-run
 
 # Update with ignore patterns to skip generated code
 npx traceability-maint update \
@@ -333,6 +332,25 @@ npx traceability-maint update \
   --from "stories/old.story.md" \
   --to "stories/new.story.md" \
   --ignore-pattern dist
+```
+
+**Supporting commands** (largely redundant with ESLint, but available):
+
+```bash
+# Show help and all options
+npx traceability-maint --help
+
+# Detect stale story references (ESLint already does this during linting)
+npx traceability-maint detect --root .
+
+# Detect with ESLint-style ignore patterns
+npx traceability-maint detect --root . --ignore-pattern node_modules --ignore-pattern dist
+
+# Verify that annotations are valid (ESLint already does this during linting)
+npx traceability-maint verify --root .
+
+# Generate a report (ESLint output already provides this information)
+npx traceability-maint report --root . --format json
 ```
 
 ### Options
@@ -347,7 +365,7 @@ npx traceability-maint update \
 
 ### ESLint Configuration Integration
 
-The maintenance tools support integration with ESLint configuration through `--ignore-pattern` flags. This allows you to:
+The maintenance tools support `--ignore-pattern` flags to skip directories when performing batch updates:
 
 - Skip generated code directories (e.g., `dist`, `build`)
 - Ignore dependency folders (e.g., `node_modules`)
@@ -356,15 +374,26 @@ The maintenance tools support integration with ESLint configuration through `--i
 Multiple patterns can be specified:
 
 ```bash
-npx traceability-maint detect \
+npx traceability-maint update \
+  --from old.story.md \
+  --to new.story.md \
   --ignore-pattern node_modules \
   --ignore-pattern dist \
   --ignore-pattern coverage
 ```
 
-### Circular Reference Detection
+### When to Use the Maintenance CLI vs ESLint
 
-The `report` command now includes detection of circular `@story` references in your story files. Circular references occur when story files reference each other in a cycle (e.g., A → B → A or A → B → C → A). These are reported separately in the maintenance report output to help identify potential documentation issues.
+**Use the maintenance CLI** when:
+- You've renamed or moved story files and need to update all code references
+- You're reorganizing your story file structure
+
+**Use ESLint** for:
+- Detecting stale or invalid references (during development and CI)
+- Validating annotation format
+- Ongoing verification of traceability compliance
+
+The maintenance CLI is a manual refactoring aid, not an automated validation tool. ESLint handles validation automatically during your normal development workflow.
 
 For a full description of options and JSON payloads, see the [Maintenance API and CLI](user-docs/api-reference.md#maintenance-api-and-cli) section in the API Reference.
 

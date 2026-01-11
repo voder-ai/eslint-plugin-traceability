@@ -551,7 +551,11 @@ export default [js.configs.recommended, traceability.configs.strict];
 
 ## Maintenance API and CLI
 
-The plugin exposes a small maintenance API and a companion CLI, `traceability-maint`, for bulk operations on `@story` annotations. These tools are intentionally minimal and focused on stale **story** references only; requirement-level maintenance and more advanced filtering are planned but **not yet implemented**. All maintenance functions operate only on the local filesystem under the provided root directory; they do not make any network calls or interact with external services.
+The plugin exposes a maintenance API and CLI, `traceability-maint`, primarily for the **batch update** operation when story files are moved or renamed.
+
+**Note**: The CLI also includes `detect`, `verify`, and `report` commands for historical reasons, but these largely duplicate functionality already provided by ESLint rules (`valid-story-reference`, `valid-req-reference`) during normal linting. The primary value of the maintenance tools is the **update** command, which can perform bulk reference updates across your codebase - something ESLint's auto-fix cannot do.
+
+These tools are intentionally focused on `@story` references only. All maintenance functions operate only on the local filesystem under the provided root directory; they do not make any network calls or interact with external services. These are manual developer tools, not intended for CI pipelines or git hooks (ESLint rules handle validation in those contexts).
 
 ### Programmatic Maintenance API
 
@@ -675,11 +679,11 @@ Generates a simple, text-only report of stale `@story` annotations.
 
 ### `traceability-maint` CLI
 
-The `traceability-maint` CLI wraps the maintenance API for manual developer invocation. It is typically available via `npx traceability-maint` or as an npm script.
+The `traceability-maint` CLI wraps the maintenance API for manual developer invocation when reorganizing story files. It is typically available via `npx traceability-maint`.
 
-**Important**: This CLI is designed for **manual developer execution only**. It should **not** be integrated into git hooks or CI pipelines for automatic maintenance operations. While the CLI is technically callable from scripts, maintenance operations like updating or detecting stale annotations are intended to be triggered manually by developers when needed, not automatically during the build or commit process.
+**Important**: This CLI is designed for **manual developer execution only** when you need to batch-update references after moving or renaming story files. It should **not** be integrated into git hooks or CI pipelines - ESLint rules (`valid-story-reference`, `valid-req-reference`) already handle validation in those contexts.
 
-These tools are intentionally minimal and focused on stale **story** references only; requirement-level maintenance and more advanced filtering are planned but **not yet implemented**. The CLI currently focuses on stale `@story` annotations only. It does **not** build or consume a separate index file, and it does not yet support requirement-level maintenance.
+The CLI's **primary value** is the `update` command, which performs bulk reference updates that ESLint cannot do. The `detect`, `verify`, and `report` commands are included for historical compatibility but largely duplicate what ESLint already provides during normal linting.
 
 #### General usage
 
