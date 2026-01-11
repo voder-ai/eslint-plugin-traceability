@@ -766,7 +766,7 @@ Generates a plain-text or JSON report of stale story references.
 # Human-readable text report (default)
 traceability-maint report --root .
 
-# JSON report suitable for CI
+# Machine-readable JSON output for further analysis
 traceability-maint report --root . --format json
 ```
 
@@ -847,7 +847,7 @@ If `--from` or `--to` is missing, the CLI prints an error, shows the help text, 
 }
 ```
 
-In CI:
+Manual verification:
 
 ```bash
 npm run traceability:verify
