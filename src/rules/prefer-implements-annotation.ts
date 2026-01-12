@@ -24,11 +24,18 @@
  * @req REQ-AUTO-FIX - Provide safe, opt-in auto-fix for simple legacy patterns
  */
 import type { Rule } from "eslint";
+import fs from "fs";
+import path from "path";
 import { normalizeCommentLine } from "./helpers/valid-annotation-format-internal";
 import {
   processInlineComments,
   type LineComment,
 } from "./helpers/prefer-implements-inline";
+
+// Module-level cache for story file requirement IDs
+// Cleared between ESLint runs, reused within a single lint execution
+// @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
+const storyFileCache = new Map<string, Set<string> | null>();
 
 // Maximum number of distinct @story paths allowed before treating as "multi-story".
 // @req REQ-MULTI-STORY-DETECT - Centralized threshold constant for detecting multi-story patterns
@@ -44,6 +51,73 @@ const MIN_REQ_TOKENS = MIN_STORY_TOKENS;
 
 // Length of the opening "/*" portion of a block comment prefix.
 const COMMENT_PREFIX_LENGTH = 2;
+
+/**
+ * Extract requirement IDs defined in a story file.
+ * Supports multiple markdown formats used in story files:
+ * - Heading format: - **REQ-ID**: Description
+ * - Acceptance format: - [x] REQ-ID: Description
+ * - Code annotation format: @req REQ-ID
+ *
+ * Returns null if the story file cannot be found or read.
+ * Returns Set<string> of requirement IDs if successful (may be empty if no requirements found).
+ *
+ * Results are cached for the duration of the ESLint run to avoid repeated file I/O.
+ *
+ * @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
+ */
+function extractRequirementsFromStory(
+  storyPath: string,
+  context: Rule.RuleContext,
+): Set<string> | null {
+  // Check cache first
+  if (storyFileCache.has(storyPath)) {
+    return storyFileCache.get(storyPath)!;
+  }
+
+  // Resolve story path relative to CWD
+  const cwd = context.getCwd ? context.getCwd() : process.cwd();
+
+  // Validate story path: no traversal or absolute paths
+  if (storyPath.includes("..") || path.isAbsolute(storyPath)) {
+    storyFileCache.set(storyPath, null);
+    return null;
+  }
+
+  const resolvedPath = path.resolve(cwd, storyPath);
+
+  // Ensure resolved path is within cwd (security check)
+  if (!resolvedPath.startsWith(cwd + path.sep) && resolvedPath !== cwd) {
+    storyFileCache.set(storyPath, null);
+    return null;
+  }
+
+  // Read and parse story file
+  try {
+    const content = fs.readFileSync(resolvedPath, "utf8");
+    const found = new Set<string>();
+
+    // Extract requirement IDs using regex pattern that matches:
+    // - **REQ-ID**: in markdown headings
+    // - [x] REQ-ID: in acceptance criteria
+    // - @req REQ-ID in code annotations
+    // - REQ-ID anywhere else in the file
+    const regex = /REQ-[A-Z0-9-]+/g;
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(content)) !== null) {
+      found.add(match[0]);
+    }
+
+    storyFileCache.set(storyPath, found);
+    return found;
+  } catch {
+    // File not found or read error
+    storyFileCache.set(storyPath, null);
+    return null;
+  }
+}
 
 /**
  * Lightweight summary of traceability-related markers extracted from a
@@ -218,6 +292,27 @@ function buildImplementsAutoFix(
     return null;
   }
 
+  // NEW: Validate @req IDs against story file content
+  // This implements REQ-MULTI-STORY-DETECT requirement to detect when
+  // @req IDs don't match the referenced @story
+  // @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
+  // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
+  const storyReqs = extractRequirementsFromStory(storyPath, context);
+
+  // If story file not found or unreadable, cannot safely auto-fix
+  if (storyReqs === null) {
+    return null;
+  }
+
+  // Check for mismatched @req IDs (IDs not defined in the story)
+  const mismatchedReqs = reqIds.filter((reqId) => !storyReqs.has(reqId));
+
+  // If any @req IDs don't match the story, cannot safely auto-fix
+  // This likely indicates a multi-story implementation that needs manual migration
+  if (mismatchedReqs.length > 0) {
+    return null;
+  }
+
   const storyIdx = storyLineIndices[0];
   const allIndicesToRemove = new Set<number>([
     ...storyLineIndices,
@@ -285,6 +380,60 @@ function hasMultipleStories(storyPaths: Set<string>): boolean {
 }
 
 /**
+ * Check for and report @req ID mismatches when auto-fix is not available.
+ * Provides detailed error messages when @req IDs don't match the story file content.
+ *
+ * @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
+ */
+function reportMismatchIfNeeded(
+  comment: any,
+  context: Rule.RuleContext,
+): boolean {
+  const { storyLineIndices, reqLineIndices, reqIds, storyPath } =
+    collectStoryAndReqMetadata(comment);
+
+  // Only check for mismatch if we have valid structure
+  if (
+    storyPath === null ||
+    storyLineIndices.length !== 1 ||
+    reqLineIndices.length < 1
+  ) {
+    return false;
+  }
+
+  const storyReqs = extractRequirementsFromStory(storyPath, context);
+
+  if (storyReqs === null) {
+    // Story file not found or unreadable
+    context.report({
+      node: comment as any,
+      messageId: "cannotAutoFix",
+      data: {
+        reason: `story file '${storyPath}' not found or cannot be read`,
+      },
+    });
+    return true;
+  }
+
+  const mismatchedReqs = reqIds.filter((reqId) => !storyReqs.has(reqId));
+
+  if (mismatchedReqs.length > 0) {
+    // Found mismatched @req IDs
+    context.report({
+      node: comment as any,
+      messageId: "cannotAutoFix",
+      data: {
+        reason: `@req '${mismatchedReqs.join("', '")}' not found in story '${storyPath}'. This may indicate a multi-story implementation`,
+      },
+    });
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * End-to-end processing for a single block comment: classify its
  * traceability annotations, decide whether to report recommendations only
  * or emit an auto-fix, and surface the appropriate message ID.
@@ -318,7 +467,17 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
     return;
   }
 
+  // Attempt to build auto-fix
+  // Will return null if story file not found or @req IDs don't match story
   const fix = buildImplementsAutoFix(context, comment, storyPaths);
+
+  // If no fix available, check if it's due to mismatch and provide helpful message
+  if (fix === null) {
+    const reported = reportMismatchIfNeeded(comment, context);
+    if (reported) {
+      return;
+    }
+  }
 
   context.report({
     node: comment as any,

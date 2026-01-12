@@ -72,8 +72,8 @@ describe("prefer-supports-annotation / prefer-implements-annotation aliasing (St
     },
     {
       name: "[REQ-SINGLE-STORY-FIX] single @story with multiple @req lines auto-fixes to single @supports line containing all REQ IDs",
-      code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ONE\n * @req REQ-TWO\n * @req REQ-THREE\n */\nfunction autoFixMultiReq() {}`,
-      output: `/**\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ONE REQ-TWO REQ-THREE\n */\nfunction autoFixMultiReq() {}`,
+      code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-REQUIRED\n * @req REQ-JSDOC-PARSING\n * @req REQ-FUNCTION-DETECTION\n */\nfunction autoFixMultiReq() {}`,
+      output: `/**\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-JSDOC-PARSING REQ-FUNCTION-DETECTION\n */\nfunction autoFixMultiReq() {}`,
       errors: [{ messageId: "preferImplements" }],
     },
     {
@@ -94,20 +94,46 @@ describe("prefer-supports-annotation / prefer-implements-annotation aliasing (St
     },
     {
       name: "[REQ-INLINE-COMMENT-SUPPORT] single inline // @story with multiple // @req lines auto-fixes to single // @supports containing all REQ IDs",
-      code: `// @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md\n// @req REQ-INLINE-COMMENT-SUPPORT\n// @req REQ-BRANCH-POSITION-PRESERVE\nfunction inlineMultiReq() {}`,
-      output: `// @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-BRANCH-POSITION-PRESERVE\nfunction inlineMultiReq() {}`,
+      code: `// @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md\n// @req REQ-INLINE-COMMENT-SUPPORT\n// @req REQ-AUTO-FIX\nfunction inlineMultiReq() {}`,
+      output: `// @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX\nfunction inlineMultiReq() {}`,
       errors: [{ messageId: "preferImplements" }],
     },
     {
-      name: "[REQ-INLINE-COMMENT-SUPPORT] inline // @story + // @req above statement is auto-fixed preserving branch position (REQ-BRANCH-POSITION-PRESERVE)",
-      code: `if (flag) {\n  // @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md\n  // @req REQ-BRANCH-POSITION-PRESERVE\n  doSomething();\n}`,
-      output: `if (flag) {\n  // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-BRANCH-POSITION-PRESERVE\n  doSomething();\n}`,
+      name: "[REQ-INLINE-COMMENT-SUPPORT] inline // @story + // @req above statement is auto-fixed preserving branch position",
+      code: `if (flag) {\n  // @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md\n  // @req REQ-AUTO-FIX\n  doSomething();\n}`,
+      output: `if (flag) {\n  // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX\n  doSomething();\n}`,
       errors: [{ messageId: "preferImplements" }],
     },
     {
       name: "[REQ-INLINE-COMMENT-SUPPORT] complex inline // @req content is not safely auto-fixable but still reports preferImplements",
       code: `// @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md\n// @req REQ-INLINE-COMMENT-SUPPORT extra description inline\nfunction inlineComplexReqNoAutoFix() {}`,
       errors: [{ messageId: "preferImplements" }],
+    },
+    {
+      name: "[REQ-MULTI-STORY-DETECT] @req ID not found in story file triggers cannotAutoFix with mismatch message",
+      code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-NONEXISTENT-ID\n */\nfunction mismatchedReq() {}`,
+      errors: [
+        {
+          messageId: "cannotAutoFix",
+          data: {
+            reason:
+              "@req 'REQ-NONEXISTENT-ID' not found in story 'docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md'. This may indicate a multi-story implementation",
+          },
+        },
+      ],
+    },
+    {
+      name: "[REQ-MULTI-STORY-DETECT] multiple @req IDs with one mismatch triggers cannotAutoFix",
+      code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-REQUIRED\n * @req REQ-INVALID-ID\n */\nfunction partialMismatch() {}`,
+      errors: [
+        {
+          messageId: "cannotAutoFix",
+          data: {
+            reason:
+              "@req 'REQ-INVALID-ID' not found in story 'docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md'. This may indicate a multi-story implementation",
+          },
+        },
+      ],
     },
   ];
 
