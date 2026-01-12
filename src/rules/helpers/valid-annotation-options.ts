@@ -102,6 +102,17 @@ function deriveStoryPatternFromDirectories(dirs: string[]): RegExp {
 }
 
 /**
+ * Derive a story path example from configured story directories.
+ * Uses the first directory in the list to create an example path.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ */
+function deriveStoryExampleFromDirectories(dirs: string[]): string {
+  const firstDir = dirs[0] || "docs/stories";
+  return `${firstDir}/005.0-DEV-EXAMPLE.story.md`;
+}
+
+/**
  * Get the default regular expression used to validate story paths.
  *
  * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
@@ -259,12 +270,24 @@ function resolveReqPattern(
 function resolveStoryExample(
   nestedStoryExample: string | undefined,
   flatStoryExample: string | undefined,
+  storyDirectories: string[] | undefined,
 ): string {
-  return resolveExample(
-    nestedStoryExample,
-    flatStoryExample,
-    getDefaultStoryExample(),
-  );
+  // If an explicit example is provided, use it
+  if (nestedStoryExample || flatStoryExample) {
+    return resolveExample(
+      nestedStoryExample,
+      flatStoryExample,
+      getDefaultStoryExample(),
+    );
+  }
+
+  // If storyDirectories is provided, derive example from it
+  if (storyDirectories && storyDirectories.length > 0) {
+    return deriveStoryExampleFromDirectories(storyDirectories);
+  }
+
+  // Otherwise, use the default example
+  return getDefaultStoryExample();
 }
 
 /**
@@ -387,6 +410,7 @@ function resolveOptionsInternal(
   const storyExample = resolveStoryExample(
     nestedStoryExample,
     flatStoryExample,
+    user?.storyDirectories,
   );
   const reqExample = resolveReqExample(nestedReqExample, flatReqExample);
 
