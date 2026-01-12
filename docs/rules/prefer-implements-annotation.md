@@ -153,6 +153,38 @@ function multiStory() {}
 
 This is a strong indicator that the code should use separate `@supports` lines for each story.
 
+### Mismatched @req IDs (not found in story file)
+
+**New in v1.1.0**: The rule now validates that `@req` IDs listed in annotations actually exist in the referenced story file before offering auto-fix. When a `@req` ID is not found in the story file, the rule reports:
+
+- **Message ID:** `cannotAutoFix`
+- **Data:** `{ reason: "@req 'REQ-ID' not found in story 'path'. This may indicate a multi-story implementation" }`
+
+Example:
+
+```js
+/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-ANNOTATION-REQUIRED  // Exists in story
+ * @req REQ-SECURITY-CHECK  // Does NOT exist in this story
+ */
+function mismatchedReq() {}
+// -> cannotAutoFix with detailed mismatch message
+// Manual migration required - likely multi-story implementation
+```
+
+This detection prevents auto-fix from creating invalid traceability links when a function implements requirements from multiple stories but only references one `@story` path. It indicates that the function likely needs separate `@supports` lines for different stories:
+
+```js
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/009.0-DEV-SECURITY-VALIDATION.story.md REQ-SECURITY-CHECK
+ */
+function properlyMigrated() {}
+```
+
+If the story file cannot be found or read, the rule also reports `cannotAutoFix` with reason `"story file 'path' not found or cannot be read"`.
+
 ### What the rule intentionally ignores
 
 To preserve backward compatibility and avoid noisy diagnostics, the rule intentionally **does not** report on:
@@ -214,6 +246,18 @@ function mixed() {}
  */
 function multiStory() {}
 // -> multiStoryDetected (multi-story integration needs manual @supports mapping)
+```
+
+### Reported: mismatched @req IDs
+
+```js
+/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @req REQ-NONEXISTENT-ID  // Not defined in the story file
+ */
+function mismatchedReq() {}
+// -> cannotAutoFix: @req 'REQ-NONEXISTENT-ID' not found in story...
+// This may indicate a multi-story implementation
 ```
 
 ## Relationship to other rules
