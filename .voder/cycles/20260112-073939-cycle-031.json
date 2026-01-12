@@ -1,0 +1,70 @@
+{
+  "cycleId": "20260112-073939-cycle-031",
+  "startedAt": "2026-01-12T07:39:39.590Z",
+  "completedAt": "2026-01-12T07:39:39.590Z",
+  "status": "completed",
+  "currentPhase": "assess",
+  "phases": {
+    "assess": {
+      "startedAt": "2026-01-12T07:39:39.590Z",
+      "completedAt": "2026-01-12T07:39:39.590Z",
+      "codexSessionId": null,
+      "result": {
+        "completedStories": [
+          "001.0-DEV-PLUGIN-SETUP",
+          "002.0-DEV-ESLINT-CONFIG",
+          "003.0-DEV-FUNCTION-ANNOTATIONS",
+          "004.0-DEV-BRANCH-ANNOTATIONS",
+          "005.0-DEV-ANNOTATION-VALIDATION",
+          "006.0-DEV-FILE-VALIDATION",
+          "007.0-DEV-ERROR-REPORTING",
+          "008.0-DEV-AUTO-FIX",
+          "009.0-DEV-MAINTENANCE-TOOLS",
+          "010.0-DEV-DEEP-VALIDATION",
+          "010.1-DEV-CONFIGURABLE-PATTERNS",
+          "010.2-DEV-MULTI-STORY-SUPPORT"
+        ],
+        "incompleteStories": [],
+        "traceabilityFiles": [
+          ".voder/traceability/001.0-DEV-PLUGIN-SETUP.trace.md",
+          ".voder/traceability/002.0-DEV-ESLINT-CONFIG.trace.md",
+          ".voder/traceability/003.0-DEV-FUNCTION-ANNOTATIONS.trace.md",
+          ".voder/traceability/004.0-DEV-BRANCH-ANNOTATIONS.trace.md",
+          ".voder/traceability/005.0-DEV-ANNOTATION-VALIDATION.trace.md",
+          ".voder/traceability/006.0-DEV-FILE-VALIDATION.trace.md",
+          ".voder/traceability/007.0-DEV-ERROR-REPORTING.trace.md",
+          ".voder/traceability/008.0-DEV-AUTO-FIX.trace.md",
+          ".voder/traceability/009.0-DEV-MAINTENANCE-TOOLS.trace.md",
+          ".voder/traceability/010.0-DEV-DEEP-VALIDATION.trace.md",
+          ".voder/traceability/010.1-DEV-CONFIGURABLE-PATTERNS.trace.md",
+          ".voder/traceability/010.2-DEV-MULTI-STORY-SUPPORT.trace.md",
+          ".voder/traceability/010.3-DEV-MIGRATE-TO-SUPPORTS.trace.md"
+        ],
+        "exitReason": "assessment-failed",
+        "failedStories": [
+          "010.3-DEV-MIGRATE-TO-SUPPORTS"
+        ],
+        "firstIncompleteId": null,
+        "assessmentMethodsByStoryId": {
+          "001.0-DEV-PLUGIN-SETUP": "codex",
+          "002.0-DEV-ESLINT-CONFIG": "codex",
+          "003.0-DEV-FUNCTION-ANNOTATIONS": "codex",
+          "004.0-DEV-BRANCH-ANNOTATIONS": "codex",
+          "005.0-DEV-ANNOTATION-VALIDATION": "codex",
+          "006.0-DEV-FILE-VALIDATION": "codex",
+          "007.0-DEV-ERROR-REPORTING": "codex",
+          "008.0-DEV-AUTO-FIX": "codex",
+          "009.0-DEV-MAINTENANCE-TOOLS": "codex",
+          "010.0-DEV-DEEP-VALIDATION": "codex",
+          "010.1-DEV-CONFIGURABLE-PATTERNS": "codex",
+          "010.2-DEV-MULTI-STORY-SUPPORT": "codex",
+          "010.3-DEV-MIGRATE-TO-SUPPORTS": "codex"
+        }
+      }
+    }
+  },
+  "metadata": {
+    "voderVersion": "unknown",
+    "workingDirectory": "/Users/tomhoward/Projects/eslint-plugin-traceability"
+  }
+}

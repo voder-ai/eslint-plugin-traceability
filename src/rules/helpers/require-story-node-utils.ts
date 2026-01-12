@@ -10,13 +10,66 @@ import {
 } from "./require-story-name-extraction";
 
 /**
+ * Check if a name is valid (not null, not empty, not "(anonymous)").
+ *
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
+ */
+function isValidName(name: string | null): boolean {
+  return typeof name === "string" && name.length > 0 && name !== "(anonymous)";
+}
+
+/**
+ * Get name from VariableDeclarator parent.
+ *
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
+ */
+function getNameFromVariableDeclarator(parent: any): string | null {
+  if (parent.type === "VariableDeclarator" && parent.id) {
+    return (
+      getContainerKeyOrIdName(parent) ?? getDirectIdentifierName(parent.id)
+    );
+  }
+  return null;
+}
+
+/**
+ * Get name from Property parent.
+ *
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
+ */
+function getNameFromProperty(parent: any): string | null {
+  if (parent.type === "Property" && parent.key) {
+    return (
+      getContainerKeyOrIdName(parent) ?? getDirectIdentifierName(parent.key)
+    );
+  }
+  return null;
+}
+
+/**
  * Determine whether a node represents an anonymous arrow function expression
  * where the parent variable declarator has no explicit Identifier name.
  *
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
  */
 export function isAnonymousArrowFunction(node: any): boolean {
-  return !!node && node.type === "ArrowFunctionExpression";
+  if (!node || node.type !== "ArrowFunctionExpression") {
+    return false;
+  }
+
+  if (!node.parent) {
+    return true;
+  }
+
+  // Check for name from VariableDeclarator or Property parent
+  const name =
+    getNameFromVariableDeclarator(node.parent) ??
+    getNameFromProperty(node.parent);
+  if (isValidName(name)) {
+    return false; // Has a name, so it's a named arrow
+  }
+
+  return true; // Truly anonymous
 }
 
 /**
@@ -50,10 +103,22 @@ export function isNestedFunction(node: any): boolean {
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-NESTED-FUNCTION-INHERITANCE
  */
 export function isEffectivelyAnonymousFunction(node: any): boolean {
+  // Check node itself for name (FunctionDeclaration, MethodDefinition, etc.)
   const name = getContainerKeyOrIdName(node) ?? getDirectIdentifierName(node);
-  if (typeof name === "string" && name.length > 0 && name !== "(anonymous)") {
+  if (isValidName(name)) {
     return false;
   }
+
+  // For arrow functions specifically, check parent for name since arrows never have their own id.
+  if (node.type === "ArrowFunctionExpression" && node.parent) {
+    const parentName =
+      getNameFromVariableDeclarator(node.parent) ??
+      getNameFromProperty(node.parent);
+    if (isValidName(parentName)) {
+      return false;
+    }
+  }
+
   return true;
 }
 

@@ -547,4 +547,152 @@ describe("Require Story Helpers (Story 003.0)", () => {
     });
     expect(result).toBeTruthy();
   });
+
+  /**
+   * Comprehensive tests for anonymous vs named arrow function detection.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @req REQ-FUNCTION-DETECTION - Anonymous arrows excluded by default, named arrows require annotations
+   */
+  test("[REQ-FUNCTION-DETECTION] Top-level anonymous arrow callback in array.map is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: {
+          type: "MemberExpression",
+          property: { type: "Identifier", name: "map" },
+        },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-FUNCTION-DETECTION] Top-level anonymous arrow callback in array.filter is excluded by default", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: {
+          type: "MemberExpression",
+          property: { type: "Identifier", name: "filter" },
+        },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-FUNCTION-DETECTION] Named arrow function assigned to variable requires annotation", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "VariableDeclarator",
+        id: { type: "Identifier", name: "handler" },
+        parent: {
+          type: "VariableDeclaration",
+        },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-FUNCTION-DETECTION] Named arrow function assigned to const requires annotation", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "VariableDeclarator",
+        id: { type: "Identifier", name: "processData" },
+        parent: {
+          type: "VariableDeclaration",
+        },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-FUNCTION-DETECTION] Nested named arrow function requires annotation", () => {
+    const outerFunc: any = {
+      type: "FunctionDeclaration",
+      id: { type: "Identifier", name: "outer" },
+    };
+
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "VariableDeclarator",
+        id: { type: "Identifier", name: "inner" },
+        parent: {
+          type: "VariableDeclaration",
+          parent: {
+            type: "BlockStatement",
+            parent: outerFunc,
+          },
+        },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-FUNCTION-DETECTION] Nested anonymous arrow callback is excluded (inherits from parent)", () => {
+    const outerFunc: any = {
+      type: "FunctionDeclaration",
+      id: { type: "Identifier", name: "outer" },
+    };
+
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: {
+          type: "MemberExpression",
+          property: { type: "Identifier", name: "forEach" },
+        },
+        parent: {
+          type: "BlockStatement",
+          parent: outerFunc,
+        },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
+
+  test("[REQ-FUNCTION-DETECTION] Named arrow as object property value requires annotation", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "Property",
+        key: { type: "Identifier", name: "handler" },
+        parent: {
+          type: "ObjectExpression",
+        },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeTruthy();
+  });
+
+  test("[REQ-FUNCTION-DETECTION] Anonymous arrow as immediate callback is excluded", () => {
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "setTimeout" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeFalsy();
+  });
 });
