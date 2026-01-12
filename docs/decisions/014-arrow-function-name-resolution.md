@@ -45,9 +45,31 @@ The plugin will resolve arrow function names by **inspecting parent node context
    - Name must be non-null, non-empty string
    - Name must not be literal `"(anonymous)"`
 
-5. **Classify based on name**
+5. **Classify based on name and context**
    - **Has valid name** → Named arrow, requires annotation
-   - **No valid name** → Anonymous arrow, subject to callback exclusion rules
+   - **No valid name + common utility callback** → Anonymous arrow, excluded
+   - **No valid name + test callback (when excludeTestCallbacks=true)** → Anonymous arrow, excluded
+   - **No valid name + custom function callback** → Anonymous arrow, **checked** (unless nested and inheriting)
+
+### Callback Exclusion Logic
+
+Anonymous arrows are excluded in specific contexts:
+
+1. **Common utility callbacks** (always excluded):
+   - Array methods: `map`, `filter`, `forEach`, `reduce`, `sort`, etc.
+   - Promise methods: `then`, `catch`, `finally`
+   - Timing functions: `setTimeout`, `setInterval`, `requestAnimationFrame`
+
+2. **Test framework callbacks** (excluded when `excludeTestCallbacks=true`):
+   - Test functions: `it`, `test`, `describe`, `suite`
+   - Lifecycle hooks: `beforeEach`, `afterEach`, `beforeAll`, `afterAll`
+   - Note: `bench` callbacks are **never** excluded
+
+3. **Custom function callbacks** (**not** excluded):
+   - Anonymous arrows passed to custom functions require annotations
+   - Exception: If nested inside another function, may inherit parent annotation
+
+This ensures common utility patterns don't clutter code with annotations while maintaining traceability for custom business logic callbacks.
 
 ### Code Structure
 
@@ -216,7 +238,14 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 ## Notes
 
 This decision resolves the functionality gap where:
-- Anonymous arrows were incorrectly checked despite being common utility callbacks
-- Named arrows were incorrectly treated as anonymous when nested
+- Anonymous arrows to common utility methods (map, filter, setTimeout) were incorrectly checked despite the spec requiring their exclusion
+- Anonymous arrows to custom functions were not explicitly distinguished from utility callbacks
+- The callback exclusion logic needed clarification to separate common utilities from custom functions
 
-The fix brings the implementation into alignment with the specification defined in REQ-FUNCTION-DETECTION.
+The implementation now:
+1. Excludes anonymous arrows to common utility callbacks (map, filter, setTimeout, Promise methods)
+2. Excludes anonymous arrows to test framework callbacks (when excludeTestCallbacks=true)
+3. **Checks** anonymous arrows to custom functions (unless nested and inheriting)
+4. Always checks named arrows regardless of context
+
+The fix brings the implementation into full alignment with the specification defined in REQ-FUNCTION-DETECTION and REQ-ARROW-FUNCTION-EXCLUDED.
