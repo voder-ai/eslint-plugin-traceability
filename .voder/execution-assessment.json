@@ -1,13 +1,13 @@
 {
   "status": "healthy",
-  "summary": "Temporary-copy install, build, and runtime smoke all succeeded; only a deprecation warning appeared during npm ci.",
+  "summary": "Build and runtime smoke succeeded in a temporary copy; only a deprecation warning appeared during install.",
   "score": 90,
   "reasoning": [
-    "`npm ci` completed successfully in the temporary copy and ran `prepare`; the only notable output was a deprecation warning for `semver-diff`, which did not affect installation.",
-    "`npm run build` (tsc with `tsconfig.build.json`) finished without errors, indicating the TypeScript build pipeline is functional.",
-    "`npm run smoke:runtime` completed successfully, confirming the plugin loads and the maintenance CLI runs without critical runtime errors.",
-    "Build/run entry points for a Node ESLint plugin are present and executable (`build`, `smoke:runtime`, `run:cli`), and the observed run path exercised the runtime smoke script.",
-    "Observable gap is limited to the install-time deprecation warning; no build or runtime failures were observed.",
+    "`npm ci` completed successfully in the temporary copy and ran the `prepare` script; the only notable output was a deprecation warning for `semver-diff`, which did not block install.",
+    "`npm run build` (TypeScript build via `tsconfig.build.json`) finished without errors, showing the build pipeline is functional.",
+    "`npm run smoke:runtime` completed successfully, indicating the plugin loads and the maintenance CLI runs without critical runtime errors.",
+    "Build and runtime entry points relevant to a Node ESLint plugin are present and were exercised (install/prepare, build, runtime smoke).",
+    "Observable gap is limited to the install-time deprecation warning; no build or runtime failures were observed in the executed path.",
     "Score reflects strong build/run health with a minor warning and no observed runtime issues in the smoke path."
   ]
 }

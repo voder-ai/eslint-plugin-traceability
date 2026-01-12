@@ -2,7 +2,7 @@
   "kind": "plan-next-work",
   "version": 1,
   "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
-  "generatedAt": "2026-01-11T22:19:06.265Z",
+  "generatedAt": "2026-01-11T23:55:29.599Z",
   "input": {
     "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
     "hadFoundationAssessment": true,
@@ -33,64 +33,64 @@
   "buckets": {
     "now": [
       {
-        "id": "now-docs-manual-trigger",
-        "title": "Remove CI-oriented guidance from maintenance docs to satisfy manual-only requirement",
-        "details": "Edit `user-docs/api-reference.md` to remove or reframe CI-oriented statements (e.g., “JSON report suitable for CI” and the “In CI” example) so maintenance tooling is clearly documented as manual-only/no-automation per REQ-MAINT-MANUAL-TRIGGER#2. Ensure wording aligns with docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md expectations.",
+        "id": "now-1",
+        "title": "Add story-file requirement format examples for deep validation",
+        "details": "Update documentation to include concrete examples of supported requirement formats in story files for deep validation (bold requirement sections, checkboxes, numbered/bulleted lists). Ensure examples live in the relevant story documentation area referenced by deep validation (likely in prompts/ or docs/stories) and align with existing annotation usage docs.",
         "attribution": "functionality",
-        "estimatedScoreImpactPct": 64,
-        "sourceItem": "[functionality] Story 009.0-DEV-MAINTENANCE-TOOLS: Documentation in `user-docs/api-reference.md` includes CI-oriented guidance (e.g., \"JSON report suitable for CI\" and an \"In CI\" example), which conflicts with the manual-only/no-automation requirement."
+        "estimatedScoreImpactPct": 59,
+        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION: Documentation does not include examples of supported requirement formats in story files (e.g., bold requirement sections, checkboxes, numbered/bulleted lists) for deep validation behavior."
       }
     ],
     "next": [
       {
-        "id": "next-verify-maintenance-story",
-        "title": "Re-check story 009 traceability after doc update",
-        "details": "After updating `user-docs/api-reference.md`, re-run the functionality assessment (or targeted traceability checks if available) to confirm REQ-MAINT-MANUAL-TRIGGER#2 is complete and Story 009.0-DEV-MAINTENANCE-TOOLS becomes complete.",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 009.0-DEV-MAINTENANCE-TOOLS (REQ-MAINT-MANUAL-TRIGGER#2): `user-docs/api-reference.md` includes CI-oriented guidance (\"JSON report suitable for CI\" and an \"In CI\" example), which conflicts with the manual-only/no-automation requirement."
-      },
-      {
-        "id": "next-docs-cross-check",
-        "title": "Cross-check related maintenance docs for automation wording",
-        "details": "Review `README.md` sections that mention maintenance CLI/manual triggers to ensure they do not imply CI/automation and remain consistent with manual-only guidance.",
+        "id": "next-1",
+        "title": "Confirm spec alignment and update prompts if needed",
+        "details": "Review related specs in prompts/ for deep validation; add or adjust any sections so requirement format examples are explicitly specified and consistent with implementation/tests.",
         "attribution": "functionality",
         "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 009.0-DEV-MAINTENANCE-TOOLS: Documentation in `user-docs/api-reference.md` includes CI-oriented guidance (e.g., \"JSON report suitable for CI\" and an \"In CI\" example), which conflicts with the manual-only/no-automation requirement."
+        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION (REQ-DEEP-ERROR#2): No documentation found with examples of supported requirement formats in story files for deep validation (only annotation usage examples are documented)."
       },
       {
-        "id": "next-branch-coverage-hotspots",
-        "title": "Target low branch-coverage hotspots with focused tests",
-        "details": "Add branch-focused tests for `src/index.ts`, `src/maintenance/commands.ts`, and `src/rules/require-traceability.ts` to raise branch coverage and reduce testing gaps; prefer small, targeted cases covering conditional paths called out by coverage report.",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": 5,
-        "sourceItem": "[testing] Branch coverage is notably low in a few key areas (e.g., `src/index.ts`, `src/rules/require-traceability.ts`, `src/maintenance/commands.ts`), leaving conditional paths less exercised despite overall high totals."
+        "id": "next-2",
+        "title": "Record documentation decision in MADR format",
+        "details": "Document the decision to add supported requirement format examples (scope, examples included, and rationale) in docs/decisions/ using MADR 4.0 template.",
+        "attribution": "execution",
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION: Documentation does not include examples of supported requirement formats in story files (e.g., bold requirement sections, checkboxes, numbered/bulleted lists) for deep validation behavior."
       },
       {
-        "id": "next-e2e-harness",
-        "title": "Introduce a minimal e2e harness for plugin+CLI workflow",
-        "details": "Define a lightweight end-to-end test that exercises an ESLint run with the plugin and a maintenance CLI command in a temp workspace, and wire it to a new `npm run test:e2e` script per SOA script contract rules.",
+        "id": "next-3",
+        "title": "Add/update tests if documentation change implies behavior guarantees",
+        "details": "If examples reveal untested formats, add/adjust tests in tests/ to ensure deep validation recognizes those formats; reference the updated spec in test descriptions.",
         "attribution": "testing",
-        "estimatedScoreImpactPct": 5,
-        "sourceItem": "[testing] There is no dedicated end-to-end test layer; coverage is limited to unit and integration/performance tests, which leaves full-system workflows unverified in an e2e harness."
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION: Documentation does not include examples of supported requirement formats in story files (e.g., bold requirement sections, checkboxes, numbered/bulleted lists) for deep validation behavior."
+      },
+      {
+        "id": "next-4",
+        "title": "Run quality checks after documentation/tests updates",
+        "details": "Run package.json scripts for linting, formatting, and tests to verify documentation/test changes keep the project healthy.",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION (REQ-DEEP-ERROR#2): No documentation found with examples of supported requirement formats in story files for deep validation (only annotation usage examples are documented)."
       }
     ],
     "later": [
       {
-        "id": "later-deprecation-warning",
-        "title": "Address semver-diff deprecation warning from npm ci",
-        "details": "Investigate `semver-diff` usage/dependency chain and update/replace to eliminate the deprecation warning during install; document any dependency decision per docs/decisions if needed.",
+        "id": "later-1",
+        "title": "Reassess functionality score after doc/spec updates",
+        "details": "Re-run the foundation assessment to confirm functionality reaches 100% once the documentation gap is closed.",
         "attribution": "execution",
-        "estimatedScoreImpactPct": 2,
-        "sourceItem": "[execution] `npm ci` completed successfully ... the only notable output was a deprecation warning for `semver-diff`."
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION: Documentation does not include examples of supported requirement formats in story files (e.g., bold requirement sections, checkboxes, numbered/bulleted lists) for deep validation behavior."
       },
       {
-        "id": "later-branch-coverage-secondary",
-        "title": "Improve branch coverage across helper utilities",
-        "details": "Incrementally add tests for lower-coverage helpers (e.g., `src/rules/helpers/prefer-implements-inline.ts`, `src/rules/helpers/require-test-traceability-helpers.ts`, `src/utils/function-annotation-helpers.ts`, `src/utils/branch-annotation-switch-helpers.ts`).",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": 3,
-        "sourceItem": "[testing] Branch coverage is notably low in a few key areas ... (coverage gaps list includes helpers with low branch coverage)."
+        "id": "later-2",
+        "title": "Triage deprecation warning from npm install",
+        "details": "Investigate the semver-diff deprecation warning and update dependency guidance or upgrades if needed.",
+        "attribution": "execution",
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "Build and runtime smoke succeeded in a temporary copy; only a deprecation warning appeared during install."
       }
     ]
   },
@@ -98,7 +98,7 @@
     "nowCount": 1,
     "nextCount": 4,
     "laterCount": 2,
-    "human": "Fix the single documentation conflict blocking functionality completion, then verify the story passes and tackle test gaps/e2e coverage for higher confidence.",
-    "nowRationale": "The functionality score is at-risk solely because Story 009’s manual-only requirement is violated by CI-oriented guidance in `user-docs/api-reference.md`. Removing or reframing that guidance is the smallest, highest-leverage change that directly unlocks functionality completion and the 100% target; all other items are secondary quality improvements."
+    "human": "Focus now on adding missing story-file requirement format examples to close the only functionality gap; follow with spec/decision alignment, tests, and verification.",
+    "nowRationale": "The sole blocker to functionality 100% is missing documentation examples for supported requirement formats. Adding those examples is the smallest, highest-leverage step that directly resolves the incomplete requirement and unblocks planning readiness."
   }
 }
