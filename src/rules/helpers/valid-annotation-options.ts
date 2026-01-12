@@ -58,6 +58,14 @@ export interface AnnotationRuleOptions {
   requirementIdExample?: string;
 
   /**
+   * Story directories to validate against. When provided, derives storyPathPattern
+   * to match files within these directories if no explicit pattern is configured.
+   * Aligns with valid-story-reference configuration.
+   * Default: ["docs/stories", "stories"]
+   */
+  storyDirectories?: string[];
+
+  /**
    * Global toggle for auto-fix behavior in valid-annotation-format.
    * When false, no automatic suffix-normalization fixes are applied.
    */
@@ -73,6 +81,24 @@ export interface ResolvedAnnotationOptions {
   reqPattern: RegExp;
   reqExample: string;
   autoFix: boolean;
+}
+
+/**
+ * Derive a story path pattern from configured story directories.
+ * Creates a pattern that matches files within any of the provided directories.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ */
+function deriveStoryPatternFromDirectories(dirs: string[]): RegExp {
+  // Escape special regex characters in directory paths
+  const escapedDirs = dirs.map((dir) =>
+    dir.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+  );
+  // Create alternation pattern: (dir1|dir2|...)/filename.story.md
+  const dirsPattern =
+    escapedDirs.length === 1 ? escapedDirs[0] : `(${escapedDirs.join("|")})`;
+  // eslint-disable-next-line no-useless-escape
+  return new RegExp(`^${dirsPattern}\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$`);
 }
 
 /**
@@ -166,6 +192,7 @@ export function getOptionErrors(): string[] {
 /**
  * Resolve the story path pattern from nested or flat configuration
  * fields, validating and falling back to the default as needed.
+ * If storyDirectories is provided but no explicit pattern, derives pattern from directories.
  *
  * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
  * @req REQ-PATTERN-CONFIG - Allow configurable story path patterns
@@ -175,15 +202,27 @@ export function getOptionErrors(): string[] {
 function resolveStoryPattern(
   nestedStoryPattern: string | undefined,
   flatStoryPattern: string | undefined,
+  storyDirectories: string[] | undefined,
 ): RegExp {
-  return resolvePattern({
-    nestedPattern: nestedStoryPattern,
-    nestedFieldName: "story.pattern",
-    flatPattern: flatStoryPattern,
-    flatFieldName: "storyPathPattern",
-    defaultPattern: getDefaultStoryPattern(),
-    errors: optionErrors,
-  });
+  // If an explicit pattern is provided (nested or flat), use it
+  if (nestedStoryPattern || flatStoryPattern) {
+    return resolvePattern({
+      nestedPattern: nestedStoryPattern,
+      nestedFieldName: "story.pattern",
+      flatPattern: flatStoryPattern,
+      flatFieldName: "storyPathPattern",
+      defaultPattern: getDefaultStoryPattern(),
+      errors: optionErrors,
+    });
+  }
+
+  // If storyDirectories is provided, derive pattern from it
+  if (storyDirectories && storyDirectories.length > 0) {
+    return deriveStoryPatternFromDirectories(storyDirectories);
+  }
+
+  // Otherwise, use the default pattern
+  return getDefaultStoryPattern();
 }
 
 /**
@@ -342,6 +381,7 @@ function resolveOptionsInternal(
   const storyPattern = resolveStoryPattern(
     nestedStoryPattern,
     flatStoryPattern,
+    user?.storyDirectories,
   );
   const reqPattern = resolveReqPattern(nestedReqPattern, flatReqPattern);
   const storyExample = resolveStoryExample(
@@ -416,6 +456,7 @@ export function getRuleSchema() {
         storyPathExample: { type: "string" },
         requirementIdPattern: { type: "string" },
         requirementIdExample: { type: "string" },
+        storyDirectories: { type: "array", items: { type: "string" } },
         autoFix: { type: "boolean" },
       },
       additionalProperties: false,
