@@ -695,4 +695,19 @@ describe("Require Story Helpers (Story 003.0)", () => {
     const result = shouldProcessNode(node, DEFAULT_SCOPE);
     expect(result).toBeFalsy();
   });
+
+  test("[REQ-FUNCTION-DETECTION] Anonymous arrow callback to custom function is checked", () => {
+    // Anonymous arrow passed to a custom function (not in common utility list)
+    // should be checked, unlike common utility callbacks
+    const node: any = {
+      type: "ArrowFunctionExpression",
+      parent: {
+        type: "CallExpression",
+        callee: { type: "Identifier", name: "customWrapper" },
+      },
+    };
+
+    const result = shouldProcessNode(node, DEFAULT_SCOPE);
+    expect(result).toBeTruthy();
+  });
 });
