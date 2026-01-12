@@ -219,6 +219,75 @@ Flat fields map directly to the canonical nested ones:
 
 If you specify both nested and flat values for the same option, the **nested `story` / `req` values take precedence** over the flat shorthand.
 
+### Shared configuration with `storyDirectories`
+
+**Recommended approach for consistency across rules.**
+
+When using both `valid-story-reference` and `valid-annotation-format`, you can configure story directory locations once using the `storyDirectories` option. The `valid-annotation-format` rule will automatically derive its `story.pattern` and `story.example` from the configured directories:
+
+```jsonc
+{
+  "rules": {
+    "traceability/valid-story-reference": ["error", {
+      "storyDirectories": ["docs/stories", "custom/stories"]
+    }],
+    "traceability/valid-annotation-format": ["error", {
+      "storyDirectories": ["docs/stories", "custom/stories"]
+      // Pattern automatically derived:
+      // ^(docs/stories|custom/stories)/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$
+      // Example automatically derived:
+      // "docs/stories/005.0-DEV-EXAMPLE.story.md"
+    }]
+  }
+}
+```
+
+**Benefits:**
+
+- **Single source of truth**: Configure directory locations once
+- **Consistency**: Both rules automatically agree on valid story paths
+- **Less duplication**: No need to manually sync patterns with directory changes
+- **Maintainability**: Update directory structure in one place
+
+**Behavior:**
+
+- When `storyDirectories` is provided and no explicit `story.pattern` or `storyPathPattern` is configured, the rule automatically derives:
+  - A pattern matching files in any of the configured directories
+  - An example path using the first configured directory
+- Explicit pattern configuration (`story.pattern` or `storyPathPattern`) overrides the derived pattern
+- The derived pattern maintains the expected story file naming convention: `<major>.<minor>-DEV-<name>.story.md`
+
+**Example configurations:**
+
+Single directory:
+```jsonc
+{
+  "storyDirectories": ["stories"]
+  // Derived pattern: ^stories/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$
+  // Derived example: "stories/005.0-DEV-EXAMPLE.story.md"
+}
+```
+
+Multiple directories:
+```jsonc
+{
+  "storyDirectories": ["docs/stories", "api/stories", "tests/stories"]
+  // Derived pattern: ^(docs/stories|api/stories|tests/stories)/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$
+  // Derived example: "docs/stories/005.0-DEV-EXAMPLE.story.md"
+}
+```
+
+Override with explicit pattern:
+```jsonc
+{
+  "storyDirectories": ["stories"],
+  "storyPathPattern": "^.*\\.story\\.md$"
+  // Explicit pattern takes precedence over derived pattern
+}
+```
+
+For more information about the decision to use shared configuration, see [ADR 016: Shared Configuration Resolution for Story Directories](../decisions/016-shared-config-resolution-for-story-directories.accepted.md).
+
 ### Invalid configuration
 
 If any of the pattern fields contain an invalid regular expression source—whether provided via nested `story.pattern` / `req.pattern` or via flat shorthand `storyPathPattern` / `requirementIdPattern`—the rule:
