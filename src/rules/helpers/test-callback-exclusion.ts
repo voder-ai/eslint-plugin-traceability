@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Shared helpers for determining whether a function-like node should be
  * treated as a test framework callback that may be excluded from
@@ -6,7 +5,6 @@
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @story docs/stories/013-exclude-test-framework-callbacks.proposed.md
  * @req REQ-TEST-CALLBACK-EXCLUSION - Provide reusable test callback exclusion logic
  */
 import type { TSESTree } from "@typescript-eslint/utils";
