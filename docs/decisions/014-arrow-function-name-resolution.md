@@ -49,27 +49,27 @@ The plugin will resolve arrow function names by **inspecting parent node context
    - **Has valid name** → Named arrow, requires annotation
    - **No valid name + common utility callback** → Anonymous arrow, excluded
    - **No valid name + test callback (when excludeTestCallbacks=true)** → Anonymous arrow, excluded
-   - **No valid name + custom function callback** → Anonymous arrow, **checked** (unless nested and inheriting)
+   - **No valid name (anonymous arrow)** → Anonymous arrow, **excluded by default** (REQ-FUNCTION-DETECTION#1)
 
 ### Callback Exclusion Logic
 
-Anonymous arrows are excluded in specific contexts:
+Anonymous arrows are excluded by default (REQ-FUNCTION-DETECTION#1):
 
-1. **Common utility callbacks** (always excluded):
-   - Array methods: `map`, `filter`, `forEach`, `reduce`, `sort`, etc.
-   - Promise methods: `then`, `catch`, `finally`
-   - Timing functions: `setTimeout`, `setInterval`, `requestAnimationFrame`
+1. **All anonymous arrow functions** (excluded by default):
+   - Array method callbacks: `map`, `filter`, `forEach`, `reduce`, `sort`, etc.
+   - Promise method callbacks: `then`, `catch`, `finally`
+   - Timing function callbacks: `setTimeout`, `setInterval`, `requestAnimationFrame`
+   - Custom function callbacks: `customWrapper(() => {})`
+   - Any callback where the arrow has no assigned name
 
-2. **Test framework callbacks** (excluded when `excludeTestCallbacks=true`):
-   - Test functions: `it`, `test`, `describe`, `suite`
-   - Lifecycle hooks: `beforeEach`, `afterEach`, `beforeAll`, `afterAll`
-   - Note: `bench` callbacks are **never** excluded
+2. **Special cases where anonymous arrows ARE checked**:
+   - When `excludeTestCallbacks` is explicitly `false` (all functions checked)
+   - Vitest `bench()` callbacks (always checked for performance traceability)
 
-3. **Custom function callbacks** (**not** excluded):
-   - Anonymous arrows passed to custom functions require annotations
-   - Exception: If nested inside another function, may inherit parent annotation
+3. **Nested anonymous functions**:
+   - May inherit from parent annotation (separate rule)
 
-This ensures common utility patterns don't clutter code with annotations while maintaining traceability for custom business logic callbacks.
+This ensures anonymous arrow callbacks don't clutter code with annotations while maintaining traceability for named functions that represent meaningful functionality.
 
 ### Code Structure
 
@@ -241,17 +241,27 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 
 ## Notes
 
-This decision resolves the functionality gap where:
+This decision was updated on 2026-01-12 to resolve the functionality gap where anonymous arrows passed to custom functions were being checked despite REQ-FUNCTION-DETECTION#1 stating "anonymous arrow functions are excluded by default."
 
-- Anonymous arrows to common utility methods (map, filter, setTimeout) were incorrectly checked despite the spec requiring their exclusion
-- Anonymous arrows to custom functions were not explicitly distinguished from utility callbacks
-- The callback exclusion logic needed clarification to separate common utilities from custom functions
+The functionality assessment identified that:
+
+- The implementation was checking anonymous arrows to custom functions
+- This contradicted REQ-FUNCTION-DETECTION#1 which states anonymous arrows are excluded **by default**
+- The specification incorrectly stated custom function callbacks should be checked
 
 The implementation now:
 
-1. Excludes anonymous arrows to common utility callbacks (map, filter, setTimeout, Promise methods)
-2. Excludes anonymous arrows to test framework callbacks (when excludeTestCallbacks=true)
-3. **Checks** anonymous arrows to custom functions (unless nested and inheriting)
-4. Always checks named arrows regardless of context
+1. **Excludes ALL anonymous arrow functions by default** (REQ-FUNCTION-DETECTION#1)
+   - Array method callbacks: `map`, `filter`, `forEach`, etc.
+   - Promise method callbacks: `then`, `catch`, `finally`
+   - Timing function callbacks: `setTimeout`, `setInterval`
+   - Custom function callbacks: `customWrapper(() => {})`
+   - Any callback where the arrow has no assigned name
 
-The fix brings the implementation into full alignment with the specification defined in REQ-FUNCTION-DETECTION and REQ-ARROW-FUNCTION-EXCLUDED.
+2. **Special cases where anonymous arrows ARE checked**:
+   - When `excludeTestCallbacks` is explicitly `false` (all functions checked)
+   - Vitest `bench()` callbacks (always checked for performance traceability)
+
+3. **Always checks named arrows regardless of context**
+
+This change removes the distinction between "common utility callbacks" and "custom function callbacks" for anonymous arrows - they are all excluded by default per REQ-FUNCTION-DETECTION#1. The fix brings the implementation and specification into full alignment with the requirement.
