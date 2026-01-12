@@ -97,8 +97,9 @@ function deriveStoryPatternFromDirectories(dirs: string[]): RegExp {
   // Create alternation pattern: (dir1|dir2|...)/filename.story.md
   const dirsPattern =
     escapedDirs.length === 1 ? escapedDirs[0] : `(${escapedDirs.join("|")})`;
-  // eslint-disable-next-line no-useless-escape
-  return new RegExp(`^${dirsPattern}\/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$`);
+  return new RegExp(
+    String.raw`^${dirsPattern}/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$`,
+  );
 }
 
 /**
