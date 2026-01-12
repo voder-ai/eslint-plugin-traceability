@@ -500,7 +500,9 @@ describe("Require Story Helpers (Story 003.0)", () => {
     expect(innerResult).toBeFalsy();
   });
 
-  test("[REQ-TEST-CALLBACK-EXCLUSION] Arrow callback passed to local wrapper around describe() is not treated as a test callback", () => {
+  test("[REQ-FUNCTION-DETECTION] Arrow callback passed to local wrapper is excluded by default", () => {
+    // Anonymous arrow functions are excluded by default (REQ-FUNCTION-DETECTION#1),
+    // including callbacks to custom functions like withDescribe
     const node: any = {
       type: "ArrowFunctionExpression",
       parent: {
@@ -510,7 +512,7 @@ describe("Require Story Helpers (Story 003.0)", () => {
     };
 
     const result = shouldProcessNode(node, DEFAULT_SCOPE);
-    expect(result).toBeTruthy();
+    expect(result).toBeFalsy();
   });
 
   /**
@@ -696,9 +698,9 @@ describe("Require Story Helpers (Story 003.0)", () => {
     expect(result).toBeFalsy();
   });
 
-  test("[REQ-FUNCTION-DETECTION] Anonymous arrow callback to custom function is checked", () => {
-    // Anonymous arrow passed to a custom function (not in common utility list)
-    // should be checked, unlike common utility callbacks
+  test("[REQ-FUNCTION-DETECTION] Anonymous arrow callback to custom function is excluded by default", () => {
+    // Anonymous arrow functions are excluded by default (REQ-FUNCTION-DETECTION#1),
+    // including callbacks to custom functions like customWrapper
     const node: any = {
       type: "ArrowFunctionExpression",
       parent: {
@@ -708,6 +710,6 @@ describe("Require Story Helpers (Story 003.0)", () => {
     };
 
     const result = shouldProcessNode(node, DEFAULT_SCOPE);
-    expect(result).toBeTruthy();
+    expect(result).toBeFalsy();
   });
 });

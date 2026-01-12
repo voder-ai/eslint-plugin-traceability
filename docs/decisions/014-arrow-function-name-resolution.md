@@ -77,23 +77,23 @@ This ensures common utility patterns don't clutter code with annotations while m
 // require-story-node-utils.ts
 
 function isValidName(name: string | null): boolean {
-  return typeof name === "string" && 
-         name.length > 0 && 
-         name !== "(anonymous)";
+  return typeof name === "string" && name.length > 0 && name !== "(anonymous)";
 }
 
 function getNameFromVariableDeclarator(parent: any): string | null {
   if (parent.type === "VariableDeclarator" && parent.id) {
-    return getContainerKeyOrIdName(parent) ?? 
-           getDirectIdentifierName(parent.id);
+    return (
+      getContainerKeyOrIdName(parent) ?? getDirectIdentifierName(parent.id)
+    );
   }
   return null;
 }
 
 function getNameFromProperty(parent: any): string | null {
   if (parent.type === "Property" && parent.key) {
-    return getContainerKeyOrIdName(parent) ?? 
-           getDirectIdentifierName(parent.key);
+    return (
+      getContainerKeyOrIdName(parent) ?? getDirectIdentifierName(parent.key)
+    );
   }
   return null;
 }
@@ -102,20 +102,20 @@ export function isAnonymousArrowFunction(node: any): boolean {
   if (!node || node.type !== "ArrowFunctionExpression") {
     return false;
   }
-  
+
   if (!node.parent) {
     return true;
   }
-  
+
   // Check for name from VariableDeclarator or Property parent
-  const name = 
-    getNameFromVariableDeclarator(node.parent) ?? 
+  const name =
+    getNameFromVariableDeclarator(node.parent) ??
     getNameFromProperty(node.parent);
-    
+
   if (isValidName(name)) {
     return false; // Has a name, so it's a named arrow
   }
-  
+
   return true; // Truly anonymous
 }
 
@@ -125,17 +125,17 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
   if (isValidName(name)) {
     return false;
   }
-  
+
   // For arrow functions specifically, check parent for name
   if (node.type === "ArrowFunctionExpression" && node.parent) {
-    const parentName = 
-      getNameFromVariableDeclarator(node.parent) ?? 
+    const parentName =
+      getNameFromVariableDeclarator(node.parent) ??
       getNameFromProperty(node.parent);
     if (isValidName(parentName)) {
       return false;
     }
   }
-  
+
   return true;
 }
 ```
@@ -180,6 +180,7 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 **Approach**: Exclude all arrow functions from annotation requirements by default.
 
 **Rejected because**:
+
 - Loses traceability for named event handlers, class methods, and other meaningful arrow functions
 - Conflicts with requirement REQ-FUNCTION-DETECTION which explicitly states named arrows should require annotations
 
@@ -188,6 +189,7 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 **Approach**: Require annotations on all arrow functions, including utility callbacks.
 
 **Rejected because**:
+
 - Creates excessive noise for common patterns like `array.map(() => {})`, `.then(() => {})`, `setTimeout(() => {})`
 - Poor developer experience in test files with dozens of anonymous callbacks
 - Conflicts with requirement REQ-ARROW-FUNCTION-EXCLUDED
@@ -197,6 +199,7 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 **Approach**: Use a full AST walker to find any ancestor that might provide a name context.
 
 **Rejected because**:
+
 - Overly complex for the actual use cases (VariableDeclarator and Property cover 99% of scenarios)
 - Performance concerns with deep AST traversal
 - Would require maintaining complex walker logic
@@ -206,6 +209,7 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 **Approach**: Let users configure patterns to distinguish named vs anonymous arrows.
 
 **Rejected because**:
+
 - Shifts complexity to users who shouldn't need to understand AST structures
 - Inconsistent behavior across projects
 - Still requires default logic that covers most use cases
@@ -220,7 +224,7 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 - **Story**: 003.0-DEV-FUNCTION-ANNOTATIONS
 - **Story**: 004.0-DEV-BRANCH-ANNOTATIONS
 - **Specification**: `prompts/003.0-function-detection-arrow-naming.md`
-- **Implementation**: 
+- **Implementation**:
   - `src/rules/helpers/require-story-node-utils.ts`
   - `src/rules/helpers/require-story-helpers.ts`
 - **Tests**: `tests/rules/require-story-helpers.test.ts`
@@ -238,11 +242,13 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 ## Notes
 
 This decision resolves the functionality gap where:
+
 - Anonymous arrows to common utility methods (map, filter, setTimeout) were incorrectly checked despite the spec requiring their exclusion
 - Anonymous arrows to custom functions were not explicitly distinguished from utility callbacks
 - The callback exclusion logic needed clarification to separate common utilities from custom functions
 
 The implementation now:
+
 1. Excludes anonymous arrows to common utility callbacks (map, filter, setTimeout, Promise methods)
 2. Excludes anonymous arrows to test framework callbacks (when excludeTestCallbacks=true)
 3. **Checks** anonymous arrows to custom functions (unless nested and inheriting)

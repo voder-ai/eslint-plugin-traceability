@@ -116,90 +116,12 @@ function buildTemplateConfig(options?: ReportOptions): {
  *
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED REQ-NESTED-FUNCTION-INHERITANCE
  */
-/** Common array and Promise methods that don't require callback annotations. */
-const COMMON_ARRAY_AND_PROMISE_METHODS = [
-  "map",
-  "filter",
-  "forEach",
-  "reduce",
-  "reduceRight",
-  "some",
-  "every",
-  "find",
-  "findIndex",
-  "findLast",
-  "findLastIndex",
-  "flatMap",
-  "sort",
-  "then",
-  "catch",
-  "finally",
-];
-
-/** Timing functions that don't require callback annotations. */
-const TIMING_FUNCTIONS = [
-  "setTimeout",
-  "setInterval",
-  "setImmediate",
-  "requestAnimationFrame",
-  "requestIdleCallback",
-  "queueMicrotask",
-];
-
-/**
- * Check if callee is a common array or Promise method.
- *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
- */
-function isCommonMethodCallback(callee: any): boolean {
-  if (
-    callee.type === "MemberExpression" &&
-    callee.property?.type === "Identifier"
-  ) {
-    return COMMON_ARRAY_AND_PROMISE_METHODS.includes(callee.property.name);
-  }
-  return false;
-}
-
-/**
- * Check if callee is a timing function.
- *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
- */
-function isTimingFunctionCallback(callee: any): boolean {
-  if (callee.type === "Identifier") {
-    return TIMING_FUNCTIONS.includes(callee.name);
-  }
-  return false;
-}
-
-/**
- * Check if an anonymous arrow is a common utility callback that should be excluded.
- *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
- */
-function isCommonUtilityCallback(node: any): boolean {
-  if (!node || node.type !== "ArrowFunctionExpression") {
-    return false;
-  }
-
-  const parent = node.parent;
-  if (!parent || parent.type !== "CallExpression" || !parent.callee) {
-    return false;
-  }
-
-  return (
-    isCommonMethodCallback(parent.callee) ||
-    isTimingFunctionCallback(parent.callee)
-  );
-}
-
 /**
  * Determine whether a function node is required to carry its own annotation
  * according to Story 004.0-DEV-BRANCH-ANNOTATIONS rules.
  *
- * - Anonymous arrow functions used as callbacks are excluded from
- *   function-level annotation requirements.
+ * - Anonymous arrow functions are excluded by default from function-level
+ *   annotation requirements (REQ-FUNCTION-DETECTION#1).
  * - Named arrow functions must be annotated.
  * - Nested anonymous functions may inherit their parent function's
  *   annotation and therefore are not required to be annotated directly.
@@ -223,10 +145,11 @@ function requiresOwnFunctionAnnotation(
     return false;
   }
 
-  // Anonymous arrow functions are excluded by default when used as:
+  // Anonymous arrow functions are excluded by default (REQ-FUNCTION-DETECTION#1).
+  // This includes:
   // - Callbacks to common utility methods (map, filter, setTimeout, Promise.then, etc.)
+  // - Callbacks to custom functions
   // - Callbacks to recognized test framework functions (when excludeTestCallbacks is true)
-  // Anonymous arrows passed to custom functions are checked unless nested and inheriting.
   // Named arrow functions require annotations like other function declarations.
   if (isAnonymousArrowFunction(node)) {
     // When excludeTestCallbacks is false, check ALL functions (including anonymous arrows)
@@ -243,14 +166,8 @@ function requiresOwnFunctionAnnotation(
       return true; // bench callbacks are always checked
     }
 
-    // Check if it's a common utility callback (map, filter, setTimeout, then, etc.)
-    if (isCommonUtilityCallback(node)) {
-      return false; // Exclude common utility callbacks
-    }
-
-    // Other anonymous arrows (like callbacks to custom functions) should be checked
-    // unless they are nested and can inherit from their parent
-    return true;
+    // Anonymous arrow functions are excluded by default (REQ-FUNCTION-DETECTION#1)
+    return false;
   }
 
   return true;
