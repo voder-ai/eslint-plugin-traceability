@@ -47,6 +47,7 @@
     "security:secrets": "secretlint \"**/*\"",
     "smoke-test": "./scripts/smoke-test.sh",
     "smoke:runtime": "./scripts/runtime-smoke.sh",
+    "smoke:enhanced": "./scripts/runtime-smoke-enhanced.sh",
     "run:cli": "node lib/maintenance/cli.js",
     "debug:cli": "node scripts/cli-debug.js",
     "debug:require-story": "node scripts/debug-require-story.js",
