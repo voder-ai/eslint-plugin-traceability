@@ -385,10 +385,12 @@ npx traceability-maint update \
 ### When to Use the Maintenance CLI vs ESLint
 
 **Use the maintenance CLI** when:
+
 - You've renamed or moved story files and need to update all code references
 - You're reorganizing your story file structure
 
 **Use ESLint** for:
+
 - Detecting stale or invalid references during development
 - Validating annotation format
 - Ongoing verification of traceability compliance

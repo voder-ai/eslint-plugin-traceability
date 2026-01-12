@@ -228,17 +228,23 @@ When using both `valid-story-reference` and `valid-annotation-format`, you can c
 ```jsonc
 {
   "rules": {
-    "traceability/valid-story-reference": ["error", {
-      "storyDirectories": ["docs/stories", "custom/stories"]
-    }],
-    "traceability/valid-annotation-format": ["error", {
-      "storyDirectories": ["docs/stories", "custom/stories"]
-      // Pattern automatically derived:
-      // ^(docs/stories|custom/stories)/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$
-      // Example automatically derived:
-      // "docs/stories/005.0-DEV-EXAMPLE.story.md"
-    }]
-  }
+    "traceability/valid-story-reference": [
+      "error",
+      {
+        "storyDirectories": ["docs/stories", "custom/stories"],
+      },
+    ],
+    "traceability/valid-annotation-format": [
+      "error",
+      {
+        "storyDirectories": ["docs/stories", "custom/stories"],
+        // Pattern automatically derived:
+        // ^(docs/stories|custom/stories)/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$
+        // Example automatically derived:
+        // "docs/stories/005.0-DEV-EXAMPLE.story.md"
+      },
+    ],
+  },
 }
 ```
 
@@ -260,28 +266,31 @@ When using both `valid-story-reference` and `valid-annotation-format`, you can c
 **Example configurations:**
 
 Single directory:
+
 ```jsonc
 {
-  "storyDirectories": ["stories"]
+  "storyDirectories": ["stories"],
   // Derived pattern: ^stories/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$
   // Derived example: "stories/005.0-DEV-EXAMPLE.story.md"
 }
 ```
 
 Multiple directories:
+
 ```jsonc
 {
-  "storyDirectories": ["docs/stories", "api/stories", "tests/stories"]
+  "storyDirectories": ["docs/stories", "api/stories", "tests/stories"],
   // Derived pattern: ^(docs/stories|api/stories|tests/stories)/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$
   // Derived example: "docs/stories/005.0-DEV-EXAMPLE.story.md"
 }
 ```
 
 Override with explicit pattern:
+
 ```jsonc
 {
   "storyDirectories": ["stories"],
-  "storyPathPattern": "^.*\\.story\\.md$"
+  "storyPathPattern": "^.*\\.story\\.md$",
   // Explicit pattern takes precedence over derived pattern
 }
 ```

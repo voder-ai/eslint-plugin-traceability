@@ -11,6 +11,7 @@ decision-makers: [Tom Howard]
 Story 010.3-DEV-MIGRATE-TO-SUPPORTS defines requirement REQ-MULTI-STORY-DETECT with acceptance criterion: "Detect when function has `@req` that don't match `@story` and warn (cannot auto-fix)".
 
 The current `prefer-supports-annotation` rule implementation detects:
+
 - Multiple `@story` paths in the same comment block
 - Mixed usage of `@story`/`@req` with existing `@supports` annotations
 - Complex patterns like `@req` without `@story`
@@ -50,14 +51,14 @@ Add helper function to extract requirement IDs from story markdown files:
  * Extract requirement IDs defined in a story file.
  * Supports multiple markdown formats used in story files:
  * - Heading format: - **REQ-ID**: Description
- * - Acceptance format: - [x] REQ-ID: Description  
+ * - Acceptance format: - [x] REQ-ID: Description
  * - Code annotation format: @req REQ-ID
  *
  * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
  */
 function extractRequirementsFromStory(
   storyPath: string,
-  context: Rule.RuleContext
+  context: Rule.RuleContext,
 ): Set<string> | null {
   // Returns null if file not found or read error
   // Returns Set<string> of requirement IDs if successful
@@ -75,23 +76,23 @@ function buildImplementsAutoFix(
   storyPaths: Set<string>,
 ): Rule.ReportFixer | null {
   // ... existing checks ...
-  
+
   // NEW: Extract requirements from story file
   const storyReqs = extractRequirementsFromStory(storyPath, context);
-  
+
   // If story file not found/readable, cannot safely auto-fix
   if (storyReqs === null) {
     return null;
   }
-  
+
   // Check for mismatched @req IDs
   const mismatchedReqs = reqIds.filter(reqId => !storyReqs.has(reqId));
-  
+
   if (mismatchedReqs.length > 0) {
     // Report mismatch and skip auto-fix
     return null;
   }
-  
+
   // All @req IDs are valid - proceed with auto-fix
   return applyImplementsReplacement(context, comment, { ... });
 }
@@ -105,15 +106,15 @@ Use existing `cannotAutoFix` message ID with descriptive reasons:
 // Story file not found
 context.report({
   messageId: "cannotAutoFix",
-  data: { reason: `story file '${storyPath}' not found` }
+  data: { reason: `story file '${storyPath}' not found` },
 });
 
 // Mismatched @req IDs
 context.report({
   messageId: "cannotAutoFix",
-  data: { 
-    reason: `@req '${mismatchedReqs.join(", ")}' not found in story '${storyPath}'`
-  }
+  data: {
+    reason: `@req '${mismatchedReqs.join(", ")}' not found in story '${storyPath}'`,
+  },
 });
 ```
 
@@ -127,12 +128,12 @@ const storyFileCache = new Map<string, Set<string> | null>();
 
 function extractRequirementsFromStory(
   storyPath: string,
-  context: Rule.RuleContext
+  context: Rule.RuleContext,
 ): Set<string> | null {
   if (storyFileCache.has(storyPath)) {
     return storyFileCache.get(storyPath)!;
   }
-  
+
   // Read and parse story file...
   const reqs = parseStoryFile(resolvedPath);
   storyFileCache.set(storyPath, reqs);
@@ -145,11 +146,11 @@ function extractRequirementsFromStory(
 Leverage shared config resolution (ADR-016) for story directory:
 
 ```typescript
-import { resolveStoryPath } from './helpers/shared-config';
+import { resolveStoryPath } from "./helpers/shared-config";
 
 function extractRequirementsFromStory(
   storyPath: string,
-  context: Rule.RuleContext
+  context: Rule.RuleContext,
 ): Set<string> | null {
   const resolvedPath = resolveStoryPath(storyPath, context);
   if (!resolvedPath) {

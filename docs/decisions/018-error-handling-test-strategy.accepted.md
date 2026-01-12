@@ -61,6 +61,7 @@ Implementation compliance confirmed through:
 **Scenario**: Rule file exists but throws error when loaded
 
 **Test Implementation**:
+
 - Create temporary plugin structure with intentionally broken rule module
 - Rule file contains `throw new Error('intentionally broken')`
 - Plugin index.js catches error and creates fallback rule
@@ -74,6 +75,7 @@ Implementation compliance confirmed through:
 **Scenario**: Plugin loads without package.json present
 
 **Test Implementation**:
+
 - Create temporary plugin directory without package.json
 - Plugin index.js exports rules correctly
 - Verify plugin still functions (Node.js allows modules without package.json)
@@ -87,6 +89,7 @@ Implementation compliance confirmed through:
 **Scenario**: Plugin index.js contains syntax errors
 
 **Test Implementation**:
+
 - Create temporary plugin with invalid JavaScript syntax in index.js
 - Attempt to load plugin through ESLint config
 - Verify ESLint reports clear error message
@@ -165,7 +168,7 @@ All tests MUST follow this pattern to avoid version control pollution:
 ```javascript
 it("test scenario", () => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "test-prefix-"));
-  
+
   try {
     // Create test plugin structure
     // Run ESLint CLI

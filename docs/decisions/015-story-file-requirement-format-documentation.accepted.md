@@ -2,7 +2,12 @@
 status: "accepted"
 date: 2026-01-12
 decision-makers: [Development Team]
-consulted: [docs/stories/010.0-DEV-DEEP-VALIDATION.story.md, .github/prompts/templates/story-template.md, .github/prompts/processes/USER-STORY-MANAGEMENT.md]
+consulted:
+  [
+    docs/stories/010.0-DEV-DEEP-VALIDATION.story.md,
+    .github/prompts/templates/story-template.md,
+    .github/prompts/processes/USER-STORY-MANAGEMENT.md,
+  ]
 informed: [Plugin Users, Story Authors, AI Agents]
 ---
 
@@ -42,6 +47,7 @@ Without this documentation, developers could not be certain whether their story 
 Chosen option: "**Option B** - Create dedicated story file format guide" because it provides a single source of truth that is easily discoverable, comprehensive, and maintainable.
 
 Created `docs/story-file-requirement-formats.md` with:
+
 - Overview of requirement identifier pattern (`REQ-[A-Z0-9-]+`)
 - Examples of all supported markdown formats
 - Real examples from the story template
@@ -109,7 +115,7 @@ This decision should be reviewed when:
 
 - Parser implementation: [src/maintenance/storyParser.ts](../../src/maintenance/storyParser.ts)
 - Related story: [010.0-DEV-DEEP-VALIDATION.story.md](../stories/010.0-DEV-DEEP-VALIDATION.story.md)
-The documentation was created following the story template and USER-STORY-MANAGEMENT patterns, documenting the following supported formats:
+  The documentation was created following the story template and USER-STORY-MANAGEMENT patterns, documenting the following supported formats:
 
 1. **Bold requirement sections** (recommended): `- **REQ-XXX-YYY**: Description`
 2. **Acceptance criteria checkboxes**: `- [ ] **Description**: Details`

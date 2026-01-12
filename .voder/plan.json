@@ -2,7 +2,7 @@
   "kind": "plan-next-work",
   "version": 1,
   "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
-  "generatedAt": "2026-01-11T23:55:29.599Z",
+  "generatedAt": "2026-01-12T06:06:49.938Z",
   "input": {
     "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
     "hadFoundationAssessment": true,
@@ -33,64 +33,64 @@
   "buckets": {
     "now": [
       {
-        "id": "now-1",
-        "title": "Add story-file requirement format examples for deep validation",
-        "details": "Update documentation to include concrete examples of supported requirement formats in story files for deep validation (bold requirement sections, checkboxes, numbered/bulleted lists). Ensure examples live in the relevant story documentation area referenced by deep validation (likely in prompts/ or docs/stories) and align with existing annotation usage docs.",
-        "attribution": "functionality",
-        "estimatedScoreImpactPct": 59,
-        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION: Documentation does not include examples of supported requirement formats in story files (e.g., bold requirement sections, checkboxes, numbered/bulleted lists) for deep validation behavior."
+        "id": "now-req-error-handling-tests",
+        "title": "Add missing dependency and rule-load failure tests",
+        "details": "Extend Jest coverage to simulate missing package metadata and rule module load failures, ensuring CLI surfaces the expected errors. Update or add test cases in `tests/cli-error-handling.test.ts` (or new dedicated test file) to align with REQ-ERROR-HANDLING#1 acceptance criteria.",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": 16,
+        "sourceItem": "[functionality] Story 001.0-DEV-PLUGIN-SETUP (REQ-ERROR-HANDLING#1): No test verifies missing dependency handling (e.g., missing package metadata) or CLI behavior when rule module loading fails; tests/cli-error-handling.test.ts does not simulate a rule-load failure."
       }
     ],
     "next": [
       {
-        "id": "next-1",
-        "title": "Confirm spec alignment and update prompts if needed",
-        "details": "Review related specs in prompts/ for deep validation; add or adjust any sections so requirement format examples are explicitly specified and consistent with implementation/tests.",
+        "id": "next-verify-cli-error-contracts",
+        "title": "Document expected CLI error behaviors for load failures",
+        "details": "Update the relevant specification in `prompts/` to explicitly define behavior when rule loading fails or dependencies are missing; ensure tests reference this spec for traceability.",
         "attribution": "functionality",
         "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION (REQ-DEEP-ERROR#2): No documentation found with examples of supported requirement formats in story files for deep validation (only annotation usage examples are documented)."
+        "sourceItem": "[functionality] Story 001.0-DEV-PLUGIN-SETUP: REQ-ERROR-HANDLING#1 lacks test evidence for missing dependency handling and CLI behavior when rule loading fails; existing CLI test does not simulate a rule-load failure."
       },
       {
-        "id": "next-2",
-        "title": "Record documentation decision in MADR format",
-        "details": "Document the decision to add supported requirement format examples (scope, examples included, and rationale) in docs/decisions/ using MADR 4.0 template.",
+        "id": "next-adr-error-handling",
+        "title": "Record error-handling test decision in MADR",
+        "details": "Add/update a decision in `docs/decisions/` documenting why these error scenarios are covered and how they map to REQ-ERROR-HANDLING#1 acceptance criteria.",
+        "attribution": "functionality",
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "[functionality] Story 001.0-DEV-PLUGIN-SETUP (REQ-ERROR-HANDLING#1): Acceptance criteria call out specific tests for coverage; current CLI test validates lint failure, not plugin load failure."
+      },
+      {
+        "id": "next-coverage-assertions",
+        "title": "Add targeted assertions for error messages and exit codes",
+        "details": "Ensure tests assert error output and exit status for missing dependency and rule-load failure scenarios to match CLI contracts; update tests to verify exact behavior.",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": null,
+        "sourceItem": "[functionality] Story 001.0-DEV-PLUGIN-SETUP (REQ-ERROR-HANDLING#1): Acceptance criteria call out specific tests for coverage; current CLI test validates lint failure, not plugin load failure."
+      },
+      {
+        "id": "next-run-quality-scripts",
+        "title": "Run lint/format/test scripts after updates",
+        "details": "Execute the project’s npm scripts for linting, formatting, and tests to confirm the new coverage and keep non-functional health above threshold.",
         "attribution": "execution",
         "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION: Documentation does not include examples of supported requirement formats in story files (e.g., bold requirement sections, checkboxes, numbered/bulleted lists) for deep validation behavior."
-      },
-      {
-        "id": "next-3",
-        "title": "Add/update tests if documentation change implies behavior guarantees",
-        "details": "If examples reveal untested formats, add/adjust tests in tests/ to ensure deep validation recognizes those formats; reference the updated spec in test descriptions.",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION: Documentation does not include examples of supported requirement formats in story files (e.g., bold requirement sections, checkboxes, numbered/bulleted lists) for deep validation behavior."
-      },
-      {
-        "id": "next-4",
-        "title": "Run quality checks after documentation/tests updates",
-        "details": "Run package.json scripts for linting, formatting, and tests to verify documentation/test changes keep the project healthy.",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION (REQ-DEEP-ERROR#2): No documentation found with examples of supported requirement formats in story files for deep validation (only annotation usage examples are documented)."
+        "sourceItem": "[functionality] Story 001.0-DEV-PLUGIN-SETUP: REQ-ERROR-HANDLING#1 lacks test evidence for missing dependency handling and CLI behavior when rule loading fails; existing CLI test does not simulate a rule-load failure."
       }
     ],
     "later": [
       {
-        "id": "later-1",
-        "title": "Reassess functionality score after doc/spec updates",
-        "details": "Re-run the foundation assessment to confirm functionality reaches 100% once the documentation gap is closed.",
+        "id": "later-runtime-scenarios",
+        "title": "Broaden runtime smoke coverage",
+        "details": "Add additional runtime scenarios beyond the lightweight smoke script to reduce execution gap noted in assessment; prioritize plugin load plus CLI paths.",
         "attribution": "execution",
         "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 010.0-DEV-DEEP-VALIDATION: Documentation does not include examples of supported requirement formats in story files (e.g., bold requirement sections, checkboxes, numbered/bulleted lists) for deep validation behavior."
+        "sourceItem": "Observable gap: runtime validation is limited to the lightweight smoke script; no broader runtime scenarios were exercised beyond that script."
       },
       {
-        "id": "later-2",
-        "title": "Triage deprecation warning from npm install",
-        "details": "Investigate the semver-diff deprecation warning and update dependency guidance or upgrades if needed.",
-        "attribution": "execution",
+        "id": "later-refine-story-map",
+        "title": "Review story map/status after error-handling completion",
+        "details": "Confirm story status for 001.0-DEV-PLUGIN-SETUP and update any story map documentation to reflect completion of error-handling coverage.",
+        "attribution": "functionality",
         "estimatedScoreImpactPct": null,
-        "sourceItem": "Build and runtime smoke succeeded in a temporary copy; only a deprecation warning appeared during install."
+        "sourceItem": "[functionality] Story 001.0-DEV-PLUGIN-SETUP (REQ-ERROR-HANDLING#1): Acceptance criteria call out specific tests for coverage; current CLI test validates lint failure, not plugin load failure."
       }
     ]
   },
@@ -98,7 +98,7 @@
     "nowCount": 1,
     "nextCount": 4,
     "laterCount": 2,
-    "human": "Focus now on adding missing story-file requirement format examples to close the only functionality gap; follow with spec/decision alignment, tests, and verification.",
-    "nowRationale": "The sole blocker to functionality 100% is missing documentation examples for supported requirement formats. Adding those examples is the smallest, highest-leverage step that directly resolves the incomplete requirement and unblocks planning readiness."
+    "human": "Focus now on adding the missing error-handling tests; next, document the behavior and decision, tighten assertions, and re-run quality scripts; later, expand runtime smoke coverage and update story status.",
+    "nowRationale": "The only failed functionality gap is missing test evidence for REQ-ERROR-HANDLING#1, which blocks reaching 100% functionality; adding these tests is the smallest, highest-leverage change that directly resolves the assessment failure and enables subsequent documentation updates to align with verified behavior."
   }
 }

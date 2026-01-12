@@ -11,6 +11,7 @@ The deep validation feature (Story 010.0-DEV-DEEP-VALIDATION) parses story files
 All requirement identifiers must follow the pattern: `REQ-[A-Z0-9-]+`
 
 Examples:
+
 - `REQ-AUTH-LOGIN`
 - `REQ-DATA-VALIDATION`
 - `REQ-PERF-LOAD`
@@ -67,9 +68,9 @@ Requirements in numbered lists are recognized:
 Requirements in bulleted lists are recognized:
 
 ```markdown
-* **REQ-ERROR-LOGGING**: Log errors to monitoring service
-* **REQ-ERROR-USER**: Display user-friendly error messages
-* **REQ-ERROR-RECOVERY**: Attempt automatic recovery from transient failures
+- **REQ-ERROR-LOGGING**: Log errors to monitoring service
+- **REQ-ERROR-USER**: Display user-friendly error messages
+- **REQ-ERROR-RECOVERY**: Attempt automatic recovery from transient failures
 ```
 
 **Pattern**: `* **REQ-XXX-YYY**: Description` or `- **REQ-XXX-YYY**: Description`
@@ -93,6 +94,7 @@ Requirements can appear in any section of the story file:
 ## Implementation Notes
 
 Technical considerations for REQ-PERF-OPTIMIZATION include:
+
 - Database query optimization (see REQ-DB-INDEX)
 - Caching strategy (REQ-CACHE-TTL)
 - Load balancing (REQ-INFRA-LB)
@@ -188,13 +190,16 @@ When writing tests for deep validation, consider these cases:
 
 ```markdown
 <!-- Valid: Bold requirement with nested criteria -->
+
 - **REQ-TEST-CASE-1**: Test requirement
   - [ ] **AC1**: First acceptance criterion
-  
+
 <!-- Valid: Inline mention -->
+
 This implements REQ-TEST-CASE-2 for the feature.
 
 <!-- Valid: Numbered list -->
+
 1. **REQ-TEST-CASE-3**: Third requirement
 
 <!-- Parser finds: REQ-TEST-CASE-1, REQ-TEST-CASE-2, REQ-TEST-CASE-3 -->
@@ -205,6 +210,7 @@ This implements REQ-TEST-CASE-2 for the feature.
 **Problem**: Annotation references requirement but validation fails
 
 **Solutions**:
+
 1. Check requirement ID spelling in both annotation and story file
 2. Verify requirement ID matches pattern `REQ-[A-Z0-9-]+`
 3. Ensure story file has not been moved or renamed
@@ -214,6 +220,7 @@ This implements REQ-TEST-CASE-2 for the feature.
 **Problem**: Parser not finding requirement that exists in file
 
 **Solutions**:
+
 1. Verify requirement follows supported formats above
 2. Check for typos in requirement ID
 3. Ensure requirement is not in code blocks (parser skips code fences)

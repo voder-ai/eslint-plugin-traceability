@@ -1,13 +1,13 @@
 {
   "status": "healthy",
-  "summary": "Build and runtime smoke succeeded in a temporary copy; only a deprecation warning appeared during install.",
+  "summary": "Temporary-copy install, build, and runtime smoke completed successfully with only a deprecation warning during npm install.",
   "score": 90,
   "reasoning": [
-    "`npm ci` completed successfully in the temporary copy and ran the `prepare` script; the only notable output was a deprecation warning for `semver-diff`, which did not block install.",
-    "`npm run build` (TypeScript build via `tsconfig.build.json`) finished without errors, showing the build pipeline is functional.",
-    "`npm run smoke:runtime` completed successfully, indicating the plugin loads and the maintenance CLI runs without critical runtime errors.",
-    "Build and runtime entry points relevant to a Node ESLint plugin are present and were exercised (install/prepare, build, runtime smoke).",
-    "Observable gap is limited to the install-time deprecation warning; no build or runtime failures were observed in the executed path.",
-    "Score reflects strong build/run health with a minor warning and no observed runtime issues in the smoke path."
+    "`npm ci` succeeded in the temp copy and ran the `prepare` script; the only notable output was a deprecation warning for `semver-diff`, which did not block install.",
+    "`npm run build` completed without errors via `tsc -p tsconfig.build.json`, indicating the TypeScript build pipeline is functioning.",
+    "`npm run smoke:runtime` passed, showing the plugin can load and the maintenance CLI runs without critical runtime errors in the smoke path.",
+    "Build and runtime entry points appropriate for a Node ESLint plugin were exercised (install/prepare, build, runtime smoke).",
+    "Observable gap: runtime validation is limited to the lightweight smoke script; no broader runtime scenarios were exercised beyond that script.",
+    "Score reflects strong build/run health with a minor install-time warning and limited runtime breadth, but no observed failures."
   ]
 }

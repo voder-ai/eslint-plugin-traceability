@@ -2,7 +2,12 @@
 status: "accepted"
 date: 2026-01-12
 decision-makers: [Development Team]
-consulted: [docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md, src/rules/valid-story-reference.ts, src/rules/valid-annotation-format.ts]
+consulted:
+  [
+    docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md,
+    src/rules/valid-story-reference.ts,
+    src/rules/valid-annotation-format.ts,
+  ]
 informed: [Plugin Users, ESLint Configuration Maintainers]
 ---
 
@@ -11,14 +16,17 @@ informed: [Plugin Users, ESLint Configuration Maintainers]
 ## Context and Problem Statement
 
 The plugin provides two rules that validate story file references:
+
 - `valid-story-reference`: Validates that `@story` annotations reference existing files
 - `valid-annotation-format`: Validates that `@story` annotation paths match expected patterns
 
 Both rules needed to understand which directories contain story files, but they configured this information differently:
+
 - `valid-story-reference` used the `storyDirectories` option to determine where story files live
 - `valid-annotation-format` used hardcoded patterns or custom `storyPathPattern` configuration
 
 This created several problems:
+
 1. **Configuration duplication**: Users had to configure directory locations twice
 2. **Inconsistency risk**: If configurations diverged, rules could reject valid story references
 3. **Maintenance burden**: Updating story directory structure required changes in multiple places
@@ -47,12 +55,14 @@ The question was: How should these rules share configuration about story directo
 Chosen option: "**Option A** - valid-annotation-format derives pattern from storyDirectories" because it establishes `storyDirectories` as the single source of truth while preserving backward compatibility and allowing explicit overrides.
 
 Implementation approach:
+
 1. `valid-annotation-format` accepts a `storyDirectories` option
 2. When `storyDirectories` is provided and no explicit pattern is configured, the rule automatically derives `storyPathPattern` and `storyPathExample` from the directories
 3. Explicit `storyPathPattern` or `story.pattern` configuration overrides the derived pattern
 4. Both rules now use the same `storyDirectories` configuration for consistent validation
 
 Pattern derivation:
+
 - Single directory: `^stories/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$`
 - Multiple directories: `^(docs/stories|custom/stories)/[0-9]+\.[0-9]+-DEV-[\w-]+\.story\.md$`
 - Example uses first directory: `docs/stories/005.0-DEV-EXAMPLE.story.md`
@@ -124,6 +134,7 @@ Pattern derivation:
 ## More Information
 
 Related files:
+
 - `src/rules/helpers/valid-annotation-options.ts`: Pattern derivation implementation
 - `tests/rules/valid-annotation-format.test.ts`: Comprehensive tests for shared configuration
 - `docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md`: Updated story documentation
