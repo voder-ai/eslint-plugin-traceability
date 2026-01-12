@@ -1,0 +1,88 @@
+
+/**
+ * Tests for shared configuration resolution (storyDirectories support).
+ * Verifies that valid-annotation-format derives storyPathPattern from
+ * storyDirectories when no explicit pattern is provided.
+ *
+ * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
+ */
+describe("Valid Annotation Format Rule - Shared Configuration (storyDirectories)", () => {
+  ruleTester.run("valid-annotation-format with storyDirectories", rule, {
+    valid: [
+      {
+        name: "accepts story path matching derived pattern from single storyDirectory",
+        code: `// @story stories/001.0-DEV-TEST.story.md`,
+        options: [{ storyDirectories: ["stories"] }],
+      },
+      {
+        name: "accepts story path matching derived pattern from multiple storyDirectories",
+        code: `// @story custom/stories/002.0-DEV-TEST.story.md`,
+        options: [{ storyDirectories: ["docs/stories", "custom/stories"] }],
+      },
+      {
+        name: "accepts story path in default directory when storyDirectories not provided",
+        code: `// @story docs/stories/003.0-DEV-TEST.story.md`,
+        options: [{}],
+      },
+      {
+        name: "explicit storyPathPattern overrides storyDirectories",
+        code: `// @story any/path/works.story.md`,
+        options: [
+          {
+            storyDirectories: ["stories"],
+            storyPathPattern: "^.*\\.story\\.md$",
+          },
+        ],
+      },
+    ],
+    invalid: [
+      {
+        name: "rejects story path not matching derived pattern from storyDirectories",
+        code: `// @story wrong/004.0-DEV-TEST.story.md`,
+        options: [{ storyDirectories: ["stories"] }],
+        errors: [
+          {
+            messageId: "invalidStoryFormat",
+            data: {
+              details:
+                'Invalid story path "wrong/004.0-DEV-TEST.story.md" for @story annotation. Expected a path like "stories/005.0-DEV-EXAMPLE.story.md".',
+            },
+          },
+        ],
+      },
+      {
+        name: "rejects story path not in any of multiple storyDirectories",
+        code: `// @story other/005.0-DEV-TEST.story.md`,
+        options: [{ storyDirectories: ["docs/stories", "custom/stories"] }],
+        errors: [
+          {
+            messageId: "invalidStoryFormat",
+            data: {
+              details:
+                'Invalid story path "other/005.0-DEV-TEST.story.md" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+            },
+          },
+        ],
+      },
+      {
+        name: "explicit storyPathPattern overrides storyDirectories for validation",
+        code: `// @story stories/006.0-DEV-TEST.story.md`,
+        options: [
+          {
+            storyDirectories: ["stories"],
+            storyPathPattern: "^docs/.*\\.story\\.md$",
+          },
+        ],
+        errors: [
+          {
+            messageId: "invalidStoryFormat",
+            data: {
+              details:
+                'Invalid story path "stories/006.0-DEV-TEST.story.md" for @story annotation. Expected a path like "docs/stories/005.0-DEV-EXAMPLE.story.md".',
+            },
+          },
+        ],
+      },
+    ],
+  });
+});
