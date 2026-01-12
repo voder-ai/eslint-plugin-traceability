@@ -376,6 +376,153 @@ Just some notes here.
       const requirements = extractRequirementsFromContent(content);
       expect(requirements).toEqual(new Set(["REQ-MULTI-001", "REQ-MULTI-002"]));
     });
+
+    /**
+     * Test checkbox format (task lists)
+     * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+     * @req REQ-DEEP-FORMAT - Support finding requirement IDs in checkbox lists
+     */
+    it("should extract requirements from checkbox format (unchecked)", () => {
+      const content = `
+## Requirements and Acceptance Criteria
+
+- **REQ-CHECKBOX-PARENT**: Parent requirement
+  - [ ] **Acceptance Criterion**: Description mentioning REQ-CHECKBOX-001
+  - [ ] **Performance**: Must meet REQ-CHECKBOX-002 standards
+`;
+      const requirements = extractRequirementsFromContent(content);
+      expect(requirements).toContain("REQ-CHECKBOX-PARENT");
+      expect(requirements).toContain("REQ-CHECKBOX-001");
+      expect(requirements).toContain("REQ-CHECKBOX-002");
+    });
+
+    /**
+     * Test checkbox format (checked boxes)
+     * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+     * @req REQ-DEEP-FORMAT - Support finding requirement IDs in checkbox lists
+     */
+    it("should extract requirements from checkbox format (checked)", () => {
+      const content = `
+## Acceptance Criteria
+
+- **REQ-DONE-001**: Completed requirement
+  - [x] **Acceptance**: REQ-DONE-001 is satisfied
+  - [x] **Testing**: REQ-DONE-002 is verified
+`;
+      const requirements = extractRequirementsFromContent(content);
+      expect(requirements).toContain("REQ-DONE-001");
+      expect(requirements).toContain("REQ-DONE-002");
+    });
+
+    /**
+     * Test numbered list format
+     * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+     * @req REQ-DEEP-FORMAT - Support finding requirement IDs in numbered lists
+     */
+    it("should extract requirements from numbered lists", () => {
+      const content = `
+## Requirements
+
+1. **REQ-NUMBERED-001**: First numbered requirement
+2. **REQ-NUMBERED-002**: Second numbered requirement
+3. **REQ-NUMBERED-003**: Third numbered requirement
+10. **REQ-NUMBERED-010**: Tenth requirement (non-sequential)
+`;
+      const requirements = extractRequirementsFromContent(content);
+      expect(requirements).toEqual(
+        new Set([
+          "REQ-NUMBERED-001",
+          "REQ-NUMBERED-002",
+          "REQ-NUMBERED-003",
+          "REQ-NUMBERED-010",
+        ]),
+      );
+    });
+
+    /**
+     * Test bulleted list with asterisk format
+     * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+     * @req REQ-DEEP-FORMAT - Support finding requirement IDs in bulleted lists
+     */
+    it("should extract requirements from bulleted lists with asterisks", () => {
+      const content = `
+## Requirements
+
+* **REQ-ASTERISK-001**: First requirement with asterisk
+* **REQ-ASTERISK-002**: Second requirement with asterisk
+* **REQ-ASTERISK-003**: Third requirement with asterisk
+`;
+      const requirements = extractRequirementsFromContent(content);
+      expect(requirements).toEqual(
+        new Set(["REQ-ASTERISK-001", "REQ-ASTERISK-002", "REQ-ASTERISK-003"]),
+      );
+    });
+
+    /**
+     * Test that only REQ- prefix is recognized (not IMPL- or other prefixes)
+     * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+     * @req REQ-DEEP-FORMAT - Parser specifically looks for REQ- prefixed identifiers
+     */
+    it("should only extract REQ- prefixed identifiers", () => {
+      const content = `
+## Requirements
+
+- **IMPL-EXISTING-CONFIG**: ESLint v9 flat configuration
+  - [x] **Existing Implementation**: Already implemented
+- **REQ-NEW-FEATURE**: New feature requirement
+- **SPEC-OTHER**: Other prefix that should not be recognized
+`;
+      const requirements = extractRequirementsFromContent(content);
+      expect(requirements).not.toContain("IMPL-EXISTING-CONFIG");
+      expect(requirements).not.toContain("SPEC-OTHER");
+      expect(requirements).toContain("REQ-NEW-FEATURE");
+      expect(requirements.size).toBe(1);
+    });
+
+    /**
+     * Test mixed list formats (comprehensive example from story template)
+     * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+     * @req REQ-DEEP-FORMAT - Support all documented requirement formats together
+     */
+    it("should extract requirements from all documented formats combined", () => {
+      const content = `
+# Story Title
+
+## Requirements and Acceptance Criteria
+
+- **REQ-PERF-LOAD**: Page loads in under 2 seconds
+  - [ ] **Load Time Validation**: Page fully loads in under 2 seconds on standard connection
+  - [ ] **Performance Monitoring**: Load time tracked and reported in monitoring
+
+- **REQ-ACCESS-WCAG**: Meets WCAG 2.1 AA accessibility standards
+  - [ ] **Accessibility Audit**: WCAG 2.1 AA compliance verified via automated tools
+  - [x] **Screen Reader Testing**: Functionality confirmed with screen readers
+
+* **REQ-MOBILE-RESPONSIVE**: Works on mobile devices 320px and up
+  * [ ] **Mobile Layout**: UI renders correctly on 320px-768px screens
+  * [ ] **Touch Interaction**: All controls accessible via touch interface
+
+1. **REQ-SETUP-ENV**: Configure development environment
+2. **REQ-SETUP-DEPS**: Install project dependencies
+
+## Implementation Notes
+
+This implements REQ-IMPL-DETAIL for the caching layer.
+See also REQ-CACHE-STRATEGY for the caching strategy.
+`;
+      const requirements = extractRequirementsFromContent(content);
+
+      // Verify all REQ- formatted requirements are recognized
+      expect(requirements).toContain("REQ-PERF-LOAD");
+      expect(requirements).toContain("REQ-ACCESS-WCAG");
+      expect(requirements).toContain("REQ-MOBILE-RESPONSIVE");
+      expect(requirements).toContain("REQ-SETUP-ENV");
+      expect(requirements).toContain("REQ-SETUP-DEPS");
+      expect(requirements).toContain("REQ-IMPL-DETAIL");
+      expect(requirements).toContain("REQ-CACHE-STRATEGY");
+
+      expect(requirements.size).toBe(7);
+    });
   });
 
   describe("extractRequirementsFromStoryFile", () => {

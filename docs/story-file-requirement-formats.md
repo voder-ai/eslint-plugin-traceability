@@ -134,17 +134,6 @@ Parser recognizes: `REQ-ACCESS-WCAG`
 
 Parser recognizes: `REQ-MOBILE-RESPONSIVE`
 
-### Implementation Reference (Existing Features)
-
-```markdown
-- **IMPL-ESLINT-CONFIG**: ESLint v9 flat configuration in eslint.config.ts
-  - [x] **Existing Implementation**: Reference to already implemented feature (no additional work needed)
-```
-
-Parser recognizes: `IMPL-ESLINT-CONFIG`
-
-Note: While the convention uses `REQ-` prefix, the parser also recognizes `IMPL-` prefixed identifiers.
-
 ## What the Parser Does NOT Require
 
 The parser is flexible and does NOT require:
@@ -160,11 +149,11 @@ The parser is flexible and does NOT require:
 The requirement parser (implemented in `src/maintenance/storyParser.ts`):
 
 1. **Reads entire story file content**
-2. **Extracts all matches** of the pattern `REQ-[A-Z0-9-]+` or `IMPL-[A-Z0-9-]+`
+2. **Extracts all matches** of the pattern `REQ-[A-Z0-9-]+`
 3. **Returns unique requirement IDs** found in the file
 4. **Caches results** with file modification timestamps for performance
 
-The parser uses a simple regex-based approach that prioritizes broad coverage over section-specific parsing.
+The parser uses a simple regex-based approach that prioritizes broad coverage over section-specific parsing. Only identifiers with the `REQ-` prefix are recognized.
 
 ## Validation Behavior
 
@@ -208,10 +197,7 @@ This implements REQ-TEST-CASE-2 for the feature.
 <!-- Valid: Numbered list -->
 1. **REQ-TEST-CASE-3**: Third requirement
 
-<!-- Valid: Different prefix -->
-- **IMPL-EXISTING-FEATURE**: Already implemented
-
-<!-- Parser finds: REQ-TEST-CASE-1, REQ-TEST-CASE-2, REQ-TEST-CASE-3, IMPL-EXISTING-FEATURE -->
+<!-- Parser finds: REQ-TEST-CASE-1, REQ-TEST-CASE-2, REQ-TEST-CASE-3 -->
 ```
 
 ## Troubleshooting
