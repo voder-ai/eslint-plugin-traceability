@@ -2,7 +2,7 @@
   "kind": "plan-next-work",
   "version": 1,
   "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
-  "generatedAt": "2026-01-12T09:07:32.787Z",
+  "generatedAt": "2026-01-12T11:25:15.389Z",
   "input": {
     "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
     "hadFoundationAssessment": true,
@@ -33,69 +33,53 @@
   "buckets": {
     "now": [
       {
-        "id": "now-1",
-        "title": "Fix arrow-function detection to exclude anonymous and include named arrows per spec",
-        "details": "Update function detection logic so anonymous arrow functions are excluded by default (including top-level callbacks) while named arrow functions are included even when nested. Specifically, adjust name extraction to inspect parent declarators and update shouldProcessNode/DEFAULT_SCOPE handling to avoid flagging anonymous arrows and to require annotations for named arrows. Add or update unit tests in tests/ to cover top-level anonymous callbacks and nested named arrows to prevent regressions.",
+        "id": "NOW-001",
+        "title": "Update spec + ADR to exclude anonymous arrow callbacks by default",
+        "details": "Update the relevant spec in `prompts/` to explicitly state that anonymous arrow callbacks are excluded from requiring annotations by default (unless they are utility/test callbacks per existing rules). Record the decision in `docs/decisions/` using MADR 4.0 to align with documentation-first requirements before implementation.",
         "attribution": "functionality",
-        "estimatedScoreImpactPct": 9,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS: Anonymous arrow function callbacks are only excluded when nested or recognized as test callbacks; top-level anonymous callbacks (e.g., array.map(() => {})) remain in scope via DEFAULT_SCOPE/shouldProcessNode despite the requirement to exclude anonymous arrow functions by default."
+        "estimatedScoreImpactPct": 0,
+        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS: Anonymous arrow functions are still required for annotations when used as non-utility callbacks because requiresOwnFunctionAnnotation returns true for anonymous arrows that are not common utilities/test callbacks, so anonymous arrow functions are not excluded by default."
       }
     ],
     "next": [
       {
-        "id": "next-1",
-        "title": "Document spec update for function detection behavior",
-        "details": "Update relevant spec(s) in prompts/ to explicitly state how anonymous arrow functions are excluded by default and how named arrow functions are detected via parent declarators, matching intended behavior and tests.",
-        "attribution": "execution",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS (REQ-FUNCTION-DETECTION#1): Anonymous arrow functions are excluded only when nested or test callbacks; top-level anonymous callbacks are still checked by shouldProcessNode."
+        "id": "NEXT-001",
+        "title": "Change function detection logic to exempt anonymous arrow callbacks",
+        "details": "Update `requiresOwnFunctionAnnotation` (and any related rule logic) so anonymous arrow functions used as non-utility callbacks are excluded from annotation requirements by default, matching the clarified spec. Ensure any exceptions remain limited to documented utility/test callback cases.",
+        "attribution": "functionality",
+        "estimatedScoreImpactPct": 91,
+        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS (REQ-FUNCTION-DETECTION#1): Anonymous arrow functions are still required for annotations when used as non-utility callbacks because requiresOwnFunctionAnnotation returns true for anonymous arrows that are not common utilities/test callbacks, so anonymous arrow functions are not excluded by default."
       },
       {
-        "id": "next-2",
-        "title": "Record decision on arrow-function naming resolution",
-        "details": "Create or update a MADR in docs/decisions/ documenting the decision to treat named arrow functions as requiring annotations even when nested and to resolve names via parent declarators; include rationale and consequences.",
-        "attribution": "execution",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS: Named arrow functions nested inside other functions can be treated as effectively anonymous because name extraction does not inspect parent declarators, so they may be excluded even though named arrow functions should require annotations."
-      },
-      {
-        "id": "next-3",
-        "title": "Expand regression tests for arrow-function scope exclusions",
-        "details": "Add targeted tests for shouldProcessNode/DEFAULT_SCOPE covering top-level anonymous callbacks (array methods), nested anonymous callbacks, and named arrows assigned to variables or properties to ensure correct inclusion/exclusion behavior.",
+        "id": "NEXT-002",
+        "title": "Add rule tests for anonymous arrow callback exclusion",
+        "details": "Add/adjust tests in `tests/` to cover anonymous arrow callbacks in non-utility contexts, asserting no annotation is required by default. Include references to the updated `prompts/` spec and ADR in test metadata/comments for traceability.",
         "attribution": "testing",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS (REQ-FUNCTION-DETECTION#1): Nested named arrow functions may be treated as effectively anonymous because name extraction ignores parent declarators, so they can be excluded from annotation requirements."
+        "estimatedScoreImpactPct": 0,
+        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS: Anonymous arrow functions are still required for annotations when used as non-utility callbacks because requiresOwnFunctionAnnotation returns true for anonymous arrows that are not common utilities/test callbacks, so anonymous arrow functions are not excluded by default."
       },
       {
-        "id": "next-4",
-        "title": "Run full lint/format/test suite after fixes",
-        "details": "Execute project scripts via package.json to validate changes (lint, format, tests) and ensure the functionality score reaches 100% and non-functional remains >= 75%.",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS: Anonymous arrow function callbacks are only excluded when nested or recognized as test callbacks; top-level anonymous callbacks (e.g., array.map(() => {})) remain in scope via DEFAULT_SCOPE/shouldProcessNode despite the requirement to exclude anonymous arrow functions by default."
+        "id": "NEXT-003",
+        "title": "Update rule documentation/examples to reflect anonymous arrow behavior",
+        "details": "Revise any user-facing rule docs (README/rule docs) to state that anonymous arrow callbacks are excluded by default and provide a short example of the expected behavior. Ensure it aligns with the new spec wording.",
+        "attribution": "functionality",
+        "estimatedScoreImpactPct": 0,
+        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS: Anonymous arrow functions are still required for annotations when used as non-utility callbacks because requiresOwnFunctionAnnotation returns true for anonymous arrows that are not common utilities/test callbacks, so anonymous arrow functions are not excluded by default."
       }
     ],
     "later": [
       {
-        "id": "later-1",
-        "title": "Broaden runtime smoke coverage for plugin usage scenarios",
-        "details": "Add runtime smoke scenarios that exercise more rule configurations and file types to improve execution breadth beyond current lightweight smoke script.",
+        "id": "LATER-001",
+        "title": "Broaden runtime smoke coverage beyond the lightweight script",
+        "details": "Extend runtime validation to exercise additional CLI/plugin scenarios or longer-running flows to reduce the remaining execution gap noted in the assessment.",
         "attribution": "execution",
         "estimatedScoreImpactPct": null,
-        "sourceItem": "Observable gap: runtime validation is limited to the lightweight smoke script; no broader runtime scenarios or long-running processes were exercised, so runtime breadth is limited."
+        "sourceItem": "Observable gap: runtime validation is limited to a lightweight smoke script; broader runtime scenarios or long-running processes were not exercised, so runtime breadth remains unproven."
       },
       {
-        "id": "later-2",
-        "title": "Review remaining functionality stories for edge-case parity",
-        "details": "Scan other function-annotation related stories for edge cases (e.g., export priority, configurable scope) to ensure coverage remains aligned after arrow-function detection changes.",
-        "attribution": "functionality",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS: Named arrow functions nested inside other functions can be treated as effectively anonymous because name extraction does not inspect parent declarators, so they may be excluded even though named arrow functions should require annotations."
-      },
-      {
-        "id": "later-3",
-        "title": "Track dependency deprecation warning remediation",
-        "details": "Evaluate semver-diff deprecation warning from npm ci and plan dependency updates if needed to keep install clean.",
+        "id": "LATER-002",
+        "title": "Investigate semver-diff deprecation warning during install",
+        "details": "Review dependency tree and update/remove the deprecated `semver-diff` usage to eliminate install-time warnings and future-proof installs.",
         "attribution": "execution",
         "estimatedScoreImpactPct": null,
         "sourceItem": "`npm ci` completed in the temporary copy and ran the `prepare` script without errors; the only notable output was a deprecation warning for `semver-diff`, which did not block installation."
@@ -104,9 +88,9 @@
   },
   "summary": {
     "nowCount": 1,
-    "nextCount": 4,
-    "laterCount": 3,
-    "human": "Prioritize fixing arrow-function detection gaps so functionality reaches 100%, then document the spec/decision and lock behavior in tests before broader follow-ups.",
-    "nowRationale": "The anonymous/named arrow-function detection gaps are the sole blocker for the failed functionality assessment; resolving them directly unlocks the target 100% functionality score and is the highest-leverage, immediately executable change compared to documentation or follow-up testing."
+    "nextCount": 3,
+    "laterCount": 2,
+    "human": "Plan focuses on fixing the single functionality gap around anonymous arrow callback handling, starting with spec/ADR updates, then code + tests, followed by runtime and dependency cleanup later.",
+    "nowRationale": "Documentation-first is required before any code change; updating the spec and ADR to explicitly exclude anonymous arrow callbacks by default unblocks the implementation and tests that will resolve the only functionality gap preventing a 100% score."
   }
 }

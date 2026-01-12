@@ -223,16 +223,18 @@ function requiresOwnFunctionAnnotation(
     return false;
   }
 
-  // Anonymous arrow functions used as common utility callbacks (map, filter, setTimeout, etc.)
-  // are excluded by default, UNLESS excludeTestCallbacks is explicitly false.
+  // Anonymous arrow functions are excluded by default when used as:
+  // - Callbacks to common utility methods (map, filter, setTimeout, Promise.then, etc.)
+  // - Callbacks to recognized test framework functions (when excludeTestCallbacks is true)
+  // Anonymous arrows passed to custom functions are checked unless nested and inheriting.
   // Named arrow functions require annotations like other function declarations.
   if (isAnonymousArrowFunction(node)) {
-    // When excludeTestCallbacks is false, check ALL functions
+    // When excludeTestCallbacks is false, check ALL functions (including anonymous arrows)
     if (options?.excludeTestCallbacks === false) {
       return true;
     }
 
-    // Special case: Vitest's bench callbacks should always be checked
+    // Special case: Vitest's bench callbacks should always be checked, even if anonymous
     if (
       node.parent?.type === "CallExpression" &&
       node.parent.callee?.type === "Identifier" &&
@@ -246,7 +248,8 @@ function requiresOwnFunctionAnnotation(
       return false; // Exclude common utility callbacks
     }
 
-    // Other anonymous arrows (like callbacks to user functions) should be checked
+    // Other anonymous arrows (like callbacks to custom functions) should be checked
+    // unless they are nested and can inherit from their parent
     return true;
   }
 
