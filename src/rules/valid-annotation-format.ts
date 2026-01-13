@@ -31,9 +31,12 @@ function handleImplementsLine(
     return pending;
   }
 
+  // Finalize any pending `@story`/`@req` annotation before processing `@supports`
+  finalizePendingAnnotation(context, comment, options, pending);
+
   const implementsValue = normalized.replace(/^@supports\b/, "").trim();
   validateImplementsAnnotation(context, comment, implementsValue, options);
-  return pending;
+  return null; // Clear pending state since `@supports` is standalone
 }
 
 function handleStoryOrReqLine(

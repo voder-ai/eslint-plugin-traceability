@@ -230,6 +230,41 @@ describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)",
  */`,
       },
       {
+        name: "[BUG-FIX] @story followed by @supports should not concatenate",
+        code: `/**
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */`,
+      },
+      {
+        name: "[BUG-FIX] @req followed by @supports should not concatenate",
+        code: `/**
+ * @req REQ-EXAMPLE-001
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FORMAT-SPECIFICATION
+ */`,
+      },
+      {
+        name: "[BUG-FIX] @story followed by @req should not concatenate",
+        code: `/**
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ * @req REQ-MIXED-SUPPORT
+ */`,
+      },
+      {
+        name: "[BUG-FIX] multiple consecutive @story annotations",
+        code: `/**
+ * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
+ * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ */`,
+      },
+      {
+        name: "[BUG-FIX] multiple consecutive @req annotations",
+        code: `/**
+ * @req REQ-FIRST
+ * @req REQ-SECOND
+ */`,
+      },
+      {
         name: "[REQ-JSDOC-TAG-COEXISTENCE] traceability before other JSDoc tags",
         code: `/**
  * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
