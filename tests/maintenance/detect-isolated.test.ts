@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Tests for: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
@@ -91,7 +90,7 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
    * [REQ-MAINT-DETECT]
    * Ensure detectStaleAnnotations performs security validation for unsafe
    * and invalid-extension story paths and does not perform filesystem checks
-   * for malicious @story paths that escape the workspace
+   * for malicious `@story` paths that escape the workspace
    * (Story 009.0-DEV-MAINTENANCE-TOOLS).
    */
   it("[REQ-MAINT-DETECT] performs security validation for unsafe and invalid-extension story paths without stat'ing outside workspace", () => {
