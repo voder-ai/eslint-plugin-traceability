@@ -1,8 +1,7 @@
-/* eslint-disable traceability/valid-annotation-format */
 /****
- * Rule to enforce @req annotation on functions
+ * Rule to enforce `@req` annotation on functions
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Require @req annotation on functions
+ * @req REQ-ANNOTATION-REQUIRED - Require `@req` annotation on functions
  * @req REQ-FUNCTION-DETECTION - Detect function declarations, function expressions, and method definitions (including TypeScript declarations)
  * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
  * @req REQ-CONFIGURABLE-SCOPE - Allow configuration of which exports are checked
@@ -37,13 +36,13 @@ function buildReqAnnotationVisitors(runCheck: (_node: any) => void) {
     /**
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-FUNCTION-DETECTION - Detect function declarations
-     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on function declarations
+     * @req REQ-ANNOTATION-REQUIRED - Enforce `@req` annotation on function declarations
      */
     FunctionDeclaration: runCheck,
     /**
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-FUNCTION-DETECTION - Detect function expressions
-     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on function expressions
+     * @req REQ-ANNOTATION-REQUIRED - Enforce `@req` annotation on function expressions
      */
     FunctionExpression(node: any) {
       if (node.parent && node.parent.type === "MethodDefinition") {
@@ -54,25 +53,25 @@ function buildReqAnnotationVisitors(runCheck: (_node: any) => void) {
     /**
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-FUNCTION-DETECTION - Detect arrow function expressions
-     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on arrow function expressions
+     * @req REQ-ANNOTATION-REQUIRED - Enforce `@req` annotation on arrow function expressions
      */
     ArrowFunctionExpression: runCheck,
     /**
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-FUNCTION-DETECTION - Detect method definitions
-     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on method definitions
+     * @req REQ-ANNOTATION-REQUIRED - Enforce `@req` annotation on method definitions
      */
     MethodDefinition: runCheck,
     /**
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript declare functions
-     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on TS declare functions
+     * @req REQ-ANNOTATION-REQUIRED - Enforce `@req` annotation on TS declare functions
      */
     TSDeclareFunction: runCheck,
     /**
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
      * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript method signatures
-     * @req REQ-ANNOTATION-REQUIRED - Enforce @req annotation on TS method signatures
+     * @req REQ-ANNOTATION-REQUIRED - Enforce `@req` annotation on TS method signatures
      */
     TSMethodSignature: runCheck,
   };
@@ -90,12 +89,12 @@ const rule: Rule.RuleModule = {
     messages: {
       /**
        * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
-       * @req REQ-ERROR-CONSISTENCY - Align missing @req function error with cross-rule conventions
+       * @req REQ-ERROR-CONSISTENCY - Align missing `@req` function error with cross-rule conventions
        * @req REQ-ERROR-SPECIFIC - Provide specific function name in error message
-       * @req REQ-ERROR-SUGGESTION - Suggest adding a @req annotation with an example identifier
-       * @req REQ-ERROR-CONTEXT - Include @req format guidance in the error text
+       * @req REQ-ERROR-SUGGESTION - Suggest adding a `@req` annotation with an example identifier
+       * @req REQ-ERROR-CONTEXT - Include `@req` format guidance in the error text
        * @req REQ-ERROR-LOCATION - Report the error at the function identifier location
-       * @req REQ-ERROR-SEVERITY - Use ESLint severity level "error" for missing @req annotations
+       * @req REQ-ERROR-SEVERITY - Use ESLint severity level "error" for missing `@req` annotations
        *
        * This rule uses ESLint's message data placeholders for the function name,
        * specifically the {{name}} placeholder populated via context.report.
