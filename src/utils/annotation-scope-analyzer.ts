@@ -38,7 +38,7 @@ export type StoryReqKey = string; // "<story>|<req>" where either side may be em
  *
  * Empty story or requirement components are normalized to the empty
  * string so that comparisons remain stable even when some annotations
- * omit one side (for example, malformed or story-less @req lines).
+ * omit one side (for example, malformed or story-less `@req` lines).
  *
  * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-DUPLICATION-DETECTION REQ-DIFFERENT-REQUIREMENTS
  */
