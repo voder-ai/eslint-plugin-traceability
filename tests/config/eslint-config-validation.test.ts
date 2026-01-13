@@ -1,11 +1,8 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Tests for ESLint config rule schemas.
  *
- * @supports docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
- * @req REQ-RULE-OPTIONS
- * @req REQ-CONFIG-VALIDATION
  * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
+ * @supports docs/stories/002.0-DEV-ESLINT-CONFIG.story.md REQ-RULE-OPTIONS REQ-CONFIG-VALIDATION
  */
 
 import validStoryReference from "../../src/rules/valid-story-reference";

@@ -1,6 +1,5 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
- * Tests for advanced @req detection heuristics
+ * Tests for advanced `@req` detection heuristics
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
  */
 import type { TSESTree } from "@typescript-eslint/utils";
@@ -232,7 +231,7 @@ describe("reqAnnotationDetection advanced heuristics (Story 003.0-DEV-FUNCTION-A
       },
     } as any;
 
-    // Choose a range that starts after the @req comment so the "text before"
+    // Choose a range that starts after the `@req` comment so the "text before"
     // window that the helper inspects includes the annotation.
     const startIndex = fullText.indexOf("function foo");
     const node = {

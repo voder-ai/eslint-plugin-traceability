@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Tests for:
  * - docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
@@ -19,7 +18,7 @@ describe("require-test-traceability rule (Stories 020.0 and 021.0)", () => {
   ruleTester.run("require-test-traceability", rule, {
     valid: [
       {
-        // [REQ-TEST-FILE-SUPPORTS] file-level @supports present and describe/test satisfied
+        // [REQ-TEST-FILE-SUPPORTS] file-level `@supports` present and describe/test satisfied
         code: `/**\n * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FILE-SUPPORTS\n */\ndescribe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', () => { it('[REQ-EXAMPLE] does something', () => {}); });`,
         filename: "tests/rules/require-test-traceability.test.ts",
       },
@@ -41,7 +40,7 @@ describe("require-test-traceability rule (Stories 020.0 and 021.0)", () => {
     ],
     invalid: [
       {
-        // [REQ-TEST-FIX-TEMPLATE] missing @supports in test file -> insert default placeholder template
+        // [REQ-TEST-FIX-TEMPLATE] missing `@supports` in test file -> insert default placeholder template
         code: `describe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', () => { it('[REQ-ONE] works', () => {}); });`,
         output: `/**\n * @supports docs/stories/XXX.X-STORY-NAME.story.md REQ-XXX-YYY REQ-XXX-ZZZ\n * TODO: Replace the placeholder story path and REQ-IDs with real values for this test file.\n */\ndescribe('Story 020.0-DEV-TEST-ANNOTATION-VALIDATION', () => { it('[REQ-ONE] works', () => {}); });`,
         filename: "tests/rules/missing-supports.test.ts",

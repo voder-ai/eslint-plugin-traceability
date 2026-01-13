@@ -4,7 +4,6 @@
  * @req REQ-MAINT-UPDATE - Update annotation references
  * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
  */
-/* eslint-disable traceability/valid-annotation-format */
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
@@ -57,7 +56,7 @@ function foo() {}
         "old.path.md",
         "new.path.md",
       );
-      expect(result.count).toBe(2); // Both @story and @supports updated
+      expect(result.count).toBe(2); // Both `@story` and `@supports` updated
       expect(result.warnings).toEqual([]);
 
       const updatedContent = fs.readFileSync(filePath, "utf8");
