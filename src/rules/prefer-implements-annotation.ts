@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format -- References prompts/ design docs and has prose parsed as annotations; needs comprehensive review */
 /**
  * ESLint rule implementation for preferring the consolidated `@supports`
  * annotation over legacy combinations of `@story` and `@req` within JSDoc
@@ -34,7 +33,7 @@ import {
 
 // Module-level cache for story file requirement IDs
 // Cleared between ESLint runs, reused within a single lint execution
-// @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
+// @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MISMATCH-DETECTION
 const storyFileCache = new Map<string, Set<string> | null>();
 
 // Maximum number of distinct `@story` paths allowed before treating as "multi-story".
@@ -46,7 +45,7 @@ const MULTI_STORY_THRESHOLD = 1;
 // @req REQ-MULTI-STORY-DETECT
 const MIN_STORY_TOKENS = 2;
 
-// Minimum number of tokens required for a valid @req annotation line, aligned with story tokens.
+// Minimum number of tokens required for a valid `@req` annotation line, aligned with story tokens.
 const MIN_REQ_TOKENS = MIN_STORY_TOKENS;
 
 // Length of the opening "/*" portion of a block comment prefix.
@@ -64,8 +63,7 @@ const COMMENT_PREFIX_LENGTH = 2;
  *
  * Results are cached for the duration of the ESLint run to avoid repeated file I/O.
  *
- * @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
- * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MISMATCH-DETECTION REQ-MULTI-STORY-DETECT
  */
 function extractRequirementsFromStory(
   storyPath: string,
@@ -160,7 +158,7 @@ function collectStoryAndReqMetadata(comment: any): {
     if (!normalized) return;
 
     if (/^@supports\b/.test(normalized)) {
-      // Mixed @supports usage should have been filtered out earlier
+      // Mixed `@supports` usage should have been filtered out earlier
       return;
     }
 
@@ -181,7 +179,7 @@ function collectStoryAndReqMetadata(comment: any): {
         reqLineIndices.push(index);
         reqIds.push(parts[1]);
       } else {
-        // Complex @req form; bail out entirely.
+        // Complex `@req` form; bail out entirely.
         storyPath = null;
       }
     }
@@ -257,7 +255,7 @@ function applyImplementsReplacement(
  * This rule requires that there is exactly one distinct `@story` path.
  * It also requires that exactly one `@story` line is present.
  * It requires that at least one `@req` line is present.
- * It also requires that each `@req` line has the simple form `@req <REQ-ID>` (no extra tokens).
+ * It also requires that each `@req` line has the simple form (no extra tokens).
  *
  * When applicable, the fix:
  * It removes the original `@story` and `@req` lines.
@@ -267,11 +265,7 @@ function applyImplementsReplacement(
  * More complex patterns remain diagnostics-only with no fix to avoid
  * producing invalid or ambiguous output.
  *
- * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-AUTO-FIX - Provide safe, opt-in auto-fix for simple legacy patterns
- * @req REQ-SINGLE-STORY-FIX - Restrict auto-fix to single-story, single-path cases
- * @req REQ-PRESERVE-FORMAT - Preserve original JSDoc indentation and prefix formatting
- * @req REQ-VALID-OUTPUT - Avoid emitting auto-fixes for complex or ambiguous patterns
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-PRESERVE-FORMAT REQ-VALID-OUTPUT
  */
 function buildImplementsAutoFix(
   context: Rule.RuleContext,
@@ -295,8 +289,7 @@ function buildImplementsAutoFix(
   // NEW: Validate `@req` IDs against story file content
   // This implements REQ-MULTI-STORY-DETECT requirement to detect when
   // `@req` IDs don't match the referenced `@story`
-  // @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
-  // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
+  // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MISMATCH-DETECTION REQ-MULTI-STORY-DETECT
   const storyReqs = extractRequirementsFromStory(storyPath, context);
 
   // If story file not found or unreadable, cannot safely auto-fix
@@ -380,11 +373,10 @@ function hasMultipleStories(storyPaths: Set<string>): boolean {
 }
 
 /**
- * Check for and report @req ID mismatches when auto-fix is not available.
- * Provides detailed error messages when @req IDs don't match the story file content.
+ * Check for and report requirement identifier mismatches when auto-fix is not available.
+ * Provides detailed error messages when requirement identifiers don't match the story file content.
  *
- * @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
- * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MISMATCH-DETECTION REQ-MULTI-STORY-DETECT
  */
 function reportMismatchIfNeeded(
   comment: any,
@@ -419,7 +411,7 @@ function reportMismatchIfNeeded(
   const mismatchedReqs = reqIds.filter((reqId) => !storyReqs.has(reqId));
 
   if (mismatchedReqs.length > 0) {
-    // Found mismatched @req IDs
+    // Found mismatched requirement identifiers
     context.report({
       node: comment as any,
       messageId: "cannotAutoFix",
@@ -468,7 +460,7 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
   }
 
   // Attempt to build auto-fix
-  // Will return null if story file not found or @req IDs don't match story
+  // Will return null if story file not found or requirement identifiers don't match story
   const fix = buildImplementsAutoFix(context, comment, storyPaths);
 
   // If no fix available, check if it's due to mismatch and provide helpful message
