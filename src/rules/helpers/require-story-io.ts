@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * IO helpers for require-story detection moved to reduce helper module size
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -6,7 +5,7 @@
  */
 
 /**
- * Number of source lines to inspect before a node when searching for @story markers.
+ * Number of source lines to inspect before a node when searching for `@story` markers.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Expose lookback size as constant for reuse
  */
@@ -20,12 +19,12 @@ export const LOOKBACK_LINES = 4;
 export const FALLBACK_WINDOW = 800;
 
 /**
- * Shared predicate to determine if a given comment node contains an @story marker.
- * Also treats @supports annotations as satisfying story presence checks.
+ * Shared predicate to determine if a given comment node contains an `@story` marker.
+ * Also treats `@supports` annotations as satisfying story presence checks.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQUIRED - Centralize @story detection logic for comment value inspection
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Treat @supports annotations as satisfying story presence checks
+ * @req REQ-ANNOTATION-REQUIRED - Centralize `@story` detection logic for comment value inspection
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Treat `@supports` annotations as satisfying story presence checks
  */
 function commentContainsStory(comment: any): boolean {
   if (typeof comment?.value !== "string") {
@@ -61,25 +60,25 @@ function getNodeStartLine(node: any): number | null {
 }
 
 /**
- * Generic helper to scan a range of physical source lines for the presence of an @story marker.
+ * Generic helper to scan a range of physical source lines for the presence of an `@story` marker.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Reuse line scanning logic for story annotations across helpers
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept @supports annotations as valid markers during line scanning
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept `@supports` annotations as valid markers during line scanning
  */
 function scanLinesForMarker(
   lines: string[],
   from: number,
   to: number,
 ): boolean {
-  // Walk each physical line in the configured lookback window to search for an inline @story or @supports marker.
+  // Walk each physical line in the configured lookback window to search for an inline `@story` or `@supports` marker.
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQUIRED - Scan preceding lines for existing story annotations
   for (let i = from; i < to; i++) {
     const text = lines[i];
-    // Treat any line containing "@story" or "@supports" as evidence that the function is already annotated.
+    // Treat any line containing `@story` or `@supports` as evidence that the function is already annotated.
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQUIRED - Detect explicit @story markers in raw source text
-    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect explicit @supports markers in raw source text
+    // @req REQ-ANNOTATION-REQUIRED - Detect explicit `@story` markers in raw source text
+    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect explicit `@supports` markers in raw source text
     if (
       typeof text === "string" &&
       (text.includes("@story") || text.includes("@supports"))
@@ -91,7 +90,7 @@ function scanLinesForMarker(
 }
 
 /**
- * Inspect a fixed number of physical source lines before the node for @story text
+ * Inspect a fixed number of physical source lines before the node for `@story` text
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-ANNOTATION-REQUIRED - Extract line-based detection into helper
  */
@@ -130,7 +129,7 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
       pComments.some(
         /**
          * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-         * @req REQ-ANNOTATION-REQUIRED - Detect @story in parent comments via value inspection
+         * @req REQ-ANNOTATION-REQUIRED - Detect `@story` in parent comments via value inspection
          */
         (c: any) => commentContainsStory(c),
       )
@@ -143,7 +142,7 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
       pLeading.some(
         /**
          * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-         * @req REQ-ANNOTATION-REQUIRED - Detect @story in parent leadingComments via value inspection
+         * @req REQ-ANNOTATION-REQUIRED - Detect `@story` in parent leadingComments via value inspection
          */
         (c: any) => commentContainsStory(c),
       )
@@ -198,11 +197,11 @@ function getFallbackTextWindow(
 
 /**
  * Detect whether the provided fallback text window contains a story marker.
- * Recognizes both @story and @supports annotations in the inspected text.
+ * Recognizes both `@story` and `@supports` annotations in the inspected text.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @req REQ-ANNOTATION-REQUIRED - Recognize story annotations discovered via fallback text scanning
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Recognize @supports annotations discovered via fallback text scanning
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Recognize `@supports` annotations discovered via fallback text scanning
  */
 function fallbackTextHasMarker(textBefore: string | null): boolean {
   if (typeof textBefore !== "string") {
@@ -212,12 +211,12 @@ function fallbackTextHasMarker(textBefore: string | null): boolean {
 }
 
 /**
- * Fallback: inspect text immediately preceding the node in sourceCode.getText to find @story
- * Also accepts @supports annotations as satisfying story presence for this rule.
+ * Fallback: inspect text immediately preceding the node in sourceCode.getText to find `@story`
+ * Also accepts `@supports` annotations as satisfying story presence for this rule.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
  * @req REQ-ANNOTATION-REQUIRED - Provide fallback textual inspection when other heuristics fail
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Treat @supports annotations as satisfying story presence in fallback checks
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Treat `@supports` annotations as satisfying story presence in fallback checks
  */
 export function fallbackTextBeforeHasStory(
   sourceCode: any,
