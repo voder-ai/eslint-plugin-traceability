@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import type { Rule } from "eslint";
 import type { AnnotationPlacement } from "./branch-annotation-helpers";
 
@@ -55,7 +54,7 @@ function buildInsidePlacementStoryFixes(
 }
 
 /**
- * Create a fixer function that inserts or migrates a @story comment for a
+ * Create a fixer function that inserts or migrates a `@story` comment for a
  * missing branch annotation, honoring the configured placement mode.
  * When annotationPlacement is "inside", this helper uses
  * buildInsidePlacementStoryFixes to migrate existing before-branch
