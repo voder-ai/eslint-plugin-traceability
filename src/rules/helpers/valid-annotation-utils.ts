@@ -43,7 +43,7 @@ export function collapseAnnotationValue(value: string): string {
 }
 
 /**
- * Attempt a minimal, safe auto-fix for common @story path suffix issues.
+ * Attempt a minimal, safe auto-fix for common `@story` path suffix issues.
  *
  * Only handles:
  *   - missing ".md"
@@ -106,7 +106,7 @@ export function getFixedStoryPath(original: string): string | null {
 }
 
 /**
- * Build a detailed error message for invalid @story annotations.
+ * Build a detailed error message for invalid `@story` annotations.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -121,8 +121,8 @@ export function buildStoryErrorMessage(
 ): string {
   const example = options.storyExample || STORY_EXAMPLE_PATH;
 
-  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md | REQ-ERROR-SPECIFICITY - Use a dedicated message variant when the @story value is completely missing.
-  // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY - Enforces presence of the story identifier by emitting a targeted message when the @story value is absent.
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md | REQ-ERROR-SPECIFICITY - Use a dedicated message variant when the `@story` value is completely missing.
+  // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY - Enforces presence of the story identifier by emitting a targeted message when the `@story` value is absent.
   if (kind === "missing") {
     // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-ERROR-SPECIFICITY
     // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-ERROR-SPECIFICITY
@@ -135,7 +135,7 @@ export function buildStoryErrorMessage(
 }
 
 /**
- * Build a detailed error message for invalid @req annotations.
+ * Build a detailed error message for invalid `@req` annotations.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
@@ -150,8 +150,8 @@ export function buildReqErrorMessage(
 ): string {
   const example = options.reqExample || getDefaultReqExample();
 
-  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md | REQ-ERROR-SPECIFICITY - Distinguish a completely missing @req from one that is present but malformed.
-  // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY - Enforces presence of the requirement identifier by emitting a specific message when the @req value is missing.
+  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md | REQ-ERROR-SPECIFICITY - Distinguish a completely missing `@req` from one that is present but malformed.
+  // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY - Enforces presence of the requirement identifier by emitting a specific message when the `@req` value is missing.
   if (kind === "missing") {
     // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-ERROR-SPECIFICITY
     // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-ERROR-SPECIFICITY

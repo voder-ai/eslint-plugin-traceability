@@ -5,12 +5,19 @@
 - [x] Run linter to identify all files with format violations
 - [x] Add `/* eslint-disable traceability/valid-annotation-format */` to top of each violating file (baseline)
 - [x] Commit and push baseline + plugin fixes (completed in `fix(rules): harden valid-annotation-format parsing`)
-- [ ] For each suppressed file (one at a time, one commit per file):
+- [x] Fix annotation concatenation bug (discovered during dogfooding)
+- [x] Remove 14 unused suppressions after bug fix
+- [ ] For each remaining suppressed file (one at a time, one commit per file):
   - [ ] Remove the `/* eslint-disable traceability/valid-annotation-format */` comment from the file
-  - [ ] Fix all `traceability/valid-annotation-format` violations in that file
+  - [ ] Fix all `traceability/valid-annotation-format` violations by:
+    - Adding story paths to malformed `@supports` annotations (e.g., `@supports REQ-XXX` → `@supports docs/stories/X.story.md REQ-XXX`)
+    - Wrapping `@story`/`@req`/`@supports` keywords in prose with backticks
+    - Fixing or removing incorrectly parsed annotations
   - [ ] Run `npm run lint` (and optionally `npm test` if the file is non-trivial)
   - [ ] Commit: "chore(lint): remove valid-annotation-format suppression in [filename]"
 - [ ] Verify no files remain with suppressions for this rule
+
+**Note**: Files with broken story references (non-existent files) will be addressed in Rule 2 (valid-story-reference), as valid-annotation-format only checks format/syntax, not file existence.
 
 ### Rule 2: valid-story-reference (Story File Validation)
 - [ ] Enable `traceability/valid-story-reference` at `error` for `src/**` and `tests/**`

@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Performance and stress tests for maintenance tools on large workspaces.
  * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-VERIFY REQ-MAINT-REPORT REQ-MAINT-UPDATE REQ-MAINT-BATCH
@@ -22,7 +21,7 @@ const LARGE_WORKSPACE_PERF_BUDGET_MS = 5000;
  * Shape of the synthetic large workspace:
  * - 10 modules (module-000 .. module-009)
  * - 50 files per module (file-000.ts .. file-049.ts)
- * - Each file includes a mix of valid and stale @story references.
+ * - Each file includes a mix of valid and stale `@story` references.
  */
 function createLargeWorkspace(): { root: string; cleanup: () => void } {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "traceability-large-"));
