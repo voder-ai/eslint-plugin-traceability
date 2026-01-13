@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import type { Rule } from "eslint";
 
 /**
@@ -84,13 +83,13 @@ export function extractStoryReqPairsFromText(text: string): Set<StoryReqKey> {
       currentStory = storyMatch[1];
     }
 
-    // Handle explicit @req lines that follow the most recent @story.
+    // Handle explicit `@req` lines that follow the most recent `@story`.
     const reqMatch = line.match(/@req\s+(\S+)/);
     if (reqMatch && currentStory) {
       pairs.add(toStoryReqKey(currentStory, reqMatch[1]));
     }
 
-    // Handle consolidated @supports lines that encode both story and
+    // Handle consolidated `@supports` lines that encode both story and
     // requirement identifiers on a single line.
     const supportsMatch = line.match(/@supports\s+(\S+)\s+(.+)/);
     if (supportsMatch) {
