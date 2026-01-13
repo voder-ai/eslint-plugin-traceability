@@ -1,4 +1,4 @@
-/* eslint-disable traceability/valid-annotation-format */
+/* eslint-disable traceability/valid-annotation-format -- Uses experimental inline branch annotation format (// @story path | REQ-ID - prose); 131 errors need systematic review */
 import { getDefaultReqExample } from "./valid-annotation-options";
 import type { ResolvedAnnotationOptions } from "./valid-annotation-options";
 

@@ -1,4 +1,4 @@
-/* eslint-disable traceability/valid-annotation-format */
+/* eslint-disable traceability/valid-annotation-format -- References prompts/ design docs and has prose parsed as annotations; needs comprehensive review */
 /**
  * ESLint rule implementation for preferring the consolidated `@supports`
  * annotation over legacy combinations of `@story` and `@req` within JSDoc
