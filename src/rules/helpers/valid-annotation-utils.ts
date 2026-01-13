@@ -13,7 +13,7 @@ import type { ResolvedAnnotationOptions } from "./valid-annotation-options";
 
 /**
  * Constant to represent the "tag not found" index when searching
- * for @story or @req within a comment.
+ * for `@story` or `@req` within a comment.
  *
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/008.0-DEV-AUTO-FIX.story.md

@@ -2,7 +2,7 @@
   "kind": "plan-next-work",
   "version": 1,
   "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
-  "generatedAt": "2026-01-12T18:31:41.932Z",
+  "generatedAt": "2026-01-12T22:56:06.643Z",
   "input": {
     "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
     "hadFoundationAssessment": true,
@@ -17,9 +17,7 @@
   },
   "readiness": {
     "hadAllAssessments": true,
-    "failedAssessments": [
-      "functionality"
-    ]
+    "failedAssessments": []
   },
   "generator": {
     "kind": "codex",
@@ -33,72 +31,40 @@
   "buckets": {
     "now": [
       {
-        "id": "now-001",
-        "title": "Exclude anonymous arrow callbacks from default annotation requirement",
-        "details": "Update function detection logic so anonymous arrow functions passed to non-utility/custom callbacks are excluded by default from requiresOwnFunctionAnnotation; align implementation with REQ-FUNCTION-DETECTION#1 and adjust related rule behavior to stop enforcing annotations on these anonymous arrows.",
-        "attribution": "functionality",
-        "estimatedScoreImpactPct": 91,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS: Anonymous arrow functions passed to non-utility/custom callbacks are still required to have annotations (requiresOwnFunctionAnnotation returns true), so anonymous arrows are not excluded by default as required."
+        "id": "now-dep-warning-cleanup",
+        "title": "Eliminate install-time semver-diff deprecation warning",
+        "details": "Audit dependency tree to locate the semver-diff deprecation source, update or replace the dependency in package.json/lockfile, and confirm npm ci no longer emits the warning. Include any necessary docs updates about dependency changes and add/adjust tests only if behavior changes.",
+        "attribution": "execution",
+        "estimatedScoreImpactPct": 2,
+        "sourceItem": "Execution assessment reasoning: \"npm ci completed successfully... only notable output was a deprecation warning for semver-diff\""
       }
     ],
     "next": [
       {
-        "id": "next-001",
-        "title": "Update specification to reflect corrected function detection behavior",
-        "details": "Revise relevant prompt spec in `prompts/` to explicitly state anonymous arrow callbacks are excluded by default from annotation requirements for non-utility/custom call sites, matching REQ-FUNCTION-DETECTION#1.",
-        "attribution": "functionality",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS (REQ-FUNCTION-DETECTION#1): Anonymous arrow functions passed to non-utility/custom callbacks are still required to have annotations, so anonymous arrows are not excluded by default."
-      },
-      {
-        "id": "next-002",
-        "title": "Document decision in MADR for function detection rule change",
-        "details": "Add/update decision record in `docs/decisions/` (MADR 4.0) describing the rationale and scope for excluding anonymous arrow callbacks by default.",
-        "attribution": "functionality",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS (REQ-FUNCTION-DETECTION#1): Anonymous arrow functions passed to non-utility/custom callbacks are still required to have annotations, so anonymous arrows are not excluded by default."
-      },
-      {
-        "id": "next-003",
-        "title": "Add/adjust tests for anonymous arrow callback exclusions",
-        "details": "Update/add tests in `tests/` to assert anonymous arrow callbacks passed to non-utility/custom call sites do not require annotations by default; include references to the relevant prompt/decision for traceability.",
-        "attribution": "testing",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS (REQ-FUNCTION-DETECTION#1): Anonymous arrow functions passed to non-utility/custom callbacks are still required to have annotations, so anonymous arrows are not excluded by default."
-      },
-      {
-        "id": "next-004",
-        "title": "Verify build and runtime smoke after change",
-        "details": "Run `npm run build` and `npm run smoke:runtime` to confirm no regressions after the function detection update.",
+        "id": "next-runtime-breadth",
+        "title": "Broaden runtime validation beyond smoke script",
+        "details": "Extend or add runtime tests/scripts to cover additional real-world CLI/plugin scenarios (e.g., multiple rules, config variants, error paths) and document what is covered. Keep it lightweight but representative to reduce unproven runtime breadth.",
         "attribution": "execution",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[execution] Observable gap: runtime validation is limited to the smoke script; broader runtime scenarios or long-running behaviors were not exercised, so runtime breadth remains unproven."
+        "estimatedScoreImpactPct": 4,
+        "sourceItem": "Execution assessment reasoning: \"runtime validation is limited to the lightweight smoke script; broader runtime scenarios or long-running behaviors were not exercised\""
       }
     ],
     "later": [
       {
-        "id": "later-001",
-        "title": "Expand runtime coverage beyond smoke path",
-        "details": "Add or document additional runtime scenarios (e.g., more rule invocation paths or CLI flows) to broaden runtime validation beyond the current smoke script.",
+        "id": "later-long-running-runtime",
+        "title": "Add long-running or stress runtime checks",
+        "details": "Design a periodic or optional runtime check for extended lint runs or larger fixtures to surface long-running behavior risks; document scope and opt-in usage.",
         "attribution": "execution",
         "estimatedScoreImpactPct": null,
-        "sourceItem": "[execution] Observable gap: runtime validation is limited to the smoke script; broader runtime scenarios or long-running behaviors were not exercised, so runtime breadth remains unproven."
-      },
-      {
-        "id": "later-002",
-        "title": "Reassess functionality story map after fix",
-        "details": "Re-run functionality assessment and review story map status for 003.0-DEV-FUNCTION-ANNOTATIONS to confirm full completion and identify any follow-on gaps.",
-        "attribution": "functionality",
-        "estimatedScoreImpactPct": null,
-        "sourceItem": "[functionality] Story 003.0-DEV-FUNCTION-ANNOTATIONS: Anonymous arrow functions passed to non-utility/custom callbacks are still required to have annotations (requiresOwnFunctionAnnotation returns true), so anonymous arrows are not excluded by default as required."
+        "sourceItem": "Execution assessment reasoning: \"broader runtime scenarios or long-running behaviors were not exercised\""
       }
     ]
   },
   "summary": {
     "nowCount": 1,
-    "nextCount": 4,
-    "laterCount": 2,
-    "human": "Address the single functionality gap around anonymous arrow callback exclusions, then update specs/decisions/tests and verify the build/runtime.",
-    "nowRationale": "Functionality is the only failed assessment and blocks the target state; fixing the anonymous arrow callback exclusion is the highest-leverage, narrowly scoped change that directly resolves the incomplete story and should bring functionality to 100% before layering documentation, tests, and verification."
+    "nextCount": 1,
+    "laterCount": 1,
+    "human": "Plan focuses on removing the only install-time warning, then expanding runtime coverage beyond the current smoke check.",
+    "nowRationale": "Clearing the semver-diff deprecation warning is the smallest, highest-leverage action that removes the only concrete execution gap observed and can be completed immediately without additional discovery, while broader runtime expansion requires more design choices."
   }
 }

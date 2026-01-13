@@ -9,7 +9,7 @@
   - [ ] Remove the `/* eslint-disable traceability/valid-annotation-format */` comment from the file
   - [ ] Fix all `traceability/valid-annotation-format` violations in that file
   - [ ] Run `npm run lint` (and optionally `npm test` if the file is non-trivial)
-  - [ ] Commit: "fix(traceability): remove valid-annotation-format suppression in [filename]"
+  - [ ] Commit: "chore(lint): remove valid-annotation-format suppression in [filename]"
 - [ ] Verify no files remain with suppressions for this rule
 
 ### Rule 2: valid-story-reference (Story File Validation)
@@ -22,7 +22,7 @@
   - [ ] Fix broken story references (update paths, restore missing files, or fix plugin bugs)
   - [ ] Run linter to verify file now passes
   - [ ] Run all tests to ensure no breakage
-  - [ ] Commit: "fix(traceability): correct story references in [filename]"
+  - [ ] Commit: "chore(lint): correct story references in [filename]"
 - [ ] Verify no files remain with suppressions for this rule
 
 ### Rule 3: valid-req-reference (Requirement ID Validation)
@@ -35,7 +35,7 @@
   - [ ] Fix malformed requirement IDs (correct format/typos, or fix plugin bugs)
   - [ ] Run linter to verify file now passes
   - [ ] Run all tests to ensure no breakage
-  - [ ] Commit: "fix(traceability): correct requirement IDs in [filename]"
+  - [ ] Commit: "chore(lint): correct requirement IDs in [filename]"
 - [ ] Verify no files remain with suppressions for this rule
 
 ## NEXT

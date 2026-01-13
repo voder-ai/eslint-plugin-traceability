@@ -1,13 +1,13 @@
 {
   "status": "healthy",
-  "summary": "Build and runtime smoke commands completed successfully in a temporary copy, with only a deprecation warning during install.",
+  "summary": "Build and runtime smoke checks succeeded in a temporary copy; only a deprecation warning appeared during install.",
   "score": 90,
   "reasoning": [
-    "`npm ci` completed in the temporary copy and ran the `prepare` script without errors; the only notable output was a deprecation warning for `semver-diff`, which did not block installation.",
-    "`npm run build` (`tsc -p tsconfig.build.json`) succeeded, indicating the TypeScript build pipeline is functional in this environment.",
-    "`npm run smoke:runtime` succeeded, showing the plugin loads and the maintenance CLI executes in the lightweight runtime smoke path without critical errors.",
-    "Build and runtime entry points appropriate for an ESLint plugin/CLI were exercised with no observed crashes or failures.",
-    "Observable gap: runtime validation is limited to the smoke script; broader runtime scenarios or long-running behaviors were not exercised, so runtime breadth remains unproven.",
-    "Score reflects strong build/run health with a minor install-time warning and limited runtime breadth, but no observed failures."
+    "`npm ci` completed successfully in the temporary copy and ran the `prepare` script; the only notable output was a deprecation warning for `semver-diff`, which did not block installation.",
+    "`npm run build` (`tsc -p tsconfig.build.json`) completed without errors, showing the TypeScript build pipeline is functional.",
+    "`npm run smoke:runtime` completed and reported successful plugin loading and CLI availability, indicating the runtime entry points exercised by the smoke script work in this environment.",
+    "No build or runtime command failures were observed, so baseline build/run health is strong for typical development needs.",
+    "Observable gap: runtime validation is limited to the lightweight smoke script; broader runtime scenarios or long-running behaviors were not exercised, leaving some runtime breadth unproven.",
+    "Score reflects successful install/build/runtime smoke with a minor install-time deprecation warning and limited runtime breadth, but no observed failures."
   ]
 }

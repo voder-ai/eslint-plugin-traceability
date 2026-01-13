@@ -16,20 +16,19 @@ function detectMalformedAnnotations(
   lines.forEach((line, idx) => {
     const lineNum = idx + 1;
 
-    /* eslint-disable traceability/valid-annotation-format */
-    // Detect @story without a path
+    // Detect `@story` without a path
     if (/@story\s*$/.test(line.trim()) || /@story\s*\*\//.test(line)) {
       warnings.push(`${filePath}:${lineNum}: @story annotation without path`);
     }
 
-    // Detect @supports without a path or requirements
+    // Detect `@supports` without a path or requirements
     if (/@supports\s*$/.test(line.trim()) || /@supports\s*\*\//.test(line)) {
       warnings.push(
         `${filePath}:${lineNum}: @supports annotation without path/requirements`,
       );
     }
 
-    // Detect @req without a requirement ID
+    // Detect `@req` without a requirement ID
     if (
       /@req\s*$/.test(line.trim()) ||
       /@req\s*\*\//.test(line) ||
@@ -39,7 +38,6 @@ function detectMalformedAnnotations(
         `${filePath}:${lineNum}: @req annotation without requirement ID`,
       );
     }
-    /* eslint-enable traceability/valid-annotation-format */
   });
 
   return warnings;
@@ -65,19 +63,17 @@ function processFileForAnnotationUpdates(
 
   let newContent = content;
 
-  /* eslint-disable traceability/valid-annotation-format */
-  // Update @story references
+  // Update `@story` references
   newContent = newContent.replace(regexes.story, (match, p1) => {
     refs.count++;
     return `${p1}${newPath}`;
   });
 
-  // Update @supports references
+  // Update `@supports` references
   newContent = newContent.replace(regexes.supports, (match, prefix, suffix) => {
     refs.count++;
     return `${prefix}${newPath}${suffix}`;
   });
-  /* eslint-enable traceability/valid-annotation-format */
 
   // Write file only if content changed
   if (newContent !== content) {
