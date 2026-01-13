@@ -1,6 +1,5 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
- * This rule validates that @story annotation references refer to existing story files.
+ * This rule validates that `@story` annotation references refer to existing story files.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-FILE-EXISTENCE - Validate that story file paths reference existing files
  * @req REQ-PATH-RESOLUTION - Resolve relative paths correctly and enforce configuration
@@ -244,7 +243,7 @@ function processStoryPath(opts: {
 
 /**
  * Handles a single comment node by processing its lines and looking for
- * @story annotations that should be validated.
+ * `@story` annotations that should be validated.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @req REQ-ANNOTATION-VALIDATION - Ensure each annotation line is parsed
  */
@@ -261,7 +260,7 @@ function handleComment(opts: {
   const lines = commentNode.value
     .split(/\r?\n/)
     /**
-     * Processes each line of the comment to extract and normalize @story annotations.
+     * Processes each line of the comment to extract and normalize `@story` annotations.
      * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
      * @req REQ-ANNOTATION-VALIDATION - Ensure each annotation line is parsed
      */
@@ -283,11 +282,11 @@ function handleComment(opts: {
 
 /**
  * ESLint rule factory: configures and returns visitors that validate story
- * references in @story and @supports annotations across all comments.
+ * references in `@story` and `@supports` annotations across all comments.
  *
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-STORY-FILE-EXISTS - Ensure each referenced story in @story/@supports annotations points to an existing file
+ * @req REQ-STORY-FILE-EXISTS - Ensure each referenced story in `@story`/`@supports` annotations points to an existing file
  * @req REQ-STORY-CONTENT - Provide a foundation for deeper story content validation by guaranteeing valid references
  */
 export default {
@@ -295,7 +294,7 @@ export default {
     type: "problem",
     docs: {
       description:
-        "Validate that @story annotations reference existing .story.md files",
+        "Validate that `@story` annotations reference existing .story.md files",
       recommended: "error",
     },
     messages: {
@@ -362,12 +361,12 @@ export default {
     const requireExt = opts?.requireStoryExtension !== false;
     return {
       /**
-       * Program-level handler: iterates comments and validates @story annotations.
+       * Program-level handler: iterates comments and validates `@story` annotations.
        * Filesystem and I/O errors are handled by underlying utilities and
        * surfaced as missing-file or filesystem-error diagnostics where appropriate.
        *
        * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
-       * @req REQ-ANNOTATION-VALIDATION - Discover and dispatch @story annotations for validation
+       * @req REQ-ANNOTATION-VALIDATION - Discover and dispatch `@story` annotations for validation
        * @req REQ-FILE-EXISTENCE - Ensure referenced files exist
        * @req REQ-PATH-RESOLUTION - Resolve using cwd and configured story directories
        * @req REQ-ERROR-HANDLING - Delegate filesystem and I/O error handling to utilities
