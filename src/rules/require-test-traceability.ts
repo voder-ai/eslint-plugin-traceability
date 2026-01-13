@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import type { Rule } from "eslint";
 import {
   determineIsTestFile,
@@ -31,11 +30,11 @@ type TestTraceabilityOptions = {
  * Enforce traceability conventions in test files.
  *
  * This rule validates that:
- * - Test files have a file-level @supports annotation listing tested requirements.
+ * - Test files have a file-level `@supports` annotation listing tested requirements.
  * - describe()/it()/test()/context() blocks include story and requirement references
  *   following project conventions.
  * - When ESLint runs with --fix, safe, non-semantic auto-fixes are applied for
- *   missing file-level @supports and malformed [REQ-XXX] prefixes in test names.
+ *   missing file-level `@supports` and malformed [REQ-XXX] prefixes in test names.
  *
  * @story docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md
  * @req REQ-TEST-FILE-SUPPORTS
