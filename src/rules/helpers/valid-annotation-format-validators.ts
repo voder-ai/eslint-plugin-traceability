@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-story-reference */
 /**
  * Validators and helper functions for the valid-annotation-format rule.
  *

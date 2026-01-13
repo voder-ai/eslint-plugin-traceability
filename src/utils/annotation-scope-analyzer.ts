@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-story-reference */
 import type { Rule } from "eslint";
 
 /**

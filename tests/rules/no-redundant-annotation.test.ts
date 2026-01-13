@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-story-reference */
 /**
  * Tests for: docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md
  * @story docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md

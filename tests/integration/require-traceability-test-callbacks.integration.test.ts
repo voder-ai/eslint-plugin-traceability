@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-story-reference */
 /**
  * Integration tests for require-traceability with configurable test callback exclusion.
  *
