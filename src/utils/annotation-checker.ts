@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import { getNodeName } from "../rules/helpers/require-story-utils";
 import { hasReqAnnotation } from "./reqAnnotationDetection";
 import {
@@ -85,18 +84,18 @@ function getFixTargetNode(node: any) {
 }
 
 /**
- * Creates a fix function that inserts a missing @req JSDoc before the node.
+ * Creates a fix function that inserts a missing `@req` JSDoc before the node.
  * Returned function is a proper named function so no inline arrow is used.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation
+ * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing `@req` annotation
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING
  */
 function createMissingReqFix(node: any) {
   const target = getFixTargetNode(node);
   /**
-   * Fixer used to insert a default @req annotation before the chosen target node.
+   * Fixer used to insert a default `@req` annotation before the chosen target node.
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-AUTOFIX - Implement autofix insertion for missing @req
+   * @req REQ-ANNOTATION-AUTOFIX - Implement autofix insertion for missing `@req`
    * @req REQ-ANNOTATION-REPORTING - Support actionable fix in reported problem
    */
   return function missingReqFix(fixer: any) {
@@ -105,9 +104,9 @@ function createMissingReqFix(node: any) {
 }
 
 /**
- * Resolve the display name used when reporting a missing @req annotation.
+ * Resolve the display name used when reporting a missing `@req` annotation.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REPORTING - Use consistent naming when reporting missing @req
+ * @req REQ-ANNOTATION-REPORTING - Use consistent naming when reporting missing `@req`
  * @req REQ-ERROR-SPECIFIC - Derive a specific, human-readable name for the node
  */
 function getReportedName(contextNode: any, parentNode: any): string {
@@ -119,7 +118,7 @@ function getReportedName(contextNode: any, parentNode: any): string {
  * Determine the AST sub-node that should be used as the location for reporting.
  * Prefers Identifier nodes (id or key) over the broader function-like node.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REPORTING - Report missing @req on the most relevant node
+ * @req REQ-ANNOTATION-REPORTING - Report missing `@req` on the most relevant node
  * @req REQ-ERROR-SPECIFIC - Target the identifier when available for precise errors
  */
 function getNameNodeForReqReport(node: any): any {
@@ -138,9 +137,9 @@ function getNameNodeForReqReport(node: any): any {
 
 /**
  * Helper to build the report options object for missing traceability annotations.
- * Uses getNodeName to provide a readable name for the node. @supports is the
+ * Uses getNodeName to provide a readable name for the node. `@supports` is the
  * preferred format for expressing traceability to one or more requirements and
- * stories, while @req is treated as a legacy shorthand for single-story usage.
+ * stories, while `@req` is treated as a legacy shorthand for single-story usage.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-ANNOTATION-REPORTING - Report missing traceability annotations to context
@@ -171,9 +170,9 @@ function buildMissingReqReportOptions(node: any, enableFix: boolean) {
 
 /**
  * Helper to report missing traceability annotations via the ESLint context API.
- * Uses getNodeName to provide a readable name for the node. @supports is the
+ * Uses getNodeName to provide a readable name for the node. `@supports` is the
  * preferred format for expressing traceability to one or more requirements and
- * stories, while @req is treated as a legacy shorthand for single-story usage.
+ * stories, while `@req` is treated as a legacy shorthand for single-story usage.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @req REQ-ANNOTATION-REPORTING - Report missing traceability annotations to context
@@ -188,15 +187,15 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
 }
 
 /**
- * Helper to check @req annotation presence on TS declare functions and method signatures.
+ * Helper to check `@req` annotation presence on TS declare functions and method signatures.
  *
  * This helper is intentionally scope/exportPriority agnostic and focuses solely
- * on detection and reporting of @req annotations for the given node.
+ * on detection and reporting of `@req` annotations for the given node.
  *
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
- * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation
- * @req REQ-ANNOTATION-REPORTING - Report missing @req annotation to context
+ * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of `@req` annotation
+ * @req REQ-ANNOTATION-REPORTING - Report missing `@req` annotation to context
  * @param context - ESLint rule context used to obtain source and report problems
  * @param node - Function-like AST node whose surrounding comments should be inspected
  * @param options - Optional configuration controlling behaviour (e.g., enableFix, annotationPlacement)
@@ -235,7 +234,7 @@ export function checkReqAnnotation(
   const comments = getCommentsBefore(sourceCode, node);
   const all = combineComments(leading, comments);
   const hasReq = hasReqAnnotation(jsdoc, all, context, node);
-  // BRANCH when a @req annotation is missing and must be reported
+  // BRANCH when a `@req` annotation is missing and must be reported
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQ-DETECTION
   // @req REQ-ANNOTATION-REPORTING
