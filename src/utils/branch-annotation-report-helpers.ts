@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import type { Rule } from "eslint";
 import {
   gatherBranchCommentText,
@@ -327,9 +326,9 @@ function getBranchIndentAndInsertPos(
 /**
  * Compute annotation-related metadata for a branch node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
+ * @req REQ-ANNOTATION-PARSING - Parse `@story` and `@req` annotations from branch comments
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
@@ -381,9 +380,9 @@ function processMissingAnnotationActions(
 /**
  * Report missing annotations on a branch node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
+ * @req REQ-ANNOTATION-PARSING - Parse `@story` and `@req` annotations from branch comments
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SUPPORTS-ALTERNATIVE
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
