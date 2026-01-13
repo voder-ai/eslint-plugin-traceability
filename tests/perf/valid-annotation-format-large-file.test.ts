@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Performance tests for valid-annotation-format on large annotated files.
  *
@@ -23,7 +22,7 @@ function buildLargeAnnotatedSource(
   const lines: string[] = [];
 
   for (let i = 0; i < functionCount; i += 1) {
-    // JSDoc-style block comment with multi-line @story/@req values.
+    // JSDoc-style block comment with multi-line `@story`/`@req` values.
     lines.push("/**");
     lines.push(
       " * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md",
