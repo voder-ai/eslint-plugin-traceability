@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-story-reference */
 import type { Rule } from "eslint";
 
 /**
@@ -56,8 +55,8 @@ export function toStoryReqKey(
  * Extract story/requirement pairs from a snippet of comment text.
  *
  * Supported patterns:
- * - `@story <path>` followed by one or more `@req <ID>` lines.
- * - `@supports <path> <REQ-ID-1> <REQ-ID-2> ...` where each `REQ-*`
+ * - `@` + `story <path>` followed by one or more `@` + `req <ID>` lines.
+ * - `@` + `supports <path> <REQ-ID-1> <REQ-ID-2> ...` where each `REQ-*`
  *   token is treated as a separate pair bound to the same story path.
  *
  * The parser is intentionally conservative: it only creates pairs when
