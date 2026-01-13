@@ -15,12 +15,12 @@
  * traceability links.
  *
  * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage in favor of @supports
+ * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy `@story`/`@req` usage in favor of `@supports`
  * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
  * @req REQ-SINGLE-STORY-FIX - Restrict auto-fix to single-story, single-path cases
  * @req REQ-PRESERVE-FORMAT - Preserve original JSDoc indentation and prefix formatting
  * @req REQ-VALID-OUTPUT - Avoid emitting auto-fixes for complex or ambiguous patterns
- * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy @story/@req annotations valid when the rule is disabled
+ * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy `@story`/`@req` annotations valid when the rule is disabled
  * @req REQ-AUTO-FIX - Provide safe, opt-in auto-fix for simple legacy patterns
  */
 import type { Rule } from "eslint";
@@ -37,11 +37,11 @@ import {
 // @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
 const storyFileCache = new Map<string, Set<string> | null>();
 
-// Maximum number of distinct @story paths allowed before treating as "multi-story".
+// Maximum number of distinct `@story` paths allowed before treating as "multi-story".
 // @req REQ-MULTI-STORY-DETECT - Centralized threshold constant for detecting multi-story patterns
 const MULTI_STORY_THRESHOLD = 1;
 
-// Minimum number of tokens required for a valid @story annotation line.
+// Minimum number of tokens required for a valid `@story` annotation line.
 // @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
 // @req REQ-MULTI-STORY-DETECT
 const MIN_STORY_TOKENS = 2;
@@ -134,7 +134,7 @@ interface CommentAnalysis {
 }
 
 /**
- * Collect line indices and metadata for @story and @req annotations within a
+ * Collect line indices and metadata for `@story` and `@req` annotations within a
  * single block comment. This helper isolates the parsing logic used by the
  * auto-fix path so that complex or ambiguous patterns can be detected and
  * safely rejected.
@@ -191,9 +191,9 @@ function collectStoryAndReqMetadata(comment: any): {
 }
 
 /**
- * Apply the @supports replacement for simple, single-story legacy blocks,
+ * Apply the `@supports` replacement for simple, single-story legacy blocks,
  * constructing a fixed comment body that preserves existing indentation and
- * prefix formatting while removing the original @story/@req lines.
+ * prefix formatting while removing the original `@story`/`@req` lines.
  *
  * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-PRESERVE-FORMAT REQ-VALID-OUTPUT
  */
@@ -214,7 +214,7 @@ function applyImplementsReplacement(
 
   const implAnnotation = `@supports ${storyPath} ${reqIds.join(" ")}`;
 
-  // Determine the leading prefix (indentation and `*`) from the original @story line
+  // Determine the leading prefix (indentation and `*`) from the original `@story` line
   const storyRawLine = rawLines[storyIdx];
   const prefixMatch = storyRawLine.match(/^(\s*\*?\s*)/);
   const linePrefix = prefixMatch ? prefixMatch[1] : "";
@@ -292,9 +292,9 @@ function buildImplementsAutoFix(
     return null;
   }
 
-  // NEW: Validate @req IDs against story file content
+  // NEW: Validate `@req` IDs against story file content
   // This implements REQ-MULTI-STORY-DETECT requirement to detect when
-  // @req IDs don't match the referenced @story
+  // `@req` IDs don't match the referenced `@story`
   // @supports prompts/010.3-prefer-supports-req-mismatch-detection.md REQ-MISMATCH-DETECTION
   // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
   const storyReqs = extractRequirementsFromStory(storyPath, context);
@@ -304,10 +304,10 @@ function buildImplementsAutoFix(
     return null;
   }
 
-  // Check for mismatched @req IDs (IDs not defined in the story)
+  // Check for mismatched `@req` IDs (IDs not defined in the story)
   const mismatchedReqs = reqIds.filter((reqId) => !storyReqs.has(reqId));
 
-  // If any @req IDs don't match the story, cannot safely auto-fix
+  // If any `@req` IDs don't match the story, cannot safely auto-fix
   // This likely indicates a multi-story implementation that needs manual migration
   if (mismatchedReqs.length > 0) {
     return null;
@@ -328,8 +328,8 @@ function buildImplementsAutoFix(
 }
 
 /**
- * Analyze a block comment to detect legacy @story/@req usage, existing
- * @supports lines, and the presence of multiple distinct @story paths.
+ * Analyze a block comment to detect legacy `@story`/`@req` usage, existing
+ * `@supports` lines, and the presence of multiple distinct `@story` paths.
  *
  * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT
  */
@@ -494,9 +494,9 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
  * is intended as an optional, opt-in migration aid.
  *
  * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage
+ * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy `@story`/`@req` usage
  * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
- * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy @story/@req annotations valid when the rule is disabled
+ * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy `@story`/`@req` annotations valid when the rule is disabled
  */
 
 /**
@@ -507,9 +507,9 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
  * is intended as an optional, opt-in migration aid.
  *
  * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy @story/@req usage
+ * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy `@story`/`@req` usage
  * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
- * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy @story/@req annotations valid when the rule is disabled
+ * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy `@story`/`@req` annotations valid when the rule is disabled
  */
 const preferImplementsAnnotationRule: Rule.RuleModule = {
   meta: {
@@ -524,8 +524,8 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
     fixable: "code",
     messages: {
       /**
-       * Recommend migrating simple, single-story @story + @req blocks to a
-       * single @supports line. Auto-fix is provided where safe in a
+       * Recommend migrating simple, single-story `@story` + `@req` blocks to a
+       * single `@supports` line. Auto-fix is provided where safe in a
        * follow-up iteration.
        *
        * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
@@ -545,7 +545,7 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
         "Cannot auto-fix: {{reason}}. Manual migration to @supports required.",
       /**
        * Specialized message for the most common non-fixable case where more
-       * than one @story annotation appears in the same block, indicating a
+       * than one `@story` annotation appears in the same block, indicating a
        * likely multi-story integration that must be converted manually.
        *
        * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md

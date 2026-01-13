@@ -1,6 +1,5 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
- * Rule to enforce @story and @req annotations on significant code branches.
+ * Rule to enforce `@story` and `@req` annotations on significant code branches.
  *
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-BRANCH-DETECTION
@@ -14,7 +13,7 @@ import {
 } from "../utils/branch-annotation-helpers";
 
 /**
- * @supports Switch case node detection for fall-through handling
+ * Switch case node detection for fall-through handling
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-SWITCH-CASE-ANNOTATION
  * @req REQ-SWITCH-DEFAULT-REQUIRED
@@ -41,7 +40,7 @@ const INVALID_INDEX = -1;
  * - Has a following SwitchCase sibling in the same SwitchStatement
  * - That following sibling has a non-empty consequent array
  *
- * @supports Switch fall-through behavior for branch annotations
+ * Switch fall-through behavior for branch annotations
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-SWITCH-CASE-ANNOTATION
  * @req REQ-SWITCH-DEFAULT-REQUIRED
@@ -98,7 +97,7 @@ function isFallthroughIntermediateCase(node: any): boolean {
 /**
  * ESLint rule definition for require-branch-annotation.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-BRANCH-DETECTION - Enforce @story/@req presence on configured branch types
+ * @req REQ-BRANCH-DETECTION - Enforce `@story`/`@req` presence on configured branch types
  * @req REQ-CONFIGURABLE-SCOPE - Respect configurable branchTypes option
  */
 const rule: Rule.RuleModule = {
