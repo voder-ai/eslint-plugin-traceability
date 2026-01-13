@@ -20,17 +20,21 @@
 **Result**: All 633 tests passing. Discovered and fixed malformed pipe-separated annotation format that wasn't a feature.
 
 ### Rule 2: valid-story-reference (Story File Validation)
-- [ ] Enable `traceability/valid-story-reference` at `error` for `src/**` and `tests/**`
-- [ ] Run linter to identify all files with broken story references
-- [ ] Add `/* eslint-disable traceability/valid-story-reference */` to top of each violating file
-- [ ] Commit: "chore(lint): enable valid-story-reference with file suppressions"
-- [ ] For each suppressed file (one at a time):
-  - [ ] Remove the eslint-disable comment from the file
-  - [ ] Fix broken story references (update paths, restore missing files, or fix plugin bugs)
-  - [ ] Run linter to verify file now passes
-  - [ ] Run all tests to ensure no breakage
-  - [ ] Commit: "chore(lint): correct story references in [filename]"
+- [x] Enable `traceability/valid-story-reference` at `error` for `src/**` and `tests/**`
+- [x] Run linter to identify all files with broken story references
+- [x] Fix plugin bugs (missing @supports support, false positives from prose)
+- [x] Add `/* eslint-disable traceability/valid-story-reference */` to top of each violating file (6 files)
+- [x] Commit: "chore(lint): add baseline suppressions for valid-story-reference rule"
+- [ ] For each suppressed file (one at a time, 0/6 complete):
+  - [ ] src/rules/helpers/valid-annotation-format-validators.ts - template placeholder
+  - [ ] src/utils/annotation-scope-analyzer.ts - template placeholders  
+  - [ ] tests/fixtures/stale/example.ts - intentionally invalid (verify)
+  - [ ] tests/fixtures/update/example.ts - intentionally invalid (verify)
+  - [ ] tests/integration/require-traceability-test-callbacks.integration.test.ts - missing story
+  - [ ] tests/rules/no-redundant-annotation.test.ts - malformed test paths
 - [ ] Verify no files remain with suppressions for this rule
+
+**Progress**: Fixed 2 plugin bugs, reduced from 85 false positives to 12 legitimate issues.
 
 ### Rule 3: valid-req-reference (Requirement ID Validation)
 - [ ] Enable `traceability/valid-req-reference` at `error` for `src/**` and `tests/**`

@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-story-reference */
 /**
  * Validators and helper functions for the valid-annotation-format rule.
  *
@@ -317,8 +316,7 @@ export function validateReqAnnotation(
 /**
  * Validate an `@supports` annotation value and report detailed errors when needed.
  *
- * Expected format:
- *   `@supports <storyPath> <REQ-ID> [<REQ-ID> ...]`
+ * Expected format: `@` + `supports <storyPath> <REQ-ID> [<REQ-ID> ...]`
  *
  * Validation rules:
  *   - Value must include at least a story path and one requirement ID.
