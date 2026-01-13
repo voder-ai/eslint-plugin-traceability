@@ -1,8 +1,7 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
- * Shared @req detection helpers used by annotation-checker utilities.
+ * Shared `@req` detection helpers used by annotation-checker utilities.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req markers around function-like nodes
+ * @req REQ-ANNOTATION-REQ-DETECTION - Detect `@req` markers around function-like nodes
  */
 import {
   FALLBACK_WINDOW,
@@ -11,11 +10,11 @@ import {
 
 /**
  * Predicate helper to check whether a comment contains a requirement annotation.
- * Treats both @req and @supports annotations as satisfying requirement presence checks.
+ * Treats both `@req` and `@supports` annotations as satisfying requirement presence checks.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req tag inside a comment
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept @supports as requirement annotation
+ * @req REQ-ANNOTATION-REQ-DETECTION - Detect `@req` tag inside a comment
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept `@supports` as requirement annotation
  */
 function commentContainsReq(c: any): boolean {
   return (
@@ -27,10 +26,10 @@ function commentContainsReq(c: any): boolean {
 
 /**
  * Line-based helper adapted from linesBeforeHasStory to detect requirement annotations.
- * Lines containing either @req or @supports are treated as annotated.
+ * Lines containing either `@req` or `@supports` are treated as annotated.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in preceding source lines
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept @supports in preceding source lines
+ * @req REQ-ANNOTATION-REQ-DETECTION - Detect `@req` in preceding source lines
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept `@supports` in preceding source lines
  */
 function linesBeforeHasReq(sourceCode: any, node: any): boolean {
   const lines = sourceCode && sourceCode.lines;
@@ -49,16 +48,16 @@ function linesBeforeHasReq(sourceCode: any, node: any): boolean {
   const from = Math.max(0, startLine - 1 - LOOKBACK_LINES);
   const to = Math.max(0, startLine - 1);
 
-  // Scan each physical line in the configured lookback window for @req or @supports markers.
+  // Scan each physical line in the configured lookback window for `@req` or `@supports` markers.
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-REQ-DETECTION - Search preceding lines for @req text
-  // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Search preceding lines for @supports text
+  // @req REQ-ANNOTATION-REQ-DETECTION - Search preceding lines for `@req` text
+  // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Search preceding lines for `@supports` text
   for (let i = from; i < to; i++) {
     const text = lines[i];
-    // When a line contains @req or @supports we treat the function as already annotated.
+    // When a line contains `@req` or `@supports` we treat the function as already annotated.
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req marker in raw source lines
-    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect @supports marker in raw source lines
+    // @req REQ-ANNOTATION-REQ-DETECTION - Detect `@req` marker in raw source lines
+    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect `@supports` marker in raw source lines
     if (
       typeof text === "string" &&
       (text.includes("@req") || text.includes("@supports"))
@@ -71,39 +70,39 @@ function linesBeforeHasReq(sourceCode: any, node: any): boolean {
 
 /**
  * Parent-chain helper adapted from parentChainHasStory to detect requirement annotations.
- * Accepts both @req and @supports in parent-chain comments as satisfying requirement presence.
+ * Accepts both `@req` and `@supports` in parent-chain comments as satisfying requirement presence.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in parent-chain comments
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept @supports in parent-chain comments
+ * @req REQ-ANNOTATION-REQ-DETECTION - Detect `@req` in parent-chain comments
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept `@supports` in parent-chain comments
  */
 function parentChainHasReq(sourceCode: any, node: any): boolean {
   let p = node && node.parent;
 
   // Walk up the parent chain and inspect comments attached to each ancestor.
-  // Accept both @req and @supports markers when local comments are absent.
+  // Accept both `@req` and `@supports` markers when local comments are absent.
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQ-DETECTION - Traverse parent nodes when local comments are absent
-  // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Allow @supports to satisfy requirement on parents
+  // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Allow `@supports` to satisfy requirement on parents
   while (p) {
     const pComments =
       typeof sourceCode?.getCommentsBefore === "function"
         ? sourceCode.getCommentsBefore(p) || []
         : [];
 
-    // Look for @req or @supports in comments immediately preceding each parent node.
+    // Look for `@req` or `@supports` in comments immediately preceding each parent node.
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req markers in parent comments
-    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect @supports markers in parent comments
+    // @req REQ-ANNOTATION-REQ-DETECTION - Detect `@req` markers in parent comments
+    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect `@supports` markers in parent comments
     if (Array.isArray(pComments) && pComments.some(commentContainsReq)) {
       return true;
     }
 
     const pLeading = p.leadingComments || [];
 
-    // Also inspect leadingComments attached directly to the parent node, accepting @req or @supports.
+    // Also inspect leadingComments attached directly to the parent node, accepting `@req` or `@supports`.
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req markers in parent leadingComments
-    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect @supports markers in parent leadingComments
+    // @req REQ-ANNOTATION-REQ-DETECTION - Detect `@req` markers in parent leadingComments
+    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect `@supports` markers in parent leadingComments
     if (Array.isArray(pLeading) && pLeading.some(commentContainsReq)) {
       return true;
     }
@@ -115,11 +114,11 @@ function parentChainHasReq(sourceCode: any, node: any): boolean {
 
 /**
  * Fallback text window helper adapted from fallbackTextBeforeHasStory to detect requirement annotations.
- * Treats both @req and @supports in the fallback text window as requirement presence.
+ * Treats both `@req` and `@supports` in the fallback text window as requirement presence.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQ-DETECTION - Detect @req in fallback text window before node
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept @supports in fallback text window before node
+ * @req REQ-ANNOTATION-REQ-DETECTION - Detect `@req` in fallback text window before node
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept `@supports` in fallback text window before node
  */
 function fallbackTextBeforeHasReq(sourceCode: any, node: any): boolean {
   // Guard against unsupported sourceCode or nodes without a usable range.
@@ -143,11 +142,11 @@ function fallbackTextBeforeHasReq(sourceCode: any, node: any): boolean {
     const start = Math.max(0, range[0] - FALLBACK_WINDOW);
     const textBefore = sourceCode.getText().slice(start, range[0]);
 
-    // Detect @req or @supports in the bounded text window immediately preceding the node.
+    // Detect `@req` or `@supports` in the bounded text window immediately preceding the node.
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
     // @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-    // @req REQ-ANNOTATION-REQ-DETECTION - Detect @req marker in fallback text window
-    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect @supports marker in fallback text window
+    // @req REQ-ANNOTATION-REQ-DETECTION - Detect `@req` marker in fallback text window
+    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect `@supports` marker in fallback text window
     if (
       typeof textBefore === "string" &&
       (textBefore.includes("@req") || textBefore.includes("@supports"))
@@ -165,11 +164,11 @@ function fallbackTextBeforeHasReq(sourceCode: any, node: any): boolean {
 
 /**
  * Helper to combine advanced, location-based heuristics for requirement detection.
- * Uses preceding lines, parent-chain comments, and fallback text windows to find @req/@supports.
+ * Uses preceding lines, parent-chain comments, and fallback text windows to find `@req`/`@supports`.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQ-DETECTION - Use multiple heuristics to detect @req markers around the node
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Use multiple heuristics to detect @supports markers around the node
+ * @req REQ-ANNOTATION-REQ-DETECTION - Use multiple heuristics to detect `@req` markers around the node
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Use multiple heuristics to detect `@supports` markers around the node
  */
 function hasReqInAdvancedHeuristics(sourceCode: any, node: any): boolean {
   if (!sourceCode || !node) {
@@ -185,11 +184,11 @@ function hasReqInAdvancedHeuristics(sourceCode: any, node: any): boolean {
 
 /**
  * Helper to check JSDoc and nearby comments for requirement annotations.
- * Accepts both @req and @supports markers as evidence of requirement coverage.
+ * Accepts both `@req` and `@supports` markers as evidence of requirement coverage.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation in JSDoc/comments
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept @supports as requirement coverage in JSDoc/comments
+ * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of `@req` annotation in JSDoc/comments
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept `@supports` as requirement coverage in JSDoc/comments
  */
 function hasReqInJsdocOrComments(jsdoc: any, comments: any[]): boolean {
   if (
@@ -205,11 +204,11 @@ function hasReqInJsdocOrComments(jsdoc: any, comments: any[]): boolean {
 
 /**
  * Helper to determine whether a JSDoc or any nearby comments contain a requirement annotation.
- * Treats both @req and @supports annotations as evidence of requirement coverage.
+ * Treats both `@req` and `@supports` annotations as evidence of requirement coverage.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of @req annotation
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept @supports as requirement coverage
+ * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of `@req` annotation
+ * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept `@supports` as requirement coverage
  */
 export function hasReqAnnotation(
   jsdoc: any,
