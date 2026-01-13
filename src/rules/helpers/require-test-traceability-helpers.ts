@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Helper utilities for the require-test-traceability rule.
  *
@@ -43,7 +42,7 @@ export function determineIsTestFile(
 }
 
 /**
- * Build the placeholder @supports template comment for a test file.
+ * Build the placeholder `@supports` template comment for a test file.
  *
  * @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-TEMPLATE REQ-TEST-FIX-PLACEHOLDER
  */
@@ -64,7 +63,7 @@ function buildSupportsTemplateComment(customTemplate?: string): string {
 }
 
 /**
- * Insert the file-level @supports template comment at a safe location.
+ * Insert the file-level `@supports` template comment at a safe location.
  *
  * The template is inserted after a shebang line if present, otherwise at the
  * very start of the file. This preserves executable semantics while adding
@@ -94,9 +93,9 @@ function insertSupportsTemplate(
 }
 
 /**
- * Ensure the file has a @supports annotation listing tested requirements.
+ * Ensure the file has a `@supports` annotation listing tested requirements.
  *
- * When auto-fix is enabled, a placeholder @supports JSDoc is inserted at the
+ * When auto-fix is enabled, a placeholder `@supports` JSDoc is inserted at the
  * top of the file (after any shebang) using a safe, non-semantic template.
  *
  * @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FILE-SUPPORTS REQ-TEST-SUPPORTS-VALID
