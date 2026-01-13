@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Unit tests for branch annotation helpers
  * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
@@ -74,8 +73,8 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
     expect(text).toBe("@story first part @req REQ-FIRST");
   });
 
-  it("should gather comment text for CatchClause and loop nodes via gatherBranchCommentText (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () => {
-    // CatchClause: comments come from getCommentsBefore when beforeText already contains @story
+  it("should gather comment text for CatchClause and loop nodes via gatherBranchCommentText (Story `004.0-DEV-BRANCH-ANNOTATIONS`)", () => {
+    // CatchClause: comments come from getCommentsBefore when beforeText already contains `@story`
     const catchComments = [
       { type: "Line", value: "@story catch branch story" },
       { type: "Line", value: "additional info" },
