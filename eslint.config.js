@@ -112,6 +112,7 @@ module.exports = [
       ...(plugin.rules
         ? {
             "traceability/valid-annotation-format": "error",
+            "traceability/valid-story-reference": "error",
           }
         : {}),
     },
@@ -141,6 +142,7 @@ module.exports = [
       "no-new-wrappers": "error",
       ...(plugin.rules ? {
         "traceability/valid-annotation-format": "error",
+        "traceability/valid-story-reference": "error",
       } : {}),
     },
   },

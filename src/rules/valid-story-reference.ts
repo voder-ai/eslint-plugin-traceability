@@ -266,7 +266,9 @@ function handleComment(opts: {
      */
     .map((l: string) => l.replace(/^[^@]*/, "").trim());
   for (const line of lines) {
-    if (line.startsWith("@story")) {
+    // Check if line starts with `@story` or `@supports` followed by whitespace (actual annotation)
+    // This prevents matching prose that mentions these keywords in backticks or mid-sentence
+    if (line.startsWith("@story ") || line.startsWith("@supports ")) {
       validateStoryPath({
         line,
         commentNode,
