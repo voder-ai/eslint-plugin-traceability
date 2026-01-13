@@ -1,4 +1,4 @@
-/* eslint-disable traceability/valid-annotation-format */
+ 
 /**
  * Tests for the require-story-annotation rule schema configuration.
  *

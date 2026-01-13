@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import type { Rule } from "eslint";
 import type { AnnotationPlacement } from "./branch-annotation-helpers";
 

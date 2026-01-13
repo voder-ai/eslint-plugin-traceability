@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
  * Shared helpers for Prettier-based integration tests.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
