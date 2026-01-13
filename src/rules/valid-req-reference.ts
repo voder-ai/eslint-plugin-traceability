@@ -1,6 +1,5 @@
-/* eslint-disable traceability/valid-annotation-format */
 /**
- * Rule to validate @req annotation references refer to existing requirements in story files.
+ * Rule to validate `@req` annotation references refer to existing requirements in story files.
  * Uses shared helpers from the valid-req-reference-helpers module.
  */
 import type { Rule } from "eslint";
@@ -11,7 +10,7 @@ export default {
     type: "problem",
     docs: {
       description:
-        "Validate that @req annotations reference existing requirements in referenced story files",
+        "Validate that `@req` annotations reference existing requirements in referenced story files",
       recommended: "error",
     },
     messages: {
@@ -26,7 +25,7 @@ export default {
       /**
        * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
        * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
-       * @req REQ-ERROR-SPECIFIC - Indicate that the story path associated with a @req annotation is invalid
+       * @req REQ-ERROR-SPECIFIC - Indicate that the story path associated with a `@req` annotation is invalid
        * @req REQ-ERROR-CONTEXT - Include the problematic storyPath value so the developer can correct it
        * @req REQ-ERROR-CONSISTENCY - Reuse the same storyPath placeholder convention used by other rules
        */
