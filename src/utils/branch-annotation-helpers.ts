@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-annotation-format */
 import type { Rule } from "eslint";
 import { reportMissingAnnotations } from "./branch-annotation-report-helpers";
 import { gatherLoopCommentText } from "./branch-annotation-loop-helpers";
@@ -204,9 +203,9 @@ function handleLoopBranch(
  * Helper that gathers comment text for non-IfStatement branch types using
  * straightforward behavior (SwitchCase, CatchClause, and loop statements).
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @supports REQ-COMMENT-ASSOCIATION
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports REQ-PLACEMENT-CONFIG
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
 function gatherNonIfBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -240,12 +239,12 @@ function gatherNonIfBranchCommentText(
  * Helper that gathers comment text for IfStatement branches, including both
  * simple if and else-if specific logic.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @supports REQ-COMMENT-ASSOCIATION
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports REQ-PLACEMENT-CONFIG
- * @supports REQ-DEFAULT-BACKWARD-COMPAT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-DEFAULT-BACKWARD-COMPAT
  */
 function gatherIfBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -278,11 +277,11 @@ function gatherIfBranchCommentText(
  * Internal helper that performs type-based dispatch for gathering branch comment text.
  * This keeps the public gatherBranchCommentTextByType wrapper small for ESLint limits.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @supports REQ-COMMENT-ASSOCIATION
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports REQ-PLACEMENT-CONFIG
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
 function gatherBranchCommentTextByTypeInternal(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -322,7 +321,7 @@ function gatherBranchCommentTextByType(
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-COMMENT-ASSOCIATION - Associate inline comments with their corresponding code branches
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
 export function gatherBranchCommentText(
@@ -347,9 +346,9 @@ export function gatherBranchCommentText(
 }
 
 /**
- * Report missing @story annotation tag on a branch node when that branch lacks a corresponding @story reference in its comments.
+ * Report missing `@story` annotation tag on a branch node when that branch lacks a corresponding `@story` reference in its comments.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
+ * @req REQ-ANNOTATION-PARSING - Parse `@story` and `@req` annotations from branch comments
  */
 export function reportMissingStory(
   context: Rule.RuleContext,
@@ -400,9 +399,9 @@ export function reportMissingStory(
 }
 
 /**
- * Report missing @req annotation tag on a branch node when that branch has no linked requirement identifier in its associated comments.
+ * Report missing `@req` annotation tag on a branch node when that branch has no linked requirement identifier in its associated comments.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-PARSING - Parse @story and @req annotations from branch comments
+ * @req REQ-ANNOTATION-PARSING - Parse `@story` and `@req` annotations from branch comments
  */
 export function reportMissingReq(
   context: Rule.RuleContext,
@@ -417,9 +416,9 @@ export function reportMissingReq(
    */
   if (!missingStory) {
     /**
-     * Fixer that inserts a default @req tag above the branch.
+     * Fixer that inserts a default `@req` tag above the branch.
      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-     * @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer function used to insert missing @req
+     * @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer function used to insert missing `@req`
      */
     function insertReqFixer(fxer: any) {
       return fxer.insertTextBeforeRange(
