@@ -1,9 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Ensure all maintenance tools are exported correctly
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE REQ-MAINT-DETECT REQ-MAINT-UPDATE REQ-MAINT-BATCH REQ-MAINT-VERIFY REQ-MAINT-REPORT
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE REQ-MAINT-BATCH
  */
 import {
   detectStaleAnnotations,
@@ -14,7 +12,7 @@ import {
 } from "../../src/maintenance";
 
 describe("Maintenance Tools Index Exports (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  it("[REQ-MAINT-DETECT] should export detectStaleAnnotations as a function", () => {
+  it("[REQ-MAINT-CLI] should export detectStaleAnnotations as a function", () => {
     expect(typeof detectStaleAnnotations).toBe("function");
   });
 
@@ -26,11 +24,11 @@ describe("Maintenance Tools Index Exports (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
     expect(typeof batchUpdateAnnotations).toBe("function");
   });
 
-  it("[REQ-MAINT-VERIFY] should export verifyAnnotations as a function", () => {
+  it("[REQ-MAINT-CLI] should export verifyAnnotations as a function", () => {
     expect(typeof verifyAnnotations).toBe("function");
   });
 
-  it("[REQ-MAINT-REPORT] should export generateMaintenanceReport as a function", () => {
+  it("[REQ-MAINT-CLI] should export generateMaintenanceReport as a function", () => {
     expect(typeof generateMaintenanceReport).toBe("function");
   });
 });
