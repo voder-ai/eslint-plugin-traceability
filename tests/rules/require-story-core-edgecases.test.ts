@@ -1,9 +1,5 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
- * Edge-case tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Cover additional branch cases in require-story-core (addStoryFixer/reportMissing)
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-AUTOFIX
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-SAFE REQ-AUTOFIX-PRESERVE
  */
 import { createAddStoryFix } from "../../src/rules/helpers/require-story-core";
 import { exerciseCreateAddStoryFixBranches } from "../utils/require-story-core-test-helpers";
