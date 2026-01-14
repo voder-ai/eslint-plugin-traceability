@@ -1,7 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Focused autofix behavior tests for annotation-checker helper.
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE REQ-AUTOFIX-PRESERVE REQ-AUTOFIX-SELECTIVE
  */
 
 jest.mock("../../src/utils/reqAnnotationDetection", () => ({
@@ -21,7 +21,7 @@ import { checkReqAnnotation } from "../../src/utils/annotation-checker";
 /**
  * Build a minimal ESLint rule context stub that captures report() calls.
  *
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REPORTING
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
  */
 function createContextStub() {
   const report = jest.fn();
@@ -43,7 +43,7 @@ function createContextStub() {
 describe(
   "annotation-checker helper autofix behavior (Story 003.0-DEV-FUNCTION-ANNOTATIONS)",
   () => {
-    it("[REQ-ANNOTATION-AUTOFIX] attaches fix directly to node when parent is missing", () => {
+    it("[REQ-AUTOFIX-PRESERVE] attaches fix directly to node when parent is missing", () => {
       const { context, report } = createContextStub();
       const node = { type: "FunctionDeclaration" } as any; // no parent property
 
@@ -63,7 +63,7 @@ describe(
       );
     });
 
-    it("[REQ-ANNOTATION-AUTOFIX] attaches fix to MethodDefinition wrapper when parent is a method", () => {
+    it("[REQ-AUTOFIX-PRESERVE] attaches fix to MethodDefinition wrapper when parent is a method", () => {
       const { context, report } = createContextStub();
       const methodParent = { type: "MethodDefinition" } as any;
       const node = {
@@ -86,7 +86,7 @@ describe(
       );
     });
 
-    it("[REQ-ANNOTATION-AUTOFIX] attaches fix to VariableDeclarator when node is its init", () => {
+    it("[REQ-AUTOFIX-PRESERVE] attaches fix to VariableDeclarator when node is its init", () => {
       const { context, report } = createContextStub();
       const declarator: any = { type: "VariableDeclarator" };
       const node: any = { type: "FunctionExpression", parent: declarator };
@@ -106,7 +106,7 @@ describe(
       );
     });
 
-    it("[REQ-ANNOTATION-AUTOFIX] attaches fix to ExpressionStatement wrapper when parent is an expression", () => {
+    it("[REQ-AUTOFIX-PRESERVE] attaches fix to ExpressionStatement wrapper when parent is an expression", () => {
       const { context, report } = createContextStub();
       const expressionParent = { type: "ExpressionStatement" } as any;
       const node = {
@@ -129,7 +129,7 @@ describe(
       );
     });
 
-    it("[REQ-ANNOTATION-AUTOFIX] omits fix when enableFix is false", () => {
+    it("[REQ-AUTOFIX-SELECTIVE] omits fix when enableFix is false", () => {
       const { context, report } = createContextStub();
       const node = {
         type: "FunctionDeclaration",
