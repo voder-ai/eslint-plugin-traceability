@@ -53,12 +53,15 @@
 - REQ-MAINT-* variants (SAFE, DETECT, REPORT, VERIFY) - 113 errors - not in story 009
 - REQ-AUTOFIX-* variants - 44 errors - missing from relevant stories
 - REQ-ERROR-* variants - 31 errors - missing from story 007
-- Suggests story files need more granular requirements documented
 
-**Strategy**: This requires either:
-1. Adding missing requirements to story files (preferred - documents actual functionality)
-2. Fixing code to use correct requirement IDs from existing stories
-3. Some combination - verify which requirements are real vs placeholders
+**ROOT CAUSE**: Developers created placeholder/fake requirement IDs instead of linking to actual requirements in story files. This is lazy practice that breaks traceability.
+
+**CRITICAL STRATEGY**: Code MUST link to existing requirements in story files:
+1. **Fix code to reference correct existing requirements** - Review story files, find the actual requirement that justifies the code, update annotations
+2. **Remove unnecessary code** - If no real requirement exists for the code, there's a strong possibility the code is not required and should be removed
+3. **Document findings** - Track how many fake IDs were found, how many led to code removal
+
+**NEVER**: Add fake requirements to story files to match fake IDs in code. Requirements drive development, not the other way around.
 
 ## NEXT
 
