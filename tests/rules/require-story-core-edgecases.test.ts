@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Edge-case tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

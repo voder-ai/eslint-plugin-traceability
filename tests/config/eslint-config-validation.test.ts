@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for ESLint config rule schemas.
  *

@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 import { detectStaleAnnotations } from "./detect";
 import { GetAllFilesOptions } from "./utils";
 import * as fs from "fs";

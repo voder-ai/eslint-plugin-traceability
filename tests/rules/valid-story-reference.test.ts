@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md

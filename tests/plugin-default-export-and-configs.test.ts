@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
  * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE REQ-RULE-REGISTRY REQ-CONFIG-SYSTEM

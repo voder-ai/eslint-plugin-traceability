@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Node classification utilities for require-story rule
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

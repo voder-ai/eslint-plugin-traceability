@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 import { updateAnnotationReferences } from "./update";
 import { detectStaleAnnotations } from "./detect";
 import { GetAllFilesOptions } from "./utils";

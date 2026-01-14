@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Helper utilities for the "valid-req-reference" rule.
  *

@@ -113,6 +113,7 @@ module.exports = [
         ? {
             "traceability/valid-annotation-format": "error",
             "traceability/valid-story-reference": "error",
+            "traceability/valid-req-reference": "error",
           }
         : {}),
     },

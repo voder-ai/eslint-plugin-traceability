@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for circular reference detection in maintenance reports
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md

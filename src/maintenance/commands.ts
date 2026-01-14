@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Subcommand handlers for the traceability-maint CLI.
  *

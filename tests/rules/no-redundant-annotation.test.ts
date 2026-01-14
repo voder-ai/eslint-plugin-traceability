@@ -8,7 +8,7 @@
  * @req REQ-SAFE-REMOVAL - Verify that auto-fix removes only redundant annotations and preserves code
  * @req REQ-DIFFERENT-REQUIREMENTS - Verify that annotations with different requirement IDs are preserved
  * @req REQ-CATCH-BLOCK-HANDLING - Verify that catch block annotations are not incorrectly treated as redundant
- * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-DUPLICATION-DETECTION REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL REQ-DIFFERENT-REQUIREMENTS REQ-CATCH-BLOCK-HANDLING REQ-SUPPORTS-COVERAGE REQ-SCOPE-INHERITANCE REQ-CONFIGURABLE-STRICTNESS
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-DUPLICATION-DETECTION REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL REQ-DIFFERENT-REQUIREMENTS REQ-CATCH-BLOCK-HANDLING REQ-SCOPE-INHERITANCE REQ-CONFIGURABLE-STRICTNESS
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/no-redundant-annotation";
@@ -32,7 +32,7 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
         code: `function example() {\n  // @story docs/stories/006.0-EXAMPLE.story.md\n  // @req REQ-OUTER-CHECK\n  if (enabled) {\n    // @story docs/stories/006.0-EXAMPLE.story.md\n    // @req REQ-INNER-VALIDATION\n    if (validate) {\n      validate(data);\n    }\n  }\n}`,
       },
       {
-        name: "[REQ-SUPPORTS-COVERAGE] preserves non-redundant mixed @supports/@req pairs when only partially covered by scope",
+        name: "[REQ-SCOPE-ANALYSIS] preserves non-redundant mixed @supports/@req pairs when only partially covered by scope",
         code: `function example() {\n  /**\n   * @story docs/stories/010.0-EXAMPLE.story.md\n   * @req REQ-FN-LEVEL\n   * @supports REQ-SHARED\n   */\n  if (flag) {\n    // @story docs/stories/010.0-EXAMPLE.story.md\n    // @req REQ-BRANCH-SPECIFIC\n    // @supports REQ-SHARED\n    doThing();\n  }\n}`,
       },
       {
@@ -92,7 +92,7 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
         errors: [{ messageId: "redundantAnnotation" }],
       },
       {
-        name: "[REQ-SUPPORTS-COVERAGE][REQ-DUPLICATION-DETECTION] flags redundant statement with multiple fully-covered @supports pairs",
+        name: "[REQ-SCOPE-ANALYSIS][REQ-DUPLICATION-DETECTION] flags redundant statement with multiple fully-covered @supports pairs",
         code: `/**\n * @story docs/stories/009.0-EXAMPLE.story.md\n * @supports REQ-SUP-A, REQ-SUP-B\n */\nfunction example() {\n  // @story docs/stories/009.0-EXAMPLE.story.md\n  // @supports REQ-SUP-A, REQ-SUP-B\n  const supported = checkSupport();\n}`,
         output: `/**\n * @story docs/stories/009.0-EXAMPLE.story.md\n * @supports REQ-SUP-A, REQ-SUP-B\n */\nfunction example() {\n  const supported = checkSupport();\n}`,
         errors: [{ messageId: "redundantAnnotation" }],

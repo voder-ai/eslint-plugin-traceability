@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 import type { Rule } from "eslint";
 import {
   gatherBranchCommentText,

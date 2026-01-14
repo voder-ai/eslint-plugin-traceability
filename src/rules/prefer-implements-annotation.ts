@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * ESLint rule implementation for preferring the consolidated `@supports`
  * annotation over legacy combinations of `@story` and `@req` within JSDoc

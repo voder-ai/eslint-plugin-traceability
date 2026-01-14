@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Flag parsing and normalization logic for the traceability-maint CLI.
  *

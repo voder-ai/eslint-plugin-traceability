@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Shared `@req` detection helpers used by annotation-checker utilities.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

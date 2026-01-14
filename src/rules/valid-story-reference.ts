@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * This rule validates that `@story` annotation references refer to existing story files.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md

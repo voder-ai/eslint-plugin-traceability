@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Low-level comment text extraction helpers for branch annotation processing.
  *

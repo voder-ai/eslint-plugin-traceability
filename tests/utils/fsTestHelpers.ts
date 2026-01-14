@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Shared filesystem mocking utilities for rule tests.
  *

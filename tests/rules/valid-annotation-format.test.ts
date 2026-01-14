@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
  * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md

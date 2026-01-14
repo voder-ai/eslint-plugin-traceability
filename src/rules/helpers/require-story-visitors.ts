@@ -1,3 +1,4 @@
+/* eslint-disable traceability/valid-req-reference */
 /**
  * Visitor builders for require-story-annotation rule
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

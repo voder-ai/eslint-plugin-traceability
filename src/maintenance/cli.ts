@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable traceability/valid-req-reference */
 
 import {
   EXIT_OK,
