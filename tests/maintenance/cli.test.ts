@@ -1,13 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-DETECT - CLI detection of stale annotations
- * @req REQ-MAINT-VERIFY - CLI verification of annotations
- * @req REQ-MAINT-REPORT - CLI reporting of stale annotations
- * @req REQ-MAINT-UPDATE - CLI updating of annotation references
- * @req REQ-MAINT-SAFE - Clear exit codes and non-destructive dry-run
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-VERIFY REQ-MAINT-REPORT REQ-MAINT-UPDATE REQ-MAINT-SAFE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI REQ-MAINT-MANUAL-TRIGGER REQ-MAINT-UPDATE
  */
 import fs from "fs";
 import path from "path";
@@ -25,7 +19,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     process.chdir(originalCwd);
   });
 
-  it("[REQ-MAINT-DETECT] detect exits with code 0 and message when no stale annotations", () => {
+  it("[REQ-MAINT-CLI] detect exits with code 0 and message when no stale annotations", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -40,7 +34,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-VERIFY] verify exits with code 0 when annotations valid", () => {
+  it("[REQ-MAINT-CLI] verify exits with code 0 when annotations valid", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -63,7 +57,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-VERIFY] verify exits with code 1 and prints guidance when annotations are stale or invalid", () => {
+  it("[REQ-MAINT-CLI] verify exits with code 1 and prints guidance when annotations are stale or invalid", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -89,7 +83,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-REPORT] report prints human-readable summary and exits 0", () => {
+  it("[REQ-MAINT-CLI] report prints human-readable summary and exits 0", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -109,7 +103,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-REPORT] report prints 'nothing to report' when no stale annotations exist", () => {
+  it("[REQ-MAINT-CLI] report prints 'nothing to report' when no stale annotations exist", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -157,7 +151,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-SAFE] update requires --from and --to and exits 2 when missing", () => {
+  it("[REQ-MAINT-UPDATE] update requires --from and --to and exits 2 when missing", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -177,7 +171,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-SAFE] dry-run does not modify files and exits 0", () => {
+  it("[REQ-MAINT-UPDATE] dry-run does not modify files and exits 0", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -205,7 +199,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-SAFE] report exits 2 and prints error on invalid --format value", () => {
+  it("[REQ-MAINT-CLI] report exits 2 and prints error on invalid --format value", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -233,7 +227,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-DETECT] detect supports --json output", () => {
+  it("[REQ-MAINT-CLI] detect supports --json output", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -259,7 +253,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-DETECT] detect with non-existent --root exits 0 and reports no stale annotations", () => {
+  it("[REQ-MAINT-CLI] detect with non-existent --root exits 0 and reports no stale annotations", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -283,7 +277,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-SAFE] prints help and exits 0 when no subcommand is provided", () => {
+  it("[REQ-MAINT-CLI] prints help and exits 0 when no subcommand is provided", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
@@ -307,7 +301,7 @@ describe("Maintenance CLI (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     }
   });
 
-  it("[REQ-MAINT-SAFE] detect catches filesystem permission errors and exits 2 with prefixed error message", () => {
+  it("[REQ-MAINT-CLI] detect catches filesystem permission errors and exits 2 with prefixed error message", () => {
     const temp = createTempDir("maint-cli-");
     const dir = temp.dir;
     process.chdir(dir);
