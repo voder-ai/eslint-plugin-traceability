@@ -41,10 +41,28 @@
 - [x] Run linter to identify all files with malformed requirement IDs
 - [x] Add `/* eslint-disable traceability/valid-req-reference */` to top of each violating file (65 files, 441 errors)
 - [x] Commit: "chore(lint): enable valid-req-reference with baseline suppressions"
+
+**CRITICAL DOGFOODING PRINCIPLE**: If a plugin bug is discovered during this process:
+1. **STOP** suppressing the file
+2. **INVESTIGATE** the bug with proper root cause analysis (5 Whys methodology)
+3. **FIX** the bug in the plugin code
+4. **TEST** the fix thoroughly with new test cases
+5. **DOCUMENT** the bug discovery and fix in commit messages
+6. **RESUME** cleanup of the file once plugin is working correctly
+
+Bugs are valuable discoveries that improve the plugin - they must be fixed, not worked around.
+
 - [x] **FALSE ALARM RESOLVED**: Initially thought valid-req-reference rule failed with @supports format, but file was already clean and suppression was unused
-- [x] For each suppressed file (one at a time, 11/65 complete):
+- [x] For each suppressed file (one at a time, 14/65 complete):
+  - [x] src/maintenance/index.ts, batch.ts, utils.ts, cli.ts, report.ts, detect.ts, commands.ts, flags.ts - Fixed REQ-MAINT-* fake IDs (8 files)
+  - [x] src/utils/comment-text-helpers.ts - Removed unused suppression
+  - [x] src/utils/branch-validation.ts - Fixed REQ-TRACEABILITY-* fake IDs
+  - [x] src/utils/reqAnnotationDetection.ts - Removed unused suppression (file was already clean)
+  - [x] src/utils/branch-annotation-helpers.ts - Fixed REQ-DUAL-POSITION-DETECTION and removed REQ-TRACEABILITY-FIX-* fake IDs
+  - [x] src/utils/branch-annotation-report-helpers.ts - Fixed REQ-DUAL-POSITION-DETECTION suffix
+  - [x] src/index.ts - Removed REQ-MAINTENANCE-API-EXPORT, REQ-RULE-LIST, REQ-DYNAMIC-LOADING; fixed REQ-ERROR-HANDLING and REQ-PLUGIN-STRUCTURE story paths
   - [ ] Remove the eslint-disable comment from the file
-  - [ ] Fix malformed requirement IDs (add to story files or fix code references)
+  - [ ] Fix malformed requirement IDs (use actual requirements from story files, or remove if describing implementation details)
   - [ ] Run linter to verify file now passes
   - [ ] Run all tests to ensure no breakage
   - [ ] Commit: "chore(lint): correct requirement IDs in [filename]"

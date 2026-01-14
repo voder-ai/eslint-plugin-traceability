@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * ESLint Traceability Plugin
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
@@ -7,10 +6,6 @@
  */
 import type { Rule } from "eslint";
 
-/**
- * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINTENANCE-API-EXPORT - Expose maintenance utilities alongside core plugin exports
- */
 import {
   detectStaleAnnotations,
   updateAnnotationReferences,
@@ -19,10 +14,6 @@ import {
   generateMaintenanceReport,
 } from "./maintenance";
 
-/**
- * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
- * @req REQ-RULE-LIST - Enumerate supported rule file names for plugin discovery
- */
 const RULE_NAMES = [
   "require-traceability",
   "require-story-annotation",
@@ -38,60 +29,41 @@ const RULE_NAMES = [
 
 const rules: Record<string, Rule.RuleModule> = {} as any;
 
-RULE_NAMES.forEach(
-  /**
-   * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
-   * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
-   * @param {RuleName} name - Rule file base name used to discover and load rule module
-   */
-  (name) => {
+RULE_NAMES.forEach((name) => {
+  try {
+    // Dynamically require rule module
+    const mod = require(`./rules/${name}`);
+    // Support ESModule default export
+    rules[name] = mod.default ?? mod;
+  } catch (error: any) {
     /**
-     * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
-     * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
+     * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+     * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
      */
-    try {
-      /**
-       * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
-       * @req REQ-DYNAMIC-LOADING - Support dynamic rule loading by name at runtime
-       */
-      // Dynamically require rule module
-      const mod = require(`./rules/${name}`);
-      // Support ESModule default export
-      rules[name] = mod.default ?? mod;
-    } catch (error: any) {
-      /**
-       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
-       * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
-       */
-      /**
-       * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
-       * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
-       */
-      console.error(
-        `[eslint-plugin-traceability] Failed to load rule "${name}": ${error.message}`,
-      );
-      rules[name] = {
-        meta: {
-          type: "problem",
-          docs: {
-            description: `Failed to load rule '${name}'`,
+    console.error(
+      `[eslint-plugin-traceability] Failed to load rule "${name}": ${error.message}`,
+    );
+    rules[name] = {
+      meta: {
+        type: "problem",
+        docs: {
+          description: `Failed to load rule '${name}'`,
+        },
+        schema: [],
+      },
+      create(context: Rule.RuleContext) {
+        return {
+          Program(node: any) {
+            context.report({
+              node,
+              message: `eslint-plugin-traceability: Error loading rule "${name}": ${error.message}`,
+            });
           },
-          schema: [],
-        },
-        create(context: Rule.RuleContext) {
-          return {
-            Program(node: any) {
-              context.report({
-                node,
-                message: `eslint-plugin-traceability: Error loading rule "${name}": ${error.message}`,
-              });
-            },
-          };
-        },
-      } as Rule.RuleModule;
-    }
-  },
-);
+        };
+      },
+    } as Rule.RuleModule;
+  }
+});
 
 /**
  * Wire up the unified function-annotation rule and its backward-compatible
@@ -301,12 +273,8 @@ const TRACEABILITY_RULE_SEVERITIES: Readonly<Record<string, "error" | "warn">> =
   } as const;
 
 /**
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @req REQ-PLUGIN-STRUCTURE - Provide foundational plugin export and registration
- * @req REQ-ERROR-SEVERITY - Map rule types to appropriate ESLint severity levels (errors vs warnings)
- * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
- * @req REQ-CONFIG-PRESETS - Provide flat-config presets that self-register the plugin and core rules
- *
+ * Create flat config preset for ESLint v9.
+ * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SEVERITY
  * @supports docs/stories/002.0-DEV-ESLINT-CONFIG.story.md REQ-CONFIG-PRESETS
  */
@@ -331,10 +299,6 @@ const configs = {
 
 plugin.configs = configs;
 
-/**
- * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINTENANCE-API-EXPORT - Expose maintenance utilities alongside core plugin exports
- */
 const maintenance = {
   detectStaleAnnotations,
   updateAnnotationReferences,
