@@ -1,9 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Node classification utilities for require-story rule
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - File-level header for node utility functions
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
  */
 import {
   getContainerKeyOrIdName,
@@ -13,7 +11,7 @@ import {
 /**
  * Check if a name is valid (not null, not empty, not "(anonymous)").
  *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 function isValidName(name: string | null): boolean {
   return typeof name === "string" && name.length > 0 && name !== "(anonymous)";
@@ -22,7 +20,7 @@ function isValidName(name: string | null): boolean {
 /**
  * Get name from VariableDeclarator parent.
  *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 function getNameFromVariableDeclarator(parent: any): string | null {
   if (parent.type === "VariableDeclarator" && parent.id) {
@@ -36,7 +34,7 @@ function getNameFromVariableDeclarator(parent: any): string | null {
 /**
  * Get name from Property parent.
  *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 function getNameFromProperty(parent: any): string | null {
   if (parent.type === "Property" && parent.key) {
@@ -51,7 +49,7 @@ function getNameFromProperty(parent: any): string | null {
  * Determine whether a node represents an anonymous arrow function expression
  * where the parent variable declarator has no explicit Identifier name.
  *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 export function isAnonymousArrowFunction(node: any): boolean {
   if (!node || node.type !== "ArrowFunctionExpression") {
@@ -76,7 +74,7 @@ export function isAnonymousArrowFunction(node: any): boolean {
 /**
  * Determine whether a function-like node is nested within another function.
  *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-NESTED-FUNCTION-INHERITANCE
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
  */
 export function isNestedFunction(node: any): boolean {
   let current = node?.parent;
@@ -101,7 +99,7 @@ export function isNestedFunction(node: any): boolean {
  * purposes of nested-function inheritance. Named functions must always carry
  * their own annotations, while anonymous nested functions may inherit.
  *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-NESTED-FUNCTION-INHERITANCE
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
  */
 export function isEffectivelyAnonymousFunction(node: any): boolean {
   // Check node itself for name (FunctionDeclaration, MethodDefinition, etc.)
@@ -126,8 +124,7 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 /**
  * Determine if a node is in an export declaration
  *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Check node ancestry to find export declarations
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-EXPORT-PRIORITY
  */
 export function isExportedNode(node: any): boolean {
   let p = node.parent;
@@ -146,8 +143,7 @@ export function isExportedNode(node: any): boolean {
 /**
  * Determine AST node where annotation should be inserted
  *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Determine correct insertion target for annotation
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-PRESERVE
  */
 export function resolveTargetNode(sourceCode: any, node: any): any {
   if (node.type === "TSMethodSignature") {
@@ -180,8 +176,7 @@ export function resolveTargetNode(sourceCode: any, node: any): any {
  * Resolve the node that should receive the `@story` annotation,
  * respecting an explicitly passed target when provided.
  *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Centralize annotation target node resolution
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-PRESERVE
  */
 export function resolveAnnotationTargetNode(
   sourceCode: any,
