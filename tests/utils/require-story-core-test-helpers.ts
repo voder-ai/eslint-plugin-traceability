@@ -1,8 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Shared test helpers for require-story-core branch coverage.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Provide reusable helpers to exercise autofix branches
+ *
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
  */
 /* global jest, expect */
  
