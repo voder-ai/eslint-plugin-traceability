@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 import type { Rule } from "eslint";
 import type { BranchType } from "./branch-annotation-helpers";
 
@@ -17,13 +16,13 @@ export function validateBranchTypes(
   /**
    * Conditional branch checking whether branchTypes option was provided.
    * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-TRACEABILITY-CONDITIONAL - Trace configuration branch existence check
+   * @req REQ-CONFIGURABLE-SCOPE - Trace configuration branch existence check
    */
   if (Array.isArray(options.branchTypes)) {
     /**
      * Predicate to determine whether a provided branch type is invalid.
      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-     * @req REQ-TRACEABILITY-FILTER-CALLBACK - Trace filter callback for invalid branch type detection
+     * @req REQ-CONFIGURABLE-SCOPE - Trace filter callback for invalid branch type detection
      */
     function isInvalidType(t: any): boolean {
       return !DEFAULT_BRANCH_TYPES.includes(t as BranchType);
@@ -33,19 +32,19 @@ export function validateBranchTypes(
     /**
      * Conditional branch checking whether any invalid types were found.
      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-     * @req REQ-TRACEABILITY-INVALID-DETECTION - Trace handling when invalid types are detected
+     * @req REQ-CONFIGURABLE-SCOPE - Trace handling when invalid types are detected
      */
     if (invalidTypes.length > 0) {
       /**
        * Program listener produced when configuration is invalid.
        * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-       * @req REQ-TRACEABILITY-PROGRAM-LISTENER - Trace Program listener reporting invalid config values
+       * @req REQ-CONFIGURABLE-SCOPE - Trace Program listener reporting invalid config values
        */
       function ProgramHandler(node: any) {
         /**
          * Report a single invalid type for the given Program node.
          * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-         * @req REQ-TRACEABILITY-FOR-EACH-CALLBACK - Trace reporting for each invalid type
+         * @req REQ-CONFIGURABLE-SCOPE - Trace reporting for each invalid type
          */
         function reportInvalidType(t: any) {
           context.report({
