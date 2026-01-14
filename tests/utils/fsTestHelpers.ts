@@ -1,9 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Shared filesystem mocking utilities for rule tests.
  *
- * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
- * @req REQ-TEST-UTILS-FS - Provide helpers to reduce duplication in fs-related tests
+ * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE REQ-ERROR-HANDLING
  */
 export function mockFsForExistingFile(
   fs: typeof import("fs"),
