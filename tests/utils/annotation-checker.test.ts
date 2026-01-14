@@ -1,10 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
- * @req REQ-TEST-UTILS-TS-LANG - Shared TS RuleTester language options helper
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT REQ-TEST-UTILS-TS-LANG
+ *
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT REQ-JSDOC-PARSING
  */
 import { RuleTester } from "eslint";
 import { checkReqAnnotation } from "../../src/utils/annotation-checker";
@@ -22,9 +19,7 @@ type AnnotationCheckerTestConfig = {
  * Shared helper for running tests that exercise the annotation-checker logic
  * for TypeScript constructs.
  *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
- * @req REQ-TEST-UTILS-TS-LANG - Shared TS RuleTester language options helper
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT REQ-JSDOC-PARSING
  */
 export function runAnnotationCheckerTests(
   ruleName: string,
@@ -52,13 +47,11 @@ const rule: any = {
   create(context: any) {
     return {
       /**
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
        */
       TSDeclareFunction: (node: any) => checkReqAnnotation(context, node),
       /**
-       * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-       * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
        */
       TSMethodSignature: (node: any) => checkReqAnnotation(context, node),
     };
