@@ -1,9 +1,8 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-IO-BEHAVIOR-EDGE-CASES - Edge-case behavior tests for IO helpers in require-story-io.ts
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-IO-BEHAVIOR-EDGE-CASES
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE
  */
 
 import {
