@@ -1,9 +1,6 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
- * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-VISITORS-BEHAVIOR - Behavior tests for visitors in require-story-visitors.ts
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-VISITORS-BEHAVIOR
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
+ * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
  */
 
 import { buildVisitors } from "../../src/rules/helpers/require-story-visitors";
