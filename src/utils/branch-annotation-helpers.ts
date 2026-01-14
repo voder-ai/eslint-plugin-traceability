@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 import type { Rule } from "eslint";
 import { reportMissingAnnotations } from "./branch-annotation-report-helpers";
 import { gatherLoopCommentText } from "./branch-annotation-loop-helpers";
@@ -242,7 +241,7 @@ function gatherNonIfBranchCommentText(
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-DEFAULT-BACKWARD-COMPAT
@@ -280,7 +279,7 @@ function gatherIfBranchCommentText(
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
@@ -322,7 +321,7 @@ function gatherBranchCommentTextByType(
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
  * @req REQ-COMMENT-ASSOCIATION - Associate inline comments with their corresponding code branches
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
 export function gatherBranchCommentText(
@@ -372,7 +371,6 @@ export function reportMissingStory(
   /**
    * Conditional branch deciding whether to offer an auto-fix for the missing story.
    * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-TRACEABILITY-FIX-DECISION - Trace decision to provide fixer for missing @story
    */
   if (storyFixCountRef.count === 0) {
     const insertStoryFixer = createStoryFixer({
@@ -413,13 +411,11 @@ export function reportMissingReq(
   /**
    * Conditional branch deciding whether to offer an auto-fix for the missing req.
    * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-   * @req REQ-TRACEABILITY-FIX-DECISION - Trace decision to provide fixer for missing @req
    */
   if (!missingStory) {
     /**
      * Fixer that inserts a default `@req` tag above the branch.
      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-     * @req REQ-TRACEABILITY-FIX-ARROW - Trace fixer function used to insert missing `@req`
      */
     function insertReqFixer(fxer: any) {
       return fxer.insertTextBeforeRange(
