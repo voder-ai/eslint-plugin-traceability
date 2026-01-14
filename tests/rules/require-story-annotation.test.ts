@@ -1,10 +1,14 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
- * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQUIRED - Verify require-story-annotation rule enforces @story annotation on functions
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Verify @supports annotation is accepted as satisfying story requirements
+ * Tests for:
+ * - docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * - docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * - docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
+ * - docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ *
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION REQ-TYPESCRIPT-SUPPORT REQ-TEST-CALLBACK-EXCLUSION REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-NESTED-FUNCTION-EXEMPTION
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-ALL-BLOCK-TYPES REQ-BEFORE-BRACE-ERROR
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-story-annotation";
@@ -17,7 +21,7 @@ const ruleTester = new RuleTester({
   languageOptions: tsRuleTesterLanguageOptions,
 } as any);
 
-describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)" /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */ /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */, () => {
+describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)" /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */, () => {
   ruleTester.run("require-story-annotation", rule, {
     valid: [
       {
@@ -25,7 +29,7 @@ describe("Require Story Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)" 
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction foo() {}`,
       },
       {
-        name: "[REQ-REQUIRE-ACCEPTS-IMPLEMENTS] valid with only @implements annotation",
+        name: "[REQ-REQUIRE-ACCEPTS-SUPPORTS] valid with only @supports annotation",
         code: `/**\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction implOnly() {}`,
       },
       {
@@ -59,11 +63,11 @@ declare function tsDecl(): void;`,
 }`,
       }),
       {
-        name: "[REQ-ARROW-FUNCTION-EXCLUDED] anonymous arrow callback in higher-order function is allowed without annotation",
+        name: "[REQ-FUNCTION-DETECTION] anonymous arrow callback in higher-order function is allowed without annotation",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction mapValues(items) {\n  return items.map(() => {\n    return 1;\n  });\n}`,
       },
       {
-        name: "[REQ-NESTED-FUNCTION-INHERITANCE] anonymous inner function inherits outer annotation",
+        name: "[REQ-NESTED-FUNCTION-EXEMPTION] anonymous inner function is allowed without its own annotation",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  const inner = function() {\n    return 1;\n  };\n  return inner();\n}`,
       },
       {
@@ -108,7 +112,7 @@ describe('Vitest suite', () => {
       },
       {
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-ALL-BLOCK-TYPES] function-level @supports annotation inside body is valid when annotationPlacement is 'inside'",
-        code: `function insideAnnotated() {\n  // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-FN\n  return 1;\n}`,
+        code: `function insideAnnotated() {\n  // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT\n  return 1;\n}`,
         options: [{ annotationPlacement: "inside" }],
       },
       withTsLanguageOptions({
@@ -206,7 +210,7 @@ describe('Vitest suite', () => {
         ],
       }),
       {
-        name: "[REQ-ARROW-FUNCTION-EXCLUDED] named arrow function must be annotated",
+        name: "[REQ-FUNCTION-DETECTION] named arrow function must be annotated",
         code: `const handler = () => {};`,
         output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nconst handler = () => {};`,
         errors: [
@@ -222,7 +226,7 @@ describe('Vitest suite', () => {
         ],
       },
       {
-        name: "[REQ-NESTED-FUNCTION-INHERITANCE] named inner function inside annotated outer must still be annotated",
+        name: "[REQ-NESTED-FUNCTION-EXEMPTION] named inner function inside annotated outer must still be annotated",
         code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  function innerNamed() {\n    return 1;\n  }\n  return innerNamed();\n}`,
         output: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction outer() {\n  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nfunction innerNamed() {\n    return 1;\n  }\n  return innerNamed();\n}`,
         errors: [
@@ -299,7 +303,7 @@ describe('Vitest suite', () => {
         ],
       },
       {
-        name: "[exportPriority][REQ-ARROW-FUNCTION-EXCLUDED] exported named arrow function must be annotated",
+        name: "[exportPriority][REQ-FUNCTION-DETECTION] exported named arrow function must be annotated",
         code: `export const arrowExported = () => {};`,
         output: `/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\nexport const arrowExported = () => {};`,
         options: [{ exportPriority: "exported" }],
