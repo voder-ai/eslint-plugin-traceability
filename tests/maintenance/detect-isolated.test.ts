@@ -1,9 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-DETECT - Detect stale annotation references
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI REQ-MAINT-MANUAL-TRIGGER
  */
 import * as path from "path";
 import * as os from "os";
@@ -11,12 +9,12 @@ import { detectStaleAnnotations } from "../../src/maintenance/detect";
 const fs = require("fs");
 
 describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  it("[REQ-MAINT-DETECT] returns empty array when directory does not exist", () => {
+  it("[REQ-MAINT-CLI] returns empty array when directory does not exist", () => {
     const result = detectStaleAnnotations("non-existent-dir");
     expect(result).toEqual([]);
   });
 
-  it("[REQ-MAINT-DETECT] detects stale annotations in nested directories", () => {
+  it("[REQ-MAINT-CLI] detects stale annotations in nested directories", () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-nested-"));
     try {
       const nestedDir = path.join(tmpDir, "nested");
@@ -44,7 +42,7 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
     }
   });
 
-  it("[REQ-MAINT-DETECT] handles permission denied errors by returning an empty result", () => {
+  it("[REQ-MAINT-CLI] handles permission denied errors by returning an empty result", () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-perm-"));
     const dir = path.join(tmpDir, "subdir");
     fs.mkdirSync(dir);
@@ -88,13 +86,13 @@ describe("detectStaleAnnotations isolated (Story 009.0-DEV-MAINTENANCE-TOOLS)", 
   });
 
   /**
-   * [REQ-MAINT-DETECT]
+   * [REQ-MAINT-CLI]
    * Ensure detectStaleAnnotations performs security validation for unsafe
    * and invalid-extension story paths and does not perform filesystem checks
    * for malicious `@story` paths that escape the workspace
    * (Story 009.0-DEV-MAINTENANCE-TOOLS).
    */
-  it("[REQ-MAINT-DETECT] performs security validation for unsafe and invalid-extension story paths without stat'ing outside workspace", () => {
+  it("[REQ-MAINT-CLI] performs security validation for unsafe and invalid-extension story paths without stat'ing outside workspace", () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "tmp-workspace-"));
     const maliciousRelative = "../outside-project.story.md";
     const maliciousAbsolute = "/etc/passwd.story.md";
