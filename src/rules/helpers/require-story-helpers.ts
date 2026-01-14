@@ -1,12 +1,9 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Helpers for the "require-story" rule
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ANNOTATION-REQUIRED - File-level header for rule helper utilities
- * @req REQ-AUTOFIX-MISSING
- * @req REQ-AUTOFIX-TEMPLATE
- * @req REQ-AUTOFIX-SELECTIVE
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-TEMPLATE
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SELECTIVE
  */
 import type { Rule } from "eslint";
 import {
@@ -106,7 +103,7 @@ function buildTemplateConfig(options?: ReportOptions): {
 
 /**
  * Determine whether a function node is required to carry its own annotation
- * according to Story 004.0-DEV-BRANCH-ANNOTATIONS rules.
+ * according to Story 003.0-DEV-FUNCTION-ANNOTATIONS rules.
  *
  * - Anonymous arrow functions used as callbacks are excluded from
  *   function-level annotation requirements.
@@ -115,11 +112,12 @@ function buildTemplateConfig(options?: ReportOptions): {
  *   annotation and therefore are not required to be annotated directly.
  * - Named nested functions must always carry their own explicit annotations.
  *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED REQ-NESTED-FUNCTION-INHERITANCE
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
  */
 /**
  * Determine whether a function node is required to carry its own annotation
- * according to Story 004.0-DEV-BRANCH-ANNOTATIONS rules.
+ * according to Story 003.0-DEV-FUNCTION-ANNOTATIONS rules.
  *
  * - Anonymous arrow functions are excluded by default from function-level
  *   annotation requirements (REQ-FUNCTION-DETECTION#1).
@@ -128,7 +126,8 @@ function buildTemplateConfig(options?: ReportOptions): {
  *   annotation and therefore are not required to be annotated directly.
  * - Named nested functions must always carry their own explicit annotations.
  *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ARROW-FUNCTION-EXCLUDED REQ-NESTED-FUNCTION-INHERITANCE
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
  */
 function requiresOwnFunctionAnnotation(
   node: any,
@@ -258,9 +257,7 @@ function reportMethod(
 
 /**
  * Explicit exports for require-story-annotation helpers.
- *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
  */
 export {
   STORY_PATH,
