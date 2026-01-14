@@ -53,14 +53,16 @@
 Bugs are valuable discoveries that improve the plugin - they must be fixed, not worked around.
 
 - [x] **FALSE ALARM RESOLVED**: Initially thought valid-req-reference rule failed with @supports format, but file was already clean and suppression was unused
-- [x] For each suppressed file (one at a time, 14/65 complete):
+- [x] For each suppressed file (one at a time, 15/65 complete, all src/ files done):
   - [x] src/maintenance/index.ts, batch.ts, utils.ts, cli.ts, report.ts, detect.ts, commands.ts, flags.ts - Fixed REQ-MAINT-* fake IDs (8 files)
   - [x] src/utils/comment-text-helpers.ts - Removed unused suppression
   - [x] src/utils/branch-validation.ts - Fixed REQ-TRACEABILITY-* fake IDs
   - [x] src/utils/reqAnnotationDetection.ts - Removed unused suppression (file was already clean)
   - [x] src/utils/branch-annotation-helpers.ts - Fixed REQ-DUAL-POSITION-DETECTION and removed REQ-TRACEABILITY-FIX-* fake IDs
   - [x] src/utils/branch-annotation-report-helpers.ts - Fixed REQ-DUAL-POSITION-DETECTION suffix
-  - [x] src/index.ts - Removed REQ-MAINTENANCE-API-EXPORT, REQ-RULE-LIST, REQ-DYNAMIC-LOADING; fixed REQ-ERROR-HANDLING and REQ-PLUGIN-STRUCTURE story paths
+  - [x] src/index.ts - Removed REQ-MAINTENANCE-API-EXPORT, REQ-RULE-LIST, REQ-DYNAMIC-LOADING; fixed REQ-ERROR-HANDLING and REQ-PLUGIN-STRUCTURE story paths; converted multi-story annotation to @supports format
+  - [x] src/rules/require-req-annotation.ts - Removed REQ-CREATE-HOOK (ESLint implementation detail)
+- [ ] For each remaining suppressed test file (one at a time, 50 test files remain):
   - [ ] Remove the eslint-disable comment from the file
   - [ ] Fix malformed requirement IDs (use actual requirements from story files, or remove if describing implementation details)
   - [ ] Run linter to verify file now passes
