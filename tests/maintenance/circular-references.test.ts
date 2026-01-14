@@ -1,9 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for circular reference detection in maintenance reports
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-REPORT - Handle circular reference edge cases
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI REQ-MAINT-MANUAL-TRIGGER
  */
 import fs from "fs";
 import path from "path";
@@ -11,7 +9,7 @@ import os from "os";
 import { generateMaintenanceReport } from "../../src/maintenance/report";
 
 describe("Circular Reference Detection (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  describe("[REQ-MAINT-REPORT] detect circular story references", () => {
+  describe("[REQ-MAINT-CLI] detect circular story references", () => {
     it("should detect simple circular reference (A -> B -> A)", () => {
       const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "circular-simple-"));
       try {
