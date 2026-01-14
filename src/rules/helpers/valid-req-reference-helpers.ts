@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Helper utilities for the "valid-req-reference" rule.
  *
@@ -294,12 +293,8 @@ function validateImplementsLine(opts: {
 
 /**
  * Handle a single annotation line for story or requirement metadata.
- * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
- * @req REQ-DEEP-PARSE - Parse annotation lines for `@story`, `@req`, and `@supports` tags
- * @req REQ-DEEP-MATCH - Dispatch `@req` lines for validation against story requirements
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-SUPPORTS-VALIDATE - Dispatch `@supports` lines for validation
- * @req REQ-MIXED-SUPPORT - Support mixed annotation types without interfering with each other
+ * @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE REQ-DEEP-MATCH
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-VALIDATE REQ-MIXED-SUPPORT
  */
 function handleAnnotationLine(opts: {
   line: string;
