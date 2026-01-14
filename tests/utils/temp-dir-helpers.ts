@@ -1,8 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Shared temp directory helpers for maintenance tests.
- * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-TEMP-HELPERS - Provide reusable OS tempdir setup/cleanup utilities for tests
+ *
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
  */
 import * as fs from "fs";
 import * as os from "os";
@@ -13,7 +12,7 @@ export interface TempDirHandle {
   readonly dir: string;
   /**
    * Remove the directory recursively; safe to call multiple times.
-   * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
+   * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
    */
   cleanup(): void;
 }
@@ -25,7 +24,7 @@ export interface TempDirHandle {
  * multiple maintenance tests so those tests can focus on behavior instead
  * of filesystem plumbing.
  *
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-TEMP-HELPERS REQ-MAINT-SAFE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
  */
 export function createTempDir(prefix: string): TempDirHandle {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
