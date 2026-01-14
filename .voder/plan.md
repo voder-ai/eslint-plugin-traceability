@@ -36,18 +36,29 @@
 
 **Result**: Rule 2 complete! Fixed 2 plugin bugs, corrected 3 src/test files. Remaining suppressions are all intentional.
 
-### Rule 3: valid-req-reference (Requirement ID Validation)
-- [ ] Enable `traceability/valid-req-reference` at `error` for `src/**` and `tests/**`
-- [ ] Run linter to identify all files with malformed requirement IDs
-- [ ] Add `/* eslint-disable traceability/valid-req-reference */` to top of each violating file
-- [ ] Commit: "chore(lint): enable valid-req-reference with file suppressions"
-- [ ] For each suppressed file (one at a time):
+### Rule 3: valid-req-reference (Requirement ID Validation) 🔄 IN PROGRESS
+- [x] Enable `traceability/valid-req-reference` at `error` for `src/**` and `tests/**`
+- [x] Run linter to identify all files with malformed requirement IDs
+- [x] Add `/* eslint-disable traceability/valid-req-reference */` to top of each violating file (65 files, 441 errors)
+- [x] Commit: "chore(lint): enable valid-req-reference with baseline suppressions"
+- [ ] For each suppressed file (one at a time, 0/65 complete):
   - [ ] Remove the eslint-disable comment from the file
-  - [ ] Fix malformed requirement IDs (correct format/typos, or fix plugin bugs)
+  - [ ] Fix malformed requirement IDs (add to story files or fix code references)
   - [ ] Run linter to verify file now passes
   - [ ] Run all tests to ensure no breakage
   - [ ] Commit: "chore(lint): correct requirement IDs in [filename]"
 - [ ] Verify no files remain with suppressions for this rule
+
+**Analysis**: 441 validation errors across 65 files. Top issues:
+- REQ-MAINT-* variants (SAFE, DETECT, REPORT, VERIFY) - 113 errors - not in story 009
+- REQ-AUTOFIX-* variants - 44 errors - missing from relevant stories
+- REQ-ERROR-* variants - 31 errors - missing from story 007
+- Suggests story files need more granular requirements documented
+
+**Strategy**: This requires either:
+1. Adding missing requirements to story files (preferred - documents actual functionality)
+2. Fixing code to use correct requirement IDs from existing stories
+3. Some combination - verify which requirements are real vs placeholders
 
 ## NEXT
 
