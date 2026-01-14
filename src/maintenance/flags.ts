@@ -1,9 +1,8 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Flag parsing and normalization logic for the traceability-maint CLI.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 import path from "path";
 
@@ -13,7 +12,7 @@ import path from "path";
  * Separates Node/V8 internals from the actual subcommand and its arguments.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 export interface ParsedCliInput {
   /**
@@ -53,7 +52,7 @@ export interface ParsedCliInput {
  * @returns ParsedCliInput with node, script, subcommand, and remaining args.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 export function parseCliInput(argv: string[]): ParsedCliInput {
   const [node = "", script = "", ...rest] = argv;
@@ -68,7 +67,7 @@ export function parseCliInput(argv: string[]): ParsedCliInput {
  * subcommand name and its raw arguments for further flag parsing.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 export interface NormalizedCliArgs {
   /**
@@ -94,7 +93,7 @@ export interface NormalizedCliArgs {
  * @returns NormalizedCliArgs with subcommand and remaining args.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 export function normalizeCliArgs(rawArgv: string[]): NormalizedCliArgs {
   const { subcommand, args } = parseCliInput(rawArgv);
@@ -115,7 +114,7 @@ export interface ParsedFlags {
  * Initialize default flags for the maintenance CLI.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 function createDefaultFlags(): ParsedFlags {
   return {
@@ -128,7 +127,7 @@ function createDefaultFlags(): ParsedFlags {
  * Safely check if the next argument value exists and is a string.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 function isNextValueString(args: string[], index: number): boolean {
   return typeof args[index + 1] === "string";
@@ -138,7 +137,7 @@ function isNextValueString(args: string[], index: number): boolean {
  * Handle the --root flag, updating the root path if present.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 function handleRootFlag(
   flags: ParsedFlags,
@@ -157,7 +156,7 @@ function handleRootFlag(
  * Handle the --json flag, toggling JSON output when present.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 function handleJsonFlag(
   flags: ParsedFlags,
@@ -176,7 +175,7 @@ function handleJsonFlag(
  * Handle the --format flag, validating and setting the output format.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 function handleFormatFlag(
   flags: ParsedFlags,
@@ -201,7 +200,7 @@ function handleFormatFlag(
  * Handle the --from flag, capturing the starting reference if present.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 function handleFromFlag(
   flags: ParsedFlags,
@@ -220,7 +219,7 @@ function handleFromFlag(
  * Handle the --to flag, capturing the ending reference if present.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 function handleToFlag(
   flags: ParsedFlags,
@@ -239,7 +238,7 @@ function handleToFlag(
  * Handle the --dry-run flag, enabling dry-run mode when present.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 function handleDryRunFlag(
   flags: ParsedFlags,
@@ -280,7 +279,7 @@ function handleIgnorePatternFlag(
  * Handle a single CLI argument and update the flags accordingly.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 function applyFlag(flags: ParsedFlags, args: string[], index: number): number {
   const afterRoot = handleRootFlag(flags, args, index);
@@ -331,7 +330,7 @@ function applyFlag(flags: ParsedFlags, args: string[], index: number): number {
  * @returns ParsedFlags with defaults applied and any recognized flags set.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE - Provide predictable, minimal argument parsing
+ * @req REQ-MAINT-CLI - Provide predictable, minimal argument parsing
  */
 export function parseFlags(normalized: NormalizedCliArgs): ParsedFlags {
   const flags: ParsedFlags = createDefaultFlags();
