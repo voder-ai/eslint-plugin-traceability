@@ -1,9 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Shared IO helper tests for require-story-io behavior.
  *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-TEST-UTILS-IO - Provide reusable helpers for IO-related edge case tests
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
  */
 export function runFallbackTextBeforeHasStoryDetectsStoryTest(
   storyAnnotationOrFallbackFn:
