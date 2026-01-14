@@ -1,10 +1,8 @@
-/* eslint-disable traceability/valid-story-reference */
 /**
  * Integration tests for require-traceability with configurable test callback exclusion.
  *
  * @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION
- * @supports docs/stories/013.0-DEV-EXCLUDE-TEST-FRAMEWORK-CALLBACKS.story.md REQ-TEST-CALLBACK-EXCLUSION
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION REQ-TEST-CALLBACK-EXCLUSION
  */
 import { FlatESLint } from "eslint/use-at-your-own-risk";
 import traceabilityPlugin from "../../src/index";
