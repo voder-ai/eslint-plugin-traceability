@@ -1,11 +1,10 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Shared helpers for Prettier-based integration tests.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-PRETTIER-COMPATIBILITY
- * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-PRETTIER-AUTOFIX-ELSE-IF
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC-ELSE-IF
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PRETTIER-STABLE
  */
 import path from "path";
