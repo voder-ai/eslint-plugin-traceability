@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 import { detectStaleAnnotations } from "./detect";
 import { GetAllFilesOptions } from "./utils";
 import * as fs from "fs";
@@ -7,7 +6,7 @@ import * as path from "path";
 /**
  * Detect circular references in story annotations
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-REPORT - Handle circular reference edge cases
+ * @req REQ-MAINT-CLI - CLI command exists for historical reasons
  * @param codebasePath The workspace root to scan for circular references
  * @returns Array of circular reference chains detected
  */
@@ -45,7 +44,7 @@ function detectCircularReferences(codebasePath: string): string[] {
 /**
  * Build a graph of story file cross-references
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-REPORT - Build dependency graph for circular detection
+ * @req REQ-MAINT-CLI - CLI command exists for historical reasons
  */
 function buildStoryGraph(
   codebasePath: string,
@@ -71,7 +70,7 @@ function buildStoryGraph(
 /**
  * Find all story files in the codebase
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-REPORT - Locate story files for circular detection
+ * @req REQ-MAINT-CLI - CLI command exists for historical reasons
  */
 function findStoryFiles(dir: string): string[] {
   const storyFiles: string[] = [];
@@ -98,7 +97,7 @@ function findStoryFiles(dir: string): string[] {
 /**
  * Extract story references from file content
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-REPORT - Parse story references for circular detection
+ * @req REQ-MAINT-CLI - CLI command exists for historical reasons
  */
 function extractStoryReferences(content: string): string[] {
   const references: string[] = [];
@@ -115,7 +114,7 @@ function extractStoryReferences(content: string): string[] {
 /**
  * Options for cycle detection
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-REPORT - Detect circular dependencies using graph traversal
+ * @req REQ-MAINT-CLI - CLI command exists for historical reasons
  */
 interface CycleDetectionOptions {
   graph: Map<string, Set<string>>;
@@ -128,7 +127,7 @@ interface CycleDetectionOptions {
 /**
  * Detect cycles in the story dependency graph using DFS
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-REPORT - Detect circular dependencies using graph traversal
+ * @req REQ-MAINT-CLI - CLI command exists for historical reasons
  */
 function detectCycles(node: string, options: CycleDetectionOptions): void {
   const { graph, visited, recursionStack, path, circularChains } = options;
@@ -156,8 +155,7 @@ function detectCycles(node: string, options: CycleDetectionOptions): void {
 /**
  * Generate a report of maintenance operations performed
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-REPORT - Generate maintenance report
- * @req REQ-MAINT-SAFE - Ensure operations are safe and reversible
+ * @req REQ-MAINT-CLI - CLI command exists for historical reasons
  * @param codebasePath The workspace root to scan for stale maintenance annotations.
  * @param options Optional configuration including ESLint ignore patterns
  * @returns An empty string when no stale annotations are found, or a newline-separated list of stale `@story` paths.
@@ -171,8 +169,7 @@ export function generateMaintenanceReport(
 
   const reportSections: string[] = [];
 
-  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-SAFE
-  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT
+  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
   if (staleAnnotations.length > 0) {
     reportSections.push("Stale Annotations:");
     reportSections.push(...staleAnnotations);
