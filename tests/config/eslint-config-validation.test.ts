@@ -1,9 +1,8 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for ESLint config rule schemas.
  *
  * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
- * @supports docs/stories/002.0-DEV-ESLINT-CONFIG.story.md REQ-RULE-OPTIONS REQ-CONFIG-VALIDATION
+ * @supports docs/stories/002.0-DEV-ESLINT-CONFIG.story.md REQ-RULE-OPTIONS
  */
 
 import validStoryReference from "../../src/rules/valid-story-reference";
@@ -19,12 +18,12 @@ describe("ESLint Configuration Setup (Story 002.0-DEV-ESLINT-CONFIG)", () => {
     expect(schema.properties).toHaveProperty("requireStoryExtension");
   });
 
-  it("[REQ-CONFIG-VALIDATION] schema disallows unknown options", () => {
+  it("[REQ-RULE-OPTIONS] schema disallows unknown options", () => {
     const schema = ((validStoryReference.meta as any).schema as any)[0];
     expect(schema.additionalProperties).toBe(false);
   });
 
-  it("[REQ-CONFIG-VALIDATION] ESLint throws on unknown rule option", async () => {
+  it("[REQ-RULE-OPTIONS] ESLint throws on unknown rule option", async () => {
     const eslint = new FlatESLint({
       overrideConfig: [
         {
@@ -63,7 +62,7 @@ describe("ESLint Configuration Setup (Story 002.0-DEV-ESLINT-CONFIG)", () => {
     expect(message).toContain("unknownOptionKey");
   });
 
-  it("[REQ-CONFIG-VALIDATION] ESLint throws on invalid option type", async () => {
+  it("[REQ-RULE-OPTIONS] ESLint throws on invalid option type", async () => {
     const eslint = new FlatESLint({
       overrideConfig: [
         {
