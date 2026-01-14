@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 import { updateAnnotationReferences } from "./update";
 import { detectStaleAnnotations } from "./detect";
 import { GetAllFilesOptions } from "./utils";
@@ -7,9 +6,8 @@ import { GetAllFilesOptions } from "./utils";
  * Batch update annotations and verify references
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-BATCH - Perform batch updates
- * @req REQ-MAINT-VERIFY - Verify annotation references
- * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
- * @req REQ-MAINT-UPDATE#1 - Update @supports references alongside @story
+ * @req REQ-MAINT-UPDATE - Update annotation references
+ * @req REQ-MAINT-CLI - Provide CLI command interface
  * @param codebasePath Absolute path to the workspace root where annotations will be updated.
  * @param mappings Array of mapping objects describing path changes, each containing an oldPath and newPath.
  * @param options Optional configuration including ESLint ignore patterns
@@ -40,8 +38,8 @@ export function batchUpdateAnnotations(
 /**
  * Verify annotation references in codebase after maintenance operations
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-VERIFY - Verify annotation references
- * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
+ * @req REQ-MAINT-CLI - Provide CLI command interface
+ * @req REQ-MAINT-MANUAL-TRIGGER - Manual developer execution
  * @param codebasePath Absolute path to the workspace root whose annotations should be verified.
  * @param options Optional configuration including ESLint ignore patterns
  * @returns Boolean indicating whether there are no stale annotations remaining (true if clean, false if any remain).
