@@ -1,8 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Prettier integration tests for CatchClause annotation positions.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
- * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-PRETTIER-COMPATIBILITY
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
  */
 import path from "path";
 import { spawnSync } from "child_process";
@@ -39,7 +38,7 @@ describe("CatchClause annotations with Prettier (Story 025.0-DEV-CATCH-ANNOTATIO
     });
   }
 
-  it("[REQ-PRETTIER-COMPATIBILITY-BEFORE] accepts code where annotations start before catch but are moved inside by Prettier", () => {
+  it("[REQ-FALLBACK-LOGIC] accepts code where annotations start before catch but are moved inside by Prettier", () => {
     const original = `
 function doSomething() {
   return 42;
@@ -50,12 +49,12 @@ function handleError(error) {
 }
 
 // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-TRY
+// @req REQ-BRANCH-DETECTION
 try {
   doSomething();
 }
 // @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
-// @req REQ-CATCH-PATH
+// @req REQ-FALLBACK-LOGIC
 catch (error) {
   handleError(error);
 }
@@ -76,7 +75,7 @@ catch (error) {
     expect(result.status).toBe(0);
   });
 
-  it("[REQ-PRETTIER-COMPATIBILITY-INSIDE] accepts code where annotations start inside the catch body and are preserved by Prettier", () => {
+  it("[REQ-DUAL-POSITION-DETECTION] accepts code where annotations start inside the catch body and are preserved by Prettier", () => {
     const original = `
 function doSomething() {
   return 42;
@@ -87,12 +86,12 @@ function handleError(error) {
 }
 
 // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-TRY
+// @req REQ-BRANCH-DETECTION
 try {
   doSomething();
 } catch (error) {
   // @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
-  // @req REQ-CATCH-INSIDE
+  // @req REQ-DUAL-POSITION-DETECTION
   handleError(error);
 }
 `;
@@ -112,19 +111,19 @@ try {
     expect(result.status).toBe(0);
   });
 
-  it("[REQ-PRETTIER-COMPATIBILITY-EMPTY] accepts empty catch blocks with inside-catch annotations after Prettier formatting", () => {
+  it("[REQ-DUAL-POSITION-DETECTION] accepts empty catch blocks with inside-catch annotations after Prettier formatting", () => {
     const original = `
 function doSomething() {
   return 42;
 }
 
 // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-TRY
+// @req REQ-BRANCH-DETECTION
 try {
   doSomething();
 } catch (error) {
   // @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
-  // @req REQ-CATCH-EMPTY
+  // @req REQ-DUAL-POSITION-DETECTION
 }
 `;
 
