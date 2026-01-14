@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 /****
  * Rule to enforce `@req` annotation on functions
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -127,7 +126,6 @@ const rule: Rule.RuleModule = {
   },
   /**
    * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-CREATE-HOOK - Provide create(context) hook for rule behavior
    * @req REQ-FUNCTION-DETECTION - Detect function declarations, function expressions, and method definitions (including TS-specific nodes)
    * @req REQ-CONFIGURABLE-SCOPE - Respect configurable scope of which exports are checked
    * @req REQ-EXPORT-PRIORITY - Respect configurable export priority when determining which nodes to check
