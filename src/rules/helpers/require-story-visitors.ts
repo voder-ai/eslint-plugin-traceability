@@ -1,8 +1,8 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Visitor builders for require-story-annotation rule
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-EXTRACT-VISITORS - Extract visitor logic into helper module to reduce rule file size
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
  */
 
 import type { Rule } from "eslint";
@@ -14,8 +14,7 @@ import {
 
 /**
  * Build visitor for FunctionDeclaration nodes.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-BUILD-VISITORS-FNDECL - Provide visitor for FunctionDeclaration
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 function buildFunctionDeclarationVisitor(
   context: Rule.RuleContext,
@@ -29,8 +28,7 @@ function buildFunctionDeclarationVisitor(
    * console.debug statements here, but by default no debug logging runs so that
    * file paths and other details are not leaked during normal linting.
    *
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-REQUIRED - Report missing @story on function declarations
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleFunctionDeclaration(node: any) {
     if (!options.shouldProcessNode(node)) return;
@@ -54,8 +52,7 @@ function buildFunctionDeclarationVisitor(
 
 /**
  * Build visitor for FunctionExpression nodes.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-BUILD-VISITORS-FNEXPR - Provide visitor for FunctionExpression
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 function buildFunctionExpressionVisitor(
   context: Rule.RuleContext,
@@ -64,16 +61,13 @@ function buildFunctionExpressionVisitor(
 ): Rule.RuleListener {
   /**
    * Handle FunctionExpression nodes.
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-REQUIRED - Report missing @story on function expressions
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleFunctionExpression(node: any) {
     if (!options.shouldProcessNode(node)) return;
 
     /**
      * Do not report when function expression is a MethodDefinition
-     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-     * @req REQ-METHOD-SKIP - Skip MethodDefinition function expressions
      */
     if (node.parent && node.parent.type === "MethodDefinition") return;
 
@@ -96,8 +90,7 @@ function buildFunctionExpressionVisitor(
 
 /**
  * Build visitor for ArrowFunctionExpression nodes.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-BUILD-VISITORS-ARROW - Provide visitor for ArrowFunctionExpression
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 function buildArrowFunctionVisitor(
   context: Rule.RuleContext,
@@ -106,8 +99,7 @@ function buildArrowFunctionVisitor(
 ): Rule.RuleListener {
   /**
    * Handle ArrowFunctionExpression nodes.
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-REQUIRED - Report missing @story on arrow functions
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleArrowFunctionExpression(node: any) {
     if (!options.shouldProcessNode(node)) return;
@@ -130,8 +122,7 @@ function buildArrowFunctionVisitor(
 
 /**
  * Build visitor for TypeScript TSDeclareFunction nodes.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-BUILD-VISITORS-TSDECL - Provide visitor for TSDeclareFunction
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
  */
 function buildTSDeclareFunctionVisitor(
   context: Rule.RuleContext,
@@ -140,8 +131,7 @@ function buildTSDeclareFunctionVisitor(
 ): Rule.RuleListener {
   /**
    * Handle TSDeclareFunction nodes.
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-REQUIRED - Report missing @story on TS declare functions
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleTSDeclareFunction(node: any) {
     if (!options.shouldProcessNode(node)) return;
@@ -163,8 +153,7 @@ function buildTSDeclareFunctionVisitor(
 
 /**
  * Build visitor for TypeScript TSMethodSignature nodes.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-BUILD-VISITORS-TSMSIG - Provide visitor for TSMethodSignature
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
  */
 function buildTSMethodSignatureVisitor(
   context: Rule.RuleContext,
@@ -173,8 +162,7 @@ function buildTSMethodSignatureVisitor(
 ): Rule.RuleListener {
   /**
    * Handle TSMethodSignature nodes.
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-REQUIRED - Report missing @story on TS method signatures
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleTSMethodSignature(node: any) {
     if (!options.shouldProcessNode(node)) return;
@@ -198,8 +186,7 @@ function buildTSMethodSignatureVisitor(
 
 /**
  * Build visitor for MethodDefinition nodes.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-BUILD-VISITORS-METHODDEF - Provide visitor for MethodDefinition
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 function buildMethodDefinitionVisitor(
   context: Rule.RuleContext,
@@ -208,8 +195,7 @@ function buildMethodDefinitionVisitor(
 ): Rule.RuleListener {
   /**
    * Handle MethodDefinition nodes (class/object methods).
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-REQUIRED - Report missing @story on class/object methods
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleMethodDefinition(node: any) {
     if (!options.shouldProcessNode(node)) return;
@@ -232,8 +218,7 @@ function buildMethodDefinitionVisitor(
 /**
  * Build visitor handlers for various function-like AST nodes.
  * Returns merged listener object from smaller builders.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-BUILD-VISITORS - Provide visitor implementations for rule create()
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 export function buildVisitors(
   context: Rule.RuleContext,
