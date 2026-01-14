@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 import * as fs from "fs";
 import * as path from "path";
 
@@ -20,7 +19,6 @@ export interface GetAllFilesOptions {
 /**
  * Recursively retrieve all files in a directory.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-UTILS - Extract common file traversal logic for maintenance tools
  * @req REQ-MAINT-UPDATE - Support ESLint configuration integration
  * @param dir Root directory to scan
  * @param options Optional configuration including ignore patterns from ESLint config
@@ -34,12 +32,7 @@ export function getAllFiles(
   /**
    * Ensure the provided path exists and is a directory before traversal.
    * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-   * @req REQ-MAINT-UTILS-VALIDATE-DIR - Validate input directory path
-   */
-  /**
-   * Traceability for the directory-existence branch.
-   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-   * @req REQ-MAINT-UTILS-VALIDATE-DIR-BRANCH - Traceability for directory-existence branch
+   * @req REQ-MAINT-UPDATE - Support ESLint configuration integration
    */
   if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
     return fileList;
@@ -74,7 +67,6 @@ function shouldIgnore(filePath: string, ignorePatterns: string[]): boolean {
 /**
  * Recursively traverse a directory and collect file paths.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-UTILS-TRAVERSE - Helper traversal function used by getAllFiles
  * @req REQ-MAINT-UPDATE - Apply ignore patterns during traversal
  */
 function traverseDirectory(
@@ -83,11 +75,6 @@ function traverseDirectory(
   ignorePatterns: string[],
 ): void {
   const entries = fs.readdirSync(currentDir);
-  /**
-   * Iterate over directory entries using a for-of loop.
-   * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-   * @req REQ-MAINT-UTILS-TRAVERSE-FOROF - Traceability for ForOfStatement branch handling entries
-   */
   for (const entry of entries) {
     const fullPath = path.join(currentDir, entry);
 
@@ -101,24 +88,9 @@ function traverseDirectory(
     }
 
     const stat = fs.statSync(fullPath);
-    /**
-     * Recurse into directories to continue traversal.
-     * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-     * @req REQ-MAINT-UTILS-TRAVERSE-DIR - Handle directory entries during traversal
-     */
     if (stat.isDirectory()) {
       traverseDirectory(fullPath, fileList, ignorePatterns);
-      /**
-       * Collect regular file entries during traversal.
-       * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-       * @req REQ-MAINT-UTILS-TRAVERSE-FILE - Handle file entries during traversal
-       */
     }
-    /**
-     * Skip non-file entries encountered during traversal.
-     * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
-     * @req REQ-MAINT-UTILS-TRAVERSE-SKIP-NONFILE - Traceability for skipping non-file entries
-     */
     if (!stat.isFile()) {
       continue;
     }
