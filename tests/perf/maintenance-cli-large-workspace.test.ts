@@ -1,7 +1,6 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * CLI-level performance tests for maintenance tools on large workspaces.
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-REPORT REQ-MAINT-SAFE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
  */
 import * as fs from "fs";
 import * as os from "os";
@@ -109,7 +108,7 @@ export function cli_deep_example_${branchIndex}_${fileIndex}() {}
 }
 
 describe("Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  it("[REQ-MAINT-DETECT] detect --json completes within a generous time budget and returns JSON payload", () => {
+  it("[REQ-MAINT-CLI] detect --json completes within a generous time budget and returns JSON payload", () => {
     const { root, cleanup } = createCliLargeWorkspace();
     const originalCwd = process.cwd();
     process.chdir(root);
@@ -147,7 +146,7 @@ describe("Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS
     }
   });
 
-  it("[REQ-MAINT-REPORT] report --format=json completes within a generous time budget", () => {
+  it("[REQ-MAINT-CLI] report --format=json completes within a generous time budget", () => {
     const { root, cleanup } = createCliLargeWorkspace();
     const originalCwd = process.cwd();
     process.chdir(root);
@@ -185,7 +184,7 @@ describe("Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS
     }
   });
 
-  it("[REQ-MAINT-VERIFY] verify completes within a generous time budget and reports stale annotations", () => {
+  it("[REQ-MAINT-CLI] verify completes within a generous time budget and reports stale annotations", () => {
     const { root, cleanup } = createCliLargeWorkspace();
     const originalCwd = process.cwd();
     process.chdir(root);
@@ -218,7 +217,7 @@ describe("Maintenance CLI on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS
     }
   });
 
-  it("[REQ-MAINT-DETECT] detect traverses deeply nested directories within a generous time budget", () => {
+  it("[REQ-MAINT-CLI] detect traverses deeply nested directories within a generous time budget", () => {
     const { root, cleanup } = createDeepNestedCliWorkspace();
     const originalCwd = process.cwd();
     process.chdir(root);
