@@ -25,12 +25,12 @@
 - [x] Fix plugin bugs (missing @supports support, false positives from prose)
 - [x] Add `/* eslint-disable traceability/valid-story-reference */` to top of each violating file (6 files)
 - [x] Commit: "chore(lint): add baseline suppressions for valid-story-reference rule"
-- [ ] For each suppressed file (one at a time, 0/6 complete):
-  - [ ] src/rules/helpers/valid-annotation-format-validators.ts - template placeholder
-  - [ ] src/utils/annotation-scope-analyzer.ts - template placeholders  
-  - [ ] tests/fixtures/stale/example.ts - intentionally invalid (verify)
-  - [ ] tests/fixtures/update/example.ts - intentionally invalid (verify)
-  - [ ] tests/integration/require-traceability-test-callbacks.integration.test.ts - missing story
+- [x] For each suppressed file (one at a time, 5/6 complete):
+  - [x] src/rules/helpers/valid-annotation-format-validators.ts - fixed template placeholder
+  - [x] src/utils/annotation-scope-analyzer.ts - fixed template placeholders  
+  - [x] tests/fixtures/stale/example.ts - kept suppression (intentionally invalid for testing)
+  - [x] tests/fixtures/update/example.ts - kept suppression (intentionally invalid for testing)
+  - [x] tests/integration/require-traceability-test-callbacks.integration.test.ts - corrected story reference
   - [ ] tests/rules/no-redundant-annotation.test.ts - malformed test paths
 - [ ] Verify no files remain with suppressions for this rule
 
