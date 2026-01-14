@@ -1,22 +1,14 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
- * Tests for: docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md, docs/stories/007.0-DEV-ERROR-REPORTING.story.md, docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
- * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @req REQ-BRANCH-DETECTION - Verify require-branch-annotation rule enforces branch annotations
- * @req REQ-ERROR-SPECIFIC - Branch-level missing-annotation error messages are specific and informative
- * @req REQ-ERROR-CONSISTENCY - Branch-level missing-annotation error messages follow shared conventions
- * @req REQ-ERROR-SUGGESTION - Branch-level missing-annotation errors include suggestions when applicable
- * @req REQ-NESTED-HANDLING - Nested branch annotations are correctly enforced without duplicative reporting
- * @req REQ-SUPPORTS-ALTERNATIVE - Branches annotated only with @supports are treated as fully annotated
- * @req REQ-PLACEMENT-CONFIG - Rule supports configurable annotation placement modes
- * @req REQ-DEFAULT-BACKWARD-COMPAT - Default placement remains backward compatible with existing behavior
+ * Tests for:
+ * - docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+ * - docs/stories/007.0-DEV-ERROR-REPORTING.story.md
+ * - docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
+ * - docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ *
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION REQ-NESTED-HANDLING REQ-SUPPORTS-ALTERNATIVE
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION
  * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF REQ-POSITION-PRIORITY-ELSE-IF REQ-PRETTIER-AUTOFIX-ELSE-IF
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-BEFORE-BRACE-ERROR REQ-ALL-BLOCK-TYPES REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-branch-annotation";
@@ -36,7 +28,7 @@ const makeMissingAnnotationErrors = (...missing: Array<"@story" | "@req">) =>
 const runRule = (tests: Parameters<typeof ruleTester.run>[2]) =>
   ruleTester.run("require-branch-annotation", rule, tests);
 
-describe("Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)" /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */, () => {
+describe("Require Branch Annotation Rule (Story 004.0-DEV-BRANCH-ANNOTATIONS)" /** @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md */, () => {
   runRule({
     valid: [
       {
@@ -113,7 +105,7 @@ catch (error) {
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] try block annotated inside body under annotationPlacement: 'inside' (Story 028.0)",
         code: `try {
   // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-TRY-INSIDE-BRANCH
+  // @req REQ-INSIDE-BRACE-PLACEMENT
   doWork();
 } finally {
   cleanup();
@@ -221,7 +213,7 @@ if (condition) {}`,
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] for-of loop annotated inside block under annotationPlacement: 'inside' (Story 028.0)",
         code: `for (const item of items) {
   // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-LOOP-INSIDE
+  // @req REQ-INSIDE-BRACE-PLACEMENT
   process(item);
 }`,
         options: [{ annotationPlacement: "inside" }],
@@ -231,12 +223,12 @@ if (condition) {}`,
         code: `switch (value) {
   case 'a': {
     // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-    // @req REQ-SWITCH-CASE-INSIDE
+    // @req REQ-INSIDE-BRACE-PLACEMENT
     doSomething();
   }
   default: {
     // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-    // @req REQ-SWITCH-DEFAULT-INSIDE
+    // @req REQ-INSIDE-BRACE-PLACEMENT
     doDefault();
   }
 }`,
@@ -466,17 +458,17 @@ if (a) {
         // Current behavior: inside-only catch annotations do NOT satisfy try branch in inside-placement mode.
         name: "TODO-FUTURE-BEHAVIOR: [REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] catch clause annotated inside block under annotationPlacement: 'inside' (Story 028.0)",
         code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-TRY
+// @req REQ-BRANCH-DETECTION
 try {
   doSomething();
 } catch (error) {
   // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-INSIDE-CATCH
+  // @req REQ-INSIDE-BRACE-PLACEMENT
   handleError(error);
 }`,
         options: [{ annotationPlacement: "inside" }],
         output:
-          "\n\ntry {\n  // @story <story-file>.story.md\n  doSomething();\n} catch (error) {\n  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n  // @req REQ-INSIDE-CATCH\n  handleError(error);\n}",
+          "\n\ntry {\n  // @story <story-file>.story.md\n  doSomething();\n} catch (error) {\n  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n  // @req REQ-INSIDE-BRACE-PLACEMENT\n  handleError(error);\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
@@ -494,7 +486,7 @@ if (condition) {
       {
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-loop annotations ignored when annotationPlacement: 'inside' for loops",
         code: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-LOOP-BEFORE
+// @req REQ-BEFORE-BRACE-ERROR
 for (const item of items) {
   process(item);
 }`,
@@ -506,24 +498,24 @@ for (const item of items) {
       {
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-catch annotations ignored when annotationPlacement: 'inside' for CatchClause",
         code: `// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-TRY
+// @req REQ-BRANCH-DETECTION
 try {
   doSomething();
 }
 // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-CATCH-BEFORE
+// @req REQ-BEFORE-BRACE-ERROR
 catch (error) {
   handleError(error);
 }`,
         options: [{ annotationPlacement: "inside" }],
         output:
-          "\n\ntry {\n  // @story <story-file>.story.md\n  doSomething();\n}\n// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n// @req REQ-CATCH-BEFORE\ncatch (error) {\n  handleError(error);\n}",
+          "\n\ntry {\n  // @story <story-file>.story.md\n  doSomething();\n}\n// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n// @req REQ-BEFORE-BRACE-ERROR\ncatch (error) {\n  handleError(error);\n}",
         errors: makeMissingAnnotationErrors("@story", "@req", "@story", "@req"),
       },
       {
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-try annotations ignored when annotationPlacement: 'inside' for TryStatement (Story 028.0)",
         code: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-TRY-BEFORE
+// @req REQ-BEFORE-BRACE-ERROR
 try {
   doWork();
 } finally {
@@ -538,42 +530,42 @@ try {
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-else-if annotations ignored when annotationPlacement: 'inside' for else-if branch (Story 028.0)",
         code: `if (a) {
   // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-OUTER-IF-INSIDE
+  // @req REQ-INSIDE-BRACE-PLACEMENT
   doA();
 }
 // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-ELSE-IF-BEFORE
+// @req REQ-BEFORE-BRACE-ERROR
 else if (b) {
   doB();
 }`,
         options: [{ annotationPlacement: "inside" }],
         output:
-          "if (a) {\n  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n  // @req REQ-OUTER-IF-INSIDE\n  doA();\n}\n// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n// @req REQ-ELSE-IF-BEFORE\nelse if (b) {\n  // @story <story-file>.story.md\n  doB();\n}",
+          "if (a) {\n  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n  // @req REQ-INSIDE-BRACE-PLACEMENT\n  doA();\n}\n// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n// @req REQ-BEFORE-BRACE-ERROR\nelse if (b) {\n  // @story <story-file>.story.md\n  doB();\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] else-if branch annotated inside block but initial if branch missing annotation under annotationPlacement: 'inside' (Story 028.0)",
         code: `// @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-// @req REQ-INSIDE-OUTER-IF
+// @req REQ-INSIDE-BRACE-PLACEMENT
 if (a) {
   doA();
 } else if (b) {
   // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-INSIDE-ELSE-IF
+  // @req REQ-INSIDE-BRACE-PLACEMENT
   doB();
 } else {
   doC();
 }`,
         options: [{ annotationPlacement: "inside" }],
         output:
-          "\n\nif (a) {\n  // @story <story-file>.story.md\n  doA();\n} else if (b) {\n  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n  // @req REQ-INSIDE-ELSE-IF\n  doB();\n} else {\n  doC();\n}",
+          "\n\nif (a) {\n  // @story <story-file>.story.md\n  doA();\n} else if (b) {\n  // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md\n  // @req REQ-INSIDE-BRACE-PLACEMENT\n  doB();\n} else {\n  doC();\n}",
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
         name: "[REQ-INSIDE-BRACE-PLACEMENT][REQ-BEFORE-BRACE-ERROR][REQ-PLACEMENT-CONFIG] before-case annotations ignored when annotationPlacement: 'inside' for SwitchCase",
         code: `switch (value) {
   // @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
-  // @req REQ-SWITCH-BEFORE
+  // @req REQ-BEFORE-BRACE-ERROR
   case 'a': {
     doSomething();
   }
