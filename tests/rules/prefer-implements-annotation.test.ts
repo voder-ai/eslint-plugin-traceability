@@ -1,10 +1,6 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-OPTIONAL-WARNING - Verify rule emits recommendations for legacy @story/@req usage and migration to @supports
- * @req REQ-MULTI-STORY-DETECT - Verify rule detects multi-story and mixed-annotation patterns involving @supports
- * @req REQ-CONFIG-SEVERITY - Verify rule is disabled by default and can be enabled as warn/error
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX REQ-BACKWARD-COMPAT-VALIDATION REQ-RULE-NAME
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/prefer-implements-annotation";
@@ -19,23 +15,23 @@ const ruleTester = new RuleTester({
 describe("prefer-supports-annotation / prefer-implements-annotation aliasing (Story 010.3-DEV-MIGRATE-TO-SUPPORTS)", () => {
   const valid = [
     {
-      name: "[REQ-BACKWARD-COMP-VALIDATION] comment with only @story is ignored",
+      name: "[REQ-BACKWARD-COMPAT-VALIDATION] comment with only @story is ignored",
       code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n */\nfunction onlyStory() {}`,
     },
     {
-      name: "[REQ-BACKWARD-COMP-VALIDATION] comment with only @req is ignored",
+      name: "[REQ-BACKWARD-COMPAT-VALIDATION] comment with only @req is ignored",
       code: `/**\n * @req REQ-ONLY\n */\nfunction onlyReq() {}`,
     },
     {
-      name: "[REQ-BACKWARD-COMP-VALIDATION] comment with @supports only is ignored",
+      name: "[REQ-BACKWARD-COMPAT-VALIDATION] comment with @supports only is ignored",
       code: `/**\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction alreadyImplements() {}`,
     },
     {
-      name: "[REQ-BACKWARD-COMP-VALIDATION] comment with @story and @supports but no @req is ignored",
+      name: "[REQ-BACKWARD-COMPAT-VALIDATION] comment with @story and @supports but no @req is ignored",
       code: `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction storyAndSupportsNoReq() {}`,
     },
     {
-      name: "[REQ-BACKWARD-COMP-VALIDATION] comment with @req and @supports but no @story is ignored",
+      name: "[REQ-BACKWARD-COMPAT-VALIDATION] comment with @req and @supports but no @story is ignored",
       code: `/**\n * @req REQ-ANNOTATION-REQUIRED\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction reqAndSupportsNoStory() {}`,
     },
   ];
