@@ -1,32 +1,9 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
- * Tests for: docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @req REQ-FORMAT-SPECIFICATION - Verify valid-annotation-format rule enforces annotation format syntax
- * Tests for: docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @req REQ-ERROR-MESSAGES-CONSISTENT - Verify invalid annotation errors use consistent wording and structure
- * @req REQ-ERROR-MESSAGES-ACTIONABLE - Verify invalid annotation errors provide actionable guidance and examples
- * @req REQ-ERROR-MESSAGES-IDENTIFIERS - Verify invalid annotation errors echo the offending identifier/path in the message
- * Tests for: docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
- * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
- * @req REQ-CONFIGURABLE-PATTERNS-STORY - Rule supports configurable story path regex patterns
- * @req REQ-CONFIGURABLE-PATTERNS-REQ - Rule supports configurable requirement ID regex patterns
- * @req REQ-CONFIGURABLE-PATTERNS-EXAMPLES - Rule supports configurable example strings in error messages
- * @req REQ-CONFIGURABLE-PATTERNS-FALLBACK - Invalid regex patterns fall back to default behavior without crashing
- * Tests for: docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-SUPPORTS-PARSE - Rule parses @supports annotations with story and requirement references
- * @req REQ-FORMAT-VALIDATION - Rule validates story and requirement formats inside @supports annotations
- * @req REQ-MIXED-SUPPORT - Rule supports mixed @story/@req/@supports usage in the same comment
- * Tests for: docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
- * @story docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md
- * @req REQ-JSDOC-TAG-COEXISTENCE - Rule allows traceability annotations to coexist with other JSDoc tags
- * @req REQ-ANNOTATION-TERMINATION - Rule correctly terminates traceability annotation values at JSDoc tag boundaries
- * @req REQ-JSDOC-BOUNDARY-DETECTION - Rule detects @param/@returns and similar tags as boundaries
- * @req REQ-CONTINUATION-LOGIC - Rule correctly decides when to continue or stop multi-line traceability values
- * @req REQ-NO-FALSE-POSITIVES - Rule does not report false positives when JSDoc tags follow traceability tags
- * @req REQ-PRESERVE-MULTILINE - Rule preserves multi-line story/req values without including following JSDoc tags
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FORMAT-SPECIFICATION
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION REQ-ERROR-CONTEXT
+ * @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-PATTERN-CONFIG REQ-REGEX-VALIDATION REQ-EXAMPLE-MESSAGES REQ-BACKWARD-COMPAT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
+ * @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md REQ-JSDOC-TAG-COEXISTENCE REQ-ANNOTATION-TERMINATION REQ-JSDOC-BOUNDARY-DETECTION REQ-CONTINUATION-LOGIC REQ-NO-FALSE-POSITIVES REQ-PRESERVE-MULTILINE
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/valid-annotation-format";
