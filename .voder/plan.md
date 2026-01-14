@@ -41,7 +41,8 @@
 - [x] Run linter to identify all files with malformed requirement IDs
 - [x] Add `/* eslint-disable traceability/valid-req-reference */` to top of each violating file (65 files, 441 errors)
 - [x] Commit: "chore(lint): enable valid-req-reference with baseline suppressions"
-- [ ] For each suppressed file (one at a time, 0/65 complete):
+- [x] **FALSE ALARM RESOLVED**: Initially thought valid-req-reference rule failed with @supports format, but file was already clean and suppression was unused
+- [x] For each suppressed file (one at a time, 11/65 complete):
   - [ ] Remove the eslint-disable comment from the file
   - [ ] Fix malformed requirement IDs (add to story files or fix code references)
   - [ ] Run linter to verify file now passes
