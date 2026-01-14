@@ -1,13 +1,12 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Subcommand handlers for the traceability-maint CLI.
  *
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-DETECT - CLI support for detection of stale annotations.
- * @req REQ-MAINT-VERIFY - CLI support for verification of annotations
- * @req REQ-MAINT-REPORT - CLI support for human-readable reports
+ * @req REQ-MAINT-CLI - CLI support for detection of stale annotations.
+ * @req REQ-MAINT-CLI - CLI support for verification of annotations
+ * @req REQ-MAINT-CLI - CLI support for human-readable reports
  * @req REQ-MAINT-UPDATE - CLI support for updating annotation references
- * @req REQ-MAINT-SAFE - Provide clear exit codes and avoid unsafe defaults
+ * @req REQ-MAINT-CLI - Provide clear exit codes and avoid unsafe defaults
  */
 import { detectStaleAnnotations } from "./detect";
 import { verifyAnnotations } from "./batch";
@@ -22,10 +21,10 @@ export const EXIT_USAGE = 2;
 /**
  * Handle the `detect` subcommand for stale story annotations.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-DETECT - CLI surface for detection of stale annotations
- * @req REQ-MAINT-SAFE - Return specific exit codes for stale vs clean states
+ * @req REQ-MAINT-CLI - CLI surface for detection of stale annotations
+ * @req REQ-MAINT-CLI - Return specific exit codes for stale vs clean states
  * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-SAFE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI REQ-MAINT-CLI
  */
 export function handleDetect(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
@@ -58,10 +57,10 @@ Run 'traceability-maint report' for a structured summary.`,
 /**
  * Handle the `verify` subcommand to validate traceability annotations.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-VERIFY - CLI surface for verification of annotations
- * @req REQ-MAINT-SAFE - Return distinct exit codes for verification failures
+ * @req REQ-MAINT-CLI - CLI surface for verification of annotations
+ * @req REQ-MAINT-CLI - Return distinct exit codes for verification failures
  * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-VERIFY REQ-MAINT-SAFE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI REQ-MAINT-CLI
  */
 export function handleVerify(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
@@ -85,10 +84,10 @@ export function handleVerify(normalized: NormalizedCliArgs): number {
 /**
  * Handle the `report` subcommand to generate a maintenance report.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-REPORT - CLI surface for human-readable maintenance reports
- * @req REQ-MAINT-SAFE - Support machine-readable formats for safe automation
+ * @req REQ-MAINT-CLI - CLI surface for human-readable maintenance reports
+ * @req REQ-MAINT-CLI - Support machine-readable formats for safe automation
  * @req REQ-MAINT-UPDATE - Integrate with ESLint configuration
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-REPORT REQ-MAINT-SAFE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI REQ-MAINT-CLI
  */
 export function handleReport(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
@@ -117,7 +116,7 @@ export function handleReport(normalized: NormalizedCliArgs): number {
 /**
  * Handle dry-run mode for update command
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-SAFE
+ * @req REQ-MAINT-CLI
  */
 function handleUpdateDryRun(
   root: string,
@@ -156,8 +155,8 @@ function handleUpdateDryRun(
  * Handle the `update` subcommand to rewrite story annotation references.
  * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
  * @req REQ-MAINT-UPDATE - CLI surface for updating annotation references
- * @req REQ-MAINT-SAFE - Provide dry-run mode and explicit parameter checks
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE REQ-MAINT-SAFE
+ * @req REQ-MAINT-CLI - Provide dry-run mode and explicit parameter checks
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE REQ-MAINT-CLI
  */
 export function handleUpdate(normalized: NormalizedCliArgs): number {
   const flags = parseFlags(normalized);
