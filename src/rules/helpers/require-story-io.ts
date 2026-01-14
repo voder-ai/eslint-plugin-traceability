@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * IO helpers for require-story detection moved to reduce helper module size
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -22,10 +21,8 @@ export const FALLBACK_WINDOW = 800;
 /**
  * Shared predicate to determine if a given comment node contains an `@story` marker.
  * Also treats `@supports` annotations as satisfying story presence checks.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQUIRED - Centralize `@story` detection logic for comment value inspection
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Treat `@supports` annotations as satisfying story presence checks
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
  */
 function commentContainsStory(comment: any): boolean {
   if (typeof comment?.value !== "string") {
@@ -62,9 +59,8 @@ function getNodeStartLine(node: any): number | null {
 
 /**
  * Generic helper to scan a range of physical source lines for the presence of an `@story` marker.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Reuse line scanning logic for story annotations across helpers
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Accept `@supports` annotations as valid markers during line scanning
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
  */
 function scanLinesForMarker(
   lines: string[],
@@ -79,7 +75,7 @@ function scanLinesForMarker(
     // Treat any line containing `@story` or `@supports` as evidence that the function is already annotated.
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
     // @req REQ-ANNOTATION-REQUIRED - Detect explicit `@story` markers in raw source text
-    // @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Detect explicit `@supports` markers in raw source text
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     if (
       typeof text === "string" &&
       (text.includes("@story") || text.includes("@supports"))
@@ -199,10 +195,8 @@ function getFallbackTextWindow(
 /**
  * Detect whether the provided fallback text window contains a story marker.
  * Recognizes both `@story` and `@supports` annotations in the inspected text.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQUIRED - Recognize story annotations discovered via fallback text scanning
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Recognize `@supports` annotations discovered via fallback text scanning
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
  */
 function fallbackTextHasMarker(textBefore: string | null): boolean {
   if (typeof textBefore !== "string") {
@@ -214,10 +208,8 @@ function fallbackTextHasMarker(textBefore: string | null): boolean {
 /**
  * Fallback: inspect text immediately preceding the node in sourceCode.getText to find `@story`
  * Also accepts `@supports` annotations as satisfying story presence for this rule.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-ANNOTATION-REQUIRED - Provide fallback textual inspection when other heuristics fail
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Treat `@supports` annotations as satisfying story presence in fallback checks
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
  */
 export function fallbackTextBeforeHasStory(
   sourceCode: any,
