@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Low-level comment text extraction helpers for branch annotation processing.
  *
@@ -9,7 +8,7 @@
 /**
  * Extract the raw value from a comment node.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
- * @req REQ-TRACEABILITY-MAP-CALLBACK - Trace mapping of comment nodes to their text values
+ * @req REQ-COMMENT-ASSOCIATION - Extract and normalize comment text from various comment node types
  */
 export function extractCommentValue(_c: any): string {
   return _c.value;
