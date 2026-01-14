@@ -1,11 +1,9 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Compute the insertion start offset for inserting annotations before a node.
  * This helper ensures we insert before any export wrapper when present, while
  * remaining resilient to malformed or unexpected AST structures.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX
- * @req REQ-AUTOFIX-SAFE
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
  */
 function getInsertionStart(candidate: any): number {
   if (!candidate || typeof candidate !== "object") {
@@ -37,15 +35,15 @@ function getInsertionStart(candidate: any): number {
  * Create a fixer function that inserts a `@story` annotation before the target node.
  * This fixer is responsible for placing the annotation immediately before the
  * resolved target node in the source code.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Provide automatic fix function for missing `@story` annotations
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-TEMPLATE
  */
 export function createAddStoryFix(target: any, annotationTemplate: string) {
   /**
    * Fixer that inserts a `@story` annotation before the target node.
    * This inner fixer is used by ESLint to apply the actual code modification.
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-AUTOFIX - Provide automatic fix function for missing `@story` annotations
+   * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
+   * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-TEMPLATE
    */
 
   function addStoryFixer(fixer: any) {
@@ -62,16 +60,16 @@ export function createAddStoryFix(target: any, annotationTemplate: string) {
  * Create a fixer function for class method annotations.
  * This helper ensures that the `@story` annotation is inserted with appropriate
  * indentation and placement before a class method declaration.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-TEMPLATE
  */
 export function createMethodFix(node: any, annotationTemplate: string) {
   /**
    * Fixer that inserts a `@story` annotation before a method node.
    * This inner fixer handles inserting the annotation with method-friendly
    * formatting and spacing.
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-AUTOFIX - Provide automatic fix for class method annotations
+   * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
+   * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-TEMPLATE
    */
 
   function methodFixer(fixer: any) {
@@ -88,8 +86,7 @@ export function createMethodFix(node: any, annotationTemplate: string) {
  * Default set of node types to check for missing `@story` annotations.
  * This default scope covers common function-like declarations used in typical
  * TypeScript and JavaScript codebases.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Provide sensible default scope for rule checks
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
  */
 export const DEFAULT_SCOPE: string[] = [
   "FunctionDeclaration",
@@ -104,8 +101,7 @@ export const DEFAULT_SCOPE: string[] = [
  * Path to the story file for function-annotation helpers.
  * This constant centralizes the reference to the canonical documentation story
  * used by these helpers.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Provide a single source of truth for the canonical story path used by helper modules
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
  */
 export const STORY_PATH =
   "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md";
@@ -152,7 +148,7 @@ type ReportDeps = {
  * Safely execute a reporting operation, swallowing unexpected errors so that
  * traceability rules never break ESLint runs. When TRACEABILITY_DEBUG=1 is
  * set in the environment, a diagnostic message is logged to stderr.
- * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-RESILIENCE
+ * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
  */
 function withSafeReporting(label: string, fn: () => void): void {
   try {
@@ -172,8 +168,8 @@ function withSafeReporting(label: string, fn: () => void): void {
  * Build the shared ESLint report descriptor for a missing story annotation.
  * This keeps the core helpers focused on computing names, targets, and
  * templates while centralizing the diagnostic wiring.
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ERROR-SPECIFIC
- * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-RESILIENCE
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SUGGESTION
  */
 function createMissingStoryReportDescriptor(config: {
   nameNode: any;
@@ -219,12 +215,9 @@ function resolveAnnotationPlacement(
  * Core helper to report a missing `@story` annotation for a function-like node.
  * This reporting utility delegates behavior to injected dependencies so that
  * higher-level helpers can stay small while sharing error-reporting logic.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ANNOTATION-REQUIRED
- * @req REQ-AUTOFIX-MISSING
- * @req REQ-ERROR-SPECIFIC
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
  */
 export function coreReportMissing(
   deps: ReportDeps,
@@ -280,12 +273,9 @@ export function coreReportMissing(
  * Core helper to report a missing `@story` annotation for a method-like node.
  * This method-focused reporting utility uses injected dependencies while
  * keeping this module centered on core error-reporting behavior.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ANNOTATION-REQUIRED
- * @req REQ-AUTOFIX-MISSING
- * @req REQ-ERROR-SPECIFIC
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
  */
 export function coreReportMethod(
   deps: ReportDeps,
