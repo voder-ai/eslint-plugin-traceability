@@ -1,9 +1,5 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
- * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-AUTOFIX - Verify createMethodFix and reportMethod behaviors
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-AUTOFIX
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-PRESERVE
  */
 import { createMethodFix } from "../../src/rules/helpers/require-story-core";
 import {
