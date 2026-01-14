@@ -1,7 +1,8 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Performance and stress tests for maintenance tools on large workspaces.
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-DETECT REQ-MAINT-VERIFY REQ-MAINT-REPORT REQ-MAINT-UPDATE REQ-MAINT-BATCH
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-BATCH
  */
 import * as fs from "fs";
 import * as os from "os";
@@ -81,7 +82,7 @@ export function example_${moduleIndex}_${fileIndex}() {}
 }
 
 describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
-  it("[REQ-MAINT-DETECT] detectStaleAnnotations completes within a generous time budget", () => {
+  it("[REQ-MAINT-CLI] detectStaleAnnotations completes within a generous time budget", () => {
     const workspace = createLargeWorkspace();
     try {
       const start = performance.now();
@@ -98,7 +99,7 @@ describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOO
     }
   });
 
-  it("[REQ-MAINT-VERIFY] verifyAnnotations remains fast on large workspaces", () => {
+  it("[REQ-MAINT-CLI] verifyAnnotations remains fast on large workspaces", () => {
     const workspace = createLargeWorkspace();
     try {
       const start = performance.now();
@@ -113,7 +114,7 @@ describe("Maintenance tools on large workspaces (Story 009.0-DEV-MAINTENANCE-TOO
     }
   });
 
-  it("[REQ-MAINT-REPORT] generateMaintenanceReport produces output within a generous time budget", () => {
+  it("[REQ-MAINT-CLI] generateMaintenanceReport produces output within a generous time budget", () => {
     const workspace = createLargeWorkspace();
     try {
       const start = performance.now();
