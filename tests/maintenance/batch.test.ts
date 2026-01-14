@@ -1,10 +1,6 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
- * @req REQ-MAINT-BATCH - Perform batch updates
- * @req REQ-MAINT-VERIFY - Verify annotation references
- * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-BATCH REQ-MAINT-VERIFY
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-BATCH REQ-MAINT-UPDATE REQ-MAINT-CLI REQ-MAINT-MANUAL-TRIGGER
  */
 import * as fs from "fs";
 import * as path from "path";
@@ -51,7 +47,7 @@ describe("verifyAnnotations (Story 009.0-DEV-MAINTENANCE-TOOLS)", () => {
     temp.cleanup();
   });
 
-  it("[REQ-MAINT-VERIFY] should return true when annotations are valid", () => {
+  it("[REQ-MAINT-CLI] should return true when annotations are valid", () => {
     const valid = verifyAnnotations(temp.dir);
     expect(valid).toBe(true);
   });
