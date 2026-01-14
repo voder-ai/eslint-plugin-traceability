@@ -1,16 +1,8 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REQUIRED - Verify require-req-annotation rule enforces @req on functions
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @req REQ-ERROR-SPECIFIC - Verify enhanced, specific error messaging behavior
- *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-TYPESCRIPT-SUPPORT - Verify TypeScript declarations are checked via shared annotation checker helper
- *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-REQUIRE-ACCEPTS-IMPLEMENTS - Verify @supports is accepted as satisfying requirement annotations
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-TYPESCRIPT-SUPPORT REQ-FUNCTION-DETECTION REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
  */
 import { RuleTester } from "eslint";
 import rule from "../../src/rules/require-req-annotation";
@@ -79,7 +71,7 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
         code: `/**\n * @req REQ-EXAMPLE\n */\nfunction foo() {}`,
       },
       {
-        name: "[REQ-REQUIRE-ACCEPTS-IMPLEMENTS] valid with only @implements annotation",
+        name: "[REQ-REQUIRE-ACCEPTS-SUPPORTS] valid with only @supports annotation",
         code: `/**\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction implOnly() {}`,
       },
       {
@@ -168,7 +160,7 @@ describe("Require Req Annotation Rule (Story 003.0-DEV-FUNCTION-ANNOTATIONS)", (
     ],
     invalid: [
       {
-        name: "[REQ-ANNOTATION-REQUIRED][REQ-REQUIRE-ACCEPTS-IMPLEMENTS] missing @req on function without JSDoc remains invalid under multi-story support",
+        name: "[REQ-ANNOTATION-REQUIRED][REQ-REQUIRE-ACCEPTS-SUPPORTS] missing @req on function without JSDoc remains invalid under multi-story support",
         code: `function baz() {}`,
         errors: [missingReq("baz")],
       },
