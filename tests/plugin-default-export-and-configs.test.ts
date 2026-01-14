@@ -1,12 +1,9 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
- * Tests for: docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
+ * Tests for plugin exports and configs.
+ *
  * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE REQ-RULE-REGISTRY REQ-CONFIG-SYSTEM
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SEVERITY
- * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @req REQ-PLUGIN-STRUCTURE - Validate plugin default export and configs in src/index.ts
- * @req REQ-ERROR-SEVERITY - Validate error severity configuration in plugin configs
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-CONFIGURABLE-SCOPE
  */
 import plugin, { rules, configs } from "../src/index";
 
