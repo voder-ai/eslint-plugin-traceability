@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * ESLint rule module: require-story-annotation
  *
@@ -7,12 +6,8 @@
  * Example: see docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md for function annotations,
  * and docs/stories/008.0-DEV-AUTO-FIX.story.md for auto-fix behavior.
  *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ANNOTATION-REQUIRED
- * @req REQ-AUTOFIX-MISSING - This rule supports auto-fixing missing `@story` annotations per Story 008.0 auto-fix behavior.
- * @req REQ-AUTOFIX-SAFE - Auto-fix behavior only inserts `@story` annotation JSDoc comments and never changes executable or runtime code.
- * @req REQ-AUTOFIX-PRESERVE - Auto-fix inserts a minimal placeholder JSDoc in a way that preserves existing surrounding formatting and structure.
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY REQ-TEST-CALLBACK-EXCLUSION
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-SAFE REQ-AUTOFIX-PRESERVE REQ-AUTOFIX-TEMPLATE REQ-AUTOFIX-SELECTIVE
  */
 import type { Rule } from "eslint";
 import { buildVisitors } from "./helpers/require-story-visitors";
@@ -75,14 +70,10 @@ function getNormalizedOptions(context: Rule.RuleContext) {
  * configurable annotation placement, including inside-brace function annotations
  * when configured.
  *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @req REQ-ANNOTATION-REQUIRED
- * @req REQ-AUTOFIX-MISSING - This rule participates in auto-fix for missing `@story` annotations.
- * @req REQ-ERROR-MSG-CONTENT - Error message instructs adding an explicit `@story` annotation that points to the implementing story file.
- * @req REQ-ERROR-MSG-PLACEHOLDER - Error message retains the {{name}} placeholder while also providing functionName in the data payload for cross-rule consistency.
- * @req REQ-ERROR-MSG-ACTIONABLE - Error message text is concise, imperative, and describes the required remediation.
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY REQ-ERROR-LOCATION
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-SUGGESTION REQ-ERROR-CONSISTENCY
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-TEMPLATE REQ-AUTOFIX-SELECTIVE
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT REQ-ALL-BLOCK-TYPES
  */
 const rule: Rule.RuleModule = {
   meta: {
@@ -94,11 +85,7 @@ const rule: Rule.RuleModule = {
     },
     hasSuggestions: true,
     /**
-     * Auto-fix support for inserting `@story` annotations.
-     *
-     * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-     * @req REQ-ANNOTATION-REQUIRED
-     * @req REQ-AUTOFIX-MISSING - `fixable: \"code\"` is used to implement REQ-AUTOFIX-MISSING for missing `@story` annotations.
+     * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-SAFE REQ-AUTOFIX-PRESERVE
      * @req REQ-AUTOFIX-SAFE - Auto-fix is conservative and only adds a single-line JSDoc `@story` annotation without modifying existing runtime expressions.
      * @req REQ-AUTOFIX-PRESERVE - Auto-fix behavior preserves surrounding code formatting and indentation when inserting the placeholder JSDoc.
      */
@@ -141,10 +128,8 @@ const rule: Rule.RuleModule = {
   /**
    * Create the rule visitor functions.
    *
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-   * @req REQ-CREATE-HOOK
-   * @req REQ-AUTOFIX-MISSING - The create hook wires in visitors that are capable of providing auto-fix suggestions for missing `@story` annotations.
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY
+   * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
    */
   create(context) {
     const {
@@ -163,9 +148,6 @@ const rule: Rule.RuleModule = {
      * Optional debug logging for troubleshooting this rule.
      * Developers can temporarily uncomment the block below to log when the rule
      * is activated for a given file during ESLint runs.
-     *
-     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-     * @req REQ-DEBUG-LOG
      */
     // console.debug(
     //   "require-story-annotation:create",
