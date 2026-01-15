@@ -1,11 +1,7 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Helpers for `@supports` annotation validation used by valid-annotation-format.
  *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-SUPPORTS-PARSE - Parse `@supports` annotations without affecting `@story`/`@req`
- * @req REQ-FORMAT-VALIDATION - Validate `@supports` story path and requirement IDs
- * @req REQ-MIXED-SUPPORT - Support mixed `@story`/`@req`/`@supports` usage in comments
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
  */
 import type { ResolvedAnnotationOptions } from "./valid-annotation-options";
 import { buildReqErrorMessage } from "./valid-annotation-utils";
@@ -15,16 +11,14 @@ import { buildReqErrorMessage } from "./valid-annotation-utils";
  *   - one story path
  *   - at least one requirement ID
  *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-SUPPORTS-PARSE
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE
  */
 export const MIN_IMPLEMENTS_TOKENS = 2;
 
 /**
  * Report a completely missing `@supports` value (no story path or req IDs).
  *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-FORMAT-VALIDATION
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FORMAT-VALIDATION
  */
 export function reportMissingImplementsValue(
   context: any,
@@ -44,8 +38,7 @@ export function reportMissingImplementsValue(
 /**
  * Report a `@supports` value that has only a story path and no requirement IDs.
  *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-FORMAT-VALIDATION
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FORMAT-VALIDATION
  */
 export function reportMissingImplementsReqIds(
   context: any,
@@ -65,8 +58,7 @@ export function reportMissingImplementsReqIds(
 /**
  * Report an invalid story path inside `@supports`.
  *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-FORMAT-VALIDATION
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FORMAT-VALIDATION
  */
 export function reportInvalidImplementsStoryPath(
   context: any,
@@ -87,9 +79,7 @@ export function reportInvalidImplementsStoryPath(
 /**
  * Report an invalid requirement ID token inside `@supports`.
  *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-FORMAT-VALIDATION
- * @req REQ-MIXED-SUPPORT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
  */
 export function reportInvalidImplementsReqId(
   context: any,
@@ -126,8 +116,7 @@ type ParsedImplementsTokens = {
  * Handles trimming, token splitting, and basic structural checks, and reports
  * missing-value conditions via the provided dependency helpers.
  *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-TOKENS
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION
  */
 function parseImplementsTokens(
   deps: ImplementsDeps,
@@ -168,8 +157,7 @@ function parseImplementsTokens(
  * story and requirement patterns, reporting any configuration or format errors
  * via the supplied dependency helpers.
  *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-IMPLEMENTS-TOKENS
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FORMAT-VALIDATION
  */
 function validateImplementsTokens(
   deps: ImplementsDeps,
@@ -205,10 +193,7 @@ function validateImplementsTokens(
  *   - validates each requirement ID using options.reqPattern
  *   - delegates reporting to the provided helpers
  *
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-SUPPORTS-PARSE
- * @req REQ-FORMAT-VALIDATION
- * @req REQ-MIXED-SUPPORT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
  */
 export function validateImplementsAnnotationHelper(
   deps: ImplementsDeps,
