@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Validators and helper functions for the valid-annotation-format rule.
  *
@@ -13,23 +12,10 @@
  * - validation of `@implements`/`@supports`-style annotations
  * - safe, minimal auto-fixes for certain invalid formats
  *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-FORMAT-SPECIFICATION
- * @req REQ-SYNTAX-VALIDATION
- * @req REQ-PATH-FORMAT
- * @req REQ-REQ-FORMAT
- * @req REQ-MULTILINE-SUPPORT
- * @req REQ-AUTOFIX-FORMAT
- * @req REQ-ERROR-SPECIFICITY
- * @req REQ-REGEX-VALIDATION
- * @req REQ-BACKWARD-COMP
- * @req REQ-SUPPORTS-PARSE
- * @req REQ-FORMAT-VALIDATION
- * @req REQ-MIXED-SUPPORT
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FORMAT-SPECIFICATION REQ-SYNTAX-VALIDATION REQ-PATH-FORMAT REQ-REQ-FORMAT REQ-MULTILINE-SUPPORT REQ-ERROR-SPECIFICITY
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-SAFE REQ-AUTOFIX-PRESERVE
+ * @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-REGEX-VALIDATION REQ-BACKWARD-COMPAT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
  */
 
 import type { ResolvedAnnotationOptions } from "./valid-annotation-options";
@@ -56,10 +42,7 @@ import { getResolvedDefaults } from "./valid-annotation-options";
  *
  * The invalid `@story` annotation is detected and reported but left unchanged.
  *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-ERROR-SPECIFICITY
  */
 export function reportInvalidStoryFormat(
   context: any,
@@ -135,13 +118,8 @@ export function createStoryFix(
  * Reporting includes both the original invalid value and, where applicable,
  * a suggested corrected story path that only adjusts the suffix.
  *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-AUTOFIX-SAFE - Auto-fix must be conservative and avoid changing semantics
- * @req REQ-AUTOFIX-PRESERVE - Auto-fix must preserve surrounding formatting and comments
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-PATH-FORMAT
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT REQ-AUTOFIX-SAFE REQ-AUTOFIX-PRESERVE
  */
 export function reportInvalidStoryFormatWithFix(
   context: any,
@@ -186,15 +164,10 @@ export function reportInvalidStoryFormatWithFix(
  *   - matching against the configured story regex,
  *   - and attempting a conservative suffix-only correction when possible.
  *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
- * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-REGEX-VALIDATION - Validate configurable story regex patterns and fall back safely
- * @req REQ-BACKWARD-COMP - Preserve behavior when invalid regex config is supplied
- * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-PATH-FORMAT REQ-ERROR-SPECIFICITY
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+ * @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-REGEX-VALIDATION REQ-BACKWARD-COMPAT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-MIXED-SUPPORT
  */
 export function validateStoryAnnotation(
   context: any,
@@ -255,14 +228,9 @@ export function validateStoryAnnotation(
  *   - collapsing multi-line requirement identifiers,
  *   - and validating the final identifier against the configured regex.
  *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-REQ-FORMAT - Validate @req identifiers follow expected patterns
- * @req REQ-ERROR-SPECIFICITY - Provide specific error messages for different format violations
- * @req REQ-REGEX-VALIDATION - Validate configurable requirement regex patterns and fall back safely
- * @req REQ-BACKWARD-COMP - Preserve behavior when invalid regex config is supplied
- * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT REQ-ERROR-SPECIFICITY
+ * @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-REGEX-VALIDATION REQ-BACKWARD-COMPAT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-MIXED-SUPPORT
  */
 export function validateReqAnnotation(
   context: any,
@@ -359,12 +327,9 @@ export function validateImplementsAnnotation(
  * comments. This function dispatches that accumulated value to the
  * appropriate validator and then clears the pending state.
  *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-SYNTAX-VALIDATION - Validate annotation syntax matches specification
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-SYNTAX-VALIDATION
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-MIXED-SUPPORT
  */
 export function finalizePendingAnnotation(
   context: any,
@@ -378,10 +343,9 @@ export function finalizePendingAnnotation(
     return null;
   }
 
-  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-  // @req REQ-SYNTAX-VALIDATION - Dispatch to @story or @req validator based on pending annotation type
-  // @req REQ-AUTOFIX-FORMAT - Route to story validator which may apply safe auto-fixes
-  // @req REQ-MIXED-SUPPORT - Ensure @story and @req annotations are handled independently
+  // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-SYNTAX-VALIDATION
+  // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+  // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-MIXED-SUPPORT
   if (pending.type === "story") {
     validateStoryAnnotation(context, comment, pending.value, options);
   } else {
