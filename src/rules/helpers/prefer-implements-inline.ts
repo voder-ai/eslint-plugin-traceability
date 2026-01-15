@@ -1,10 +1,8 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * Inline comment processing for prefer-implements-annotation rule.
  * Handles migration of inline comment story and requirement patterns to supports format.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-MIGRATE-INLINE
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
  */
 import type { Rule } from "eslint";
 import { normalizeCommentLine } from "../helpers/valid-annotation-format-internal";
@@ -19,8 +17,7 @@ const MIN_REQ_TOKENS = 2;
  * source text so that new inline annotations can be inserted with matching
  * indentation and formatting.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-MIGRATE-INLINE
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
  */
 function getLinePrefixFromText(fullText: string): string {
   const match = fullText.match(/^(\s*\/\/\s*)/);
@@ -32,8 +29,7 @@ function getLinePrefixFromText(fullText: string): string {
  * sequence of `@story` and `@req` line comments with a single `@supports`
  * annotation while preserving the original comment prefix.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-MIGRATE-INLINE
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
  */
 function tryBuildInlineAutoFix(
   context: Rule.RuleContext,
@@ -93,8 +89,7 @@ function tryBuildInlineAutoFix(
  * comment and its following `@req` comments, reporting diagnostics and
  * scheduling auto-fixes where safe.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-MIGRATE-INLINE
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
  */
 function collectReqIndicesAfterStory(
   group: LineComment[],
