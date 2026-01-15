@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Shared helpers for determining whether a function-like node should be
  * treated as a test framework callback that may be excluded from
@@ -76,6 +74,7 @@ const TEST_FUNCTION_CONCURRENT_PROP = "concurrent";
  * even if it appears in additionalTestHelperNames, to preserve the story
  * requirement that bench callbacks always require annotations.
  *
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
  * @req REQ-TEST-CALLBACK-EXCLUSION
  */
 function isRecognizedTestHelperName(
@@ -111,6 +110,7 @@ function isRecognizedTestHelperName(
  * - skipped variants and helpers: xit(), xtest(), xdescribe(), xsuite()
  * - their .concurrent variants (e.g., it.concurrent(), test.concurrent())
  *
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
  * @req REQ-TEST-CALLBACK-EXCLUSION
  */
 function isTestFrameworkCallback(
