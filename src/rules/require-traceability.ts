@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Composite ESLint rule that enforces both story and requirement traceability
  * annotations on functions and methods.
@@ -89,6 +87,10 @@ const rule: Rule.RuleModule = {
     ],
   },
 
+  /**
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION REQ-CONFIGURABLE-SCOPE
+   */
   create(context) {
     // Create a modified context that passes through options to composed rules
     // We need to preserve all context methods while modifying the options array
@@ -117,6 +119,10 @@ const rule: Rule.RuleModule = {
       const reqHandler = reqListeners[eventName];
 
       if (storyHandler && reqHandler) {
+        /**
+         * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+         * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-ERROR-LOCATION
+         */
         mergedListener[eventName] = function mergedHandler(
           this: unknown,
           ...args: any[]
