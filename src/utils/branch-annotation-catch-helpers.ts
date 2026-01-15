@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 import type { Rule } from "eslint";
 import { scanCommentLinesInRange } from "./branch-annotation-helpers";
 import { extractCommentValue } from "./comment-text-helpers";

@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /****
  * Rule to enforce `@req` annotation on functions
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Visitor builders for require-story-annotation rule
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED

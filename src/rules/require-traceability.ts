@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Composite ESLint rule that enforces both story and requirement traceability
  * annotations on functions and methods.

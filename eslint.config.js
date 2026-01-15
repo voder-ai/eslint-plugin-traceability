@@ -119,6 +119,18 @@ module.exports = [
     },
   },
   {
+    // Rule 4: Function-level traceability requirements (src only)
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: { ...(plugin.rules ? { traceability: plugin } : {}) },
+    rules: {
+      ...(plugin.rules
+        ? {
+            "traceability/require-traceability": "error",
+          }
+        : {}),
+    },
+  },
+  {
     files: ["**/*.js", "**/*.jsx"],
     languageOptions: {
       ecmaVersion: 2022,

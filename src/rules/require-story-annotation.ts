@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * ESLint rule module: require-story-annotation
  *
