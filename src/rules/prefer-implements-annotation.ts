@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 /**
  * ESLint rule implementation for preferring the consolidated `@supports`
  * annotation over legacy combinations of `@story` and `@req` within JSDoc
@@ -14,14 +13,7 @@
  * gradually move to the newer `@supports` format without breaking existing
  * traceability links.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy `@story`/`@req` usage in favor of `@supports`
- * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
- * @req REQ-SINGLE-STORY-FIX - Restrict auto-fix to single-story, single-path cases
- * @req REQ-PRESERVE-FORMAT - Preserve original JSDoc indentation and prefix formatting
- * @req REQ-VALID-OUTPUT - Avoid emitting auto-fixes for complex or ambiguous patterns
- * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy `@story`/`@req` annotations valid when the rule is disabled
- * @req REQ-AUTO-FIX - Provide safe, opt-in auto-fix for simple legacy patterns
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-AUTO-FIX REQ-BACKWARD-COMPAT-VALIDATION REQ-INLINE-COMMENT-SUPPORT REQ-ERROR-MESSAGE-PREFERENCE
  */
 import type { Rule } from "eslint";
 import fs from "fs";
@@ -34,16 +26,15 @@ import {
 
 // Module-level cache for story file requirement IDs
 // Cleared between ESLint runs, reused within a single lint execution
-// @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MISMATCH-DETECTION
+// @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
 const storyFileCache = new Map<string, Set<string> | null>();
 
 // Maximum number of distinct `@story` paths allowed before treating as "multi-story".
-// @req REQ-MULTI-STORY-DETECT - Centralized threshold constant for detecting multi-story patterns
+// @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
 const MULTI_STORY_THRESHOLD = 1;
 
 // Minimum number of tokens required for a valid `@story` annotation line.
-// @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
-// @req REQ-MULTI-STORY-DETECT
+// @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
 const MIN_STORY_TOKENS = 2;
 
 // Minimum number of tokens required for a valid `@req` annotation line, aligned with story tokens.
@@ -64,7 +55,7 @@ const COMMENT_PREFIX_LENGTH = 2;
  *
  * Results are cached for the duration of the ESLint run to avoid repeated file I/O.
  *
- * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MISMATCH-DETECTION REQ-MULTI-STORY-DETECT
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
  */
 function extractRequirementsFromStory(
   storyPath: string,
@@ -138,7 +129,7 @@ interface CommentAnalysis {
  * auto-fix path so that complex or ambiguous patterns can be detected and
  * safely rejected.
  *
- * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-VALID-OUTPUT
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-MULTI-STORY-DETECT
  */
 function collectStoryAndReqMetadata(comment: any): {
   storyLineIndices: number[];
@@ -194,7 +185,7 @@ function collectStoryAndReqMetadata(comment: any): {
  * constructing a fixed comment body that preserves existing indentation and
  * prefix formatting while removing the original `@story`/`@req` lines.
  *
- * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-PRESERVE-FORMAT REQ-VALID-OUTPUT
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
  */
 function applyImplementsReplacement(
   context: Rule.RuleContext,
@@ -266,7 +257,7 @@ function applyImplementsReplacement(
  * More complex patterns remain diagnostics-only with no fix to avoid
  * producing invalid or ambiguous output.
  *
- * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-SINGLE-STORY-FIX REQ-PRESERVE-FORMAT REQ-VALID-OUTPUT
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX REQ-MULTI-STORY-DETECT
  */
 function buildImplementsAutoFix(
   context: Rule.RuleContext,
@@ -290,7 +281,7 @@ function buildImplementsAutoFix(
   // NEW: Validate `@req` IDs against story file content
   // This implements REQ-MULTI-STORY-DETECT requirement to detect when
   // `@req` IDs don't match the referenced `@story`
-  // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MISMATCH-DETECTION REQ-MULTI-STORY-DETECT
+  // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
   const storyReqs = extractRequirementsFromStory(storyPath, context);
 
   // If story file not found or unreadable, cannot safely auto-fix
@@ -365,11 +356,10 @@ function analyzeComment(comment: any): CommentAnalysis {
  * Check whether a given set of story paths represents multiple story/req
  * blocks within the same comment, which cannot be safely auto-migrated.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-MIGRATE-INLINE
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
  */
 function hasMultipleStories(storyPaths: Set<string>): boolean {
-  // @req REQ-MULTI-STORY-DETECT - Use named threshold constant instead of a magic number
+  // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
   return storyPaths.size > MULTI_STORY_THRESHOLD;
 }
 
@@ -377,7 +367,7 @@ function hasMultipleStories(storyPaths: Set<string>): boolean {
  * Check for and report requirement identifier mismatches when auto-fix is not available.
  * Provides detailed error messages when requirement identifiers don't match the story file content.
  *
- * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MISMATCH-DETECTION REQ-MULTI-STORY-DETECT
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
  */
 function reportMismatchIfNeeded(
   comment: any,
@@ -431,7 +421,7 @@ function reportMismatchIfNeeded(
  * traceability annotations, decide whether to report recommendations only
  * or emit an auto-fix, and surface the appropriate message ID.
  *
- * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-AUTO-FIX REQ-VALID-OUTPUT
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-AUTO-FIX
  */
 function processBlockComment(comment: any, context: Rule.RuleContext): void {
   const { hasStory, hasReq, hasImplements, storyPaths } =
@@ -486,10 +476,7 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
  * newer `@supports` format. This rule is **disabled by default** and
  * is intended as an optional, opt-in migration aid.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy `@story`/`@req` usage
- * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
- * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy `@story`/`@req` annotations valid when the rule is disabled
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-BACKWARD-COMPAT-VALIDATION REQ-ERROR-MESSAGE-PREFERENCE
  */
 
 /**
@@ -499,10 +486,7 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
  * newer `@supports` format. This rule is **disabled by default** and
  * is intended as an optional, opt-in migration aid.
  *
- * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
- * @req REQ-OPTIONAL-WARNING - Emit configurable recommendation diagnostics for legacy `@story`/`@req` usage
- * @req REQ-MULTI-STORY-DETECT - Detect multi-story patterns that cannot be auto-fixed
- * @req REQ-BACKWARD-COMP-VALIDATION - Keep legacy `@story`/`@req` annotations valid when the rule is disabled
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT REQ-BACKWARD-COMPAT-VALIDATION REQ-ERROR-MESSAGE-PREFERENCE
  */
 const preferImplementsAnnotationRule: Rule.RuleModule = {
   meta: {
@@ -521,8 +505,7 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
        * single `@supports` line. Auto-fix is provided where safe in a
        * follow-up iteration.
        *
-       * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
-       * @req REQ-OPTIONAL-WARNING
+       * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-ERROR-MESSAGE-PREFERENCE
        */
       preferImplements:
         "Consider using @supports instead of @story + @req for clearer traceability. Run ESLint with --fix to auto-convert.",
@@ -531,8 +514,7 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
        * but cannot safely provide an automatic fix. The `reason` field gives
        * a short, human-readable explanation to guide manual migration.
        *
-       * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
-       * @req REQ-MULTI-STORY-DETECT
+       * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
        */
       cannotAutoFix:
         "Cannot auto-fix: {{reason}}. Manual migration to @supports required.",
@@ -541,8 +523,7 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
        * than one `@story` annotation appears in the same block, indicating a
        * likely multi-story integration that must be converted manually.
        *
-       * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
-       * @req REQ-MULTI-STORY-DETECT
+       * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
        */
       multiStoryDetected:
         "Multiple @story annotations detected in the same comment block. Manually convert to separate @supports lines.",
@@ -557,9 +538,7 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
    * it surfaces recommendations when legacy `@story` + `@req` combinations are
    * present but does not yet perform automatic code modifications.
    *
-   * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
-   * @req REQ-OPTIONAL-WARNING
-   * @req REQ-MULTI-STORY-DETECT
+   * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT
    */
   create(context) {
     const sourceCode = context.getSourceCode();
@@ -569,9 +548,7 @@ const preferImplementsAnnotationRule: Rule.RuleModule = {
        * Program-level visitor that scans all comments for legacy
        * `@story` + `@req` usage and emits recommendation diagnostics.
        *
-       * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
-       * @req REQ-OPTIONAL-WARNING - Emit recommendations when legacy annotations are detected
-       * @req REQ-MULTI-STORY-DETECT - Detect multi-story and mixed annotation patterns
+       * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING REQ-MULTI-STORY-DETECT
        */
       Program() {
         const comments = sourceCode.getAllComments() || [];
