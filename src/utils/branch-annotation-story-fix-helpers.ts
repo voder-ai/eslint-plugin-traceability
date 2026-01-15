@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 import type { Rule } from "eslint";
 import type { AnnotationPlacement } from "./branch-annotation-helpers";
 
@@ -70,6 +68,10 @@ function buildInsidePlacementStoryFixes(
 export function createStoryFixer(ctx: StoryFixContext) {
   const { annotationPlacement, insertPos, indent } = ctx;
 
+  /**
+   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+   * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-AUTO-FIX-MIGRATION REQ-INDENTATION-CORRECT
+   */
   function insertStoryFixer(fixer: any) {
     if (annotationPlacement === "inside") {
       return buildInsidePlacementStoryFixes(ctx, fixer);
