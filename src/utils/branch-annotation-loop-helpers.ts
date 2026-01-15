@@ -1,11 +1,14 @@
-/* eslint-disable traceability/require-traceability */
-
 import type { Rule } from "eslint";
 import {
   scanCommentLinesInRange,
   type AnnotationPlacement,
 } from "./branch-annotation-helpers";
 
+/**
+ * Extract any traceability comment text from inside a loop body.
+ *
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE REQ-LOOP-ANNOTATION
+ */
 function getInsideLoopCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
