@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 import type { Rule } from "eslint";
 import type {
   RedundancyRuleOptions,
@@ -35,8 +34,7 @@ const DEFAULT_MAX_SCOPE_DEPTH = 3;
 /**
  * Normalize and apply defaults to rule options for the redundancy detector.
  *
- * @story docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md
- * @req REQ-REDUNDANT-OPTIONS
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-CONFIGURABLE-STRICTNESS
  */
 function normalizeOptions(raw: any | undefined): RedundancyRuleOptions {
   const strictness: Strictness =
@@ -100,7 +98,7 @@ const rule: Rule.RuleModule = {
     ],
     messages: {
       /**
-       * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-CLEAR-MESSAGES REQ-SAFE-REMOVAL
+       * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-ERROR-MESSAGES REQ-SAFE-REMOVAL
        */
       redundantAnnotation:
         "Annotation on this statement is redundant; it is already covered by its containing scope.",
@@ -110,8 +108,7 @@ const rule: Rule.RuleModule = {
   /**
    * Wire up the ESLint visitors that detect and fix redundant annotations.
    *
-   * @story docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md
-   * @req REQ-REDUNDANT-DETECTION
+   * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-DUPLICATION-DETECTION REQ-STATEMENT-SIGNIFICANCE REQ-REDUNDANCY-PATTERNS REQ-SAFE-REMOVAL
    */
   create(context) {
     const options = normalizeOptions(context.options[0]);
