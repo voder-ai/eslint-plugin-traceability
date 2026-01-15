@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 import { getNodeName } from "../rules/helpers/require-story-utils";
 import { hasReqAnnotation } from "./reqAnnotationDetection";
 import {
@@ -8,8 +7,7 @@ import {
 
 /**
  * Helper to retrieve the JSDoc comment for a node.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-GET-JSDOC - Retrieve JSDoc comment for a node
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING
  */
 function getJsdocComment(sourceCode: any, node: any) {
   return sourceCode.getJSDocComment(node);
@@ -17,8 +15,7 @@ function getJsdocComment(sourceCode: any, node: any) {
 
 /**
  * Helper to retrieve leading comments from a node (TypeScript declare style).
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-LEADING-COMMENTS - Collect leading comments from node
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-TYPESCRIPT-SUPPORT
  */
 function getLeadingComments(node: any) {
   return (node as any).leadingComments || [];
@@ -26,8 +23,7 @@ function getLeadingComments(node: any) {
 
 /**
  * Helper to retrieve comments before a node using the sourceCode API.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-COMMENTS-BEFORE - Collect comments before node via sourceCode
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING
  */
 function getCommentsBefore(sourceCode: any, node: any) {
   return sourceCode.getCommentsBefore(node) || [];
@@ -35,8 +31,7 @@ function getCommentsBefore(sourceCode: any, node: any) {
 
 /**
  * Helper to combine leading and before comments into a single array.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-COMBINE-COMMENTS - Combine comment arrays for checking
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
  */
 function combineComments(leading: any[], before: any[]) {
   return [...leading, ...before];
@@ -46,37 +41,32 @@ function combineComments(leading: any[], before: any[]) {
  * Determine the most appropriate node to attach an inserted JSDoc to.
  * Prefers outer function-like constructs such as methods, variable declarators,
  * or wrapping expression statements for function expressions.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing @req annotation
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE REQ-AUTOFIX-SAFE
  */
 function getFixTargetNode(node: any) {
   const parent = node && (node as any).parent;
 
   // When there is no parent, attach the annotation directly to the node itself.
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-AUTOFIX - Default to annotating the node when it has no parent
+  // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
   if (!parent) {
     return node;
   }
 
   // If the node is part of a class/obj method definition, attach to the MethodDefinition
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-AUTOFIX - Attach fixes to the MethodDefinition wrapper for methods
+  // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
   if (parent.type === "MethodDefinition") {
     return parent;
   }
 
   // If the node is the init of a variable declarator, attach to the VariableDeclarator
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-AUTOFIX - Attach fixes to the VariableDeclarator for function initializers
+  // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
   if (parent.type === "VariableDeclarator" && parent.init === node) {
     return parent;
   }
 
   // If the parent is an expression statement (e.g. IIFE or assigned via expression),
   // attach to the outer ExpressionStatement.
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-AUTOFIX - Attach fixes to the ExpressionStatement wrapper for IIFEs
+  // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
   if (parent.type === "ExpressionStatement") {
     return parent;
   }
@@ -87,17 +77,13 @@ function getFixTargetNode(node: any) {
 /**
  * Creates a fix function that inserts a missing `@req` JSDoc before the node.
  * Returned function is a proper named function so no inline arrow is used.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-AUTOFIX - Provide autofix for missing `@req` annotation
- * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-AUTOFIX REQ-ANNOTATION-REPORTING
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-TEMPLATE REQ-AUTOFIX-SELECTIVE
  */
 function createMissingReqFix(node: any) {
   const target = getFixTargetNode(node);
   /**
    * Fixer used to insert a default `@req` annotation before the chosen target node.
-   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-   * @req REQ-ANNOTATION-AUTOFIX - Implement autofix insertion for missing `@req`
-   * @req REQ-ANNOTATION-REPORTING - Support actionable fix in reported problem
+   * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-TEMPLATE
    */
   return function missingReqFix(fixer: any) {
     return fixer.insertTextBefore(target, "/** @req <REQ-ID> */\n");
@@ -106,9 +92,7 @@ function createMissingReqFix(node: any) {
 
 /**
  * Resolve the display name used when reporting a missing `@req` annotation.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REPORTING - Use consistent naming when reporting missing `@req`
- * @req REQ-ERROR-SPECIFIC - Derive a specific, human-readable name for the node
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC
  */
 function getReportedName(contextNode: any, parentNode: any): string {
   const rawName = getNodeName(contextNode) ?? getNodeName(parentNode);
@@ -118,9 +102,8 @@ function getReportedName(contextNode: any, parentNode: any): string {
 /**
  * Determine the AST sub-node that should be used as the location for reporting.
  * Prefers Identifier nodes (id or key) over the broader function-like node.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-ANNOTATION-REPORTING - Report missing `@req` on the most relevant node
- * @req REQ-ERROR-SPECIFIC - Target the identifier when available for precise errors
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ERROR-LOCATION
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-LOCATION
  */
 function getNameNodeForReqReport(node: any): any {
   const candidateId = (node as any).id;
@@ -141,13 +124,8 @@ function getNameNodeForReqReport(node: any): any {
  * Uses getNodeName to provide a readable name for the node. `@supports` is the
  * preferred format for expressing traceability to one or more requirements and
  * stories, while `@req` is treated as a legacy shorthand for single-story usage.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @req REQ-ANNOTATION-REPORTING - Report missing traceability annotations to context
- * @req REQ-ERROR-SPECIFIC - Provide specific error details including node name
- * @req REQ-ERROR-LOCATION - Include contextual location information in errors
- * @req REQ-ERROR-SUGGESTION - Provide actionable suggestions or fixes where possible
- * @req REQ-ERROR-CONTEXT - Include contextual hints to help understand the error
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-ERROR-LOCATION
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-SUGGESTION REQ-ERROR-CONTEXT
  */
 function buildMissingReqReportOptions(node: any, enableFix: boolean) {
   const parentNode = (node as any)?.parent;
@@ -160,8 +138,7 @@ function buildMissingReqReportOptions(node: any, enableFix: boolean) {
   };
 
   // Conditionally attach an autofix only when enabled in the rule options.
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-AUTOFIX - Only provide autofix suggestions when explicitly enabled
+  // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SELECTIVE
   if (enableFix) {
     reportOptions.fix = createMissingReqFix(node);
   }
@@ -174,13 +151,8 @@ function buildMissingReqReportOptions(node: any, enableFix: boolean) {
  * Uses getNodeName to provide a readable name for the node. `@supports` is the
  * preferred format for expressing traceability to one or more requirements and
  * stories, while `@req` is treated as a legacy shorthand for single-story usage.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md
- * @req REQ-ANNOTATION-REPORTING - Report missing traceability annotations to context
- * @req REQ-ERROR-SPECIFIC - Provide specific error details including node name
- * @req REQ-ERROR-LOCATION - Include contextual location information in errors
- * @req REQ-ERROR-SUGGESTION - Provide actionable suggestions or fixes where possible
- * @req REQ-ERROR-CONTEXT - Include contextual hints to help understand the error
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-ERROR-LOCATION
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-SUGGESTION REQ-ERROR-CONTEXT
  */
 function reportMissing(context: any, node: any, enableFix: boolean = true) {
   const reportOptions = buildMissingReqReportOptions(node, enableFix);
@@ -193,10 +165,8 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
  * This helper is intentionally scope/exportPriority agnostic and focuses solely
  * on detection and reporting of `@req` annotations for the given node.
  *
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
- * @req REQ-TYPESCRIPT-SUPPORT - Support TypeScript-specific function syntax
- * @req REQ-ANNOTATION-REQ-DETECTION - Determine presence of `@req` annotation
- * @req REQ-ANNOTATION-REPORTING - Report missing `@req` annotation to context
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-ANNOTATION-REQ-DETECTION REQ-TYPESCRIPT-SUPPORT
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-LOCATION REQ-ERROR-SPECIFIC
  * @param context - ESLint rule context used to obtain source and report problems
  * @param node - Function-like AST node whose surrounding comments should be inspected
  * @param options - Optional configuration controlling behaviour (e.g., enableFix, annotationPlacement)
@@ -236,9 +206,8 @@ export function checkReqAnnotation(
   const all = combineComments(leading, comments);
   const hasReq = hasReqAnnotation(jsdoc, all, context, node);
   // BRANCH when a `@req` annotation is missing and must be reported
-  // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
-  // @req REQ-ANNOTATION-REQ-DETECTION
-  // @req REQ-ANNOTATION-REPORTING
+  // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+  // @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC
   if (!hasReq) {
     reportMissing(context, node, enableFix);
   }
