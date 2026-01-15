@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 import type { Rule } from "eslint";
 import { scanCommentLinesInRange } from "./branch-annotation-helpers";
 import { extractCommentValue } from "./comment-text-helpers";
@@ -11,6 +9,7 @@ import { extractCommentValue } from "./comment-text-helpers";
  * then falls back to line-based scanning if API is unavailable or returns empty.
  *
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
  * @req REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
  * @param sourceCode - ESLint source code object providing comment access APIs
  * @param node - CatchClause AST node whose body will be scanned for comments
@@ -50,7 +49,8 @@ export function getInsideCatchCommentText(
 
 /**
  * Gather comment text from the first contiguous comment lines inside a TryStatement block body.
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-INDENTATION-CORRECT
+ * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
  * @param sourceCode - ESLint source code object providing line access
  * @param node - TryStatement AST node whose block will be scanned for comments
  * @returns Concatenated comment text from inside the try block, or empty string if none found
