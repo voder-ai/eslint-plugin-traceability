@@ -1,4 +1,3 @@
-/* eslint-disable traceability/valid-req-reference */
 import {
   resolveOptions,
   type ResolvedAnnotationOptions,
@@ -97,15 +96,9 @@ function extendPendingAnnotation(
 /**
  * Process a single normalized comment line and update the pending annotation state.
  *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-SYNTAX-VALIDATION - Start new pending annotation when a tag is found
- * @req REQ-MULTILINE-SUPPORT - Treat subsequent lines as continuation for pending annotation
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-IMPLEMENTS-PARSE - Parse @supports annotations without affecting @story/@req
- * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
- * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-SYNTAX-VALIDATION REQ-MULTILINE-SUPPORT
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
  */
 function processCommentLine({
   normalized,
@@ -151,12 +144,9 @@ function processCommentLine({
     return null;
   }
 
-  // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-  // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-  // @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-  // @req REQ-MULTILINE-SUPPORT - Extend value of existing pending annotation across lines
-  // @req REQ-AUTOFIX-FORMAT - Maintain complete logical value for downstream validation and fixes
-  // @req REQ-MIXED-SUPPORT - Leave non-annotation lines untouched when no pending state exists
+  // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT
+  // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+  // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-MIXED-SUPPORT
   return extendPendingAnnotation(normalized, pending);
 }
 
@@ -170,15 +160,9 @@ function processCommentLine({
  * `@supports` annotations are validated immediately per-line and are not
  * accumulated into pending multi-line state.
  *
- * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
- * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
- * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
- * @req REQ-MULTILINE-SUPPORT - Handle annotations split across multiple lines
- * @req REQ-FLEXIBLE-PARSING - Support reasonable variations in whitespace and formatting
- * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
- * @req REQ-IMPLEMENTS-PARSE - Parse @supports annotations without affecting @story/@req
- * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
- * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT REQ-FLEXIBLE-PARSING
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
  */
 function processCommentLines({
   context,
@@ -238,17 +222,14 @@ export default {
        */
       invalidReqFormat: "Invalid annotation format: {{details}}.",
       /**
-       * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-       * @req REQ-ERROR-SPECIFIC - Provide specific details about invalid @supports annotation format
-       * @req REQ-ERROR-CONTEXT - Include human-readable details about the expected @supports annotation format
-       * @req REQ-ERROR-CONSISTENCY - Use shared "Invalid annotation format: {{details}}." message pattern across rules
-       * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
+       * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONTEXT REQ-ERROR-CONSISTENCY
+       * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FORMAT-VALIDATION
        */
       invalidImplementsFormat: "Invalid annotation format: {{details}}.",
       /**
        * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
        * @req REQ-REGEX-VALIDATION - Surface configuration errors for invalid regex patterns
-       * @req REQ-BACKWARD-COMP - Preserve behavior by falling back to default patterns on error
+       * @req REQ-BACKWARD-COMPAT - Preserve behavior by falling back to default patterns on error
        */
       invalidRuleConfiguration:
         "Invalid configuration for valid-annotation-format: {{details}}",
@@ -259,27 +240,16 @@ export default {
      * Fixes are limited strictly to adjusting the suffix portion of the `@story` path (e.g., adding
      * `.md` or `.story.md`), preserving all other comment text and whitespace exactly as written.
      *
-     * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-     * @req REQ-AUTOFIX-SAFE
-     * @req REQ-AUTOFIX-PRESERVE
-     * @req REQ-REGEX-VALIDATION - Ensure regex configuration does not affect fix safety
-     * @req REQ-BACKWARD-COMP - Maintain previous auto-fix behavior under invalid configs
+     * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE REQ-AUTOFIX-PRESERVE
+     * @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-REGEX-VALIDATION REQ-BACKWARD-COMPAT
      */
     fixable: "code",
   },
   /**
-   * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-   * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-   * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
-   * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-   * @req REQ-SYNTAX-VALIDATION - Ensure rule create function validates annotations syntax
-   * @req REQ-FORMAT-SPECIFICATION - Implement formatting checks per specification
-   * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
-   * @req REQ-REGEX-VALIDATION - Derive validation regexes from shared options helper
-   * @req REQ-BACKWARD-COMP - Fall back to default patterns and continue validation on config errors
-   * @req REQ-IMPLEMENTS-PARSE - Parse @supports annotations without affecting @story/@req
-   * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
-   * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+   * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-SYNTAX-VALIDATION REQ-FORMAT-SPECIFICATION
+   * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+   * @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-REGEX-VALIDATION REQ-BACKWARD-COMPAT
+   * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
    */
   create(context: any) {
     const sourceCode = context.getSourceCode();
@@ -290,18 +260,10 @@ export default {
       /**
        * Program-level handler that inspects all comments for `@story`, `@req`, and `@supports` tags
        *
-       * @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
-       * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
-       * @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
-       * @story docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md
-       * @req REQ-PATH-FORMAT - Validate @story paths follow expected patterns
-       * @req REQ-REQ-FORMAT - Validate @req identifiers follow expected patterns
-       * @req REQ-AUTOFIX-FORMAT - Provide safe, minimal automatic fixes for common format issues
-       * @req REQ-REGEX-VALIDATION - Surface regex configuration errors without blocking validation
-       * @req REQ-BACKWARD-COMP - Continue validating comments using default patterns on error
-       * @req REQ-IMPLEMENTS-PARSE - Parse @supports annotations without affecting @story/@req
-       * @req REQ-FORMAT-VALIDATION - Validate @implements story path and requirement IDs
-       * @req REQ-MIXED-SUPPORT - Support mixed @story/@req/@implements usage in comments
+       * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-PATH-FORMAT REQ-REQ-FORMAT
+       * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+       * @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-REGEX-VALIDATION REQ-BACKWARD-COMPAT
+       * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
        */
       Program(node: any) {
         // @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
