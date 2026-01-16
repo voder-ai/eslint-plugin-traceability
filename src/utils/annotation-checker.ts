@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 import { getNodeName } from "../rules/helpers/require-story-utils";
 import { hasReqAnnotation } from "./reqAnnotationDetection";
 import {
@@ -83,13 +81,17 @@ function getFixTargetNode(node: any) {
  */
 function createMissingReqFix(node: any) {
   const target = getFixTargetNode(node);
+
   /**
    * Fixer used to insert a default `@req` annotation before the chosen target node.
+   * @story docs/stories/008.0-DEV-AUTO-FIX.story.md
    * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-TEMPLATE
    */
-  return function missingReqFix(fixer: any) {
+  function missingReqFix(fixer: any) {
     return fixer.insertTextBefore(target, "/** @req <REQ-ID> */\n");
-  };
+  }
+
+  return missingReqFix;
 }
 
 /**
@@ -167,6 +169,7 @@ function reportMissing(context: any, node: any, enableFix: boolean = true) {
  * This helper is intentionally scope/exportPriority agnostic and focuses solely
  * on detection and reporting of `@req` annotations for the given node.
  *
+ * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-ANNOTATION-REQ-DETECTION REQ-TYPESCRIPT-SUPPORT
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-LOCATION REQ-ERROR-SPECIFIC
  * @param context - ESLint rule context used to obtain source and report problems
