@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Visitor builders for require-story-annotation rule
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
@@ -30,6 +28,7 @@ function buildFunctionDeclarationVisitor(
    * console.debug statements here, but by default no debug logging runs so that
    * file paths and other details are not leaked during normal linting.
    *
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleFunctionDeclaration(node: any) {
@@ -63,6 +62,7 @@ function buildFunctionExpressionVisitor(
 ): Rule.RuleListener {
   /**
    * Handle FunctionExpression nodes.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleFunctionExpression(node: any) {
@@ -101,6 +101,7 @@ function buildArrowFunctionVisitor(
 ): Rule.RuleListener {
   /**
    * Handle ArrowFunctionExpression nodes.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleArrowFunctionExpression(node: any) {
@@ -133,6 +134,7 @@ function buildTSDeclareFunctionVisitor(
 ): Rule.RuleListener {
   /**
    * Handle TSDeclareFunction nodes.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleTSDeclareFunction(node: any) {
@@ -164,6 +166,7 @@ function buildTSMethodSignatureVisitor(
 ): Rule.RuleListener {
   /**
    * Handle TSMethodSignature nodes.
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleTSMethodSignature(node: any) {
@@ -197,6 +200,7 @@ function buildMethodDefinitionVisitor(
 ): Rule.RuleListener {
   /**
    * Handle MethodDefinition nodes (class/object methods).
+   * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleMethodDefinition(node: any) {
