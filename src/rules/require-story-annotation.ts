@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * ESLint rule module: require-story-annotation
  *
@@ -19,6 +17,11 @@ import {
   shouldProcessNode,
 } from "./helpers/require-story-helpers";
 
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-TEMPLATE REQ-AUTOFIX-SELECTIVE
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */
 function getNormalizedOptions(context: Rule.RuleContext) {
   const sourceCode = context.getSourceCode();
   const opts = (context.options && context.options[0]) || {};
@@ -158,13 +161,18 @@ const rule: Rule.RuleModule = {
     //     : "<unknown>",
     // );
 
-    // Local closure that binds configured scope and export priority to the helper.
-    const should = (node: any) =>
-      shouldProcessNode(node, scope, exportPriority, {
+    /**
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY REQ-TEST-CALLBACK-EXCLUSION
+     * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
+     */
+    function should(node: any) {
+      return shouldProcessNode(node, scope, exportPriority, {
         excludeTestCallbacks,
         additionalTestHelperNames,
         annotationPlacement,
       });
+    }
 
     // Delegate visitor construction to helper to keep this file concise.
     return buildVisitors(context, sourceCode, {
