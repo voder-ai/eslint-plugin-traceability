@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /****
  * Rule to enforce `@req` annotation on functions
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -144,6 +142,10 @@ const rule: Rule.RuleModule = {
         ? rawAnnotationPlacement
         : "before";
 
+    /**
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY
+     */
     const shouldCheck = (node: any): boolean =>
       shouldProcessNode(node, scope, exportPriority, {
         annotationPlacement,
@@ -152,6 +154,10 @@ const rule: Rule.RuleModule = {
     /**
      * Helper to conditionally run the annotation check only when the node
      * should be processed according to scope/exportPriority.
+     */
+    /**
+     * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+     * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION
      */
     const runCheck = (node: any) => {
       if (!shouldCheck(node)) return;
