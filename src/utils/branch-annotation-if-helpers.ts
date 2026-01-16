@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 import type { Rule } from "eslint";
 import type { AnnotationPlacement } from "./branch-annotation-helpers";
 import { scanCommentLinesInRange } from "./branch-annotation-helpers";
@@ -16,6 +14,11 @@ import { scanCommentLinesInRange } from "./branch-annotation-helpers";
 
 const PRE_COMMENT_OFFSET = 2; // kept in sync with main helpers
 
+/**
+ * Retrieve trimmed comment text for a given source line.
+ * Used for associating inline branch-annotation comments with control-flow nodes.
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION REQ-ANNOTATION-PARSING
+ */
 function getCommentTextAtLine(lines: string[], index: number): string | null {
   const line = lines[index];
   if (!line || !line.trim()) {
@@ -28,6 +31,11 @@ function getCommentTextAtLine(lines: string[], index: number): string | null {
   return line.trim();
 }
 
+/**
+ * Detect whether an IfStatement is an else-if branch of its parent.
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
+ */
 export function isElseIfBranch(node: any, parent: any | undefined): boolean {
   return (
     node &&
@@ -38,6 +46,11 @@ export function isElseIfBranch(node: any, parent: any | undefined): boolean {
   );
 }
 
+/**
+ * Guard helper ensuring the else-if node has the loc/range details we need to scan
+ * between the condition and the consequent body.
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF
+ */
 export function hasValidElseIfBlockLoc(node: any): boolean {
   const hasBlockConsequent =
     node.consequent &&
@@ -53,6 +66,10 @@ export function hasValidElseIfBlockLoc(node: any): boolean {
   );
 }
 
+/**
+ * Scan for annotation comments immediately preceding the else-if line.
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-POSITION-PRIORITY-ELSE-IF
+ */
 export function scanElseIfPrecedingComments(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
@@ -82,6 +99,11 @@ export function scanElseIfPrecedingComments(
   return comments.join(" ");
 }
 
+/**
+ * Scan for annotation comments between the else-if condition and the consequent.
+ * This is used as a fallback position when no annotations exist before the else-if keyword.
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC-ELSE-IF REQ-DUAL-POSITION-DETECTION-ELSE-IF
+ */
 export function scanElseIfBetweenConditionAndBody(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
@@ -100,6 +122,11 @@ export function scanElseIfBetweenConditionAndBody(
   return scanCommentLinesInRange(lines, startIndex, endIndexExclusive - 1);
 }
 
+/**
+ * Scan for annotation comments at the start of a BlockStatement consequent.
+ * Used when `annotationPlacement: "inside"` is enabled.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-ALL-BLOCK-TYPES
+ */
 export function scanElseIfInsideBlockComments(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
@@ -122,6 +149,10 @@ export function scanElseIfInsideBlockComments(
   return comments.join(" ");
 }
 
+/**
+ * Retrieve else-if branch annotation text when inside-brace placement is active.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG
+ */
 export function getInsideElseIfCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
@@ -138,6 +169,12 @@ export function getInsideElseIfCommentText(
   return "";
 }
 
+/**
+ * Gather the most relevant comment text for else-if branches, respecting the
+ * configured annotation placement and else-if position priority rules.
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF REQ-POSITION-PRIORITY-ELSE-IF
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */
 export function gatherElseIfCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
@@ -191,6 +228,7 @@ export function gatherElseIfCommentText(
 }
 /**
  * Try to get comments from inside a node using getCommentsInside if available.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-ALL-BLOCK-TYPES
  */
 function tryGetCommentsInsideNode(sourceCode: any, consequent: any): string {
   const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
@@ -202,7 +240,14 @@ function tryGetCommentsInsideNode(sourceCode: any, consequent: any): string {
   try {
     const insideComments =
       (getCommentsInside as (_node: any) => any[])(consequent) || [];
-    const extractCommentValue = (c: any) => c.value;
+    /**
+     * Extract the raw string value for a comment token.
+     * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+     * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ANNOTATION-PARSING
+     */
+    function extractCommentValue(c: any) {
+      return c.value;
+    }
     return insideComments.map(extractCommentValue).join(" ");
   } catch {
     return "";
@@ -211,6 +256,7 @@ function tryGetCommentsInsideNode(sourceCode: any, consequent: any): string {
 
 /**
  * Scan for comments at the start of a block using line-based fallback.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-ALL-BLOCK-TYPES
  */
 function scanBlockStartComments(sourceCode: any, consequent: any): string {
   if (
@@ -243,6 +289,11 @@ function scanBlockStartComments(sourceCode: any, consequent: any): string {
   return comments.join(" ");
 }
 
+/**
+ * Gather comment text for a simple (non-else-if) if statement, optionally
+ * using inside-brace placement semantics.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-INSIDE-BRACE-PLACEMENT REQ-ALL-BLOCK-TYPES
+ */
 export function gatherSimpleIfCommentText(
   sourceCode: any,
   node: any,
