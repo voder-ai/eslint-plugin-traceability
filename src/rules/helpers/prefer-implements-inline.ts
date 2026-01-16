@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Inline comment processing for prefer-implements-annotation rule.
  * Handles migration of inline comment story and requirement patterns to supports format.
@@ -118,6 +116,10 @@ function collectReqIndicesAfterStory(
   return { reqIndices, nextIndex: j };
 }
 
+/**
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
+ */
 function handleInlineStorySequence(
   context: Rule.RuleContext,
   group: LineComment[],
@@ -150,6 +152,10 @@ function handleInlineStorySequence(
   return nextIndex;
 }
 
+/**
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
+ */
 function advanceInlineGroupIndex(
   context: Rule.RuleContext,
   group: LineComment[],
@@ -162,6 +168,10 @@ function advanceInlineGroupIndex(
   return handleInlineStorySequence(context, group, i);
 }
 
+/**
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
+ */
 function processInlineGroup(
   context: Rule.RuleContext,
   group: LineComment[],
@@ -176,6 +186,10 @@ function processInlineGroup(
  * Scan sequences of Line comments for inline legacy story and requirement patterns
  * and report diagnostics with optional auto-fixes.
  */
+/**
+ * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+ * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
+ */
 export function processInlineComments(
   context: Rule.RuleContext,
   lineComments: LineComment[],
@@ -185,6 +199,10 @@ export function processInlineComments(
   // Group by contiguous line numbers
   let group: LineComment[] = [lineComments[0]];
 
+  /**
+   * @story docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md
+   * @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
+   */
   const flushGroup = () => {
     processInlineGroup(context, group);
     group = [];
