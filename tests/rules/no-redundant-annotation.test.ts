@@ -1,4 +1,6 @@
 /* eslint-disable traceability/valid-story-reference -- TODO test cases contain placeholder story paths */
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Tests for: docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md
  * @story docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md

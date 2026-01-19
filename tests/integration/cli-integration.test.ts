@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Tests for CLI integration of the traceability plugin.
  * Validates that the plugin registers correctly and enforces

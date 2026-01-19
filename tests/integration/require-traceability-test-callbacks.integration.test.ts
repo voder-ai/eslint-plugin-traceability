@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Integration tests for require-traceability with configurable test callback exclusion.
  *

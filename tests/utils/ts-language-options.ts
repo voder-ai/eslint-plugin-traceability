@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Shared TypeScript RuleTester language options for traceability tests.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

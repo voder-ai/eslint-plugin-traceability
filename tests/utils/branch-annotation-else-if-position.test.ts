@@ -1,4 +1,6 @@
  
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Unit tests for else-if annotation gathering and position priority.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md

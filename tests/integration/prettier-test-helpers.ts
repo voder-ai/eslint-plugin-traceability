@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Shared helpers for Prettier-based integration tests.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md

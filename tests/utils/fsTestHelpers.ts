@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Shared filesystem mocking utilities for rule tests.
  *

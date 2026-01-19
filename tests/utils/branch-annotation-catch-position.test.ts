@@ -1,4 +1,6 @@
  
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Unit tests for CatchClause annotation gathering and insert position logic.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md

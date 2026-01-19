@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Shared test helpers for require-story-core branch coverage.
  *

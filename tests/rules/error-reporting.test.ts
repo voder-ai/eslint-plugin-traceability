@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Tests for: docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * @story docs/stories/007.0-DEV-ERROR-REPORTING.story.md

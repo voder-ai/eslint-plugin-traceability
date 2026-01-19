@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Tests for: docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE REQ-CONFIGURABLE-PATHS REQ-ERROR-HANDLING

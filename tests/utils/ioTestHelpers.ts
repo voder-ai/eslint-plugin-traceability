@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Shared IO helper tests for require-story-io behavior.
  *

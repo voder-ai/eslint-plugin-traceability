@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Prettier integration tests for CatchClause annotation positions.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md

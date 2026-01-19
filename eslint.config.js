@@ -119,8 +119,8 @@ module.exports = [
     },
   },
   {
-    // Rule 4: Function-level traceability requirements (src only)
-    files: ["src/**/*.{ts,tsx}"],
+    // Rule 4: Function-level traceability requirements (src + tests)
+    files: ["src/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
     plugins: { ...(plugin.rules ? { traceability: plugin } : {}) },
     rules: {
       ...(plugin.rules

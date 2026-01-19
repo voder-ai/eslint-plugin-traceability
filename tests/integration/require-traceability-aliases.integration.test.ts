@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Integration tests for unified require-traceability rule and its legacy aliases.
  *

@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Prettier integration tests for else-if annotation positions.
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md

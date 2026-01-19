@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-traceability */
+
 /**
  * Performance tests for require-branch-annotation on large nested-branch files.
  *
