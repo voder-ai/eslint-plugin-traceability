@@ -1,6 +1,3 @@
- 
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Unit tests for else-if annotation gathering and position priority.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
@@ -10,6 +7,20 @@
 import type { Rule } from "eslint";
 import { gatherBranchCommentText } from "../../src/utils/branch-annotation-helpers";
 
+/**
+ * Implements a SourceCode-like `getCommentsBefore` hook for tests.
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
+ */
+function getCommentsBeforeFrom(
+  commentsBefore: Array<{ value: string }>,
+): Array<{ value: string }> {
+  return commentsBefore;
+}
+
+/**
+ * Creates a minimal mock of ESLint SourceCode used by `gatherBranchCommentText`.
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF
+ */
 function createMockSourceCode(options: {
   lines?: string[];
   commentsBefore?: Array<{ value: string }>;
@@ -18,9 +29,7 @@ function createMockSourceCode(options: {
 
   return {
     lines,
-    getCommentsBefore() {
-      return commentsBefore;
-    },
+    getCommentsBefore: getCommentsBeforeFrom.bind(null, commentsBefore),
   } as any;
 }
 
