@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * This rule validates that `@story` annotation references refer to existing story files.
  * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE REQ-PATH-RESOLUTION REQ-SECURITY-VALIDATION
@@ -316,6 +314,10 @@ export default {
       },
     ],
   },
+  /**
+   * ESLint rule entrypoint.
+   * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ANNOTATION-VALIDATION REQ-CONFIGURABLE-PATHS REQ-FILE-EXISTENCE
+   */
   create(context: Rule.RuleContext) {
     const cwd = (context as any).cwd ?? process.cwd();
     const opts = context.options[0] as
