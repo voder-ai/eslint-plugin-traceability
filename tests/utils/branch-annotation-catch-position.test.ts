@@ -1,6 +1,3 @@
- 
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Unit tests for CatchClause annotation gathering and insert position logic.
  * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
@@ -10,6 +7,35 @@
 import type { Rule } from "eslint";
 import { gatherBranchCommentText } from "../../src/utils/branch-annotation-helpers";
 
+/**
+ * Implements a SourceCode-like `getCommentsBefore` hook for tests.
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
+ */
+function getCommentsBeforeFrom(
+  commentsBefore: Array<{ value: string }>,
+): Array<{ value: string }> {
+  return commentsBefore;
+}
+
+/**
+ * Implements a SourceCode-like `getCommentsInside` hook for tests.
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC
+ */
+function getCommentsInsideFrom(
+  commentsInside: Array<{ value: string }>,
+  node: any,
+): Array<{ value: string }> {
+  // exercise the code path that passes node.body into getCommentsInside
+  if (node && node.type === "BlockStatement") {
+    return commentsInside;
+  }
+  return [];
+}
+
+/**
+ * Creates a minimal mock of ESLint SourceCode used by `gatherBranchCommentText`.
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
+ */
 function createMockSourceCode(options: {
   lines?: string[];
   commentsBefore?: Array<{ value: string }>;
@@ -19,16 +45,8 @@ function createMockSourceCode(options: {
 
   return {
     lines,
-    getCommentsBefore() {
-      return commentsBefore;
-    },
-    getCommentsInside(node: any) {
-      // exercise the code path that passes node.body into getCommentsInside
-      if (node && node.type === "BlockStatement") {
-        return commentsInside;
-      }
-      return [];
-    },
+    getCommentsBefore: getCommentsBeforeFrom.bind(null, commentsBefore),
+    getCommentsInside: getCommentsInsideFrom.bind(null, commentsInside),
   } as any;
 }
 
