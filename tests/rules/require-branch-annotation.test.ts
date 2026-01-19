@@ -4,6 +4,8 @@
  * - docs/stories/007.0-DEV-ERROR-REPORTING.story.md
  * - docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * - docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
+ * - prompts/004.1-branch-annotation-anonymous-arrows.md
+ * - docs/decisions/2026-01-19-branch-annotations-inside-anonymous-arrows.md
  *
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION REQ-NESTED-HANDLING REQ-SUPPORTS-ALTERNATIVE
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION
@@ -180,6 +182,28 @@ if (outer) {
     doWork();
   }
 }`,
+      },
+      {
+        name: "[REQ-ARROW-FUNCTION-BRANCH-INCLUDED] anonymous arrow callback with annotated if-statement branch",
+        code: `items.map(() => {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
+  if (ready) {
+    doWork();
+  }
+});`,
+      },
+      {
+        name: "[REQ-ARROW-FUNCTION-BRANCH-INCLUDED] anonymous arrow callback with annotated switch-case branch",
+        code: `items.forEach(() => {
+  switch (state) {
+    // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+    // @req REQ-BRANCH-DETECTION
+    case "ready":
+      handleReady();
+      break;
+  }
+});`,
       },
       {
         name: "[REQ-CONFIGURABLE-SCOPE] custom branchTypes ignores unlisted branch types",
@@ -429,6 +453,40 @@ if (outer) {
     doWork();
   }
 }`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-ARROW-FUNCTION-BRANCH-INCLUDED] missing annotations on if-statement inside anonymous arrow callback",
+        code: `items.map(() => {
+  if (ready) {
+    doWork();
+  }
+});`,
+        output: `items.map(() => {
+  // @story <story-file>.story.md
+  if (ready) {
+    doWork();
+  }
+});`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-ARROW-FUNCTION-BRANCH-INCLUDED] missing annotations on switch-case inside anonymous arrow callback",
+        code: `items.forEach(() => {
+  switch (state) {
+    case "ready":
+      handleReady();
+      break;
+  }
+});`,
+        output: `items.forEach(() => {
+  switch (state) {
+    // @story <story-file>.story.md
+    case "ready":
+      handleReady();
+      break;
+  }
+});`,
         errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
