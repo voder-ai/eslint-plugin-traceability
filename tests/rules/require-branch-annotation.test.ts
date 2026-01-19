@@ -5,9 +5,11 @@
  * - docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
  * - docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
  * - prompts/004.1-branch-annotation-anonymous-arrows.md
+ * - prompts/004.2-async-catch-annotation-handling.md
  * - docs/decisions/2026-01-19-branch-annotations-inside-anonymous-arrows.md
+ * - docs/decisions/2026-01-19-async-catch-annotation-handling.md
  *
- * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION REQ-NESTED-HANDLING REQ-SUPPORTS-ALTERNATIVE
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION REQ-NESTED-HANDLING REQ-SUPPORTS-ALTERNATIVE REQ-ASYNC-CATCH-INCLUDED
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION
  * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF REQ-FALLBACK-LOGIC-ELSE-IF REQ-POSITION-PRIORITY-ELSE-IF REQ-PRETTIER-AUTOFIX-ELSE-IF
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-BEFORE-BRACE-ERROR REQ-ALL-BLOCK-TYPES REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
@@ -101,6 +103,21 @@ try {
 /* @req REQ-BRANCH-DETECTION */
 catch (error) {
   handleError(error);
+}`,
+      },
+      {
+        name: "[REQ-ASYNC-CATCH-INCLUDED] async try/catch with await includes catch annotations",
+        code: `async function load() {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-ASYNC-CATCH-INCLUDED
+  try {
+    await fetchData();
+  }
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-ASYNC-CATCH-INCLUDED
+  catch (error) {
+    handleError(error);
+  }
 }`,
       },
       {
@@ -420,6 +437,56 @@ try {
           ...makeMissingAnnotationErrors("@story", "@req"),
           ...makeMissingAnnotationErrors("@story", "@req"),
         ],
+      },
+      {
+        name: "[REQ-ASYNC-CATCH-INCLUDED] non-async try/catch missing catch annotations",
+        code: `function load() {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-ASYNC-CATCH-INCLUDED
+  try {
+    doWork();
+  }
+  catch (error) {
+    handleError(error);
+  }
+}`,
+        output: `function load() {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-ASYNC-CATCH-INCLUDED
+  try {
+    doWork();
+  }
+  catch (error) {
+    // @story <story-file>.story.md
+    handleError(error);
+  }
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
+      },
+      {
+        name: "[REQ-ASYNC-CATCH-INCLUDED] async try/catch missing catch annotations",
+        code: `async function load() {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-ASYNC-CATCH-INCLUDED
+  try {
+    await fetchData();
+  }
+  catch (error) {
+    handleError(error);
+  }
+}`,
+        output: `async function load() {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-ASYNC-CATCH-INCLUDED
+  try {
+    await fetchData();
+  }
+  catch (error) {
+    // @story <story-file>.story.md
+    handleError(error);
+  }
+}`,
+        errors: makeMissingAnnotationErrors("@story", "@req"),
       },
       {
         name: "[REQ-BRANCH-DETECTION] missing annotations on switch-case with blank line",
