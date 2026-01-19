@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 import type { Rule } from "eslint";
 import type { AnnotationPlacement } from "./branch-annotation-helpers";
 
@@ -34,6 +32,10 @@ type BranchIndentOptions = {
   indent: string;
 };
 
+/**
+ * Detect loop node types that support inside-brace placement.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
+ */
 function isLoopNode(node: any): boolean {
   return (
     node.type === "ForStatement" ||
@@ -44,6 +46,10 @@ function isLoopNode(node: any): boolean {
   );
 }
 
+/**
+ * Compute indentation/insert position for inside-placement catch clauses.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES REQ-INSIDE-BRACE-PLACEMENT REQ-INDENTATION-CORRECT
+ */
 function computeInsideCatchIndentAndInsertPos(
   sourceCode: SourceCode,
   node: any,
@@ -66,6 +72,10 @@ function computeInsideCatchIndentAndInsertPos(
   );
 }
 
+/**
+ * Compute indentation/insert position for inside-placement loop bodies.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES REQ-INSIDE-BRACE-PLACEMENT REQ-INDENTATION-CORRECT
+ */
 function computeInsideLoopIndentAndInsertPos(
   options: BranchIndentOptions,
   context: IndentHelperContext,
@@ -89,6 +99,11 @@ function computeInsideLoopIndentAndInsertPos(
   );
 }
 
+/**
+ * Compute indentation/insert position for inside-placement try/switch nodes
+ * when the first statement line provides the best insertion reference.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES REQ-INSIDE-BRACE-PLACEMENT REQ-INDENTATION-CORRECT
+ */
 function computeInsideTryOrSwitchIndentAndInsertPos(
   sourceCode: SourceCode,
   node: any,
@@ -122,6 +137,10 @@ function computeInsideTryOrSwitchIndentAndInsertPos(
   };
 }
 
+/**
+ * Compute indentation/insert position for inside-placement try blocks.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES REQ-INSIDE-BRACE-PLACEMENT REQ-INDENTATION-CORRECT
+ */
 function computeInsideTryBlockIndentAndInsertPos(
   options: BranchIndentOptions,
   context: IndentHelperContext,
@@ -147,6 +166,10 @@ function computeInsideTryBlockIndentAndInsertPos(
   );
 }
 
+/**
+ * Compute indentation/insert position for inside-placement switch cases.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES REQ-INSIDE-BRACE-PLACEMENT REQ-INDENTATION-CORRECT
+ */
 function computeInsideSwitchCaseIndentAndInsertPos(
   options: BranchIndentOptions,
   context: IndentHelperContext,
@@ -181,6 +204,10 @@ function computeInsideSwitchCaseIndentAndInsertPos(
   };
 }
 
+/**
+ * Compute indentation/insert position for inside-placement catch blocks.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES REQ-INSIDE-BRACE-PLACEMENT REQ-INDENTATION-CORRECT
+ */
 function computeInsideCatchBlockIndentAndInsertPos(
   options: BranchIndentOptions,
   context: IndentHelperContext,
