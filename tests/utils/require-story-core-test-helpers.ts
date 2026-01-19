@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Shared test helpers for require-story-core branch coverage.
  *
@@ -22,12 +20,25 @@ interface ExerciseOptions {
 const DEFAULT_ANNOTATION =
   "/** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */\n";
 
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
+ */
+function insertTextBeforeRangeImpl(r: unknown, t: unknown): { r: unknown; t: unknown } {
+  return { r, t };
+}
+
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
+ */
 function baseFixer() {
   return {
-    insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),
+    insertTextBeforeRange: jest.fn(insertTextBeforeRangeImpl),
   };
 }
 
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
+ */
 function exerciseBranch1(
   createAddStoryFixFactory: (_target: any, _annotationTemplate: string) => (_fixer: any) => any,
   annotation: string,
@@ -45,6 +56,9 @@ function exerciseBranch1(
   });
 }
 
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
+ */
 function exerciseBranch2(
   createAddStoryFixFactory: (_target: any, _annotationTemplate: string) => (_fixer: any) => any,
   annotation: string,
@@ -69,6 +83,9 @@ function exerciseBranch2(
   });
 }
 
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
+ */
 function exerciseBranch3(
   createAddStoryFixFactory: (_target: any, _annotationTemplate: string) => (_fixer: any) => any,
   annotation: string,
@@ -96,6 +113,9 @@ function exerciseBranch3(
   });
 }
 
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
+ */
 export function exerciseCreateAddStoryFixBranches(
   createAddStoryFixFactory: (_target: any, _annotationTemplate: string) => (_fixer: any) => any,
   options: ExerciseOptions = {},
