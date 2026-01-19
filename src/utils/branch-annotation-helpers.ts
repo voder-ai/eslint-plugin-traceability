@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 import type { Rule } from "eslint";
 import { reportMissingAnnotations } from "./branch-annotation-report-helpers";
 import { gatherLoopCommentText } from "./branch-annotation-loop-helpers";
@@ -138,14 +136,10 @@ function gatherCatchClauseCommentText(
 }
 
 /**
- * Gather annotation text for simple IfStatement branches, honoring the configured placement.
- * When placement is "before", this helper preserves the existing behavior by returning the
- * leading comment text unchanged. When placement is "inside", it switches to inside-brace
- * semantics and scans for comments at the top of the consequent block.
- * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
+ * Handle try/catch branch annotation gathering with inside-placement support.
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-PLACEMENT-CONFIG
  */
-
 function handleTryCatchBranch(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
@@ -176,6 +170,11 @@ function handleTryCatchBranch(
   return null;
 }
 
+/**
+ * Handle loop branch annotation gathering with inside-placement support.
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-ANNOTATION REQ-LOOP-PLACEMENT-FLEXIBLE
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES REQ-PLACEMENT-CONFIG
+ */
 function handleLoopBranch(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
@@ -304,6 +303,11 @@ function gatherBranchCommentTextByTypeInternal(
   return null;
 }
 
+/**
+ * Public wrapper for internal branch comment text gathering dispatcher.
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */
 function gatherBranchCommentTextByType(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
