@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * ESLint Traceability Plugin
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
@@ -31,7 +29,7 @@ const RULE_NAMES = [
 
 const rules: Record<string, Rule.RuleModule> = {} as any;
 
-RULE_NAMES.forEach((name) => {
+for (const name of RULE_NAMES) {
   try {
     // Dynamically require rule module
     const mod = require(`./rules/${name}`);
@@ -53,8 +51,21 @@ RULE_NAMES.forEach((name) => {
         },
         schema: [],
       },
+      /**
+       * Fallback rule module to keep plugin loading resilient even when a rule
+       * fails to load.
+       *
+       * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
+       * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-CONSISTENCY
+       */
       create(context: Rule.RuleContext) {
         return {
+          /**
+           * Report the rule-load failure at Program level so consumers get a
+           * visible diagnostic in their lint output.
+           *
+           * @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
+           */
           Program(node: any) {
             context.report({
               node,
@@ -65,7 +76,7 @@ RULE_NAMES.forEach((name) => {
       },
     } as Rule.RuleModule;
   }
-});
+}
 
 /**
  * Wire up the unified function-annotation rule and its backward-compatible
@@ -143,9 +154,17 @@ function wireUnifiedFunctionAnnotationAliases(): void {
     | undefined;
 
   if (unifiedRule) {
-    const createAliasRule = (
+    /**
+     * Create a rule module that shares the unified implementation but preserves
+     * legacy metadata.
+     *
+     * @story docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md
+     * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-EXPORT-PRIORITY
+     * @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE
+     */
+    function createAliasRule(
       legacyRule: Rule.RuleModule | undefined,
-    ): Rule.RuleModule => {
+    ): Rule.RuleModule {
       const mergedMeta = createAliasRuleMeta(unifiedRule, legacyRule);
       if (!mergedMeta) {
         return unifiedRule;
@@ -156,7 +175,7 @@ function wireUnifiedFunctionAnnotationAliases(): void {
         meta: mergedMeta,
         create: unifiedRule.create,
       };
-    };
+    }
 
     rules["require-story-annotation"] = createAliasRule(legacyStoryRule);
     rules["require-req-annotation"] = createAliasRule(legacyReqRule);
