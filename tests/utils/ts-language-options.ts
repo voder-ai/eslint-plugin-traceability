@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Shared TypeScript RuleTester language options for traceability tests.
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -22,6 +20,9 @@ export const tsRuleTesterLanguageOptions: any = {
  *
  * @param testCase A RuleTester valid/invalid test case object
  * @returns The same test case with TypeScript language options applied
+ */
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
  */
 export function withTsLanguageOptions<T extends Record<string, unknown>>(
   testCase: T
