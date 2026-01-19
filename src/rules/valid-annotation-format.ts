@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 import {
   resolveOptions,
   type ResolvedAnnotationOptions,
@@ -16,6 +14,13 @@ import {
   finalizePendingAnnotation,
 } from "./helpers/valid-annotation-format-validators";
 
+/**
+ * Handle a single normalized comment line that starts with `@supports`.
+ *
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-SYNTAX-VALIDATION REQ-FORMAT-SPECIFICATION
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
+ */
 function handleImplementsLine(
   normalized: string,
   pending: PendingAnnotation | null,
@@ -41,6 +46,11 @@ function handleImplementsLine(
   return null; // Clear pending state since `@supports` is standalone
 }
 
+/**
+ * Handle a single normalized comment line that starts with `@story` or `@req`.
+ *
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-SYNTAX-VALIDATION REQ-MULTILINE-SUPPORT REQ-FLEXIBLE-PARSING
+ */
 function handleStoryOrReqLine(
   normalized: string,
   pending: PendingAnnotation | null,
@@ -71,6 +81,12 @@ function handleStoryOrReqLine(
   };
 }
 
+/**
+ * Extend a pending multi-line `@story`/`@req` annotation value.
+ *
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT REQ-FLEXIBLE-PARSING
+ * @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md REQ-CONTINUATION-LOGIC
+ */
 function extendPendingAnnotation(
   normalized: string,
   pending: PendingAnnotation | null,
@@ -192,6 +208,13 @@ function processCommentLines({
   finalizePendingAnnotation(context, comment, options, pending);
 }
 
+/**
+ * Process a single comment node and validate any `@story`/`@req`/`@supports` annotations it contains.
+ *
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-SYNTAX-VALIDATION REQ-FORMAT-SPECIFICATION
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+ * @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
+ */
 function processComment(
   context: any,
   comment: any,
