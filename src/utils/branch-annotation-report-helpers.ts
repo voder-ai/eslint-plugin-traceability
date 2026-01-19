@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 import type { Rule } from "eslint";
 import {
   gatherBranchCommentText,
@@ -45,6 +43,7 @@ function getIndentAndInsertPosForLine(
  * BlockStatement, used for inside-brace insertion.
  * Falls back to the block's own line with one extra indent step if it has no
  * body statements.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-INDENTATION-CORRECT
  */
 function getInsideBlockIndentAndInsertPos(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -89,6 +88,7 @@ function getInsideBlockIndentAndInsertPos(
 
 /**
  * Apply the base catch-clause indentation/insert-position fallback used by
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES REQ-INDENTATION-CORRECT
  * getBaseBranchIndentAndInsertPos when no inside-placement override is applied.
  */
 function applyCatchClauseBaseIndentFallback(
@@ -181,7 +181,7 @@ function getBaseBranchIndentAndInsertPos(
 /**
  * Determine whether a node represents an else-if branch that should be used for
  * determining comment insertion position.
- * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
  */
 function isElseIfBranchForInsert(node: any, parent: any | undefined): boolean {
   return (
@@ -359,13 +359,19 @@ function getBranchAnnotationInfo(
   );
   return { missingStory, missingReq, indent, insertPos };
 }
-
+/**
+ * Execute reporting actions for missing annotations on a branch.
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ANNOTATION-PARSING
+ */
 function processMissingAnnotationActions(
   context: Rule.RuleContext,
   node: any,
   actions: Array<{ missing: boolean; fn: Function; args: any[] }>,
 ): void {
-  /** @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md */
+  /**
+   * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+   * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ANNOTATION-PARSING
+   */
   function processAction(item: {
     missing: boolean;
     fn: Function;
