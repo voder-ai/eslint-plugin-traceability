@@ -1,8 +1,16 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Shared IO helper tests for require-story-io behavior.
  *
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
+ */
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
+ */
+function getTextFromFakeSource(source: { text: string }): string {
+  return source.text;
+}
+
+/**
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING REQ-ANNOTATION-REQUIRED
  */
 export function runFallbackTextBeforeHasStoryDetectsStoryTest(
@@ -24,7 +32,8 @@ export function runFallbackTextBeforeHasStoryDetectsStoryTest(
   const pre = `/* ${storyAnnotation} */\n`;
   const rest = "function y() {}";
   const full = pre + rest;
-  const fakeSource: any = { getText: () => full };
+  const fakeSource: any = { text: full };
+  fakeSource.getText = getTextFromFakeSource.bind(null, fakeSource);
   const node: any = { range: [full.indexOf("function"), full.length] };
   expect(fallbackFn(fakeSource, node)).toBe(true);
 }
