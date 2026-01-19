@@ -154,6 +154,8 @@ function wireUnifiedFunctionAnnotationAliases(): void {
     | undefined;
 
   if (unifiedRule) {
+    const unified = unifiedRule;
+
     /**
      * Create a rule module that shares the unified implementation but preserves
      * legacy metadata.
@@ -165,15 +167,15 @@ function wireUnifiedFunctionAnnotationAliases(): void {
     function createAliasRule(
       legacyRule: Rule.RuleModule | undefined,
     ): Rule.RuleModule {
-      const mergedMeta = createAliasRuleMeta(unifiedRule, legacyRule);
+      const mergedMeta = createAliasRuleMeta(unified, legacyRule);
       if (!mergedMeta) {
-        return unifiedRule;
+        return unified;
       }
 
       return {
-        ...(unifiedRule as any),
+        ...(unified as any),
         meta: mergedMeta,
-        create: unifiedRule.create,
+        create: unified.create,
       };
     }
 
