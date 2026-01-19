@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Shared helpers for Prettier-based integration tests.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
@@ -19,6 +17,11 @@ interface FormatOptions {
 /**
  * Format arbitrary source with Prettier using the installed CLI binary.
  * Defaults to the TypeScript parser when none is provided.
+ */
+/**
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC-ELSE-IF
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PRETTIER-STABLE
  */
 export function formatWithPrettier(
   source: string,
