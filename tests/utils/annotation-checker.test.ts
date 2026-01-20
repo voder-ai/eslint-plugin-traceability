@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  *
@@ -35,6 +33,20 @@ export function runAnnotationCheckerTests(
   });
 }
 
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
+ */
+function checkTSDeclareFunction(context: any, node: any) {
+  return checkReqAnnotation(context, node);
+}
+
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
+ */
+function checkTSMethodSignature(context: any, node: any) {
+  return checkReqAnnotation(context, node);
+}
+
 const rule: any = {
   meta: {
     type: "problem",
@@ -46,16 +58,13 @@ const rule: any = {
     messages: { missingReq: "Missing @req annotation" },
     schema: [],
   },
+  /**
+   * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
+   */
   create(context: any) {
     return {
-      /**
-       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
-       */
-      TSDeclareFunction: (node: any) => checkReqAnnotation(context, node),
-      /**
-       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TYPESCRIPT-SUPPORT
-       */
-      TSMethodSignature: (node: any) => checkReqAnnotation(context, node),
+      TSDeclareFunction: checkTSDeclareFunction.bind(null, context),
+      TSMethodSignature: checkTSMethodSignature.bind(null, context),
     };
   },
 };
