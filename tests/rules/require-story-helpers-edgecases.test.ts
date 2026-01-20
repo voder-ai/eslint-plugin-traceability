@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING
@@ -20,13 +18,27 @@ import {
 
 describe("Require Story Helpers - edge cases (Story 003.0)", () => {
   test("jsdocHasStory returns false when JSDoc exists but value is not a string", () => {
-    const fakeSource: any = { getJSDocComment: () => ({ value: 123 }) };
+    const fakeSource: any = {
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING
+       */
+      getJSDocComment() {
+        return { value: 123 };
+      },
+    };
     const res = jsdocHasStory(fakeSource, {} as any);
     expect(res).toBe(false);
   });
 
   test("commentsBeforeHasStory returns false when comments exist but value is not a string", () => {
-    const fakeSource: any = { getCommentsBefore: () => [{ value: 123 }] };
+    const fakeSource: any = {
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING
+       */
+      getCommentsBefore() {
+        return [{ value: 123 }];
+      },
+    };
     const res = commentsBeforeHasStory(fakeSource, {} as any);
     expect(res).toBe(false);
   });
@@ -45,7 +57,14 @@ describe("Require Story Helpers - edge cases (Story 003.0)", () => {
   });
 
   test("resolveTargetNode returns ExpressionStatement parent for FunctionExpression", () => {
-    const fakeSource: any = { getText: () => "" };
+    const fakeSource: any = {
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getText() {
+        return "";
+      },
+    };
     const node: any = {
       type: "FunctionExpression",
       parent: { type: "ExpressionStatement" },
@@ -86,10 +105,25 @@ describe("Require Story Helpers - edge cases (Story 003.0)", () => {
     const rest = "function fnA() {}\n";
     const full = jsdoc + rest;
     const fakeSource: any = {
-      getText: () => full,
-      getJSDocComment: () => null,
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING
+       */
+      getText() {
+        return full;
+      },
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING
+       */
+      getJSDocComment() {
+        return null;
+      },
       lines: full.split(/\r?\n/),
-      getCommentsBefore: () => [],
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-JSDOC-PARSING
+       */
+      getCommentsBefore() {
+        return [];
+      },
     };
     const node: any = {
       type: "FunctionDeclaration",
@@ -104,7 +138,15 @@ describe("Require Story Helpers - edge cases (Story 003.0)", () => {
       },
     };
 
-    const context: any = { getSourceCode: () => fakeSource, report: jest.fn() };
+    const context: any = {
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getSourceCode() {
+        return fakeSource;
+      },
+      report: jest.fn(),
+    };
     reportMissing(context, fakeSource, { node, target: node });
     expect(context.report).not.toHaveBeenCalled();
   });
