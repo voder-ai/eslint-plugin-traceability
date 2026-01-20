@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Integration tests for unified require-traceability rule and its legacy aliases.
  *
@@ -8,6 +6,9 @@
 import { FlatESLint } from "eslint/use-at-your-own-risk";
 import traceabilityPlugin, { configs } from "../../src/index";
 
+/**
+ * @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE
+ */
 async function lintTextWithConfig(
   text: string,
   filename: string,
@@ -29,26 +30,38 @@ async function lintTextWithConfig(
   return result;
 }
 
+/**
+ * @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE
+ */
+async function getDiagnosticsForRule(ruleKey: string, code: string) {
+  const config = [
+    {
+      rules: {
+        [ruleKey]: "error",
+      },
+    },
+  ];
+
+  const result = await lintTextWithConfig(code, "example.js", config);
+
+  const diagnostics: Array<{
+    ruleId: string | null;
+    messageId: string | null;
+  }> = [];
+  for (const message of result.messages) {
+    diagnostics.push({
+      ruleId: message.ruleId,
+      messageId: message.messageId,
+    });
+  }
+
+  return diagnostics;
+}
+
 describe("Unified require-traceability and aliases integration (Story 010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES)", () => {
   const codeMissingAll = "function foo() {}";
   const codeWithSupportsOnly = `/**\n * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED\n */\nfunction foo() {}`;
   const codeWithStoryAndReq = `/**\n * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md\n * @req REQ-ANNOTATION-REQUIRED\n */\nfunction foo() {}`;
-
-  async function getDiagnosticsForRule(ruleKey: string, code: string) {
-    const config = [
-      {
-        rules: {
-          [ruleKey]: "error",
-        },
-      },
-    ];
-
-    const result = await lintTextWithConfig(code, "example.js", config);
-    return result.messages.map((m) => ({
-      ruleId: m.ruleId,
-      messageId: m.messageId,
-    }));
-  }
 
   it("[REQ-UNIFIED-ALIAS-ENGINE] canonical and alias keys all report missing traceability on unannotated function", async () => {
     const ruleKeys = [
@@ -57,17 +70,22 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
       "traceability/require-req-annotation",
     ];
 
-    const results = await Promise.all(
-      ruleKeys.map((ruleKey) => getDiagnosticsForRule(ruleKey, codeMissingAll)),
-    );
+    const results: Array<
+      Array<{ ruleId: string | null; messageId: string | null }>
+    > = [];
+    for (const ruleKey of ruleKeys) {
+      results.push(await getDiagnosticsForRule(ruleKey, codeMissingAll));
+    }
 
-    results.forEach((messages, index) => {
+    for (let index = 0; index < results.length; index += 1) {
       const ruleKey = ruleKeys[index];
+      const messages = results[index];
+
       expect(messages.length).toBeGreaterThan(0);
-      messages.forEach((msg) => {
+      for (const msg of messages) {
         expect(msg.ruleId).toBe(ruleKey);
-      });
-    });
+      }
+    }
   });
 
   it("[REQ-SUPPORTS-FIRST-MODEL] @supports-only annotation satisfies all three rule keys", async () => {
@@ -77,15 +95,16 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
       "traceability/require-req-annotation",
     ];
 
-    const results = await Promise.all(
-      ruleKeys.map((ruleKey) =>
-        getDiagnosticsForRule(ruleKey, codeWithSupportsOnly),
-      ),
-    );
+    const results: Array<
+      Array<{ ruleId: string | null; messageId: string | null }>
+    > = [];
+    for (const ruleKey of ruleKeys) {
+      results.push(await getDiagnosticsForRule(ruleKey, codeWithSupportsOnly));
+    }
 
-    results.forEach((messages) => {
+    for (const messages of results) {
       expect(messages).toHaveLength(0);
-    });
+    }
   });
 
   it("[REQ-SUPPORTS-FIRST-MODEL] @story + @req annotation satisfies all three rule keys", async () => {
@@ -95,15 +114,16 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
       "traceability/require-req-annotation",
     ];
 
-    const results = await Promise.all(
-      ruleKeys.map((ruleKey) =>
-        getDiagnosticsForRule(ruleKey, codeWithStoryAndReq),
-      ),
-    );
+    const results: Array<
+      Array<{ ruleId: string | null; messageId: string | null }>
+    > = [];
+    for (const ruleKey of ruleKeys) {
+      results.push(await getDiagnosticsForRule(ruleKey, codeWithStoryAndReq));
+    }
 
-    results.forEach((messages) => {
+    for (const messages of results) {
       expect(messages).toHaveLength(0);
-    });
+    }
   });
 
   it("[REQ-INSIDE-BRACE-PLACEMENT][REQ-ALL-BLOCK-TYPES] unified rule and aliases accept inside-brace annotations when annotationPlacement is 'inside'", async () => {
@@ -135,7 +155,10 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
       config,
     );
 
-    const ruleIds = result.messages.map((m) => m.ruleId);
+    const ruleIds: Array<string | null> = [];
+    for (const message of result.messages) {
+      ruleIds.push(message.ruleId);
+    }
     expect(ruleIds).not.toContain("traceability/require-story-annotation");
     expect(ruleIds).not.toContain("traceability/require-req-annotation");
   });
@@ -147,7 +170,11 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
       configs.recommended,
     );
 
-    const ruleIds = result.messages.map((m) => m.ruleId).sort();
+    const ruleIds: Array<string | null> = [];
+    for (const message of result.messages) {
+      ruleIds.push(message.ruleId);
+    }
+    ruleIds.sort();
 
     expect(ruleIds).toContain("traceability/require-traceability");
     expect(ruleIds).toContain("traceability/require-story-annotation");
@@ -161,7 +188,11 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
       configs.strict,
     );
 
-    const ruleIds = result.messages.map((m) => m.ruleId).sort();
+    const ruleIds: Array<string | null> = [];
+    for (const message of result.messages) {
+      ruleIds.push(message.ruleId);
+    }
+    ruleIds.sort();
 
     expect(ruleIds).toContain("traceability/require-traceability");
     expect(ruleIds).toContain("traceability/require-story-annotation");
