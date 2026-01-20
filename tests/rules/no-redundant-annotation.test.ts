@@ -1,5 +1,4 @@
 /* eslint-disable traceability/valid-story-reference -- TODO test cases contain placeholder story paths */
-/* eslint-disable traceability/require-traceability */
 
 /**
  * Tests for: docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md
@@ -19,10 +18,17 @@ const ruleTester = new RuleTester({
   languageOptions: { parserOptions: { ecmaVersion: 2020 } },
 } as any);
 
-const runRule = (tests: Parameters<typeof ruleTester.run>[2]) =>
-  ruleTester.run("no-redundant-annotation", rule, tests);
+/**
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-DUPLICATION-DETECTION REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL REQ-DIFFERENT-REQUIREMENTS REQ-CATCH-BLOCK-HANDLING REQ-SCOPE-INHERITANCE REQ-CONFIGURABLE-STRICTNESS
+ */
+function runRule(tests: Parameters<typeof ruleTester.run>[2]) {
+  return ruleTester.run("no-redundant-annotation", rule, tests);
+}
 
-describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION)", () => {
+/**
+ * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-DUPLICATION-DETECTION REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL REQ-DIFFERENT-REQUIREMENTS REQ-CATCH-BLOCK-HANDLING REQ-SCOPE-INHERITANCE REQ-CONFIGURABLE-STRICTNESS
+ */
+function noRedundantAnnotationRuleSuite() {
   runRule({
     valid: [
       {
@@ -163,4 +169,9 @@ describe("no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DET
       },
     ],
   });
-});
+}
+
+describe(
+  "no-redundant-annotation rule (Story 027.0-DEV-REDUNDANT-ANNOTATION-DETECTION)",
+  noRedundantAnnotationRuleSuite,
+);
