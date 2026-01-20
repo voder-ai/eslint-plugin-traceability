@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Prettier integration tests for else-if annotation positions.
  * @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
@@ -9,37 +7,41 @@ import path from "path";
 import { spawnSync } from "child_process";
 import { formatWithPrettier } from "./prettier-test-helpers";
 
+const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
+const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
+const configPath = path.resolve(__dirname, "../../eslint.config.js");
+
+/**
+ * Runs ESLint against stdin using the repo flat config and a rule override.
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-PRETTIER-AUTOFIX-ELSE-IF
+ */
+function runEslintWithRequireBranchAnnotation(code: string) {
+  const args = [
+    "--no-config-lookup",
+    "--config",
+    configPath,
+    "--stdin",
+    "--stdin-filename",
+    "else-if.js",
+    "--rule",
+    "no-unused-vars:off",
+    "--rule",
+    "no-magic-numbers:off",
+    "--rule",
+    "no-undef:off",
+    "--rule",
+    "no-console:off",
+    "--rule",
+    "traceability/require-branch-annotation:error",
+  ];
+
+  return spawnSync(process.execPath, [eslintCliPath, ...args], {
+    encoding: "utf-8",
+    input: code,
+  });
+}
+
 describe("Else-if annotations with Prettier (Story 026.0-DEV-ELSE-IF-ANNOTATION-POSITION)", () => {
-  const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
-  const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
-  const configPath = path.resolve(__dirname, "../../eslint.config.js");
-
-  function runEslintWithRequireBranchAnnotation(code: string) {
-    const args = [
-      "--no-config-lookup",
-      "--config",
-      configPath,
-      "--stdin",
-      "--stdin-filename",
-      "else-if.js",
-      "--rule",
-      "no-unused-vars:off",
-      "--rule",
-      "no-magic-numbers:off",
-      "--rule",
-      "no-undef:off",
-      "--rule",
-      "no-console:off",
-      "--rule",
-      "traceability/require-branch-annotation:error",
-    ];
-
-    return spawnSync(process.execPath, [eslintCliPath, ...args], {
-      encoding: "utf-8",
-      input: code,
-    });
-  }
-
   it("[REQ-PRETTIER-COMPATIBILITY-ELSE-IF-BEFORE] accepts code where annotations start before else-if but are moved between condition and body by Prettier", () => {
     const original = `
 function doA() {
