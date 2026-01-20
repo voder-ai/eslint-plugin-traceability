@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FORMAT-SPECIFICATION
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION REQ-ERROR-CONTEXT
@@ -14,7 +12,11 @@ const ruleTester = new RuleTester({
   languageOptions: { parserOptions: { ecmaVersion: 2020 } },
 } as any);
 
-const makeInvalid = ({
+/**
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FORMAT-SPECIFICATION
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION REQ-ERROR-CONTEXT
+ */
+function makeInvalid({
   name,
   code,
   output,
@@ -28,27 +30,33 @@ const makeInvalid = ({
   messageId: string;
   details: string;
   options?: any[];
-}) => ({
-  name,
-  code,
-  ...(output ? { output } : {}),
-  ...(options ? { options } : {}),
-  errors: [
-    {
-      messageId,
-      data: {
-        details,
+}) {
+  return {
+    name,
+    code,
+    ...(output ? { output } : {}),
+    ...(options ? { options } : {}),
+    errors: [
+      {
+        messageId,
+        data: {
+          details,
+        },
       },
-    },
-  ],
-});
+    ],
+  };
+}
 
 /**
  * Test-only convenience for Story 005.0 error messaging consistency.
  * Preconfigures the invalidStoryFormat messageId so tests only specify
  * name, code, and details (plus optional output/options).
  */
-const makeInvalidStory = ({
+/**
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FORMAT-SPECIFICATION
+ * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-CONSISTENCY REQ-ERROR-SUGGESTION REQ-ERROR-CONTEXT
+ */
+function makeInvalidStory({
   name,
   code,
   details,
@@ -60,8 +68,8 @@ const makeInvalidStory = ({
   details: string;
   output?: string;
   options?: any[];
-}) =>
-  makeInvalid({
+}) {
+  return makeInvalid({
     name,
     code,
     output,
@@ -69,6 +77,7 @@ const makeInvalidStory = ({
     messageId: "invalidStoryFormat",
     details,
   });
+}
 
 describe("Valid Annotation Format Rule (Story 005.0-DEV-ANNOTATION-VALIDATION)", () => {
   ruleTester.run("valid-annotation-format", rule, {
