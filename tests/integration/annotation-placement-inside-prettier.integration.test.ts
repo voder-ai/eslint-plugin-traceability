@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Prettier integration tests for annotationPlacement: "inside" across multiple branch types.
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
@@ -9,46 +7,55 @@ import path from "path";
 import { spawnSync } from "child_process";
 import { formatWithPrettier as sharedFormatWithPrettier } from "./prettier-test-helpers";
 
+const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
+const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
+const configPath = path.resolve(__dirname, "../../eslint.config.js");
+
+/**
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */
+function buildInsidePlacementArgs(stdinFilename: string): string[] {
+  return [
+    "--no-config-lookup",
+    "--config",
+    configPath,
+    "--stdin",
+    "--stdin-filename",
+    stdinFilename,
+    "--rule",
+    "no-unused-vars:off",
+    "--rule",
+    "no-magic-numbers:off",
+    "--rule",
+    "no-undef:off",
+    "--rule",
+    "no-console:off",
+    "--rule",
+    'traceability/require-branch-annotation:["error",{"annotationPlacement":"inside"}]',
+  ];
+}
+
+/**
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PRETTIER-STABLE
+ */
+function runEslintWithInsidePlacement(code: string, _filename: string) {
+  // Pin stdin filename to a tsconfig-included path to satisfy @typescript-eslint/parser's project lookup in these integration tests.
+  const args = buildInsidePlacementArgs("src/annotation-placement-inside.ts");
+
+  return spawnSync(process.execPath, [eslintCliPath, ...args], {
+    encoding: "utf-8",
+    input: code,
+  });
+}
+
+/**
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PRETTIER-STABLE
+ */
+function formatWithPrettier(source: string): string {
+  return sharedFormatWithPrettier(source, { parser: "typescript" });
+}
+
 describe("annotationPlacement: 'inside' with Prettier (Story 028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION)", () => {
-  const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
-  const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
-  const configPath = path.resolve(__dirname, "../../eslint.config.js");
-
-  function buildInsidePlacementArgs(stdinFilename: string): string[] {
-    return [
-      "--no-config-lookup",
-      "--config",
-      configPath,
-      "--stdin",
-      "--stdin-filename",
-      stdinFilename,
-      "--rule",
-      "no-unused-vars:off",
-      "--rule",
-      "no-magic-numbers:off",
-      "--rule",
-      "no-undef:off",
-      "--rule",
-      "no-console:off",
-      "--rule",
-      'traceability/require-branch-annotation:["error",{"annotationPlacement":"inside"}]',
-    ];
-  }
-
-  function runEslintWithInsidePlacement(code: string, _filename: string) {
-    // Pin stdin filename to a tsconfig-included path to satisfy @typescript-eslint/parser's project lookup in these integration tests.
-    const args = buildInsidePlacementArgs("src/annotation-placement-inside.ts");
-
-    return spawnSync(process.execPath, [eslintCliPath, ...args], {
-      encoding: "utf-8",
-      input: code,
-    });
-  }
-
-  function formatWithPrettier(source: string): string {
-    return sharedFormatWithPrettier(source, { parser: "typescript" });
-  }
-
   it("[REQ-PRETTIER-STABLE][REQ-INSIDE-BRACE-PLACEMENT] accepts formatted code with inside-brace annotations for if/else and loops", () => {
     const original = `
 function demo(value: number) {
