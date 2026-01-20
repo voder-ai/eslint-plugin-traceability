@@ -50,8 +50,8 @@ async function getDiagnosticsForRule(ruleKey: string, code: string) {
   }> = [];
   for (const message of result.messages) {
     diagnostics.push({
-      ruleId: message.ruleId,
-      messageId: message.messageId,
+      ruleId: message.ruleId ?? null,
+      messageId: message.messageId ?? null,
     });
   }
 
@@ -157,7 +157,7 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
 
     const ruleIds: Array<string | null> = [];
     for (const message of result.messages) {
-      ruleIds.push(message.ruleId);
+      ruleIds.push(message.ruleId ?? null);
     }
     expect(ruleIds).not.toContain("traceability/require-story-annotation");
     expect(ruleIds).not.toContain("traceability/require-req-annotation");
@@ -172,7 +172,7 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
 
     const ruleIds: Array<string | null> = [];
     for (const message of result.messages) {
-      ruleIds.push(message.ruleId);
+      ruleIds.push(message.ruleId ?? null);
     }
     ruleIds.sort();
 
@@ -190,7 +190,7 @@ describe("Unified require-traceability and aliases integration (Story 010.4-DEV-
 
     const ruleIds: Array<string | null> = [];
     for (const message of result.messages) {
-      ruleIds.push(message.ruleId);
+      ruleIds.push(message.ruleId ?? null);
     }
     ruleIds.sort();
 
