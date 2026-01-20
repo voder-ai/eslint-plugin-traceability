@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-PRESERVE
  */
@@ -9,66 +7,104 @@ import {
   reportMethod,
 } from "../../src/rules/helpers/require-story-helpers";
 
-describe("Require Story Core (Story 003.0)", () => {
-  test("createMethodFix uses parent range start when parent is export", () => {
-    const node: any = {
-      type: "MethodDefinition",
-      range: [30, 60],
-      parent: { type: "ExportNamedDeclaration", range: [12, 90] },
-    };
-    const fixer = {
-      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),
-    } as any;
+/**
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-PRESERVE
+ */
+function insertTextBeforeRangeReturnsRangeAndText(
+  range: unknown,
+  text: unknown,
+) {
+  return { r: range, t: text };
+}
 
-    const defaultTemplate = getAnnotationTemplate();
-    const fixFn = createMethodFix(node, defaultTemplate);
-    const result = fixFn(fixer);
+/**
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-PRESERVE
+ */
+function getEmptyText() {
+  return "";
+}
 
-    expect(fixer.insertTextBeforeRange).toHaveBeenCalledTimes(1);
-    const calledArgs = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];
-    expect(calledArgs[0]).toEqual([12, 12]);
-    expect(typeof calledArgs[1]).toBe("string");
-    expect(calledArgs[1].length).toBeGreaterThan(0);
-    expect(result).toEqual({ r: [12, 12], t: calledArgs[1] });
-  });
+/**
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-PRESERVE
+ */
+function createMethodFixUsesParentRangeStartWhenParentIsExport() {
+  const node: any = {
+    type: "MethodDefinition",
+    range: [30, 60],
+    parent: { type: "ExportNamedDeclaration", range: [12, 90] },
+  };
+  const fixer = {
+    insertTextBeforeRange: jest.fn(insertTextBeforeRangeReturnsRangeAndText),
+  } as any;
 
-  test("reportMethod calls context.report with proper data and suggest.fix works", () => {
-    const node: any = {
-      type: "MethodDefinition",
-      key: { name: "myMethod" },
-      range: [40, 80],
-      parent: { type: "ClassBody" },
-    };
+  const defaultTemplate = getAnnotationTemplate();
+  const fixFn = createMethodFix(node, defaultTemplate);
+  const result = fixFn(fixer);
 
-    const fakeSource: any = { getText: () => "" };
-    const context: any = {
-      getSourceCode: () => fakeSource,
-      report: jest.fn(),
-    };
+  expect(fixer.insertTextBeforeRange).toHaveBeenCalledTimes(1);
+  const calledArgs = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];
+  expect(calledArgs[0]).toEqual([12, 12]);
+  expect(typeof calledArgs[1]).toBe("string");
+  expect(calledArgs[1].length).toBeGreaterThan(0);
+  expect(result).toEqual({ r: [12, 12], t: calledArgs[1] });
+}
 
-    reportMethod(context, fakeSource, { node, target: node });
+/**
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-PRESERVE
+ */
+function reportMethodCallsContextReportAndSuggestFixWorks() {
+  const node: any = {
+    type: "MethodDefinition",
+    key: { name: "myMethod" },
+    range: [40, 80],
+    parent: { type: "ClassBody" },
+  };
 
-    expect(context.report).toHaveBeenCalledTimes(1);
-    const call = (context.report as jest.Mock).mock.calls[0][0];
-    expect(call.messageId).toBe("missingStory");
-    expect(call.data).toHaveProperty("name");
-    expect(call.data).toHaveProperty("functionName");
-    expect(typeof call.data.name).toBe("string");
-    expect(typeof call.data.functionName).toBe("string");
+  const fakeSource: any = { getText: getEmptyText };
+  const context: any = {
+    getSourceCode: jest.fn(() => fakeSource),
+    report: jest.fn(),
+  };
 
-    // The suggest fix should be a function; exercise it with a mock fixer
-    expect(Array.isArray(call.suggest)).toBe(true);
-    expect(typeof call.suggest[0].fix).toBe("function");
+  reportMethod(context, fakeSource, { node, target: node });
 
-    const fixer = {
-      insertTextBeforeRange: jest.fn((r, t) => ({ r, t })),
-    } as any;
-    const fixResult = call.suggest[0].fix(fixer);
-    expect(fixer.insertTextBeforeRange).toHaveBeenCalled();
-    const args = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];
-    expect(args[0]).toEqual([40, 40]);
-    expect(typeof args[1]).toBe("string");
-    expect(args[1].length).toBeGreaterThan(0);
-    expect(fixResult).toEqual({ r: [40, 40], t: args[1] });
-  });
-});
+  expect(context.report).toHaveBeenCalledTimes(1);
+  const call = (context.report as jest.Mock).mock.calls[0][0];
+  expect(call.messageId).toBe("missingStory");
+  expect(call.data).toHaveProperty("name");
+  expect(call.data).toHaveProperty("functionName");
+  expect(typeof call.data.name).toBe("string");
+  expect(typeof call.data.functionName).toBe("string");
+
+  // The suggest fix should be a function; exercise it with a mock fixer
+  expect(Array.isArray(call.suggest)).toBe(true);
+  expect(typeof call.suggest[0].fix).toBe("function");
+
+  const fixer = {
+    insertTextBeforeRange: jest.fn(insertTextBeforeRangeReturnsRangeAndText),
+  } as any;
+  const fixResult = call.suggest[0].fix(fixer);
+  expect(fixer.insertTextBeforeRange).toHaveBeenCalled();
+  const args = (fixer.insertTextBeforeRange as jest.Mock).mock.calls[0];
+  expect(args[0]).toEqual([40, 40]);
+  expect(typeof args[1]).toBe("string");
+  expect(args[1].length).toBeGreaterThan(0);
+  expect(fixResult).toEqual({ r: [40, 40], t: args[1] });
+}
+
+/**
+ * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-PRESERVE
+ */
+function requireStoryCoreTestSuite() {
+  test(
+    "createMethodFix uses parent range start when parent is export",
+    createMethodFixUsesParentRangeStartWhenParentIsExport,
+  );
+
+  test(
+    "reportMethod calls context.report with proper data and suggest.fix works",
+    reportMethodCallsContextReportAndSuggestFixWorks,
+  );
+}
+
+describe("Require Story Core (Story 003.0)", requireStoryCoreTestSuite);
