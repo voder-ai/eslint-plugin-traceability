@@ -1,6 +1,3 @@
- 
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Tests for: docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
  * @story docs/stories/002.0-DEV-ESLINT-CONFIG.story.md
@@ -16,6 +13,10 @@ const baseConfig = {
   rules: {},
 };
 
+/**
+ * Lints an in-memory string using a Flat Config array.
+ * @supports docs/stories/002.0-DEV-ESLINT-CONFIG.story.md REQ-FLAT-CONFIG REQ-PROJECT-INTEGRATION
+ */
 async function lintTextWithConfig(text: string, config: any) {
   const eslint = new FlatESLint({
     overrideConfig: config,
