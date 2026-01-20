@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Tests for: docs/stories/006.0-DEV-FILE-VALIDATION.story.md
  * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE REQ-CONFIGURABLE-PATHS REQ-ERROR-HANDLING
@@ -334,18 +332,31 @@ function runRuleOnCode(code: string, options: any[] = []) {
   const messages: any[] = [];
 
   const context: any = {
-    report: (descriptor: any) => {
+    /**
+     * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ERROR-HANDLING
+     */
+    report(descriptor: any) {
       messages.push(descriptor);
     },
-    getSourceCode: () => ({
-      text: code,
-      getAllComments: () => [
-        {
-          type: "Line",
-          value: code.replace(/^\/\//, "").trim(),
+    /**
+     * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ERROR-HANDLING
+     */
+    getSourceCode() {
+      return {
+        text: code,
+        /**
+         * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ERROR-HANDLING
+         */
+        getAllComments() {
+          return [
+            {
+              type: "Line",
+              value: code.replace(/^\/\//, "").trim(),
+            },
+          ];
         },
-      ],
-    }),
+      };
+    },
     options,
     parserOptions: { ecmaVersion: 2020 },
   };
