@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Tests for: docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -72,13 +70,28 @@ describe("Require Story Helpers (Story 003.0)", () => {
       range: [0, 10],
     };
     const fakeSource = {
-      getJSDocComment: () => ({
-        value: "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md",
-      }),
-      getText: () => "",
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getJSDocComment() {
+        return {
+          value: "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md",
+        };
+      },
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getText() {
+        return "";
+      },
     } as any;
     const context: any = {
-      getSourceCode: () => fakeSource,
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getSourceCode() {
+        return fakeSource;
+      },
       report: jest.fn(),
     };
 
@@ -93,11 +106,26 @@ describe("Require Story Helpers (Story 003.0)", () => {
       range: [0, 10],
     };
     const fakeSource = {
-      getJSDocComment: () => null,
-      getText: () => "",
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getJSDocComment() {
+        return null;
+      },
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getText() {
+        return "";
+      },
     } as any;
     const context: any = {
-      getSourceCode: () => fakeSource,
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getSourceCode() {
+        return fakeSource;
+      },
       report: jest.fn(),
     };
 
@@ -114,7 +142,14 @@ describe("Require Story Helpers (Story 003.0)", () => {
    * @req REQ-ANNOTATION-REQUIRED - Verify resolveTargetNode/getNodeName/shouldProcessNode and IO helpers
    */
   test("resolveTargetNode prefers parent when parent is ExportNamedDeclaration", () => {
-    const fakeSource: any = { getText: () => "" };
+    const fakeSource: any = {
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getText() {
+        return "";
+      },
+    };
     const node: any = {
       type: "FunctionExpression",
       range: [5, 10],
@@ -125,7 +160,14 @@ describe("Require Story Helpers (Story 003.0)", () => {
   });
 
   test("resolveTargetNode falls back to node when parent is not an export", () => {
-    const fakeSource: any = { getText: () => "" };
+    const fakeSource: any = {
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getText() {
+        return "";
+      },
+    };
     const node: any = {
       type: "FunctionDeclaration",
       range: [5, 10],
@@ -158,10 +200,20 @@ describe("Require Story Helpers (Story 003.0)", () => {
     const rest = "function fn() {}\n";
     const full = jsdoc + rest;
     const fakeSource: any = {
-      getText: () => full,
-      getJSDocComment: () => ({
-        value: "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md",
-      }),
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getText() {
+        return full;
+      },
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getJSDocComment() {
+        return {
+          value: "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md",
+        };
+      },
       lines: full.split(/\r?\n/),
     };
     const nodeLine =
@@ -183,7 +235,12 @@ describe("Require Story Helpers (Story 003.0)", () => {
     const rest = "function fnB() {}\n";
     const full = jsdoc + rest;
     const fakeSource: any = {
-      getText: () => full,
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getText() {
+        return full;
+      },
     };
     const node: any = {
       type: "FunctionDeclaration",
@@ -196,12 +253,18 @@ describe("Require Story Helpers (Story 003.0)", () => {
 
   test("parentChainHasStory returns true when ancestors have JSDoc story", () => {
     const fakeSource: any = {
-      getCommentsBefore: () => [
-        {
-          type: "Block",
-          value: "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md",
-        },
-      ],
+      /**
+       * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+       */
+      getCommentsBefore() {
+        return [
+          {
+            type: "Block",
+            value:
+              "@story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md",
+          },
+        ];
+      },
     };
     const node: any = {
       type: "Identifier",
