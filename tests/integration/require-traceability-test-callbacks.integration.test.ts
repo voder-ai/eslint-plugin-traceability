@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Integration tests for require-traceability with configurable test callback exclusion.
  *
@@ -9,6 +7,9 @@
 import { FlatESLint } from "eslint/use-at-your-own-risk";
 import traceabilityPlugin from "../../src/index";
 
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
+ */
 async function lintTextWithConfig(
   text: string,
   filename: string,
@@ -28,6 +29,37 @@ async function lintTextWithConfig(
 
   const [result] = await eslint.lintText(text, { filePath: filename });
   return result;
+}
+
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
+ */
+function getTraceabilityMessages(messages: Array<{ ruleId?: string | null }>) {
+  const filtered: Array<{ ruleId?: string | null }> = [];
+  for (const message of messages) {
+    const ruleId = message.ruleId;
+    if (
+      ruleId === "traceability/require-traceability" ||
+      ruleId === "traceability/require-story-annotation"
+    ) {
+      filtered.push(message);
+    }
+  }
+  return filtered;
+}
+
+/**
+ * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
+ */
+async function getRuleMessages(
+  code: string,
+  filename: string,
+  extraConfig: any,
+) {
+  const result = await lintTextWithConfig(code, filename, extraConfig);
+  return getTraceabilityMessages(
+    result.messages as Array<{ ruleId?: string | null }>,
+  );
 }
 
 describe("Unified require-traceability with configurable test callback exclusion (Story 013-exclude-test-framework-callbacks)", () => {
@@ -50,19 +82,6 @@ bench('bench case', () => {\n  function helper() {}\n  helper();\n});`;
 function helperWrapper(fn) {\n  return fn;\n}
 
 helperWrapper(() => {\n  function helper() {}\n  helper();\n});`;
-
-  async function getRuleMessages(
-    code: string,
-    filename: string,
-    extraConfig: any,
-  ) {
-    const result = await lintTextWithConfig(code, filename, extraConfig);
-    return result.messages.filter(
-      (m) =>
-        m.ruleId === "traceability/require-traceability" ||
-        m.ruleId === "traceability/require-story-annotation",
-    );
-  }
 
   it("[REQ-TEST-CALLBACK-EXCLUSION] excludes callbacks under known test helpers when configured", async () => {
     const config = [
@@ -135,15 +154,11 @@ helperWrapper(() => {\n  function helper() {}\n  helper();\n});`;
       withBenchAsHelperConfig,
     );
 
-    const baseMessages = baseResult.messages.filter(
-      (m) =>
-        m.ruleId === "traceability/require-traceability" ||
-        m.ruleId === "traceability/require-story-annotation",
+    const baseMessages = getTraceabilityMessages(
+      baseResult.messages as Array<{ ruleId?: string | null }>,
     );
-    const withBenchHelperMessages = withBenchHelperResult.messages.filter(
-      (m) =>
-        m.ruleId === "traceability/require-traceability" ||
-        m.ruleId === "traceability/require-story-annotation",
+    const withBenchHelperMessages = getTraceabilityMessages(
+      withBenchHelperResult.messages as Array<{ ruleId?: string | null }>,
     );
 
     expect(withBenchHelperMessages.length).toBeGreaterThanOrEqual(
@@ -203,26 +218,18 @@ helperWrapper(() => {\n  function helper() {}\n  helper();\n});`;
       withAdditionalHelpersConfig,
     );
 
-    const wrapperBaseMessages = wrapperBaseResult.messages.filter(
-      (m) =>
-        m.ruleId === "traceability/require-traceability" ||
-        m.ruleId === "traceability/require-story-annotation",
+    const wrapperBaseMessages = getTraceabilityMessages(
+      wrapperBaseResult.messages as Array<{ ruleId?: string | null }>,
     );
-    const wrapperWithHelpersMessages = wrapperWithHelpersResult.messages.filter(
-      (m) =>
-        m.ruleId === "traceability/require-traceability" ||
-        m.ruleId === "traceability/require-story-annotation",
+    const wrapperWithHelpersMessages = getTraceabilityMessages(
+      wrapperWithHelpersResult.messages as Array<{ ruleId?: string | null }>,
     );
 
-    const benchBaseMessages = benchBaseResult.messages.filter(
-      (m) =>
-        m.ruleId === "traceability/require-traceability" ||
-        m.ruleId === "traceability/require-story-annotation",
+    const benchBaseMessages = getTraceabilityMessages(
+      benchBaseResult.messages as Array<{ ruleId?: string | null }>,
     );
-    const benchWithHelpersMessages = benchWithHelpersResult.messages.filter(
-      (m) =>
-        m.ruleId === "traceability/require-traceability" ||
-        m.ruleId === "traceability/require-story-annotation",
+    const benchWithHelpersMessages = getTraceabilityMessages(
+      benchWithHelpersResult.messages as Array<{ ruleId?: string | null }>,
     );
 
     expect(wrapperWithHelpersMessages.length).toBeLessThanOrEqual(
