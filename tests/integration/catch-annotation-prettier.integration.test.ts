@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Prettier integration tests for CatchClause annotation positions.
  * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
@@ -9,37 +7,42 @@ import path from "path";
 import { spawnSync } from "child_process";
 import { formatWithPrettier } from "./prettier-test-helpers";
 
+const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
+const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
+const configPath = path.resolve(__dirname, "../../eslint.config.js");
+
+/**
+ * Run ESLint with `traceability/require-branch-annotation` enabled against provided code.
+ * @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
+ * @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION REQ-FALLBACK-LOGIC
+ */
+function runEslintWithRequireBranchAnnotation(code: string) {
+  const args = [
+    "--no-config-lookup",
+    "--config",
+    configPath,
+    "--stdin",
+    "--stdin-filename",
+    "catch.js",
+    "--rule",
+    "no-unused-vars:off",
+    "--rule",
+    "no-magic-numbers:off",
+    "--rule",
+    "no-undef:off",
+    "--rule",
+    "no-console:off",
+    "--rule",
+    "traceability/require-branch-annotation:error",
+  ];
+
+  return spawnSync(process.execPath, [eslintCliPath, ...args], {
+    encoding: "utf-8",
+    input: code,
+  });
+}
+
 describe("CatchClause annotations with Prettier (Story 025.0-DEV-CATCH-ANNOTATION-POSITION)", () => {
-  const eslintPkgDir = path.dirname(require.resolve("eslint/package.json"));
-  const eslintCliPath = path.join(eslintPkgDir, "bin", "eslint.js");
-  const configPath = path.resolve(__dirname, "../../eslint.config.js");
-
-  function runEslintWithRequireBranchAnnotation(code: string) {
-    const args = [
-      "--no-config-lookup",
-      "--config",
-      configPath,
-      "--stdin",
-      "--stdin-filename",
-      "catch.js",
-      "--rule",
-      "no-unused-vars:off",
-      "--rule",
-      "no-magic-numbers:off",
-      "--rule",
-      "no-undef:off",
-      "--rule",
-      "no-console:off",
-      "--rule",
-      "traceability/require-branch-annotation:error",
-    ];
-
-    return spawnSync(process.execPath, [eslintCliPath, ...args], {
-      encoding: "utf-8",
-      input: code,
-    });
-  }
-
   it("[REQ-FALLBACK-LOGIC] accepts code where annotations start before catch but are moved inside by Prettier", () => {
     const original = `
 function doSomething() {
