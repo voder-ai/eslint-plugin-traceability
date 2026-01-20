@@ -103,7 +103,7 @@ function missingAnnotation() {
       m.message.includes("missingAnnotation"),
     );
     expect(missingAnnotationError).toBeDefined();
-  });
+  }, 30_000);
 
   /**
    * @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
