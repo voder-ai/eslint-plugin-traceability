@@ -51,10 +51,9 @@ function doA() {
 function doB() {
   return 2;
 }
-
-// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-DETECTION
 if (aVeryLongConditionThatForcesPrettierToWrapTheElseIfBranch && anotherCondition) {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
   doA();
 }
 // @story docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md
@@ -87,10 +86,9 @@ function doA() {
 function doB() {
   return 2;
 }
-
-// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-DETECTION
 if (aVeryLongConditionThatForcesPrettierToWrapTheElseIfBranch && anotherCondition) {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
   doA();
 } else if (
   anotherVeryLongConditionThatForcesWrapping && someOtherCondition

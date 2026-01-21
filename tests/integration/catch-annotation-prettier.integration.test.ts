@@ -53,9 +53,9 @@ function handleError(error) {
   console.error(error);
 }
 
-// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-DETECTION
 try {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
   doSomething();
 }
 // @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
@@ -90,9 +90,9 @@ function handleError(error) {
   console.error(error);
 }
 
-// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-DETECTION
 try {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
   doSomething();
 } catch (error) {
   // @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
@@ -122,9 +122,9 @@ function doSomething() {
   return 42;
 }
 
-// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
-// @req REQ-BRANCH-DETECTION
 try {
+  // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+  // @req REQ-BRANCH-DETECTION
   doSomething();
 } catch (error) {
   // @story docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md
