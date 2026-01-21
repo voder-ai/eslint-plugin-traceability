@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import {
   scanCommentLinesInRange,
@@ -16,6 +14,7 @@ function getInsideLoopCommentText(
   node: any,
 ): string {
   const body = node.body;
+  // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-ANNOTATION
   if (
     body &&
     body.type === "BlockStatement" &&
@@ -28,6 +27,7 @@ function getInsideLoopCommentText(
     const endIndex = body.loc.end.line - 1;
 
     const insideText = scanCommentLinesInRange(lines, startIndex, endIndex);
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-ANNOTATION
     if (
       insideText &&
       (/@story\b/.test(insideText) ||
@@ -54,14 +54,17 @@ export function gatherLoopCommentText(
   annotationPlacement: AnnotationPlacement,
   beforeText: string,
 ): string {
+  // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE
   if (annotationPlacement === "inside") {
     const insideText = getInsideLoopCommentText(sourceCode, node);
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE
     if (insideText) {
       return insideText;
     }
     return "";
   }
 
+  // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-ANNOTATION
   if (
     /@story\b/.test(beforeText) ||
     /@req\b/.test(beforeText) ||
@@ -71,6 +74,7 @@ export function gatherLoopCommentText(
   }
 
   const insideText = getInsideLoopCommentText(sourceCode, node);
+  // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE
   if (insideText) {
     return insideText;
   }
