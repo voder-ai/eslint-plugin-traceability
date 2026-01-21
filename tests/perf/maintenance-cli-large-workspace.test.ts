@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * CLI-level performance tests for maintenance tools on large workspaces.
  * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
@@ -13,6 +11,9 @@ import { runMaintenanceCli } from "../../src/maintenance/cli";
 // Performance budget documented in docs/maintenance-performance-tests.md
 const CLI_LARGE_WORKSPACE_PERF_BUDGET_MS = 5000;
 
+/**
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
+ */
 function createCliLargeWorkspace(): { root: string; cleanup: () => void } {
   const root = fs.mkdtempSync(
     path.join(os.tmpdir(), "traceability-cli-large-"),
@@ -53,12 +54,18 @@ export function cli_example_${moduleIndex}_${fileIndex}() {}
 
   return {
     root,
-    cleanup: () => {
+    /**
+     * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
+     */
+    cleanup(): void {
       fs.rmSync(root, { recursive: true, force: true });
     },
   };
 }
 
+/**
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
+ */
 function createDeepNestedCliWorkspace(): { root: string; cleanup: () => void } {
   const root = fs.mkdtempSync(
     path.join(os.tmpdir(), "traceability-cli-deep-nested-"),
@@ -103,7 +110,10 @@ export function cli_deep_example_${branchIndex}_${fileIndex}() {}
 
   return {
     root,
-    cleanup: () => {
+    /**
+     * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
+     */
+    cleanup(): void {
       fs.rmSync(root, { recursive: true, force: true });
     },
   };
