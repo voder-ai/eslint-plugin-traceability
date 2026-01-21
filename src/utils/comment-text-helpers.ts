@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Low-level comment text extraction helpers for branch annotation processing.
  *
@@ -31,9 +29,11 @@ export function getCommentTextAtLine(
 ): string | null {
   const line = lines[index];
   if (!line || !line.trim()) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     return null;
   }
   if (!/^\s*(\/\/|\/\*)/.test(line)) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     return null;
   }
 
@@ -55,6 +55,7 @@ export function collectCommentLine(
 ): boolean {
   const commentText = getCommentTextAtLine(lines, index);
   if (!commentText) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     return false;
   }
 
