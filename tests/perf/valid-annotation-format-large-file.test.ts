@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Performance tests for valid-annotation-format on large annotated files.
  *
@@ -16,6 +14,9 @@ import rule from "../../src/rules/valid-annotation-format";
  * The generated code mixes valid and invalid annotation formats to exercise
  * parsing, multi-line handling, and error-reporting paths at scale without
  * relying on auto-fix.
+ */
+/**
+ * @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT REQ-FLEXIBLE-PARSING REQ-SYNTAX-VALIDATION
  */
 function buildLargeAnnotatedSource(
   functionCount: number,
