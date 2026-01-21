@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Performance and stress tests for maintenance tools on large workspaces.
  * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
@@ -26,6 +24,11 @@ const LARGE_WORKSPACE_PERF_BUDGET_MS = 5000;
  * - 10 modules (module-000 .. module-009)
  * - 50 files per module (file-000.ts .. file-049.ts)
  * - Each file includes a mix of valid and stale `@story` references.
+ */
+/**
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
+ * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-BATCH
  */
 function createLargeWorkspace(): { root: string; cleanup: () => void } {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "traceability-large-"));
@@ -77,7 +80,12 @@ export function example_${moduleIndex}_${fileIndex}() {}
 
   return {
     root,
-    cleanup: () => {
+    /**
+     * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
+     * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
+     * @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-BATCH
+     */
+    cleanup(): void {
       fs.rmSync(root, { recursive: true, force: true });
     },
   };
