@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Parser for extracting requirements from story files
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md

@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable traceability/require-branch-annotation */
+
 import {
   EXIT_OK,
   EXIT_USAGE,

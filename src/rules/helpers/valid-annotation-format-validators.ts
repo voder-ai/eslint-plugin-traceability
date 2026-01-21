@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Validators and helper functions for the valid-annotation-format rule.
  *

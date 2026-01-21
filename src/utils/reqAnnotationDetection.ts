@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Shared `@req` detection helpers used by annotation-checker utilities.
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION

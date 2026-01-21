@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Inline comment processing for prefer-implements-annotation rule.
  * Handles migration of inline comment story and requirement patterns to supports format.

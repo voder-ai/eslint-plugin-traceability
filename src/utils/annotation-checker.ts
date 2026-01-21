@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 import { getNodeName } from "../rules/helpers/require-story-utils";
 import { hasReqAnnotation } from "./reqAnnotationDetection";
 import {

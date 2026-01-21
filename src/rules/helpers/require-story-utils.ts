@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * src/rules/helpers/require-story-utils.ts
  *

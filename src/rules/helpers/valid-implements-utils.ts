@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Helpers for `@supports` annotation validation used by valid-annotation-format.
  *

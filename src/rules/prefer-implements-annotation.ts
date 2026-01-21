@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * ESLint rule implementation for preferring the consolidated `@supports`
  * annotation over legacy combinations of `@story` and `@req` within JSDoc

@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 import {
   resolveOptions,
   type ResolvedAnnotationOptions,

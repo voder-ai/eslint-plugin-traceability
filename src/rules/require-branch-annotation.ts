@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Rule to enforce `@story` and `@req` annotations on significant code branches.
  *

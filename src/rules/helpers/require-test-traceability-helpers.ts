@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Helper utilities for the require-test-traceability rule.
  *

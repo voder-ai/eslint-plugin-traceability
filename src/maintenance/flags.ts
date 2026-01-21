@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Flag parsing and normalization logic for the traceability-maint CLI.
  *

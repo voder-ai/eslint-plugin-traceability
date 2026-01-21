@@ -131,6 +131,18 @@ module.exports = [
     },
   },
   {
+    // Rule 5: Branch-level traceability requirements (src only)
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: { ...(plugin.rules ? { traceability: plugin } : {}) },
+    rules: {
+      ...(plugin.rules
+        ? {
+            "traceability/require-branch-annotation": "error",
+          }
+        : {}),
+    },
+  },
+  {
     files: ["**/*.js", "**/*.jsx"],
     languageOptions: {
       ecmaVersion: 2022,

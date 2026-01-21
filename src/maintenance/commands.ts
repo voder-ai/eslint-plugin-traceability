@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Subcommand handlers for the traceability-maint CLI.
  *

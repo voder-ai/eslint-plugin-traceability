@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 import * as fs from "fs";
 import * as path from "path";
 

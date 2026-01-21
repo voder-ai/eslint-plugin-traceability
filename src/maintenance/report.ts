@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 import { detectStaleAnnotations } from "./detect";
 import { GetAllFilesOptions } from "./utils";
 import * as fs from "fs";

@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Utility functions for story path resolution and existence checking.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md

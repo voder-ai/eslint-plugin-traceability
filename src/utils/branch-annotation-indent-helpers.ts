@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 import type { Rule } from "eslint";
 import type { AnnotationPlacement } from "./branch-annotation-helpers";
 

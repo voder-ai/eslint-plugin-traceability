@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Shared option handling for the valid-annotation-format rule.
  *

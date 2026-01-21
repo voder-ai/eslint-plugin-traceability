@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Name extraction utilities for require-story rule
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md

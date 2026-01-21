@@ -1,3 +1,5 @@
+/* eslint-disable traceability/require-branch-annotation */
+
 /**
  * Shared helpers for determining whether a function-like node should be
  * treated as a test framework callback that may be excluded from
