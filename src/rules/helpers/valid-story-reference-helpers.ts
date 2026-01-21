@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import path from "path";
 import { enforceProjectBoundary } from "../../utils/storyReferenceUtils";
 

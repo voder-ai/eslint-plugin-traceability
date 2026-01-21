@@ -75,6 +75,7 @@ export function createStoryFixer(ctx: StoryFixContext) {
   function insertStoryFixer(fixer: any) {
     // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-AUTO-FIX-MIGRATION REQ-INSIDE-BRACE-PLACEMENT
     if (annotationPlacement === "inside") {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-AUTO-FIX-MIGRATION REQ-INSIDE-BRACE-PLACEMENT
       return buildInsidePlacementStoryFixes(ctx, fixer);
     }
 

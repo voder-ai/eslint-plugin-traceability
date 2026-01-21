@@ -22,6 +22,7 @@ function getInsideLoopCommentText(
     body.loc.start &&
     body.loc.end
   ) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-ANNOTATION
     const lines = sourceCode.lines;
     const startIndex = body.loc.start.line; // first line inside block body (start.line is 1-based)
     const endIndex = body.loc.end.line - 1;
@@ -34,6 +35,7 @@ function getInsideLoopCommentText(
         /@req\b/.test(insideText) ||
         /@supports\b/.test(insideText))
     ) {
+      // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-ANNOTATION
       return insideText;
     }
   }
@@ -56,9 +58,11 @@ export function gatherLoopCommentText(
 ): string {
   // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE
   if (annotationPlacement === "inside") {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE
     const insideText = getInsideLoopCommentText(sourceCode, node);
     // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE
     if (insideText) {
+      // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE
       return insideText;
     }
     return "";
@@ -70,12 +74,14 @@ export function gatherLoopCommentText(
     /@req\b/.test(beforeText) ||
     /@supports\b/.test(beforeText)
   ) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-ANNOTATION
     return beforeText;
   }
 
   const insideText = getInsideLoopCommentText(sourceCode, node);
   // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE
   if (insideText) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-LOOP-PLACEMENT-FLEXIBLE
     return insideText;
   }
 

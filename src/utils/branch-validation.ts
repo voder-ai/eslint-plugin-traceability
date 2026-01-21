@@ -19,6 +19,7 @@ export function validateBranchTypes(
    * @req REQ-CONFIGURABLE-SCOPE - Trace configuration branch existence check
    */
   if (Array.isArray(options.branchTypes)) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE
     /**
      * Predicate to determine whether a provided branch type is invalid.
      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
@@ -35,6 +36,7 @@ export function validateBranchTypes(
      * @req REQ-CONFIGURABLE-SCOPE - Trace handling when invalid types are detected
      */
     if (invalidTypes.length > 0) {
+      // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE
       /**
        * Program listener produced when configuration is invalid.
        * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md

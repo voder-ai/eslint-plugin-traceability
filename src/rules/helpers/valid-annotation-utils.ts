@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import { getDefaultReqExample } from "./valid-annotation-options";
 import type { ResolvedAnnotationOptions } from "./valid-annotation-options";
 
