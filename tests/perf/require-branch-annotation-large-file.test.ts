@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-traceability */
-
 /**
  * Performance tests for require-branch-annotation on large nested-branch files.
  *
@@ -15,6 +13,10 @@ import rule from "../../src/rules/require-branch-annotation";
  *
  * The generated code intentionally omits annotations so that the rule
  * produces diagnostics for both outer and inner branches.
+ */
+/**
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-PERFORMANCE-OPTIMIZATION
+ * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-NESTED-HANDLING
  */
 function buildLargeNestedBranchSource(
   functionCount: number,
