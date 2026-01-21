@@ -33,24 +33,26 @@ for (const filePath of files) {
   }
 
   const content = fs.readFileSync(filePath, "utf8");
-  
+
   // Check if suppression already exists
   if (content.includes(`eslint-disable ${ruleName}`)) {
-    console.log(`Skipping ${path.relative(process.cwd(), filePath)} (already has suppression)`);
+    console.log(
+      `Skipping ${path.relative(process.cwd(), filePath)} (already has suppression)`,
+    );
     skippedCount++;
     continue;
   }
 
   // Check if there's already an eslint-disable comment
   const existingDisable = content.match(/^\/\* eslint-disable ([^*]+) \*\//);
-  
+
   let newContent;
   if (existingDisable) {
     // Add to existing disable comment
     const existingRules = existingDisable[1];
     newContent = content.replace(
       /^\/\* eslint-disable ([^*]+) \*\//,
-      `/* eslint-disable ${existingRules}, ${ruleName} */`
+      `/* eslint-disable ${existingRules}, ${ruleName} */`,
     );
   } else {
     // Add new disable comment at top
@@ -58,7 +60,9 @@ for (const filePath of files) {
   }
 
   fs.writeFileSync(filePath, newContent, "utf8");
-  console.log(`✓ Added suppression to ${path.relative(process.cwd(), filePath)}`);
+  console.log(
+    `✓ Added suppression to ${path.relative(process.cwd(), filePath)}`,
+  );
   addedCount++;
 }
 

@@ -208,7 +208,7 @@ function createMissingStoryReportDescriptor(config: {
 
 /**
  * Resolve the configured annotation placement, defaulting to "before".
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
 function resolveAnnotationPlacement(
   options?: CoreReportOptions,

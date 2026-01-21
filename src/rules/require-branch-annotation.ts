@@ -129,7 +129,7 @@ const rule: Rule.RuleModule = {
             uniqueItems: true,
           },
           /**
-           * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
+           * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-INSIDE REQ-OPT-IN-LEGACY-BEFORE
            */
           annotationPlacement: {
             enum: ["before", "inside"],
@@ -164,14 +164,14 @@ const rule: Rule.RuleModule = {
     /**
      * Resolve annotation placement configuration with backward-compatible default.
      *
-     * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT
+     * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-INSIDE REQ-OPT-IN-LEGACY-BEFORE
      */
     const rawOptions: any = context.options[0] || {};
     const _annotationPlacement: AnnotationPlacement =
       rawOptions.annotationPlacement === "inside" ||
       rawOptions.annotationPlacement === "before"
         ? rawOptions.annotationPlacement
-        : "before";
+        : "inside";
 
     const storyFixCountRef = { count: 0 };
     const handlers: Rule.RuleListener = {};

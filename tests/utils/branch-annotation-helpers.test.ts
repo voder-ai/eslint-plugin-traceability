@@ -68,7 +68,12 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
       },
     };
 
-    const text = gatherBranchCommentText(sourceCode as any, switchCaseNode as any);
+    const text = gatherBranchCommentText(
+      sourceCode as any,
+      switchCaseNode as any,
+      undefined,
+      "before" as AnnotationPlacement,
+    );
 
     expect(text).toBe("@story first part @req REQ-FIRST");
   });
@@ -93,7 +98,12 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
       },
     };
 
-    const catchText = gatherBranchCommentText(sourceCodeCatch as any, catchNode as any);
+    const catchText = gatherBranchCommentText(
+      sourceCodeCatch as any,
+      catchNode as any,
+      undefined,
+      "before" as AnnotationPlacement,
+    );
     expect(sourceCodeCatch.getCommentsBefore).toHaveBeenCalledWith(catchNode);
     expect(catchText).toContain("@story catch branch story");
     expect(catchText).toContain("additional info");
@@ -117,7 +127,12 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
       },
     };
 
-    const loopText = gatherBranchCommentText(sourceCodeLoop as any, forNode as any);
+    const loopText = gatherBranchCommentText(
+      sourceCodeLoop as any,
+      forNode as any,
+      undefined,
+      "before" as AnnotationPlacement,
+    );
     expect(sourceCodeLoop.getCommentsBefore).toHaveBeenCalledWith(forNode);
     expect(loopText).toBe("@story loop branch story loop details");
   });
@@ -173,10 +188,10 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
     expect(insideText).not.toContain("before-loop should be ignored");
   });
 
-  it("[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] uses inside-catch comments when annotationPlacement is 'inside' and ignores before-catch annotations", () => {
+  it("[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] uses inside-catch comments when annotationPlacement is 'inside' and no before-catch annotations exist", () => {
     const sourceCode: any = {
       lines: [
-        "// @story before-catch should be ignored in inside mode",
+        "// before-catch note (not an annotation)",
         "try {",
         "  doSomething();",
         "}",
@@ -189,7 +204,7 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
       getCommentsBefore: jest
         .fn()
         .mockReturnValue([
-          { value: "@story before-catch should be ignored in inside mode" },
+          { value: "before-catch note (not an annotation)" },
         ]),
     };
 
@@ -224,7 +239,7 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
       "@story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md",
     );
     expect(insideText).toContain("@req REQ-CATCH-INSIDE");
-    expect(insideText).not.toContain("before-catch should be ignored");
+    expect(insideText).not.toContain("before-catch note");
   });
 
   it("[REQ-INSIDE-BRACE-PLACEMENT][REQ-PLACEMENT-CONFIG] uses inside-switch comments when annotationPlacement is 'inside' and ignores before-case annotations", () => {
@@ -288,10 +303,10 @@ describe("validateBranchTypes helper (Story 004.0-DEV-BRANCH-ANNOTATIONS)", () =
  * Tests for annotationPlacement wiring at helper level
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-DEFAULT-BACKWARD-COMPAT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-DEFAULT-INSIDE REQ-OPT-IN-LEGACY-BEFORE
  */
 describe("gatherBranchCommentText annotationPlacement wiring (Story 028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION)", () => {
-  it("[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] honors configured placement for simple if-statements", () => {
+  it("[REQ-PLACEMENT-CONFIG][REQ-OPT-IN-LEGACY-BEFORE] honors configured placement for simple if-statements", () => {
     const sourceCode: any = {
       lines: [
         "function demo() {",
@@ -354,7 +369,7 @@ describe("gatherBranchCommentText annotationPlacement wiring (Story 028.0-DEV-AN
     expect(insideText).not.toContain("@req REQ-BEFORE");
   });
 
-  it("[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] honors Story 028.0 inside-placement semantics for else-if branches while preserving Story 026.0 before-else behavior", () => {
+  it("[REQ-PLACEMENT-CONFIG][REQ-OPT-IN-LEGACY-BEFORE] honors Story 028.0 inside-placement semantics for else-if branches while preserving Story 026.0 before-else behavior", () => {
     const sourceCode: any = {
       lines: [
         "function demoElseIf(x) {", // 1
@@ -437,14 +452,14 @@ describe("gatherBranchCommentText annotationPlacement wiring (Story 028.0-DEV-AN
       "inside" as AnnotationPlacement,
     );
 
-    expect(insideText).toBe("");
-    expect(insideText).not.toContain("REQ-BEFORE-ELSE");
-    expect(insideText).not.toContain(
+    expect(insideText).toContain("REQ-BEFORE-ELSE");
+    expect(insideText).toContain(
       "docs/stories/026.0-DEV-BRANCH-ANNOTATIONS-ELSE-BRANCHES.story.md",
     );
+    expect(insideText).not.toContain("REQ-ELSE-IF-INSIDE");
   });
 
-  it("[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] honors configured placement for TryStatement branches in try/finally patterns", () => {
+  it("[REQ-PLACEMENT-CONFIG][REQ-OPT-IN-LEGACY-BEFORE] honors configured placement for TryStatement branches in try/finally patterns", () => {
     const sourceCode: any = {
       lines: [
         "function demoTry() {", // 1
@@ -528,7 +543,7 @@ describe("gatherBranchCommentText annotationPlacement wiring (Story 028.0-DEV-AN
     expect(insideText).not.toContain("REQ-BEFORE-TRY");
   });
 
-  it("[REQ-PLACEMENT-CONFIG][REQ-DEFAULT-BACKWARD-COMPAT] honors before-case annotations for SwitchCase in default placement mode", () => {
+  it("[REQ-PLACEMENT-CONFIG][REQ-OPT-IN-LEGACY-BEFORE] honors before-case annotations for SwitchCase in legacy placement mode", () => {
     const sourceCode: any = {
       lines: [
         "// @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md",

@@ -8,18 +8,16 @@ Ensures that significant code branches (if/else, switch cases, loops, try/catch)
 
 ## Rule Details
 
-This rule checks for JSDoc or inline comments associated with significant code branches and ensures both `@story` and `@req` annotations are present. By default it expects annotations in comments immediately preceding the branch node (`annotationPlacement: "before"`), but when configured with `annotationPlacement: "inside"` it instead looks for annotations as the first comment-only lines inside each branch block (if/else, loops, try/catch, and switch cases).
+This rule checks for JSDoc or inline comments associated with significant code branches and ensures both `@story` and `@req` annotations are present. By default it expects annotations as the first comment-only lines inside each branch block (`annotationPlacement: "inside"`), but when configured with `annotationPlacement: "before"` it instead looks for annotations in comments immediately preceding the branch node.
 
 ### Catch clause annotation positions
 
-For `catch` blocks, there are two valid locations for the required annotations:
+For `catch` blocks:
 
-1. Immediately before the `catch` keyword (in a line or block comment directly above the `catch`).
-2. As the first comment-only lines inside the catch block body (before any executable statements).
+- With `annotationPlacement: "inside"` (default), annotations must appear as the first comment-only lines inside the catch block body (before any executable statements).
+- With `annotationPlacement: "before"`, annotations immediately before the `catch` keyword are accepted, and the rule also supports an inside-block fallback for formatter-driven cases.
 
-If annotations are present in both locations, the annotations immediately before the `catch` keyword take precedence.
-
-When the rule applies an auto-fix for missing catch annotations, it inserts placeholder `@story` and `@req` comments inside the catch block body, matching Prettier’s tendency to place `catch` comments there. Other branch types continue to receive auto-fix annotations immediately before the branch keyword.
+When the rule applies an auto-fix for missing catch annotations, it inserts placeholder `@story` and `@req` comments inside the catch block body, matching Prettier’s tendency to place `catch` comments there.
 
 This behavior is covered by unit tests in `tests/utils/branch-annotation-catch-position.test.ts` and integration tests in `tests/integration/catch-annotation-prettier.integration.test.ts`.
 
@@ -76,17 +74,18 @@ module.exports = {
 ```
 
 Property: `annotationPlacement` (string)  
-Default: `"before"`  
+Default: `"inside"`  
 Allowed values: `"before" | "inside"`
 
-- `"before"` (default) — legacy behavior. Annotations are read from comments immediately before the branch node. Catch and else-if branches retain their formatter-aware dual-position behavior from Stories 025.0 and 026.0.
-- `"inside"` — inside-brace standard from Story 028.0. Annotations are read from the first contiguous comment-only lines inside the branch block:
+- `"inside"` (default) — inside-brace standard from Story 028.0. Annotations are read from the first contiguous comment-only lines inside the branch block:
   - `if` / `else if` / `else` blocks: comments immediately inside the `{ ... }` body.
   - Loops (`for` / `for...of` / `for...in` / `while` / `do...while`): comments immediately inside the loop body.
   - `try`/`catch`/`finally`: comments inside the corresponding block body. Existing before-try / before-catch comments are ignored for placement validation in this mode.
   - `switch` cases: comments inside the case body when it is a block (`case 'a': { ... }`); if there is no block, the rule falls back to line-based scanning inside the case range.
 
-When `annotationPlacement: "inside"` is enabled, annotations that appear _only_ before the branch keyword are treated as missing for placement purposes and will trigger the usual `missingAnnotation` diagnostics with autofixes that insert placeholders at the inside location. This allows a gradual migration from before-brace to inside-brace annotations without breaking the default configuration.
+- `"before"` — legacy behavior. Annotations are read from comments immediately before the branch node. Catch and else-if branches retain their formatter-aware dual-position behavior from Stories 025.0 and 026.0.
+
+When `annotationPlacement: "inside"` is enabled, annotations that appear _only_ before the branch keyword are treated as missing for placement purposes and will trigger the usual `missingAnnotation` diagnostics with autofixes that insert placeholders at the inside location. Set `annotationPlacement: "before"` to retain legacy before-branch behavior.
 
 Example (inside placement for a switch statement):
 

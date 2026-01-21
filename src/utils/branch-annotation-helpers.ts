@@ -113,24 +113,28 @@ function gatherCatchClauseCommentText(
   annotationPlacement: AnnotationPlacement,
   beforeText: string,
 ): string {
-  if (annotationPlacement === "inside") {
-    const insideText = getInsideCatchCommentText(sourceCode, node);
-    if (insideText) {
-      return insideText;
-    }
-    return "";
-  }
-
-  if (
+  const beforeHasAnnotations =
     /@story\b/.test(beforeText) ||
     /@req\b/.test(beforeText) ||
-    /@supports\b/.test(beforeText)
-  ) {
+    /@supports\b/.test(beforeText);
+
+  const insideText = getInsideCatchCommentText(sourceCode, node);
+  const insideHasAnnotations =
+    /@story\b/.test(insideText) ||
+    /@req\b/.test(insideText) ||
+    /@supports\b/.test(insideText);
+
+  // CatchClause supports dual-position annotations for Prettier compatibility.
+  // Prefer before-catch annotations when present in both positions.
+  if (beforeHasAnnotations) {
     return beforeText;
   }
 
-  const insideText = getInsideCatchCommentText(sourceCode, node);
-  if (insideText) {
+  if (insideHasAnnotations) {
+    return insideText;
+  }
+
+  if (annotationPlacement === "inside" && insideText) {
     return insideText;
   }
 
@@ -247,7 +251,7 @@ function gatherNonIfBranchCommentText(
  * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
  * @story docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-DEFAULT-BACKWARD-COMPAT
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-DEFAULT-INSIDE REQ-OPT-IN-LEGACY-BEFORE
  */
 function gatherIfBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -336,7 +340,7 @@ export function gatherBranchCommentText(
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
   node: any,
   parent?: any,
-  annotationPlacement: AnnotationPlacement = "before",
+  annotationPlacement: AnnotationPlacement = "inside",
 ): string {
   const beforeComments = sourceCode.getCommentsBefore(node) || [];
   const beforeText = beforeComments.map(extractCommentValue).join(" ");

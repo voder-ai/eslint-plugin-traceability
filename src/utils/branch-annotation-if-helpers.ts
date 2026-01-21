@@ -34,6 +34,17 @@ function getCommentTextAtLine(lines: string[], index: number): string | null {
 }
 
 /**
+ * Detect whether a comment text includes any traceability annotations.
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
+ */
+function hasTraceabilityAnnotations(text: string): boolean {
+  return (
+    /@story\b/.test(text) || /@req\b/.test(text) || /@supports\b/.test(text)
+  );
+}
+
+/**
  * Detect whether an IfStatement is an else-if branch of its parent.
  * @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-BRANCH-DETECTION
  * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
@@ -189,26 +200,12 @@ export function gatherElseIfCommentText(
     return beforeText;
   }
 
-  if (annotationPlacement === "inside") {
-    return getInsideElseIfCommentText(sourceCode, node);
-  }
-
-  if (
-    beforeText &&
-    (/@story\b/.test(beforeText) ||
-      /@req\b/.test(beforeText) ||
-      /@supports\b/.test(beforeText))
-  ) {
+  if (beforeText && hasTraceabilityAnnotations(beforeText)) {
     return beforeText;
   }
 
   const beforeElseText = scanElseIfPrecedingComments(sourceCode, node);
-  if (
-    beforeElseText &&
-    (/@story\b/.test(beforeElseText) ||
-      /@req\b/.test(beforeElseText) ||
-      /@supports\b/.test(beforeElseText))
-  ) {
+  if (beforeElseText && hasTraceabilityAnnotations(beforeElseText)) {
     return beforeElseText;
   }
 
@@ -217,12 +214,18 @@ export function gatherElseIfCommentText(
   }
 
   const betweenText = scanElseIfBetweenConditionAndBody(sourceCode, node);
-  if (betweenText) {
+  if (betweenText && hasTraceabilityAnnotations(betweenText)) {
     return betweenText;
   }
 
+  // For inside-placement mode, also accept annotations at the start of the
+  // else-if block body as a last-resort position.
   const insideText = scanElseIfInsideBlockComments(sourceCode, node);
-  if (insideText) {
+  if (insideText && hasTraceabilityAnnotations(insideText)) {
+    return insideText;
+  }
+
+  if (annotationPlacement === "inside" && insideText) {
     return insideText;
   }
 

@@ -78,7 +78,7 @@ function getNormalizedOptions(context: Rule.RuleContext) {
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-CONFIGURABLE-SCOPE REQ-EXPORT-PRIORITY REQ-ERROR-LOCATION
  * @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC REQ-ERROR-SUGGESTION REQ-ERROR-CONSISTENCY
  * @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING REQ-AUTOFIX-TEMPLATE REQ-AUTOFIX-SELECTIVE
- * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT REQ-ALL-BLOCK-TYPES
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-INSIDE REQ-OPT-IN-LEGACY-BEFORE REQ-ALL-BLOCK-TYPES
  */
 const rule: Rule.RuleModule = {
   meta: {
@@ -119,7 +119,7 @@ const rule: Rule.RuleModule = {
             uniqueItems: true,
           },
           /**
-           * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-BACKWARD-COMPAT REQ-ALL-BLOCK-TYPES
+           * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-DEFAULT-INSIDE REQ-OPT-IN-LEGACY-BEFORE REQ-ALL-BLOCK-TYPES
            */
           annotationPlacement: {
             enum: ["before", "inside"],

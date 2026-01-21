@@ -27,13 +27,18 @@ function getIndentAndInsertPosForLine(
   const lines = sourceCode.lines;
   let indent = fallbackIndent;
 
-  if (line >= 1 && line <= lines.length) {
-    const rawLine = lines[line - 1];
+  const safeLine =
+    Array.isArray(lines) && lines.length > 0
+      ? Math.min(Math.max(line, 1), lines.length)
+      : 1;
+
+  if (safeLine >= 1 && safeLine <= lines.length) {
+    const rawLine = lines[safeLine - 1];
     indent = rawLine.match(/^(\s*)/)?.[1] || fallbackIndent;
   }
 
   const insertPos = sourceCode.getIndexFromLoc({
-    line,
+    line: safeLine,
     column: 0,
   });
 
@@ -180,22 +185,56 @@ function getBaseBranchIndentAndInsertPos(
   );
 }
 
-/**
- * Determine whether a node represents an else-if branch that should be used for
- * determining comment insertion position.
- * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
- */
-function isElseIfBranchForInsert(node: any, parent: any | undefined): boolean {
-  return (
-    node &&
-    node.type === "IfStatement" &&
-    parent &&
-    parent.type === "IfStatement" &&
-    parent.alternate === node
-  );
-}
-
 type IfIndentContext = { indent: string; insertPos: number };
+
+/**
+ * Compute indentation and insertion point for inside-brace annotation placement
+ * for IfStatement blocks.
+ * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-INDENTATION-CORRECT
+ * @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-PRETTIER-AUTOFIX-ELSE-IF
+ */
+function getInsideIfBlockIndentAndInsertPos(
+  sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
+  blockNode: any,
+  currentIndent: string,
+): IfIndentContext {
+  const blockStatements: any[] = Array.isArray(blockNode.body)
+    ? blockNode.body
+    : [];
+  const firstStatement: any | undefined =
+    blockStatements.length > 0 ? blockStatements[0] : undefined;
+
+  if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
+    return getIndentAndInsertPosForLine(
+      sourceCode,
+      firstStatement.loc.start.line,
+      currentIndent,
+    );
+  }
+
+  const baseLineInfo = getIndentAndInsertPosForLine(
+    sourceCode,
+    blockNode.loc.start.line,
+    currentIndent,
+  );
+
+  // Insert immediately after the opening brace when the block has no
+  // statements (e.g. `if (x) {}`) to avoid out-of-range line lookups.
+  const braceColumnAfter =
+    blockNode.loc &&
+    blockNode.loc.start &&
+    typeof blockNode.loc.start.column === "number"
+      ? blockNode.loc.start.column + 1
+      : 0;
+
+  return {
+    indent: `${baseLineInfo.indent}  `,
+    insertPos: sourceCode.getIndexFromLoc({
+      line: blockNode.loc.start.line,
+      column: braceColumnAfter,
+    }),
+  };
+}
 
 /**
  * Compute indentation and insert position for IfStatement branches, handling
@@ -213,8 +252,8 @@ function getIfStatementIndentAndInsertPos(
   },
   context: IfIndentContext,
 ): IfIndentContext {
-  const { parent, annotationPlacement } = options;
-  let { indent, insertPos } = context;
+  const { annotationPlacement } = options;
+  const { indent } = context;
 
   const hasBlockConsequent =
     node.consequent &&
@@ -226,27 +265,19 @@ function getIfStatementIndentAndInsertPos(
     return context;
   }
 
-  const isElseIf = isElseIfBranchForInsert(node, parent);
-  const isSimpleIfInsidePlacement =
-    annotationPlacement === "inside" && !isElseIf;
-
-  if (
-    annotationPlacement === "inside" &&
-    (isSimpleIfInsidePlacement || isElseIf)
-  ) {
-    const commentLine = node.consequent.loc.start.line + 1;
-    const commentLineInfo = getIndentAndInsertPosForLine(
-      sourceCode,
-      commentLine,
-      indent,
-    );
-
-    indent = commentLineInfo.indent;
-    insertPos = commentLineInfo.insertPos;
-
-    context.indent = indent;
-    context.insertPos = insertPos;
+  if (annotationPlacement !== "inside") {
+    return context;
   }
+
+  const blockNode: any = node.consequent;
+  const insideInfo = getInsideIfBlockIndentAndInsertPos(
+    sourceCode,
+    blockNode,
+    indent,
+  );
+
+  context.indent = insideInfo.indent;
+  context.insertPos = insideInfo.insertPos;
 
   return context;
 }
@@ -409,7 +440,7 @@ export function reportMissingAnnotations(
     (rawOptions.annotationPlacement === "inside" ||
       rawOptions.annotationPlacement === "before")
       ? rawOptions.annotationPlacement
-      : "before";
+      : "inside";
 
   const parent = (node as any).parent;
 

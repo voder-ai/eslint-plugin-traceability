@@ -24,8 +24,9 @@ When the actual source code has annotations properly formatted on separate lines
 ## Affected Files
 
 During dogfooding cleanup, 5 files exhibited this issue:
+
 1. `src/utils/branch-annotation-report-helpers.ts` (8 errors)
-2. `src/utils/branch-annotation-helpers.ts` (23 errors)  
+2. `src/utils/branch-annotation-helpers.ts` (23 errors)
 3. `src/utils/branch-annotation-indent-helpers.ts` (1 error)
 4. `src/utils/branch-annotation-story-fix-helpers.ts` (4 errors)
 5. `src/utils/branch-annotation-switch-helpers.ts` (2 errors)
@@ -70,11 +71,11 @@ export function isNonTraceabilityJSDocTagLine(normalized: string): boolean {
   if (!trimmed || !trimmed.startsWith("@")) {
     return false;
   }
-  
+
   if (/^@(story|req|supports)\b/.test(trimmed)) {
-    return false;  // ← Returns false for @supports!
+    return false; // ← Returns false for @supports!
   }
-  
+
   return true;
 }
 ```
@@ -89,6 +90,7 @@ export function isNonTraceabilityJSDocTagLine(normalized: string): boolean {
 2. `handleStoryOrReqLine` (for `@story`/`@req`)
 
 **However**, when a `@story` is pending and a `@supports` line is encountered:
+
 - `handleImplementsLine` checks `if (/^@supports\b/.test(normalized))` and would create a new annotation
 - BUT it doesn't finalize the pending `@story` annotation first
 - So the code falls through to `extendPendingAnnotation` which concatenates the `@supports` line to the pending `@story`
@@ -116,7 +118,7 @@ if (afterImplements !== pending) {
   return afterImplements;
 }
 
-// Try @story/@req  
+// Try @story/@req
 const afterStoryOrReq = handleStoryOrReqLine(normalized, pending, {...});
 if (afterStoryOrReq !== pending) {
   return afterStoryOrReq;
@@ -135,11 +137,12 @@ The problem: If a `@story` is pending and a `@supports` line appears, `handleImp
 **Answer**: The test suite doesn't include test cases with **consecutive different traceability annotation types** in the same JSDoc block. Specifically missing:
 
 1. `@story` followed immediately by `@supports`
-2. `@req` followed immediately by `@supports`  
+2. `@req` followed immediately by `@supports`
 3. Multiple `@supports` annotations in sequence
 4. All combinations of traceability tags in various orders
 
 The existing tests validate:
+
 - Individual annotation types in isolation
 - Traceability tags with standard JSDoc tags (`@param`, etc.)
 - Multi-line continuation of the same annotation type
@@ -155,6 +158,7 @@ But they don't validate the boundaries between different traceability annotation
 **Immediate Cause**: The `handleImplementsLine` function (line 16-36 in `valid-annotation-format.ts`) validates `@supports` annotations but **returns the unchanged `pending` parameter** (line 35). This causes the pending `@story` or `@req` annotation to remain pending, and the `@supports` line gets treated as a continuation.
 
 **Code Flow**:
+
 ```typescript
 // When processing: @supports docs/...
 const afterImplements = handleImplementsLine(normalized, pending, {...});
@@ -192,6 +196,7 @@ function handleImplementsLine(
 ```
 
 **Why this causes the bug**:
+
 1. When a `@story` annotation is processed, `pending` is set to `{ type: 'story', value: '...' }`
 2. Next line has `@supports` annotation
 3. `handleImplementsLine` matches the `@supports` pattern
@@ -203,12 +208,14 @@ function handleImplementsLine(
 9. The entire `@supports` line gets concatenated to the pending `@story` value
 
 **Experimental Verification**: Created test file `test-annotation-bug.js` and confirmed:
+
 - ESLint produces error: `"docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md@supportsdocs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.mdREQ-PLACEMENT-CONFIG"`
 - Simulation script `verify-bug-fix.js` demonstrates exact concatenation behavior
 
 ## Proposed Fix
 
 **Option 1: Finalize pending before validating `@supports`** (Recommended):
+
 ```typescript
 function handleImplementsLine(
   normalized: string,
@@ -223,7 +230,7 @@ function handleImplementsLine(
 
   // FIX: Finalize any pending annotation before processing @supports
   finalizePendingAnnotation(context, comment, options, pending);
-  
+
   const implementsValue = normalized.replace(/^@supports\b/, "").trim();
   validateImplementsAnnotation(context, comment, implementsValue, options);
   return null;  // FIX: Return null to clear pending state
@@ -231,16 +238,17 @@ function handleImplementsLine(
 ```
 
 **Option 2: Make `@supports` stateful like `@story`/`@req`**:
+
 ```typescript
 function handleImplementsLine(...): PendingAnnotation | null {
   // ...
   if (!isImplements) {
     return pending;
   }
-  
+
   finalizePendingAnnotation(context, comment, options, pending);
   const implementsValue = normalized.replace(/^@supports\b/, "").trim();
-  
+
   // Return new pending annotation for @supports
   return {
     type: 'supports',
@@ -262,19 +270,25 @@ function handleImplementsLine(...): PendingAnnotation | null {
 ## Experimental Verification
 
 ### Test File Created
+
 `test-annotation-bug.js` - Simple file with `@story` followed by `@supports`:
+
 ```javascript
 /**
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
  * @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
  */
-function testFunction() { return true; }
+function testFunction() {
+  return true;
+}
 ```
 
 ### ESLint Output
+
 ```
 Invalid story path "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md@supportsdocs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.mdREQ-PLACEMENT-CONFIG"
 ```
+
 **Confirms**: The two annotations are being concatenated into a single malformed value.
 
 ### Simulation Scripts
@@ -291,6 +305,7 @@ Invalid story path "docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md@support
    - Demonstrates fix: Finalizing pending returns `null`, preventing fall-through
 
 ### Key Finding
+
 The bug is **not** in normalization or boundary detection. The bug is purely in the return value of `handleImplementsLine` (line 35) returning `pending` instead of `null`.
 
 ## Related Documentation
@@ -314,6 +329,7 @@ The bug is **not** in normalization or boundary detection. The bug is purely in 
 ## Value of Dogfooding
 
 This bug was discovered **only** through dogfooding - applying the plugin to its own codebase. The affected pattern (`@story` + `@supports` in same comment) is:
+
 - Common in real-world usage
 - Not covered by unit tests
 - A genuine boundary case that breaks the stated functionality
