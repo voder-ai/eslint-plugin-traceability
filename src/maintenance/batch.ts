@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import { updateAnnotationReferences } from "./update";
 import { detectStaleAnnotations } from "./detect";
 import { GetAllFilesOptions } from "./utils";
@@ -24,6 +22,8 @@ export function batchUpdateAnnotations(
   const allWarnings: string[] = [];
 
   for (const { oldPath, newPath } of mappings) {
+    // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+    // @req REQ-MAINT-BATCH - Apply each path mapping
     const result = updateAnnotationReferences(
       codebasePath,
       oldPath,
