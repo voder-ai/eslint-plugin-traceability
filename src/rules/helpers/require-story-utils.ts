@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * src/rules/helpers/require-story-utils.ts
  *
@@ -35,9 +33,13 @@
  * @returns the identifier name or null
  */
 function isIdentifierLike(node: any): string | null {
-  if (!node) return null;
+  if (!node) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return null;
+  }
   const type = node.type;
   if (type === "Identifier" || type === "JSXIdentifier") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return typeof node.name === "string" ? node.name : null;
   }
   return null;
@@ -53,9 +55,15 @@ function isIdentifierLike(node: any): string | null {
  * @returns the literal as string or null if not stable/resolvable
  */
 function literalToString(node: any): string | null {
-  if (!node || node.type !== "Literal") return null;
+  if (!node || node.type !== "Literal") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return null;
+  }
   const val = node.value;
-  if (val === null) return null;
+  if (val === null) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return null;
+  }
   const t = typeof val;
   return t === "string" || t === "number" || t === "boolean"
     ? String(val)
@@ -72,15 +80,30 @@ function literalToString(node: any): string | null {
  * @returns the cooked/raw concatenated template string or null if it contains expressions
  */
 function templateLiteralToString(node: any): string | null {
-  if (!node || node.type !== "TemplateLiteral") return null;
+  if (!node || node.type !== "TemplateLiteral") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return null;
+  }
   const expressions = node.expressions || [];
-  if (expressions.length !== 0) return null;
+  if (expressions.length !== 0) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return null;
+  }
   const quasis = node.quasis || [];
   return quasis
     .map((q: any) => {
-      if (!q || !q.value) return "";
-      if (typeof q.value.cooked === "string") return q.value.cooked;
-      if (typeof q.value.raw === "string") return q.value.raw;
+      if (!q || !q.value) {
+        // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+        return "";
+      }
+      if (typeof q.value.cooked === "string") {
+        // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+        return q.value.cooked;
+      }
+      if (typeof q.value.raw === "string") {
+        // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+        return q.value.raw;
+      }
       return "";
     })
     .join("");
@@ -96,13 +119,17 @@ function templateLiteralToString(node: any): string | null {
  * @returns resolved member/property name or null
  */
 function memberExpressionName(node: any): string | null {
-  if (!node) return null;
+  if (!node) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return null;
+  }
   const type = node.type;
   if (
     type !== "MemberExpression" &&
     type !== "TSQualifiedName" &&
     type !== "JSXMemberExpression"
   ) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return null;
   }
   // For TSQualifiedName and JSXMemberExpression, treat like non-computed access.
@@ -111,6 +138,7 @@ function memberExpressionName(node: any): string | null {
     type === "JSXMemberExpression" ||
     node.computed === false
   ) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return getNodeName(node.property || node.right);
   }
   return null;
@@ -126,8 +154,12 @@ function memberExpressionName(node: any): string | null {
  * @returns the resolved key name or null
  */
 function propertyKeyName(node: any): string | null {
-  if (!node) return null;
+  if (!node) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return null;
+  }
   if (node.type === "Property" || node.type === "ObjectProperty") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return getNodeName(node.key);
   }
   return null;
@@ -146,24 +178,37 @@ function propertyKeyName(node: any): string | null {
  * @returns the resolved direct name or null
  */
 function directName(node: any): string | null {
-  if (!node) return null;
+  if (!node) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return null;
+  }
 
   // Prefer direct .id.name when available
   if (node.id && typeof node.id.name === "string") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return node.id.name;
   }
   if (node.id) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     const idName = getNodeName(node.id);
-    if (idName !== null) return idName;
+    if (idName !== null) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      return idName;
+    }
   }
 
   // Prefer direct .key.name early
   if (node.key && typeof node.key.name === "string") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return node.key.name;
   }
   if (node.key) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     const keyName = getNodeName(node.key);
-    if (keyName !== null) return keyName;
+    if (keyName !== null) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      return keyName;
+    }
   }
 
   return null;
@@ -179,44 +224,68 @@ function directName(node: any): string | null {
  * @returns The resolved name string, or null if a stable name cannot be determined.
  */
 export function getNodeName(node: any): string | null {
-  if (!node) return null;
+  if (!node) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return null;
+  }
 
   // Delegate direct-level id/key resolution to helper to reduce cyclomatic complexity
   const direct = directName(node);
-  if (direct !== null) return direct;
+  if (direct !== null) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return direct;
+  }
 
   // Identifier-like nodes
   const idName = isIdentifierLike(node);
-  if (idName !== null) return idName;
+  if (idName !== null) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return idName;
+  }
 
   // Literal nodes
   const lit = literalToString(node);
-  if (lit !== null) return lit;
+  if (lit !== null) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return lit;
+  }
 
   // TemplateLiteral nodes
   const tpl = templateLiteralToString(node);
-  if (tpl !== null) return tpl;
+  if (tpl !== null) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return tpl;
+  }
 
   // Property-like nodes
   const prop = propertyKeyName(node);
-  if (prop !== null) return prop;
+  if (prop !== null) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return prop;
+  }
 
   // Member/qualified/member-expression-like nodes
   const member = memberExpressionName(node);
-  if (member !== null) return member;
+  if (member !== null) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    return member;
+  }
 
   // TypeScript literal wrapper
   if (node.type === "TSLiteralType" && node.literal) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return getNodeName(node.literal);
   }
 
   // JSX namespaced name
   if (node.type === "JSXNamespacedName") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return getNodeName(node.name);
   }
 
   // Generic fallback: try .key if present on other shapes
   if (node.key) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return getNodeName(node.key);
   }
 
