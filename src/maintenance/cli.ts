@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-/* eslint-disable traceability/require-branch-annotation */
-
 import {
   EXIT_OK,
   EXIT_USAGE,
@@ -102,5 +100,6 @@ Options:
 }
 
 if (require.main === module) {
+  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-MANUAL-TRIGGER
   process.exit(runMaintenanceCli(process.argv));
 }
