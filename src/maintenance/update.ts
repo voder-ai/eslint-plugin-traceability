@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import * as fs from "fs";
 import { getAllFiles, GetAllFilesOptions } from "./utils";
 
@@ -20,11 +18,13 @@ function detectMalformedAnnotations(
 
     // Detect `@story` without a path
     if (/@story\s*$/.test(line.trim()) || /@story\s*\*\//.test(line)) {
+      // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
       warnings.push(`${filePath}:${lineNum}: @story annotation without path`);
     }
 
     // Detect `@supports` without a path or requirements
     if (/@supports\s*$/.test(line.trim()) || /@supports\s*\*\//.test(line)) {
+      // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
       warnings.push(
         `${filePath}:${lineNum}: @supports annotation without path/requirements`,
       );
@@ -36,6 +36,7 @@ function detectMalformedAnnotations(
       /@req\s*\*\//.test(line) ||
       /@req\s+-\s/.test(line)
     ) {
+      // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
       warnings.push(
         `${filePath}:${lineNum}: @req annotation without requirement ID`,
       );
@@ -79,6 +80,7 @@ function processFileForAnnotationUpdates(
 
   // Write file only if content changed
   if (newContent !== content) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
     fs.writeFileSync(fullPath, newContent, "utf8");
   }
 }
@@ -100,12 +102,11 @@ export function updateAnnotationReferences(
   newPath: string,
   options?: GetAllFilesOptions,
 ): { count: number; warnings: string[] } {
-  // Check that the provided codebase path exists and is a directory.
-  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
   if (
     !fs.existsSync(codebasePath) ||
     !fs.statSync(codebasePath).isDirectory()
   ) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
     return { count: 0, warnings: [] };
   }
 
@@ -122,9 +123,8 @@ export function updateAnnotationReferences(
 
   const files = getAllFiles(codebasePath, options);
 
-  // Loop over each discovered file path
-  // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
   for (const fullPath of files) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
     processFileForAnnotationUpdates(
       fullPath,
       { story: storyRegex, supports: supportsRegex },
