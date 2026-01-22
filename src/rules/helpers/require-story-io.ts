@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * IO helpers for require-story detection moved to reduce helper module size
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -28,6 +26,8 @@ export const FALLBACK_WINDOW = 800;
  */
 function commentContainsStory(comment: any): boolean {
   if (typeof comment?.value !== "string") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     return false;
   }
   return (
@@ -53,6 +53,7 @@ function getSourceLines(sourceCode: any): string[] | null {
  */
 function getNodeStartLine(node: any): number | null {
   if (!node || !node.loc) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return null;
   }
   const line = node.loc.start?.line;
@@ -73,6 +74,8 @@ function scanLinesForMarker(
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQUIRED - Scan preceding lines for existing story annotations
   for (let i = from; i < to; i++) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     const text = lines[i];
     // Treat any line containing `@story` or `@supports` as evidence that the function is already annotated.
     // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -82,6 +85,8 @@ function scanLinesForMarker(
       typeof text === "string" &&
       (text.includes("@story") || text.includes("@supports"))
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
       return true;
     }
   }
@@ -104,6 +109,7 @@ export function linesBeforeHasStory(
   // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
   // @req REQ-ANNOTATION-REQUIRED - Fail gracefully when source lines or locations are unavailable
   if (!lines || typeof startLine !== "number") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return false;
   }
   const from = Math.max(0, startLine - 1 - lookback);
@@ -119,6 +125,7 @@ export function linesBeforeHasStory(
 export function parentChainHasStory(sourceCode: any, node: any): boolean {
   let p = node && node.parent;
   while (p) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     const pComments =
       typeof sourceCode?.getCommentsBefore === "function"
         ? sourceCode.getCommentsBefore(p) || []
@@ -133,6 +140,8 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
         (c: any) => commentContainsStory(c),
       )
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
       return true;
     }
     const pLeading = p.leadingComments || [];
@@ -146,6 +155,8 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
         (c: any) => commentContainsStory(c),
       )
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
       return true;
     }
     p = p.parent;
@@ -161,10 +172,12 @@ export function parentChainHasStory(sourceCode: any, node: any): boolean {
  */
 function getFallbackRangeStart(sourceCode: any, node: any): number | null {
   if (typeof sourceCode?.getText !== "function") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return null;
   }
   const range = (node && node.range) || null;
   if (!Array.isArray(range) || typeof range[0] !== "number") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return null;
   }
   return range[0];
@@ -182,9 +195,11 @@ function getFallbackTextWindow(
 ): string | null {
   const start = Math.max(0, nodeStartIndex - FALLBACK_WINDOW);
   try {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     const textBefore = sourceCode.getText().slice(start, nodeStartIndex);
     return typeof textBefore === "string" ? textBefore : null;
   } catch {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     /*
      * Swallow low-level IO or slicing errors so annotation detection never breaks lint execution.
      * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -202,6 +217,8 @@ function getFallbackTextWindow(
  */
 function fallbackTextHasMarker(textBefore: string | null): boolean {
   if (typeof textBefore !== "string") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     return false;
   }
   return textBefore.includes("@story") || textBefore.includes("@supports");
@@ -219,6 +236,7 @@ export function fallbackTextBeforeHasStory(
 ): boolean {
   const nodeStartIndex = getFallbackRangeStart(sourceCode, node);
   if (nodeStartIndex === null) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return false;
   }
   const textBefore = getFallbackTextWindow(sourceCode, nodeStartIndex);
