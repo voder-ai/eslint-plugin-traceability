@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Parser for extracting requirements from story files
  * @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
@@ -20,6 +18,8 @@ export function extractRequirementsFromStoryFile(
   filePath: string,
 ): Set<string> {
   try {
+    // @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+    // @req REQ-DEEP-PARSE - Parse story file content to identify available requirements
     const content = fs.readFileSync(filePath, "utf8");
     return extractRequirementsFromContent(content);
   } catch {
@@ -68,6 +68,8 @@ function extractFromSections(content: string): Set<string> {
   let inAcceptanceCriteriaSection = false;
 
   for (const line of lines) {
+    // @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+    // @req REQ-DEEP-SECTION - Parse structured sections line by line
     // Detect section headers
     if (line.match(/^##\s+Requirements/i)) {
       // @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
@@ -82,6 +84,8 @@ function extractFromSections(content: string): Set<string> {
       inRequirementsSection = false;
       continue;
     } else if (line.match(/^##\s+/)) {
+      // @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+      // @req REQ-DEEP-SECTION - Reset section tracking for other headers
       // New section that's not Requirements or Acceptance Criteria
       inRequirementsSection = false;
       inAcceptanceCriteriaSection = false;
@@ -114,6 +118,8 @@ function extractReqIdsFromLine(line: string): string[] {
   const boldPattern = /\*\*(REQ-[A-Z0-9-]+)\*\*/g;
   let match;
   while ((match = boldPattern.exec(line)) !== null) {
+    // @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+    // @req REQ-DEEP-FORMAT - Extract from bold requirement format
     requirements.push(match[1]);
   }
 
@@ -122,7 +128,11 @@ function extractReqIdsFromLine(line: string): string[] {
   // @req REQ-DEEP-FORMAT - Extract from plain text mentions
   const plainPattern = /\b(REQ-[A-Z0-9-]+)\b/g;
   while ((match = plainPattern.exec(line)) !== null) {
+    // @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+    // @req REQ-DEEP-FORMAT - Extract from plain text mentions
     if (!requirements.includes(match[1])) {
+      // @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+      // @req REQ-DEEP-FORMAT - Avoid duplicate requirement entries
       requirements.push(match[1]);
     }
   }
@@ -141,6 +151,8 @@ function extractWithRegex(content: string): Set<string> {
   let match: RegExpExecArray | null;
 
   while ((match = regex.exec(content)) !== null) {
+    // @story docs/stories/010.0-DEV-DEEP-VALIDATION.story.md
+    // @req REQ-DEEP-FORMAT - Extract requirement IDs from any location in content
     requirements.add(match[1]);
   }
 
