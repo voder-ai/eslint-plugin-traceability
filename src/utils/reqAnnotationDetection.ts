@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Shared `@req` detection helpers used by annotation-checker utilities.
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
@@ -39,6 +37,7 @@ function linesBeforeHasReq(sourceCode: any, node: any): boolean {
   // Guard against missing or malformed source/loc information before scanning.
   // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
   if (!Array.isArray(lines) || typeof startLine !== "number") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
     return false;
   }
 
@@ -49,6 +48,8 @@ function linesBeforeHasReq(sourceCode: any, node: any): boolean {
   // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
   // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
   for (let i = from; i < to; i++) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     const text = lines[i];
     // When a line contains `@req` or `@supports` we treat the function as already annotated.
     // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
@@ -57,6 +58,8 @@ function linesBeforeHasReq(sourceCode: any, node: any): boolean {
       typeof text === "string" &&
       (text.includes("@req") || text.includes("@supports"))
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+      // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
       return true;
     }
   }
@@ -77,6 +80,8 @@ function parentChainHasReq(sourceCode: any, node: any): boolean {
   // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
   // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
   while (p) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     const pComments =
       typeof sourceCode?.getCommentsBefore === "function"
         ? sourceCode.getCommentsBefore(p) || []
@@ -86,6 +91,8 @@ function parentChainHasReq(sourceCode: any, node: any): boolean {
     // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
     // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     if (Array.isArray(pComments) && pComments.some(commentContainsReq)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+      // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
       return true;
     }
 
@@ -95,6 +102,8 @@ function parentChainHasReq(sourceCode: any, node: any): boolean {
     // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
     // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     if (Array.isArray(pLeading) && pLeading.some(commentContainsReq)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+      // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
       return true;
     }
 
@@ -116,6 +125,7 @@ function fallbackTextBeforeHasReq(sourceCode: any, node: any): boolean {
     typeof sourceCode?.getText !== "function" ||
     !Array.isArray((node && node.range) || [])
   ) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
     return false;
   }
   const range = node.range;
@@ -123,9 +133,11 @@ function fallbackTextBeforeHasReq(sourceCode: any, node: any): boolean {
   // Guard when the node range cannot provide a numeric start index.
   // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
   if (!Array.isArray(range) || typeof range[0] !== "number") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
     return false;
   }
   try {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
     const start = Math.max(0, range[0] - FALLBACK_WINDOW);
     const textBefore = sourceCode.getText().slice(start, range[0]);
 
@@ -136,6 +148,8 @@ function fallbackTextBeforeHasReq(sourceCode: any, node: any): boolean {
       typeof textBefore === "string" &&
       (textBefore.includes("@req") || textBefore.includes("@supports"))
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+      // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
       return true;
     }
   } catch {
@@ -154,6 +168,7 @@ function fallbackTextBeforeHasReq(sourceCode: any, node: any): boolean {
  */
 function hasReqInAdvancedHeuristics(sourceCode: any, node: any): boolean {
   if (!sourceCode || !node) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
     return false;
   }
 
@@ -176,6 +191,8 @@ function hasReqInJsdocOrComments(jsdoc: any, comments: any[]): boolean {
     typeof jsdoc.value === "string" &&
     (jsdoc.value.includes("@req") || jsdoc.value.includes("@supports"))
   ) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     return true;
   }
 
@@ -195,15 +212,20 @@ export function hasReqAnnotation(
   node?: any,
 ): boolean {
   try {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
     const sourceCode =
       context && typeof context.getSourceCode === "function"
         ? context.getSourceCode()
         : undefined;
 
     if (hasReqInAdvancedHeuristics(sourceCode, node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+      // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-REQUIRE-ACCEPTS-SUPPORTS
       return true;
     }
   } catch {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
     // swallow and fall through to simple checks
   }
 
