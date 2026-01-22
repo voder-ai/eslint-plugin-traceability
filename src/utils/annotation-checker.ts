@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import { getNodeName } from "../rules/helpers/require-story-utils";
 import { hasReqAnnotation } from "./reqAnnotationDetection";
 import {
@@ -51,18 +49,21 @@ function getFixTargetNode(node: any) {
   // When there is no parent, attach the annotation directly to the node itself.
   // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
   if (!parent) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
     return node;
   }
 
   // If the node is part of a class/obj method definition, attach to the MethodDefinition
   // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
   if (parent.type === "MethodDefinition") {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
     return parent;
   }
 
   // If the node is the init of a variable declarator, attach to the VariableDeclarator
   // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
   if (parent.type === "VariableDeclarator" && parent.init === node) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
     return parent;
   }
 
@@ -70,6 +71,7 @@ function getFixTargetNode(node: any) {
   // attach to the outer ExpressionStatement.
   // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
   if (parent.type === "ExpressionStatement") {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
     return parent;
   }
 
@@ -114,11 +116,15 @@ function getReportedName(contextNode: any, parentNode: any): string {
 function getNameNodeForReqReport(node: any): any {
   const candidateId = (node as any).id;
   if (candidateId && candidateId.type === "Identifier") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ERROR-LOCATION
+    // @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-LOCATION
     return candidateId;
   }
 
   const candidateKey = (node as any).key;
   if (candidateKey && candidateKey.type === "Identifier") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ERROR-LOCATION
+    // @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-LOCATION
     return candidateKey;
   }
 
@@ -146,6 +152,7 @@ function buildMissingReqReportOptions(node: any, enableFix: boolean) {
   // Conditionally attach an autofix only when enabled in the rule options.
   // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SELECTIVE
   if (enableFix) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SELECTIVE
     reportOptions.fix = createMissingReqFix(node);
   }
 
@@ -198,11 +205,14 @@ export function checkReqAnnotation(
     annotationPlacement === "inside" &&
     supportsInsidePlacementForFunction(node)
   ) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
     const insideText = getFunctionInsideBodyCommentText(sourceCode, node);
     if (
       typeof insideText === "string" &&
       (insideText.includes("@req") || insideText.includes("@supports"))
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
       return;
     }
   }
@@ -216,6 +226,8 @@ export function checkReqAnnotation(
   // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
   // @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC
   if (!hasReq) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQ-DETECTION
+    // @supports docs/stories/007.0-DEV-ERROR-REPORTING.story.md REQ-ERROR-SPECIFIC
     reportMissing(context, node, enableFix);
   }
 }
