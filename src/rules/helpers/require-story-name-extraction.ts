@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Name extraction utilities for require-story rule
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -20,6 +18,7 @@ export function getDirectIdentifierName(node: any): string | null {
     typeof node.name === "string" &&
     node.name.length > 0
   ) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return node.name;
   }
   return null;
@@ -33,19 +32,24 @@ export function getDirectIdentifierName(node: any): string | null {
  */
 export function getContainerKeyOrIdName(node: any): string | null {
   if (!node) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return null;
   }
 
   if (node.id) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     const idName = getNodeName(node.id);
     if (typeof idName === "string" && idName.length > 0) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return idName;
     }
   }
 
   if (node.key) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     const keyName = getNodeName(node.key);
     if (typeof keyName === "string" && keyName.length > 0) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return keyName;
     }
 
@@ -54,6 +58,7 @@ export function getContainerKeyOrIdName(node: any): string | null {
       typeof (node.key as any).value === "string" &&
       (node.key as any).value.length > 0
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return (node.key as any).value;
     }
   }
@@ -71,18 +76,22 @@ export function extractName(node: any): string {
   let current: any = node;
 
   while (current) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     const directIdentifierName = getDirectIdentifierName(current);
     if (directIdentifierName) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return directIdentifierName;
     }
 
     const containerName = getContainerKeyOrIdName(current);
     if (containerName) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return containerName;
     }
 
     const directName = (current as any).name;
     if (typeof directName === "string" && directName.length > 0) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return directName;
     }
 
@@ -111,10 +120,12 @@ export function getReportedFunctionName(node: any): string {
  */
 export function getNameNodeForReport(node: any): any {
   if (node?.id?.type === "Identifier") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return node.id;
   }
 
   if (node?.key?.type === "Identifier") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return node.key;
   }
 
