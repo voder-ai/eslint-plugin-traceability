@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import * as fs from "fs";
 import * as path from "path";
 import { getAllFiles, GetAllFilesOptions } from "./utils";
@@ -48,6 +46,7 @@ export function detectStaleAnnotations(
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-CLI - Loop over each workspace file to inspect its @story annotations
   for (const file of files) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     processFileForStaleAnnotations(file, workspaceRoot, cwd, stale);
   }
 
@@ -81,6 +80,7 @@ function processFileForStaleAnnotations(
   // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
   // @req REQ-MAINT-CLI - Iterate over regex matches for @story annotations
   while ((match = regex.exec(content)) !== null) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     handleStoryMatch(match[1], workspaceRoot, cwd, stale);
   }
 }
