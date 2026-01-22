@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Comment detection utilities for require-story rule
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -27,6 +25,7 @@ import {
  */
 export function jsdocHasStory(sourceCode: any, node: any): boolean {
   if (typeof sourceCode?.getJSDocComment !== "function") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return false;
   }
   const jsdoc = sourceCode.getJSDocComment(node);
@@ -45,6 +44,7 @@ export function jsdocHasStory(sourceCode: any, node: any): boolean {
  */
 export function commentsBeforeHasStory(sourceCode: any, node: any): boolean {
   if (typeof sourceCode?.getCommentsBefore !== "function") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return false;
   }
   const commentsBefore = sourceCode.getCommentsBefore(node) || [];
@@ -81,17 +81,22 @@ export function leadingCommentsHasStory(node: any): boolean {
  */
 export function hasStoryAnnotation(sourceCode: any, node: any): boolean {
   try {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     // Direct, node-local checks always apply first.
     if (jsdocHasStory(sourceCode, node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return true;
     }
     if (commentsBeforeHasStory(sourceCode, node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return true;
     }
     if (leadingCommentsHasStory(node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return true;
     }
     if (!isNestedFunction(node) && linesBeforeHasStory(sourceCode, node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return true;
     }
 
@@ -102,17 +107,22 @@ export function hasStoryAnnotation(sourceCode: any, node: any): boolean {
     // callbacks) may treat parent-chain comments or broad fallback text as
     // satisfying the annotation requirement.
     if (canInherit && parentChainHasStory(sourceCode, node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return true;
     }
     if (canInherit && fallbackTextBeforeHasStory(sourceCode, node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return true;
     }
 
     if (canInherit) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return true;
     }
   } catch (error) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     if (process.env.TRACEABILITY_DEBUG === "1") {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       console.error(
         "[traceability] hasStoryAnnotation failed for node",
         (error as Error)?.message ?? error,
@@ -151,19 +161,24 @@ export function hasStoryAnnotationWithPlacement(
     annotationPlacement !== "inside" ||
     !_supportsInsidePlacementForFunction(node)
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return hasStoryAnnotation(sourceCode, node);
   }
 
   try {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     const insideText = _getFunctionInsideBodyCommentText(sourceCode, node);
     if (
       typeof insideText === "string" &&
       (insideText.includes("@story") || insideText.includes("@supports"))
     ) {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
       return true;
     }
   } catch (error) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     if (process.env.TRACEABILITY_DEBUG === "1") {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
       // Debug logging only when explicitly enabled for troubleshooting helper failures.
       console.error(
         "[traceability] hasStoryAnnotationWithPlacement failed for node",
