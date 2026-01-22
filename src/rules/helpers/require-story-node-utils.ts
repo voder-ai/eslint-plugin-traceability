@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Node classification utilities for require-story rule
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
@@ -26,6 +24,7 @@ function isValidName(name: string | null): boolean {
  */
 function getNameFromVariableDeclarator(parent: any): string | null {
   if (parent.type === "VariableDeclarator" && parent.id) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return (
       getContainerKeyOrIdName(parent) ?? getDirectIdentifierName(parent.id)
     );
@@ -40,6 +39,7 @@ function getNameFromVariableDeclarator(parent: any): string | null {
  */
 function getNameFromProperty(parent: any): string | null {
   if (parent.type === "Property" && parent.key) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return (
       getContainerKeyOrIdName(parent) ?? getDirectIdentifierName(parent.key)
     );
@@ -55,10 +55,12 @@ function getNameFromProperty(parent: any): string | null {
  */
 export function isAnonymousArrowFunction(node: any): boolean {
   if (!node || node.type !== "ArrowFunctionExpression") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return false;
   }
 
   if (!node.parent) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return true;
   }
 
@@ -67,6 +69,7 @@ export function isAnonymousArrowFunction(node: any): boolean {
     getNameFromVariableDeclarator(node.parent) ??
     getNameFromProperty(node.parent);
   if (isValidName(name)) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return false; // Has a name, so it's a named arrow
   }
 
@@ -81,6 +84,7 @@ export function isAnonymousArrowFunction(node: any): boolean {
 export function isNestedFunction(node: any): boolean {
   let current = node?.parent;
   while (current) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     if (
       current.type === "FunctionDeclaration" ||
       current.type === "FunctionExpression" ||
@@ -89,6 +93,7 @@ export function isNestedFunction(node: any): boolean {
       current.type === "TSDeclareFunction" ||
       current.type === "TSMethodSignature"
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
       return true;
     }
     current = current.parent;
@@ -107,15 +112,18 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
   // Check node itself for name (FunctionDeclaration, MethodDefinition, etc.)
   const name = getContainerKeyOrIdName(node) ?? getDirectIdentifierName(node);
   if (isValidName(name)) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     return false;
   }
 
   // For arrow functions specifically, check parent for name since arrows never have their own id.
   if (node.type === "ArrowFunctionExpression" && node.parent) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     const parentName =
       getNameFromVariableDeclarator(node.parent) ??
       getNameFromProperty(node.parent);
     if (isValidName(parentName)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
       return false;
     }
   }
@@ -131,10 +139,12 @@ export function isEffectivelyAnonymousFunction(node: any): boolean {
 export function isExportedNode(node: any): boolean {
   let p = node.parent;
   while (p) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-EXPORT-PRIORITY
     if (
       p.type === "ExportNamedDeclaration" ||
       p.type === "ExportDefaultDeclaration"
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-EXPORT-PRIORITY
       return true;
     }
     p = p.parent;
@@ -149,6 +159,7 @@ export function isExportedNode(node: any): boolean {
  */
 export function resolveTargetNode(sourceCode: any, node: any): any {
   if (node.type === "TSMethodSignature") {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
     // Interface method signature -> insert on interface
     return node.parent.parent;
   }
@@ -156,18 +167,23 @@ export function resolveTargetNode(sourceCode: any, node: any): any {
     node.type === "FunctionExpression" ||
     node.type === "ArrowFunctionExpression"
   ) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
     const parent = node.parent;
     if (parent.type === "VariableDeclarator") {
+      // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-MISSING
       const varDecl = parent.parent;
       if (varDecl.parent && varDecl.parent.type === "ExportNamedDeclaration") {
+        // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
         return varDecl.parent;
       }
       return varDecl;
     }
     if (parent.type === "ExportNamedDeclaration") {
+      // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
       return parent;
     }
     if (parent.type === "ExpressionStatement") {
+      // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
       return parent;
     }
   }
