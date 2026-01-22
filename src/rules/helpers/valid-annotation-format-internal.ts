@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Internal helpers and types for the valid-annotation-format rule.
  *
@@ -29,6 +27,7 @@ export interface PendingAnnotation {
 export function normalizeCommentLine(rawLine: string): string {
   const trimmed = rawLine.trim();
   if (!trimmed) {
+    // @supports docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md REQ-CENTRALIZED-FILTER
     return "";
   }
 
@@ -48,6 +47,7 @@ export function normalizeCommentLine(rawLine: string): string {
   // If so, return the whole line as-is to avoid false positives where annotation
   // keywords appear in the tag's description (e.g., "`@returns` ... `@story` annotations")
   if (/^@(?!story\b|req\b|supports\b)/.test(withoutLeadingStar)) {
+    // @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md REQ-JSDOC-BOUNDARY-DETECTION REQ-JSDOC-TAG-COEXISTENCE
     return withoutLeadingStar;
   }
 
@@ -56,6 +56,7 @@ export function normalizeCommentLine(rawLine: string): string {
     /@story\b|@req\b|@supports\b/,
   );
   if (!annotationMatch || annotationMatch.index === undefined) {
+    // @supports docs/stories/024.0-DEV-IGNORE-INLINE-CODE-REFS.story.md REQ-CENTRALIZED-FILTER
     return withoutLeadingStar;
   }
 
@@ -79,10 +80,12 @@ export function normalizeCommentLine(rawLine: string): string {
 export function isNonTraceabilityJSDocTagLine(normalized: string): boolean {
   const trimmed = normalized.trimStart();
   if (!trimmed || !trimmed.startsWith("@")) {
+    // @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md REQ-JSDOC-BOUNDARY-DETECTION
     return false;
   }
 
   if (/^@(story|req|supports)\b/.test(trimmed)) {
+    // @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md REQ-JSDOC-TAG-COEXISTENCE
     return false;
   }
 
