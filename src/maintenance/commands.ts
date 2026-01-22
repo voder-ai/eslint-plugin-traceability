@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Subcommand handlers for the traceability-maint CLI.
  *
@@ -37,11 +35,14 @@ export function handleDetect(normalized: NormalizedCliArgs): number {
   const stale = detectStaleAnnotations(root, options);
 
   if (flags.json) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     // Emit JSON output to support consumption by external tools and scripts.
     console.log(JSON.stringify({ root, stale }));
   } else if (stale.length === 0) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     console.log("No stale @story annotations found.");
   } else {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     stale.forEach((story) => {
       console.log(story);
     });
@@ -73,6 +74,7 @@ export function handleVerify(normalized: NormalizedCliArgs): number {
   const valid = verifyAnnotations(root, options);
 
   if (valid) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     console.log(`All traceability annotations under ${root} are valid.`);
     return EXIT_OK;
   }
@@ -102,10 +104,13 @@ export function handleReport(normalized: NormalizedCliArgs): number {
   const report = generateMaintenanceReport(root, options);
 
   if (format === "json") {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     console.log(JSON.stringify({ root, report }));
   } else if (!report) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     console.log("No stale @story annotations found. Nothing to report.");
   } else {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     console.log(`# Traceability Maintenance Report for ${root}`);
     console.log("");
     console.log("Stale story references:");
@@ -139,8 +144,10 @@ function handleUpdateDryRun(
   };
 
   if (flags.json) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     console.log(JSON.stringify({ mode: "dry-run", ...summary }));
   } else {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     console.log("Dry run: no files were modified.");
     console.log(
       `Would update @story and @supports annotations from '${from}' to '${to}' under ${root}.`,
@@ -168,6 +175,7 @@ export function handleUpdate(normalized: NormalizedCliArgs): number {
     : undefined;
 
   if (!flags.from || !flags.to) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     console.error("'update' requires --from <oldPath> and --to <newPath>.");
     return EXIT_USAGE;
   }
@@ -176,6 +184,7 @@ export function handleUpdate(normalized: NormalizedCliArgs): number {
   const to = flags.to;
 
   if (flags.dryRun) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return handleUpdateDryRun(root, from, to, {
       ignorePatterns: flags.ignorePatterns,
       json: flags.json,
@@ -186,11 +195,13 @@ export function handleUpdate(normalized: NormalizedCliArgs): number {
 
   // Report malformed annotations if any were found
   if (result.warnings.length > 0) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
     console.error("\nWarnings - malformed annotations detected:");
     result.warnings.forEach((warning) => console.error(`  ${warning}`));
   }
 
   if (flags.json) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
     console.log(
       JSON.stringify({
         root,
@@ -201,6 +212,7 @@ export function handleUpdate(normalized: NormalizedCliArgs): number {
       }),
     );
   } else {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
     console.log(
       `Updated ${result.count} annotation${result.count === 1 ? "" : "s"} (@story and @supports) from '${from}' to '${to}' under ${root}.`,
     );
