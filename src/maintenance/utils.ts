@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import * as fs from "fs";
 import * as path from "path";
 
@@ -37,6 +35,8 @@ export function getAllFiles(
    * @req REQ-MAINT-UPDATE - Support ESLint configuration integration
    */
   if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
+    // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+    // @req REQ-MAINT-UPDATE - Return empty array for invalid directories
     return fileList;
   }
 
@@ -52,6 +52,8 @@ export function getAllFiles(
  */
 function shouldIgnore(filePath: string, ignorePatterns: string[]): boolean {
   for (const pattern of ignorePatterns) {
+    // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+    // @req REQ-MAINT-UPDATE - Check each ignore pattern
     // Support both exact path matches and directory prefix matches
     if (
       filePath === pattern ||
@@ -60,6 +62,8 @@ function shouldIgnore(filePath: string, ignorePatterns: string[]): boolean {
       filePath.includes(path.sep + pattern + path.sep) ||
       filePath.endsWith(path.sep + pattern)
     ) {
+      // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+      // @req REQ-MAINT-UPDATE - Return true when pattern matches
       return true;
     }
   }
@@ -78,6 +82,8 @@ function traverseDirectory(
 ): void {
   const entries = fs.readdirSync(currentDir);
   for (const entry of entries) {
+    // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+    // @req REQ-MAINT-UPDATE - Process each directory entry
     const fullPath = path.join(currentDir, entry);
 
     /**
@@ -86,14 +92,20 @@ function traverseDirectory(
      * @req REQ-MAINT-UPDATE - Respect ESLint ignore patterns
      */
     if (shouldIgnore(fullPath, ignorePatterns)) {
+      // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+      // @req REQ-MAINT-UPDATE - Skip ignored paths
       continue;
     }
 
     const stat = fs.statSync(fullPath);
     if (stat.isDirectory()) {
+      // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+      // @req REQ-MAINT-UPDATE - Recurse into subdirectories
       traverseDirectory(fullPath, fileList, ignorePatterns);
     }
     if (!stat.isFile()) {
+      // @story docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md
+      // @req REQ-MAINT-UPDATE - Skip non-file entries
       continue;
     }
     fileList.push(fullPath);
