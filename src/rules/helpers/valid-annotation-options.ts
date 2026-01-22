@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Shared option handling for the valid-annotation-format rule.
  *
@@ -220,6 +218,7 @@ function resolveStoryPattern(
 ): RegExp {
   // If an explicit pattern is provided (nested or flat), use it
   if (nestedStoryPattern || flatStoryPattern) {
+    // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-PATTERN-CONFIG REQ-REGEX-VALIDATION
     return resolvePattern({
       nestedPattern: nestedStoryPattern,
       nestedFieldName: "story.pattern",
@@ -232,6 +231,7 @@ function resolveStoryPattern(
 
   // If storyDirectories is provided, derive pattern from it
   if (storyDirectories && storyDirectories.length > 0) {
+    // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-PATTERN-CONFIG REQ-BACKWARD-COMPAT
     return deriveStoryPatternFromDirectories(storyDirectories);
   }
 
@@ -277,6 +277,7 @@ function resolveStoryExample(
 ): string {
   // If an explicit example is provided, use it
   if (nestedStoryExample || flatStoryExample) {
+    // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-EXAMPLE-MESSAGES REQ-BACKWARD-COMPAT
     return resolveExample(
       nestedStoryExample,
       flatStoryExample,
@@ -286,6 +287,7 @@ function resolveStoryExample(
 
   // If storyDirectories is provided, derive example from it
   if (storyDirectories && storyDirectories.length > 0) {
+    // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-EXAMPLE-MESSAGES REQ-BACKWARD-COMPAT
     return deriveStoryExampleFromDirectories(storyDirectories);
   }
 
