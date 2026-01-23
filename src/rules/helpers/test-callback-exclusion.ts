@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Shared helpers for determining whether a function-like node should be
  * treated as a test framework callback that may be excluded from
@@ -84,10 +82,12 @@ function isRecognizedTestHelperName(
   options?: CallbackExclusionOptions,
 ): boolean {
   if (name === "bench") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     return false;
   }
 
   if (TEST_FUNCTION_NAMES.has(name)) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     return true;
   }
 
@@ -95,6 +95,7 @@ function isRecognizedTestHelperName(
     options?.additionalTestHelperNames &&
     Array.isArray(options.additionalTestHelperNames)
   ) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     return options.additionalTestHelperNames.includes(name);
   }
 
@@ -120,15 +121,18 @@ function isTestFrameworkCallback(
   options?: CallbackExclusionOptions,
 ): boolean {
   if (options?.excludeTestCallbacks === false) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     return false;
   }
 
   if (!node || node.type !== "ArrowFunctionExpression") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     return false;
   }
 
   const parent = node.parent;
   if (!parent || parent.type !== "CallExpression") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     return false;
   }
 
@@ -137,6 +141,7 @@ function isTestFrameworkCallback(
   const callee = callExpressionParent.callee;
 
   if (callee.type === "Identifier") {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     return isRecognizedTestHelperName(callee.name, options);
   }
 
@@ -147,8 +152,10 @@ function isTestFrameworkCallback(
     callee.property.type === "Identifier" &&
     callee.property.name === TEST_FUNCTION_CONCURRENT_PROP
   ) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     const obj = callee.object;
     if (obj && obj.type === "Identifier") {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
       return isRecognizedTestHelperName(obj.name, options);
     }
   }
