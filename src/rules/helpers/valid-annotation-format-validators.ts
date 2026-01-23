@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Validators and helper functions for the valid-annotation-format rule.
  *
@@ -85,6 +83,7 @@ export function createStoryFix(
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
   // @req REQ-AUTOFIX-SAFE - Skip auto-fix when @story tag cannot be reliably located
   if (tagIndex === TAG_NOT_FOUND_INDEX) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE
     return null;
   }
 
@@ -94,6 +93,7 @@ export function createStoryFix(
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
   // @req REQ-AUTOFIX-SAFE - Abort auto-fix when story value range cannot be safely determined
   if (!valueMatch || valueMatch.index === undefined) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE
     return null;
   }
 
@@ -133,6 +133,7 @@ export function reportInvalidStoryFormatWithFix(
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
   // @req REQ-AUTOFIX-SAFE - Fall back to reporting without fix when safe fix cannot be created
   if (!fixFactory) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE
     reportInvalidStoryFormat(
       context,
       comment,
@@ -181,6 +182,7 @@ export function validateStoryAnnotation(
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
   // @req REQ-PATH-FORMAT - Treat missing @story value as a specific validation error
   if (!trimmed) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-PATH-FORMAT
     context.report({
       node: comment as any,
       messageId: "invalidStoryFormat",
@@ -195,12 +197,14 @@ export function validateStoryAnnotation(
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
   // @req REQ-PATH-FORMAT - Accept @story value when it matches configured storyPattern
   if (pathPattern.test(collapsed)) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-PATH-FORMAT
     return;
   }
 
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
   // @req REQ-PATH-FORMAT - Reject @story values containing internal whitespace that do not collapse into a valid story path
   if (/\s/.test(trimmed) && !pathPattern.test(collapsed)) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-PATH-FORMAT
     reportInvalidStoryFormat(context, comment, collapsed, options);
     return;
   }
@@ -210,16 +214,20 @@ export function validateStoryAnnotation(
   // @story docs/stories/008.0-DEV-AUTO-FIX.story.md
   // @req REQ-AUTOFIX-FORMAT - Apply suffix-only auto-fix when it yields a pattern-compliant path
   if (fixed && pathPattern.test(fixed)) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
     if (options.autoFix !== false) {
+      // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
       reportInvalidStoryFormatWithFix(context, comment, collapsed, fixed);
       return;
+    } else {
+      // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
+      reportInvalidStoryFormat(context, comment, collapsed, options);
+      return;
     }
-
+  } else {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
     reportInvalidStoryFormat(context, comment, collapsed, options);
-    return;
   }
-
-  reportInvalidStoryFormat(context, comment, collapsed, options);
 }
 
 /**
@@ -244,6 +252,7 @@ export function validateReqAnnotation(
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
   // @req REQ-REQ-FORMAT - Treat missing @req value as a specific validation error
   if (!trimmed) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT
     context.report({
       node: comment as any,
       messageId: "invalidReqFormat",
@@ -254,6 +263,7 @@ export function validateReqAnnotation(
 
   // Allow mixed `@req`/`@supports` lines to pass without additional `@req` validation.
   if (trimmed.includes("@supports")) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-MIXED-SUPPORT
     return;
   }
 
@@ -261,21 +271,28 @@ export function validateReqAnnotation(
   let reqId = tokens[0] || trimmed;
 
   for (let index = 1; index < tokens.length; index += 1) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT
     const token = tokens[index];
-    if (token === "-" || token === "–" || token === "—") break;
+    if (token === "-" || token === "–" || token === "—") {
+      // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT
+      break;
+    }
 
     const candidate = `${reqId}${token}`;
     if (reqId.endsWith("-") || options.reqPattern.test(candidate)) {
+      // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT
       reqId = candidate;
       continue;
     }
 
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT
     break;
   }
 
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
   // @req REQ-REQ-FORMAT - Flag @req identifiers that do not match the configured pattern
   if (!options.reqPattern.test(reqId)) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-REQ-FORMAT
     context.report({
       node: comment as any,
       messageId: "invalidReqFormat",
@@ -342,6 +359,7 @@ export function finalizePendingAnnotation(
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
   // @req REQ-MULTILINE-SUPPORT - Do nothing when there is no pending multi-line annotation to finalize
   if (!pending) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT
     return null;
   }
 
@@ -349,6 +367,7 @@ export function finalizePendingAnnotation(
   // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-FORMAT
   // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-MIXED-SUPPORT
   if (pending.type === "story") {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-SYNTAX-VALIDATION
     validateStoryAnnotation(context, comment, pending.value, options);
   } else {
     validateReqAnnotation(context, comment, pending.value, options);
