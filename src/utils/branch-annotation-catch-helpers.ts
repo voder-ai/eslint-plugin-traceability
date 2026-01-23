@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import { scanCommentLinesInRange } from "./branch-annotation-helpers";
 import { extractCommentValue } from "./comment-text-helpers";
@@ -23,21 +21,26 @@ export function getInsideCatchCommentText(
 ): string {
   const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
   if (node.body && typeof getCommentsInside === "function") {
+    // @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
     /* @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION */
     try {
+      // @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
       const insideComments =
         (getCommentsInside as (_node: any) => any[])(node.body) || [];
       const insideText = insideComments.map(extractCommentValue).join(" ");
       if (insideText) {
+        // @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
         /* @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION */
         return insideText;
       }
     } catch {
+      // @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC
       // fall through to line-based fallback
     }
   }
 
   if (node.body && node.body.loc && node.body.loc.start && node.body.loc.end) {
+    // @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC
     /* @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC */
     const lines = sourceCode.lines;
     const startIndex = node.body.loc.start.line - 1;
@@ -67,7 +70,6 @@ export function getInsideTryBlockCommentText(
 ): string {
   const block = node && node.block;
   if (
-    /* @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT */
     !block ||
     block.type !== "BlockStatement" ||
     !block.loc ||
@@ -76,6 +78,7 @@ export function getInsideTryBlockCommentText(
     typeof block.loc.start.line !== "number" ||
     typeof block.loc.end.line !== "number"
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return "";
   }
 
@@ -85,6 +88,7 @@ export function getInsideTryBlockCommentText(
 
   const insideText = scanCommentLinesInRange(lines, startIndex + 1, endIndex);
   if (insideText) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     /* @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT */
     return insideText;
   }
