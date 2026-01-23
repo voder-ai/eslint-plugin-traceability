@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import type {
   RedundancyRuleOptions,
@@ -121,6 +119,7 @@ const rule: Rule.RuleModule = {
         const parent = (node as any).parent;
 
         if (process.env.TRACEABILITY_DEBUG === "1") {
+          // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-DUPLICATION-DETECTION REQ-REDUNDANCY-PATTERNS
           console.log(
             "[no-redundant-annotation] BlockStatement parent=%s statements=%d",
             parent && parent.type,
@@ -130,6 +129,7 @@ const rule: Rule.RuleModule = {
 
         // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-CATCH-BLOCK-HANDLING
         if (parent && parent.type === "CatchClause") {
+          // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-CATCH-BLOCK-HANDLING
           return;
         }
 
@@ -139,7 +139,10 @@ const rule: Rule.RuleModule = {
           options.maxScopeDepth,
         );
         debugScopePairs(parent, scopePairs);
-        if (scopePairs.size === 0) return;
+        if (scopePairs.size === 0) {
+          // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
+          return;
+        }
 
         reportRedundantAnnotationsInBlock(context, node, scopePairs, options);
       },
