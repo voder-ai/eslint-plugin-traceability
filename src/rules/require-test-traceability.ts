@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import {
   determineIsTestFile,
@@ -131,7 +129,10 @@ const rule: Rule.RuleModule = {
     } = rawOptions as TestTraceabilityOptions;
 
     const isTestFile = determineIsTestFile(filename, testFilePatterns);
-    if (!isTestFile) return {};
+    if (!isTestFile) {
+      // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-PATTERN-DETECT
+      return {};
+    }
 
     const sourceCode = context.getSourceCode();
     ensureFileSupportsAnnotation(context, sourceCode, {
