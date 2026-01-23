@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Helpers for the "require-story" rule
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
@@ -64,6 +62,7 @@ function getAnnotationTemplate(
   _options?: CallbackExclusionOptions,
 ): string {
   if (typeof override === "string" && override.trim().length > 0) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
     return override.trim();
   }
   return `/** @story ${STORY_PATH} */`;
@@ -74,6 +73,7 @@ function shouldApplyAutoFix(
   _options?: CallbackExclusionOptions,
 ): boolean {
   if (autoFix === false) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SELECTIVE
     return false;
   }
   return true;
@@ -138,12 +138,14 @@ function requiresOwnFunctionAnnotation(
   // Test framework callbacks respect the excludeTestCallbacks option.
   // When excludeTestCallbacks is false, test callbacks ARE checked.
   if (isTestFrameworkCallback(node, options)) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
     return false;
   }
 
   // Named nested functions must carry their own annotations.
   // Anonymous nested functions may inherit from parent.
   if (isNestedFunction(node) && isEffectivelyAnonymousFunction(node)) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return false;
   }
 
@@ -154,8 +156,10 @@ function requiresOwnFunctionAnnotation(
   // - Callbacks to recognized test framework functions (when excludeTestCallbacks is true)
   // Named arrow functions require annotations like other function declarations.
   if (isAnonymousArrowFunction(node)) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     // When excludeTestCallbacks is false, check ALL functions (including anonymous arrows)
     if (options?.excludeTestCallbacks === false) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
       return true;
     }
 
@@ -165,6 +169,7 @@ function requiresOwnFunctionAnnotation(
       node.parent.callee?.type === "Identifier" &&
       node.parent.callee.name === "bench"
     ) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-TEST-CALLBACK-EXCLUSION
       return true; // bench callbacks are always checked
     }
 
@@ -189,17 +194,21 @@ function shouldProcessNode(
       node.type === "ArrowFunctionExpression") &&
     !requiresOwnFunctionAnnotation(node, options)
   ) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return false;
   }
 
   if (!scope.includes(node.type)) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return false;
   }
   const exported = isExportedNode(node);
   if (exportPriority === "exported" && !exported) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return false;
   }
   if (exportPriority === "non-exported" && exported) {
+    // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
     return false;
   }
   return true;
