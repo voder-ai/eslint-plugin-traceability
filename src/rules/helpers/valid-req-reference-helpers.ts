@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Helper utilities for the "valid-req-reference" rule.
  *
@@ -35,8 +33,10 @@ const IMPLEMENTS_TOKENS = {
 function extractStoryPath(comment: any): string | null {
   const rawLines = comment.value.split(/\r?\n/);
   for (const rawLine of rawLines) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE
     const line = rawLine.trim().replace(/^\*+\s*/, "");
     if (line.startsWith("@story")) {
+      // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE
       const parts = line.split(/\s+/);
       return parts[1] || null;
     }
@@ -59,6 +59,7 @@ function validateAndResolveStoryPath(opts: {
   const { comment, context, storyPath, cwd } = opts;
 
   if (storyPath.includes("..") || path.isAbsolute(storyPath)) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-CACHE
     context.report({
       node: comment as any,
       messageId: "invalidPath",
@@ -72,6 +73,7 @@ function validateAndResolveStoryPath(opts: {
     !resolvedStoryPath.startsWith(cwd + path.sep) &&
     resolvedStoryPath !== cwd
   ) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-CACHE
     context.report({
       node: comment as any,
       messageId: "invalidPath",
@@ -97,16 +99,20 @@ function loadAndCacheRequirements(opts: {
   const { resolvedStoryPath, reqCache } = opts;
 
   if (!reqCache.has(resolvedStoryPath)) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-CACHE REQ-DEEP-PARSE
     try {
+      // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-CACHE REQ-DEEP-PARSE
       const content = fs.readFileSync(resolvedStoryPath, "utf8");
       const found = new Set<string>();
       const regex = /REQ-[A-Z0-9-]+/g;
       let match: RegExpExecArray | null;
       while ((match = regex.exec(content)) !== null) {
+        // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-CACHE REQ-DEEP-PARSE
         found.add(match[0]);
       }
       reqCache.set(resolvedStoryPath, found);
     } catch {
+      // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-CACHE
       reqCache.set(resolvedStoryPath, new Set());
     }
   }
@@ -129,6 +135,7 @@ function checkRequirementExists(opts: {
   const { comment, context, reqId, storyPath, reqSet } = opts;
 
   if (!reqSet.has(reqId)) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-MATCH
     context.report({
       node: comment as any,
       messageId: "reqMissing",
@@ -170,6 +177,7 @@ function resolveStoryAndRequirements(opts: {
   });
 
   if (!resolvedStoryPath) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-CACHE
     return { resolvedStoryPath: null, reqSet: null };
   }
 
@@ -201,6 +209,7 @@ function validateReqLine(opts: {
   const { comment, context, line, storyPath, cwd, reqCache } = opts;
   const reqId = extractReqIdFromLine(line);
   if (!reqId || !storyPath) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE
     return;
   }
 
@@ -213,6 +222,7 @@ function validateReqLine(opts: {
   });
 
   if (!reqSet) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-CACHE REQ-DEEP-MATCH
     return;
   }
 
@@ -241,6 +251,7 @@ function parseImplementsLine(
   const storyPath = parts[IMPLEMENTS_TOKENS.STORY_INDEX];
   const reqIds = parts.slice(IMPLEMENTS_TOKENS.FIRST_REQ_INDEX);
   if (!storyPath || reqIds.length === 0) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-VALIDATE REQ-SCOPED-IDS
     return null;
   }
   return { storyPath, reqIds };
@@ -265,6 +276,7 @@ function validateImplementsLine(opts: {
   const { comment, context, line, cwd, reqCache } = opts;
   const parsed = parseImplementsLine(line);
   if (!parsed) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-VALIDATE
     return;
   }
 
@@ -279,10 +291,12 @@ function validateImplementsLine(opts: {
   });
 
   if (!reqSet) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-VALIDATE REQ-SCOPED-IDS
     return;
   }
 
   for (const reqId of reqIds) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-VALIDATE REQ-SCOPED-IDS
     checkRequirementExists({
       comment,
       context,
@@ -308,12 +322,15 @@ function handleAnnotationLine(opts: {
 }): string | null {
   const { line, comment, context, cwd, reqCache, storyPath } = opts;
   if (line.startsWith("@story")) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE
     const newPath = extractStoryPath(comment);
     return newPath || storyPath;
   } else if (line.startsWith("@req")) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-MATCH
     validateReqLine({ comment, context, line, storyPath, cwd, reqCache });
     return storyPath;
   } else if (line.startsWith("@supports")) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-VALIDATE REQ-MIXED-SUPPORT
     validateImplementsLine({ comment, context, line, cwd, reqCache });
     return storyPath;
   }
@@ -337,6 +354,7 @@ function processCommentLines(opts: {
   let storyPath = initialStoryPath;
   const rawLines = comment.value.split(/\r?\n/);
   for (const rawLine of rawLines) {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE REQ-DEEP-MATCH
     const line = rawLine.trim().replace(/^\*+\s*/, "");
     storyPath = handleAnnotationLine({
       line,
@@ -392,6 +410,7 @@ function processAllComments(opts: {
   let rawStoryPath = opts.initialStoryPath;
   const comments = sourceCode.getAllComments() || [];
   comments.forEach((comment: any) => {
+    // @supports docs/stories/010.0-DEV-DEEP-VALIDATION.story.md REQ-DEEP-PARSE REQ-DEEP-CACHE
     rawStoryPath = handleComment({
       comment,
       context,
