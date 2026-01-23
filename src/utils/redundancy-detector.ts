@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import {
   extractStoryReqPairsFromComments,
@@ -34,10 +32,12 @@ export function getScopeCommentsFromJSDocAndLeading(
     : [];
 
   if (jsdoc) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE
     comments.push(jsdoc);
   }
 
   if (Array.isArray(scopeNode.leadingComments)) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE
     comments.push(...scopeNode.leadingComments);
   }
 
@@ -58,6 +58,7 @@ export function getScopePairs(
   parent: any,
 ): Set<string> {
   if (DEFAULT_BRANCH_TYPES.includes(scopeNode.type)) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE
     const commentText = gatherBranchCommentText(
       sourceCode as any,
       scopeNode,
@@ -72,6 +73,7 @@ export function getScopePairs(
     scopeNode,
   );
   if (directComments.length === 0) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-SCOPE-INHERITANCE
     return new Set();
   }
 
@@ -91,10 +93,12 @@ export function getStatementComments(
   const comments: any[] = [];
 
   if ((sourceCode as any).getCommentsBefore) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL
     comments.push(...((sourceCode as any).getCommentsBefore(node) || []));
   }
 
   if (Array.isArray(node.leadingComments)) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL
     comments.push(...node.leadingComments);
   }
 
@@ -102,6 +106,7 @@ export function getStatementComments(
     ? (sourceCode as any).getJSDocComment(node)
     : null;
   if (jsdoc) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE REQ-SAFE-REMOVAL
     comments.push(jsdoc);
   }
 
@@ -115,6 +120,7 @@ export function getStatementComments(
  */
 export function debugScopePairs(scopeNode: any, scopePairs: Set<string>): void {
   if (process.env.TRACEABILITY_DEBUG === "1") {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
     console.log(
       "[no-redundant-annotation] Scope %s has %d pairs: %s",
       scopeNode && scopeNode.type,
@@ -142,6 +148,7 @@ export function collectScopePairs(
   let depth = 0;
 
   while (currentNode && depth < maxDepth) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-INHERITANCE REQ-CONFIGURABLE-STRICTNESS
     const parent = currentNode.parent;
     const nodePairs = getScopePairs(
       context.getSourceCode(),
@@ -151,6 +158,7 @@ export function collectScopePairs(
     nodePairs.forEach((pair) => allPairs.add(pair));
 
     if (allPairs.size > 0 && depth > 0) {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-INHERITANCE REQ-CONFIGURABLE-STRICTNESS
       break;
     }
 
@@ -173,17 +181,20 @@ export function getStatementPairsForRedundancy(
   options: RedundancyRuleOptions,
 ): { comments: any[]; pairs: Set<string> } | null {
   if (!isStatementEligibleForRedundancy(stmt, options, DEFAULT_BRANCH_TYPES)) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE REQ-CONFIGURABLE-STRICTNESS
     return null;
   }
 
   const comments = getStatementComments(context, stmt);
   if (comments.length === 0) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE REQ-CONFIGURABLE-STRICTNESS
     return null;
   }
 
   const pairs = extractStoryReqPairsFromComments(comments);
 
   if (process.env.TRACEABILITY_DEBUG === "1") {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS REQ-CONFIGURABLE-STRICTNESS
     console.log(
       "[no-redundant-annotation] Statement %s has %d pairs: %s (scope has %d)",
       stmt.type,
@@ -196,6 +207,7 @@ export function getStatementPairsForRedundancy(
   }
 
   if (pairs.size === 0) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE REQ-CONFIGURABLE-STRICTNESS
     return null;
   }
 
@@ -218,10 +230,12 @@ export function isStatementRedundantWithinScope(
     stmtPairs.size === 1 &&
     arePairsFullyCovered(stmtPairs, scopePairs)
   ) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-CONFIGURABLE-STRICTNESS
     return false;
   }
 
   if (!arePairsFullyCovered(stmtPairs, scopePairs)) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-CONFIGURABLE-STRICTNESS
     return false;
   }
 
@@ -264,17 +278,20 @@ export function getRedundantStatementContext(
   );
 
   if (!stmtInfo) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE REQ-CONFIGURABLE-STRICTNESS
     return null;
   }
 
   const { comments, pairs } = stmtInfo;
 
   if (!isStatementRedundantWithinScope(pairs, scopePairs, options)) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-CONFIGURABLE-STRICTNESS
     return null;
   }
 
   const annotationComments = getAnnotationCommentsFromStatement(comments);
   if (annotationComments.length === 0) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
     return null;
   }
 
@@ -293,12 +310,14 @@ export function getRemovalRangesForAnnotationComments(
   const rangeMap = new Map<string, [number, number]>();
 
   for (const comment of comments) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
     const [removalStart, removalEnd] = getCommentRemovalRange(
       comment,
       sourceCode,
     );
     const key = `${removalStart}:${removalEnd}`;
     if (!rangeMap.has(key)) {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
       rangeMap.set(key, [removalStart, removalEnd]);
     }
   }
@@ -321,11 +340,15 @@ export function reportRedundantAnnotationsInBlock(
   options: RedundancyRuleOptions,
 ): void {
   const statements: any[] = Array.isArray(blockNode.body) ? blockNode.body : [];
-  if (statements.length === 0 || scopePairs.size === 0) return;
+  if (statements.length === 0 || scopePairs.size === 0) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE
+    return;
+  }
 
   const sourceCode = context.getSourceCode();
 
   for (const stmt of statements) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-REDUNDANCY-PATTERNS REQ-SAFE-REMOVAL REQ-STATEMENT-SIGNIFICANCE
     const info = getRedundantStatementContext(
       context,
       stmt,
@@ -333,6 +356,7 @@ export function reportRedundantAnnotationsInBlock(
       options,
     );
     if (!info) {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE REQ-CONFIGURABLE-STRICTNESS
       continue;
     }
 
@@ -341,6 +365,7 @@ export function reportRedundantAnnotationsInBlock(
       sourceCode,
     );
     if (ranges.length === 0) {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
       continue;
     }
 
