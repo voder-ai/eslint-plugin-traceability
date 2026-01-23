@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import { scanCommentLinesInRange } from "./branch-annotation-helpers";
 
@@ -24,6 +22,7 @@ import { scanCommentLinesInRange } from "./branch-annotation-helpers";
  */
 function getFunctionBodyBlock(node: any): any | null {
   if (!node || typeof node.type !== "string") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return null;
   }
 
@@ -32,13 +31,16 @@ function getFunctionBodyBlock(node: any): any | null {
     node.type === "FunctionExpression" ||
     node.type === "ArrowFunctionExpression"
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     const body = (node as any).body;
     return body && body.type === "BlockStatement" ? body : null;
   }
 
   if (node.type === "MethodDefinition") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     const value = (node as any).value;
     if (value && value.type === "FunctionExpression") {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
       const body = value.body;
       return body && body.type === "BlockStatement" ? body : null;
     }
@@ -84,13 +86,16 @@ export function getFunctionInsideBodyCommentText(
     typeof block.loc.start.line !== "number" ||
     typeof block.loc.end.line !== "number"
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT REQ-ALL-BLOCK-TYPES
     return "";
   }
 
   const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
 
   if (typeof getCommentsInside === "function") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     try {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
       const insideComments =
         (getCommentsInside as (_node: any) => any[])(block) || [];
       const insideText = insideComments
@@ -99,9 +104,11 @@ export function getFunctionInsideBodyCommentText(
         .join(" ");
 
       if (insideText) {
+        // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
         return insideText;
       }
     } catch {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
       // Fall through to the line-based fallback when structured comment
       // retrieval is unavailable or fails.
     }
@@ -109,6 +116,7 @@ export function getFunctionInsideBodyCommentText(
 
   const lines = (sourceCode as any).lines as string[] | undefined;
   if (!Array.isArray(lines)) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return "";
   }
 
