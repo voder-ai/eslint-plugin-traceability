@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Compute the insertion start offset for inserting annotations before a node.
  * This helper ensures we insert before any export wrapper when present, while
@@ -9,6 +7,7 @@
  */
 function getInsertionStart(candidate: any): number {
   if (!candidate || typeof candidate !== "object") {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE
     return 0;
   }
 
@@ -20,6 +19,7 @@ function getInsertionStart(candidate: any): number {
     Array.isArray(parent.range) &&
     typeof parent.range[0] === "number"
   ) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-PRESERVE
     return parent.range[0];
   }
 
@@ -27,6 +27,7 @@ function getInsertionStart(candidate: any): number {
     Array.isArray(candidate.range) &&
     typeof candidate.range[0] === "number"
   ) {
+    // @supports docs/stories/008.0-DEV-AUTO-FIX.story.md REQ-AUTOFIX-SAFE
     return candidate.range[0];
   }
 
@@ -154,9 +155,12 @@ type ReportDeps = {
  */
 function withSafeReporting(label: string, fn: () => void): void {
   try {
+    // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
     fn();
   } catch (error) {
+    // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
     if (process.env.TRACEABILITY_DEBUG === "1") {
+      // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
       // Debug logging only when explicitly enabled for troubleshooting helper failures.
       console.error(
         `[traceability] ${label} failed`,
@@ -245,10 +249,13 @@ export function coreReportMissing(
       | undefined;
 
     if (typeof hasWithPlacement === "function") {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
       if (hasWithPlacement(sourceCode, node, annotationPlacement)) {
+        // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
         return;
       }
     } else if (deps.hasStoryAnnotation(sourceCode, node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return;
     }
 
@@ -293,6 +300,7 @@ export function coreReportMethod(
 
   withSafeReporting("coreReportMethod", () => {
     if (deps.hasStoryAnnotation(sourceCode, node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
       return;
     }
 
