@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import {
   scanCommentLinesInRange,
@@ -29,10 +27,12 @@ function getInsideSwitchCaseCommentText(
     typeof firstConsequent.loc.start.line === "number" &&
     typeof firstConsequent.loc.end.line === "number"
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     const startIndex = firstConsequent.loc.start.line - 1;
     const endIndex = firstConsequent.loc.end.line - 1;
     const insideText = scanCommentLinesInRange(lines, startIndex + 1, endIndex);
     if (insideText) {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
       return insideText;
     }
     return "";
@@ -45,10 +45,12 @@ function getInsideSwitchCaseCommentText(
     typeof node.loc.start.line === "number" &&
     typeof node.loc.end.line === "number"
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     const startIndex = node.loc.start.line - 1;
     const endIndex = node.loc.end.line - 1;
     const insideText = scanCommentLinesInRange(lines, startIndex + 1, endIndex);
     if (insideText) {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
       return insideText;
     }
   }
@@ -77,8 +79,10 @@ export function gatherSwitchCaseCommentText(
   beforeText: string,
 ): string {
   if (annotationPlacement === "inside") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-INSIDE-BRACE-PLACEMENT
     const insideText = getInsideSwitchCaseCommentText(sourceCode, node);
     if (insideText) {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG REQ-INSIDE-BRACE-PLACEMENT
       return insideText;
     }
     return "";
@@ -89,6 +93,7 @@ export function gatherSwitchCaseCommentText(
     /@req\b/.test(beforeText) ||
     /@supports\b/.test(beforeText)
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return beforeText;
   }
 
