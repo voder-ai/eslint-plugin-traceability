@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Helper utilities for the require-test-traceability rule.
  *
@@ -83,6 +81,7 @@ function insertSupportsTemplate(
 
   // Preserve shebang: it must remain the very first characters in the file.
   if (text.startsWith("#!")) {
+    // @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-PRESERVE
     const firstNewline = text.indexOf("\n");
     insertIndex = firstNewline === NOT_FOUND ? text.length : firstNewline + 1;
   }
@@ -115,6 +114,7 @@ export function ensureFileSupportsAnnotation(
   );
 
   if (!fileHasSupports) {
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FILE-SUPPORTS
     const node =
       (fileComments[0] as any) || (sourceCode.ast && (sourceCode.ast as any));
 
@@ -150,12 +150,14 @@ function isTestCallName(name: string): boolean {
  */
 function getCalleeName(node: any): string | null {
   if (node.callee.type === "Identifier") {
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FRAMEWORK-COMPAT
     return node.callee.name;
   }
   if (
     node.callee.type === "MemberExpression" &&
     node.callee.object.type === "Identifier"
   ) {
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FRAMEWORK-COMPAT
     return node.callee.object.name;
   }
   return null;
@@ -168,10 +170,16 @@ function getCalleeName(node: any): string | null {
  */
 function getFirstArgumentLiteral(node: any): string | null {
   const arg = node.arguments && node.arguments[0];
-  if (!arg) return null;
+  if (!arg) {
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
+    return null;
+  }
+  // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
   if (arg.type === "Literal" && typeof arg.value === "string") {
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
     return arg.value;
   }
+  // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
   return null;
 }
 
@@ -187,6 +195,7 @@ function normalizeReqId(raw: string): string {
   let id = raw.trim().toUpperCase();
 
   if (!id.startsWith("REQ")) {
+    // @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-PREFIX-FORMAT
     return id;
   }
 
@@ -219,12 +228,14 @@ function normalizeReqId(raw: string): string {
 function normalizeReqPrefixInDescription(description: string): string | null {
   const canonicalPattern = /^\[REQ-[^\]]+]/;
   if (canonicalPattern.test(description)) {
+    // @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-PREFIX-FORMAT
     return null;
   }
 
   // Leading square brackets with optional spacing.
   const squareMatch = description.match(/^\[\s*(REQ[^\]]*?)\s*](.*)$/i);
   if (squareMatch) {
+    // @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-PREFIX-FORMAT
     const normalizedId = normalizeReqId(squareMatch[1]);
     return `[${normalizedId}]${squareMatch[2] ?? ""}`;
   }
@@ -232,6 +243,7 @@ function normalizeReqPrefixInDescription(description: string): string | null {
   // Leading parentheses with optional spacing.
   const parenMatch = description.match(/^\(\s*(REQ[^)]*?)\s*\)(.*)$/i);
   if (parenMatch) {
+    // @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-PREFIX-FORMAT
     const normalizedId = normalizeReqId(parenMatch[1]);
     return `[${normalizedId}]${parenMatch[2] ?? ""}`;
   }
@@ -256,6 +268,7 @@ function createUpdatedStringLiteralRaw(
   const firstChar = raw[0];
 
   if (QUOTES.includes(firstChar as (typeof QUOTES)[number])) {
+    // @supports docs/stories/021.0-DEV-TEST-ANNOTATION-AUTO-FIX.story.md REQ-TEST-FIX-PRESERVE
     const quote = firstChar;
     const escaped = newValue
       .replace(/\\/g, "\\\\")
@@ -281,8 +294,13 @@ function handleDescribeCall(
   options: { describeRegex: RegExp; requireDescribeStory: boolean },
 ): void {
   const { describeRegex, requireDescribeStory } = options;
-  if (!requireDescribeStory) return;
+  if (!requireDescribeStory) {
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
+    return;
+  }
+  // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
   if (!describeRegex.test(description)) {
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
     context.report({
       node: node as any,
       messageId: "missingDescribeStory",
@@ -305,9 +323,13 @@ function handleItOrTestCall(
 ): void {
   const { sourceCode, requireTestReqPrefix, autoFixTestPrefixFormat } = options;
 
-  if (!requireTestReqPrefix) return;
-
+  if (!requireTestReqPrefix) {
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-IT-REQ-PREFIX
+    return;
+  }
+  // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-IT-REQ-PREFIX
   if (!/^\[REQ-[^\]]+]/.test(description)) {
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-IT-REQ-PREFIX
     const normalizedDescription =
       autoFixTestPrefixFormat !== false
         ? normalizeReqPrefixInDescription(description)
@@ -353,21 +375,28 @@ export function handleCallExpression(
   return (node: any) => {
     const calleeName = getCalleeName(node);
     if (!calleeName || !isTestCallName(calleeName)) {
+      // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-FRAMEWORK-COMPAT
       return;
     }
 
     const description = getFirstArgumentLiteral(node);
-    if (!description) return;
-
+    if (!description) {
+      // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
+      return;
+    }
+    // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
     if (calleeName === "describe") {
+      // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
       handleDescribeCall(context, node, description, {
         describeRegex,
         requireDescribeStory,
       });
+      // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-DESCRIBE-STORY
       return;
     }
 
     if (calleeName === "it" || calleeName === "test") {
+      // @supports docs/stories/020.0-DEV-TEST-ANNOTATION-VALIDATION.story.md REQ-TEST-IT-REQ-PREFIX
       handleItOrTestCall(context, node, description, options);
     }
   };
