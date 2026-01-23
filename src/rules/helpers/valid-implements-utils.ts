@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Helpers for `@supports` annotation validation used by valid-annotation-format.
  *
@@ -139,6 +137,7 @@ function parseImplementsTokens(
   const value = rawValue?.trim() ?? "";
 
   if (!value) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION
     reportMissingImplementsValue(context, comment, options);
     return null;
   }
@@ -146,6 +145,7 @@ function parseImplementsTokens(
   const tokens = value.split(/\s+/);
 
   if (tokens.length < MIN_IMPLEMENTS_TOKENS) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE REQ-FORMAT-VALIDATION
     reportMissingImplementsReqIds(context, comment, options);
     return null;
   }
@@ -173,12 +173,15 @@ function validateImplementsTokens(
   const { storyPath, reqIds } = parsed;
 
   if (!options.storyPattern.test(storyPath)) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FORMAT-VALIDATION
     reportInvalidImplementsStoryPath(context, comment, storyPath, options);
     return;
   }
 
   for (const reqId of reqIds) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
     if (!options.reqPattern.test(reqId)) {
+      // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-FORMAT-VALIDATION REQ-MIXED-SUPPORT
       reportInvalidImplementsReqId(context, comment, reqId, options);
     }
   }
@@ -213,6 +216,7 @@ export function validateImplementsAnnotationHelper(
   });
 
   if (!parsed) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE
     return;
   }
 
