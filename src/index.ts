@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * ESLint Traceability Plugin
  * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
@@ -32,12 +30,15 @@ const RULE_NAMES = [
 const rules: Record<string, Rule.RuleModule> = {} as any;
 
 for (const name of RULE_NAMES) {
+  // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE REQ-ERROR-HANDLING
   try {
+    // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE
     // Dynamically require rule module
     const mod = require(`./rules/${name}`);
     // Support ESModule default export
     rules[name] = mod.default ?? mod;
   } catch (error: any) {
+    // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-ERROR-HANDLING
     /**
      * @story docs/stories/001.0-DEV-PLUGIN-SETUP.story.md
      * @req REQ-ERROR-HANDLING - Provide fallback rule module and surface errors when rule loading fails
@@ -97,6 +98,7 @@ function createAliasRuleMeta(
   legacyRule: Rule.RuleModule | undefined,
 ): Rule.RuleMetaData | null {
   if (!legacyRule) {
+    // @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE
     return null;
   }
 
@@ -156,6 +158,7 @@ function wireUnifiedFunctionAnnotationAliases(): void {
     | undefined;
 
   if (unifiedRule) {
+    // @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE
     const unified = unifiedRule;
 
     /**
@@ -171,6 +174,7 @@ function wireUnifiedFunctionAnnotationAliases(): void {
     ): Rule.RuleModule {
       const mergedMeta = createAliasRuleMeta(unified, legacyRule);
       if (!mergedMeta) {
+        // @supports docs/stories/010.4-DEV-UNIFIED-FUNCTION-RULE-AND-ALIASES.story.md REQ-UNIFIED-ALIAS-ENGINE
         return unified;
       }
 
@@ -201,6 +205,7 @@ function wirePreferSupportsAlias(): void {
     | undefined;
 
   if (implementsRule) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-RULE-NAME
     const originalMeta = (implementsRule as any).meta ?? {};
     const preferSupportsRule: Rule.RuleModule = {
       ...(implementsRule as any),
@@ -221,6 +226,7 @@ function wirePreferSupportsAlias(): void {
       implementsMeta.docs &&
       typeof implementsMeta.docs.description === "string"
     ) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-RULE-NAME
       implementsMeta.docs.description +=
         " (deprecated alias: use traceability/prefer-supports-annotation instead)";
     }
@@ -240,20 +246,23 @@ const pluginMeta = (() => {
   let pkg: Pkg = {};
 
   try {
+    // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-NPM-PACKAGE
     // When running from built output (lib/src/index.js)
     // this resolves to the package.json at the project root.
     // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-NPM-PACKAGE
     pkg = require("../../package.json") as Pkg;
   } catch {
+    // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-NPM-PACKAGE
     try {
+      // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-NPM-PACKAGE
       // When running via the TypeScript sources (src/index.ts) in this repo,
       // fall back to resolving package.json one level up from src/.
       // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-NPM-PACKAGE
       pkg = require("../package.json") as Pkg;
     } catch {
+      // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE
       // As a last resort (tests, unusual environments), provide sensible
       // defaults so that plugin loading never fails just for metadata.
-      // @supports docs/stories/001.0-DEV-PLUGIN-SETUP.story.md REQ-PLUGIN-STRUCTURE
       pkg = {
         name: "eslint-plugin-traceability",
         version: "0.0.0-development",
