@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Utility functions for story path resolution and existence checking.
  * @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
@@ -110,6 +108,7 @@ export function buildStoryCandidates(
   // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
   // @req REQ-PATH-RESOLUTION - Preserve explicit relative story path semantics when building candidate locations
   if (storyPath.startsWith("./") || storyPath.startsWith("../")) {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PATH-RESOLUTION
     candidates.push(path.resolve(cwd, storyPath));
   } else {
     // For bare paths, first try resolving directly under the current working directory.
@@ -120,6 +119,7 @@ export function buildStoryCandidates(
     // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
     // @req REQ-PATH-RESOLUTION - Expand search across configured storyDirectories while staying within project
     for (const dir of storyDirs) {
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PATH-RESOLUTION
       candidates.push(path.resolve(cwd, dir, path.basename(storyPath)));
     }
   }
@@ -150,31 +150,38 @@ function checkSingleCandidate(candidate: string): StoryPathCheckResult {
   // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
   // @req REQ-PERFORMANCE-OPTIMIZATION - Short-circuit on cached existence checks
   if (cached) {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PERFORMANCE-OPTIMIZATION
     return cached;
   }
 
   let result: StoryPathCheckResult;
 
   try {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE REQ-ERROR-HANDLING
     const exists = fs.existsSync(candidate);
     // When the path does not exist at all, record a simple "missing" status.
     // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
     // @req REQ-FILE-EXISTENCE - Distinguish non-existent story paths from other failure modes
     if (!exists) {
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE
       result = { path: candidate, status: "missing" };
     } else {
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE
       const stat = fs.statSync(candidate);
       // Treat existing regular files as valid story candidates; other entry types are considered missing.
       // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
       // @req REQ-FILE-EXISTENCE - Only regular files may satisfy a story path reference
       if (stat.isFile()) {
+        // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE
         result = { path: candidate, status: "exists" };
       } else {
+        // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE
         // Path exists but is not a file; treat as missing for story purposes.
         result = { path: candidate, status: "missing" };
       }
     }
   } catch (error) {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ERROR-HANDLING
     // Any filesystem error is captured and surfaced as an fs-error status instead of throwing.
     // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
     // @req REQ-ERROR-HANDLING - Represent filesystem failures as fs-error results while keeping callers resilient
@@ -203,12 +210,14 @@ export function getStoryExistence(candidates: string[]): StoryExistenceResult {
   let firstFsError: StoryPathCheckResult | undefined;
 
   for (const candidate of candidates) {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE REQ-ERROR-HANDLING
     const res = checkSingleCandidate(candidate);
 
     // As soon as a candidate file is confirmed to exist, return a successful existence result.
     // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
     // @req REQ-FILE-EXISTENCE - Prefer the first positively-matched story file
     if (res.status === "exists") {
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE
       return {
         candidates,
         status: "exists",
@@ -220,6 +229,7 @@ export function getStoryExistence(candidates: string[]): StoryExistenceResult {
     // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
     // @req REQ-ERROR-HANDLING - Surface a single representative filesystem error without failing fast
     if (res.status === "fs-error" && !firstFsError) {
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ERROR-HANDLING
       firstFsError = res;
     }
   }
@@ -228,6 +238,7 @@ export function getStoryExistence(candidates: string[]): StoryExistenceResult {
   // @story docs/stories/006.0-DEV-FILE-VALIDATION.story.md
   // @req REQ-ERROR-HANDLING - Distinguish IO failures from simple "missing" results in existence checks
   if (firstFsError) {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ERROR-HANDLING
     return {
       candidates,
       status: "fs-error",
