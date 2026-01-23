@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Visitor builders for require-story-annotation rule
  * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
@@ -34,7 +32,10 @@ function buildFunctionDeclarationVisitor(
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleFunctionDeclaration(node: any) {
-    if (!options.shouldProcessNode(node)) return;
+    if (!options.shouldProcessNode(node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      return;
+    }
 
     const target = resolveTargetNode(sourceCode, node);
     helperReportMissing(context, sourceCode, {
@@ -68,12 +69,18 @@ function buildFunctionExpressionVisitor(
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleFunctionExpression(node: any) {
-    if (!options.shouldProcessNode(node)) return;
+    if (!options.shouldProcessNode(node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      return;
+    }
 
     /**
      * Do not report when function expression is a MethodDefinition
      */
-    if (node.parent && node.parent.type === "MethodDefinition") return;
+    if (node.parent && node.parent.type === "MethodDefinition") {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      return;
+    }
 
     const target = resolveTargetNode(sourceCode, node);
     helperReportMissing(context, sourceCode, {
@@ -107,7 +114,10 @@ function buildArrowFunctionVisitor(
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleArrowFunctionExpression(node: any) {
-    if (!options.shouldProcessNode(node)) return;
+    if (!options.shouldProcessNode(node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      return;
+    }
     const target = resolveTargetNode(sourceCode, node);
     helperReportMissing(context, sourceCode, {
       node,
@@ -140,7 +150,10 @@ function buildTSDeclareFunctionVisitor(
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleTSDeclareFunction(node: any) {
-    if (!options.shouldProcessNode(node)) return;
+    if (!options.shouldProcessNode(node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-TYPESCRIPT-SUPPORT
+      return;
+    }
     helperReportMissing(context, sourceCode, {
       node,
       target: node,
@@ -172,7 +185,10 @@ function buildTSMethodSignatureVisitor(
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleTSMethodSignature(node: any) {
-    if (!options.shouldProcessNode(node)) return;
+    if (!options.shouldProcessNode(node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-TYPESCRIPT-SUPPORT
+      return;
+    }
     const target = resolveTargetNode(sourceCode, node);
     helperReportMissing(context, sourceCode, {
       node,
@@ -206,7 +222,10 @@ function buildMethodDefinitionVisitor(
    * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
    */
   function handleMethodDefinition(node: any) {
-    if (!options.shouldProcessNode(node)) return;
+    if (!options.shouldProcessNode(node)) {
+      // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED
+      return;
+    }
     helperReportMethod(context, sourceCode, {
       node,
       options: {
