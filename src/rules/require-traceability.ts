@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Composite ESLint rule that enforces both story and requirement traceability
  * annotations on functions and methods.
@@ -117,10 +115,14 @@ const rule: Rule.RuleModule = {
     ]);
 
     for (const eventName of allEventNames) {
+      // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+      // @req REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION REQ-ERROR-LOCATION
       const storyHandler = storyListeners[eventName];
       const reqHandler = reqListeners[eventName];
 
       if (storyHandler && reqHandler) {
+        // @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
+        // @req REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION REQ-ERROR-LOCATION
         /**
          * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
          * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-ERROR-LOCATION
@@ -129,12 +131,15 @@ const rule: Rule.RuleModule = {
           this: unknown,
           ...args: any[]
         ) {
+          // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-ERROR-LOCATION
           (storyHandler as any).apply(this, args);
           (reqHandler as any).apply(this, args);
         };
       } else if (storyHandler) {
+        // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION
         mergedListener[eventName] = storyHandler;
       } else if (reqHandler) {
+        // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION
         mergedListener[eventName] = reqHandler;
       }
     }
