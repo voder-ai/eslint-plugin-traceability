@@ -1,13 +1,13 @@
 {
   "status": "healthy",
-  "summary": "Build and runtime smoke checks succeeded in a temporary copy; only a deprecation warning appeared during install.",
-  "score": 90,
+  "summary": "Build and runtime smoke checks completed successfully with no errors observed.",
+  "score": 94,
   "reasoning": [
-    "`npm ci` completed successfully in the temporary copy and ran the `prepare` script; the only notable output was a deprecation warning for `semver-diff`, which did not block installation.",
-    "`npm run build` (`tsc -p tsconfig.build.json`) completed without errors, showing the TypeScript build pipeline is functional.",
-    "`npm run smoke:runtime` completed and reported successful plugin loading and CLI availability, indicating the runtime entry points exercised by the smoke script work in this environment.",
-    "No build or runtime command failures were observed, so baseline build/run health is strong for typical development needs.",
-    "Observable gap: runtime validation is limited to the lightweight smoke script; broader runtime scenarios or long-running behaviors were not exercised, leaving some runtime breadth unproven.",
-    "Score reflects successful install/build/runtime smoke with a minor install-time deprecation warning and limited runtime breadth, but no observed failures."
+    "`npm run build` (`tsc -p tsconfig.build.json`) completed without errors, indicating the TypeScript build pipeline is healthy in this environment.",
+    "`npm run smoke:runtime` completed successfully, showing the plugin loads, fixture validation works, and the CLI entry point is functional for a basic runtime path.",
+    "No build failures, runtime crashes, or configuration errors were observed during the minimal checks.",
+    "The runtime verification is limited to the lightweight smoke script, so broader runtime behaviors (e.g., varied inputs or extended scenarios) were not exercised in this assessment.",
+    "No dependency installation was needed during this run, so package manager setup issues were not observed here.",
+    "Score reflects clean build and basic runtime success with limited runtime breadth validation; strong baseline but not fully exhaustive."
   ]
 }

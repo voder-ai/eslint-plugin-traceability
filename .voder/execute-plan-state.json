@@ -1,0 +1,70 @@
+{
+  "kind": "execute-plan-state",
+  "version": 1,
+  "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
+  "plan": {
+    "path": ".voder/plan.json",
+    "generatedAt": "2026-01-19T20:57:16.321Z",
+    "contentHash": "1b387af29eac6822e9925f2f886049456745b1a62cc7a51ef6d42adfd587b88d"
+  },
+  "status": "completed",
+  "tasks": [
+    {
+      "id": "now-1",
+      "bucket": "now",
+      "status": "completed",
+      "lastUpdated": "2026-01-19T21:03:37.438Z",
+      "title": "Add tests for branch annotation requirements inside anonymous arrow functions",
+      "completion": {
+        "taskId": "now-1",
+        "status": "completed",
+        "summary": "Added spec and ADR documenting branch annotation requirements inside anonymous arrow callbacks, plus valid/invalid rule tests covering if and switch branches inside anonymous arrows. Ran npm run lint, npm run format:check, and npm test; commit succeeded with lint-staged prettier/eslint hooks.",
+        "commitShas": [
+          "63a84f02bd375d251c6c1ae3eb491ee57e324df7"
+        ],
+        "hookValidation": {
+          "ran": true,
+          "passed": true,
+          "message": "git commit ran lint-staged (prettier --write, eslint --fix) on staged files successfully."
+        }
+      },
+      "codex": {
+        "sessionId": "0dc34ba1-f124-401d-afc8-4ede22bafdb4",
+        "attempts": 1
+      }
+    },
+    {
+      "id": "next-1",
+      "bucket": "next",
+      "status": "completed",
+      "lastUpdated": "2026-01-19T21:11:13.211Z",
+      "title": "Add tests for async/await catch-clause annotation handling",
+      "completion": {
+        "taskId": "next-1",
+        "status": "completed",
+        "summary": "Added async catch clause specification and ADR, and extended require-branch-annotation rule tests with async/non-async try/catch parity cases plus passing async coverage. Ran npm run lint, npm run format:check, and npm test; commit succeeded with lint-staged prettier/eslint hooks.",
+        "commitShas": [
+          "bfc6c66"
+        ],
+        "hookValidation": {
+          "ran": true,
+          "passed": true,
+          "message": "git commit ran lint-staged (prettier --write, eslint --fix) on staged files successfully."
+        }
+      },
+      "codex": {
+        "sessionId": "0dc34ba1-f124-401d-afc8-4ede22bafdb4",
+        "attempts": 1
+      }
+    },
+    {
+      "id": "later-1",
+      "bucket": "later",
+      "status": "pending",
+      "lastUpdated": "2026-01-19T20:57:24.828Z",
+      "title": "Audit remaining traceability rules for unverified edge-case annotations"
+    }
+  ],
+  "createdAt": "2026-01-19T20:57:24.828Z",
+  "updatedAt": "2026-01-19T21:11:13.215Z"
+}

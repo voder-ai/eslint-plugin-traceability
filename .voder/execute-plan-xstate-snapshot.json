@@ -1,0 +1,625 @@
+{
+  "kind": "execute-plan-xstate-snapshot",
+  "version": 1,
+  "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
+  "planHash": "1b387af29eac6822e9925f2f886049456745b1a62cc7a51ef6d42adfd587b88d",
+  "persistedAt": "2026-01-19T21:11:13.221Z",
+  "snapshot": {
+    "status": "done",
+    "value": "completed",
+    "historyValue": {},
+    "context": {
+      "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
+      "voderDir": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder",
+      "planPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/plan.json",
+      "plan": {
+        "kind": "plan-next-work",
+        "version": 1,
+        "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
+        "generatedAt": "2026-01-19T20:57:16.321Z",
+        "input": {
+          "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
+          "hadFoundationAssessment": true,
+          "parsedOk": true
+        },
+        "targetState": {
+          "nonFunctionalScorePct": 75,
+          "functionalityScorePct": 100
+        },
+        "thresholds": {
+          "nonFunctionalScorePct": 75
+        },
+        "readiness": {
+          "hadAllAssessments": true,
+          "failedAssessments": [
+            "functionality"
+          ]
+        },
+        "generator": {
+          "kind": "codex",
+          "codex": {
+            "attempted": true,
+            "succeeded": true,
+            "failureKind": null,
+            "failureMessage": null
+          }
+        },
+        "buckets": {
+          "now": [
+            {
+              "id": "now-1",
+              "title": "Add tests for branch annotation requirements inside anonymous arrow functions",
+              "steps": [
+                "Locate existing rule tests covering branch annotations (likely in tests for the rule enforcing @story/@req/@supports on branches).",
+                "Add new test cases where an anonymous arrow function contains a branch (e.g., if/else, conditional, switch) and assert missing annotations are flagged inside the arrow body.",
+                "Add complementary passing cases where the same branches inside anonymous arrow functions include required @story/@req or @supports annotations and are accepted.",
+                "Ensure the tests explicitly assert that the branch inside the anonymous arrow is treated the same as top-level branches for annotation requirements."
+              ],
+              "details": "Functionality gaps indicate the behavior is implemented but unverified. This task adds focused tests to lock down branch annotation requirements within anonymous arrow functions.",
+              "attribution": "testing",
+              "estimatedScoreImpactPct": 36,
+              "sourceItem": "REQ-ARROW-FUNCTION-BRANCH-INCLUDED#1: Branch annotation behavior inside anonymous arrow functions appears implemented but is not verified by tests."
+            }
+          ],
+          "next": [
+            {
+              "id": "next-1",
+              "title": "Add tests for async/await catch-clause annotation handling",
+              "steps": [
+                "Find the rule tests that validate catch-clause annotation requirements.",
+                "Add test cases where an async function uses try/catch with await inside the try and assert the catch clause is still required to carry @story/@req or @supports annotations.",
+                "Include passing cases where the async catch clause is properly annotated, and failing cases where it is missing annotations.",
+                "Confirm the tests assert identical behavior between async and non-async catch clauses."
+              ],
+              "details": "Functionality gap indicates async/await catch handling is unverified. This task verifies parity with existing catch behavior.",
+              "attribution": "testing",
+              "estimatedScoreImpactPct": 30,
+              "sourceItem": "REQ-ASYNC-CATCH-INCLUDED#1: Catch-clause annotation behavior for async/await contexts appears implemented but is not verified by tests."
+            }
+          ],
+          "later": [
+            {
+              "id": "later-1",
+              "title": "Audit remaining traceability rules for unverified edge-case annotations",
+              "steps": [
+                "Scan rule implementations for conditional branches or context-specific handling that lacks explicit tests.",
+                "Add a short list of candidate edge cases and map each to missing test coverage before implementing.",
+                "Convert the highest-risk edge case into a test-backed verification task in the next planning cycle."
+              ],
+              "details": "Speculative follow-up to ensure no other behavior is implemented without tests once the current gaps are closed.",
+              "attribution": "testing",
+              "estimatedScoreImpactPct": null,
+              "sourceItem": "No tests verify that branches inside anonymous arrow functions are still required to carry @story/@req or @supports annotations; implementation appears present but unverified."
+            }
+          ]
+        },
+        "summary": {
+          "nowCount": 1,
+          "nextCount": 1,
+          "laterCount": 1,
+          "human": "Add targeted tests to verify annotation requirements for anonymous-arrow branches and async catch clauses, then reassess functionality readiness.",
+          "nowRationale": "The largest functionality deficit is unverified behavior; the anonymous-arrow branch requirement is explicitly called out and likely high-impact. Verifying it first is the smallest, fastest step to raise functionality confidence before broader audits."
+        },
+        "review": {
+          "score": 82,
+          "feedback": "The plan meets critical criteria: exactly one NOW task with actionable checklist steps, tasks are atomic (tests added within each task), and no assessment tasks are scheduled. It ties directly to stated gaps and is immediately executable. Minor improvements: include explicit quality gates (e.g., run relevant test suite or targeted tests) in NOW/ NEXT steps, and provide concrete file/path hints for where tests live to reduce guesswork. LATER is acceptable but could be more clearly tied to assessment dimensions if it becomes actionable.",
+          "passed": true,
+          "iterations": 1
+        }
+      },
+      "planHash": "1b387af29eac6822e9925f2f886049456745b1a62cc7a51ef6d42adfd587b88d",
+      "state": {
+        "kind": "execute-plan-state",
+        "version": 1,
+        "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
+        "plan": {
+          "path": ".voder/plan.json",
+          "generatedAt": "2026-01-19T20:57:16.321Z",
+          "contentHash": "1b387af29eac6822e9925f2f886049456745b1a62cc7a51ef6d42adfd587b88d"
+        },
+        "status": "completed",
+        "tasks": [
+          {
+            "id": "now-1",
+            "bucket": "now",
+            "status": "completed",
+            "lastUpdated": "2026-01-19T21:03:37.438Z",
+            "title": "Add tests for branch annotation requirements inside anonymous arrow functions",
+            "completion": {
+              "taskId": "now-1",
+              "status": "completed",
+              "summary": "Added spec and ADR documenting branch annotation requirements inside anonymous arrow callbacks, plus valid/invalid rule tests covering if and switch branches inside anonymous arrows. Ran npm run lint, npm run format:check, and npm test; commit succeeded with lint-staged prettier/eslint hooks.",
+              "commitShas": [
+                "63a84f02bd375d251c6c1ae3eb491ee57e324df7"
+              ],
+              "hookValidation": {
+                "ran": true,
+                "passed": true,
+                "message": "git commit ran lint-staged (prettier --write, eslint --fix) on staged files successfully."
+              }
+            },
+            "codex": {
+              "sessionId": "0dc34ba1-f124-401d-afc8-4ede22bafdb4",
+              "attempts": 1
+            }
+          },
+          {
+            "id": "next-1",
+            "bucket": "next",
+            "status": "completed",
+            "lastUpdated": "2026-01-19T21:11:13.211Z",
+            "title": "Add tests for async/await catch-clause annotation handling",
+            "completion": {
+              "taskId": "next-1",
+              "status": "completed",
+              "summary": "Added async catch clause specification and ADR, and extended require-branch-annotation rule tests with async/non-async try/catch parity cases plus passing async coverage. Ran npm run lint, npm run format:check, and npm test; commit succeeded with lint-staged prettier/eslint hooks.",
+              "commitShas": [
+                "bfc6c66"
+              ],
+              "hookValidation": {
+                "ran": true,
+                "passed": true,
+                "message": "git commit ran lint-staged (prettier --write, eslint --fix) on staged files successfully."
+              }
+            },
+            "codex": {
+              "sessionId": "0dc34ba1-f124-401d-afc8-4ede22bafdb4",
+              "attempts": 1
+            }
+          },
+          {
+            "id": "later-1",
+            "bucket": "later",
+            "status": "pending",
+            "lastUpdated": "2026-01-19T20:57:24.828Z",
+            "title": "Audit remaining traceability rules for unverified edge-case annotations"
+          }
+        ],
+        "createdAt": "2026-01-19T20:57:24.828Z",
+        "updatedAt": "2026-01-19T21:11:13.215Z"
+      },
+      "codexSessionId": "0dc34ba1-f124-401d-afc8-4ede22bafdb4",
+      "codexSessionReused": false,
+      "workingTreeClean": true,
+      "events": [
+        {
+          "type": "CODEX_SESSION_ACQUISITION_STARTED"
+        },
+        {
+          "type": "CODEX_SESSION_ACQUISITION_COMPLETED",
+          "sessionId": "0dc34ba1-f124-401d-afc8-4ede22bafdb4",
+          "reused": false
+        },
+        {
+          "type": "WORKING_TREE_CLEAN"
+        }
+      ],
+      "progress": [
+        {
+          "kind": "phase",
+          "phase": "loading_plan",
+          "message": "phase loading plan.",
+          "timestamp": "2026-01-19T20:57:24.823Z"
+        },
+        {
+          "kind": "phase",
+          "phase": "acquiring_session",
+          "message": "phase acquiring Codex session.",
+          "timestamp": "2026-01-19T20:57:24.835Z"
+        },
+        {
+          "kind": "phase",
+          "phase": "checking_working_tree",
+          "message": "phase checking working tree hygiene.",
+          "timestamp": "2026-01-19T20:57:24.841Z"
+        },
+        {
+          "kind": "phase",
+          "phase": "executing_now",
+          "message": "phase executing NOW tasks.",
+          "timestamp": "2026-01-19T20:57:24.976Z"
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "now",
+            "index": 0,
+            "total": 1,
+            "id": "now-1",
+            "title": "Add tests for branch annotation requirements inside anonymous arrow functions"
+          },
+          "status": "starting",
+          "timestamp": "2026-01-19T20:57:24.977Z",
+          "message": "NOW task 1/1 (now-1): Add tests for branch annotation requirements inside anonymous arrow functions - starting."
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "now",
+            "index": 0,
+            "total": 1,
+            "id": "now-1",
+            "title": "Add tests for branch annotation requirements inside anonymous arrow functions"
+          },
+          "status": "awaiting_codex",
+          "timestamp": "2026-01-19T20:57:24.983Z",
+          "message": "NOW task 1/1 (now-1): Add tests for branch annotation requirements inside anonymous arrow functions - awaiting Codex completion."
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "now",
+            "index": 0,
+            "total": 1,
+            "id": "now-1",
+            "title": "Add tests for branch annotation requirements inside anonymous arrow functions"
+          },
+          "status": "session",
+          "timestamp": "2026-01-19T20:57:24.989Z",
+          "message": "NOW task 1/1 (now-1): Add tests for branch annotation requirements inside anonymous arrow functions - Acquired Codex session 0dc34ba1-f124-401d-afc8-4ede22bafdb4.",
+          "sessionId": "0dc34ba1-f124-401d-afc8-4ede22bafdb4"
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "now",
+            "index": 0,
+            "total": 1,
+            "id": "now-1",
+            "title": "Add tests for branch annotation requirements inside anonymous arrow functions"
+          },
+          "status": "attempt",
+          "timestamp": "2026-01-19T20:57:24.989Z",
+          "message": "NOW task 1/1 (now-1): Add tests for branch annotation requirements inside anonymous arrow functions - Codex attempt 1/10.",
+          "attempt": 1,
+          "maxAttempts": 10
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "now",
+            "index": 0,
+            "total": 1,
+            "id": "now-1",
+            "title": "Add tests for branch annotation requirements inside anonymous arrow functions"
+          },
+          "status": "codex_received",
+          "timestamp": "2026-01-19T21:03:37.298Z",
+          "message": "NOW task 1/1 (now-1): Add tests for branch annotation requirements inside anonymous arrow functions - Codex completion received; evaluating result."
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "now",
+            "index": 0,
+            "total": 1,
+            "id": "now-1",
+            "title": "Add tests for branch annotation requirements inside anonymous arrow functions"
+          },
+          "status": "hook",
+          "timestamp": "2026-01-19T21:03:37.314Z",
+          "message": "NOW task 1/1 (now-1): Add tests for branch annotation requirements inside anonymous arrow functions - hook validation passed.",
+          "hookStatus": "passed"
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "now",
+            "index": 0,
+            "total": 1,
+            "id": "now-1",
+            "title": "Add tests for branch annotation requirements inside anonymous arrow functions"
+          },
+          "status": "completed",
+          "timestamp": "2026-01-19T21:03:37.445Z",
+          "message": "NOW task 1/1 (now-1): Add tests for branch annotation requirements inside anonymous arrow functions - completed."
+        },
+        {
+          "kind": "phase",
+          "phase": "executing_next",
+          "message": "phase executing NEXT tasks.",
+          "timestamp": "2026-01-19T21:03:37.449Z"
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "next",
+            "index": 0,
+            "total": 1,
+            "id": "next-1",
+            "title": "Add tests for async/await catch-clause annotation handling"
+          },
+          "status": "starting",
+          "timestamp": "2026-01-19T21:03:37.450Z",
+          "message": "NEXT task 1/1 (next-1): Add tests for async/await catch-clause annotation handling - starting."
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "next",
+            "index": 0,
+            "total": 1,
+            "id": "next-1",
+            "title": "Add tests for async/await catch-clause annotation handling"
+          },
+          "status": "awaiting_codex",
+          "timestamp": "2026-01-19T21:03:37.463Z",
+          "message": "NEXT task 1/1 (next-1): Add tests for async/await catch-clause annotation handling - awaiting Codex completion."
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "next",
+            "index": 0,
+            "total": 1,
+            "id": "next-1",
+            "title": "Add tests for async/await catch-clause annotation handling"
+          },
+          "status": "session",
+          "timestamp": "2026-01-19T21:03:37.469Z",
+          "message": "NEXT task 1/1 (next-1): Add tests for async/await catch-clause annotation handling - Continuing Codex session 0dc34ba1-f124-401d-afc8-4ede22bafdb4.",
+          "sessionId": "0dc34ba1-f124-401d-afc8-4ede22bafdb4"
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "next",
+            "index": 0,
+            "total": 1,
+            "id": "next-1",
+            "title": "Add tests for async/await catch-clause annotation handling"
+          },
+          "status": "attempt",
+          "timestamp": "2026-01-19T21:03:37.469Z",
+          "message": "NEXT task 1/1 (next-1): Add tests for async/await catch-clause annotation handling - Codex attempt 1/10.",
+          "attempt": 1,
+          "maxAttempts": 10
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "next",
+            "index": 0,
+            "total": 1,
+            "id": "next-1",
+            "title": "Add tests for async/await catch-clause annotation handling"
+          },
+          "status": "codex_received",
+          "timestamp": "2026-01-19T21:11:13.088Z",
+          "message": "NEXT task 1/1 (next-1): Add tests for async/await catch-clause annotation handling - Codex completion received; evaluating result."
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "next",
+            "index": 0,
+            "total": 1,
+            "id": "next-1",
+            "title": "Add tests for async/await catch-clause annotation handling"
+          },
+          "status": "hook",
+          "timestamp": "2026-01-19T21:11:13.095Z",
+          "message": "NEXT task 1/1 (next-1): Add tests for async/await catch-clause annotation handling - hook validation passed.",
+          "hookStatus": "passed"
+        },
+        {
+          "kind": "task",
+          "task": {
+            "bucket": "next",
+            "index": 0,
+            "total": 1,
+            "id": "next-1",
+            "title": "Add tests for async/await catch-clause annotation handling"
+          },
+          "status": "completed",
+          "timestamp": "2026-01-19T21:11:13.215Z",
+          "message": "NEXT task 1/1 (next-1): Add tests for async/await catch-clause annotation handling - completed."
+        },
+        {
+          "kind": "phase",
+          "phase": "completed",
+          "message": "phase completed.",
+          "timestamp": "2026-01-19T21:11:13.221Z"
+        }
+      ],
+      "report": {
+        "kind": "execute-plan",
+        "version": 1,
+        "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
+        "status": "ready",
+        "summary": "Plan is present and valid. NOW: 1, NEXT: 1, LATER: 1.",
+        "plan": {
+          "kind": "plan-next-work",
+          "version": 1,
+          "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
+          "generatedAt": "2026-01-19T20:57:16.321Z",
+          "input": {
+            "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
+            "hadFoundationAssessment": true,
+            "parsedOk": true
+          },
+          "targetState": {
+            "nonFunctionalScorePct": 75,
+            "functionalityScorePct": 100
+          },
+          "thresholds": {
+            "nonFunctionalScorePct": 75
+          },
+          "readiness": {
+            "hadAllAssessments": true,
+            "failedAssessments": [
+              "functionality"
+            ]
+          },
+          "generator": {
+            "kind": "codex",
+            "codex": {
+              "attempted": true,
+              "succeeded": true,
+              "failureKind": null,
+              "failureMessage": null
+            }
+          },
+          "buckets": {
+            "now": [
+              {
+                "id": "now-1",
+                "title": "Add tests for branch annotation requirements inside anonymous arrow functions",
+                "steps": [
+                  "Locate existing rule tests covering branch annotations (likely in tests for the rule enforcing @story/@req/@supports on branches).",
+                  "Add new test cases where an anonymous arrow function contains a branch (e.g., if/else, conditional, switch) and assert missing annotations are flagged inside the arrow body.",
+                  "Add complementary passing cases where the same branches inside anonymous arrow functions include required @story/@req or @supports annotations and are accepted.",
+                  "Ensure the tests explicitly assert that the branch inside the anonymous arrow is treated the same as top-level branches for annotation requirements."
+                ],
+                "details": "Functionality gaps indicate the behavior is implemented but unverified. This task adds focused tests to lock down branch annotation requirements within anonymous arrow functions.",
+                "attribution": "testing",
+                "estimatedScoreImpactPct": 36,
+                "sourceItem": "REQ-ARROW-FUNCTION-BRANCH-INCLUDED#1: Branch annotation behavior inside anonymous arrow functions appears implemented but is not verified by tests."
+              }
+            ],
+            "next": [
+              {
+                "id": "next-1",
+                "title": "Add tests for async/await catch-clause annotation handling",
+                "steps": [
+                  "Find the rule tests that validate catch-clause annotation requirements.",
+                  "Add test cases where an async function uses try/catch with await inside the try and assert the catch clause is still required to carry @story/@req or @supports annotations.",
+                  "Include passing cases where the async catch clause is properly annotated, and failing cases where it is missing annotations.",
+                  "Confirm the tests assert identical behavior between async and non-async catch clauses."
+                ],
+                "details": "Functionality gap indicates async/await catch handling is unverified. This task verifies parity with existing catch behavior.",
+                "attribution": "testing",
+                "estimatedScoreImpactPct": 30,
+                "sourceItem": "REQ-ASYNC-CATCH-INCLUDED#1: Catch-clause annotation behavior for async/await contexts appears implemented but is not verified by tests."
+              }
+            ],
+            "later": [
+              {
+                "id": "later-1",
+                "title": "Audit remaining traceability rules for unverified edge-case annotations",
+                "steps": [
+                  "Scan rule implementations for conditional branches or context-specific handling that lacks explicit tests.",
+                  "Add a short list of candidate edge cases and map each to missing test coverage before implementing.",
+                  "Convert the highest-risk edge case into a test-backed verification task in the next planning cycle."
+                ],
+                "details": "Speculative follow-up to ensure no other behavior is implemented without tests once the current gaps are closed.",
+                "attribution": "testing",
+                "estimatedScoreImpactPct": null,
+                "sourceItem": "No tests verify that branches inside anonymous arrow functions are still required to carry @story/@req or @supports annotations; implementation appears present but unverified."
+              }
+            ]
+          },
+          "summary": {
+            "nowCount": 1,
+            "nextCount": 1,
+            "laterCount": 1,
+            "human": "Add targeted tests to verify annotation requirements for anonymous-arrow branches and async catch clauses, then reassess functionality readiness.",
+            "nowRationale": "The largest functionality deficit is unverified behavior; the anonymous-arrow branch requirement is explicitly called out and likely high-impact. Verifying it first is the smallest, fastest step to raise functionality confidence before broader audits."
+          },
+          "review": {
+            "score": 82,
+            "feedback": "The plan meets critical criteria: exactly one NOW task with actionable checklist steps, tasks are atomic (tests added within each task), and no assessment tasks are scheduled. It ties directly to stated gaps and is immediately executable. Minor improvements: include explicit quality gates (e.g., run relevant test suite or targeted tests) in NOW/ NEXT steps, and provide concrete file/path hints for where tests live to reduce guesswork. LATER is acceptable but could be more clearly tied to assessment dimensions if it becomes actionable.",
+            "passed": true,
+            "iterations": 1
+          }
+        },
+        "execution": {
+          "status": "completed",
+          "nowCount": 1,
+          "nowCompleted": 1
+        },
+        "tasks": [
+          {
+            "id": "now-1",
+            "bucket": "now",
+            "status": "completed",
+            "steps": [
+              "Locate existing rule tests covering branch annotations (likely in tests for the rule enforcing @story/@req/@supports on branches).",
+              "Add new test cases where an anonymous arrow function contains a branch (e.g., if/else, conditional, switch) and assert missing annotations are flagged inside the arrow body.",
+              "Add complementary passing cases where the same branches inside anonymous arrow functions include required @story/@req or @supports annotations and are accepted.",
+              "Ensure the tests explicitly assert that the branch inside the anonymous arrow is treated the same as top-level branches for annotation requirements."
+            ],
+            "completion": {
+              "taskId": "now-1",
+              "status": "completed",
+              "summary": "Added spec and ADR documenting branch annotation requirements inside anonymous arrow callbacks, plus valid/invalid rule tests covering if and switch branches inside anonymous arrows. Ran npm run lint, npm run format:check, and npm test; commit succeeded with lint-staged prettier/eslint hooks.",
+              "commitShas": [
+                "63a84f02bd375d251c6c1ae3eb491ee57e324df7"
+              ],
+              "hookValidation": {
+                "ran": true,
+                "passed": true,
+                "message": "git commit ran lint-staged (prettier --write, eslint --fix) on staged files successfully."
+              }
+            },
+            "attempts": 1,
+            "continuationAttempts": 0,
+            "hookValidation": {
+              "ran": true,
+              "passed": true,
+              "message": "git commit ran lint-staged (prettier --write, eslint --fix) on staged files successfully."
+            },
+            "hookFailureReason": null,
+            "deliverySummary": "Delivered small-batch change (1 commit, hooks passed) in one attempt.",
+            "stepsChecklist": "1. Locate existing rule tests covering branch annotations (likely in tests for the rule enforcing @story/@req/@supports on branches).\n2. Add new test cases where an anonymous arrow function contains a branch (e.g., if/else, conditional, switch) and assert missing annotations are flagged inside the arrow body.\n3. Add complementary passing cases where the same branches inside anonymous arrow functions include required @story/@req or @supports annotations and are accepted.\n4. Ensure the tests explicitly assert that the branch inside the anonymous arrow is treated the same as top-level branches for annotation requirements.",
+            "details": "Functionality gaps indicate the behavior is implemented but unverified. This task adds focused tests to lock down branch annotation requirements within anonymous arrow functions."
+          },
+          {
+            "id": "next-1",
+            "bucket": "next",
+            "status": "completed",
+            "steps": [
+              "Find the rule tests that validate catch-clause annotation requirements.",
+              "Add test cases where an async function uses try/catch with await inside the try and assert the catch clause is still required to carry @story/@req or @supports annotations.",
+              "Include passing cases where the async catch clause is properly annotated, and failing cases where it is missing annotations.",
+              "Confirm the tests assert identical behavior between async and non-async catch clauses."
+            ],
+            "completion": {
+              "taskId": "next-1",
+              "status": "completed",
+              "summary": "Added async catch clause specification and ADR, and extended require-branch-annotation rule tests with async/non-async try/catch parity cases plus passing async coverage. Ran npm run lint, npm run format:check, and npm test; commit succeeded with lint-staged prettier/eslint hooks.",
+              "commitShas": [
+                "bfc6c66"
+              ],
+              "hookValidation": {
+                "ran": true,
+                "passed": true,
+                "message": "git commit ran lint-staged (prettier --write, eslint --fix) on staged files successfully."
+              }
+            },
+            "attempts": 1,
+            "continuationAttempts": 0,
+            "hookValidation": {
+              "ran": true,
+              "passed": true,
+              "message": "git commit ran lint-staged (prettier --write, eslint --fix) on staged files successfully."
+            },
+            "hookFailureReason": null,
+            "deliverySummary": "Delivered small-batch change (1 commit, hooks passed) in one attempt.",
+            "stepsChecklist": "1. Find the rule tests that validate catch-clause annotation requirements.\n2. Add test cases where an async function uses try/catch with await inside the try and assert the catch clause is still required to carry @story/@req or @supports annotations.\n3. Include passing cases where the async catch clause is properly annotated, and failing cases where it is missing annotations.\n4. Confirm the tests assert identical behavior between async and non-async catch clauses.",
+            "details": "Functionality gap indicates async/await catch handling is unverified. This task verifies parity with existing catch behavior."
+          },
+          {
+            "id": "later-1",
+            "bucket": "later",
+            "status": "pending",
+            "steps": [
+              "Scan rule implementations for conditional branches or context-specific handling that lacks explicit tests.",
+              "Add a short list of candidate edge cases and map each to missing test coverage before implementing.",
+              "Convert the highest-risk edge case into a test-backed verification task in the next planning cycle."
+            ],
+            "attempts": 0,
+            "continuationAttempts": 0,
+            "hookFailureReason": null,
+            "deliverySummary": "Not started.",
+            "stepsChecklist": "1. Scan rule implementations for conditional branches or context-specific handling that lacks explicit tests.\n2. Add a short list of candidate edge cases and map each to missing test coverage before implementing.\n3. Convert the highest-risk edge case into a test-backed verification task in the next planning cycle.",
+            "details": "Speculative follow-up to ensure no other behavior is implemented without tests once the current gaps are closed."
+          }
+        ],
+        "replanEvents": []
+      },
+      "error": null
+    },
+    "children": {}
+  }
+}

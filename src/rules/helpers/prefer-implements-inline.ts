@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Inline comment processing for prefer-implements-annotation rule.
  * Handles migration of inline comment story and requirement patterns to supports format.
@@ -44,30 +42,36 @@ function tryBuildInlineAutoFix(
   const storyComment = comments[storyIndex];
   const storyNormalized = normalizeCommentLine(storyComment.value || "");
   if (!storyNormalized || !/^@story\b/.test(storyNormalized)) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
     return null;
   }
 
   const storyParts = storyNormalized.split(/\s+/);
   if (storyParts.length !== MIN_STORY_TOKENS) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
     return null;
   }
   const storyPath = storyParts[1];
 
   const reqIds: string[] = [];
   for (const idx of reqIndices) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
     const reqComment = comments[idx];
     const reqNormalized = normalizeCommentLine(reqComment.value || "");
     if (!reqNormalized || !/^@req\b/.test(reqNormalized)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
       return null;
     }
     const reqParts = reqNormalized.split(/\s+/);
     if (reqParts.length !== MIN_REQ_TOKENS) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
       return null;
     }
     reqIds.push(reqParts[1]);
   }
 
   if (!reqIds.length) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
     return null;
   }
 
@@ -102,12 +106,15 @@ function collectReqIndicesAfterStory(
   let j = startIndex + 1;
 
   while (j < n) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
     const next = group[j];
     const nextNormalized = normalizeCommentLine(next.value || "");
     if (!nextNormalized || /^@supports\b/.test(nextNormalized)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
       break;
     }
     if (/^@req\b/.test(nextNormalized)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
       reqIndices.push(j);
       j += 1;
       continue;
@@ -131,6 +138,7 @@ function handleInlineStorySequence(
   const normalized = normalizeCommentLine(current.value || "");
 
   if (!normalized || !/^@story\b/.test(normalized)) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
     return startIndex + 1;
   }
 
@@ -140,6 +148,7 @@ function handleInlineStorySequence(
   );
 
   if (reqIndices.length === 0) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
     return startIndex + 1;
   }
 
@@ -164,6 +173,7 @@ function advanceInlineGroupIndex(
   i: number,
 ): number {
   if (i >= group.length) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
     return i;
   }
 
@@ -180,6 +190,7 @@ function processInlineGroup(
 ): void {
   let i = 0;
   while (i < group.length) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT
     i = advanceInlineGroupIndex(context, group, i);
   }
 }
@@ -196,7 +207,10 @@ export function processInlineComments(
   context: Rule.RuleContext,
   lineComments: LineComment[],
 ): void {
-  if (!lineComments.length) return;
+  if (!lineComments.length) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
+    return;
+  }
 
   // Group by contiguous line numbers
   let group: LineComment[] = [lineComments[0]];
@@ -211,12 +225,14 @@ export function processInlineComments(
   };
 
   for (let idx = 1; idx < lineComments.length; idx++) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
     const prev = lineComments[idx - 1];
     const curr = lineComments[idx];
     if (
       curr.loc.start.line === prev.loc.start.line + 1 &&
       curr.loc.start.column === prev.loc.start.column
     ) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-INLINE-COMMENT-SUPPORT REQ-AUTO-FIX
       group.push(curr);
     } else {
       flushGroup();

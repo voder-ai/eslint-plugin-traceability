@@ -2,7 +2,7 @@
   "kind": "plan-next-work",
   "version": 1,
   "rootDir": "/Users/tomhoward/Projects/eslint-plugin-traceability",
-  "generatedAt": "2026-01-12T22:56:06.643Z",
+  "generatedAt": "2026-01-19T20:57:16.321Z",
   "input": {
     "foundationAssessmentPath": "/Users/tomhoward/Projects/eslint-plugin-traceability/.voder/foundation-assessment.json",
     "hadFoundationAssessment": true,
@@ -17,7 +17,9 @@
   },
   "readiness": {
     "hadAllAssessments": true,
-    "failedAssessments": []
+    "failedAssessments": [
+      "functionality"
+    ]
   },
   "generator": {
     "kind": "codex",
@@ -31,32 +33,49 @@
   "buckets": {
     "now": [
       {
-        "id": "now-dep-warning-cleanup",
-        "title": "Eliminate install-time semver-diff deprecation warning",
-        "details": "Audit dependency tree to locate the semver-diff deprecation source, update or replace the dependency in package.json/lockfile, and confirm npm ci no longer emits the warning. Include any necessary docs updates about dependency changes and add/adjust tests only if behavior changes.",
-        "attribution": "execution",
-        "estimatedScoreImpactPct": 2,
-        "sourceItem": "Execution assessment reasoning: \"npm ci completed successfully... only notable output was a deprecation warning for semver-diff\""
+        "id": "now-1",
+        "title": "Add tests for branch annotation requirements inside anonymous arrow functions",
+        "steps": [
+          "Locate existing rule tests covering branch annotations (likely in tests for the rule enforcing @story/@req/@supports on branches).",
+          "Add new test cases where an anonymous arrow function contains a branch (e.g., if/else, conditional, switch) and assert missing annotations are flagged inside the arrow body.",
+          "Add complementary passing cases where the same branches inside anonymous arrow functions include required @story/@req or @supports annotations and are accepted.",
+          "Ensure the tests explicitly assert that the branch inside the anonymous arrow is treated the same as top-level branches for annotation requirements."
+        ],
+        "details": "Functionality gaps indicate the behavior is implemented but unverified. This task adds focused tests to lock down branch annotation requirements within anonymous arrow functions.",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": 36,
+        "sourceItem": "REQ-ARROW-FUNCTION-BRANCH-INCLUDED#1: Branch annotation behavior inside anonymous arrow functions appears implemented but is not verified by tests."
       }
     ],
     "next": [
       {
-        "id": "next-runtime-breadth",
-        "title": "Broaden runtime validation beyond smoke script",
-        "details": "Extend or add runtime tests/scripts to cover additional real-world CLI/plugin scenarios (e.g., multiple rules, config variants, error paths) and document what is covered. Keep it lightweight but representative to reduce unproven runtime breadth.",
-        "attribution": "execution",
-        "estimatedScoreImpactPct": 4,
-        "sourceItem": "Execution assessment reasoning: \"runtime validation is limited to the lightweight smoke script; broader runtime scenarios or long-running behaviors were not exercised\""
+        "id": "next-1",
+        "title": "Add tests for async/await catch-clause annotation handling",
+        "steps": [
+          "Find the rule tests that validate catch-clause annotation requirements.",
+          "Add test cases where an async function uses try/catch with await inside the try and assert the catch clause is still required to carry @story/@req or @supports annotations.",
+          "Include passing cases where the async catch clause is properly annotated, and failing cases where it is missing annotations.",
+          "Confirm the tests assert identical behavior between async and non-async catch clauses."
+        ],
+        "details": "Functionality gap indicates async/await catch handling is unverified. This task verifies parity with existing catch behavior.",
+        "attribution": "testing",
+        "estimatedScoreImpactPct": 30,
+        "sourceItem": "REQ-ASYNC-CATCH-INCLUDED#1: Catch-clause annotation behavior for async/await contexts appears implemented but is not verified by tests."
       }
     ],
     "later": [
       {
-        "id": "later-long-running-runtime",
-        "title": "Add long-running or stress runtime checks",
-        "details": "Design a periodic or optional runtime check for extended lint runs or larger fixtures to surface long-running behavior risks; document scope and opt-in usage.",
-        "attribution": "execution",
+        "id": "later-1",
+        "title": "Audit remaining traceability rules for unverified edge-case annotations",
+        "steps": [
+          "Scan rule implementations for conditional branches or context-specific handling that lacks explicit tests.",
+          "Add a short list of candidate edge cases and map each to missing test coverage before implementing.",
+          "Convert the highest-risk edge case into a test-backed verification task in the next planning cycle."
+        ],
+        "details": "Speculative follow-up to ensure no other behavior is implemented without tests once the current gaps are closed.",
+        "attribution": "testing",
         "estimatedScoreImpactPct": null,
-        "sourceItem": "Execution assessment reasoning: \"broader runtime scenarios or long-running behaviors were not exercised\""
+        "sourceItem": "No tests verify that branches inside anonymous arrow functions are still required to carry @story/@req or @supports annotations; implementation appears present but unverified."
       }
     ]
   },
@@ -64,7 +83,13 @@
     "nowCount": 1,
     "nextCount": 1,
     "laterCount": 1,
-    "human": "Plan focuses on removing the only install-time warning, then expanding runtime coverage beyond the current smoke check.",
-    "nowRationale": "Clearing the semver-diff deprecation warning is the smallest, highest-leverage action that removes the only concrete execution gap observed and can be completed immediately without additional discovery, while broader runtime expansion requires more design choices."
+    "human": "Add targeted tests to verify annotation requirements for anonymous-arrow branches and async catch clauses, then reassess functionality readiness.",
+    "nowRationale": "The largest functionality deficit is unverified behavior; the anonymous-arrow branch requirement is explicitly called out and likely high-impact. Verifying it first is the smallest, fastest step to raise functionality confidence before broader audits."
+  },
+  "review": {
+    "score": 82,
+    "feedback": "The plan meets critical criteria: exactly one NOW task with actionable checklist steps, tasks are atomic (tests added within each task), and no assessment tasks are scheduled. It ties directly to stated gaps and is immediately executable. Minor improvements: include explicit quality gates (e.g., run relevant test suite or targeted tests) in NOW/ NEXT steps, and provide concrete file/path hints for where tests live to reduce guesswork. LATER is acceptable but could be more clearly tied to assessment dimensions if it becomes actionable.",
+    "passed": true,
+    "iterations": 1
   }
 }
