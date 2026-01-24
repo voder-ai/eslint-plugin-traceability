@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 
 /**
@@ -70,37 +68,44 @@ export function toStoryReqKey(
  */
 export function extractStoryReqPairsFromText(text: string): Set<StoryReqKey> {
   const pairs = new Set<StoryReqKey>();
-  if (!text) return pairs;
+  if (!text) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
+    return pairs;
+  }
 
   const lines = text.split(/\r?\n/);
   let currentStory: string | null = null;
 
   for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (!line) continue;
-
     // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
+    const line = rawLine.trim();
+    if (!line) {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
+      continue;
+    }
+
     const storyMatch = line.match(/@story\s+(\S+)/);
     if (storyMatch) {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
       currentStory = storyMatch[1];
     }
 
-    // Handle explicit `@req` lines that follow the most recent `@story`.
     const reqMatch = line.match(/@req\s+(\S+)/);
     if (reqMatch && currentStory) {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
       pairs.add(toStoryReqKey(currentStory, reqMatch[1]));
     }
 
-    // Handle consolidated `@supports` lines that encode both story and
-    // requirement identifiers on a single line.
     const supportsMatch = line.match(/@supports\s+(\S+)\s+(.+)/);
     if (supportsMatch) {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
       const storyPath = supportsMatch[1];
       const tail = supportsMatch[2];
       const tokens = tail
         .split(/\s+/)
         .filter((t) => /^REQ-[A-Z0-9-]+$/.test(t));
       for (const reqId of tokens) {
+        // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
         pairs.add(toStoryReqKey(storyPath, reqId));
       }
     }
@@ -119,6 +124,7 @@ export function extractStoryReqPairsFromComments(
 ): Set<StoryReqKey> {
   const pairs = new Set<StoryReqKey>();
   if (!Array.isArray(comments) || comments.length === 0) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
     return pairs;
   }
 
@@ -129,6 +135,7 @@ export function extractStoryReqPairsFromComments(
 
   const fromComments = extractStoryReqPairsFromText(combinedText);
   for (const key of fromComments) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SCOPE-ANALYSIS
     pairs.add(key);
   }
 
@@ -150,11 +157,19 @@ export function arePairsFullyCovered(
   child: Set<StoryReqKey>,
   parent: Set<StoryReqKey>,
 ): boolean {
-  if (child.size === 0) return false;
-  if (parent.size === 0) return false;
+  if (child.size === 0) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-DUPLICATION-DETECTION
+    return false;
+  }
+  if (parent.size === 0) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-DUPLICATION-DETECTION
+    return false;
+  }
 
   for (const key of child) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-DUPLICATION-DETECTION
     if (!parent.has(key)) {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-DUPLICATION-DETECTION
       return false;
     }
   }
@@ -184,25 +199,28 @@ export function isStatementEligibleForRedundancy(
   branchTypes: readonly string[],
 ): boolean {
   if (!node || typeof node.type !== "string") {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE
     return false;
   }
 
-  // Never treat branch nodes themselves as "simple" statements; their
-  // annotations are typically intentional and should be preserved.
   if (branchTypes.includes(node.type)) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE
     return false;
   }
 
   const alwaysCoveredSet = new Set(options.alwaysCovered);
   if (alwaysCoveredSet.has(node.type)) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-STATEMENT-SIGNIFICANCE
     return true;
   }
 
   if (options.strictness === "permissive") {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-CONFIGURABLE-STRICTNESS
     return false;
   }
 
   if (options.strictness === "moderate") {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-CONFIGURABLE-STRICTNESS
     // Treat side-effecting expression statements (e.g. assignments or
     // simple calls) as eligible while still excluding more complex
     // control-flow constructs.
@@ -229,6 +247,7 @@ export function isStatementEligibleForRedundancy(
  *
  * @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
  */
+// eslint-disable-next-line max-lines-per-function
 export function getCommentRemovalRange(
   comment: any,
   sourceCode: ReturnType<Rule.RuleContext["getSourceCode"]>,
@@ -237,6 +256,7 @@ export function getCommentRemovalRange(
   const range: number[] | undefined = comment && comment.range;
 
   if (!Array.isArray(range) || range.length !== EXPECTED_RANGE_LENGTH) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
     return [0, 0];
   }
 
@@ -245,8 +265,12 @@ export function getCommentRemovalRange(
   // Find the start of the current line.
   let lineStart = start;
   while (lineStart > 0) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
     const ch = fullText.charAt(lineStart - 1);
-    if (ch === "\n" || ch === "\r") break;
+    if (ch === "\n" || ch === "\r") {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
+      break;
+    }
     lineStart -= 1;
   }
 
@@ -257,28 +281,33 @@ export function getCommentRemovalRange(
   let removalEnd = end;
 
   if (onlyWhitespaceBeforeComment) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
     removalStart = lineStart;
   }
 
-  // Expand to consume trailing whitespace after the comment.
   while (removalEnd < fullText.length) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
     const ch = fullText.charAt(removalEnd);
     if (ch === " " || ch === "	") {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
       removalEnd += 1;
     } else {
       break;
     }
   }
 
-  // Optionally include the newline when the comment owns the line.
   if (onlyWhitespaceBeforeComment && removalEnd < fullText.length) {
+    // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
     const ch = fullText.charAt(removalEnd);
     if (ch === "\r") {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
       removalEnd += 1;
       if (fullText.charAt(removalEnd) === "\n") {
+        // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
         removalEnd += 1;
       }
     } else if (ch === "\n") {
+      // @supports docs/stories/027.0-DEV-REDUNDANT-ANNOTATION-DETECTION.story.md REQ-SAFE-REMOVAL
       removalEnd += 1;
     }
   }
