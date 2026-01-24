@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import type { AnnotationPlacement } from "./branch-annotation-helpers";
 import { scanCommentLinesInRange } from "./branch-annotation-helpers";
@@ -24,9 +22,11 @@ const PRE_COMMENT_OFFSET = 2; // kept in sync with main helpers
 function getCommentTextAtLine(lines: string[], index: number): string | null {
   const line = lines[index];
   if (!line || !line.trim()) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     return null;
   }
   if (!/^\s*(\/\/|\/\*)/.test(line)) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ANNOTATION-PARSING
     return null;
   }
 
@@ -90,6 +90,7 @@ export function scanElseIfPrecedingComments(
   const lines = sourceCode.lines;
 
   if (!node.loc || !node.loc.start || typeof node.loc.start.line !== "number") {
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
     return "";
   }
 
@@ -99,8 +100,10 @@ export function scanElseIfPrecedingComments(
   let scanned = 0;
 
   while (i >= 0 && scanned < PRE_COMMENT_OFFSET) {
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
     const commentText = getCommentTextAtLine(lines, i);
     if (!commentText) {
+      // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
       break;
     }
 
@@ -129,6 +132,7 @@ export function scanElseIfBetweenConditionAndBody(
   const endIndexExclusive = consequentStartLine - 1;
 
   if (endIndexExclusive <= startIndex) {
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC-ELSE-IF
     return "";
   }
 
@@ -151,8 +155,10 @@ export function scanElseIfInsideBlockComments(
   let lineIndex = consequentStartLine;
 
   while (lineIndex < lines.length) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     const lineText = getCommentTextAtLine(lines, lineIndex);
     if (!lineText) {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
       break;
     }
     comments.push(lineText);
@@ -171,11 +177,13 @@ export function getInsideElseIfCommentText(
   node: any,
 ): string {
   if (!hasValidElseIfBlockLoc(node)) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return "";
   }
 
   const insideText = scanElseIfInsideBlockComments(sourceCode, node);
   if (insideText) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return insideText;
   }
 
@@ -197,24 +205,29 @@ export function gatherElseIfCommentText(
   const { annotationPlacement, beforeText } = options;
 
   if (!isElseIfBranch(node, parent)) {
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
     return beforeText;
   }
 
   if (beforeText && hasTraceabilityAnnotations(beforeText)) {
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-POSITION-PRIORITY-ELSE-IF
     return beforeText;
   }
 
   const beforeElseText = scanElseIfPrecedingComments(sourceCode, node);
   if (beforeElseText && hasTraceabilityAnnotations(beforeElseText)) {
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-POSITION-PRIORITY-ELSE-IF
     return beforeElseText;
   }
 
   if (!hasValidElseIfBlockLoc(node)) {
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC-ELSE-IF
     return beforeText;
   }
 
   const betweenText = scanElseIfBetweenConditionAndBody(sourceCode, node);
   if (betweenText && hasTraceabilityAnnotations(betweenText)) {
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-FALLBACK-LOGIC-ELSE-IF
     return betweenText;
   }
 
@@ -222,10 +235,12 @@ export function gatherElseIfCommentText(
   // else-if block body as a last-resort position.
   const insideText = scanElseIfInsideBlockComments(sourceCode, node);
   if (insideText && hasTraceabilityAnnotations(insideText)) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return insideText;
   }
 
   if (annotationPlacement === "inside" && insideText) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return insideText;
   }
 
@@ -239,10 +254,12 @@ function tryGetCommentsInsideNode(sourceCode: any, consequent: any): string {
   const getCommentsInside: unknown = (sourceCode as any).getCommentsInside;
 
   if (typeof getCommentsInside !== "function") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return "";
   }
 
   try {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     const insideComments =
       (getCommentsInside as (_node: any) => any[])(consequent) || [];
     /**
@@ -255,6 +272,7 @@ function tryGetCommentsInsideNode(sourceCode: any, consequent: any): string {
     }
     return insideComments.map(extractCommentValue).join(" ");
   } catch {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return "";
   }
 }
@@ -271,6 +289,8 @@ function scanBlockStartComments(sourceCode: any, consequent: any): string {
     typeof consequent.loc.start.line !== "number" ||
     typeof consequent.loc.end.line !== "number"
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return "";
   }
 
@@ -283,8 +303,10 @@ function scanBlockStartComments(sourceCode: any, consequent: any): string {
   let i = startIndex + 1;
 
   while (i <= lastIndex) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     const line = lines[i];
     if (!line || !line.trim() || !/^\s*(\/\/|\/\*)/.test(line)) {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
       break;
     }
     comments.push(line.trim());
@@ -306,10 +328,12 @@ export function gatherSimpleIfCommentText(
   beforeText: string,
 ): string {
   if (annotationPlacement !== "inside") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return beforeText;
   }
 
   if (!node.consequent || node.consequent.type !== "BlockStatement") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return "";
   }
 
@@ -317,6 +341,7 @@ export function gatherSimpleIfCommentText(
 
   const insideText = tryGetCommentsInsideNode(sourceCode, consequent);
   if (insideText) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return insideText;
   }
 
