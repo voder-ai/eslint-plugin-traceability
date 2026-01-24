@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Rule to enforce `@story` and `@req` annotations on significant code branches.
  *
@@ -49,13 +47,19 @@ const INVALID_INDEX = -1;
  * @req REQ-SWITCH-FALLTHROUGH
  */
 function isFallthroughIntermediateCase(node: any): boolean {
-  if (!isSwitchCaseNode(node)) return false;
+  // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SWITCH-CASE-ANNOTATION
+  if (!isSwitchCaseNode(node)) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SWITCH-CASE-ANNOTATION
+    return false;
+  }
   // Default cases must always be annotated when they represent a branch.
   if ((node as any).test == null) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SWITCH-DEFAULT-REQUIRED
     return false;
   }
 
   if (!Array.isArray(node.consequent) || node.consequent.length > 0) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SWITCH-FALLTHROUGH
     return false;
   }
 
@@ -65,12 +69,14 @@ function isFallthroughIntermediateCase(node: any): boolean {
     parent.type !== "SwitchStatement" ||
     !Array.isArray(parent.cases)
   ) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SWITCH-CASE-ANNOTATION
     return false;
   }
 
   const cases = parent.cases as any[];
   const index = cases.indexOf(node);
   if (index === INVALID_INDEX) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SWITCH-FALLTHROUGH
     return false;
   }
 
@@ -84,10 +90,12 @@ function isFallthroughIntermediateCase(node: any): boolean {
     j < cases.length &&
     (!Array.isArray(cases[j].consequent) || cases[j].consequent.length === 0)
   ) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SWITCH-FALLTHROUGH
     j++;
   }
 
   if (j >= cases.length) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SWITCH-FALLTHROUGH
     // No later case with a body; treat this as an independent branch that
     // should be annotated when appropriate.
     return false;
@@ -157,6 +165,7 @@ const rule: Rule.RuleModule = {
      * @req REQ-CONFIGURABLE-SCOPE
      */
     if (!Array.isArray(branchTypesOrListener)) {
+      // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE
       return branchTypesOrListener;
     }
     const branchTypes = branchTypesOrListener;
@@ -189,6 +198,7 @@ const rule: Rule.RuleModule = {
           isSwitchCaseNode(node) &&
           isFallthroughIntermediateCase(node)
         ) {
+          // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-SWITCH-FALLTHROUGH
           // Skip intermediate fall-through labels; only the last case before a shared code block
           // requires its own annotation per REQ-SWITCH-FALLTHROUGH.
           return;
