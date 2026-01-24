@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import {
   resolveOptions,
   type ResolvedAnnotationOptions,
@@ -37,6 +35,7 @@ function handleImplementsLine(
   // false matches when this keyword appears in prose
   const isImplements = /^@supports\b/.test(normalized);
   if (!isImplements) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE
     return pending;
   }
 
@@ -69,6 +68,7 @@ function handleStoryOrReqLine(
   const isReq = /^@req\b/.test(normalized);
 
   if (!isStory && !isReq) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FLEXIBLE-PARSING
     return pending;
   }
 
@@ -94,11 +94,13 @@ function extendPendingAnnotation(
   pending: PendingAnnotation | null,
 ): PendingAnnotation | null {
   if (!pending) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT
     return pending;
   }
 
   const continuation = normalized.trim();
   if (!continuation) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-MULTILINE-SUPPORT
     return pending;
   }
 
@@ -136,6 +138,7 @@ function processCommentLine({
   // @story docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md
   // @req REQ-FLEXIBLE-PARSING - Ignore empty normalized lines without affecting pending state
   if (!normalized) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FLEXIBLE-PARSING
     return pending;
   }
 
@@ -145,6 +148,7 @@ function processCommentLine({
     options,
   });
   if (afterImplements !== pending) {
+    // @supports docs/stories/010.2-DEV-MULTI-STORY-SUPPORT.story.md REQ-SUPPORTS-PARSE
     return afterImplements;
   }
 
@@ -154,12 +158,14 @@ function processCommentLine({
     options,
   });
   if (afterStoryOrReq !== pending) {
+    // @supports docs/stories/005.0-DEV-ANNOTATION-VALIDATION.story.md REQ-FLEXIBLE-PARSING
     return afterStoryOrReq;
   }
 
   // Implement JSDoc tag coexistence behavior: terminate `@story`/`@req` values when a new non-traceability JSDoc tag line (e.g., @param, @returns) is encountered.
   // @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md REQ-ANNOTATION-TERMINATION REQ-CONTINUATION-LOGIC
   if (isNonTraceabilityJSDocTagLine(normalized)) {
+    // @supports docs/stories/022.0-DEV-JSDOC-COEXISTENCE.story.md REQ-ANNOTATION-TERMINATION
     finalizePendingAnnotation(context, comment, options, pending);
     return null;
   }
@@ -296,6 +302,7 @@ export default {
         // @story docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md
         // @req REQ-REGEX-VALIDATION - Report any configuration errors discovered while resolving options
         if (optionErrors && optionErrors.length > 0) {
+          // @supports docs/stories/010.1-DEV-CONFIGURABLE-PATTERNS.story.md REQ-REGEX-VALIDATION
           optionErrors.forEach((details: string) => {
             context.report({
               node,
