@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import type { AnnotationPlacement } from "./branch-annotation-helpers";
 
@@ -59,11 +57,13 @@ function computeInsideCatchIndentAndInsertPos(
   context: IndentHelperContext,
 ): { indent: string; insertPos: number } | null {
   if (!(node.type === "CatchClause" && node.body)) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return null;
   }
 
   const bodyNode: any = node.body;
   if (!bodyNode.loc || !bodyNode.loc.start) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return null;
   }
 
@@ -91,6 +91,7 @@ function computeInsideLoopIndentAndInsertPos(
     !node.body.loc ||
     !node.body.loc.start
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return null;
   }
 
@@ -120,11 +121,13 @@ function computeInsideTryOrSwitchIndentAndInsertPos(
       node.consequent.length > 0
     )
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return null;
   }
 
   const firstStatement = node.consequent[0];
   if (!firstStatement || !firstStatement.loc || !firstStatement.loc.start) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INDENTATION-CORRECT
     return null;
   }
 
@@ -158,6 +161,7 @@ function computeInsideTryBlockIndentAndInsertPos(
       node.block.loc.start
     )
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return null;
   }
 
@@ -186,11 +190,13 @@ function computeInsideSwitchCaseIndentAndInsertPos(
       node.consequent.length > 0
     )
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return null;
   }
 
   const firstStatement = node.consequent[0];
   if (!firstStatement || !firstStatement.loc || !firstStatement.loc.start) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INDENTATION-CORRECT
     return null;
   }
 
@@ -225,6 +231,7 @@ function computeInsideCatchBlockIndentAndInsertPos(
       node.body.loc.start
     )
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return null;
   }
 
@@ -252,6 +259,7 @@ export function computeInsideBaseIndentAndInsertPos(
   const { sourceCode, node, annotationPlacement, currentIndent } = options;
 
   if (annotationPlacement !== "inside") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return null;
   }
 
@@ -262,6 +270,7 @@ export function computeInsideBaseIndentAndInsertPos(
     context,
   );
   if (catchInside) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return catchInside;
   }
 
@@ -270,6 +279,7 @@ export function computeInsideBaseIndentAndInsertPos(
     context,
   );
   if (loopInside) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return loopInside;
   }
 
@@ -280,6 +290,7 @@ export function computeInsideBaseIndentAndInsertPos(
     context,
   );
   if (tryOrSwitchInside) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return tryOrSwitchInside;
   }
 
@@ -297,6 +308,7 @@ export function applyInsidePlacementOverridesForBranch(
   const { annotationPlacement } = options;
 
   if (annotationPlacement !== "inside") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return null;
   }
 
@@ -308,8 +320,10 @@ export function applyInsidePlacementOverridesForBranch(
   ];
 
   for (const calculator of calculators) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     const result = calculator(options, context);
     if (result) {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
       return result;
     }
   }
