@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import { reportMissingAnnotations } from "./branch-annotation-report-helpers";
 import { gatherLoopCommentText } from "./branch-annotation-loop-helpers";
@@ -76,6 +74,7 @@ export function scanCommentLinesInRange(
   endIndexInclusive: number,
 ): string {
   if (!Array.isArray(lines) || lines.length === 0) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     return "";
   }
 
@@ -84,6 +83,7 @@ export function scanCommentLinesInRange(
     startIndex >= lines.length ||
     startIndex > endIndexInclusive
   ) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     return "";
   }
 
@@ -92,7 +92,9 @@ export function scanCommentLinesInRange(
   let i = startIndex;
 
   while (i <= lastIndex) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     if (!collectCommentLine(lines, i, comments)) {
+      // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
       break;
     }
     i++;
@@ -127,14 +129,17 @@ function gatherCatchClauseCommentText(
   // CatchClause supports dual-position annotations for Prettier compatibility.
   // Prefer before-catch annotations when present in both positions.
   if (beforeHasAnnotations) {
+    // @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
     return beforeText;
   }
 
   if (insideHasAnnotations) {
+    // @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
     return insideText;
   }
 
   if (annotationPlacement === "inside" && insideText) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return insideText;
   }
 
@@ -154,17 +159,22 @@ function handleTryCatchBranch(
   const { annotationPlacement, beforeText } = context;
 
   if (node.type === "TryStatement") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     if (annotationPlacement === "inside") {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
       const insideText = getInsideTryBlockCommentText(sourceCode, node);
       if (insideText) {
+        // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
         return insideText;
       }
       return "";
     }
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return beforeText;
   }
 
   if (node.type === "CatchClause") {
+    // @supports docs/stories/025.0-DEV-CATCH-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION
     return gatherCatchClauseCommentText(
       sourceCode,
       node,
@@ -195,6 +205,7 @@ function handleLoopBranch(
     node.type === "WhileStatement" ||
     node.type === "DoWhileStatement"
   ) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     return gatherLoopCommentText(
       sourceCode,
       node,
@@ -220,6 +231,7 @@ function gatherNonIfBranchCommentText(
   context: { annotationPlacement: AnnotationPlacement; beforeText: string },
 ): string | null {
   if (node.type === "SwitchCase") {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     const { annotationPlacement, beforeText } = context;
     return gatherSwitchCaseCommentText(
       sourceCode,
@@ -231,11 +243,13 @@ function gatherNonIfBranchCommentText(
 
   const tryCatchResult = handleTryCatchBranch(sourceCode, node, context);
   if (tryCatchResult != null) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return tryCatchResult;
   }
 
   const loopResult = handleLoopBranch(sourceCode, node, context);
   if (loopResult != null) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return loopResult;
   }
 
@@ -262,10 +276,12 @@ function gatherIfBranchCommentText(
   const { annotationPlacement, beforeText } = context;
 
   if (node.type !== "IfStatement") {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     return null;
   }
 
   if (isElseIfBranch(node, parent)) {
+    // @supports docs/stories/026.0-DEV-ELSE-IF-ANNOTATION-POSITION.story.md REQ-DUAL-POSITION-DETECTION-ELSE-IF
     return gatherElseIfCommentText(sourceCode, node, parent, {
       annotationPlacement,
       beforeText,
@@ -298,11 +314,13 @@ function gatherBranchCommentTextByTypeInternal(
 ): string | null {
   const nonIfResult = gatherNonIfBranchCommentText(sourceCode, node, context);
   if (nonIfResult != null) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     return nonIfResult;
   }
 
   const ifResult = gatherIfBranchCommentText(sourceCode, node, parent, context);
   if (ifResult != null) {
+    // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-COMMENT-ASSOCIATION
     return ifResult;
   }
 
@@ -351,6 +369,7 @@ export function gatherBranchCommentText(
   });
 
   if (handled != null) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return handled;
   }
 
@@ -385,6 +404,8 @@ export function reportMissingStory(
    * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
    */
   if (storyFixCountRef.count === 0) {
+    // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-PARSING
     const insertStoryFixer = createStoryFixer({
       annotationPlacement,
       sourceCode,
@@ -425,6 +446,8 @@ export function reportMissingReq(
    * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
    */
   if (!missingStory) {
+    // @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
+    // @req REQ-ANNOTATION-PARSING
     /**
      * Fixer that inserts a default `@req` tag above the branch.
      * @story docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md
