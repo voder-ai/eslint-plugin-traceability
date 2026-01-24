@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * Flag parsing and normalization logic for the traceability-maint CLI.
  *
@@ -147,6 +145,7 @@ function handleRootFlag(
   index: number,
 ): number {
   if (args[index] !== "--root" || !isNextValueString(args, index)) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return index;
   }
 
@@ -166,6 +165,7 @@ function handleJsonFlag(
   index: number,
 ): number {
   if (args[index] !== "--json") {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return index;
   }
 
@@ -185,13 +185,16 @@ function handleFormatFlag(
   index: number,
 ): number {
   if (args[index] !== "--format" || !isNextValueString(args, index)) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return index;
   }
 
   const value = args[index + 1];
   if (value === "text" || value === "json") {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     flags.format = value;
   } else {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     throw new Error(`Invalid format: ${value}. Expected 'text' or 'json'.`);
   }
 
@@ -210,6 +213,7 @@ function handleFromFlag(
   index: number,
 ): number {
   if (args[index] !== "--from" || !isNextValueString(args, index)) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return index;
   }
 
@@ -229,6 +233,7 @@ function handleToFlag(
   index: number,
 ): number {
   if (args[index] !== "--to" || !isNextValueString(args, index)) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return index;
   }
 
@@ -248,6 +253,7 @@ function handleDryRunFlag(
   index: number,
 ): number {
   if (args[index] !== "--dry-run") {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return index;
   }
 
@@ -267,10 +273,12 @@ function handleIgnorePatternFlag(
   index: number,
 ): number {
   if (args[index] !== "--ignore-pattern" || !isNextValueString(args, index)) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
     return index;
   }
 
   if (!flags.ignorePatterns) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
     flags.ignorePatterns = [];
   }
   flags.ignorePatterns.push(args[index + 1]);
@@ -286,36 +294,43 @@ function handleIgnorePatternFlag(
 function applyFlag(flags: ParsedFlags, args: string[], index: number): number {
   const afterRoot = handleRootFlag(flags, args, index);
   if (afterRoot !== index) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return afterRoot;
   }
 
   const afterJson = handleJsonFlag(flags, args, index);
   if (afterJson !== index) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return afterJson;
   }
 
   const afterFormat = handleFormatFlag(flags, args, index);
   if (afterFormat !== index) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return afterFormat;
   }
 
   const afterFrom = handleFromFlag(flags, args, index);
   if (afterFrom !== index) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return afterFrom;
   }
 
   const afterTo = handleToFlag(flags, args, index);
   if (afterTo !== index) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return afterTo;
   }
 
   const afterDryRun = handleDryRunFlag(flags, args, index);
   if (afterDryRun !== index) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     return afterDryRun;
   }
 
   const afterIgnorePattern = handleIgnorePatternFlag(flags, args, index);
   if (afterIgnorePattern !== index) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-UPDATE
     return afterIgnorePattern;
   }
 
@@ -339,6 +354,7 @@ export function parseFlags(normalized: NormalizedCliArgs): ParsedFlags {
   const { args } = normalized;
 
   for (let i = 0; i < args.length; i += 1) {
+    // @supports docs/stories/009.0-DEV-MAINTENANCE-TOOLS.story.md REQ-MAINT-CLI
     i = applyFlag(flags, args, i);
   }
 
