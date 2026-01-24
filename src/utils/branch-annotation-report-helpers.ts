@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 import type { Rule } from "eslint";
 import {
   gatherBranchCommentText,
@@ -33,6 +31,7 @@ function getIndentAndInsertPosForLine(
       : 1;
 
   if (safeLine >= 1 && safeLine <= lines.length) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INDENTATION-CORRECT
     const rawLine = lines[safeLine - 1];
     indent = rawLine.match(/^(\s*)/)?.[1] || fallbackIndent;
   }
@@ -70,6 +69,7 @@ function getInsideBlockIndentAndInsertPos(
     bodyStatements && bodyStatements.length > 0 ? bodyStatements[0] : undefined;
 
   if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     const firstLine = firstStatement.loc.start.line;
     const firstLineInfo = getIndentAndInsertPosForLine(
       sourceCode,
@@ -79,6 +79,7 @@ function getInsideBlockIndentAndInsertPos(
     indent = firstLineInfo.indent;
     insertPos = firstLineInfo.insertPos;
   } else if (blockNode.loc && blockNode.loc.start) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     const blockLine = blockNode.loc.start.line;
     const blockLineInfo = getIndentAndInsertPosForLine(
       sourceCode,
@@ -108,6 +109,7 @@ function applyCatchClauseBaseIndentFallback(
   let insertPos = currentInsertPos;
 
   if (node.type === "CatchClause" && node.body) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-ALL-BLOCK-TYPES
     const bodyNode: any = node.body;
     const bodyStatements: any[] | undefined = Array.isArray(bodyNode.body)
       ? bodyNode.body
@@ -118,6 +120,7 @@ function applyCatchClauseBaseIndentFallback(
         : undefined;
 
     if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INDENTATION-CORRECT
       const firstLine = firstStatement.loc.start.line;
       const firstLineInfo = getIndentAndInsertPosForLine(
         sourceCode,
@@ -128,6 +131,7 @@ function applyCatchClauseBaseIndentFallback(
       indent = firstLineInfo.indent;
       insertPos = firstLineInfo.insertPos;
     } else if (bodyNode.loc && bodyNode.loc.start) {
+      // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INDENTATION-CORRECT
       const blockLine = bodyNode.loc.start.line;
       const blockLineInfo = getIndentAndInsertPosForLine(
         sourceCode,
@@ -174,6 +178,7 @@ function getBaseBranchIndentAndInsertPos(
     indentHelpers,
   );
   if (insideBase) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return insideBase;
   }
 
@@ -205,6 +210,7 @@ function getInsideIfBlockIndentAndInsertPos(
     blockStatements.length > 0 ? blockStatements[0] : undefined;
 
   if (firstStatement && firstStatement.loc && firstStatement.loc.start) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return getIndentAndInsertPosForLine(
       sourceCode,
       firstStatement.loc.start.line,
@@ -262,10 +268,12 @@ function getIfStatementIndentAndInsertPos(
     node.consequent.loc.start;
 
   if (!hasBlockConsequent) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-INSIDE-BRACE-PLACEMENT
     return context;
   }
 
   if (annotationPlacement !== "inside") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return context;
   }
 
@@ -324,6 +332,7 @@ function getBranchIndentAndInsertPos(
   let { indent, insertPos } = base;
 
   if (node.type === "IfStatement") {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     const context: IfIndentContext = { indent, insertPos };
     const updatedContext = getIfStatementIndentAndInsertPos(
       sourceCode,
@@ -352,6 +361,7 @@ function getBranchIndentAndInsertPos(
     indentHelpers,
   );
   if (insideOverride) {
+    // @supports docs/stories/028.0-DEV-ANNOTATION-PLACEMENT-STANDARDIZATION.story.md REQ-PLACEMENT-CONFIG
     return insideOverride;
   }
 
@@ -411,6 +421,7 @@ function processMissingAnnotationActions(
     args: any[];
   }) {
     if (item.missing) {
+      // @supports docs/stories/004.0-DEV-BRANCH-ANNOTATIONS.story.md REQ-ANNOTATION-PARSING
       item.fn(...item.args);
     }
   }
