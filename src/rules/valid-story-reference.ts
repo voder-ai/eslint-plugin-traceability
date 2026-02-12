@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * This rule validates that `@story` annotation references refer to existing story files.
  * @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE REQ-PATH-RESOLUTION REQ-SECURITY-VALIDATION
@@ -61,7 +59,10 @@ function validateStoryPath(opts: {
   } = opts;
   const parts = line.split(/\s+/);
   const storyPath = parts[1];
-  if (!storyPath) return;
+  if (!storyPath) {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ANNOTATION-VALIDATION
+    return;
+  }
   processStoryPath({
     storyPath,
     commentNode,
@@ -87,10 +88,12 @@ function reportExistenceStatus(
   context: any,
 ): void {
   if (!existenceResult || existenceResult.status === "exists") {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE
     return;
   }
 
   if (existenceResult.status === "missing") {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-FILE-EXISTENCE
     context.report({
       node: commentNode,
       messageId: "fileMissing",
@@ -100,12 +103,15 @@ function reportExistenceStatus(
   }
 
   if (existenceResult.status === "fs-error") {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ERROR-HANDLING
     const rawError = existenceResult.error;
     let errorMessage: string;
 
     if (rawError == null) {
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ERROR-HANDLING
       errorMessage = "Unknown filesystem error";
     } else if (rawError instanceof Error) {
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ERROR-HANDLING
       errorMessage = rawError.message;
     } else {
       errorMessage = String(rawError);
@@ -154,6 +160,7 @@ function reportExistenceProblems(opts: {
   });
 
   if (invalidByBoundary) {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PROJECT-BOUNDARY
     return;
   }
 
@@ -197,11 +204,13 @@ function processStoryPath(opts: {
   });
 
   if (!securityOk) {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-SECURITY-VALIDATION
     return;
   }
 
   // Extension check
   if (requireExt && !hasValidExtension(storyPath)) {
+    // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-PATH-RESOLUTION
     context.report({
       node: commentNode,
       messageId: "invalidExtension",
@@ -252,6 +261,7 @@ function handleComment(opts: {
     // Check if line starts with `@story` or `@supports` followed by whitespace (actual annotation)
     // This prevents matching prose that mentions these keywords in backticks or mid-sentence
     if (line.startsWith("@story ") || line.startsWith("@supports ")) {
+      // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ANNOTATION-VALIDATION
       validateStoryPath({
         line,
         commentNode,
@@ -343,6 +353,7 @@ export default {
       Program() {
         const comments = context.getSourceCode().getAllComments() || [];
         for (const comment of comments) {
+          // @supports docs/stories/006.0-DEV-FILE-VALIDATION.story.md REQ-ANNOTATION-VALIDATION
           handleComment({
             commentNode: comment,
             context,
