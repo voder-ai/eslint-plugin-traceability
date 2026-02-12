@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /****
  * Rule to enforce `@req` annotation on functions
  * @story docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md
@@ -48,6 +46,7 @@ function buildReqAnnotationVisitors(runCheck: (_node: any) => void) {
      */
     FunctionExpression(node: any) {
       if (node.parent && node.parent.type === "MethodDefinition") {
+        // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-FUNCTION-DETECTION
         return;
       }
       runCheck(node);
@@ -162,7 +161,10 @@ const rule: Rule.RuleModule = {
      * @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-ANNOTATION-REQUIRED REQ-FUNCTION-DETECTION
      */
     const runCheck = (node: any) => {
-      if (!shouldCheck(node)) return;
+      if (!shouldCheck(node)) {
+        // @supports docs/stories/003.0-DEV-FUNCTION-ANNOTATIONS.story.md REQ-CONFIGURABLE-SCOPE
+        return;
+      }
       checkReqAnnotation(context, node, {
         enableFix: false,
         annotationPlacement,
