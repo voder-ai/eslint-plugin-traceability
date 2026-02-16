@@ -1,5 +1,3 @@
-/* eslint-disable traceability/require-branch-annotation */
-
 /**
  * ESLint rule implementation for preferring the consolidated `@supports`
  * annotation over legacy combinations of `@story` and `@req` within JSDoc
@@ -65,6 +63,7 @@ function extractRequirementsFromStory(
 ): Set<string> | null {
   // Check cache first
   if (storyFileCache.has(storyPath)) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     return storyFileCache.get(storyPath)!;
   }
 
@@ -73,6 +72,7 @@ function extractRequirementsFromStory(
 
   // Validate story path: no traversal or absolute paths
   if (storyPath.includes("..") || path.isAbsolute(storyPath)) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     storyFileCache.set(storyPath, null);
     return null;
   }
@@ -81,12 +81,14 @@ function extractRequirementsFromStory(
 
   // Ensure resolved path is within cwd (security check)
   if (!resolvedPath.startsWith(cwd + path.sep) && resolvedPath !== cwd) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     storyFileCache.set(storyPath, null);
     return null;
   }
 
   // Read and parse story file
   try {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     const content = fs.readFileSync(resolvedPath, "utf8");
     const found = new Set<string>();
 
@@ -99,12 +101,14 @@ function extractRequirementsFromStory(
     let match: RegExpExecArray | null;
 
     while ((match = regex.exec(content)) !== null) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
       found.add(match[0]);
     }
 
     storyFileCache.set(storyPath, found);
     return found;
   } catch {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     // File not found or read error
     storyFileCache.set(storyPath, null);
     return null;
@@ -149,30 +153,40 @@ function collectStoryAndReqMetadata(comment: any): {
 
   rawLines.forEach((rawLine, index) => {
     const normalized = normalizeCommentLine(rawLine);
-    if (!normalized) return;
+    if (!normalized) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
+      return;
+    }
 
     if (/^@supports\b/.test(normalized)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
       // Mixed `@supports` usage should have been filtered out earlier
       return;
     }
 
     if (/^@story\b/.test(normalized)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
       const parts = normalized.split(/\s+/);
       if (parts.length === MIN_STORY_TOKENS) {
+        // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
         storyLineIndices.push(index);
         storyPath = parts[1];
       } else {
+        // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
         storyPath = null;
       }
       return;
     }
 
     if (/^@req\b/.test(normalized)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
       const parts = normalized.split(/\s+/);
       if (parts.length === MIN_REQ_TOKENS) {
+        // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
         reqLineIndices.push(index);
         reqIds.push(parts[1]);
       } else {
+        // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
         // Complex `@req` form; bail out entirely.
         storyPath = null;
       }
@@ -216,10 +230,12 @@ function applyImplementsReplacement(
   const fixedLines: string[] = [];
   rawLines.forEach((line, index) => {
     if (index === storyIdx) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
       fixedLines.push(implementsLine);
       return;
     }
     if (allIndicesToRemove.has(index)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
       return;
     }
     fixedLines.push(line);
@@ -266,7 +282,10 @@ function buildImplementsAutoFix(
   comment: any,
   storyPaths: Set<string>,
 ): Rule.ReportFixer | null {
-  if (storyPaths.size !== 1) return null;
+  if (storyPaths.size !== 1) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
+    return null;
+  }
 
   const { storyLineIndices, reqLineIndices, reqIds, storyPath } =
     collectStoryAndReqMetadata(comment);
@@ -277,6 +296,7 @@ function buildImplementsAutoFix(
     reqLineIndices.length < 1 ||
     storyPath === null
   ) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
     return null;
   }
 
@@ -288,6 +308,7 @@ function buildImplementsAutoFix(
 
   // If story file not found or unreadable, cannot safely auto-fix
   if (storyReqs === null) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     return null;
   }
 
@@ -297,6 +318,7 @@ function buildImplementsAutoFix(
   // If any `@req` IDs don't match the story, cannot safely auto-fix
   // This likely indicates a multi-story implementation that needs manual migration
   if (mismatchedReqs.length > 0) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     return null;
   }
 
@@ -330,23 +352,30 @@ function analyzeComment(comment: any): CommentAnalysis {
 
   rawLines.forEach((rawLine) => {
     const normalized = normalizeCommentLine(rawLine);
-    if (!normalized) return;
+    if (!normalized) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING
+      return;
+    }
 
     if (/^@supports\b/.test(normalized)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING
       hasImplements = true;
       return;
     }
 
     if (/^@story\b/.test(normalized)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING
       hasStory = true;
       const parts = normalized.split(/\s+/);
       if (parts.length >= MIN_STORY_TOKENS) {
+        // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
         storyPaths.add(parts[1]);
       }
       return;
     }
 
     if (/^@req\b/.test(normalized)) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING
       hasReq = true;
     }
   });
@@ -384,12 +413,14 @@ function reportMismatchIfNeeded(
     storyLineIndices.length !== 1 ||
     reqLineIndices.length < 1
   ) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     return false;
   }
 
   const storyReqs = extractRequirementsFromStory(storyPath, context);
 
   if (storyReqs === null) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     // Story file not found or unreadable
     context.report({
       node: comment as any,
@@ -404,6 +435,7 @@ function reportMismatchIfNeeded(
   const mismatchedReqs = reqIds.filter((reqId) => !storyReqs.has(reqId));
 
   if (mismatchedReqs.length > 0) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     // Found mismatched requirement identifiers
     context.report({
       node: comment as any,
@@ -430,10 +462,12 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
     analyzeComment(comment);
 
   if (!hasStory || !hasReq) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING
     return;
   }
 
   if (hasImplements) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-OPTIONAL-WARNING
     context.report({
       node: comment as any,
       messageId: "cannotAutoFix",
@@ -445,6 +479,7 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
   }
 
   if (hasMultipleStories(storyPaths)) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
     context.report({
       node: comment as any,
       messageId: "multiStoryDetected",
@@ -458,8 +493,10 @@ function processBlockComment(comment: any, context: Rule.RuleContext): void {
 
   // If no fix available, check if it's due to mismatch and provide helpful message
   if (fix === null) {
+    // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-AUTO-FIX
     const reported = reportMismatchIfNeeded(comment, context);
     if (reported) {
+      // @supports docs/stories/010.3-DEV-MIGRATE-TO-SUPPORTS.story.md REQ-MULTI-STORY-DETECT
       return;
     }
   }
